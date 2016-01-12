@@ -1,0 +1,92 @@
+package uk.co.drnaylor.minecraft.quickstart;
+
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.plugin.Plugin;
+import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
+import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
+import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.ModuleRegistration;
+import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Optional;
+
+@Plugin(id = QuickStart.ID, name = QuickStart.NAME, version = QuickStart.VERSION)
+public class QuickStart {
+    public final static String ID = "quickstart";
+    public final static String NAME = "Quick Start";
+    public final static String VERSION = "0.1";
+
+    private boolean modulesLoaded = false;
+    private boolean isErrored = false;
+    private final ConfigMap configMap = new ConfigMap();
+    private Injector injector;
+
+    @Inject private Game game;
+    @Inject private Logger logger;
+    @Inject @DefaultConfig(sharedRoot = false) private Path path;
+
+    @Listener
+    public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
+        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
+
+        // Get the config file.
+        try {
+            configMap.putConfig(new MainConfig(path));
+        } catch (IOException e) {
+            isErrored = true;
+            e.printStackTrace();
+            return;
+        }
+
+        // We register the ModuleService NOW so that others can hook into it.
+        game.getServiceManager().setProvider(this, QuickStartModuleService.class, new ModuleRegistration(this));
+    }
+
+    @Listener
+    public void onPostInit(GamePostInitializationEvent event) {
+        if (isErrored) {
+            return;
+        }
+
+        modulesLoaded = true;
+    }
+
+    public Injector getInjector() {
+        return injector;
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * Gets whether the modules are loaded.
+     *
+     * @return Whether the modules are loaded.
+     */
+    public boolean areModulesLoaded() {
+        return this.modulesLoaded;
+    }
+
+    /**
+     * Gets the configuration file
+     *
+     * @param config The {@link Class} of the config to get (see T).
+     * @param <T> The type of {@link AbstractConfig} to get.
+     * @return An {@link Optional} that might contain the config, if it exists.
+     */
+    public <T extends AbstractConfig> Optional<T> getConfig(Class<T> config) {
+        return configMap.getConfig(config);
+    }
+}
