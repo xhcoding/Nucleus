@@ -11,5 +11,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 public @interface Modules {
-    PluginModule[] modules() default { };
+    PluginModule[] value() default { };
 }
