@@ -17,8 +17,6 @@ public class ModuleRegistration implements QuickStartModuleService {
 
     public ModuleRegistration(QuickStart plugin) {
         this.plugin = plugin;
-
-
     }
 
     @Override
