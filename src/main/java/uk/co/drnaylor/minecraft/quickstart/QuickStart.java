@@ -13,7 +13,9 @@ import org.spongepowered.api.plugin.Plugin;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ModuleRegistration;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
 
@@ -60,6 +62,10 @@ public class QuickStart {
         }
 
         modulesLoaded = true;
+
+        // Register commands
+        new CommandLoader(this).loadCommands();
+        new EventLoader(this).loadEvents();
     }
 
     public Injector getInjector() {

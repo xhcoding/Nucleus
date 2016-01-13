@@ -24,7 +24,7 @@ public class EventLoader {
         return events;
     }
 
-    public void loadCommands() {
+    public void loadEvents() {
         Set<Class<? extends ListenerBase>> commandsToLoad = base.filterOutModules(getEvents());
         Injector injector = quickStart.getInjector();
         commandsToLoad.stream().map(injector::getInstance).forEach(c -> Sponge.getEventManager().registerListeners(quickStart, c));
