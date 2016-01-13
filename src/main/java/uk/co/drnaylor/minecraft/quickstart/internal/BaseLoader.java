@@ -15,7 +15,7 @@ class BaseLoader<T> {
     private final Predicate<Class<? extends T>> moduleCheck = o -> {
         Modules annotation = o.getAnnotation(Modules.class);
         // No annotation, include it.
-        return annotation == null || service.getModulesToLoad().stream().anyMatch(a -> Arrays.asList(annotation.modules()).contains(a));
+        return annotation == null || service.getModulesToLoad().stream().anyMatch(a -> Arrays.asList(annotation.value()).contains(a));
     };
 
     Set<Class<? extends T>> filterOutModules(Set<Class<? extends T>> objectsToFilter) {

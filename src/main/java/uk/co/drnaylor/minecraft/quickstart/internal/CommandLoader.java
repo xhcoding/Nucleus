@@ -25,6 +25,6 @@ public class CommandLoader {
     public void loadCommands() {
         Set<Class<? extends CommandBase>> commandsToLoad = base.filterOutModules(getCommands());
         Injector injector = quickStart.getInjector();
-        commandsToLoad.stream().map(injector::getInstance).forEach(c -> Sponge.getCommandManager().register(quickStart, c.getSpec(), c.getAliases()));
+        commandsToLoad.stream().map(injector::getInstance).forEach(c -> Sponge.getCommandManager().register(quickStart, c.createSpec(), c.getAliases()));
     }
 }

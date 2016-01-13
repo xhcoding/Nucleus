@@ -1,67 +1,73 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
+import com.google.common.collect.Sets;
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 
+import java.util.Set;
+
 public abstract class CommandBase implements CommandExecutor {
 
-    protected final QuickStart plugin;
+    private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
+    private final Set<String> additionalPermissions;
 
-    protected CommandBase(QuickStart plugin) {
-        this.plugin = plugin;
+    @Inject protected QuickStart plugin;
+
+    protected CommandBase() {
+        // Additional permissions
+        Permissions op = this.getClass().getAnnotation(Permissions.class);
+        if (op != null) {
+            additionalPermissions = Sets.newHashSet(op.value());
+            if (op.includeAdmin()) {
+                additionalPermissions.add(QuickStart.PERMISSIONS_ADMIN);
+            }
+        } else {
+            additionalPermissions = Sets.newHashSet();
+        }
     }
 
-    public abstract CommandSpec getSpec();
+    public abstract CommandSpec createSpec();
 
     public abstract String[] getAliases();
 
-    /**
-     * Runs the command. If the command is marked as {@link RunAsync}, runs it using a {@link org.spongepowered.api.scheduler.AsynchronousExecutor}
-     *
-     * @param src The source of the command.
-     * @param args The arguments sent to the command.
-     * @return The {@link CommandResult}
-     * @throws CommandException Generally not thrown.
-     */
+    public abstract CommandResult executeCommand(CommandSource src, CommandContext args) throws CommandException;
+
     @Override
     @NonnullByDefault
-    public final CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        if (this.getClass().getAnnotation(RunAsync.class) != null) {
+    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+        // If they don't match ANY permission, throw 'em.
+        if (!additionalPermissions.isEmpty() && !additionalPermissions.stream().anyMatch(src::hasPermission)) {
+            throw new CommandPermissionException();
+        }
+
+        if (isAsync) {
             plugin.getLogger().debug("Running " + this.getClass().getName() + " in async mode.");
             Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
                 try {
                     executeCommand(src, args);
                 } catch (CommandException e) {
-                    src.sendMessage(Text.of(TextColors.RED, "[" + QuickStart.NAME + "] ", e.getText()));
+                    src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
                 }
             });
+
             return CommandResult.success();
-        } else {
-            try {
-                return executeCommand(src, args);
-            } catch (CommandException e) {
-                src.sendMessage(Text.of(TextColors.RED, "[" + QuickStart.NAME + "] ", e.getText()));
-                return CommandResult.empty();
-            }
+        }
+
+        try {
+            return executeCommand(src, args);
+        } catch (CommandException e) {
+            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
+            return CommandResult.empty();
         }
     }
-
-    /**
-     * Replacement for {@link #execute(CommandSource, CommandContext)} in the {@link CommandExecutor}
-     *
-     * @param src The source of the command.
-     * @param args The arguments sent to the command.
-     * @return The {@link CommandResult}
-     * @throws CommandException Should be thrown for an error condition.
-     */
-    public abstract CommandResult executeCommand(CommandSource src, CommandContext args) throws CommandException;
 }

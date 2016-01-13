@@ -10,6 +10,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
@@ -28,6 +30,10 @@ public class QuickStart {
     public final static String ID = "quickstart";
     public final static String NAME = "Quick Start";
     public final static String VERSION = "0.1";
+    public final static String PERMISSIONS_PREFIX = "quickstart.";
+    public final static String PERMISSIONS_ADMIN = PERMISSIONS_PREFIX + "admin";
+    public final static Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "]");
+    public final static Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "]");
 
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
