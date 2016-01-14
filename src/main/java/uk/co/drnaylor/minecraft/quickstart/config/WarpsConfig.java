@@ -3,19 +3,15 @@ package uk.co.drnaylor.minecraft.quickstart.config;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
-import org.spongepowered.api.entity.living.player.User;
-import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
+import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.UUID;
 
-public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements QuickStartUser {
-    private final User user;
+public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements QuickStartWarpService {
 
-    public UserConfig(Path file, User user) throws IOException {
+    protected WarpsConfig(Path file) throws IOException {
         super(file);
-        this.user = user;
     }
 
     @Override
@@ -26,14 +22,5 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     protected ConfigurationNode getDefaults() {
         return SimpleConfigurationNode.root();
-    }
-
-    @Override
-    public User getUser() {
-        return user;
-    }
-
-    public UUID getUniqueId() {
-        return user.getUniqueId();
     }
 }

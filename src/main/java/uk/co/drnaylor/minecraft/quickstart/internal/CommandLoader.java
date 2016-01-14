@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
-import uk.co.drnaylor.minecraft.quickstart.commands.QuickStartCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
 
 import java.util.Set;
 

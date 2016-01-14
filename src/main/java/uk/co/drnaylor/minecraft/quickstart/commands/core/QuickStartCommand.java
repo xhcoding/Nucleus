@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.commands;
+package uk.co.drnaylor.minecraft.quickstart.commands.core;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;

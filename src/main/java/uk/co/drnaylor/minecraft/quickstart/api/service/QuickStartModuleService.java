@@ -6,6 +6,9 @@ import uk.co.drnaylor.minecraft.quickstart.api.exceptions.UnremovableModuleExcep
 
 import java.util.Set;
 
+/**
+ * A service that allows plugins to request certain modules are not loaded.
+ */
 public interface QuickStartModuleService {
     /**
      * Gets the modules to load, or the modules that have been loaded.
