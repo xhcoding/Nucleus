@@ -18,8 +18,9 @@ public interface QuickStartModuleService {
      * Removes a module from QuickStart pragmatically, so plugins can override the behaviour if required.
      *
      * @param module The {@link PluginModule} to disable.
-     * @throws ModulesLoadedException Thrown if the modules have now been loaded.
-     * @throws UnremovableModuleException Thrown if the module has been marked cannot be disabled.
+     * @throws ModulesLoadedException Thrown if the modules have now been loaded and can no longer be removed.
+     * @throws UnremovableModuleException Thrown if the module has been marked "cannot be disabled". Plugins are expected
+     *         to honour this.
      */
     void removeModule(PluginModule module) throws ModulesLoadedException, UnremovableModuleException;
 }

@@ -22,7 +22,11 @@ public abstract class AbstractConfig<T extends ConfigurationNode, L extends Conf
 
     public void load() throws IOException {
         node = loader.load();
+        node.mergeValuesFrom(getDefaults());
+        save();
     }
 
     protected abstract L getLoader(Path file);
+
+    protected abstract T getDefaults();
 }
