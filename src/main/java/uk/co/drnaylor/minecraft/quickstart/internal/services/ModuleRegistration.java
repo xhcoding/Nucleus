@@ -1,7 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import com.google.common.collect.ImmutableSet;
-import com.sun.javaws.Main;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.ModulesLoadedException;

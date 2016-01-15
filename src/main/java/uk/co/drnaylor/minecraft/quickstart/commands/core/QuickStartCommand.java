@@ -12,8 +12,8 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 @RunAsync
 @Permissions(QuickStart.PERMISSIONS_PREFIX + "quickstart.base")

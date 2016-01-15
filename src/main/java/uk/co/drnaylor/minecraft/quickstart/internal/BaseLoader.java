@@ -2,6 +2,7 @@ package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 
 import java.util.Arrays;
 import java.util.Set;

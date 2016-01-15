@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.internal;
+package uk.co.drnaylor.minecraft.quickstart.internal.annotations;
 
 import java.lang.annotation.*;
 

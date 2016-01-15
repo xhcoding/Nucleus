@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.internal;
+package uk.co.drnaylor.minecraft.quickstart.internal.annotations;
 
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 

@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
@@ -13,10 +14,13 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartUserService;
+import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
+import uk.co.drnaylor.minecraft.quickstart.config.WarpsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
@@ -24,9 +28,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModu
 import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.Set;
 
 @Plugin(id = QuickStart.ID, name = QuickStart.NAME, version = QuickStart.VERSION)
 public class QuickStart {
@@ -47,6 +54,7 @@ public class QuickStart {
     @Inject private Game game;
     @Inject private Logger logger;
     @Inject @DefaultConfig(sharedRoot = false) private Path path;
+    @Inject @ConfigDir(sharedRoot = false) private Path configDir;
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
@@ -55,6 +63,8 @@ public class QuickStart {
         // Get the config file.
         try {
             configMap.putConfig(new MainConfig(path));
+
+            configMap.putConfig(new WarpsConfig(Paths.get(path.getParent().toString(), "warps.json")));
         } catch (IOException e) {
             isErrored = true;
             e.printStackTrace();
@@ -79,6 +89,13 @@ public class QuickStart {
 
         // Register services
         game.getServiceManager().setProvider(this, QuickStartUserService.class, configLoader);
+
+        Set<PluginModule> modules = game.getServiceManager().provideUnchecked(QuickStartModuleService.class).getModulesToLoad();
+
+        // Load the following services only if necessary.
+        if (modules.contains(PluginModule.WARPS)) {
+            game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
+        }
     }
 
     @Listener
