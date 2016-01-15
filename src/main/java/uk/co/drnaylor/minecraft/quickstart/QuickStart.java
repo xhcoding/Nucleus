@@ -15,6 +15,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
+import uk.co.drnaylor.minecraft.quickstart.api.exceptions.ModulesLoadedException;
+import uk.co.drnaylor.minecraft.quickstart.api.exceptions.UnremovableModuleException;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartUserService;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
@@ -63,8 +65,6 @@ public class QuickStart {
         // Get the config file.
         try {
             configMap.putConfig(new MainConfig(path));
-
-            configMap.putConfig(new WarpsConfig(Paths.get(path.getParent().toString(), "warps.json")));
         } catch (IOException e) {
             isErrored = true;
             e.printStackTrace();
@@ -81,6 +81,28 @@ public class QuickStart {
             return;
         }
 
+        QuickStartModuleService m = game.getServiceManager().provideUnchecked(QuickStartModuleService.class);
+        Set<PluginModule> modules = m.getModulesToLoad();
+
+        // Load the following services only if necessary.
+        if (modules.contains(PluginModule.WARPS)) {
+            try {
+                configMap.putConfig(new WarpsConfig(Paths.get(path.getParent().toString(), "warps.json")));
+
+                // Put the warps service into the service manager.
+                game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
+            } catch (IOException ex) {
+                try {
+                    m.removeModule(PluginModule.WARPS);
+                } catch (ModulesLoadedException | UnremovableModuleException e) {
+                    // Nope.
+                }
+
+                logger.warn("Could not load the warps module for the reason below.");
+                ex.printStackTrace();
+            }
+        }
+
         modulesLoaded = true;
 
         // Register commands
@@ -89,13 +111,6 @@ public class QuickStart {
 
         // Register services
         game.getServiceManager().setProvider(this, QuickStartUserService.class, configLoader);
-
-        Set<PluginModule> modules = game.getServiceManager().provideUnchecked(QuickStartModuleService.class).getModulesToLoad();
-
-        // Load the following services only if necessary.
-        if (modules.contains(PluginModule.WARPS)) {
-            game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
-        }
     }
 
     @Listener
