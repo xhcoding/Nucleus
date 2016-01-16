@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.config;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -7,6 +8,7 @@ import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchWorldException;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.LocationNode;
@@ -61,12 +63,12 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
     }
 
     @Override
-    public Optional<Location<World>> getWarp(String warpName) {
+    public Optional<WarpLocation> getWarp(String warpName) {
         LocationNode ln = warpNodes.get(warpName.toLowerCase());
 
         try {
             if (ln != null) {
-                return Optional.of(ln.getLocation());
+                return Optional.of(new WarpLocation(ln.getLocation(), ln.getRotation()));
             }
         } catch (NoSuchWorldException ex) {
             // Yeah... we know
@@ -81,13 +83,13 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
     }
 
     @Override
-    public boolean setWarp(String warpName, Location<World> location) {
+    public boolean setWarp(String warpName, Location<World> location, Vector3d rotation) {
         String warp = warpName.toLowerCase();
         if (getWarp(warp).isPresent()) {
             return false;
         }
 
-        warpNodes.put(warp, new LocationNode(location));
+        warpNodes.put(warp, new LocationNode(location, rotation));
         return true;
     }
 }

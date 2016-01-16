@@ -13,6 +13,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
+import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 
@@ -84,11 +85,11 @@ public class WarpParser extends CommandElement {
 
     public class WarpData {
         public final String warp;
-        public final Location<World> world;
+        public final WarpLocation loc;
 
-        private WarpData(String warp, Location<World> world) {
+        private WarpData(String warp, WarpLocation loc) {
             this.warp = warp;
-            this.world = world;
+            this.loc = loc;
         }
     }
 }

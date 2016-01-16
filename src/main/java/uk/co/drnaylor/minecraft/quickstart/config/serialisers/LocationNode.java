@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.config.serialisers;
 
+import com.flowpowered.math.vector.Vector3d;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
@@ -14,26 +15,38 @@ public class LocationNode {
     private final double x;
     private final double y;
     private final double z;
+    private final double rotx;
+    private final double roty;
+    private final double rotz;
     private final UUID world;
 
     public LocationNode(ConfigurationNode locationNode) {
         this.x = locationNode.getNode("x").getDouble();
         this.y = locationNode.getNode("y").getDouble();
         this.z = locationNode.getNode("z").getDouble();
+        this.rotx = locationNode.getNode("rotx").getDouble();
+        this.roty = locationNode.getNode("roty").getDouble();
+        this.rotz = locationNode.getNode("rotz").getDouble();
         this.world = UUID.fromString(locationNode.getNode("world").getString());
     }
 
-    public LocationNode(Location<World> length) {
+    public LocationNode(Location<World> length, Vector3d rotation) {
         this.x = length.getX();
         this.y = length.getY();
         this.z = length.getZ();
+        this.rotx = rotation.getX();
+        this.roty = rotation.getY();
+        this.rotz = rotation.getZ();
         this.world = length.getExtent().getUniqueId();
     }
 
-    public LocationNode(double x, double y, double z, UUID world) {
+    public LocationNode(double x, double y, double z, double rotx, double roty, double rotz, UUID world) {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.rotx = rotx;
+        this.roty = roty;
+        this.rotz = rotz;
         this.world = world;
     }
 
@@ -46,6 +59,11 @@ public class LocationNode {
         cn.getNode("x").setValue(x);
         cn.getNode("y").setValue(y);
         cn.getNode("z").setValue(z);
+
+        cn.getNode("rotx").setValue(rotx);
+        cn.getNode("roty").setValue(roty);
+        cn.getNode("rotz").setValue(rotz);
+
         cn.getNode("world").setValue(world.toString());
     }
 
@@ -63,5 +81,9 @@ public class LocationNode {
         }
 
         throw new NoSuchWorldException();
+    }
+
+    public Vector3d getRotation() {
+        return new Vector3d(rotx, roty, rotz);
     }
 }

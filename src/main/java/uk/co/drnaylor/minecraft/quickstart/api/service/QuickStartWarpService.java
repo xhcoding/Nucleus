@@ -1,7 +1,9 @@
 package uk.co.drnaylor.minecraft.quickstart.api.service;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +19,7 @@ public interface QuickStartWarpService {
      * @param warpName The name of the warp to check.
      * @return The {@link Location} of the warp, or {@link Optional#empty()} otherwise.
      */
-    Optional<Location<World>> getWarp(String warpName);
+    Optional<WarpLocation> getWarp(String warpName);
 
     /**
      * Removes a warp.
@@ -32,9 +34,10 @@ public interface QuickStartWarpService {
      *
      * @param warpName The name of the warp to set.
      * @param location The location of the warp.
+     * @param rotation The rotation of the warp.
      * @return <code>true</code> if set, <code>false</code> otherwise.
      */
-    boolean setWarp(String warpName, Location<World> location);
+    boolean setWarp(String warpName, Location<World> location, Vector3d rotation);
 
     /**
      * Gets the names of all the warps that are available.
