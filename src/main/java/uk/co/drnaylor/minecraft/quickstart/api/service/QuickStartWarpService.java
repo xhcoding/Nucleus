@@ -4,6 +4,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Gets a service that allows users to warp about using defined warps.
@@ -34,4 +35,19 @@ public interface QuickStartWarpService {
      * @return <code>true</code> if set, <code>false</code> otherwise.
      */
     boolean setWarp(String warpName, Location<World> location);
+
+    /**
+     * Gets the names of all the warps that are available.
+     *
+     * @return A set of warps.
+     */
+    Set<String> getWarpNames();
+
+    /**
+     * Gets whether a warp exists.
+     *
+     * @param name The name to check for.
+     * @return <code>true</code> if it exists, <code>false</code> otherwise.
+     */
+    boolean warpExists(String name);
 }

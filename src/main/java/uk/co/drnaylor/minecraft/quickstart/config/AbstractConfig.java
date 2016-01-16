@@ -5,6 +5,7 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Set;
 
 public abstract class AbstractConfig<T extends ConfigurationNode, L extends ConfigurationLoader<T>> {
 

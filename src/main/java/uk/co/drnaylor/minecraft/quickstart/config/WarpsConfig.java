@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.config;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements QuickStartWarpService {
 
@@ -46,6 +48,16 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
     @Override
     protected ConfigurationNode getDefaults() {
         return SimpleConfigurationNode.root();
+    }
+
+    @Override
+    public Set<String> getWarpNames() {
+        return ImmutableSet.copyOf(warpNodes.keySet());
+    }
+
+    @Override
+    public boolean warpExists(String name) {
+        return warpNodes.containsKey(name.toLowerCase());
     }
 
     @Override
