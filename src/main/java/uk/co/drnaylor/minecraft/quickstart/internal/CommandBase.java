@@ -6,10 +6,7 @@ import com.google.inject.Inject;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandPermissionException;
-import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.*;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -186,5 +183,16 @@ public abstract class CommandBase implements CommandExecutor {
     private void cleanCooldowns() {
         long time = new Date().getTime();
         cooldownStore.entrySet().stream().filter(k -> k.getValue() < time).map(Map.Entry::getKey).forEach(cooldownStore::remove);
+    }
+
+    @SafeVarargs
+    protected final Map<List<String>, CommandCallable> createChildCommands(Class<? extends CommandBase>... bases) {
+        Map<List<String>, CommandCallable> map = Maps.newHashMap();
+        Arrays.asList(bases).forEach(cb -> {
+            CommandBase c = plugin.getInjector().getInstance(cb);
+            map.put(Arrays.asList(c.getAliases()), c.createSpec());
+        });
+
+        return map;
     }
 }

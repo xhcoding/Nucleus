@@ -19,7 +19,10 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 public class WarpsCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new WarpParser(Text.of(Util.messageBundle.getString("args.name.warpname")), plugin, true))).build();
+        return CommandSpec.builder().executor(this)
+                .children(this.createChildCommands(
+                        DeleteWarpCommand.class, ListWarpCommand.class, SetWarpCommand.class
+                )).arguments(GenericArguments.onlyOne(new WarpParser(Text.of(Util.messageBundle.getString("args.name.warpname")), plugin, true))).build();
     }
 
     @Override
