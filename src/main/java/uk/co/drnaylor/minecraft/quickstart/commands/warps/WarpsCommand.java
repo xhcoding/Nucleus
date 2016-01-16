@@ -19,7 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 public class WarpsCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new WarpParser(Text.of("Warp Name"), plugin, true))).build();
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new WarpParser(Text.of(Util.messageBundle.getString("args.name.warpname")), plugin, true))).build();
     }
 
     @Override
@@ -29,7 +29,7 @@ public class WarpsCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws CommandException {
-        WarpParser.WarpData wd = args.<WarpParser.WarpData>getOne("Warp Name").get();
+        WarpParser.WarpData wd = args.<WarpParser.WarpData>getOne(Util.messageBundle.getString("args.name.warpname")).get();
         return null;
     }
 
