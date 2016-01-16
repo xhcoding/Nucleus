@@ -12,6 +12,67 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 public @interface Permissions {
-    String[] value();
+
+    /**
+     * Arbitrary permissions that could be checked.
+     *
+     * @return The permissions
+     */
+    String[] value() default {};
+
+    /**
+     * Use the default permission - "prefix.(root).command.{sub}.base"
+     *
+     * @return <code>true</code> if this permission should be used.
+     */
+    boolean useDefault() default true;
+
+    /**
+     * Additional permissions for cooldown exemption.
+     *
+     * @return The list of permissions
+     */
+    String[] cooldownExempt() default {};
+
+    /**
+     * Additional permissions for warmup exemption.
+     *
+     * @return The list of permissions
+     */
+    String[] warmupExempt() default {};
+
+    /**
+     * Use the default permission - "prefix.(root).command.{sub}.exempt.cooldown"
+     *
+     * @return <code>true</code> if this permission should be used.
+     */
+    boolean useDefaultCooldownExempt() default true;
+
+    /**
+     * Use the default permission - "prefix.(root).command.{sub}.exempt.warmup"
+     *
+     * @return <code>true</code> if this permission should be used.
+     */
+    boolean useDefaultWarmupExempt() default true;
+
+    /**
+     * The root permission to use
+     *
+     * @return The root, or empty string if no root
+     */
+    String root() default "";
+
+    /**
+     * The sub permission to use
+     *
+     * @return The sub, or empty string if no root
+     */
+    String sub() default "";
+
+    /**
+     * Include the admin permission in this check.
+     *
+     * @return <code>true</code> if the admin permission is also permissible.
+     */
     boolean includeAdmin() default true;
 }

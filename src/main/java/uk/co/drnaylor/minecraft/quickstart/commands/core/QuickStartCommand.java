@@ -16,7 +16,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 @RunAsync
-@Permissions(QuickStart.PERMISSIONS_PREFIX + "quickstart.base")
+@Permissions
 public class QuickStartCommand extends CommandBase {
 
     @Override

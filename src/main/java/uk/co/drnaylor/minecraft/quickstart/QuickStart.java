@@ -21,6 +21,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartUserService;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
+import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.WarpsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
@@ -62,9 +63,10 @@ public class QuickStart {
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
 
-        // Get the config file.
+        // Get the mandatory config files.
         try {
             configMap.putConfig(new MainConfig(path));
+            configMap.putConfig(new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
         } catch (IOException e) {
             isErrored = true;
             e.printStackTrace();
@@ -87,7 +89,7 @@ public class QuickStart {
         // Load the following services only if necessary.
         if (modules.contains(PluginModule.WARPS)) {
             try {
-                configMap.putConfig(new WarpsConfig(Paths.get(path.getParent().toString(), "warps.json")));
+                configMap.putConfig(new WarpsConfig(Paths.get(configDir.toString(), "warps.json")));
 
                 // Put the warps service into the service manager.
                 game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());

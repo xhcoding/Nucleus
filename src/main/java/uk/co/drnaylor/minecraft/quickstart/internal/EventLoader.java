@@ -6,6 +6,7 @@ import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.listeners.CoreListener;
 import uk.co.drnaylor.minecraft.quickstart.listeners.MuteListener;
+import uk.co.drnaylor.minecraft.quickstart.listeners.WarmupListener;
 
 import java.util.Set;
 
@@ -21,6 +22,7 @@ public class EventLoader {
         Set<Class<? extends ListenerBase>> events = Sets.newHashSet();
         events.add(CoreListener.class);
         events.add(MuteListener.class);
+        events.add(WarmupListener.class);
         return events;
     }
 

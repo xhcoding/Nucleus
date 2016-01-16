@@ -5,7 +5,10 @@ import com.google.inject.Injector;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.warps.WarpsCommand;
+import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 
+import java.io.IOException;
 import java.util.Set;
 
 public class CommandLoader {
@@ -19,12 +22,29 @@ public class CommandLoader {
     private Set<Class<? extends CommandBase>> getCommands() {
         Set<Class<? extends CommandBase>> cmds = Sets.newHashSet();
         cmds.add(QuickStartCommand.class);
+        cmds.add(WarpsCommand.class);
         return cmds;
     }
 
     public void loadCommands() {
         Set<Class<? extends CommandBase>> commandsToLoad = base.filterOutModules(getCommands());
         Injector injector = quickStart.getInjector();
-        commandsToLoad.stream().map(injector::getInstance).forEach(c -> Sponge.getCommandManager().register(quickStart, c.createSpec(), c.getAliases()));
+
+        // Commands config!
+        CommandsConfig cc = quickStart.getConfig(CommandsConfig.class).get();
+        commandsToLoad.stream().map(injector::getInstance).forEach(c -> {
+            // Merge in config defaults.
+            cc.mergeDefaultsForCommand(c.getAliases()[0], c.getDefaults());
+
+            // Register the commands.
+            Sponge.getCommandManager().register(quickStart, c.createSpec(), c.getAliases());
+        });
+
+        try {
+            cc.save();
+        } catch (IOException e) {
+            quickStart.getLogger().error("Could not save defaults.");
+            e.printStackTrace();
+        }
     }
 }

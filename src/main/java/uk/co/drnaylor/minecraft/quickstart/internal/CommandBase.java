@@ -1,7 +1,10 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandPermissionException;
@@ -10,32 +13,83 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
+import uk.co.drnaylor.minecraft.quickstart.Util;
+import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
+import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
-import java.util.Set;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public abstract class CommandBase implements CommandExecutor {
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
     private final Set<String> additionalPermissions;
+    private final Set<String> cooldown;
+    private final Set<String> warmup;
+
+    private final Map<UUID, Long> cooldownStore = Maps.newHashMap();
+    private QuickStartWarmupManagerService warmupService = null;
 
     @Inject protected QuickStart plugin;
 
     protected CommandBase() {
         // Additional permissions
         Permissions op = this.getClass().getAnnotation(Permissions.class);
+        additionalPermissions = Sets.newHashSet();
+        cooldown = Sets.newHashSet();
+        warmup = Sets.newHashSet();
+
         if (op != null) {
-            additionalPermissions = Sets.newHashSet(op.value());
+            Collections.addAll(additionalPermissions, op.value());
+            Collections.addAll(cooldown, op.cooldownExempt());
+            Collections.addAll(warmup, op.warmupExempt());
+
+            StringBuilder perm = new StringBuilder(QuickStart.PERMISSIONS_PREFIX);
+            if (!op.root().isEmpty()) {
+                perm.append(op.root()).append(".");
+            }
+
+            perm.append(getAliases()[0]).append(".");
+
+            if (!op.sub().isEmpty()) {
+                perm.append(op.sub()).append(".");
+            }
+
+            String defaultroot = perm.toString();
+            if (op.useDefault()) {
+                additionalPermissions.add(defaultroot + "base");
+            }
+
+            if (op.useDefaultCooldownExempt()) {
+                cooldown.add(defaultroot + "exempt.cooldown");
+            }
+
+            if (op.useDefaultWarmupExempt()) {
+                warmup.add(defaultroot + "exempt.warmup");
+            }
+
             if (op.includeAdmin()) {
                 additionalPermissions.add(QuickStart.PERMISSIONS_ADMIN);
+                cooldown.add(QuickStart.PERMISSIONS_ADMIN);
+                warmup.add(QuickStart.PERMISSIONS_ADMIN);
             }
-        } else {
-            additionalPermissions = Sets.newHashSet();
         }
+    }
+
+    public CommentedConfigurationNode getDefaults() {
+        CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
+        n.getNode("cooldown").setComment(Util.messageBundle.getString("config.cooldown")).setValue(0);
+        n.getNode("warmup").setComment(Util.messageBundle.getString("config.warmup")).setValue(0);
+        return n;
     }
 
     public abstract CommandSpec createSpec();
@@ -52,24 +106,85 @@ public abstract class CommandBase implements CommandExecutor {
             throw new CommandPermissionException();
         }
 
-        if (isAsync) {
-            plugin.getLogger().debug("Running " + this.getClass().getName() + " in async mode.");
-            Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-                try {
-                    executeCommand(src, args);
-                } catch (CommandException e) {
-                    src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
-                }
-            });
-
-            return CommandResult.success();
+        if ((src instanceof Player) && !cooldown.stream().anyMatch(src::hasPermission)) {
+            cleanCooldowns();
+            if (cooldownStore.containsKey(((Player) src).getUniqueId())) {
+                long l = (cooldownStore.get(((Player) src).getUniqueId()) / 1000) + 1;
+                src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("cooldown.message"), Util.getTimeStringFromSeconds(l)))
+                        .color(TextColors.YELLOW).build());
+                return CommandResult.empty();
+            }
         }
 
+        int getWarmup = applyWarmup(src);
+        if (getWarmup > 0) {
+            // We know that the source is a player
+            final Player p = (Player)src;
+            if (warmupService == null) {
+                warmupService = Sponge.getServiceManager().provideUnchecked(QuickStartWarmupManagerService.class);
+            }
+
+            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().delay(getWarmup, TimeUnit.SECONDS).execute(t -> {
+                src.sendMessage(Text.builder(Util.messageBundle.getString("warmup.end")).color(TextColors.YELLOW).build());
+                warmupService.removeWarmup(p.getUniqueId());
+                startExecute(src, args);
+            }).name("Command Warmup - " + src.getName());
+
+            if (isAsync) {
+                tb.async();
+            }
+
+            warmupService.addWarmup(((Player) src).getUniqueId(), tb.submit(plugin));
+            src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("warmup.start"), Util.getTimeStringFromSeconds(getWarmup)))
+                    .color(TextColors.YELLOW).build());
+            return CommandResult.success();
+        } else {
+
+            if (isAsync) {
+                plugin.getLogger().debug("Running " + this.getClass().getName() + " in async mode.");
+                Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> startExecute(src, args));
+
+                return CommandResult.success();
+            }
+
+            return startExecute(src, args);
+        }
+    }
+
+    private int applyWarmup(CommandSource src) {
+        if (!(src instanceof Player) || warmup.isEmpty() || warmup.stream().anyMatch(src::hasPermission)) {
+            return 0;
+        }
+
+        int warmupTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("warmup").getInt();
+        if (warmupTime <= 0) {
+            return 0;
+        }
+
+        return warmupTime;
+    }
+
+    private CommandResult startExecute(CommandSource src, CommandContext args) {
+        CommandResult cr;
         try {
-            return executeCommand(src, args);
+            cr = executeCommand(src, args);
         } catch (CommandException e) {
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
-            return CommandResult.empty();
+            cr = CommandResult.empty();
         }
+
+        if (src instanceof Player && !cooldown.stream().anyMatch(src::hasPermission)) {
+            int cooldownTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("cooldown").getInt();
+            if (cooldownTime > 0 && cr.getSuccessCount().orElse(0) > 0) {
+                cooldownStore.put(((Player)src).getUniqueId(), new Date().getTime() + (cooldownTime*1000));
+            }
+        }
+
+        return cr;
+    }
+
+    private void cleanCooldowns() {
+        long time = new Date().getTime();
+        cooldownStore.entrySet().stream().filter(k -> k.getValue() < time).map(Map.Entry::getKey).forEach(cooldownStore::remove);
     }
 }

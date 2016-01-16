@@ -28,9 +28,7 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
         super.load();
 
         warpNodes.clear();
-        node.getChildrenMap().forEach((k, v) -> {
-            warpNodes.put(k.toString().toLowerCase(), new LocationNode(v));
-        });
+        node.getChildrenMap().forEach((k, v) -> warpNodes.put(k.toString().toLowerCase(), new LocationNode(v)));
     }
 
     @Override

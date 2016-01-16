@@ -11,7 +11,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WarpParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
-@Permissions(QuickStart.PERMISSIONS_PREFIX + "warp.base")
+@Permissions
 public class WarpsCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
@@ -20,7 +20,7 @@ public class WarpsCommand extends CommandBase {
 
     @Override
     public String[] getAliases() {
-        return new String[0];
+        return new String[] { "warp" };
     }
 
     @Override
