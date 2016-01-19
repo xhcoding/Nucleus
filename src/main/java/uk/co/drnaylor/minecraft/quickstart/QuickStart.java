@@ -48,6 +48,7 @@ public class QuickStart {
     public final static Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "]");
     public final static Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "]");
 
+    private ModuleRegistration moduleRegistration = new ModuleRegistration(this);
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
     private final ConfigMap configMap = new ConfigMap();
@@ -61,8 +62,6 @@ public class QuickStart {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
-        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
-
         // Get the mandatory config files.
         try {
             configMap.putConfig(new MainConfig(path));
@@ -74,7 +73,8 @@ public class QuickStart {
         }
 
         // We register the ModuleService NOW so that others can hook into it.
-        game.getServiceManager().setProvider(this, QuickStartModuleService.class, new ModuleRegistration(this));
+        game.getServiceManager().setProvider(this, QuickStartModuleService.class, moduleRegistration);
+        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
     }
 
     @Listener
@@ -83,8 +83,7 @@ public class QuickStart {
             return;
         }
 
-        QuickStartModuleService m = game.getServiceManager().provideUnchecked(QuickStartModuleService.class);
-        Set<PluginModule> modules = m.getModulesToLoad();
+        Set<PluginModule> modules = moduleRegistration.getModulesToLoad();
 
         // Load the following services only if necessary.
         if (modules.contains(PluginModule.WARPS)) {
@@ -95,7 +94,7 @@ public class QuickStart {
                 game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
             } catch (IOException ex) {
                 try {
-                    m.removeModule(PluginModule.WARPS);
+                    moduleRegistration.removeModule(PluginModule.WARPS);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {
                     // Nope.
                 }

@@ -8,6 +8,8 @@ import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.*;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.source.CommandBlockSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,11 +24,12 @@ import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public abstract class CommandBase implements CommandExecutor {
+public abstract class CommandBase<T extends CommandSource> implements CommandExecutor {
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
     private final Set<String> additionalPermissions;
@@ -35,10 +38,19 @@ public abstract class CommandBase implements CommandExecutor {
 
     private final Map<UUID, Long> cooldownStore = Maps.newHashMap();
     private QuickStartWarmupManagerService warmupService = null;
+    private final Class<T> sourceType;
 
     @Inject protected QuickStart plugin;
 
+    @SuppressWarnings("unchecked")
     protected CommandBase() {
+        // I hate type erasure...
+        Method me = Arrays.asList(getClass().getDeclaredMethods()).stream().filter(x -> x.getName().equals("executeCommand") &&
+                x.getParameterTypes().length == 2 &&
+                x.getParameterTypes()[1].isAssignableFrom(CommandContext.class)).findFirst().get();
+
+        sourceType = (Class<T>)(me.getParameterTypes()[0]);
+
         // Additional permissions
         Permissions op = this.getClass().getAnnotation(Permissions.class);
         additionalPermissions = Sets.newHashSet();
@@ -93,11 +105,17 @@ public abstract class CommandBase implements CommandExecutor {
 
     public abstract String[] getAliases();
 
-    public abstract CommandResult executeCommand(CommandSource src, CommandContext args) throws CommandException;
+    public abstract CommandResult executeCommand(T src, CommandContext args) throws CommandException;
 
     @Override
     @NonnullByDefault
-    public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
+        if (!checkSourceType(source)) {
+            return CommandResult.empty();
+        }
+
+        @SuppressWarnings("unchecked") T src = (T)source;
+
         // If they don't match ANY permission, throw 'em.
         if (!additionalPermissions.isEmpty() && !additionalPermissions.stream().anyMatch(src::hasPermission)) {
             throw new CommandPermissionException();
@@ -131,7 +149,7 @@ public abstract class CommandBase implements CommandExecutor {
                 tb.async();
             }
 
-            warmupService.addWarmup(((Player) src).getUniqueId(), tb.submit(plugin));
+            warmupService.addWarmup(p.getUniqueId(), tb.submit(plugin));
             src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("warmup.start"), Util.getTimeStringFromSeconds(getWarmup)))
                     .color(TextColors.YELLOW).build());
             return CommandResult.success();
@@ -161,7 +179,7 @@ public abstract class CommandBase implements CommandExecutor {
         return warmupTime;
     }
 
-    private CommandResult startExecute(CommandSource src, CommandContext args) {
+    private CommandResult startExecute(T src, CommandContext args) {
         CommandResult cr;
         try {
             cr = executeCommand(src, args);
@@ -183,6 +201,21 @@ public abstract class CommandBase implements CommandExecutor {
     private void cleanCooldowns() {
         long time = new Date().getTime();
         cooldownStore.entrySet().stream().filter(k -> k.getValue() < time).map(Map.Entry::getKey).forEach(cooldownStore::remove);
+    }
+
+    private boolean checkSourceType(CommandSource source) {
+        if (sourceType.equals(Player.class) && !(source instanceof Player)) {
+            source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+            return false;
+        } else if (sourceType.equals(ConsoleSource.class) && !(source instanceof Player)) {
+            source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.consoleonly")));
+            return false;
+        } else if (sourceType.equals(CommandBlockSource.class) && !(source instanceof CommandBlockSource)) {
+            source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.commandblockonly")));
+            return false;
+        }
+
+        return true;
     }
 
     @SafeVarargs

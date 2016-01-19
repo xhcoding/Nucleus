@@ -28,7 +28,6 @@ public class WarpParser extends CommandElement {
     private QuickStartWarpService service;
     private final QuickStart plugin;
     private final boolean permissionCheck;
-    private final String prefix = QuickStart.PERMISSIONS_PREFIX + "warps.";
 
     public WarpParser(@Nullable Text key, QuickStart plugin, boolean permissionCheck) {
         super(key);
@@ -71,10 +70,8 @@ public class WarpParser extends CommandElement {
             return true;
         }
 
-        String permission = prefix + name.toLowerCase();
-
         // No permissions, no entry!
-        return (src.hasPermission(permission) || src.hasPermission(QuickStart.PERMISSIONS_ADMIN));
+        return (src.hasPermission(QuickStart.PERMISSIONS_PREFIX + "warps." + name.toLowerCase()) || src.hasPermission(QuickStart.PERMISSIONS_ADMIN));
     }
 
     private void getService() {
