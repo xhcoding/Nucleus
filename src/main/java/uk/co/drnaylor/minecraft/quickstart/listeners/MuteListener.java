@@ -7,7 +7,5 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 
 @Modules(PluginModule.MUTES)
 public class MuteListener extends ListenerBase {
-    public MuteListener(QuickStart plugin) {
-        super(plugin);
-    }
+
 }
