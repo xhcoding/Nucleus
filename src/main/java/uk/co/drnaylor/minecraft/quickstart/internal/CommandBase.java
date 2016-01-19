@@ -45,11 +45,16 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     @SuppressWarnings("unchecked")
     protected CommandBase() {
         // I hate type erasure...
-        Method me = Arrays.asList(getClass().getDeclaredMethods()).stream().filter(x -> x.getName().equals("executeCommand") &&
+        Optional<Method> me = Arrays.asList(getClass().getMethods()).stream().filter(x -> x.getName().equals("executeCommand") &&
                 x.getParameterTypes().length == 2 &&
-                x.getParameterTypes()[1].isAssignableFrom(CommandContext.class)).findFirst().get();
+                x.getParameterTypes()[1].isAssignableFrom(CommandContext.class) &&
+                !x.getParameterTypes()[0].equals(CommandSource.class)).findFirst();
 
-        sourceType = (Class<T>)(me.getParameterTypes()[0]);
+        if (me.isPresent()) {
+            sourceType = (Class<T>) (me.get().getParameterTypes()[0]);
+        } else {
+            sourceType = (Class<T>) CommandSource.class;
+        }
 
         // Additional permissions
         Permissions op = this.getClass().getAnnotation(Permissions.class);

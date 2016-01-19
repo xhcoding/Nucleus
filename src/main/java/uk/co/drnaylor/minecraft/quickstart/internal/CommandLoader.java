@@ -10,6 +10,7 @@ import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.function.Function;
 
 public class CommandLoader {
     private final QuickStart quickStart;
@@ -31,8 +32,18 @@ public class CommandLoader {
         Injector injector = quickStart.getInjector();
 
         // Commands config!
+
         CommandsConfig cc = quickStart.getConfig(CommandsConfig.class).get();
-        commandsToLoad.stream().map(injector::getInstance).forEach(c -> {
+        commandsToLoad.stream().map(x -> {
+            try {
+                CommandBase cb = x.newInstance();
+                injector.injectMembers(cb);
+                return cb;
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(x -> x != null).forEach(c -> {
             // Merge in config defaults.
             cc.mergeDefaultsForCommand(c.getAliases()[0], c.getDefaults());
 
