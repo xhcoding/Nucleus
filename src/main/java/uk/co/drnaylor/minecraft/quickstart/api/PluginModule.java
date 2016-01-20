@@ -13,7 +13,9 @@ public enum PluginModule {
     ITEMS("items"),
     PLAYERINFO("playerinfo"),
     TELEPORT("teleport"),
-    MISC("misc");
+    CHAT("chat"),
+    MISC("misc"),
+    FUN("fun");
 
     String key;
 
