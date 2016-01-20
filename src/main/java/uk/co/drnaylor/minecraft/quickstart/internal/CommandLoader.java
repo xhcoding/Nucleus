@@ -5,12 +5,11 @@ import com.google.inject.Injector;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.warps.WarpsCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.function.Function;
 
 public class CommandLoader {
     private final QuickStart quickStart;

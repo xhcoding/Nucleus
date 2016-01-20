@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.commands.warps;
+package uk.co.drnaylor.minecraft.quickstart.commands.warp;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.command.CommandException;

@@ -88,9 +88,9 @@ public class QuickStart {
         // Load the following services only if necessary.
         if (modules.contains(PluginModule.WARPS)) {
             try {
-                configMap.putConfig(new WarpsConfig(Paths.get(configDir.toString(), "warps.json")));
+                configMap.putConfig(new WarpsConfig(Paths.get(configDir.toString(), "warp.json")));
 
-                // Put the warps service into the service manager.
+                // Put the warp service into the service manager.
                 game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
             } catch (IOException ex) {
                 try {
@@ -99,7 +99,7 @@ public class QuickStart {
                     // Nope.
                 }
 
-                logger.warn("Could not load the warps module for the reason below.");
+                logger.warn("Could not load the warp module for the reason below.");
                 ex.printStackTrace();
             }
         }

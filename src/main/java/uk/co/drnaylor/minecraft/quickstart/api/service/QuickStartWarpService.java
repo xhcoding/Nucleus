@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Gets a service that allows users to warp about using defined warps.
+ * Gets a service that allows users to warp about using defined warp.
  */
 public interface QuickStartWarpService {
 
@@ -30,7 +30,7 @@ public interface QuickStartWarpService {
     boolean removeWarp(String warpName);
 
     /**
-     * Sets a warp, will not overwrite current warps.
+     * Sets a warp, will not overwrite current warp.
      *
      * @param warpName The name of the warp to set.
      * @param location The location of the warp.
@@ -40,9 +40,9 @@ public interface QuickStartWarpService {
     boolean setWarp(String warpName, Location<World> location, Vector3d rotation);
 
     /**
-     * Gets the names of all the warps that are available.
+     * Gets the names of all the warp that are available.
      *
-     * @return A set of warps.
+     * @return A set of warp.
      */
     Set<String> getWarpNames();
 

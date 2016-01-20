@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.commands.warps;
+package uk.co.drnaylor.minecraft.quickstart.commands.warp;
 
 import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
@@ -6,7 +6,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -34,7 +33,7 @@ public class ListWarpCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
-                .description(Text.of("Lists the warps available to you.")).build();
+                .description(Text.of("Lists the warp available to you.")).build();
     }
 
     @Override
@@ -63,6 +62,6 @@ public class ListWarpCommand extends CommandBase {
     private boolean canView(CommandSource src, String warp) {
         return !commandsConfig.getCommandNode("warp").getNode(WarpsCommand.seperatePermissionsConfigEntryName).getBoolean(false)
                 || src.hasPermission(QuickStart.PERMISSIONS_ADMIN)
-                || src.hasPermission(QuickStart.PERMISSIONS_PREFIX + "warps." + warp);
+                || src.hasPermission(QuickStart.PERMISSIONS_PREFIX + "warp." + warp);
     }
 }
