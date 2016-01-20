@@ -22,6 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
@@ -40,6 +41,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private final Map<UUID, Long> cooldownStore = Maps.newHashMap();
     private QuickStartWarmupManagerService warmupService = null;
     private final Class<T> sourceType;
+    private final boolean bypassWarmup;
 
     @Inject protected QuickStart plugin;
 
@@ -56,6 +58,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         } else {
             sourceType = (Class<T>) CommandSource.class;
         }
+
+        bypassWarmup = this.getClass().getAnnotation(NoWarmup.class) != null;
 
         // Additional permissions
         Permissions op = this.getClass().getAnnotation(Permissions.class);
@@ -185,7 +189,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     private int applyWarmup(CommandSource src) {
-        if (!(src instanceof Player) || warmup.isEmpty() || warmup.stream().anyMatch(src::hasPermission)) {
+        if (bypassWarmup || !(src instanceof Player) || warmup.isEmpty() || warmup.stream().anyMatch(src::hasPermission)) {
             return 0;
         }
 
