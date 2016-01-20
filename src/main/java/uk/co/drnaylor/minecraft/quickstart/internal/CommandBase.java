@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -169,6 +170,18 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
             return startExecute(src, args);
         }
+    }
+
+    public final Set<String> getCommandPermissions() {
+        return ImmutableSet.copyOf(additionalPermissions);
+    }
+
+    public final Set<String> getWarmupExemptPermissions() {
+        return ImmutableSet.copyOf(warmup);
+    }
+
+    public final Set<String> getCooldownExemptPermissions() {
+        return ImmutableSet.copyOf(cooldown);
     }
 
     private int applyWarmup(CommandSource src) {
