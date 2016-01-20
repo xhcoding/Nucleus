@@ -43,7 +43,7 @@ public class WarpsCommand extends CommandBase<Player> {
         WarpParser.WarpData wd = args.<WarpParser.WarpData>getOne(warpNameArg).get();
 
         // We have a warp data, warp them.
-        pl.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.messageBundle.getString("command.warp.start"), wd.warp)));
+        pl.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.messageBundle.getString("command.warps.start"), wd.warp)));
 
         // Warp them.
         if (args.getOne("f").isPresent()) { // Force the position.
