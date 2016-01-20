@@ -46,7 +46,7 @@ public class SetWarpCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        // Get the service, does it exist?
+        // Get the service, does the warp exist?
         QuickStartWarpService qs = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
         if (qs.getWarp(warp).isPresent()) {
             // You have to delete to set the same name
