@@ -17,6 +17,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
 
+/**
+ * Creates a warp where the player is currently standing. The warp must not exist.
+ *
+ * Command Usage: /warp set [warp]
+ * Permission: quickstart.warp.set.base
+ */
 @Permissions(root = "warp")
 public class SetWarpCommand extends CommandBase<Player> {
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");

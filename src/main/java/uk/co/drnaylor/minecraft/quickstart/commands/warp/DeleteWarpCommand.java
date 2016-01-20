@@ -18,6 +18,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 import java.text.MessageFormat;
 
+/**
+ * Deletes a warp.
+ *
+ * Command Usage: /warp delete [warp]
+ * Permission: quickstart.warp.delete.base
+ */
 @Permissions(root = "warp")
 @RunAsync
 public class DeleteWarpCommand extends CommandBase {

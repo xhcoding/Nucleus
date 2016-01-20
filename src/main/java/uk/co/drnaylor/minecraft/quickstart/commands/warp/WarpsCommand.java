@@ -16,6 +16,15 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.text.MessageFormat;
 
+/**
+ * Allows a user to warp to the specified warp.
+ *
+ * Command Usage: /warp [warp]
+ * Permission: quickstart.warp.base
+ *
+ * If <code>warp.separate-permissions</code> = <code>true</code> in the commands config, also requires
+ * <code>quickstart.warps.[warpname]</code> permission, or the QuickStart admin permission.
+ */
 @Permissions
 public class WarpsCommand extends CommandBase<Player> {
     static final String seperatePermissionsConfigEntryName = "separate-permissions";

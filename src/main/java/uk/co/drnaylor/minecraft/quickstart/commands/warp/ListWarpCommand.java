@@ -24,6 +24,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Lists all the warps that a player can access.
+ *
+ * Command Usage: /warp list
+ * Permission: quickstart.warp.list.base
+ */
 @Permissions(root = "warp")
 @RunAsync
 public class ListWarpCommand extends CommandBase {

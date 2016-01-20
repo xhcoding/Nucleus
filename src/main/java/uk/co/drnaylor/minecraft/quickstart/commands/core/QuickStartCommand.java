@@ -15,6 +15,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
+/**
+ * Gives information about QuickStart.
+ *
+ * Command Usage: /quickstart
+ * Permission: quickstart.quickstart.base
+ */
 @RunAsync
 @Permissions
 public class QuickStartCommand extends CommandBase {
