@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.listeners;
 
+import com.google.inject.Inject;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 

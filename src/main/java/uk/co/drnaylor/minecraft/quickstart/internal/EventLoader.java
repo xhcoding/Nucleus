@@ -1,6 +1,7 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.collect.Sets;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
@@ -29,6 +30,15 @@ public class EventLoader {
     public void loadEvents() {
         Set<Class<? extends ListenerBase>> commandsToLoad = base.filterOutModules(getEvents());
         Injector injector = quickStart.getInjector();
-        commandsToLoad.stream().map(injector::getInstance).forEach(c -> Sponge.getEventManager().registerListeners(quickStart, c));
+        commandsToLoad.stream().map(x -> {
+            try {
+                ListenerBase lb = x.newInstance();
+                injector.injectMembers(lb);
+                return lb;
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(lb -> lb != null).forEach(c -> Sponge.getEventManager().registerListeners(quickStart, c));
     }
 }

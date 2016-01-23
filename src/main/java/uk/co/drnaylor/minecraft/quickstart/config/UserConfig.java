@@ -74,7 +74,8 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         this.muteData = null;
     }
 
-    public UUID getUniqueId() {
+    @Override
+    public UUID getUniqueID() {
         return user.getUniqueId();
     }
 }

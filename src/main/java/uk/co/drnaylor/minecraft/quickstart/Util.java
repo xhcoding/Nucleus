@@ -1,8 +1,9 @@
 package uk.co.drnaylor.minecraft.quickstart;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.UUID;
+import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
+import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
+
+import java.util.*;
 
 public class Util {
 
@@ -64,6 +65,26 @@ public class Util {
         } else {
             return Util.messageBundle.getString("standard.unknown");
         }
+    }
+
+    public static Optional<MuteData> testForMuted(QuickStartUser user) {
+        Optional<MuteData> omd = user.getMuteData();
+        if (omd.isPresent()) {
+            MuteData md = omd.get();
+            if (md.getEndTimestamp().isPresent() && (new Date().getTime() / 1000) > md.getEndTimestamp().get()) {
+                // Mute expired.
+                user.removeMuteData();
+                return Optional.empty();
+            }
+        }
+
+        return omd;
+    }
+
+    public static Optional<Long> getSecondsToTimestamp(long timestamp) {
+        long currentime = new Date().getTime() / 1000L;
+        long time = timestamp - currentime;
+        return time > 0 ? Optional.of(time) : Optional.empty();
     }
 
     private static void appendComma(StringBuilder sb) {

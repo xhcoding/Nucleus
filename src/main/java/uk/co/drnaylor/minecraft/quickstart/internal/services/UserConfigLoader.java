@@ -64,7 +64,7 @@ public class UserConfigLoader implements QuickStartUserService {
             try {
                 c.save();
             } catch (IOException | ObjectMappingException e) {
-                plugin.getLogger().error("Could not save data for " + c.getUniqueId().toString());
+                plugin.getLogger().error("Could not save data for " + c.getUniqueID().toString());
                 e.printStackTrace();
             }
         });
