@@ -74,7 +74,7 @@ public class QuickStart {
 
         // We register the ModuleService NOW so that others can hook into it.
         game.getServiceManager().setProvider(this, QuickStartModuleService.class, moduleRegistration);
-        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
+        this.injector = Guice.createInjector(new QuickStartInjectorModule(this, configLoader));
     }
 
     @Listener

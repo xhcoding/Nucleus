@@ -22,6 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCooldown;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
@@ -42,6 +43,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private QuickStartWarmupManagerService warmupService = null;
     private final Class<T> sourceType;
     private final boolean bypassWarmup;
+    private final boolean bypassCooldown;
 
     @Inject protected QuickStart plugin;
 
@@ -60,6 +62,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         bypassWarmup = this.getClass().getAnnotation(NoWarmup.class) != null;
+        bypassCooldown = this.getClass().getAnnotation(NoCooldown.class) != null;
 
         // Additional permissions
         Permissions op = this.getClass().getAnnotation(Permissions.class);
@@ -106,8 +109,14 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
-        n.getNode("cooldown").setComment(Util.messageBundle.getString("config.cooldown")).setValue(0);
-        n.getNode("warmup").setComment(Util.messageBundle.getString("config.warmup")).setValue(0);
+        if (!bypassCooldown) {
+            n.getNode("cooldown").setComment(Util.messageBundle.getString("config.cooldown")).setValue(0);
+        }
+
+        if (!bypassWarmup) {
+            n.getNode("warmup").setComment(Util.messageBundle.getString("config.warmup")).setValue(0);
+        }
+
         return n;
     }
 

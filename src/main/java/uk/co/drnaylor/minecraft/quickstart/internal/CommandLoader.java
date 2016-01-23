@@ -6,6 +6,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 
@@ -24,6 +25,7 @@ public class CommandLoader {
         Set<Class<? extends CommandBase>> cmds = Sets.newHashSet();
         cmds.add(QuickStartCommand.class);
         cmds.add(WarpsCommand.class);
+        cmds.add(MuteCommand.class);
         return cmds;
     }
 

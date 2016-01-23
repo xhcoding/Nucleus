@@ -2,10 +2,13 @@ package uk.co.drnaylor.minecraft.quickstart;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class Util {
 
     private Util() { }
+
+    public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     public static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
@@ -18,28 +21,48 @@ public class Util {
 
         StringBuilder sb = new StringBuilder();
         if (day > 0) {
-            sb.append(day).append(" days");
+            sb.append(day).append(" ");
+            if (day > 1) {
+                sb.append(Util.messageBundle.getString("standard.days"));
+            } else {
+                sb.append(Util.messageBundle.getString("standard.day"));
+            }
         }
 
         if (hour > 0) {
             appendComma(sb);
-            sb.append(hour).append(" hours");
+            sb.append(hour).append(" ");
+            if (hour > 1) {
+                sb.append(Util.messageBundle.getString("standard.hours"));
+            } else {
+                sb.append(Util.messageBundle.getString("standard.hour"));
+            }
         }
 
         if (min > 0) {
             appendComma(sb);
-            sb.append(min).append(" minutes");
+            sb.append(min).append(" ");
+            if (min > 1) {
+                sb.append(Util.messageBundle.getString("standard.minutes"));
+            } else {
+                sb.append(Util.messageBundle.getString("standard.minute"));
+            }
         }
 
         if (sec > 0) {
             appendComma(sb);
-            sb.append(sec).append(" seconds");
+            sb.append(sec).append(" ");
+            if (sec > 1) {
+                sb.append(Util.messageBundle.getString("standard.seconds"));
+            } else {
+                sb.append(Util.messageBundle.getString("standard.second"));
+            }
         }
 
         if (sb.length() > 0) {
             return sb.toString();
         } else {
-            return "unknown";
+            return Util.messageBundle.getString("standard.unknown");
         }
     }
 
