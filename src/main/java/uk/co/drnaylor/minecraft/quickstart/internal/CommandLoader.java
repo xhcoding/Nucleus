@@ -2,10 +2,15 @@ package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
+import com.google.inject.spi.Message;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickAllCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.message.MessageCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.message.ReplyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.CheckMuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
@@ -26,10 +31,23 @@ public class CommandLoader {
     private Set<Class<? extends CommandBase>> getCommands() {
         Set<Class<? extends CommandBase>> cmds = Sets.newHashSet();
         cmds.add(QuickStartCommand.class);
+
+        // Warps
         cmds.add(WarpsCommand.class);
+
+        // Chat
         cmds.add(MuteCommand.class);
         cmds.add(CheckMuteCommand.class);
+
+        // Messages
+        cmds.add(MessageCommand.class);
+        cmds.add(ReplyCommand.class);
         cmds.add(SocialSpyCommand.class);
+
+        // Kick
+        cmds.add(KickAllCommand.class);
+        cmds.add(KickCommand.class);
+
         return cmds;
     }
 
