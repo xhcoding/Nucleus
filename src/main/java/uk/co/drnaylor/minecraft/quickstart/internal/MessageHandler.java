@@ -97,7 +97,7 @@ public class MessageHandler {
         MessageChannel mc = MessageChannel.fixed(lm);
         sender.sendMessage(constructMessage(me, nameOfReceiver, message));
         receiver.sendMessage(constructMessage(nameOfSender, me, message));
-        mc.send(constructMessage(nameOfSender, nameOfReceiver, message));
+        mc.send(constructSSMessage(nameOfSender, nameOfReceiver, message));
         return true;
     }
 
