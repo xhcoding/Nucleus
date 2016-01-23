@@ -129,6 +129,10 @@ public class QuickStart {
         return logger;
     }
 
+    public Path getConfigDirPath() {
+        return configDir;
+    }
+
     /**
      * Gets whether the modules are loaded.
      *
