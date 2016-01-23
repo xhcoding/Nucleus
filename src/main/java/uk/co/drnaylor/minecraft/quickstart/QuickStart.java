@@ -28,6 +28,7 @@ import uk.co.drnaylor.minecraft.quickstart.config.WarpsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
+import uk.co.drnaylor.minecraft.quickstart.internal.MessageHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
@@ -54,6 +55,7 @@ public class QuickStart {
     private final ConfigMap configMap = new ConfigMap();
     private final UserConfigLoader configLoader = new UserConfigLoader(this);
     private Injector injector;
+    private MessageHandler messageHandler = new MessageHandler();
 
     @Inject private Game game;
     @Inject private Logger logger;
@@ -151,5 +153,9 @@ public class QuickStart {
      */
     public <T extends AbstractConfig> Optional<T> getConfig(Class<T> config) {
         return configMap.getConfig(config);
+    }
+
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
     }
 }

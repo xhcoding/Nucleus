@@ -6,12 +6,20 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchPlayerException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 /**
  * A service that retrieves {@link QuickStartUser}s.
  */
 public interface QuickStartUserService {
+
+    /**
+     * Gets a list of {@link QuickStartUser}s that represents the online.
+     *
+     * @return A {@link List} of {@link QuickStartUser}s.
+     */
+    List<QuickStartUser> getOnlineUsers();
 
     /**
      * Gets the user data file from their UUID.

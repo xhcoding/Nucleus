@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -29,6 +30,18 @@ public class UserConfigLoader implements QuickStartUserService {
 
     public UserConfigLoader(QuickStart plugin) {
         this.plugin = plugin;
+    }
+
+    public List<QuickStartUser> getOnlineUsers() {
+        return Sponge.getServer().getOnlinePlayers().stream().map(x -> {
+            try {
+                return getUser(x);
+            } catch (IOException | ObjectMappingException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }).filter(x -> x != null).collect(Collectors.toList());
     }
 
     @Override
