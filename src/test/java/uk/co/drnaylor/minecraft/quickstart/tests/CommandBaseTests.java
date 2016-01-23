@@ -115,7 +115,7 @@ public class CommandBaseTests {
         }
 
         @Override
-        public CommandResult executeCommand(Player src, CommandContext args) throws CommandException {
+        public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
             return CommandResult.success();
         }
     }
@@ -133,7 +133,7 @@ public class CommandBaseTests {
         }
 
         @Override
-        public CommandResult executeCommand(CommandSource src, CommandContext args) throws CommandException {
+        public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
             return CommandResult.success();
         }
     }

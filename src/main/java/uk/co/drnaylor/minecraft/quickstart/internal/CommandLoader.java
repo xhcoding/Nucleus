@@ -6,6 +6,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.CheckMuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
@@ -28,6 +29,7 @@ public class CommandLoader {
         cmds.add(WarpsCommand.class);
         cmds.add(MuteCommand.class);
         cmds.add(CheckMuteCommand.class);
+        cmds.add(SocialSpyCommand.class);
         return cmds;
     }
 

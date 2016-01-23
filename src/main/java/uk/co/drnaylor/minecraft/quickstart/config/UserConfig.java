@@ -6,6 +6,7 @@ import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.User;
+import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements QuickStartUser {
     private final User user;
     private MuteData muteData;
+    private boolean socialSpy;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -31,6 +33,8 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         } else {
             muteData = node.getNode("mute").getValue(TypeToken.of(MuteData.class));
         }
+
+        socialSpy = node.getNode("socialspy").getBoolean(false);
     }
 
     @Override
@@ -41,6 +45,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             node.setValue(TypeToken.of(MuteData.class), muteData);
         }
 
+        node.getNode("socialspy").setValue(isSocialSpy());
         super.save();
     }
 
@@ -72,6 +77,20 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public void removeMuteData() {
         this.muteData = null;
+    }
+
+    @Override
+    public boolean isSocialSpy() {
+        socialSpy = socialSpy && (user.hasPermission(QuickStart.PERMISSIONS_PREFIX + "socialspy.base") || user.hasPermission(QuickStart.PERMISSIONS_ADMIN));
+        return socialSpy;
+    }
+
+    @Override
+    public boolean setSocialSpy(boolean socialSpy) {
+        this.socialSpy = socialSpy;
+
+        // Permission checks! Return true if it's what we wanted.
+        return isSocialSpy() == socialSpy;
     }
 
     @Override

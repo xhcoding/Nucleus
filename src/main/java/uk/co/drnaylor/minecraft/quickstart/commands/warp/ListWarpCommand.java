@@ -2,7 +2,6 @@ package uk.co.drnaylor.minecraft.quickstart.commands.warp;
 
 import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -48,7 +47,7 @@ public class ListWarpCommand extends CommandBase {
     }
 
     @Override
-    public CommandResult executeCommand(final CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
 
         // Get the warp list.

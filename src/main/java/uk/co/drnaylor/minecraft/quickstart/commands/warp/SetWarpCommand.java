@@ -1,7 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.warp;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -43,7 +42,7 @@ public class SetWarpCommand extends CommandBase<Player> {
     }
 
     @Override
-    public CommandResult executeCommand(Player src, CommandContext args) throws CommandException {
+    public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         String warp = args.<String>getOne(WarpsCommand.warpNameArg).get();
 
         // Needs to match the name...

@@ -14,7 +14,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.Identifiable;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
@@ -22,7 +21,6 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
-import uk.co.drnaylor.minecraft.quickstart.config.UserConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
@@ -70,7 +68,7 @@ public class MuteCommand extends CommandBase {
     }
 
     @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
 
         // Get the user.
         User user = args.<User>getOne(playerArgument).get();

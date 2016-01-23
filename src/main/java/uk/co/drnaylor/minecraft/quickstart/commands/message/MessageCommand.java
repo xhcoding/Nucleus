@@ -1,6 +1,5 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.message;
 
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,7 +25,7 @@ public class MessageCommand extends CommandBase {
     }
 
     @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws CommandException {
+    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         return null;
     }
 }

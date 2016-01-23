@@ -17,6 +17,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
@@ -124,7 +125,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     public abstract String[] getAliases();
 
-    public abstract CommandResult executeCommand(T src, CommandContext args) throws CommandException;
+    public abstract CommandResult executeCommand(T src, CommandContext args) throws Exception;
 
     @Override
     @NonnullByDefault
@@ -214,8 +215,11 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         CommandResult cr;
         try {
             cr = executeCommand(src, args);
-        } catch (CommandException e) {
+        } catch (TextMessageException e) {
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
+            cr = CommandResult.empty();
+        } catch (Exception e) {
+            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("command.error")));
             cr = CommandResult.empty();
         }
 
