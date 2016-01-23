@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
@@ -23,12 +24,12 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
 
     private final Map<String, LocationNode> warpNodes = Maps.newHashMap();
 
-    public WarpsConfig(Path file) throws IOException {
+    public WarpsConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
     }
 
     @Override
-    public void load() throws IOException {
+    public void load() throws IOException, ObjectMappingException {
         super.load();
 
         warpNodes.clear();
@@ -36,7 +37,7 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
     }
 
     @Override
-    public void save() throws IOException {
+    public void save() throws IOException, ObjectMappingException {
         node = SimpleConfigurationNode.root();
         warpNodes.forEach((k, v) -> v.populateNode(node.getNode(k.toLowerCase())));
         super.save();

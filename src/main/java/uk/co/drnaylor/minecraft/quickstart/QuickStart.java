@@ -3,6 +3,7 @@ package uk.co.drnaylor.minecraft.quickstart;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
@@ -31,7 +32,6 @@ import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModu
 import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -66,7 +66,7 @@ public class QuickStart {
         try {
             configMap.putConfig(new MainConfig(path));
             configMap.putConfig(new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
-        } catch (IOException e) {
+        } catch (IOException | ObjectMappingException e) {
             isErrored = true;
             e.printStackTrace();
             return;
@@ -92,7 +92,7 @@ public class QuickStart {
 
                 // Put the warp service into the service manager.
                 game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
-            } catch (IOException ex) {
+            } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.WARPS);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {

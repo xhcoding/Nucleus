@@ -1,6 +1,7 @@
 package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import com.google.common.collect.Maps;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.util.Identifiable;
@@ -43,7 +44,7 @@ public class UserConfigLoader implements QuickStartUserService {
         loadedUsers.values().forEach(c -> {
             try {
                 c.save();
-            } catch (IOException e) {
+            } catch (IOException | ObjectMappingException e) {
                 plugin.getLogger().error("Could not save data for " + c.getUniqueId().toString());
                 e.printStackTrace();
             }
@@ -57,7 +58,7 @@ public class UserConfigLoader implements QuickStartUserService {
                 UserConfig uc = loadedUsers.get(x);
                 uc.save();
                 loadedUsers.remove(x);
-            } catch (IOException e) {
+            } catch (IOException | ObjectMappingException e) {
                 plugin.getLogger().error("Could not save data for " + x.toString());
                 e.printStackTrace();
             }

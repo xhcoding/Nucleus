@@ -2,6 +2,7 @@ package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
@@ -52,7 +53,7 @@ public class CommandLoader {
 
         try {
             cc.save();
-        } catch (IOException e) {
+        } catch (IOException | ObjectMappingException e) {
             quickStart.getLogger().error("Could not save defaults.");
             e.printStackTrace();
         }

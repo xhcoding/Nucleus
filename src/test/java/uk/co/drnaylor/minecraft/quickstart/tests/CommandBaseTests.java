@@ -3,6 +3,7 @@ package uk.co.drnaylor.minecraft.quickstart.tests;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -165,7 +166,7 @@ public class CommandBaseTests {
                 CommandsConfig cc = new CommandsConfig(file);
                 Mockito.when(plugin.getConfig(CommandsConfig.class)).thenReturn(Optional.of(cc));
                 return plugin;
-            } catch (IOException e) {
+            } catch (IOException | ObjectMappingException e) {
                 throw new RuntimeException(e);
             }
         }

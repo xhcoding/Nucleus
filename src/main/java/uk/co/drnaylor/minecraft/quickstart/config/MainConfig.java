@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
@@ -21,12 +20,12 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private final Map<PluginModule, ModuleOptions> moduleOptions = new HashMap<>();
     private final String modulesSection = "modules";
 
-    public MainConfig(Path file) throws IOException {
+    public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
     }
 
     @Override
-    public void load() throws IOException {
+    public void load() throws IOException, ObjectMappingException {
         super.load();
 
         // Recreate anything we need to re-create.

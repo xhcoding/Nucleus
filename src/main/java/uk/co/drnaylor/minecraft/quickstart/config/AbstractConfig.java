@@ -2,26 +2,26 @@ package uk.co.drnaylor.minecraft.quickstart.config;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Set;
 
 public abstract class AbstractConfig<T extends ConfigurationNode, L extends ConfigurationLoader<T>> {
 
     protected final L loader;
     protected T node;
 
-    protected AbstractConfig(Path file) throws IOException {
+    protected AbstractConfig(Path file) throws IOException, ObjectMappingException {
         loader = getLoader(file);
         load();
     }
 
-    public void save() throws IOException {
+    public void save() throws IOException, ObjectMappingException {
         loader.save(node);
     }
 
-    public void load() throws IOException {
+    public void load() throws IOException, ObjectMappingException {
         node = loader.load();
         node.mergeValuesFrom(getDefaults());
         save();
