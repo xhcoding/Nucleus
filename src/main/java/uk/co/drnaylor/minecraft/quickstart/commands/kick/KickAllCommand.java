@@ -28,7 +28,7 @@ public class KickAllCommand extends CommandBase {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Kicks all player.")).executor(this)
+        return CommandSpec.builder().description(Text.of("Kicks all players.")).executor(this)
                 .arguments(
                         GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))
                 ).build();
@@ -36,16 +36,14 @@ public class KickAllCommand extends CommandBase {
 
     @Override
     public String[] getAliases() {
-        return new String[] { "kick" };
+        return new String[] { "kickall" };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String r = args.<String>getOne(reason).orElse(Util.messageBundle.getString("command.kick.defaultreason"));
 
-        Sponge.getServer().getOnlinePlayers().stream().filter(x -> !(src instanceof Player) || ((Player) src).getUniqueId().equals(x.getUniqueId())).forEach(x -> {
-            x.kick(Text.of(TextColors.RED, r));
-        });
+        Sponge.getServer().getOnlinePlayers().stream().filter(x -> !(src instanceof Player) || ((Player) src).getUniqueId().equals(x.getUniqueId())).forEach(x -> x.kick(Text.of(TextColors.RED, r)));
 
         List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(QuickStart.PERMISSIONS_PREFIX + "kick.notify"))
                 .map(y -> (CommandSource)y).collect(Collectors.toList());
