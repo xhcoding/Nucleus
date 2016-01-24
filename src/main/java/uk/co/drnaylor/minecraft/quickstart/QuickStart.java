@@ -49,11 +49,11 @@ public class QuickStart {
     public final static Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "]");
     public final static Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "]");
 
-    private ModuleRegistration moduleRegistration = new ModuleRegistration(this);
+    private ModuleRegistration moduleRegistration;
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
     private final ConfigMap configMap = new ConfigMap();
-    private final UserConfigLoader configLoader = new UserConfigLoader(this);
+    private UserConfigLoader configLoader;
     private Injector injector;
     private MessageHandler messageHandler = new MessageHandler();
 
@@ -68,6 +68,8 @@ public class QuickStart {
         try {
             configMap.putConfig(new MainConfig(path));
             configMap.putConfig(new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
+            configLoader = new UserConfigLoader(this);
+            moduleRegistration = new ModuleRegistration(this);
         } catch (IOException | ObjectMappingException e) {
             isErrored = true;
             e.printStackTrace();

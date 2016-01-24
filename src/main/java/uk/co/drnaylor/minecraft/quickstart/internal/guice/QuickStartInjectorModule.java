@@ -17,9 +17,9 @@ public class QuickStartInjectorModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(QuickStart.class).toInstance(plugin);
-        bind(Logger.class).toInstance(plugin.getLogger());
-        bind(CommandsConfig.class).toInstance(plugin.getConfig(CommandsConfig.class).get());
-        bind(UserConfigLoader.class).toInstance(loader);
+        bind(QuickStart.class).toProvider(() -> plugin);
+        bind(Logger.class).toProvider(plugin::getLogger);
+        bind(CommandsConfig.class).toProvider(() -> plugin.getConfig(CommandsConfig.class).get());
+        bind(UserConfigLoader.class).toProvider(() -> loader);
     }
 }

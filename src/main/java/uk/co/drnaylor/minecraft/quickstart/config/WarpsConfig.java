@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements QuickStartWarpService {
 
-    private final Map<String, LocationNode> warpNodes = Maps.newHashMap();
+    private Map<String, LocationNode> warpNodes;
 
     public WarpsConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -31,7 +31,6 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
     @Override
     public void load() throws IOException, ObjectMappingException {
         super.load();
-
         warpNodes.clear();
         node.getChildrenMap().forEach((k, v) -> warpNodes.put(k.toString().toLowerCase(), new LocationNode(v)));
     }
@@ -39,6 +38,13 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
     @Override
     public void save() throws IOException, ObjectMappingException {
         node = SimpleConfigurationNode.root();
+
+        // There is a comment in the MainConfig that explains what this line is about. I'm not repeating it here.
+        // Go find the comment if you're interested.
+        if (warpNodes == null) {
+            warpNodes = Maps.newHashMap();
+        }
+
         warpNodes.forEach((k, v) -> v.populateNode(node.getNode(k.toLowerCase())));
         super.save();
     }

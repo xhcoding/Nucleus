@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class MainConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
 
-    private final Map<PluginModule, ModuleOptions> moduleOptions = new HashMap<>();
+    private Map<PluginModule, ModuleOptions> moduleOptions;
     private final String modulesSection = "modules";
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
@@ -27,6 +27,15 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     @Override
     public void load() throws IOException, ObjectMappingException {
         super.load();
+
+        // Because we execute this command from the superclass constructor, if we create moduleOptions
+        // as part of the declaration, it apparently doesn't get constructed until AFTER the superclass constructor
+        // runs. This means that when this is called from the superclass, moduleOptions actually doesn't exist.
+        //
+        // So, the solution is to just construct it here, rather than call load in every config file I create.
+        if (moduleOptions == null) {
+            moduleOptions = new HashMap<>();
+        }
 
         // Recreate anything we need to re-create.
         moduleOptions.clear();
