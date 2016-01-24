@@ -1,6 +1,5 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.environment;
 
-import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -15,6 +14,7 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.weather.Weather;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WeatherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
@@ -33,7 +33,7 @@ public class WeatherCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(world)))),
-                GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(weather), CatalogTypes.WEATHER)),
+                GenericArguments.onlyOne(new WeatherParser(Text.of(weather))), // More flexible with the arguments we can use.
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration))))
         ).description(Text.of("Sets the weather")).build();
     }
