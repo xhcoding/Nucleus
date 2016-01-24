@@ -7,6 +7,8 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.environment.SetTimeCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.environment.TimeCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.WeatherCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickAllCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickCommand;
@@ -49,9 +51,9 @@ public class CommandLoader {
         cmds.add(KickAllCommand.class);
         cmds.add(KickCommand.class);
 
-        // Weather
+        // Environment
         cmds.add(WeatherCommand.class);
-
+        cmds.add(TimeCommand.class);
         return cmds;
     }
 

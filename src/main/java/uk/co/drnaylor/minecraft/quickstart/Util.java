@@ -3,6 +3,7 @@ package uk.co.drnaylor.minecraft.quickstart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class Util {
@@ -85,6 +86,25 @@ public class Util {
         long currentime = new Date().getTime() / 1000L;
         long time = timestamp - currentime;
         return time > 0 ? Optional.of(time) : Optional.empty();
+    }
+
+    public static String getTimeFromTicks(long ticks) {
+        if (ticks < 0 || ticks > 23999) {
+            // Normalise
+            ticks = ticks % 24000;
+        }
+
+        int mins = (int)((ticks % 1000) / (100./6.));
+        long hours = (ticks / 1000 + 6) % 24;
+
+        if (hours < 12) {
+            long ahours = hours == 0 ? 12 : hours;
+            return MessageFormat.format(messageBundle.getString("time.am"), ahours, hours, mins);
+        } else {
+            hours -= 12;
+            long ahours = hours == 0 ? 12 : hours;
+            return MessageFormat.format(messageBundle.getString("time.pm"), ahours, hours, mins);
+        }
     }
 
     private static void appendComma(StringBuilder sb) {
