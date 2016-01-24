@@ -42,6 +42,13 @@ public @interface Permissions {
     String[] warmupExempt() default {};
 
     /**
+     * Additional permissions for cost exemption.
+     *
+     * @return The list of permissions
+     */
+    String[] costExempt() default {};
+
+    /**
      * Use the default permission - "prefix.(root).command.{sub}.exempt.cooldown"
      *
      * @return <code>true</code> if this permission should be used.
@@ -54,6 +61,13 @@ public @interface Permissions {
      * @return <code>true</code> if this permission should be used.
      */
     boolean useDefaultWarmupExempt() default true;
+
+    /**
+     * Use the default permission - "prefix.(root).command.{sub}.exempt.cost"
+     *
+     * @return <code>true</code> if this permission should be used.
+     */
+    boolean useDefaultCostExempt() default true;
 
     /**
      * The root permission to use
