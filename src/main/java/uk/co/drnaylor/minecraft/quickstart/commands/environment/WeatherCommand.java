@@ -14,6 +14,7 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.weather.Weather;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WeatherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
@@ -28,13 +29,17 @@ public class WeatherCommand extends CommandBase {
     private final String world = "world";
     private final String weather = "weather";
     private final String duration = "duration";
+    private final String timespan = "timespan";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(world)))),
                 GenericArguments.onlyOne(new WeatherParser(Text.of(weather))), // More flexible with the arguments we can use.
-                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration))))
+                GenericArguments.firstParsing(
+                    GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration)))),
+                    GenericArguments.onlyOne(GenericArguments.optional(new TimespanParser(Text.of(timespan))))
+                )
         ).description(Text.of("Sets the weather")).build();
     }
 
@@ -63,7 +68,12 @@ public class WeatherCommand extends CommandBase {
         Weather we = args.<Weather>getOne(weather).get();
 
         // Have we gotten an accurate forecast? Do we know how long this weather spell will go on for?
-        Optional<Integer> oi = args.<Integer>getOne(duration);
+        Optional<Long> oi = args.<Long>getOne(timespan);
+        if (!oi.isPresent()) {
+            Optional<Integer> i = args.<Integer>getOne(duration);
+            oi =  i.isPresent() ? Optional.of((long)i.get()) : Optional.empty();
+        }
+
         if (oi.isPresent()) {
             // YES! I should get a job at the weather service and show them how it's done!
             w.forecast(we, oi.get());
