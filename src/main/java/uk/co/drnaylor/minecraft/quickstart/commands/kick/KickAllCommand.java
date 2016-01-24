@@ -29,9 +29,9 @@ public class KickAllCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Kicks all players.")).executor(this)
-                .arguments(
-                        GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))
-                ).build();
+            .arguments(
+                    GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))
+            ).build();
     }
 
     @Override
