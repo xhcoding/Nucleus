@@ -40,7 +40,7 @@ public class QuickStartCommand extends CommandBase {
 
         StringBuilder sb = new StringBuilder();
         qs.getModulesToLoad().stream().map(PluginModule::getKey).forEach(s -> {
-            if (sb.length() == 0) {
+            if (sb.length() > 0) {
                 sb.append(", ");
             }
 
