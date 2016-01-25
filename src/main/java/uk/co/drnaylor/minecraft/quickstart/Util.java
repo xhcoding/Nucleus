@@ -14,8 +14,11 @@ public class Util {
 
     public static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
-    public static String getTimeStringFromSeconds(long timeOffset) {
-        long time = timeOffset / 1000;
+    public static String getTimeStringFromMillseconds(long time) {
+        return getTimeStringFromSeconds(time / 1000);
+    }
+
+    public static String getTimeStringFromSeconds(long time) {
         long sec = time % 60;
         long min = (time / 60) % 60;
         long hour = (time / 3600) % 24;

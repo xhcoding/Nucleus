@@ -40,25 +40,20 @@ public class SetTimeCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        World w = args.<World>getOne(world).orElse(null);
-        int tick = args.<Integer>getOne(time).get();
-        if (w == null) {
+        WorldProperties pr = args.<WorldProperties>getOne(world).orElse(null);
+        if (pr == null) {
             // Actually, we just care about where we are.
             if (src instanceof Player) {
-                w = ((Player) src).getWorld();
+                pr = ((Player) src).getWorld().getProperties();
             } else if (src instanceof CommandBlockSource) {
-                w = ((CommandBlockSource) src).getWorld();
+                pr = ((CommandBlockSource) src).getWorld().getProperties();
+            } else {
+                src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.settime.default")));
+                pr = Sponge.getServer().getDefaultWorld().get();
             }
         }
 
-        WorldProperties pr;
-        if (w == null) {
-            src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.settime.default")));
-            pr = Sponge.getServer().getDefaultWorld().get();
-        } else {
-            pr = w.getProperties();
-        }
-
+        int tick = args.<Integer>getOne(time).get();
         pr.setWorldTime(tick);
         src.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.messageBundle.getString("command.settime.done"), Util.getTimeFromTicks(tick))));
         return CommandResult.success();

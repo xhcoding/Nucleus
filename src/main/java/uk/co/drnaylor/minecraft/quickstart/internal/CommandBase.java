@@ -321,9 +321,11 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             cr = executeCommand(src, args);
         } catch (TextMessageException e) {
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
+            e.printStackTrace();
             cr = CommandResult.empty();
         } catch (Exception e) {
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("command.error")));
+            e.printStackTrace();
             cr = CommandResult.empty();
         }
 

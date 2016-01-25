@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.environment;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -11,6 +12,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.weather.Weather;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
@@ -51,8 +53,11 @@ public class WeatherCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // We can predict the weather on multiple worlds now!
-        World w = args.<World>getOne(world).orElse(null);
-        if (w == null) {
+        WorldProperties wp = args.<WorldProperties>getOne(world).orElse(null);
+        World w;
+        if (wp != null) {
+            w = Sponge.getServer().getWorld(wp.getUniqueId()).get();
+        } else {
             // Actually, we just care about where we are.
             if (src instanceof Player) {
                 w = ((Player) src).getWorld();
