@@ -20,6 +20,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.exceptions.ModulesLoadedException
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.UnremovableModuleException;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartUserService;
+import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
@@ -32,6 +33,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.MessageHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -78,6 +80,7 @@ public class QuickStart {
 
         // We register the ModuleService NOW so that others can hook into it.
         game.getServiceManager().setProvider(this, QuickStartModuleService.class, moduleRegistration);
+        game.getServiceManager().setProvider(this, QuickStartWarmupManagerService.class, new WarmupManager());
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this, configLoader));
     }
 
