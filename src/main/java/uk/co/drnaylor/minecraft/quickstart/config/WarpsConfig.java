@@ -30,14 +30,8 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
 
     @Override
     public void load() throws IOException, ObjectMappingException {
-        super.load();
-        warpNodes.clear();
-        node.getChildrenMap().forEach((k, v) -> warpNodes.put(k.toString().toLowerCase(), new LocationNode(v)));
-    }
-
-    @Override
-    public void save() throws IOException, ObjectMappingException {
-        node = SimpleConfigurationNode.root();
+        // In this case, we don't want to get/save any defaults, don't call the super method.
+        node = loader.load();
 
         // There is a comment in the MainConfig that explains what this line is about. I'm not repeating it here.
         // Go find the comment if you're interested.
@@ -45,6 +39,13 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
             warpNodes = Maps.newHashMap();
         }
 
+        warpNodes.clear();
+        node.getChildrenMap().forEach((k, v) -> warpNodes.put(k.toString().toLowerCase(), new LocationNode(v)));
+    }
+
+    @Override
+    public void save() throws IOException, ObjectMappingException {
+        node = SimpleConfigurationNode.root();
         warpNodes.forEach((k, v) -> v.populateNode(node.getNode(k.toLowerCase())));
         super.save();
     }
