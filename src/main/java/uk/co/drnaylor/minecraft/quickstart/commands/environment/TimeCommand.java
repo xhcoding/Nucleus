@@ -1,9 +1,11 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.environment;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,6 +20,8 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 
 @Permissions
 @Modules(PluginModule.ENVIRONMENT)
@@ -26,7 +30,10 @@ public class TimeCommand extends CommandBase {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).children(this.createChildCommands(SetTimeCommand.class)).build();
+        Map<List<String>, CommandCallable> ms = this.createChildCommands(SetTimeCommand.class);
+        return CommandSpec.builder().executor(this)
+                .arguments(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))))
+                .children(ms).build();
     }
 
     @Override

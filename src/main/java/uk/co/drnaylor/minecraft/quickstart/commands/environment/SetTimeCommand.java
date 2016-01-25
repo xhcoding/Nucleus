@@ -28,7 +28,7 @@ public class SetTimeCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).description(Text.of("Sets the time")).arguments(
-                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(world)))),
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
                 GenericArguments.onlyOne(new WorldTimeParser(Text.of(time)))
         ).build();
     }

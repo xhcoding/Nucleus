@@ -30,7 +30,7 @@ public class KickAllCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Kicks all players.")).executor(this)
             .arguments(
-                    GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))
+                    GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
             ).build();
     }
 

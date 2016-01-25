@@ -36,7 +36,7 @@ public class KickCommand extends CommandBase {
         return CommandSpec.builder().description(Text.of("Kicks a player.")).executor(this)
                 .arguments(
                         GenericArguments.onlyOne(GenericArguments.player(Text.of(player))),
-                        GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))
+                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
                 ).build();
     }
 

@@ -35,7 +35,7 @@ public class WarpsCommand extends CommandBase<Player> {
                 .children(this.createChildCommands(
                         DeleteWarpCommand.class, ListWarpCommand.class, SetWarpCommand.class
                 )).arguments(
-                        GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.flags().flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
+                        GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.flags().flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
                         GenericArguments.onlyOne(new WarpParser(Text.of(warpNameArg), plugin, true))
                 ).build();
     }

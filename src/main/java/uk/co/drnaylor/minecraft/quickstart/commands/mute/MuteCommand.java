@@ -57,7 +57,7 @@ public class MuteCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Mutes or unmutes a player")).executor(this).arguments(
                 GenericArguments.onlyOne(new UserParser(Text.of(playerArgument))),
-                GenericArguments.onlyOne(GenericArguments.optional(new TimespanParser(Text.of(timespanArgument)))),
+                GenericArguments.onlyOne(GenericArguments.optionalWeak(new TimespanParser(Text.of(timespanArgument)))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
         ).build();
     }

@@ -36,7 +36,7 @@ public class WeatherCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
-                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(world)))),
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
                 GenericArguments.onlyOne(new WeatherParser(Text.of(weather))), // More flexible with the arguments we can use.
                 GenericArguments.firstParsing(
                     GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration)))),
