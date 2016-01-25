@@ -30,7 +30,7 @@ public class SetWarpCommand extends CommandBase<Player> {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
                 .arguments(
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of(Util.messageBundle.getString(WarpsCommand.warpNameArg))))
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of(WarpsCommand.warpNameArg)))
                 )
                 .description(Text.of("Sets a warp at the player's location."))
                 .build();
