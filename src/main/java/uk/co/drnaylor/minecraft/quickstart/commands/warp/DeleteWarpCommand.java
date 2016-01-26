@@ -48,7 +48,7 @@ public class DeleteWarpCommand extends CommandBase {
 
         if (qs.removeWarp(warp.warp)) {
             // Worked. Tell them.
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.warps.del"), warp)));
+            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.warps.del"), warp.warp)));
             return CommandResult.success();
         }
 

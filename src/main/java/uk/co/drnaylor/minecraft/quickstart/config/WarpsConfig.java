@@ -87,7 +87,17 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
 
     @Override
     public boolean removeWarp(String warpName) {
-        return warpNodes.remove(warpName.toLowerCase()) != null;
+        if (warpNodes.remove(warpName.toLowerCase()) != null) {
+            try {
+                save();
+            } catch (IOException | ObjectMappingException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -98,6 +108,12 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
         }
 
         warpNodes.put(warp, new LocationNode(location, rotation));
+        try {
+            save();
+        } catch (IOException | ObjectMappingException e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 }

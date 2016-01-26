@@ -55,7 +55,7 @@ public class ListWarpCommand extends CommandBase {
         List<Text> lt = ws.stream()
                 .filter(s -> canView(src, s.toLowerCase()))
                 .map(s -> Text.builder(s).color(TextColors.GREEN)
-                    .style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("warp " + s))
+                    .style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
                     .onHover(TextActions.showText(Text.of(TextColors.YELLOW, "Click to warp to " + s))).build())
                 .collect(Collectors.toList());
 
