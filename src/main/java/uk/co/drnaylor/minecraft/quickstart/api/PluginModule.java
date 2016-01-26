@@ -2,7 +2,7 @@ package uk.co.drnaylor.minecraft.quickstart.api;
 
 public enum PluginModule {
     MESSAGES("messages"),
-    WARPS("warp"),
+    WARPS("warps"),
     HOMES("homes"),
     BANS("bans"),
     JAILS("jails"),
@@ -15,7 +15,8 @@ public enum PluginModule {
     TELEPORT("teleport"),
     CHAT("chat"),
     MISC("misc"),
-    FUN("fun");
+    FUN("fun"),
+    AFK("afk");
 
     String key;
 

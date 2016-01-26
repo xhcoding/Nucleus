@@ -9,16 +9,20 @@ import org.spongepowered.api.entity.living.player.User;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements QuickStartUser {
+public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements InternalQuickStartUser {
     private final User user;
     private MuteData muteData;
     private boolean socialSpy;
+    private Instant login;
+    private Instant logout;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -35,6 +39,8 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         }
 
         socialSpy = node.getNode("socialspy").getBoolean(false);
+        login = Instant.ofEpochMilli(node.getNode("timestamp", "login").getLong());
+        logout = Instant.ofEpochMilli(node.getNode("timestamp", "logout").getLong());
     }
 
     @Override
@@ -46,6 +52,8 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         }
 
         node.getNode("socialspy").setValue(isSocialSpy());
+        node.getNode("timestamp", "login").setValue(login.toEpochMilli());
+        node.getNode("timestamp", "logout").setValue(logout.toEpochMilli());
         super.save();
     }
 
@@ -91,6 +99,24 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
         // Permission checks! Return true if it's what we wanted.
         return isSocialSpy() == socialSpy;
+    }
+
+    @Override
+    public Instant getLastLogin() {
+        return login;
+    }
+
+    public void setLastLogin(Instant login) {
+        this.login = login;
+    }
+
+    @Override
+    public Instant getLastLogout() {
+        return logout;
+    }
+
+    public void setLastLogout(Instant logout) {
+        this.logout = logout;
     }
 
     @Override

@@ -1,8 +1,10 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.collect.Maps;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 

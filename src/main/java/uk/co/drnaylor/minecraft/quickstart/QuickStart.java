@@ -149,6 +149,10 @@ public class QuickStart {
         return this.modulesLoaded;
     }
 
+    public UserConfigLoader getUserLoader() {
+        return configLoader;
+    }
+
     /**
      * Gets the configuration file
      *

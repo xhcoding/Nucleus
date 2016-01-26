@@ -4,6 +4,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,4 +60,8 @@ public interface QuickStartUser {
      * @return <code>true</code> if the change was made.
      */
     boolean setSocialSpy(boolean socialSpy);
+
+    Instant getLastLogin();
+
+    Instant getLastLogout();
 }

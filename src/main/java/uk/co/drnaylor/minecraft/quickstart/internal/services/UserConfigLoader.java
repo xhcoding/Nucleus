@@ -10,6 +10,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchPlayerException;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartUserService;
 import uk.co.drnaylor.minecraft.quickstart.config.UserConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class UserConfigLoader implements QuickStartUserService {
     }
 
     @Override
-    public QuickStartUser getUser(User user) throws IOException, ObjectMappingException {
+    public InternalQuickStartUser getUser(User user) throws IOException, ObjectMappingException {
         if (loadedUsers.containsKey(user.getUniqueId())) {
             return loadedUsers.get(user.getUniqueId());
         }
