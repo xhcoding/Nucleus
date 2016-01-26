@@ -25,6 +25,7 @@ import java.io.IOException;
 @RunAsync
 @NoWarmup
 @NoCooldown
+@NoCost
 public class SocialSpyCommand extends CommandBase<Player> {
     private final String arg = "Social Spy";
     @Inject private UserConfigLoader userConfigLoader;

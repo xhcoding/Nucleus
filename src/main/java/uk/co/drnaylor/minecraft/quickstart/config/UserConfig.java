@@ -42,7 +42,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         if (muteData == null) {
             node.removeChild("mute");
         } else {
-            node.setValue(TypeToken.of(MuteData.class), muteData);
+            node.getNode("mute").setValue(TypeToken.of(MuteData.class), muteData);
         }
 
         node.getNode("socialspy").setValue(isSocialSpy());

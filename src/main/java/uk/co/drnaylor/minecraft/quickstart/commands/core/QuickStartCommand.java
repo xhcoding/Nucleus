@@ -11,8 +11,9 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+
+import java.util.Arrays;
 
 /**
  * Gives information about QuickStart.
@@ -22,7 +23,13 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
  */
 @RunAsync
 @Permissions
+@NoWarmup
+@NoCooldown
+@NoCost
 public class QuickStartCommand extends CommandBase {
+
+    private final Text version = Text.of(QuickStart.MESSAGE_PREFIX, TextColors.GREEN, QuickStart.NAME + " version " + QuickStart.VERSION);
+    private Text modules = null;
 
     @Override
     public CommandSpec createSpec() {
@@ -36,20 +43,26 @@ public class QuickStartCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        QuickStartModuleService qs = Sponge.getServiceManager().provideUnchecked(QuickStartModuleService.class);
+        if (modules == null) {
+            QuickStartModuleService qs = Sponge.getServiceManager().provideUnchecked(QuickStartModuleService.class);
 
-        StringBuilder sb = new StringBuilder();
-        qs.getModulesToLoad().stream().map(PluginModule::getKey).forEach(s -> {
-            if (sb.length() > 0) {
-                sb.append(", ");
+            Text.Builder tb = Text.builder("Modules: ").color(TextColors.GREEN);
+
+            boolean addComma = false;
+            for (PluginModule x : PluginModule.values()) {
+                if (addComma) {
+                    tb.append(Text.of(TextColors.GREEN, ", "));
+                }
+
+                tb.append(Text.of(qs.getModulesToLoad().contains(x) ? TextColors.GREEN : TextColors.RED, x.getKey()));
+                addComma = true;
             }
 
-            sb.append(s);
-        });
+            modules = tb.append(Text.of(TextColors.GREEN, ".")).build();
+        }
 
-        sb.insert(0, "Modules loaded: ").append(".");
-        src.sendMessage(Text.of(QuickStart.MESSAGE_PREFIX, TextColors.GREEN, QuickStart.NAME + " version " + QuickStart.VERSION));
-        src.sendMessage(Text.of(TextColors.GREEN, sb.toString()));
+        src.sendMessage(version);
+        src.sendMessage(modules);
         return CommandResult.success();
     }
 }

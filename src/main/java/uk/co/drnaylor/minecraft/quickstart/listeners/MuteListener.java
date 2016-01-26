@@ -56,7 +56,7 @@ public class MuteListener extends ListenerBase {
                         if (md.getTimeFromNextLogin().isPresent() && !md.getEndTimestamp().isPresent()) {
                             // Need to setup the end timestamp
                             long m = md.getTimeFromNextLogin().get();
-                            md = new MuteData(md.getMuter(), (new Date().getTime() / 1000) + m, md.getReason());
+                            md = new MuteData(md.getMuter(), new Date().getTime() + m, md.getReason());
                             qs.setMuteData(md);
                         }
 

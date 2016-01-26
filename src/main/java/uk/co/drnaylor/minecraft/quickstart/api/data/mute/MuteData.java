@@ -28,12 +28,26 @@ public class MuteData {
         this(muter, null, reason);
     }
 
+    /**
+     * Creates the data.
+     *
+     * @param muter The UUID of the muter
+     * @param endtimestamp The end timestamp in milliseconds
+     * @param reason The reason
+     */
     public MuteData(UUID muter, Long endtimestamp, String reason) {
         this.muter = muter;
         this.endtimestamp = endtimestamp;
         this.reason = reason;
     }
 
+    /**
+     * Creates the data.
+     *
+     * @param muter The UUID of the muter
+     * @param reason The reason
+     * @param timeFromNextLogin The time, in millseconds, to mute for from next login.
+     */
     public MuteData(UUID muter, String reason, Long timeFromNextLogin) {
         this.muter = muter;
         this.timeFromNextLogin = timeFromNextLogin;

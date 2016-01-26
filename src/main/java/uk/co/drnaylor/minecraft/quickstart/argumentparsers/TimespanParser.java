@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parses an argument and tries to get a timespan.
+ * Parses an argument and tries to get a timespan. Returns in seconds.
  *
  * This parser was taken from
  * https://github.com/dualspiral/Hammer/blob/master/HammerCore/src/main/java/uk/co/drnaylor/minecraft/hammer/core/commands/parsers/TimespanParser.java

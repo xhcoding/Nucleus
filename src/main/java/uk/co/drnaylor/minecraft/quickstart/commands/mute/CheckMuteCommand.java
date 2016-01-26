@@ -38,6 +38,7 @@ import java.util.Optional;
 @Modules(PluginModule.MUTES)
 @NoWarmup
 @NoCooldown
+@NoCost
 public class CheckMuteCommand extends CommandBase {
 
     @Inject private UserConfigLoader userConfigLoader;
@@ -89,12 +90,12 @@ public class CheckMuteCommand extends CommandBase {
             time = Util.getTimeStringFromSeconds(md.getEndTimestamp().get() - (new Date().getTime() / 1000));
             forString = " " + Util.messageBundle.getString("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
-            time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get());
+            time = Util.getTimeStringFromMillseconds(md.getTimeFromNextLogin().get());
             forString = " " + Util.messageBundle.getString("standard.for") + " ";
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format("command.checkmute.mute", user.getName(), name, forString, time)));
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format("standard.reason", md.getReason())));
+        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.checkmute.mute"), user.getName(), name, forString, time)));
+        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), md.getReason())));
         return CommandResult.success();
     }
 }

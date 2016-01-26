@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.data.value.mutable.Value;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -38,6 +38,10 @@ public class MessageHandler {
     public Optional<CommandSource> getPlayerToReplyTo(UUID from) {
         Preconditions.checkNotNull(from);
         UUID to = messagesReceived.get(from);
+        if (to == null) {
+            return Optional.empty();
+        }
+
         if (to.equals(Util.consoleFakeUUID)) {
             return Optional.of(Sponge.getServer().getConsole());
         }
@@ -92,12 +96,16 @@ public class MessageHandler {
         List<MessageReceiver> lm = qs.getOnlineUsers().stream().filter(x ->
                 !getUUID(sender).equals(x.getUniqueID()) && !getUUID(receiver).equals(x.getUniqueID())
         ).filter(QuickStartUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
-        lm.add(Sponge.getServer().getConsole());
+
+        if (getUUID(sender) != Util.consoleFakeUUID && getUUID(receiver) != Util.consoleFakeUUID) {
+            lm.add(Sponge.getServer().getConsole());
+        }
 
         MessageChannel mc = MessageChannel.fixed(lm);
         sender.sendMessage(constructMessage(me, nameOfReceiver, message));
         receiver.sendMessage(constructMessage(nameOfSender, me, message));
         mc.send(constructSSMessage(nameOfSender, nameOfReceiver, message));
+        update(getUUID(sender), getUUID(receiver));
         return true;
     }
 
@@ -111,8 +119,9 @@ public class MessageHandler {
         }
 
         Player player = (Player)src;
-        Value<Text> vt = player.getDisplayNameData().displayName();
-        if (player.getDisplayNameData().customNameVisible().get() && vt.exists()) {
+        Optional<Text> vt = player.get(Keys.DISPLAY_NAME);
+        boolean b = player.get(Keys.SHOWS_DISPLAY_NAME).orElse(false);
+        if (b) {
             return vt.get().toBuilder().onClick(TextActions.suggestCommand("/msg " + player.getName() + " ")).build();
         }
 

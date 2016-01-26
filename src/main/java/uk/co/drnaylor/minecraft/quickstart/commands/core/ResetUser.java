@@ -5,11 +5,13 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
-@Permissions
+@Permissions(root = "quickstart")
 @RunAsync
+@NoWarmup
+@NoCooldown
+@NoCost
 public class ResetUser extends CommandBase {
     @Override
     public CommandSpec createSpec() {

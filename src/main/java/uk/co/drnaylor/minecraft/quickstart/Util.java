@@ -75,7 +75,7 @@ public class Util {
         Optional<MuteData> omd = user.getMuteData();
         if (omd.isPresent()) {
             MuteData md = omd.get();
-            if (md.getEndTimestamp().isPresent() && (new Date().getTime() / 1000) > md.getEndTimestamp().get()) {
+            if (md.getEndTimestamp().isPresent() && (new Date().getTime()) > md.getEndTimestamp().get()) {
                 // Mute expired.
                 user.removeMuteData();
                 return Optional.empty();
@@ -86,8 +86,8 @@ public class Util {
     }
 
     public static Optional<Long> getSecondsToTimestamp(long timestamp) {
-        long currentime = new Date().getTime() / 1000L;
-        long time = timestamp - currentime;
+        long currentime = new Date().getTime();
+        long time = (timestamp - currentime) / 1000L;
         return time > 0 ? Optional.of(time) : Optional.empty();
     }
 

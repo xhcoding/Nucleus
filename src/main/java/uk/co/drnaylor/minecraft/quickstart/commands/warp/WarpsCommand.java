@@ -9,8 +9,10 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
+import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WarpParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.text.MessageFormat;
@@ -25,6 +27,7 @@ import java.text.MessageFormat;
  * <code>quickstart.warps.[warpname]</code> permission, or the QuickStart admin permission.
  */
 @Permissions
+@Modules(PluginModule.WARPS)
 public class WarpsCommand extends CommandBase<Player> {
     static final String seperatePermissionsConfigEntryName = "separate-permissions";
     static final String warpNameArg = Util.messageBundle.getString("args.name.warpname");

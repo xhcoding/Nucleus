@@ -27,7 +27,11 @@ public class CommandsConfig extends AbstractConfig<CommentedConfigurationNode, H
         return node.getNode(command.toLowerCase());
     }
 
+    public void mergeDefaults(CommentedConfigurationNode node) {
+        this.node.mergeValuesFrom(node);
+    }
+
     public void mergeDefaultsForCommand(String command, CommentedConfigurationNode node) {
-        node.getNode(command.toLowerCase()).mergeValuesFrom(node);
+        this.node.getNode(command.toLowerCase()).mergeValuesFrom(node);
     }
 }

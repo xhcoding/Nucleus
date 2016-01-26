@@ -105,11 +105,11 @@ public class UserConfigLoader implements QuickStartUserService {
 
     private Path getUserPath(UUID uuid) throws IOException {
         String u = uuid.toString();
-        String f = u.substring(0, 1);
+        String f = u.substring(0, 2);
         Path file = plugin.getConfigDirPath().resolve(String.format("userdata%1$s%2$s%1$s%3$s.json", File.separator, f, u));
 
         if (Files.notExists(file)) {
-            Files.createDirectories(file);
+            Files.createDirectories(file.getParent());
         }
 
         // Configurate will create it for us.

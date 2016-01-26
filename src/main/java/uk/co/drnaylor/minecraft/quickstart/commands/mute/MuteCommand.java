@@ -27,6 +27,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 @Modules(PluginModule.MUTES)
 @NoWarmup
 @NoCooldown
+@NoCost
 public class MuteCommand extends CommandBase {
 
     @Inject private UserConfigLoader userConfigLoader;
@@ -124,7 +126,7 @@ public class MuteCommand extends CommandBase {
 
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("mute.playernotify.time"), ts)));
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("command.reason"), rs)));
-        return new MuteData(ua, time, rs);
+        return new MuteData(ua, new Date().getTime() + (time * 1000), rs);
     }
 
     private MuteData offlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {
@@ -132,7 +134,7 @@ public class MuteCommand extends CommandBase {
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.mute.success.time"),
                 user.getName(), src.getName(), ts)));
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), rs)));
-        return new MuteData(ua, rs, time);
+        return new MuteData(ua, rs, time * 1000);
     }
 
     private MuteData permMute(CommandSource src, User user, String rs, UUID ua, MessageChannel mc) {

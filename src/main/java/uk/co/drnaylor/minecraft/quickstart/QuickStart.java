@@ -48,8 +48,8 @@ public class QuickStart {
     public final static String VERSION = "0.1";
     public final static String PERMISSIONS_PREFIX = "quickstart.";
     public final static String PERMISSIONS_ADMIN = PERMISSIONS_PREFIX + "admin";
-    public final static Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "]");
-    public final static Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "]");
+    public final static Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "] ");
+    public final static Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "] ");
 
     private ModuleRegistration moduleRegistration;
     private boolean modulesLoaded = false;

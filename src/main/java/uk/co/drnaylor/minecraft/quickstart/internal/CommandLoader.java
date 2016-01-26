@@ -3,6 +3,8 @@ package uk.co.drnaylor.minecraft.quickstart.internal;
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import com.google.inject.spi.Message;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
@@ -64,6 +66,7 @@ public class CommandLoader {
         // Commands config!
 
         CommandsConfig cc = quickStart.getConfig(CommandsConfig.class).get();
+        CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandsToLoad.stream().map(x -> {
             try {
                 CommandBase cb = x.newInstance();
@@ -75,13 +78,15 @@ public class CommandLoader {
             }
         }).filter(x -> x != null).forEach(c -> {
             // Merge in config defaults.
-            cc.mergeDefaultsForCommand(c.getAliases()[0], c.getDefaults());
+            sn.getNode(c.getAliases()[0].toLowerCase()).setValue(c.getDefaults());
+            // cc.mergeDefaultsForCommand(c.getAliases()[0], c.getDefaults());
 
             // Register the commands.
             Sponge.getCommandManager().register(quickStart, c.createSpec(), c.getAliases());
         });
 
         try {
+            cc.mergeDefaults(sn);
             cc.save();
         } catch (IOException | ObjectMappingException e) {
             quickStart.getLogger().error("Could not save defaults.");
