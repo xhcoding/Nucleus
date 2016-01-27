@@ -17,7 +17,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.economy.EconomyService;
-import org.spongepowered.api.service.economy.account.Account;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.ResultType;
 import org.spongepowered.api.service.economy.transaction.TransactionResult;
@@ -34,6 +33,8 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +46,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private final Set<String> warmup;
     private final Set<String> cost;
 
-    private final Map<UUID, Long> cooldownStore = Maps.newHashMap();
+    private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     private QuickStartWarmupManagerService warmupService = null;
     private final Class<T> sourceType;
     private final boolean bypassWarmup;
@@ -56,23 +57,55 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     @SuppressWarnings("unchecked")
     protected CommandBase() {
-        // I hate type erasure...
+        // I hate type erasure - it leads to a hack like this. Admittedly, I could've just created a subclass that does
+        // the same thing, but I like to beat the system! :)
+        //
+        // This code reflectively looks for methods called "executeCommand", which is defined in this class. However,
+        // due to type erasure, if a generic type is specified, there are two "executeCommand" methods, one that satisfies
+        // this abstract class (with the CommandSource argument) and a second method that fulfils the generic type T.
+        //
+        // Thus, we need to check that there is a method called executeCommand that has a more restrictive argument than
+        // "CommandSource" in order to check for the generic type.
+        //
+        // This allows us to then have code that filters out non-Players by simply specifying the generic type "Player".
+        //
+        // The provided stream filters out the standard executeCommand method, and checks to see if there is a second that makes
+        // use of the generic parameter.
         Optional<Method> me = Arrays.asList(getClass().getMethods()).stream().filter(x -> x.getName().equals("executeCommand") &&
                 x.getParameterTypes().length == 2 &&
                 x.getParameterTypes()[1].isAssignableFrom(CommandContext.class) &&
                 !x.getParameterTypes()[0].equals(CommandSource.class)).findFirst();
 
+        // If there is a second executeCommand method, then we know that's the type that we need and we can do our source
+        // checks against it accordingly.
         if (me.isPresent()) {
             sourceType = (Class<T>) (me.get().getParameterTypes()[0]);
         } else {
             sourceType = (Class<T>) CommandSource.class;
         }
 
+        // For these flags, we simply need to get whether the annotation was declared. If they were not, we simply get back
+        // a null - so the check is based around that.
         bypassWarmup = this.getClass().getAnnotation(NoWarmup.class) != null;
         bypassCooldown = this.getClass().getAnnotation(NoCooldown.class) != null;
         bypassCost = this.getClass().getAnnotation(NoCost.class) != null;
 
-        // Additional permissions
+        // The Permissions annotation provides the backbone of the permissions system for the commands.
+        // The standard permisson is based on the getAliases command, specifically, the first argument in the
+        // returned array, such that the permission it will generated if this annotation is defined is:
+        //
+        // quickstart.(primaryalias).base
+        //
+        // Adding a "root" and/or "sub" string will generate:
+        //
+        // quickstart.(root).(primaryalias).(sub).use
+        //
+        // For warmup, cooldown and cost exemption, replace use with:
+        //
+        // exempt.(cooldown|warmup|cost)
+        //
+        // By default, the permission "quickstart.admin" also gets permission to run and bypass all warmup,
+        // cooldown and costs, but this can be turned off in the annotation.
         Permissions op = this.getClass().getAnnotation(Permissions.class);
         additionalPermissions = Sets.newHashSet();
         cooldown = Sets.newHashSet();
@@ -148,10 +181,12 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     @Override
     @NonnullByDefault
     public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
+        // If the implementing class has defined a generic parameter, then check the source type.
         if (!checkSourceType(source)) {
             return CommandResult.empty();
         }
 
+        // Cast as required.
         @SuppressWarnings("unchecked") T src = (T)source;
 
         // If they don't match ANY permission, throw 'em.
@@ -159,11 +194,16 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             throw new CommandPermissionException();
         }
 
-        if ((src instanceof Player) && !cooldown.stream().anyMatch(src::hasPermission)) {
+        // If the source is a player, there may be a cooldown in effect. Check if this might be the case.
+        // We have a list of permissions that are exempt from cooldowns, check those too.
+        if (!bypassCooldown && (src instanceof Player) && !cooldown.stream().anyMatch(src::hasPermission)) {
+            // Remove any expired cooldowns.
             cleanCooldowns();
+
+            // If they are still in there, then tell them they are still cooling down.
             if (cooldownStore.containsKey(((Player) src).getUniqueId())) {
-                long l = (cooldownStore.get(((Player) src).getUniqueId()) / 1000) + 1;
-                src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("cooldown.message"), Util.getTimeStringFromSeconds(l)))
+                Instant l = (cooldownStore.get(((Player) src).getUniqueId()));
+                src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("cooldown.message"), Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))))
                         .color(TextColors.YELLOW).build());
                 return CommandResult.empty();
             }
@@ -178,6 +218,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
                 warmupService = Sponge.getServiceManager().provideUnchecked(QuickStartWarmupManagerService.class);
             }
 
+            // We create a task that executes the command at a later time. Because we already know we have permission,
+            // we can skip those checks.
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().delay(getWarmup, TimeUnit.SECONDS).execute(t -> {
                 src.sendMessage(Text.builder(Util.messageBundle.getString("warmup.end")).color(TextColors.YELLOW).build());
                 warmupService.removeWarmup(p.getUniqueId());
@@ -191,29 +233,41 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
                 startExecute(src, args);
             }).name("Command Warmup - " + src.getName());
 
+            // Run an async command async, of course!
             if (isAsync) {
                 tb.async();
             }
 
+            // Add the warmup to the service so we can cancel it if we need to.
             warmupService.addWarmup(p.getUniqueId(), tb.submit(plugin));
+
+            // Tell the user we're warming up.
             src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("warmup.start"), Util.getTimeStringFromSeconds(getWarmup)))
                     .color(TextColors.YELLOW).build());
+
+            // Sponge should think the command was run successfully.
             return CommandResult.success();
         } else {
 
             // Do we charge the player?
             Double cost = applyCost(src);
             if (cost == null) {
+                // If we get a null, we're assuming something failed, so we return an empty. The user
+                // has already been notified.
                 return CommandResult.empty();
             }
 
+            // If we're running async...
             if (isAsync) {
+                // Create an executor that runs the command async.
                 plugin.getLogger().debug("Running " + this.getClass().getName() + " in async mode.");
                 Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> startExecute(src, args));
 
+                // Tell Sponge we're done.
                 return CommandResult.success();
             }
 
+            // Run the command sync.
             return startExecute(src, args);
         }
     }
@@ -235,12 +289,15 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     private int applyWarmup(CommandSource src) {
+        // If there is no warmup, or there are no exemption permissions, or the user has permission to be exempt, return zero.
         if (bypassWarmup || !(src instanceof Player) || warmup.isEmpty() || warmup.stream().anyMatch(src::hasPermission)) {
             return 0;
         }
 
+        // Return the warmup time. TODO: Cache this?
         int warmupTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("warmup").getInt();
         if (warmupTime <= 0) {
+            // Can't be negative, so a time of zero is returned if it was.
             return 0;
         }
 
@@ -289,10 +346,12 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     private double getCost(CommandSource src) {
+        // If the player or command itself is exempt, return a zero.
         if (bypassCost || !(src instanceof Player) || cost.isEmpty() || cost.stream().anyMatch(src::hasPermission)) {
             return 0.;
         }
 
+        // Return the cost if positive, else, zero.
         double cost = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("cost").getDouble(0.);
         if (cost <= 0.) {
             return 0.;
@@ -302,10 +361,12 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     private void reverseCharge(Player p, EconomyService es, double cost) {
+        // If there was a charge.
         if (cost > 0) {
             // We might be async, so put this on the sync tick loop.
             Optional<UniqueAccount> a = es.getAccount(p.getUniqueId());
             if (a.isPresent()) {
+                // Reverse the charge.
                 final UniqueAccount ua = a.get();
                 Sponge.getScheduler().createSyncExecutor(this.plugin).execute(() -> {
                     ua.deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(this));
@@ -318,36 +379,46 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private CommandResult startExecute(T src, CommandContext args) {
         CommandResult cr;
         try {
+            // Execute the command in the specific executor.
             cr = executeCommand(src, args);
         } catch (TextMessageException e) {
+            // If the exception contains a text object, render it like so...
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
             e.printStackTrace();
             cr = CommandResult.empty();
         } catch (Exception e) {
+            // If it doesn't, just tell the user something went wrong.
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("command.error")));
             e.printStackTrace();
             cr = CommandResult.empty();
         }
 
         if (src instanceof Player) {
-            // Cooldown
+            // If the player is subject to cooling down, apply the cooldown.
             final Player p = (Player)src;
             if (!cooldown.stream().anyMatch(src::hasPermission) && cr.getSuccessCount().orElse(0) > 0) {
+                // Get the cooldown time.
                 int cooldownTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("cooldown").getInt();
                 if (cooldownTime > 0 && cr.getSuccessCount().orElse(0) > 0) {
-                    cooldownStore.put(p.getUniqueId(), new Date().getTime() + (cooldownTime*1000));
+                    // If there is a cooldown, add the cooldown to the list, with the end time as an Instant.
+                    cooldownStore.put(p.getUniqueId(), Instant.now().plus(cooldownTime, ChronoUnit.SECONDS));
                 }
             }
 
             // For the tests, keep this here so we can skip the hard to test code below.
             final double cost = getCost(p);
             if (cost > 0) {
+                // We need the economy service if we are to reverse the charge!
                 Optional<EconomyService> oes = Sponge.getServiceManager().provide(EconomyService.class);
                 if (oes.isPresent()) {
+                    // Get the service
                     final EconomyService es = oes.get();
+
+                    // If there was a failiure, reverse the charge.
                     if (cr.getSuccessCount().orElse(0) == 0) {
                         reverseCharge(p, es, cost);
                     } else {
+                        // Tell them they were charged, otherwise.
                         String c = es.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain();
                         p.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.messageBundle.getString("cost.complete"), c)));
                     }
@@ -359,8 +430,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     private void cleanCooldowns() {
-        long time = new Date().getTime();
-        cooldownStore.entrySet().stream().filter(k -> k.getValue() < time).map(Map.Entry::getKey).forEach(cooldownStore::remove);
+        cooldownStore.entrySet().stream().filter(k -> k.getValue().isAfter(Instant.now())).map(Map.Entry::getKey).forEach(cooldownStore::remove);
     }
 
     private boolean checkSourceType(CommandSource source) {
