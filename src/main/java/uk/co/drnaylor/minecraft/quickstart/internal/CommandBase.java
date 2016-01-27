@@ -48,6 +48,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     private QuickStartWarmupManagerService warmupService = null;
+    protected final PermissionUtil permissions;
     private final Class<T> sourceType;
     private final boolean bypassWarmup;
     private final boolean bypassCooldown;
@@ -112,46 +113,14 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         warmup = Sets.newHashSet();
         cost = Sets.newHashSet();
 
-        if (op != null) {
-            Collections.addAll(additionalPermissions, op.value());
-            Collections.addAll(cooldown, op.cooldownExempt());
-            Collections.addAll(warmup, op.warmupExempt());
-            Collections.addAll(cost, op.costExempt());
-
-            StringBuilder perm = new StringBuilder(QuickStart.PERMISSIONS_PREFIX);
-            if (!op.root().isEmpty()) {
-                perm.append(op.root()).append(".");
-            }
-
-            perm.append(getAliases()[0]).append(".");
-
-            if (!op.sub().isEmpty()) {
-                perm.append(op.sub()).append(".");
-            }
-
-            String defaultroot = perm.toString();
-            if (op.useDefault()) {
-                additionalPermissions.add(defaultroot + "base");
-            }
-
-            if (op.useDefaultCooldownExempt()) {
-                cooldown.add(defaultroot + "exempt.cooldown");
-            }
-
-            if (op.useDefaultWarmupExempt()) {
-                warmup.add(defaultroot + "exempt.warmup");
-            }
-
-            if (op.useDefaultCostExempt()) {
-                warmup.add(defaultroot + "exempt.cost");
-            }
-
-            if (op.includeAdmin()) {
-                additionalPermissions.add(QuickStart.PERMISSIONS_ADMIN);
-                cooldown.add(QuickStart.PERMISSIONS_ADMIN);
-                warmup.add(QuickStart.PERMISSIONS_ADMIN);
-                cost.add(QuickStart.PERMISSIONS_ADMIN);
-            }
+        if (op == null) {
+            permissions = null;
+        } else {
+            permissions = new PermissionUtil(op, getAliases()[0]);
+            additionalPermissions.addAll(permissions.getBasePermissions());
+            cooldown.addAll(permissions.getCooldownPermissions());
+            warmup.addAll(permissions.getWarmupPermissions());
+            cost.addAll(permissions.getCostPermissions());
         }
     }
 
