@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.util.Identifiable;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
@@ -46,8 +47,8 @@ public class UserConfigLoader implements QuickStartUserService {
     }
 
     @Override
-    public QuickStartUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException {
-        return null;
+    public InternalQuickStartUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException {
+        return getUser(Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(playerUUID).orElseThrow(NoSuchPlayerException::new));
     }
 
     @Override
@@ -100,8 +101,7 @@ public class UserConfigLoader implements QuickStartUserService {
     }
 
     private void clearNullSoftReferences() {
-        Set<UUID> toRemove = softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() == null).map(Map.Entry::getKey).collect(Collectors.toSet());
-        toRemove.forEach(softLoadedUsers::remove);
+        softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() == null).map(Map.Entry::getKey).forEach(softLoadedUsers::remove);
     }
 
     private Path getUserPath(UUID uuid) throws IOException {
