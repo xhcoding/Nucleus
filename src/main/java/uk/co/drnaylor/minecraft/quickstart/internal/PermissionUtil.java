@@ -18,7 +18,7 @@ public final class PermissionUtil {
     }
 
     public Set<String> getBasePermissions() {
-        Set<String> perms = ps.useDefault() ? getPermissionWithSuffix("base") : new HashSet<>();
+        Set<String> perms = getPermissionWithSuffix("base");
         perms.addAll(Arrays.asList(ps.value()));
         return perms;
     }
@@ -43,18 +43,21 @@ public final class PermissionUtil {
 
     public Set<String> getPermissionWithSuffix(String suffix) {
         Set<String> perms = new HashSet<>();
-        StringBuilder perm = new StringBuilder(QuickStart.PERMISSIONS_PREFIX);
-        if (!ps.root().isEmpty()) {
-            perm.append(ps.root()).append(".");
+
+        if (ps.useDefault()) {
+            StringBuilder perm = new StringBuilder(QuickStart.PERMISSIONS_PREFIX);
+            if (!ps.root().isEmpty()) {
+                perm.append(ps.root()).append(".");
+            }
+
+            perm.append(commandAlias).append(".");
+
+            if (!ps.sub().isEmpty()) {
+                perm.append(ps.sub()).append(".");
+            }
+
+            perms.add(perm.append(suffix).toString());
         }
-
-        perm.append(commandAlias).append(".");
-
-        if (!ps.sub().isEmpty()) {
-            perm.append(ps.sub()).append(".");
-        }
-
-        perms.add(perm.append(suffix).toString());
 
         if (ps.includeAdmin()) {
             perms.add(QuickStart.PERMISSIONS_ADMIN);
