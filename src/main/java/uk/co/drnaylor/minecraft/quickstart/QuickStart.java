@@ -40,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Plugin(id = QuickStart.ID, name = QuickStart.NAME, version = QuickStart.VERSION)
 public class QuickStart {
@@ -119,6 +120,13 @@ public class QuickStart {
 
         // Register services
         game.getServiceManager().setProvider(this, QuickStartUserService.class, configLoader);
+
+        // Start tasks, save every thirty seconds
+        game.getScheduler().createTaskBuilder().async().name("QuickStart Cleanup Task").delay(30, TimeUnit.SECONDS).interval(30, TimeUnit.SECONDS)
+            .execute(() -> {
+                this.getUserLoader().purgeNotOnline();
+                this.configLoader.saveAll();
+            }).submit(this);
     }
 
     @Listener

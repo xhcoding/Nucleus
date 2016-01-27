@@ -31,7 +31,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public void load() throws IOException, ObjectMappingException {
-        super.load();
+        node = loader.load();
         if (node.getNode("mute").isVirtual()) {
             muteData = null;
         } else {
