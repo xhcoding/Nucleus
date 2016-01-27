@@ -23,6 +23,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private boolean socialSpy;
     private Instant login;
     private Instant logout;
+    private boolean invulnerable;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -41,6 +42,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         socialSpy = node.getNode("socialspy").getBoolean(false);
         login = Instant.ofEpochMilli(node.getNode("timestamp", "login").getLong());
         logout = Instant.ofEpochMilli(node.getNode("timestamp", "logout").getLong());
+        invulnerable = node.getNode("invulnerable").getBoolean();
     }
 
     @Override
@@ -54,6 +56,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         node.getNode("socialspy").setValue(isSocialSpy());
         node.getNode("timestamp", "login").setValue(login.toEpochMilli());
         node.getNode("timestamp", "logout").setValue(logout.toEpochMilli());
+        node.getNode("invulnerable").setValue(invulnerable);
         super.save();
     }
 
@@ -99,6 +102,16 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
         // Permission checks! Return true if it's what we wanted.
         return isSocialSpy() == socialSpy;
+    }
+
+    @Override
+    public boolean isInvulnerable() {
+        return false;
+    }
+
+    @Override
+    public void setInvulnerable(boolean invuln) {
+
     }
 
     @Override

@@ -61,7 +61,33 @@ public interface QuickStartUser {
      */
     boolean setSocialSpy(boolean socialSpy);
 
+    /**
+     * Gets whether QuickStart thinks the player should be invulnerable. Note, this means the player has been subject to
+     * the /god command.
+     *
+     * @return <code>true</code> if so.
+     */
+    boolean isInvulnerable();
+
+    /**
+     * Sets whether QuickStart thinks the player should be invulnerable. Note, this is the same as the player being subject to
+     * the /god command.
+     *
+     * @param invuln <code>true</code> if so, <code>false</code> otherwise.
+     */
+    void setInvulnerable(boolean invuln);
+
+    /**
+     * Gets the time the player last logged in.
+     *
+     * @return The {@link Instant}
+     */
     Instant getLastLogin();
 
+    /**
+     * Gets the time the player last logged out.
+     *
+     * @return The {@link Instant}
+     */
     Instant getLastLogout();
 }

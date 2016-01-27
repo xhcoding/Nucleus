@@ -56,10 +56,16 @@ public class GodCommand extends CommandBase {
             }
         }
 
-        // TODO: Attach information to QuickStartPlayer so that it can be persisted.
         boolean god = args.<Boolean>getOne(invulnKey).get();
+        plugin.getUserLoader().getUser(pl).setInvulnerable(god);
 
-        DataTransactionResult tr = pl.offer(Keys.INVULNERABILITY, god ? Integer.MAX_VALUE : 0);
+        DataTransactionResult tr;
+        if (god) {
+            tr = pl.offer(Keys.INVULNERABILITY, Integer.MAX_VALUE);
+        } else {
+            tr = pl.remove(Keys.INVULNERABILITY);
+        }
+
         if (!tr.isSuccessful()) {
             src.sendMessages(Text.of(TextColors.RED, Util.messageBundle.getString("command.god.error")));
             return CommandResult.empty();
