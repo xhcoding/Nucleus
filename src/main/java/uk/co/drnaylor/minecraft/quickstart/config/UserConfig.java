@@ -7,8 +7,7 @@ import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.User;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
-import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
-import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;

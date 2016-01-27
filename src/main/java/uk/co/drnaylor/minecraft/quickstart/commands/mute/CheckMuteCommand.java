@@ -16,7 +16,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
-import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
@@ -24,6 +24,8 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
@@ -87,10 +89,10 @@ public class CheckMuteCommand extends CommandBase {
         String time = "";
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
-            time = Util.getTimeStringFromSeconds(md.getEndTimestamp().get() - (new Date().getTime() / 1000));
+            time = Util.getTimeStringFromSeconds(md.getEndTimestamp().get().until(Instant.now(), ChronoUnit.SECONDS));
             forString = " " + Util.messageBundle.getString("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
-            time = Util.getTimeStringFromMillseconds(md.getTimeFromNextLogin().get());
+            time = Util.getTimeStringFromMillseconds(md.getTimeFromNextLogin().get().getSeconds());
             forString = " " + Util.messageBundle.getString("standard.for") + " ";
         }
 

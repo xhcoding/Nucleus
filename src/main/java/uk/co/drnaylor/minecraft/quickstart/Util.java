@@ -1,9 +1,10 @@
 package uk.co.drnaylor.minecraft.quickstart;
 
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
-import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.*;
 
 public class Util {
@@ -75,7 +76,7 @@ public class Util {
         Optional<MuteData> omd = user.getMuteData();
         if (omd.isPresent()) {
             MuteData md = omd.get();
-            if (md.getEndTimestamp().isPresent() && (new Date().getTime()) > md.getEndTimestamp().get()) {
+            if (md.getEndTimestamp().isPresent() && md.getEndTimestamp().get().isBefore(Instant.now())) {
                 // Mute expired.
                 user.removeMuteData();
                 return Optional.empty();

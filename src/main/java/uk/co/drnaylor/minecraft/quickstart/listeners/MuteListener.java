@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -15,13 +14,15 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
-import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +56,7 @@ public class MuteListener extends ListenerBase {
                         MuteData md = omd.get();
                         if (md.getTimeFromNextLogin().isPresent() && !md.getEndTimestamp().isPresent()) {
                             // Need to setup the end timestamp
-                            long m = md.getTimeFromNextLogin().get();
+                            long m = md.getTimeFromNextLogin().get().getSeconds();
                             md = new MuteData(md.getMuter(), new Date().getTime() + m, md.getReason());
                             qs.setMuteData(md);
                         }
@@ -91,7 +92,7 @@ public class MuteListener extends ListenerBase {
         if (md.getEndTimestamp().isPresent()) {
             user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(
                     Util.messageBundle.getString("mute.playernotify.time"),
-                    Util.getTimeStringFromSeconds(Util.getSecondsToTimestamp(md.getEndTimestamp().get()).get()))));
+                    Util.getTimeStringFromSeconds(Util.getSecondsToTimestamp(md.getEndTimestamp().get().until(Instant.now(), ChronoUnit.SECONDS)).get()))));
         } else {
             user.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("mute.playernotify")));
         }

@@ -1,13 +1,17 @@
-package uk.co.drnaylor.minecraft.quickstart.api.data.mute;
+package uk.co.drnaylor.minecraft.quickstart.api.data;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.jar.Pack200;
 
 @ConfigSerializable
-public class MuteData {
+public final class MuteData {
 
     @Setting
     private UUID muter;
@@ -58,15 +62,28 @@ public class MuteData {
         return reason;
     }
 
-    public Optional<Long> getEndTimestamp() {
-        return Optional.ofNullable(endtimestamp);
+    /**
+     * Gets the timestamp for the end of the mute.
+     *
+     * @return An {@link Instant}
+     */
+    public Optional<Instant> getEndTimestamp() {
+        if (endtimestamp == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Instant.ofEpochSecond(endtimestamp));
     }
 
     public UUID getMuter() {
         return muter;
     }
 
-    public Optional<Long> getTimeFromNextLogin() {
-        return Optional.ofNullable(timeFromNextLogin);
+    public Optional<Duration> getTimeFromNextLogin() {
+        if (timeFromNextLogin == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
     }
 }

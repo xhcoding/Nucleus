@@ -18,7 +18,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
-import uk.co.drnaylor.minecraft.quickstart.api.data.mute.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
@@ -126,7 +126,7 @@ public class MuteCommand extends CommandBase {
 
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("mute.playernotify.time"), ts)));
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("command.reason"), rs)));
-        return new MuteData(ua, new Date().getTime() + (time * 1000), rs);
+        return new MuteData(ua, new Date().getTime() + (time), rs);
     }
 
     private MuteData offlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {
@@ -134,7 +134,7 @@ public class MuteCommand extends CommandBase {
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.mute.success.time"),
                 user.getName(), src.getName(), ts)));
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), rs)));
-        return new MuteData(ua, rs, time * 1000);
+        return new MuteData(ua, rs, time);
     }
 
     private MuteData permMute(CommandSource src, User user, String rs, UUID ua, MessageChannel mc) {
