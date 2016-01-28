@@ -4,17 +4,15 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 @Permissions(root = "jail")
 @RunAsync
-@Modules(PluginModule.JAILS)
 @NoWarmup
 @NoCooldown
 @NoCost
-public class CheckJailCommand extends CommandBase {
+public class DeleteJailCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return null;
