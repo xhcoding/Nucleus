@@ -105,12 +105,12 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public boolean isInvulnerable() {
-        return false;
+        return invulnerable;
     }
 
     @Override
     public void setInvulnerable(boolean invuln) {
-
+        invulnerable = invuln;
     }
 
     @Override
