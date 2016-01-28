@@ -1,5 +1,11 @@
 package uk.co.drnaylor.minecraft.quickstart;
 
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 
@@ -113,6 +119,21 @@ public class Util {
             long ahours = hours == 0 ? 12 : hours;
             return MessageFormat.format(messageBundle.getString("time.pm"), ahours, hours, mins);
         }
+    }
+
+    public static Text getName(CommandSource src) {
+        if (!(src instanceof Player)) {
+            return Text.of(src.getName());
+        }
+
+        Player player = (Player)src;
+        Optional<Text> vt = player.get(Keys.DISPLAY_NAME);
+        boolean b = player.get(Keys.SHOWS_DISPLAY_NAME).orElse(false);
+        if (b) {
+            return vt.get();
+        }
+
+        return Text.of(player.getName());
     }
 
     private static void appendComma(StringBuilder sb) {

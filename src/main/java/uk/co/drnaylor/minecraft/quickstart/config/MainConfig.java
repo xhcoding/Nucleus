@@ -20,6 +20,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     private Map<PluginModule, ModuleOptions> moduleOptions;
     private final String modulesSection = "modules";
+    private int afkTime = 300;
+    private int afkTimeKick = 0;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -49,6 +51,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
                 moduleOptions.put(p, ModuleOptions.DEFAULT);
             }
         });
+
+        afkTime = node.getNode("afk", "afktime").getInt(300);
+        afkTimeKick = node.getNode("afk", "afktimetokick").getInt(0);
     }
 
     @Override
@@ -65,10 +70,23 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
                 .setComment(Util.getMessageWithFormat("config.modules", "default", "forceload", "disabled"));
         Arrays.asList(PluginModule.values()).forEach(m -> modules.getNode(m.getKey().toLowerCase()).setValue(ModuleOptions.DEFAULT.name().toLowerCase()));
 
+        // AFK module
+        CommentedConfigurationNode afkc = ccn.getNode("afk").setComment(Util.messageBundle.getString("config.afk"));
+        afkc.getNode("afktime").setComment(Util.messageBundle.getString("config.afk.time")).setValue(300);
+        afkc.getNode("afktimetokick").setComment(Util.messageBundle.getString("config.afk.timetokick")).setValue(0);
+
         return ccn;
     }
 
     public Map<PluginModule, ModuleOptions> getModuleOptions() {
         return ImmutableMap.copyOf(moduleOptions);
+    }
+
+    public int getAfkTime() {
+        return afkTime;
+    }
+
+    public int getAfkTimeToKick() {
+        return afkTimeKick;
     }
 }

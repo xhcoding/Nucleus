@@ -15,6 +15,8 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 @RunAsync
 public class AFKCommand extends CommandBase<Player> {
+    public static String[] getAfkAliases() { return new String[] { "afk" }; }
+
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
@@ -22,7 +24,7 @@ public class AFKCommand extends CommandBase<Player> {
 
     @Override
     public String[] getAliases() {
-        return new String[] { "afk" };
+        return AFKCommand.getAfkAliases();
     }
 
     @Override

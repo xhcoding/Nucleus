@@ -17,6 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.MessageCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.ReplyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.misc.GodCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.CheckMuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
@@ -57,6 +58,10 @@ public class CommandLoader {
         // Environment
         cmds.add(WeatherCommand.class);
         cmds.add(TimeCommand.class);
+
+        // Misc
+        cmds.add(GodCommand.class);
+
         return cmds;
     }
 

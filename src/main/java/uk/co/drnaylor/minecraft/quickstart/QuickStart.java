@@ -6,6 +6,7 @@ import com.google.inject.Injector;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
@@ -29,15 +30,18 @@ import uk.co.drnaylor.minecraft.quickstart.config.WarpsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
-import uk.co.drnaylor.minecraft.quickstart.internal.MessageHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.handlers.AFKHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MessageHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
+import uk.co.drnaylor.minecraft.quickstart.runnables.AFKTask;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +63,8 @@ public class QuickStart {
     private UserConfigLoader configLoader;
     private Injector injector;
     private MessageHandler messageHandler = new MessageHandler();
+
+    private AFKHandler afkHandler = new AFKHandler();
 
     @Inject private Game game;
     @Inject private Logger logger;
@@ -110,6 +116,11 @@ public class QuickStart {
                 logger.warn("Could not load the warp module for the reason below.");
                 ex.printStackTrace();
             }
+        }
+
+        if (modules.contains(PluginModule.AFK)) {
+            Sponge.getScheduler().createTaskBuilder().async().name("QuickStart - AFK").delay(2, TimeUnit.SECONDS)
+                    .interval(2, TimeUnit.SECONDS).execute(new AFKTask(this)).submit(this);
         }
 
         modulesLoaded = true;
@@ -174,5 +185,9 @@ public class QuickStart {
 
     public MessageHandler getMessageHandler() {
         return messageHandler;
+    }
+
+    public AFKHandler getAfkHandler() {
+        return afkHandler;
     }
 }

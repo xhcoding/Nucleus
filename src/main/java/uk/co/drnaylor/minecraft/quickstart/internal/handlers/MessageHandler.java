@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.internal;
+package uk.co.drnaylor.minecraft.quickstart.internal.handlers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -118,14 +118,7 @@ public class MessageHandler {
             return Text.builder(src.getName()).color(TextColors.LIGHT_PURPLE).onClick(TextActions.suggestCommand("/msg - ")).build();
         }
 
-        Player player = (Player)src;
-        Optional<Text> vt = player.get(Keys.DISPLAY_NAME);
-        boolean b = player.get(Keys.SHOWS_DISPLAY_NAME).orElse(false);
-        if (b) {
-            return vt.get().toBuilder().onClick(TextActions.suggestCommand("/msg " + player.getName() + " ")).build();
-        }
-
-        return Text.builder(player.getName()).color(TextColors.GRAY).onClick(TextActions.suggestCommand("/msg " + player.getName() + " ")).build();
+        return Util.getName(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
     }
 
     private Text constructSSMessage(Text from, Text to, String message) {
