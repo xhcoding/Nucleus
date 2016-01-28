@@ -30,7 +30,7 @@ public class DeleteWarpCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
                 .arguments(
-                        GenericArguments.onlyOne(new WarpParser(Text.of(WarpsCommand.warpNameArg), plugin, false))
+                        GenericArguments.onlyOne(new WarpParser(Text.of(WarpsCommand.warpNameArg), plugin, false, false))
                 )
                 .description(Text.of("Deletes a warp."))
                 .build();

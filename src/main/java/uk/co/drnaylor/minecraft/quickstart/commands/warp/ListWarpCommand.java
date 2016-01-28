@@ -54,9 +54,16 @@ public class ListWarpCommand extends CommandBase {
         Set<String> ws = service.getWarpNames();
         List<Text> lt = ws.stream()
                 .filter(s -> canView(src, s.toLowerCase()))
-                .map(s -> Text.builder(s).color(TextColors.GREEN)
-                    .style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
-                    .onHover(TextActions.showText(Text.of(TextColors.YELLOW, "Click to warp to " + s))).build())
+                .map(s -> {
+                    if (service.getWarp(s).isPresent()) {
+                        return Text.builder(s).color(TextColors.GREEN)
+                                .style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
+                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, "Click to warp to " + s))).build();
+                    } else {
+                        return Text.builder(s).color(TextColors.RED)
+                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, "Warp currently unavailable."))).build();
+                    }
+                })
                 .collect(Collectors.toList());
 
         ps.builder().title(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.warps.list.header")))

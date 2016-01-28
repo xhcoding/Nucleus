@@ -25,14 +25,20 @@ import java.util.stream.Collectors;
  * Returns a {@link WarpData}
  */
 public class WarpParser extends CommandElement {
+    private final boolean includeWarpData;
     private QuickStartWarpService service;
     private final QuickStart plugin;
     private final boolean permissionCheck;
 
     public WarpParser(@Nullable Text key, QuickStart plugin, boolean permissionCheck) {
+        this(key, plugin, permissionCheck, true);
+    }
+
+    public WarpParser(@Nullable Text key, QuickStart plugin, boolean permissionCheck, boolean includeWarpData) {
         super(key);
         this.plugin = plugin;
         this.permissionCheck = permissionCheck;
+        this.includeWarpData = includeWarpData;
     }
 
     @Nullable
@@ -50,7 +56,11 @@ public class WarpParser extends CommandElement {
             throw args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("args.warps.noperms")));
         }
 
-        return new WarpData(warpName, service.getWarp(warp).get());
+        if (includeWarpData) {
+            return new WarpData(warpName, service.getWarp(warp).orElseThrow(() -> args.createError(Text.of(Util.messageBundle.getString("args.warps.notavailable")))));
+        } else {
+            return new WarpData(warpName, null);
+        }
     }
 
     @Override
@@ -59,7 +69,8 @@ public class WarpParser extends CommandElement {
 
         try {
             String name = args.peek().toLowerCase();
-            return service.getWarpNames().stream().filter(s -> s.startsWith(name)).filter(x -> checkPermission(src, name)).collect(Collectors.toList());
+            return service.getWarpNames().stream().filter(s -> s.startsWith(name)).filter(s -> !includeWarpData || service.getWarp(s).isPresent())
+                    .filter(x -> checkPermission(src, name)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Lists.newArrayList();
         }
