@@ -52,9 +52,9 @@ public class KickCommand extends CommandBase {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(player).get();
         String r = args.<String>getOne(reason).orElse(Util.messageBundle.getString("command.kick.defaultreason"));
-        pl.kick(Text.of(TextColors.RED, r));
+        pl.kick(Text.of(r));
 
-        List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(QuickStart.PERMISSIONS_PREFIX + "kick.notify"))
+        List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(QuickStart.PERMISSIONS_ADMIN) && x.hasPermission(QuickStart.PERMISSIONS_PREFIX + "kick.notify"))
                 .map(y -> (CommandSource)y).collect(Collectors.toList());
         lcs.add(Sponge.getServer().getConsole());
 

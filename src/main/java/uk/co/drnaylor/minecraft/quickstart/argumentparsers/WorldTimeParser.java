@@ -92,15 +92,15 @@ public class WorldTimeParser extends CommandElement {
 
         // <number>am,pm
         Matcher m2 = ampm.matcher(arg);
-        if (m1.matches()) {
+        if (m2.matches()) {
             // Get the number, multiply by 1000, return.
-            int i = Integer.parseInt(m1.group(1));
+            int i = Integer.parseInt(m2.group(1));
             if (i > 12 || i < 1) {
                 throw args.createError(Text.of(Util.messageBundle.getString("args.worldtime.12herror")));
             }
 
             // Modify to 24 hour time, based on am/pm
-            String id = m1.group(2).toLowerCase();
+            String id = m2.group(2).toLowerCase();
             if (id.startsWith("p") && i < 12) {
                 // 11 pm -> 23, 12 pm -> 12.
                 i += 12;

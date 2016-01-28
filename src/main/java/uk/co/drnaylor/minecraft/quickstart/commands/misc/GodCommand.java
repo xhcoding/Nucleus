@@ -61,9 +61,9 @@ public class GodCommand extends CommandBase {
 
         DataTransactionResult tr;
         if (god) {
-            tr = pl.offer(Keys.INVULNERABILITY, Integer.MAX_VALUE);
+            tr = pl.offer(Keys.INVULNERABILITY_TICKS, Integer.MAX_VALUE);
         } else {
-            tr = pl.remove(Keys.INVULNERABILITY);
+            tr = pl.remove(Keys.INVULNERABILITY_TICKS);
         }
 
         if (!tr.isSuccessful()) {
