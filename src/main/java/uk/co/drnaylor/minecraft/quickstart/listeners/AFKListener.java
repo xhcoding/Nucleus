@@ -59,7 +59,7 @@ public class AFKListener extends ListenerBase {
     @Listener
     public void onPlayerCommand(final SendCommandEvent event, @First Player player) {
         // Did the player run /afk? Then don't do anything, we'll toggle it anyway.
-        if (Arrays.asList(AFKCommand.getAfkAliases()).contains(event.getCommand().toLowerCase())) {
+        if (!Arrays.asList(AFKCommand.getAfkAliases()).contains(event.getCommand().toLowerCase())) {
             updateAFK(player);
         }
     }

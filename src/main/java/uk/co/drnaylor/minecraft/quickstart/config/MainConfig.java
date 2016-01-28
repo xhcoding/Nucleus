@@ -20,8 +20,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     private Map<PluginModule, ModuleOptions> moduleOptions;
     private final String modulesSection = "modules";
-    private int afkTime = 300;
-    private int afkTimeKick = 0;
+    private int afkTime;
+    private int afkTimeKick;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
