@@ -27,6 +27,8 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
  *
  * Command Usage: /mute user [time] [reason]
  * Permission: quickstart.mute.base
+ * Notify: quickstart.mute.notify
  */
 @Permissions
 @RunAsync
@@ -126,7 +129,7 @@ public class MuteCommand extends CommandBase {
 
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("mute.playernotify.time"), ts)));
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("command.reason"), rs)));
-        return new MuteData(ua, new Date().getTime() + (time), rs);
+        return new MuteData(ua, Instant.now().plus(time, ChronoUnit.SECONDS).getEpochSecond(), rs);
     }
 
     private MuteData offlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {

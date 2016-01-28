@@ -57,7 +57,7 @@ public class MuteListener extends ListenerBase {
                         if (md.getTimeFromNextLogin().isPresent() && !md.getEndTimestamp().isPresent()) {
                             // Need to setup the end timestamp
                             long m = md.getTimeFromNextLogin().get().getSeconds();
-                            md = new MuteData(md.getMuter(), new Date().getTime() + m, md.getReason());
+                            md = new MuteData(md.getMuter(), Instant.now().plus(m, ChronoUnit.SECONDS).getEpochSecond(), md.getReason());
                             qs.setMuteData(md);
                         }
 
@@ -92,7 +92,7 @@ public class MuteListener extends ListenerBase {
         if (md.getEndTimestamp().isPresent()) {
             user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(
                     Util.messageBundle.getString("mute.playernotify.time"),
-                    Util.getTimeStringFromSeconds(Util.getSecondsToTimestamp(md.getEndTimestamp().get().until(Instant.now(), ChronoUnit.SECONDS)).get()))));
+                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS)))));
         } else {
             user.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("mute.playernotify")));
         }

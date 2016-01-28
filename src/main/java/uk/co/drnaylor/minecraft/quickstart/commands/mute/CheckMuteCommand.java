@@ -72,7 +72,7 @@ public class CheckMuteCommand extends CommandBase {
 
         Optional<MuteData> omd = uc.getMuteData();
         if (!omd.isPresent()) {
-            src.sendMessage(Text.of(MessageFormat.format(Util.messageBundle.getString("command.checkmute.none"), user.getName())));
+            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.checkmute.none"), user.getName())));
             return CommandResult.success();
         }
 
@@ -89,11 +89,11 @@ public class CheckMuteCommand extends CommandBase {
         String time = "";
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
-            time = Util.getTimeStringFromSeconds(md.getEndTimestamp().get().until(Instant.now(), ChronoUnit.SECONDS));
-            forString = " " + Util.messageBundle.getString("standard.for") + " ";
+            time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
+            forString = Util.messageBundle.getString("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
-            time = Util.getTimeStringFromMillseconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = " " + Util.messageBundle.getString("standard.for") + " ";
+            time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
+            forString = Util.messageBundle.getString("standard.for") + " ";
         }
 
         src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.checkmute.mute"), user.getName(), name, forString, time)));

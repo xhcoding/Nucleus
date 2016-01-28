@@ -96,12 +96,6 @@ public class Util {
         return omd;
     }
 
-    public static Optional<Long> getSecondsToTimestamp(long timestamp) {
-        long currentime = new Date().getTime();
-        long time = (timestamp - currentime) / 1000L;
-        return time > 0 ? Optional.of(time) : Optional.empty();
-    }
-
     public static String getTimeFromTicks(long ticks) {
         if (ticks < 0 || ticks > 23999) {
             // Normalise
