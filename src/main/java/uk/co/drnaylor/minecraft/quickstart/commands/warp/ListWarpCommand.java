@@ -58,10 +58,10 @@ public class ListWarpCommand extends CommandBase {
                     if (service.getWarp(s).isPresent()) {
                         return Text.builder(s).color(TextColors.GREEN)
                                 .style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
-                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, "Click to warp to " + s))).build();
+                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.warps.warpprompt", s)))).build();
                     } else {
                         return Text.builder(s).color(TextColors.RED)
-                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, "Warp currently unavailable."))).build();
+                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.warps.unavailable")))).build();
                     }
                 })
                 .collect(Collectors.toList());
