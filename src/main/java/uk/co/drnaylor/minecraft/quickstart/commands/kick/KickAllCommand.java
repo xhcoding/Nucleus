@@ -20,6 +20,11 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Kicks all players
+ *
+ * Permission: quickstart.kickall.base
+ */
 @Permissions
 @Modules(PluginModule.KICKS)
 @NoWarmup

@@ -14,7 +14,7 @@ public final class PermissionUtil {
     PermissionUtil(Permissions ps, String commandAlias) {
         Preconditions.checkNotNull(ps);
         this.ps = ps;
-        this.commandAlias = commandAlias;
+        this.commandAlias = ps.alias().isEmpty() ? commandAlias : ps.alias().toLowerCase();
     }
 
     public Set<String> getBasePermissions() {

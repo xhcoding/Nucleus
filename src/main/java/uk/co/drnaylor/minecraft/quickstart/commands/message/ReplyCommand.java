@@ -12,7 +12,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
-@Permissions
+/**
+ * Replies to the last player who sent a message
+ *
+ * Permission: quickstart.message.base
+ */
+@Permissions(alias = "message")
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 public class ReplyCommand extends CommandBase {

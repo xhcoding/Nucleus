@@ -40,7 +40,9 @@ public class PermissionsTest {
                     { QuickStart.PERMISSIONS_ADMIN, PermissionNoDefault.class },
                     { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
                     { "test.test", PermissionCustom.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionCustom.class }
+                    { QuickStart.PERMISSIONS_ADMIN, PermissionCustom.class },
+                    { QuickStart.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class },
+                    { QuickStart.PERMISSIONS_ADMIN, PermissionAlias.class }
             });
         }
 
@@ -73,7 +75,8 @@ public class PermissionsTest {
                     { QuickStart.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
                     { QuickStart.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class },
                     { QuickStart.PERMISSIONS_ADMIN, PermissionNoAdmin.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionNoDefault.class }
+                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionNoDefault.class },
+                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionAlias.class }
             });
         }
 
@@ -116,6 +119,9 @@ public class PermissionsTest {
 
     @Permissions(root = "root", sub = "sub")
     public static class PermissionRootSub extends PermissionOne { }
+
+    @Permissions(alias = "alias")
+    public static class PermissionAlias extends PermissionOne { }
 
     @Permissions(includeAdmin = false)
     public static class PermissionNoAdmin extends PermissionOne { }

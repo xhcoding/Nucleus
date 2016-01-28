@@ -28,6 +28,13 @@ public @interface Permissions {
     boolean useDefault() default true;
 
     /**
+     * Replaces the command portion of the permssion with the specified alias - "prefix.alias.base"
+     *
+     * @return The name of the alias to use
+     */
+    String alias() default "";
+
+    /**
      * Additional permissions for cooldown exemption.
      *
      * @return The list of permissions

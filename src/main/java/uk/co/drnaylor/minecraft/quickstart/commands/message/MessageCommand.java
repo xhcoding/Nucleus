@@ -13,6 +13,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
+
+/**
+ * Messages a player.
+ *
+ * Permission: quickstart.message.base
+ */
 @Permissions
 @Modules(PluginModule.MESSAGES)
 @RunAsync
