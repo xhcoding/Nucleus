@@ -15,6 +15,10 @@ public class Util {
 
     public static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
+    public static final String getMessageWithFormat(String key, String... substitutions) {
+        return MessageFormat.format(messageBundle.getString(key), substitutions);
+    }
+
     public static String getTimeStringFromMillseconds(long time) {
         return getTimeStringFromSeconds(time / 1000);
     }

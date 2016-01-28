@@ -6,6 +6,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.config.enumerations.ModuleOptions;
 
@@ -61,7 +62,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
         // Load in the modules.
         CommentedConfigurationNode modules = ccn.getNode(modulesSection)
-                .setComment("Sets the modules to either load normally (unless another plugin requests it should be disabled, forceload (always load regardless) and disabled (never load).");
+                .setComment(Util.getMessageWithFormat("config.modules", "default", "forceload", "disabled"));
         Arrays.asList(PluginModule.values()).forEach(m -> modules.getNode(m.getKey().toLowerCase()).setValue(ModuleOptions.DEFAULT.name().toLowerCase()));
 
         return ccn;
