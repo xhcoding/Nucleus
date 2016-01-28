@@ -21,6 +21,7 @@ import uk.co.drnaylor.minecraft.quickstart.commands.mute.CheckMuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ConfigCommandAlias;
 
 import java.io.IOException;
 import java.util.Set;
@@ -78,8 +79,9 @@ public class CommandLoader {
             }
         }).filter(x -> x != null).forEach(c -> {
             // Merge in config defaults.
-            sn.getNode(c.getAliases()[0].toLowerCase()).setValue(c.getDefaults());
-            // cc.mergeDefaultsForCommand(c.getAliases()[0], c.getDefaults());
+            if (c.mergeDefaults()) {
+                sn.getNode(c.getAliases()[0].toLowerCase()).setValue(c.getDefaults());
+            }
 
             // Register the commands.
             Sponge.getCommandManager().register(quickStart, c.createSpec(), c.getAliases());

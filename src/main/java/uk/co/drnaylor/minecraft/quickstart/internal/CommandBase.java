@@ -53,6 +53,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private final boolean bypassWarmup;
     private final boolean bypassCooldown;
     private final boolean bypassCost;
+    private final String configSection;
+    private final boolean generateDefaults;
 
     @Inject protected QuickStart plugin;
 
@@ -122,6 +124,14 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             warmup.addAll(permissions.getWarmupPermissions());
             cost.addAll(permissions.getCostPermissions());
         }
+
+        ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
+        configSection = cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase();
+        generateDefaults = cca != null && cca.generate();
+    }
+
+    public final boolean mergeDefaults() {
+        return generateDefaults;
     }
 
     public CommentedConfigurationNode getDefaults() {
@@ -264,7 +274,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         // Return the warmup time. TODO: Cache this?
-        int warmupTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("warmup").getInt();
+        int warmupTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(configSection).getNode("warmup").getInt();
         if (warmupTime <= 0) {
             // Can't be negative, so a time of zero is returned if it was.
             return 0;
@@ -321,7 +331,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         // Return the cost if positive, else, zero.
-        double cost = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("cost").getDouble(0.);
+        double cost = plugin.getConfig(CommandsConfig.class).get().getCommandNode(configSection).getNode("cost").getDouble(0.);
         if (cost <= 0.) {
             return 0.;
         }
@@ -367,7 +377,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             final Player p = (Player)src;
             if (!cooldown.stream().anyMatch(src::hasPermission) && cr.getSuccessCount().orElse(0) > 0) {
                 // Get the cooldown time.
-                int cooldownTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(getAliases()[0]).getNode("cooldown").getInt();
+                int cooldownTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(configSection).getNode("cooldown").getInt();
                 if (cooldownTime > 0 && cr.getSuccessCount().orElse(0) > 0) {
                     // If there is a cooldown, add the cooldown to the list, with the end time as an Instant.
                     cooldownStore.put(p.getUniqueId(), Instant.now().plus(cooldownTime, ChronoUnit.SECONDS));

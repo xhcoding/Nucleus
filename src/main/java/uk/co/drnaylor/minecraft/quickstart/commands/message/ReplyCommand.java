@@ -8,18 +8,20 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ConfigCommandAlias;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 /**
- * Replies to the last player who sent a message
+ * Replies to the last player who sent a message.
  *
  * Permission: quickstart.message.base
  */
 @Permissions(alias = "message")
 @Modules(PluginModule.MESSAGES)
 @RunAsync
+@ConfigCommandAlias(value = "message", generate = false)
 public class ReplyCommand extends CommandBase {
     private final String message = "message";
 
