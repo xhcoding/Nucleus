@@ -6,7 +6,10 @@ import org.spongepowered.api.util.Identifiable;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class AFKHandler {
@@ -34,9 +37,10 @@ public class AFKHandler {
     }
 
     public void purgeNotOnline() {
-        // CMEs BE GONE!
-        List<UUID> uuid = new ArrayList<>(Sponge.getServer().getOnlinePlayers()).stream().map(Identifiable::getUniqueId).collect(Collectors.toList());
-        data.keySet().stream().filter(x -> !uuid.contains(x)).forEach(data::remove);
+        List<UUID> uuid = Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toList());
+
+        // CMEs BE GONE! The collect part of this creates a new list, avoiding the CME.
+        data.keySet().stream().filter(x -> !uuid.contains(x)).collect(Collectors.toList()).forEach(data::remove);
     }
 
     public AFKData getAFKData(Player pl) {
