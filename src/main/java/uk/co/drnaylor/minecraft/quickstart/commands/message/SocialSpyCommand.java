@@ -33,7 +33,7 @@ public class SocialSpyCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Sets whether the player can spy on messages."))
-                .arguments(GenericArguments.onlyOne(GenericArguments.bool(Text.of(arg))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(arg)))))
                 .executor(this)
                 .build();
     }
@@ -46,7 +46,7 @@ public class SocialSpyCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         QuickStartUser qs = userConfigLoader.getUser(src);
-        boolean spy = args.<Boolean>getOne(arg).get();
+        boolean spy = args.<Boolean>getOne(arg).orElse(!qs.isSocialSpy());
         if (qs.setSocialSpy(spy)) {
             String message = Util.messageBundle.getString(spy ? "command.socialspy.on" : "command.socialspy.off");
             src.sendMessage(Text.of(TextColors.GREEN, message));

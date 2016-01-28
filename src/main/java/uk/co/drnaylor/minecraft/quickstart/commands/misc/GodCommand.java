@@ -13,8 +13,10 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
+import uk.co.drnaylor.minecraft.quickstart.config.UserConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -32,7 +34,7 @@ public class GodCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
                 new RequireOneOfPermission(GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey))), permissions.getPermissionWithSuffix("others")),
-                GenericArguments.onlyOne(GenericArguments.bool(Text.of(invulnKey)))
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(invulnKey))))
         ).build();
     }
 
@@ -56,8 +58,9 @@ public class GodCommand extends CommandBase {
             }
         }
 
-        boolean god = args.<Boolean>getOne(invulnKey).get();
-        plugin.getUserLoader().getUser(pl).setInvulnerable(god);
+        InternalQuickStartUser uc = plugin.getUserLoader().getUser(pl);
+        boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
+        uc.setInvulnerable(god);
 
         DataTransactionResult tr;
         if (god) {
