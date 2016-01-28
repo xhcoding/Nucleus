@@ -6,10 +6,7 @@ import org.spongepowered.api.util.Identifiable;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AFKHandler {
@@ -37,7 +34,8 @@ public class AFKHandler {
     }
 
     public void purgeNotOnline() {
-        List<UUID> uuid = Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toList());
+        // CMEs BE GONE!
+        List<UUID> uuid = new ArrayList<>(Sponge.getServer().getOnlinePlayers()).stream().map(Identifiable::getUniqueId).collect(Collectors.toList());
         data.keySet().stream().filter(x -> !uuid.contains(x)).forEach(data::remove);
     }
 
@@ -58,7 +56,7 @@ public class AFKHandler {
     public List<UUID> checkForAfkKick(int amount) {
         Instant now = Instant.now();
         return data.entrySet().stream()
-                .filter(x -> !x.getValue().noTrack && !x.getValue().isAFK && x.getValue().lastActivity.plus(amount, ChronoUnit.SECONDS).isBefore(now))
+                .filter(x -> !x.getValue().noTrack && x.getValue().lastActivity.plus(amount, ChronoUnit.SECONDS).isBefore(now))
                 .map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
