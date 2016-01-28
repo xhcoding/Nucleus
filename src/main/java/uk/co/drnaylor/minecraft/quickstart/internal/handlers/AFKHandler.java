@@ -31,6 +31,11 @@ public class AFKHandler {
         getData(user).noTrack = track;
     }
 
+    public void setAFK(UUID user, boolean afk) {
+        AFKData a = getData(user);
+        a.isAFK = !a.noTrack && afk;
+    }
+
     public void purgeNotOnline() {
         List<UUID> uuid = Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toList());
         data.keySet().stream().filter(x -> !uuid.contains(x)).forEach(data::remove);

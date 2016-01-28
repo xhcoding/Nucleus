@@ -8,6 +8,7 @@ import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
+import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.SetTimeCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.TimeCommand;
@@ -38,6 +39,9 @@ public class CommandLoader {
     private Set<Class<? extends CommandBase>> getCommands() {
         Set<Class<? extends CommandBase>> cmds = Sets.newHashSet();
         cmds.add(QuickStartCommand.class);
+
+        // AFK
+        cmds.add(AFKCommand.class);
 
         // Warps
         cmds.add(WarpsCommand.class);
