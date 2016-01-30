@@ -2,6 +2,8 @@ package uk.co.drnaylor.minecraft.quickstart.internal.guice;
 
 import com.google.inject.AbstractModule;
 import org.slf4j.Logger;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
@@ -21,5 +23,6 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(Logger.class).toProvider(plugin::getLogger);
         bind(CommandsConfig.class).toProvider(() -> plugin.getConfig(CommandsConfig.class).get());
         bind(UserConfigLoader.class).toProvider(() -> loader);
+        bind(Game.class).toProvider(Sponge::getGame);
     }
 }

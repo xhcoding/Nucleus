@@ -39,6 +39,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
 import uk.co.drnaylor.minecraft.quickstart.runnables.AFKTask;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.temporal.ChronoUnit;
@@ -70,11 +71,14 @@ public class QuickStart {
     @Inject private Logger logger;
     @Inject @DefaultConfig(sharedRoot = false) private Path path;
     @Inject @ConfigDir(sharedRoot = false) private Path configDir;
+    private Path dataDir;
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
+        dataDir = game.getSavesDirectory().resolve("quickstart-essentials");
         // Get the mandatory config files.
         try {
+            Files.createDirectories(dataDir);
             configMap.putConfig(new MainConfig(path));
             configMap.putConfig(new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
             configLoader = new UserConfigLoader(this);
@@ -102,7 +106,7 @@ public class QuickStart {
         // Load the following services only if necessary.
         if (modules.contains(PluginModule.WARPS)) {
             try {
-                configMap.putConfig(new WarpsConfig(Paths.get(configDir.toString(), "warp.json")));
+                configMap.putConfig(new WarpsConfig(Paths.get(dataDir.toString(), "warp.json")));
 
                 // Put the warp service into the service manager.
                 game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
@@ -157,6 +161,10 @@ public class QuickStart {
 
     public Path getConfigDirPath() {
         return configDir;
+    }
+
+    public Path getDataPath() {
+        return dataDir;
     }
 
     /**
