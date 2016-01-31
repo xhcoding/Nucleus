@@ -5,10 +5,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
-import uk.co.drnaylor.minecraft.quickstart.listeners.AFKListener;
-import uk.co.drnaylor.minecraft.quickstart.listeners.CoreListener;
-import uk.co.drnaylor.minecraft.quickstart.listeners.MuteListener;
-import uk.co.drnaylor.minecraft.quickstart.listeners.WarmupListener;
+import uk.co.drnaylor.minecraft.quickstart.commands.mail.MailCommand;
+import uk.co.drnaylor.minecraft.quickstart.listeners.*;
 
 import java.util.Set;
 
@@ -26,6 +24,7 @@ public class EventLoader {
         events.add(MuteListener.class);
         events.add(WarmupListener.class);
         events.add(AFKListener.class);
+        events.add(MailListener.class);
         return events;
     }
 
