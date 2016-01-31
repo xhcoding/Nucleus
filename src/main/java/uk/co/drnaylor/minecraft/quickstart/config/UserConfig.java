@@ -1,6 +1,8 @@
 package uk.co.drnaylor.minecraft.quickstart.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.TypeToken;
+import jdk.nashorn.internal.ir.annotations.Immutable;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -8,11 +10,13 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.User;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +27,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private Instant login;
     private Instant logout;
     private boolean invulnerable;
+    private List<MailData> mailDataList;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -42,6 +47,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         login = Instant.ofEpochMilli(node.getNode("timestamp", "login").getLong());
         logout = Instant.ofEpochMilli(node.getNode("timestamp", "logout").getLong());
         invulnerable = node.getNode("invulnerable").getBoolean();
+        mailDataList = node.getNode("mail").getList(TypeToken.of(MailData.class));
     }
 
     @Override
@@ -56,6 +62,9 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         node.getNode("timestamp", "login").setValue(login.toEpochMilli());
         node.getNode("timestamp", "logout").setValue(logout.toEpochMilli());
         node.getNode("invulnerable").setValue(invulnerable);
+
+        // Type erasure! Thanks to Google's Type Token, we work around it.
+        node.getNode("mail").setValue(new TypeToken<List<MailData>>() {}, mailDataList);
         super.save();
     }
 
@@ -125,6 +134,21 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public Instant getLastLogout() {
         return logout;
+    }
+
+    @Override
+    public List<MailData> getMail() {
+        return ImmutableList.copyOf(mailDataList);
+    }
+
+    @Override
+    public void addMail(MailData mailData) {
+        mailDataList.add(mailData);
+    }
+
+    @Override
+    public void clearMail() {
+        mailDataList.clear();
     }
 
     public void setLastLogout(Instant logout) {

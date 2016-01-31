@@ -2,8 +2,10 @@ package uk.co.drnaylor.minecraft.quickstart.api.data;
 
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

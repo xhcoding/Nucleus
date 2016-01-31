@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -19,10 +20,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.ModulesLoadedException;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.UnremovableModuleException;
-import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
-import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartUserService;
-import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
-import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
+import uk.co.drnaylor.minecraft.quickstart.api.service.*;
 import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
@@ -31,6 +29,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.handlers.AFKHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MailHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MessageHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
@@ -64,6 +63,7 @@ public class QuickStart {
     private UserConfigLoader configLoader;
     private Injector injector;
     private MessageHandler messageHandler = new MessageHandler();
+    private MailHandler mailHandler;
 
     private AFKHandler afkHandler = new AFKHandler();
 
@@ -125,6 +125,11 @@ public class QuickStart {
         if (modules.contains(PluginModule.AFK)) {
             Sponge.getScheduler().createTaskBuilder().async().name("QuickStart - AFK").delay(2, TimeUnit.SECONDS)
                     .interval(2, TimeUnit.SECONDS).execute(new AFKTask(this)).submit(this);
+        }
+
+        if (modules.contains(PluginModule.MAILS)) {
+            mailHandler = new MailHandler(game, this);
+            game.getServiceManager().setProvider(this, QuickStartMailService.class, mailHandler);
         }
 
         modulesLoaded = true;
@@ -194,6 +199,8 @@ public class QuickStart {
     public MessageHandler getMessageHandler() {
         return messageHandler;
     }
+
+    public MailHandler getMailHandler() { return mailHandler; }
 
     public AFKHandler getAfkHandler() {
         return afkHandler;

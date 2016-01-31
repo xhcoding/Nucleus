@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -118,7 +117,7 @@ public class MessageHandler {
             return Text.builder(src.getName()).color(TextColors.LIGHT_PURPLE).onClick(TextActions.suggestCommand("/msg - ")).build();
         }
 
-        return Util.getName(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
+        return Util.getNameFromCommandSource(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
     }
 
     private Text constructSSMessage(Text from, Text to, String message) {

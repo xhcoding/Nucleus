@@ -2,7 +2,9 @@ package uk.co.drnaylor.minecraft.quickstart;
 
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.value.ValueContainer;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -115,12 +117,15 @@ public class Util {
         }
     }
 
-    public static Text getName(CommandSource src) {
-        if (!(src instanceof Player)) {
+    public static Text getNameFromCommandSource(CommandSource src) {
+        if (!(src instanceof User)) {
             return Text.of(src.getName());
         }
 
-        Player player = (Player)src;
+        return getName((User)src);
+    }
+
+    public static Text getName(User player) {
         Optional<Text> vt = player.get(Keys.DISPLAY_NAME);
         boolean b = player.get(Keys.SHOWS_DISPLAY_NAME).orElse(false);
         if (b) {
