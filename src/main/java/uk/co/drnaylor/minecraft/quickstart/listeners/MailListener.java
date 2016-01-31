@@ -29,7 +29,7 @@ public class MailListener extends ListenerBase {
                 event.getTargetEntity().sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("mail.login",
                         String.valueOf(mailCount))));
                 event.getTargetEntity().sendMessage(Text.builder()
-                        .append(Text.builder("/mail read").color(TextColors.AQUA).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/mail read"))
+                        .append(Text.builder("/mail").color(TextColors.AQUA).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/mail"))
                                 .onHover(TextActions.showText(Text.of("Click here to read your mail."))).build())
                         .append(Text.of(TextColors.YELLOW, " " + Util.messageBundle.getString("mail.toread") + " "))
                         .append(Text.builder("/mail clear").color(TextColors.AQUA).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/mail clear"))
