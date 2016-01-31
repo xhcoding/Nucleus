@@ -93,11 +93,11 @@ public interface QuickStartMailService {
      * Create a filter that restricts the messages returned to the provided substring.
      *
      * <p>
-     *
+     *     If multiple filters are set, only one needs to match.
      * </p>
      *
      * @param message The message.
-     * @return
+     * @return The {@link MailFilter}
      */
     MailFilter<String> createMessageFilter(String message);
 }

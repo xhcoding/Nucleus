@@ -1,16 +1,19 @@
 package uk.co.drnaylor.minecraft.quickstart;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.value.ValueContainer;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 
+import javax.jws.soap.SOAPBinding;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.*;
@@ -23,8 +26,8 @@ public class Util {
 
     public static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
-    public static final String getMessageWithFormat(String key, String... substitutions) {
-        return MessageFormat.format(messageBundle.getString(key), (Object)substitutions);
+    public static String getMessageWithFormat(String key, String... substitutions) {
+        return MessageFormat.format(messageBundle.getString(key), (Object[])substitutions);
     }
 
     public static String getTimeStringFromMillseconds(long time) {
@@ -133,6 +136,20 @@ public class Util {
         }
 
         return Text.of(player.getName());
+    }
+
+    public static String getNameFromUUID(UUID uuid) {
+        if (Util.consoleFakeUUID.equals(uuid)) {
+            return Sponge.getServer().getConsole().getName();
+        }
+
+        UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
+        Optional<User> user = uss.get(uuid);
+        if (user.isPresent()) {
+            return user.get().getName();
+        }
+
+        return Util.messageBundle.getString("standard.unknown");
     }
 
     private static void appendComma(StringBuilder sb) {

@@ -4,6 +4,7 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @ConfigSerializable
@@ -13,7 +14,7 @@ public class MailData {
     private UUID uuid;
 
     @Setting
-    private Instant date;
+    private long date;
 
     @Setting
     private String message;
@@ -22,7 +23,7 @@ public class MailData {
 
     public MailData(UUID uuid, Instant date, String message) {
         this.uuid = uuid;
-        this.date = date;
+        this.date = date.truncatedTo(ChronoUnit.DAYS).toEpochMilli();
         this.message = message;
     }
 
@@ -31,7 +32,7 @@ public class MailData {
     }
 
     public Instant getDate() {
-        return date;
+        return Instant.ofEpochSecond(date);
     }
 
     public UUID getUuid() {

@@ -15,6 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.commands.environment.TimeCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.WeatherCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickAllCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.mail.MailCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.MessageCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.ReplyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
@@ -65,6 +66,9 @@ public class CommandLoader {
 
         // Misc
         cmds.add(GodCommand.class);
+
+        // Mail
+        cmds.add(MailCommand.class);
 
         return cmds;
     }

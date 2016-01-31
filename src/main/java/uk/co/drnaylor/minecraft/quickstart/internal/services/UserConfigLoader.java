@@ -87,7 +87,9 @@ public class UserConfigLoader implements QuickStartUserService {
 
     public void purgeNotOnline() {
         Set<UUID> onlineUUIDs = Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toSet());
-        loadedUsers.keySet().stream().filter(x -> !onlineUUIDs.contains(x)).forEach(x -> {
+
+        // Collector to list should prevent CMEs.
+        loadedUsers.keySet().stream().filter(x -> !onlineUUIDs.contains(x)).collect(Collectors.toList()).forEach(x -> {
             try {
                 UserConfig uc = loadedUsers.get(x);
                 uc.save();

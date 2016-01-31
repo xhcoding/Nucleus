@@ -1,6 +1,7 @@
 package uk.co.drnaylor.minecraft.quickstart.config;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -47,7 +48,9 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         login = Instant.ofEpochMilli(node.getNode("timestamp", "login").getLong());
         logout = Instant.ofEpochMilli(node.getNode("timestamp", "logout").getLong());
         invulnerable = node.getNode("invulnerable").getBoolean();
-        mailDataList = node.getNode("mail").getList(TypeToken.of(MailData.class));
+
+        // This returned an immutable list, so we want to make it mutable.
+        mailDataList = Lists.newArrayList(node.getNode("mail").getList(TypeToken.of(MailData.class)));
     }
 
     @Override
