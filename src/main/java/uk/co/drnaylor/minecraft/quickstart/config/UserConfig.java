@@ -8,6 +8,11 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.data.DataTransactionResult;
+import org.spongepowered.api.data.manipulator.mutable.entity.FlyingAbilityData;
+import org.spongepowered.api.data.manipulator.mutable.entity.FlyingData;
+import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
@@ -28,6 +33,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private Instant login;
     private Instant logout;
     private boolean invulnerable;
+    private boolean fly;
     private List<MailData> mailDataList;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
@@ -48,6 +54,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         login = Instant.ofEpochMilli(node.getNode("timestamp", "login").getLong());
         logout = Instant.ofEpochMilli(node.getNode("timestamp", "logout").getLong());
         invulnerable = node.getNode("invulnerable").getBoolean();
+        fly = node.getNode("fly").getBoolean();
 
         // This returned an immutable list, so we want to make it mutable.
         mailDataList = Lists.newArrayList(node.getNode("mail").getList(TypeToken.of(MailData.class)));
@@ -65,6 +72,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         node.getNode("timestamp", "login").setValue(login.toEpochMilli());
         node.getNode("timestamp", "logout").setValue(logout.toEpochMilli());
         node.getNode("invulnerable").setValue(invulnerable);
+        node.getNode("fly").setValue(fly);
 
         // Type erasure! Thanks to Google's Type Token, we work around it.
         node.getNode("mail").setValue(new TypeToken<List<MailData>>() {}, mailDataList);
@@ -121,8 +129,57 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     }
 
     @Override
-    public void setInvulnerable(boolean invuln) {
+    public boolean setInvulnerable(boolean invuln) {
+        if (user.isOnline()) {
+            Player pl = user.getPlayer().get();
+            Optional<InvulnerabilityData> oid = pl.get(InvulnerabilityData.class);
+
+            if (!oid.isPresent()) {
+                return false;
+            }
+
+            InvulnerabilityData id = oid.get();
+            id.invulnerableTicks().set(invuln ? Integer.MAX_VALUE : 0);
+            if (!pl.offer(id).isSuccessful()) {
+                return false;
+            }
+        }
+
         invulnerable = invuln;
+        return true;
+    }
+
+    @Override
+    public boolean isFlying() {
+        return fly;
+    }
+
+    @Override
+    public boolean setFlying(boolean fly) {
+        if (user.isOnline()) {
+            Player pl = user.getPlayer().get();
+            Optional<FlyingData> oid = pl.get(FlyingData.class);
+            Optional<FlyingAbilityData> of = pl.get(FlyingAbilityData.class);
+
+            if (!of.isPresent() || !oid.isPresent()) {
+                return false;
+            }
+
+            FlyingAbilityData f = of.get();
+            f.canFly().set(fly);
+
+            FlyingData id = oid.get();
+            if (!fly) {
+                id.flying().set(false);
+            }
+
+            if (!pl.offer(f).isSuccessful() || !pl.offer(id).isSuccessful()) {
+                return false;
+            }
+        }
+
+        this.fly = fly;
+        return true;
     }
 
     @Override
@@ -130,6 +187,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         return login;
     }
 
+    @Override
     public void setLastLogin(Instant login) {
         this.login = login;
     }
@@ -154,6 +212,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         mailDataList.clear();
     }
 
+    @Override
     public void setLastLogout(Instant logout) {
         this.logout = logout;
     }

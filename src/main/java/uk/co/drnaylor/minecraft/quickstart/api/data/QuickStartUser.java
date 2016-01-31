@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.api.data;
 
+import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
@@ -75,8 +76,26 @@ public interface QuickStartUser {
      * the /god command.
      *
      * @param invuln <code>true</code> if so, <code>false</code> otherwise.
+     * @return <code>true</code> if successful.
      */
-    void setInvulnerable(boolean invuln);
+    boolean setInvulnerable(boolean invuln);
+
+    /**
+     * Gets whether QuickStart thinks the player should be flying. Note, this means the player has been subject to
+     * the /god command.
+     *
+     * @return <code>true</code> if so.
+     */
+    boolean isFlying();
+
+    /**
+     * Sets whether QuickStart thinks the player should be flying. This does not necessarily mean that the player is
+     * actually flying.
+     *
+     * @param fly <code>true</code> if so, <code>false</code> otherwise.
+     * @return <code>true</code> if successful.
+     */
+    boolean setFlying(boolean fly);
 
     /**
      * Gets the time the player last logged in.

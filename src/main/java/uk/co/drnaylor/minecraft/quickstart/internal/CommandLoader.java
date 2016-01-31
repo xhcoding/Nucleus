@@ -19,6 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.commands.mail.MailCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.MessageCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.ReplyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.misc.FlyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.misc.GodCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.CheckMuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
@@ -66,6 +67,7 @@ public class CommandLoader {
 
         // Misc
         cmds.add(GodCommand.class);
+        cmds.add(FlyCommand.class);
 
         // Mail
         cmds.add(MailCommand.class);
