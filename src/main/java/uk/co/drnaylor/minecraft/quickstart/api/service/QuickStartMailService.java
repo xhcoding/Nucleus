@@ -93,7 +93,7 @@ public interface QuickStartMailService {
      * Create a filter that restricts the messages returned to the provided substring.
      *
      * <p>
-     *     If multiple filters are set, only one needs to match.
+     *     If multiple filters are set, all need to match.
      * </p>
      *
      * @param message The message.

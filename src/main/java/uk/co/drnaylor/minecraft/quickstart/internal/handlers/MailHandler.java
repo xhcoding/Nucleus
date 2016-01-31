@@ -53,12 +53,11 @@ public class MailHandler implements QuickStartMailService {
         }
 
         List<MailFilter> lmf = Arrays.asList(filters);
-        List<Predicate<MailData>> lf = Lists.newArrayList();
         Optional<DateFilter> odf = lmf.stream().filter(d -> d instanceof DateFilter).map(d -> (DateFilter)d).findFirst();
         if (odf.isPresent()) {
             BetweenInstantsData df = odf.get().getSuppliedData();
-            lf.add(x -> df.from().orElseGet(() -> Instant.ofEpochSecond(0)).isBefore(x.getDate()) &&
-                    df.to().orElseGet(() -> Instant.now().plus(1, ChronoUnit.DAYS)).isAfter(x.getDate()));
+            lmd = lmd.stream().filter(x -> df.from().orElseGet(() -> Instant.ofEpochSecond(0)).isBefore(x.getDate()) &&
+                    df.to().orElseGet(() -> Instant.now().plus(1, ChronoUnit.DAYS)).isAfter(x.getDate())).collect(Collectors.toList());
         }
 
         // Get players.
@@ -69,24 +68,19 @@ public class MailHandler implements QuickStartMailService {
 
         // Add the predicates
         if (!pf.isEmpty()) {
-            lf.add(x -> pf.contains(x.getUuid()));
+            // Check the UUIDs - if they are in the list, let them through.
+            lmd = lmd.stream().filter(x -> pf.contains(x.getUuid())).collect(Collectors.toList());
         }
 
         // Message parts
-        lmf.stream().filter(x -> x instanceof MessageFilter).map(d -> ((MessageFilter) d).getSuppliedData()).forEach(
-                m -> lf.add(x -> x.getMessage().toLowerCase().contains(m.toLowerCase())));
+        List<String> m = lmf.stream().filter(x -> x instanceof MessageFilter).map(d -> ((MessageFilter) d).getSuppliedData().toLowerCase())
+                .collect(Collectors.toList());
+        if (!m.isEmpty()) {
+            // For each mail, check to see if any filters match after everything goes lowercase.
+            lmd = lmd.stream().filter(x -> m.stream().allMatch(a -> x.getMessage().toLowerCase().contains(a.toLowerCase()))).collect(Collectors.toList());
+        }
 
-        // Got the filters, now filter!
-        return lmd.stream().filter(x -> {
-            for (Predicate<MailData> p : lf) {
-                if (!p.test(x)) {
-                    // All predicates must be true. One false one, and we don't return it.
-                    return false;
-                }
-            }
-
-            return true;
-        }).collect(Collectors.toList());
+        return lmd;
     }
 
     @Override

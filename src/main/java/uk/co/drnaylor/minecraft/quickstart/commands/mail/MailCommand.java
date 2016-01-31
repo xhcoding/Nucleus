@@ -23,6 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MailHandler;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class MailCommand extends CommandBase<Player> {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).children(this.createChildCommands(ClearMailCommand.class, SendMailCommand.class))
                 .arguments(
-                        GenericArguments.optional(GenericArguments.onlyOne(new MailFilterParser(Text.of(filters), handler)))
+                        GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(filters), handler)))
                 ).build();
     }
 
@@ -53,17 +54,16 @@ public class MailCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        Optional<List<MailFilter>> olmf = args.getOne(filters);
+        Collection<MailFilter> lmf = args.<MailFilter>getAll(filters);
         List<MailData> lmd;
-        if (olmf.isPresent()) {
-            List<MailFilter> lmf = olmf.get();
-            lmd = handler.getMail(src, olmf.get().toArray(new MailFilter[lmf.size()]));
+        if (!lmf.isEmpty()) {
+            lmd = handler.getMail(src, lmf.toArray(new MailFilter[lmf.size()]));
         } else {
             lmd = handler.getMail(src);
         }
 
         if (lmd.isEmpty()) {
-            src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString(olmf.isPresent() ? "command.mail.none.filter" : "command.mail.none")));
+            src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString(!lmf.isEmpty() ? "command.mail.none.filter" : "command.mail.none")));
             return CommandResult.success();
         }
 
@@ -73,7 +73,7 @@ public class MailCommand extends CommandBase<Player> {
 
         // Paginate the mail.
         PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().paddingString("-").title(Text.of(TextColors.YELLOW, Util.messageBundle.getString("mail.title")))
+        ps.builder().paddingString("-").title(Text.of(TextColors.YELLOW, Util.messageBundle.getString(lmf.isEmpty() ? "mail.title" : "mail.title.filter")))
                 .header(Text.of(TextColors.YELLOW, Util.messageBundle.getString("mail.header"))).contents(mails)
                 .sendTo(src);
 
@@ -81,7 +81,7 @@ public class MailCommand extends CommandBase<Player> {
     }
 
     private Text createMessage(final MailData md) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("YYYY-MMM-dd").withZone(ZoneId.systemDefault());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM dd").withZone(ZoneId.systemDefault());
         return Text.builder().append(Text.builder(Util.getNameFromUUID(md.getUuid()))
                 .color(TextColors.GREEN)
                 .style(TextStyles.UNDERLINE)

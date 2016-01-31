@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 public class MailFilterParser extends CommandElement {
     private static final Pattern before = Pattern.compile("b:(\\d+)]");
     private static final Pattern after = Pattern.compile("a:(\\d+)]");
-    private static final Pattern message = Pattern.compile("m:(.+)(?= [abmp]:|$)]");
-    private static final Pattern player = Pattern.compile("p:([a-zA-Z0-9_]{1,16})]");
+    private static final Pattern message = Pattern.compile("m:(.+?)(?= [abmp]:|$)");
+    private static final Pattern player = Pattern.compile("p:([a-zA-Z0-9_]{1,16})");
     private final MailHandler handler;
 
     public MailFilterParser(@Nullable Text key, MailHandler handler) {
@@ -53,11 +53,11 @@ public class MailFilterParser extends CommandElement {
         // Get the arguments
         // Players
         Matcher players = player.matcher(together);
-        if (players.matches()) {
+        if (players.find()) {
             do {
                 UUID u = player(players.group(1));
                 if (u != null) {
-                    if (u == Util.consoleFakeUUID) {
+                    if (Util.consoleFakeUUID.equals(u)) {
                         lmf.add(handler.createConsoleFilter());
                     } else {
                         try {
@@ -72,7 +72,7 @@ public class MailFilterParser extends CommandElement {
 
         // Message
         Matcher m = message.matcher(together);
-        if (m.matches()) {
+        if (m.find()) {
             do {
                 lmf.add(handler.createMessageFilter(m.group(1)));
             } while (m.find());
@@ -82,13 +82,13 @@ public class MailFilterParser extends CommandElement {
         Matcher b = before.matcher(together);
         Instant before1 = null;
         Instant after1 = null;
-        if (b.matches()) {
+        if (b.find()) {
             // Days before
             before1 = Instant.now().minus(Integer.parseInt(b.group(1)), ChronoUnit.DAYS);
         }
 
         Matcher a = after.matcher(together);
-        if (a.matches()) {
+        if (a.find()) {
             after1 = Instant.now().minus(Integer.parseInt(a.group(1)), ChronoUnit.DAYS);
         }
 
