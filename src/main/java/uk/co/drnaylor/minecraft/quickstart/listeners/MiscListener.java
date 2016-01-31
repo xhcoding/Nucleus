@@ -6,8 +6,10 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
+import uk.co.drnaylor.minecraft.quickstart.config.UserConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
 
@@ -18,11 +20,11 @@ public class MiscListener extends ListenerBase {
     @Listener(order = Order.FIRST)
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
         try {
-            if (plugin.getUserLoader().getUser(event.getTargetEntity()).isInvulnerable()) {
-                event.getTargetEntity().offer(Keys.INVULNERABILITY, Integer.MAX_VALUE);
-            } else {
-                event.getTargetEntity().remove(Keys.INVULNERABILITY);
-            }
+            InternalQuickStartUser uc = plugin.getUserLoader().getUser(event.getTargetEntity());
+
+            // Let's just reset these...
+            uc.setInvulnerable(uc.isInvulnerable());
+            uc.setFlying(uc.isFlying());
         } catch (IOException | ObjectMappingException e) {
             e.printStackTrace();
         }
