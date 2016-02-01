@@ -25,6 +25,7 @@ public class EventLoader {
         events.add(WarmupListener.class);
         events.add(AFKListener.class);
         events.add(MailListener.class);
+        events.add(MiscListener.class);
         return events;
     }
 

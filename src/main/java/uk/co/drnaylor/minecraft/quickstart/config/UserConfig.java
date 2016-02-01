@@ -9,6 +9,7 @@ import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.data.DataTransactionResult;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.FlyingAbilityData;
 import org.spongepowered.api.data.manipulator.mutable.entity.FlyingData;
 import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
@@ -125,6 +126,10 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public boolean isInvulnerable() {
+        if (user.isOnline()) {
+            invulnerable = user.getPlayer().get().get(Keys.INVULNERABILITY_TICKS).orElse(0) > 0;
+        }
+
         return invulnerable;
     }
 
@@ -151,6 +156,10 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public boolean isFlying() {
+        if (user.isOnline()) {
+            fly = user.getPlayer().get().get(Keys.CAN_FLY).orElse(false);
+        }
+
         return fly;
     }
 
@@ -158,22 +167,11 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     public boolean setFlying(boolean fly) {
         if (user.isOnline()) {
             Player pl = user.getPlayer().get();
-            Optional<FlyingData> oid = pl.get(FlyingData.class);
-            Optional<FlyingAbilityData> of = pl.get(FlyingAbilityData.class);
-
-            if (!of.isPresent() || !oid.isPresent()) {
+            if (!fly && !pl.offer(Keys.IS_FLYING, false).isSuccessful()) {
                 return false;
             }
 
-            FlyingAbilityData f = of.get();
-            f.canFly().set(fly);
-
-            FlyingData id = oid.get();
-            if (!fly) {
-                id.flying().set(false);
-            }
-
-            if (!pl.offer(f).isSuccessful() || !pl.offer(id).isSuccessful()) {
+            if (!pl.offer(Keys.CAN_FLY, fly).isSuccessful()) {
                 return false;
             }
         }
@@ -210,6 +208,16 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public void clearMail() {
         mailDataList.clear();
+    }
+
+    @Override
+    public boolean isFlyingSafe() {
+        return fly;
+    }
+
+    @Override
+    public boolean isInvulnerableSafe() {
+        return invulnerable;
     }
 
     @Override
