@@ -221,6 +221,15 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     }
 
     @Override
+    public void setOnLogout() {
+        setLastLogout(Instant.now());
+
+        // Set data based toggles.
+        isFlying();
+        isInvulnerable();
+    }
+
+    @Override
     public void setLastLogout(Instant logout) {
         this.logout = logout;
     }

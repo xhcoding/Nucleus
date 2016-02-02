@@ -33,7 +33,7 @@ public class CoreListener extends ListenerBase {
             UserConfigLoader ucl = this.plugin.getUserLoader();
             try {
                 InternalQuickStartUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
-                qsu.setLastLogout(Instant.now());
+                qsu.setOnLogout();
                 ucl.purgeNotOnline();
             } catch (IOException | ObjectMappingException e) {
                 e.printStackTrace();

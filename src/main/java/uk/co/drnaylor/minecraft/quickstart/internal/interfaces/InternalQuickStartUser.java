@@ -33,4 +33,6 @@ public interface InternalQuickStartUser extends QuickStartUser {
      * @return <code>true</code> if so.
      */
     boolean isInvulnerableSafe();
+
+    void setOnLogout();
 }
