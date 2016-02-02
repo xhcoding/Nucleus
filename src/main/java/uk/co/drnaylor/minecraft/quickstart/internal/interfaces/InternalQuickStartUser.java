@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.internal.interfaces;
 
+import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 
@@ -33,6 +34,10 @@ public interface InternalQuickStartUser extends QuickStartUser {
      * @return <code>true</code> if so.
      */
     boolean isInvulnerableSafe();
+
+    void setJailData(JailData data);
+
+    void removeJailData();
 
     void setOnLogout();
 }

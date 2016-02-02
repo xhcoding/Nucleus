@@ -16,6 +16,7 @@ import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
+import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
@@ -36,6 +37,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private boolean invulnerable;
     private boolean fly;
     private List<MailData> mailDataList;
+    private JailData jailData;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -49,6 +51,12 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             muteData = null;
         } else {
             muteData = node.getNode("mute").getValue(TypeToken.of(MuteData.class));
+        }
+
+        if (node.getNode("jail").isVirtual()) {
+            jailData = null;
+        } else {
+            jailData = node.getNode("jail").getValue(TypeToken.of(JailData.class));
         }
 
         socialSpy = node.getNode("socialspy").getBoolean(false);
@@ -67,6 +75,12 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             node.removeChild("mute");
         } else {
             node.getNode("mute").setValue(TypeToken.of(MuteData.class), muteData);
+        }
+
+        if (jailData == null) {
+            node.removeChild("jail");
+        } else {
+            node.getNode("jail").setValue(TypeToken.of(JailData.class), jailData);
         }
 
         node.getNode("socialspy").setValue(isSocialSpy());
@@ -181,6 +195,11 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     }
 
     @Override
+    public Optional<JailData> getJailData() {
+        return Optional.ofNullable(jailData);
+    }
+
+    @Override
     public Instant getLastLogin() {
         return login;
     }
@@ -218,6 +237,16 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public boolean isInvulnerableSafe() {
         return invulnerable;
+    }
+
+    @Override
+    public void setJailData(JailData data) {
+        jailData = data;
+    }
+
+    @Override
+    public void removeJailData() {
+        setJailData(null);
     }
 
     @Override

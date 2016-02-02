@@ -98,6 +98,13 @@ public interface QuickStartUser {
     boolean setFlying(boolean fly);
 
     /**
+     * If the player is jailed, gets the {@link JailData}
+     *
+     * @return If it exists, an {@link Optional} wrapped {@link JailData}
+     */
+    Optional<JailData> getJailData();
+
+    /**
      * Gets the time the player last logged in.
      *
      * @return The {@link Instant}
