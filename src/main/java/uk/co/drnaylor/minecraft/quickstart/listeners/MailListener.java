@@ -12,7 +12,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MailHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 import java.util.concurrent.TimeUnit;
 

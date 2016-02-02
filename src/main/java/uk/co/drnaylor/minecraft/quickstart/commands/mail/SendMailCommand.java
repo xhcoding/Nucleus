@@ -15,7 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MailHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 /**
  * Permission - "quickstart.mail.send.use"

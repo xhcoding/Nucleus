@@ -8,6 +8,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.exceptions.UnremovableModuleExcep
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.enumerations.ModuleOptions;
+import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,7 @@ public class ModuleRegistration implements QuickStartModuleService {
 
     public ModuleRegistration(QuickStart plugin) {
         this.plugin = plugin;
-        modulesToLoad = plugin.getConfig(MainConfig.class).get().getModuleOptions().entrySet().stream()
+        modulesToLoad = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getModuleOptions().entrySet().stream()
                 .filter(s -> s.getValue() != ModuleOptions.DISABLED)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,

@@ -1,7 +1,6 @@
-package uk.co.drnaylor.minecraft.quickstart.internal.handlers;
+package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.User;
@@ -24,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MailHandler implements QuickStartMailService {

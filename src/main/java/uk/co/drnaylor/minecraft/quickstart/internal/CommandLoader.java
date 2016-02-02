@@ -82,7 +82,7 @@ public class CommandLoader {
 
         // Commands config!
 
-        CommandsConfig cc = quickStart.getConfig(CommandsConfig.class).get();
+        CommandsConfig cc = quickStart.getConfig(ConfigMap.COMMANDS_CONFIG).get();
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandsToLoad.stream().map(x -> {
             try {

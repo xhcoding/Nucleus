@@ -14,7 +14,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailFilter;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchPlayerException;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MailHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 import javax.annotation.Nullable;
 import java.time.Instant;

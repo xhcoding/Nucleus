@@ -20,6 +20,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -164,7 +165,7 @@ public class CommandBaseTests {
             try {
                 Path file = Files.createTempFile("quickstartcmdtest", "conf");
                 CommandsConfig cc = new CommandsConfig(file);
-                Mockito.when(plugin.getConfig(CommandsConfig.class)).thenReturn(Optional.of(cc));
+                Mockito.when(plugin.getConfig(ConfigMap.COMMANDS_CONFIG)).thenReturn(Optional.of(cc));
                 return plugin;
             } catch (IOException | ObjectMappingException e) {
                 throw new RuntimeException(e);

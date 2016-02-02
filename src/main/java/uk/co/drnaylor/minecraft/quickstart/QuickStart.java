@@ -28,9 +28,9 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.AFKHandler;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MailHandler;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MessageHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.MessageHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
@@ -77,8 +77,8 @@ public class QuickStart {
         // Get the mandatory config files.
         try {
             Files.createDirectories(dataDir);
-            configMap.putConfig(new MainConfig(path));
-            configMap.putConfig(new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
+            configMap.putConfig(ConfigMap.MAIN_CONFIG, new MainConfig(path));
+            configMap.putConfig(ConfigMap.COMMANDS_CONFIG, new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
             configLoader = new UserConfigLoader(this);
             moduleRegistration = new ModuleRegistration(this);
         } catch (IOException | ObjectMappingException e) {
@@ -104,10 +104,10 @@ public class QuickStart {
         // Load the following services only if necessary.
         if (modules.contains(PluginModule.WARPS)) {
             try {
-                configMap.putConfig(new WarpsConfig(Paths.get(dataDir.toString(), "warp.json")));
+                configMap.putConfig(ConfigMap.WARPS_CONFIG, new WarpsConfig(Paths.get(dataDir.toString(), "warp.json")));
 
                 // Put the warp service into the service manager.
-                game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(WarpsConfig.class).get());
+                game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(ConfigMap.WARPS_CONFIG).get());
             } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.WARPS);
@@ -116,6 +116,21 @@ public class QuickStart {
                 }
 
                 logger.warn("Could not load the warp module for the reason below.");
+                ex.printStackTrace();
+            }
+        }
+
+        if (modules.contains(PluginModule.JAILS)) {
+            try {
+                configMap.putConfig(ConfigMap.JAILS_CONFIG, new WarpsConfig(Paths.get(dataDir.toString(), "jails.json")));
+            } catch (IOException | ObjectMappingException ex) {
+                try {
+                    moduleRegistration.removeModule(PluginModule.JAILS);
+                } catch (ModulesLoadedException | UnremovableModuleException e) {
+                    // Nope.
+                }
+
+                logger.warn("Could not load the jail module for the reason below.");
                 ex.printStackTrace();
             }
         }
@@ -186,12 +201,12 @@ public class QuickStart {
     /**
      * Gets the configuration file
      *
-     * @param config The {@link Class} of the config to get (see T).
+     * @param key The {@link uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap.Key} of the config to get (see T).
      * @param <T> The type of {@link AbstractConfig} to get.
      * @return An {@link Optional} that might contain the config, if it exists.
      */
-    public <T extends AbstractConfig> Optional<T> getConfig(Class<T> config) {
-        return configMap.getConfig(config);
+    public <T extends AbstractConfig> Optional<T> getConfig(ConfigMap.Key<T> key) {
+        return configMap.getConfig(key);
     }
 
     public MessageHandler getMessageHandler() {

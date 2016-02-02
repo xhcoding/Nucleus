@@ -12,7 +12,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.AFKHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
 @Permissions
 @Modules(PluginModule.AFK)

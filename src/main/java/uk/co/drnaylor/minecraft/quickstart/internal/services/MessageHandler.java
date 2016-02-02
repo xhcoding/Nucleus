@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.internal.handlers;
+package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;

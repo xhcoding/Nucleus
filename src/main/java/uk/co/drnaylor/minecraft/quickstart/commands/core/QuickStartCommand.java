@@ -13,8 +13,6 @@ import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
-import java.util.Arrays;
-
 /**
  * Gives information about QuickStart.
  *

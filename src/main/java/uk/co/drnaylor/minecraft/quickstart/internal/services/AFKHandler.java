@@ -1,4 +1,4 @@
-package uk.co.drnaylor.minecraft.quickstart.internal.handlers;
+package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;

@@ -19,13 +19,12 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailFilter;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.MailFilterParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.MailHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Permissions

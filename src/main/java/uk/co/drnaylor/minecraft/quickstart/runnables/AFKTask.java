@@ -8,7 +8,8 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
-import uk.co.drnaylor.minecraft.quickstart.internal.handlers.AFKHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class AFKTask implements Consumer<Task> {
         AFKHandler a = plugin.getAfkHandler();
         a.purgeNotOnline();
 
-        MainConfig c = plugin.getConfig(MainConfig.class).get();
+        MainConfig c = plugin.getConfig(ConfigMap.MAIN_CONFIG).get();
 
         // AFK time
         if (c.getAfkTime() > 0) {

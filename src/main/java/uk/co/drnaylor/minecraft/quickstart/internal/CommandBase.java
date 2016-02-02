@@ -27,7 +27,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
-import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.lang.reflect.Method;
@@ -274,7 +273,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         // Return the warmup time. TODO: Cache this?
-        int warmupTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(configSection).getNode("warmup").getInt();
+        int warmupTime = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("warmup").getInt();
         if (warmupTime <= 0) {
             // Can't be negative, so a time of zero is returned if it was.
             return 0;
@@ -331,7 +330,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         // Return the cost if positive, else, zero.
-        double cost = plugin.getConfig(CommandsConfig.class).get().getCommandNode(configSection).getNode("cost").getDouble(0.);
+        double cost = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("cost").getDouble(0.);
         if (cost <= 0.) {
             return 0.;
         }
@@ -377,7 +376,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             final Player p = (Player)src;
             if (!cooldown.stream().anyMatch(src::hasPermission) && cr.getSuccessCount().orElse(0) > 0) {
                 // Get the cooldown time.
-                int cooldownTime = plugin.getConfig(CommandsConfig.class).get().getCommandNode(configSection).getNode("cooldown").getInt();
+                int cooldownTime = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("cooldown").getInt();
                 if (cooldownTime > 0 && cr.getSuccessCount().orElse(0) > 0) {
                     // If there is a cooldown, add the cooldown to the list, with the end time as an Instant.
                     cooldownStore.put(p.getUniqueId(), Instant.now().plus(cooldownTime, ChronoUnit.SECONDS));
