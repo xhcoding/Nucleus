@@ -75,7 +75,8 @@ public class MessageHandler {
         if (sender instanceof Player) {
             Player pl = (Player)sender;
             try {
-                if (Util.testForMuted(qs.getUser(pl)).isPresent()) {
+                QuickStartUser q = qs.getUser(pl);
+                if (Util.testForEndTimestamp(q.getMuteData(), q::removeMuteData).isPresent()) {
                     // Cancel.
                     pl.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("mute.playernotify")));
                     return false;
