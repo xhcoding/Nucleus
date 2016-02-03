@@ -38,6 +38,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private boolean fly;
     private List<MailData> mailDataList;
     private JailData jailData;
+    private boolean sendToSpawnOnLogin;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -256,6 +257,20 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         // Set data based toggles.
         isFlying();
         isInvulnerable();
+    }
+
+    @Override
+    public void sendToSpawnOnLogin(boolean send) {
+        if (user.isOnline()) {
+            sendToSpawnOnLogin = false;
+        }
+
+        sendToSpawnOnLogin = send;
+    }
+
+    @Override
+    public boolean isSendToSpawnOnLogin() {
+        return sendToSpawnOnLogin;
     }
 
     @Override

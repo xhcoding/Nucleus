@@ -27,6 +27,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -129,7 +130,7 @@ public class MuteCommand extends CommandBase {
 
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("mute.playernotify.time"), ts)));
         user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("command.reason"), rs)));
-        return new MuteData(ua, Instant.now().plus(time, ChronoUnit.SECONDS).getEpochSecond(), rs);
+        return new MuteData(ua, rs, Instant.now().plus(time, ChronoUnit.SECONDS));
     }
 
     private MuteData offlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {
@@ -137,7 +138,7 @@ public class MuteCommand extends CommandBase {
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.mute.success.time"),
                 user.getName(), src.getName(), ts)));
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), rs)));
-        return new MuteData(ua, rs, time);
+        return new MuteData(ua, rs, Duration.of(time, ChronoUnit.SECONDS));
     }
 
     private MuteData permMute(CommandSource src, User user, String rs, UUID ua, MessageChannel mc) {

@@ -54,14 +54,9 @@ public class MuteListener extends ListenerBase {
                     Optional<MuteData> omd = qs.getMuteData();
                     if (omd.isPresent()) {
                         MuteData md = omd.get();
-                        if (md.getTimeFromNextLogin().isPresent() && !md.getEndTimestamp().isPresent()) {
-                            // Need to setup the end timestamp
-                            long m = md.getTimeFromNextLogin().get().getSeconds();
-                            md = new MuteData(md.getMuter(), Instant.now().plus(m, ChronoUnit.SECONDS).getEpochSecond(), md.getReason());
-                            qs.setMuteData(md);
-                        }
+                        md.nextLoginToTimestamp();
 
-                        omd = Util.testForMuted(qs);
+                        omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
                         if (omd.isPresent()) {
                             md = omd.get();
                             onMute(md, event.getTargetEntity());
@@ -80,7 +75,7 @@ public class MuteListener extends ListenerBase {
             return;
         }
 
-        Optional<MuteData> omd = Util.testForMuted(qs);
+        Optional<MuteData> omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
         if (omd.isPresent()) {
             onMute(omd.get(), player);
             MessageChannel.TO_CONSOLE.send(Text.of(player.getName() + " (" + Util.messageBundle.getString("muted") + "): ").toBuilder().append(event.getRawMessage()).build());

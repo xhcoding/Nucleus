@@ -1,6 +1,8 @@
 package uk.co.drnaylor.minecraft.quickstart.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -12,9 +14,7 @@ import uk.co.drnaylor.minecraft.quickstart.config.enumerations.ModuleOptions;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class MainConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
 
@@ -22,6 +22,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private final String modulesSection = "modules";
     private int afkTime;
     private int afkTimeKick;
+    private List<String> allowedCommandsInJail;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -54,6 +55,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
         afkTime = node.getNode("afk", "afktime").getInt(300);
         afkTimeKick = node.getNode("afk", "afktimetokick").getInt(0);
+        allowedCommandsInJail = node.getNode("jail", "allowed-commands").getList(TypeToken.of(String.class));
     }
 
     @Override
@@ -75,6 +77,13 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         afkc.getNode("afktime").setComment(Util.messageBundle.getString("config.afk.time")).setValue(300);
         afkc.getNode("afktimetokick").setComment(Util.messageBundle.getString("config.afk.timetokick")).setValue(0);
 
+        try {
+            node.getNode("jail", "allowed-commands").setComment(Util.messageBundle.getString("config.jail.commands")).setValue(new TypeToken<List<String>>() {},
+                        Lists.newArrayList("m", "msg", "r", "mail", "rules", "info"));
+        } catch (ObjectMappingException e) {
+            e.printStackTrace();
+        }
+
         return ccn;
     }
 
@@ -88,5 +97,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public int getAfkTimeToKick() {
         return afkTimeKick;
+    }
+
+    public List<String> getAllowedCommandsInJail() {
+        return ImmutableList.copyOf(allowedCommandsInJail);
     }
 }

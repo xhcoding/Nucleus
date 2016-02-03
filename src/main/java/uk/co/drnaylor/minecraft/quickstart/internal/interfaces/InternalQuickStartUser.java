@@ -40,4 +40,8 @@ public interface InternalQuickStartUser extends QuickStartUser {
     void removeJailData();
 
     void setOnLogout();
+
+    void sendToSpawnOnLogin(boolean send);
+
+    boolean isSendToSpawnOnLogin();
 }

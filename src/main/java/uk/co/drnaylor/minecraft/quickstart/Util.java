@@ -12,6 +12,8 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.interfaces.EndTimestamp;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.VoidFunction;
 
 import javax.jws.soap.SOAPBinding;
 import java.text.MessageFormat;
@@ -87,13 +89,12 @@ public class Util {
         }
     }
 
-    public static Optional<MuteData> testForMuted(QuickStartUser user) {
-        Optional<MuteData> omd = user.getMuteData();
+    public static <T extends EndTimestamp> Optional<T> testForEndTimestamp(Optional<T> omd, VoidFunction function) {
         if (omd.isPresent()) {
-            MuteData md = omd.get();
+            T md = omd.get();
             if (md.getEndTimestamp().isPresent() && md.getEndTimestamp().get().isBefore(Instant.now())) {
                 // Mute expired.
-                user.removeMuteData();
+                function.action();
                 return Optional.empty();
             }
         }

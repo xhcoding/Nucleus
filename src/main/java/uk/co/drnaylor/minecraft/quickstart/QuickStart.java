@@ -28,12 +28,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.MessageHandler;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.ModuleRegistration;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.*;
 import uk.co.drnaylor.minecraft.quickstart.runnables.AFKTask;
 
 import java.io.IOException;
@@ -62,6 +57,7 @@ public class QuickStart {
     private Injector injector;
     private MessageHandler messageHandler = new MessageHandler();
     private MailHandler mailHandler;
+    private JailHandler jailHandler;
 
     private AFKHandler afkHandler = new AFKHandler();
 
@@ -123,6 +119,9 @@ public class QuickStart {
         if (modules.contains(PluginModule.JAILS)) {
             try {
                 configMap.putConfig(ConfigMap.JAILS_CONFIG, new WarpsConfig(Paths.get(dataDir.toString(), "jails.json")));
+
+                jailHandler = new JailHandler(this);
+                game.getServiceManager().setProvider(this, QuickStartJailService.class, jailHandler);
             } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.JAILS);
@@ -217,5 +216,9 @@ public class QuickStart {
 
     public AFKHandler getAfkHandler() {
         return afkHandler;
+    }
+
+    public JailHandler getJailHandler() {
+        return jailHandler;
     }
 }
