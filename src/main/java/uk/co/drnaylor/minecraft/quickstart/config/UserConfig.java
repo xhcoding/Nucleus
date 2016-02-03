@@ -6,8 +6,10 @@ import com.google.common.reflect.TypeToken;
 import jdk.nashorn.internal.ir.annotations.Immutable;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.FlyingAbilityData;
@@ -15,6 +17,9 @@ import org.spongepowered.api.data.manipulator.mutable.entity.FlyingData;
 import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
@@ -38,7 +43,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private boolean fly;
     private List<MailData> mailDataList;
     private JailData jailData;
-    private boolean sendToSpawnOnLogin;
+    private Location<World> locationOnLogin;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -68,6 +73,17 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
         // This returned an immutable list, so we want to make it mutable.
         mailDataList = Lists.newArrayList(node.getNode("mail").getList(TypeToken.of(MailData.class)));
+
+        ConfigurationNode ccn = node.getNode("locationOnLogin");
+        if (!ccn.isVirtual()) {
+            Optional<World> ow = Sponge.getServer().getWorld(ccn.getNode("world").getValue(TypeToken.of(UUID.class)));
+            if (ow.isPresent()) {
+                locationOnLogin = new Location<>(ow.get(), node.getNode("x").getDouble(), node.getNode("y").getDouble(), node.getNode("z").getDouble());
+            } else {
+                WorldProperties wp = Sponge.getServer().getDefaultWorld().get();
+                locationOnLogin = new Location<>(Sponge.getServer().getWorld(wp.getUniqueId()).get(), wp.getSpawnPosition());
+            }
+        }
     }
 
     @Override
@@ -92,6 +108,17 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
         // Type erasure! Thanks to Google's Type Token, we work around it.
         node.getNode("mail").setValue(new TypeToken<List<MailData>>() {}, mailDataList);
+
+        if (locationOnLogin == null) {
+            node.removeChild("locationOnLogin");
+        } else {
+            ConfigurationNode ccn = node.getNode("locationOnLogin");
+            node.getNode("x").setValue(locationOnLogin.getX());
+            node.getNode("y").setValue(locationOnLogin.getY());
+            node.getNode("z").setValue(locationOnLogin.getZ());
+            node.getNode("world").setValue(locationOnLogin.getExtent().getUniqueId());
+        }
+
         super.save();
     }
 
@@ -260,17 +287,13 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     }
 
     @Override
-    public void sendToSpawnOnLogin(boolean send) {
-        if (user.isOnline()) {
-            sendToSpawnOnLogin = false;
-        }
-
-        sendToSpawnOnLogin = send;
+    public Optional<Location<World>> getLocationOnLogin() {
+        return Optional.ofNullable(locationOnLogin);
     }
 
     @Override
-    public boolean isSendToSpawnOnLogin() {
-        return sendToSpawnOnLogin;
+    public void sendToLocationOnLogin(Location<World> worldLocation) {
+        locationOnLogin = worldLocation;
     }
 
     @Override

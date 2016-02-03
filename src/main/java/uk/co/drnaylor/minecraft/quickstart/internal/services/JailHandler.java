@@ -2,6 +2,7 @@ package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import com.flowpowered.math.vector.Vector3d;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
@@ -89,18 +90,19 @@ public class JailHandler implements QuickStartJailService {
             return false;
         }
 
-        if (iqsu.getJailData() == null) {
+        Optional<JailData> ojd = iqsu.getJailData();
+        if (!ojd.isPresent()) {
             return false;
         }
 
+        Optional<Location<World>> ow = ojd.get().getPreviousLocation();
         iqsu.removeJailData();
         if (user.isOnline()) {
             Player player = user.getPlayer().get();
-
-            // TODO: Send them to their previous location.
-            player.setLocation(player.getWorld().getSpawnLocation());
+            player.setLocation(ow.isPresent() ? ow.get() : player.getWorld().getSpawnLocation());
         } else {
-            iqsu.sendToSpawnOnLogin(true);
+            iqsu.sendToLocationOnLogin(ow.isPresent() ? ow.get() : new Location<>(Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorld().get().getUniqueId()).get(),
+                    Sponge.getServer().getDefaultWorld().get().getSpawnPosition()));
         }
 
         return true;

@@ -5,12 +5,15 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class CoreListener extends ListenerBase {
@@ -25,6 +28,23 @@ public class CoreListener extends ListenerBase {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Listener
+    public void onPlayerJoin(final ClientConnectionEvent.Join event) {
+        try {
+            // If we have a location to send them to in the config, send them there now!
+            InternalQuickStartUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
+            Optional<Location<World>> olw = qsu.getLocationOnLogin();
+            if (olw.isPresent()) {
+                event.getTargetEntity().setLocation(olw.get());
+                qsu.sendToLocationOnLogin(null);
+            }
+        } catch (IOException | ObjectMappingException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     @Listener

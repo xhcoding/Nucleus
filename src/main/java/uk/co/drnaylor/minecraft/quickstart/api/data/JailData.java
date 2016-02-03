@@ -3,11 +3,12 @@ package uk.co.drnaylor.minecraft.quickstart.api.data;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.api.data.interfaces.EndTimestamp;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,22 +24,41 @@ public final class JailData extends EndTimestamp {
     @Setting
     private String reason;
 
+    @Setting
+    private double previousx = 0;
+
+    @Setting
+    private double previousy = -1;
+
+    @Setting
+    private double previousz = 0;
+
+    @Setting
+    private UUID world;
+
     // Configurate
     public JailData() { }
 
-    public JailData(UUID jailer, String jailName, String reason) {
+    public JailData(UUID jailer, String jailName, String reason, Location<World> previousLocation) {
         this.jailer = jailer;
         this.reason = reason;
         this.jailName = jailName;
+
+        if (previousLocation != null) {
+            this.world = previousLocation.getExtent().getUniqueId();
+            this.previousx = previousLocation.getX();
+            this.previousy = previousLocation.getY();
+            this.previousz = previousLocation.getZ();
+        }
     }
 
-    public JailData(UUID jailer, String jailName, String reason, Instant endTimestamp) {
-        this(jailer, jailName, reason);
+    public JailData(UUID jailer, String jailName, String reason, Location<World> previousLocation, Instant endTimestamp) {
+        this(jailer, jailName, reason, previousLocation);
         this.endtimestamp = endTimestamp.getEpochSecond();
     }
 
-    public JailData(UUID jailer, String jailName, String reason, Duration timeFromNextLogin) {
-        this(jailer, jailName, reason);
+    public JailData(UUID jailer, String jailName, String reason, Location<World> previousLocation, Duration timeFromNextLogin) {
+        this(jailer, jailName, reason, previousLocation);
         this.timeFromNextLogin = timeFromNextLogin.getSeconds();
     }
 
@@ -54,4 +74,14 @@ public final class JailData extends EndTimestamp {
         return jailer;
     }
 
+    public Optional<Location<World>> getPreviousLocation() {
+        if (world != null) {
+            Optional<World> ow = Sponge.getServer().getWorld(world);
+            if (ow.isPresent() && previousx != 0 && previousy != -1 && previousz != 0) {
+                return Optional.of(new Location<>(ow.get(), previousx, previousy, previousz));
+            }
+        }
+
+        return Optional.empty();
+    }
 }

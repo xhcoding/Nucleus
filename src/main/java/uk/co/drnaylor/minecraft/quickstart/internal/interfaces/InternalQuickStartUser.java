@@ -1,11 +1,14 @@
 package uk.co.drnaylor.minecraft.quickstart.internal.interfaces;
 
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface InternalQuickStartUser extends QuickStartUser {
 
@@ -41,7 +44,7 @@ public interface InternalQuickStartUser extends QuickStartUser {
 
     void setOnLogout();
 
-    void sendToSpawnOnLogin(boolean send);
+    Optional<Location<World>> getLocationOnLogin();
 
-    boolean isSendToSpawnOnLogin();
+    void sendToLocationOnLogin(Location<World> worldLocation);
 }
