@@ -5,9 +5,12 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
+import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartJailService;
@@ -96,8 +99,11 @@ public class JailHandler implements QuickStartJailService {
 
         iqsu.setJailData(data);
         if (user.isOnline()) {
-            Player player = user.getPlayer().get();
-            player.setLocationAndRotation(owl.get().getLocation(), owl.get().getRotation());
+            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
+                Player player = user.getPlayer().get();
+                player.setLocationAndRotation(owl.get().getLocation(), owl.get().getRotation());
+                iqsu.setFlying(false);
+            });
         } else {
             iqsu.setJailOnNextLogin(true);
         }
@@ -124,7 +130,10 @@ public class JailHandler implements QuickStartJailService {
         iqsu.removeJailData();
         if (user.isOnline()) {
             Player player = user.getPlayer().get();
-            player.setLocation(ow.isPresent() ? ow.get() : player.getWorld().getSpawnLocation());
+            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
+                player.setLocation(ow.isPresent() ? ow.get() : player.getWorld().getSpawnLocation());
+                player.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("jail.elapsed")));
+            });
         } else {
             iqsu.sendToLocationOnLogin(ow.isPresent() ? ow.get() : new Location<>(Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorld().get().getUniqueId()).get(),
                     Sponge.getServer().getDefaultWorld().get().getSpawnPosition()));

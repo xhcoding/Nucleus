@@ -119,22 +119,25 @@ public class JailListener extends ListenerBase {
     @Listener
     public void onCommand(SendCommandEvent event, @Root Player player) {
         // Only if the command is not in the control list.
-        if (checkJail(player) && config.getAllowedCommandsInJail().stream().anyMatch(x -> event.getCommand().toLowerCase().startsWith(x.toLowerCase()))) {
+        if (checkJail(player, false) && !config.getAllowedCommandsInJail().stream().anyMatch(x -> event.getCommand().equalsIgnoreCase(x))) {
             event.setCancelled(true);
+
+            // This is the easiest way to send the messages.
+            checkJail(player, true);
         }
     }
 
     @Listener
     public void onBlockChange(ChangeBlockEvent event, @Root Player player) {
-        event.setCancelled(checkJail(player));
+        event.setCancelled(checkJail(player, true));
     }
 
     @Listener
     public void onInteract(InteractEvent event, @Root Player player) {
-        event.setCancelled(checkJail(player));
+        event.setCancelled(checkJail(player, true));
     }
 
-    private boolean checkJail(final Player player) {
+    private boolean checkJail(final Player player, boolean sendMessage) {
         InternalQuickStartUser qs;
         try {
             qs = loader.getUser(player);
@@ -145,7 +148,10 @@ public class JailListener extends ListenerBase {
 
         Optional<JailData> omd = Util.testForEndTimestamp(qs.getJailData(), () -> handler.unjailPlayer(player));
         if (omd.isPresent()) {
-            onJail(omd.get(), player);
+            if (sendMessage) {
+                onJail(omd.get(), player);
+            }
+
             return true;
         }
 
@@ -160,6 +166,8 @@ public class JailListener extends ListenerBase {
         } else {
             user.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("jail.playernotify")));
         }
+
+        user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", md.getReason())));
     }
 
 }

@@ -37,8 +37,8 @@ public class JailInfoCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         WarpLocation wl = args.<WarpLocation>getOne(jailKey).get();
-        Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.jail.info.name") + ": ", TextColors.GREEN, wl.getName());
-        Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.jail.info.location") + ": ", TextColors.GREEN, wl.toLocationString());
+        src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.jail.info.name") + ": ", TextColors.GREEN, wl.getName()));
+        src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.jail.info.location") + ": ", TextColors.GREEN, wl.toLocationString()));
         return CommandResult.success();
     }
 }

@@ -70,7 +70,6 @@ public class JailCommand extends CommandBase {
 
     private CommandResult onUnjail(CommandSource src, CommandContext args, User user) throws Exception {
         if (handler.unjailPlayer(user)) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.jail.unjail", user.getName())));
             return CommandResult.success();
         } else {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.jail.unjail.fail", user.getName())));
@@ -111,7 +110,7 @@ public class JailCommand extends CommandBase {
                             user.getName(), owl.get().getName(), src.getName(), "", ""));
             messageTo = Text.of(TextColors.RED,
                     Util.getMessageWithFormat("command.jail.jailed",
-                            owl.get().getName(), src.getName(), Util.messageBundle.getString("standard.for"), Util.getTimeStringFromSeconds(duration.get())));
+                            owl.get().getName(), src.getName(), "", ""));
         }
 
         if (handler.jailPlayer(user, jd)) {
