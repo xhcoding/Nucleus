@@ -87,7 +87,6 @@ public class JailHandler implements QuickStartJailService {
                 return null;
             }
 
-
             return getJails().entrySet().stream().findFirst().get().getValue();
         });
 
@@ -99,6 +98,8 @@ public class JailHandler implements QuickStartJailService {
         if (user.isOnline()) {
             Player player = user.getPlayer().get();
             player.setLocationAndRotation(owl.get().getLocation(), owl.get().getRotation());
+        } else {
+            iqsu.setJailOnNextLogin(true);
         }
 
         return true;

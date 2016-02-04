@@ -3,22 +3,19 @@ package uk.co.drnaylor.minecraft.quickstart;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.value.ValueContainer;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
-import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
+import org.spongepowered.api.util.Identifiable;
 import uk.co.drnaylor.minecraft.quickstart.api.data.interfaces.EndTimestamp;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.VoidFunction;
 
-import javax.jws.soap.SOAPBinding;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.UUID;
 
 public class Util {
 
@@ -27,6 +24,14 @@ public class Util {
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     public static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
+
+    public static UUID getUUID(CommandSource src) {
+        if (src instanceof Identifiable) {
+            return ((Identifiable) src).getUniqueId();
+        }
+
+        return consoleFakeUUID;
+    }
 
     public static String getMessageWithFormat(String key, String... substitutions) {
         return MessageFormat.format(messageBundle.getString(key), (Object[])substitutions);

@@ -3,17 +3,12 @@ package uk.co.drnaylor.minecraft.quickstart.config;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.entity.FlyingAbilityData;
-import org.spongepowered.api.data.manipulator.mutable.entity.FlyingData;
 import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -44,6 +39,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private List<MailData> mailDataList;
     private JailData jailData;
     private Location<World> locationOnLogin;
+    private boolean jailOffline = false;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -65,6 +61,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             jailData = node.getNode("jail").getValue(TypeToken.of(JailData.class));
         }
 
+        jailOffline = node.getNode("jailOnLogin").getBoolean(false);
         socialSpy = node.getNode("socialspy").getBoolean(false);
         login = Instant.ofEpochMilli(node.getNode("timestamp", "login").getLong());
         logout = Instant.ofEpochMilli(node.getNode("timestamp", "logout").getLong());
@@ -105,6 +102,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         node.getNode("timestamp", "logout").setValue(logout.toEpochMilli());
         node.getNode("invulnerable").setValue(invulnerable);
         node.getNode("fly").setValue(fly);
+        node.getNode("jailOnLogin").setValue(jailOffline);
 
         // Type erasure! Thanks to Google's Type Token, we work around it.
         node.getNode("mail").setValue(new TypeToken<List<MailData>>() {}, mailDataList);
@@ -304,5 +302,15 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public UUID getUniqueID() {
         return user.getUniqueId();
+    }
+
+    @Override
+    public boolean jailOnNextLogin() {
+        return jailOffline;
+    }
+
+    @Override
+    public void setJailOnNextLogin(boolean set) {
+        jailOffline = !user.isOnline() && set;
     }
 }

@@ -47,4 +47,8 @@ public interface InternalQuickStartUser extends QuickStartUser {
     Optional<Location<World>> getLocationOnLogin();
 
     void sendToLocationOnLogin(Location<World> worldLocation);
+
+    boolean jailOnNextLogin();
+
+    void setJailOnNextLogin(boolean set);
 }

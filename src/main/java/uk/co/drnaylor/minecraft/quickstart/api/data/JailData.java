@@ -9,6 +9,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.interfaces.EndTimestamp;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,6 +63,13 @@ public final class JailData extends EndTimestamp {
         this.timeFromNextLogin = timeFromNextLogin.getSeconds();
     }
 
+    public void setPreviousLocation(Location<World> previousLocation) {
+        this.world = previousLocation.getExtent().getUniqueId();
+        this.previousx = previousLocation.getX();
+        this.previousy = previousLocation.getY();
+        this.previousz = previousLocation.getZ();
+    }
+
     public String getReason() {
         return reason;
     }
@@ -83,5 +91,17 @@ public final class JailData extends EndTimestamp {
         }
 
         return Optional.empty();
+    }
+
+    public Optional<Duration> getTimeLeft() {
+        if (endtimestamp == null && timeFromNextLogin == null) {
+            return Optional.empty();
+        }
+
+        if (endtimestamp != null) {
+            return Optional.of(Duration.between(Instant.ofEpochSecond(endtimestamp), Instant.now()));
+        }
+
+        return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
     }
 }

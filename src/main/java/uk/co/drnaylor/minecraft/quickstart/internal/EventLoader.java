@@ -1,11 +1,9 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.collect.Sets;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
-import uk.co.drnaylor.minecraft.quickstart.commands.mail.MailCommand;
 import uk.co.drnaylor.minecraft.quickstart.listeners.*;
 
 import java.util.Set;
@@ -26,6 +24,7 @@ public class EventLoader {
         events.add(AFKListener.class);
         events.add(MailListener.class);
         events.add(MiscListener.class);
+        events.add(JailListener.class);
         return events;
     }
 

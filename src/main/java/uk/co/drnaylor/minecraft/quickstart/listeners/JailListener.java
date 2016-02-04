@@ -11,10 +11,13 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
@@ -24,8 +27,10 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -48,18 +53,55 @@ public class JailListener extends ListenerBase {
      */
     @Listener
     public void onPlayerLogin(final ClientConnectionEvent.Join event) {
+        final Player user = event.getTargetEntity();
+        InternalQuickStartUser qs;
+        try {
+            qs = loader.getUser(user);
+        } catch (IOException | ObjectMappingException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        // Jailing the player if we need to.
+        if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
+            Optional<WarpLocation> owl = handler.getJail(qs.getJailData().get().getJailName());
+            if (!owl.isPresent()) {
+                Collection<WarpLocation> wl = handler.getJails().values();
+                if (wl.isEmpty()) {
+                    MessageChannel.permission(QuickStart.PERMISSIONS_PREFIX + "jail.notify").send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
+                    handler.unjailPlayer(user);
+                    return;
+                }
+
+                owl = wl.stream().findFirst();
+            }
+
+            JailData jd = qs.getJailData().get();
+            jd.setPreviousLocation(user.getLocation());
+            qs.setJailData(jd);
+            user.setLocationAndRotation(owl.get().getLocation(), owl.get().getRotation());
+
+            Optional<Duration> timeLeft = jd.getTimeLeft();
+            Text message;
+            if (timeLeft.isPresent()) {
+                message = Text.of(TextColors.RED,
+                        Util.getMessageWithFormat("command.jail.jailed",
+                                owl.get().getName(), Util.getNameFromUUID(jd.getJailer()), Util.messageBundle.getString("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds())));
+            } else {
+                message = Text.of(TextColors.RED,
+                        Util.getMessageWithFormat("command.jail.jailed",
+                                owl.get().getName(), Util.getNameFromUUID(jd.getJailer()), "", ""));
+            }
+
+            user.sendMessage(message);
+            user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", jd.getReason())));
+        }
+
+        qs.setJailOnNextLogin(false);
+
         // Kick off a scheduled task.
         Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS)
                 .execute(() -> {
-                    final Player user = event.getTargetEntity();
-                    InternalQuickStartUser qs;
-                    try {
-                        qs = loader.getUser(user);
-                    } catch (IOException | ObjectMappingException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-
                     Optional<JailData> omd = qs.getJailData();
                     if (omd.isPresent()) {
                         JailData md = omd.get();
