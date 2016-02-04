@@ -88,6 +88,7 @@ public class JailListener extends ListenerBase {
                                 owl.get().getName(), Util.getNameFromUUID(jd.getJailer()), "", ""));
             }
 
+            qs.setFlying(false);
             user.sendMessage(message);
             user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", jd.getReason())));
         }
@@ -151,6 +152,7 @@ public class JailListener extends ListenerBase {
         Optional<JailData> omd = Util.testForEndTimestamp(qs.getJailData(), () -> handler.unjailPlayer(player));
         if (omd.isPresent()) {
             if (sendMessage) {
+                qs.setFlying(false);
                 onJail(omd.get(), player);
             }
 
