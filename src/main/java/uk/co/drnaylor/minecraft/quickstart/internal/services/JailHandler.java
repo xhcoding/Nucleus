@@ -47,6 +47,21 @@ public class JailHandler implements QuickStartJailService {
     }
 
     @Override
+    public boolean isPlayerJailed(User user) {
+        return getPlayerJailData(user).isPresent();
+    }
+
+    @Override
+    public Optional<JailData> getPlayerJailData(User user) {
+        try {
+            return plugin.getUserLoader().getUser(user).getJailData();
+        } catch (IOException | ObjectMappingException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public boolean jailPlayer(User user, JailData data) {
         InternalQuickStartUser iqsu;
         try {
@@ -56,7 +71,7 @@ public class JailHandler implements QuickStartJailService {
             return false;
         }
 
-        if (iqsu.getJailData() != null) {
+        if (iqsu.getJailData().isPresent()) {
             return false;
         }
 
