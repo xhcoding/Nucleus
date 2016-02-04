@@ -135,8 +135,7 @@ public class JailListener extends ListenerBase {
     @Listener
     public void onSpawn(RespawnPlayerEvent event) {
         if (checkJail(event.getTargetEntity(), false)) {
-            // Send them back whence they came!
-            event.setToTransform(event.getFromTransform());
+            event.setToTransform(event.getToTransform().setLocation(handler.getWarpLocation(event.getTargetEntity()).get().getLocation()));
         }
     }
 
