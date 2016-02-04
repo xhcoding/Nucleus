@@ -11,12 +11,14 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartJailService;
+import uk.co.drnaylor.minecraft.quickstart.config.WarpsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public class JailHandler implements QuickStartJailService {
 
@@ -32,13 +34,16 @@ public class JailHandler implements QuickStartJailService {
     }
 
     @Override
-    public Set<String> getJails() {
-        return plugin.getConfig(ConfigMap.JAILS_CONFIG).get().getWarpNames();
+    public Map<String, WarpLocation> getJails() {
+        final WarpsConfig jc = plugin.getConfig(ConfigMap.JAILS_CONFIG).get();
+        Map<String, WarpLocation> l = new HashMap<>();
+        jc.getWarpNames().forEach(x -> jc.getWarp(x.toLowerCase()).ifPresent(y -> l.put(x.toLowerCase(), y)));
+        return l;
     }
 
     @Override
     public Optional<WarpLocation> getJail(String name) {
-        return plugin.getConfig(ConfigMap.JAILS_CONFIG).get().getWarp(name);
+        return plugin.getConfig(ConfigMap.JAILS_CONFIG).get().getWarp(name.toLowerCase());
     }
 
     @Override
@@ -77,13 +82,17 @@ public class JailHandler implements QuickStartJailService {
 
         // Get the jail.
         Optional<WarpLocation> owl = getJail(data.getJailName());
-        if (!owl.isPresent()) {
-            Optional<String> i = getJails().stream().findFirst();
-            if (!i.isPresent()) {
-                return false;
+        WarpLocation wl = owl.orElseGet(() -> {
+            if (!getJails().isEmpty()) {
+                return null;
             }
 
-            owl = getJail(i.get());
+
+            return getJails().entrySet().stream().findFirst().get().getValue();
+        });
+
+        if (wl == null) {
+            return false;
         }
 
         iqsu.setJailData(data);

@@ -15,34 +15,30 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
-@Permissions(root = "jail")
-@RunAsync
-@NoWarmup
 @NoCooldown
 @NoCost
-public class DeleteJailCommand extends CommandBase {
-    @Inject private JailHandler handler;
+@NoWarmup
+@Permissions(root = "jail")
+@RunAsync
+public class JailInfoCommand extends CommandBase {
     private final String jailKey = "jail";
+    @Inject private JailHandler handler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).build();
+        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).executor(this).build();
     }
 
     @Override
     public String[] getAliases() {
-        return new String[] { "delete", "del", "remove" };
+        return new String[] { "info" };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         WarpLocation wl = args.<WarpLocation>getOne(jailKey).get();
-        if (handler.removeJail(wl.getName())) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.jails.del.success", wl.getName())));
-            return CommandResult.success();
-        }
-
-        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.jails.del.error", wl.getName())));
-        return CommandResult.empty();
+        Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.jail.info.name") + ": ", TextColors.GREEN, wl.getName());
+        Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.jail.info.location") + ": ", TextColors.GREEN, wl.toLocationString());
+        return CommandResult.success();
     }
 }

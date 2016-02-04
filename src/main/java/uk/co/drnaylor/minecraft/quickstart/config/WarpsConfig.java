@@ -76,7 +76,7 @@ public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigura
 
         try {
             if (ln != null) {
-                return Optional.of(new WarpLocation(ln.getLocation(), ln.getRotation()));
+                return Optional.of(new WarpLocation(warpName.toLowerCase(), ln.getLocation(), ln.getRotation()));
             }
         } catch (NoSuchWorldException ex) {
             // Yeah... we know

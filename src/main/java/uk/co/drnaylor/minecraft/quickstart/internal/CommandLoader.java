@@ -11,6 +11,7 @@ import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.TimeCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.WeatherCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.jail.JailsCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickAllCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mail.MailCommand;
@@ -72,6 +73,9 @@ public class CommandLoader {
 
         // Mail
         cmds.add(MailCommand.class);
+
+        // Jail
+        cmds.add(JailsCommand.class);
 
         return cmds;
     }

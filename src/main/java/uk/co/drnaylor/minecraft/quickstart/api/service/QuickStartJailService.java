@@ -8,8 +8,8 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * A service that handles player jailing.
@@ -26,11 +26,11 @@ public interface QuickStartJailService {
     boolean setJail(String name, Location<World> location, Vector3d rotation);
 
     /**
-     * Gets the name of the jails on the server.
+     * Gets the name of the jails on the server. All jails returned in this map exist.
      *
-     * @return A {@link Set} of names.
+     * @return A {@link Map} of names to {@link WarpLocation}.
      */
-    Set<String> getJails();
+    Map<String, WarpLocation> getJails();
 
     /**
      * Gets the location of a jail, if it exists.
