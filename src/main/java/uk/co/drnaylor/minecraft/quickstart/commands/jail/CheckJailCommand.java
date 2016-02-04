@@ -68,10 +68,10 @@ public class CheckJailCommand extends CommandBase {
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
             time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
-            forString = Util.messageBundle.getString("standard.for") + " ";
+            forString = " " + Util.messageBundle.getString("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
             time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = Util.messageBundle.getString("standard.for") + " ";
+            forString = " " + Util.messageBundle.getString("standard.for") + " ";
         }
 
         src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.checkjail.jailed"), user.getName(), md.getJailName(), name, forString, time)));

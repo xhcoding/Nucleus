@@ -19,6 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -140,5 +141,23 @@ public class JailHandler implements QuickStartJailService {
         }
 
         return true;
+    }
+
+    public Optional<WarpLocation> getWarpLocation(Player user) {
+        if (!isPlayerJailed(user)) {
+            return Optional.empty();
+        }
+
+        Optional<WarpLocation> owl = getJail(getPlayerJailData(user).get().getJailName());
+        if (!owl.isPresent()) {
+            Collection<WarpLocation> wl = getJails().values();
+            if (wl.isEmpty()) {
+                return Optional.empty();
+            }
+
+            owl = wl.stream().findFirst();
+        }
+
+        return owl;
     }
 }

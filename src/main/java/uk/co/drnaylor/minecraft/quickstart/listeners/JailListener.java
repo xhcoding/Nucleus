@@ -8,6 +8,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
+import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
@@ -30,7 +31,6 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -64,16 +64,11 @@ public class JailListener extends ListenerBase {
 
         // Jailing the player if we need to.
         if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
-            Optional<WarpLocation> owl = handler.getJail(qs.getJailData().get().getJailName());
+            Optional<WarpLocation> owl = handler.getWarpLocation(user);
             if (!owl.isPresent()) {
-                Collection<WarpLocation> wl = handler.getJails().values();
-                if (wl.isEmpty()) {
-                    MessageChannel.permission(QuickStart.PERMISSIONS_PREFIX + "jail.notify").send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
-                    handler.unjailPlayer(user);
-                    return;
-                }
-
-                owl = wl.stream().findFirst();
+                MessageChannel.permission(QuickStart.PERMISSIONS_PREFIX + "jail.notify").send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
+                handler.unjailPlayer(user);
+                return;
             }
 
             JailData jd = qs.getJailData().get();
@@ -135,6 +130,14 @@ public class JailListener extends ListenerBase {
     @Listener
     public void onInteract(InteractEvent event, @Root Player player) {
         event.setCancelled(checkJail(player, true));
+    }
+
+    @Listener
+    public void onSpawn(RespawnPlayerEvent event) {
+        if (checkJail(event.getTargetEntity(), false)) {
+            // Send them back whence they came!
+            event.setToTransform(event.getFromTransform());
+        }
     }
 
     private boolean checkJail(final Player player, boolean sendMessage) {

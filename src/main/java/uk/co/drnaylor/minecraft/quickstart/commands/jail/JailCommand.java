@@ -100,10 +100,10 @@ public class JailCommand extends CommandBase {
 
             message = Text.of(TextColors.GREEN,
                     Util.getMessageWithFormat("command.checkjail.jailed",
-                            user.getName(), owl.get().getName(), src.getName(), Util.messageBundle.getString("standard.for"), Util.getTimeStringFromSeconds(duration.get())));
+                            user.getName(), owl.get().getName(), src.getName(), " " + Util.messageBundle.getString("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get())));
             messageTo = Text.of(TextColors.RED,
                     Util.getMessageWithFormat("command.jail.jailed",
-                            owl.get().getName(), src.getName(), Util.messageBundle.getString("standard.for"), Util.getTimeStringFromSeconds(duration.get())));
+                            owl.get().getName(), src.getName(), " " + Util.messageBundle.getString("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get())));
         } else {
             jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, user.isOnline() ? user.getPlayer().get().getLocation() : null);
             message = Text.of(TextColors.GREEN,
@@ -117,8 +117,11 @@ public class JailCommand extends CommandBase {
         if (handler.jailPlayer(user, jd)) {
             MutableMessageChannel mmc = MessageChannel.permission(QuickStart.PERMISSIONS_PREFIX + "jail.notify").asMutable();
             mmc.addMember(Sponge.getServer().getConsole());
-            mmc.send(message);
-            mmc.send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("standard.reason", reason)));
+            mmc.addMember(src);
+
+            MessageChannel mc = MessageChannel.combined(mmc, MessageChannel.permission(QuickStart.PERMISSIONS_ADMIN));
+            mc.send(message);
+            mc.send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("standard.reason", reason)));
 
             if (user.isOnline()) {
                 user.getPlayer().get().sendMessage(messageTo);
