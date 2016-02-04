@@ -25,6 +25,7 @@ public class EventLoader {
         events.add(MailListener.class);
         events.add(MiscListener.class);
         events.add(JailListener.class);
+        events.add(CommandLoggingListener.class);
         return events;
     }
 

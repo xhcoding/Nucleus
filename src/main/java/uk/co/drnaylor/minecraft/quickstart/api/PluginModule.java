@@ -16,7 +16,8 @@ public enum PluginModule {
     CHAT("chat"),
     MISC("misc"),
     FUN("fun"),
-    AFK("afk");
+    AFK("afk"),
+    COMMAND_LOGGING("command-logging");
 
     String key;
 
