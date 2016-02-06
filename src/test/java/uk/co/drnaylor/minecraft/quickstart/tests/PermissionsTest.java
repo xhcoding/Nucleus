@@ -42,7 +42,9 @@ public class PermissionsTest {
                     { "test.test", PermissionCustom.class },
                     { PermissionUtil.PERMISSIONS_ADMIN, PermissionCustom.class },
                     { PermissionUtil.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionAlias.class }
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionAlias.class },
+                    { PermissionUtil.PERMISSIONS_MOD, PermissionMod.class },
+                    { PermissionUtil.PERMISSIONS_USER, PermissionUser.class }
             });
         }
 
@@ -76,7 +78,9 @@ public class PermissionsTest {
                     { PermissionUtil.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class },
                     { PermissionUtil.PERMISSIONS_ADMIN, PermissionNoAdmin.class },
                     { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionNoDefault.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionAlias.class }
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionAlias.class },
+                    { PermissionUtil.PERMISSIONS_MOD, PermissionNoAdmin.class },
+                    { PermissionUtil.PERMISSIONS_USER, PermissionNoAdmin.class }
             });
         }
 
@@ -131,4 +135,10 @@ public class PermissionsTest {
 
     @Permissions({"test.test"})
     public static class PermissionCustom extends PermissionOne { }
+
+    @Permissions(includeMod = true)
+    public static class PermissionMod extends PermissionOne { }
+
+    @Permissions(includeUser = true)
+    public static class PermissionUser extends PermissionOne { }
 }
