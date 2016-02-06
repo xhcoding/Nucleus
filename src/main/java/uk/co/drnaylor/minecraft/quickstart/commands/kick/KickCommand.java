@@ -10,10 +10,10 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.text.MessageFormat;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * Permission: quickstart.kick.base
  */
-@Permissions
+@Permissions(includeMod = true)
 @Modules(PluginModule.KICKS)
 @NoWarmup
 @NoCooldown
@@ -54,7 +54,7 @@ public class KickCommand extends CommandBase {
         String r = args.<String>getOne(reason).orElse(Util.messageBundle.getString("command.kick.defaultreason"));
         pl.kick(Text.of(r));
 
-        List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(QuickStart.PERMISSIONS_ADMIN) && x.hasPermission(QuickStart.PERMISSIONS_PREFIX + "kick.notify"))
+        List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) && x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "kick.notify"))
                 .map(y -> (CommandSource)y).collect(Collectors.toList());
         lcs.add(Sponge.getServer().getConsole());
 

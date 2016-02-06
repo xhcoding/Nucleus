@@ -14,13 +14,13 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
@@ -66,7 +66,7 @@ public class JailListener extends ListenerBase {
         if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
             Optional<WarpLocation> owl = handler.getWarpLocation(user);
             if (!owl.isPresent()) {
-                MessageChannel.permission(QuickStart.PERMISSIONS_PREFIX + "jail.notify").send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
+                MessageChannel.permission(PermissionUtil.PERMISSIONS_PREFIX + "jail.notify").send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
                 handler.unjailPlayer(user);
                 return;
             }

@@ -10,7 +10,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
-@Permissions
+@Permissions(includeUser = true)
 @RunAsync
 @Modules(PluginModule.MISC)
 public class RulesCommand extends CommandBase {

@@ -17,7 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.Optional;
 
-@Permissions
+@Permissions(includeUser = true)
 @Modules(PluginModule.HOMES)
 public class HomeCommand extends CommandBase<Player> {
     private final String home = "home";

@@ -9,12 +9,13 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.text.MessageFormat;
@@ -29,7 +30,7 @@ public class FlyCommand extends CommandBase {
 
     @Override
     public CommandSpec createSpec() {
-        Set<String> ss = Sets.newHashSet(QuickStart.PERMISSIONS_PREFIX + "fly.others", QuickStart.PERMISSIONS_ADMIN);
+        Set<String> ss = Sets.newHashSet(PermissionUtil.PERMISSIONS_PREFIX + "fly.others", PermissionUtil.PERMISSIONS_ADMIN);
 
         return CommandSpec.builder().executor(this).arguments(
                 new RequireOneOfPermission(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.player(Text.of(player)))), ss),

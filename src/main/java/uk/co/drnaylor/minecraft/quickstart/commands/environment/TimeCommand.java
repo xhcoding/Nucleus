@@ -11,7 +11,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
@@ -23,12 +22,13 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-@Permissions
+@Permissions(includeUser = true)
 @Modules(PluginModule.ENVIRONMENT)
 public class TimeCommand extends CommandBase {
     private final String world = "world";
 
     @Override
+    @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
         Map<List<String>, CommandCallable> ms = this.createChildCommands(SetTimeCommand.class);
         return CommandSpec.builder().executor(this)

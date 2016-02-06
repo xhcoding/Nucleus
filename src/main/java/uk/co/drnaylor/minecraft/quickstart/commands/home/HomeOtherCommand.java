@@ -12,7 +12,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeOtherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
-@Permissions(root = "home", alias = "other")
+@Permissions(root = "home", alias = "other", includeMod = true)
 public class HomeOtherCommand extends CommandBase<Player> {
     private final String home = "home";
 

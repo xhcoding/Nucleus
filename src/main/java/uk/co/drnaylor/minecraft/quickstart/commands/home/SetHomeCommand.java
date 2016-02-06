@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-@Permissions(root = "home", alias = "set")
+@Permissions(root = "home", alias = "set", includeUser = true)
 @Modules(PluginModule.HOMES)
 @RunAsync
 public class SetHomeCommand extends CommandBase<Player> {

@@ -19,7 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
  *
  * Permission: quickstart.message.base
  */
-@Permissions
+@Permissions(includeUser = true)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 public class MessageCommand extends CommandBase {

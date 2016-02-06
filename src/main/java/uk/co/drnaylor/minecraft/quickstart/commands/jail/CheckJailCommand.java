@@ -24,7 +24,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-@Permissions(root = "jail")
+@Permissions(root = "jail", includeMod = true)
 @RunAsync
 @Modules(PluginModule.JAILS)
 @NoWarmup

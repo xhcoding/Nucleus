@@ -9,10 +9,10 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
@@ -20,7 +20,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 /**
  * Permission - "quickstart.mail.send.use"
  */
-@Permissions(root = "mail")
+@Permissions(root = "mail", includeUser = true)
 @RunAsync
 public class SendMailCommand extends CommandBase {
     @Inject private MailHandler handler;
@@ -45,7 +45,7 @@ public class SendMailCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = args.<User>getOne(player).get();
-        if (!pl.hasPermission(QuickStart.PERMISSIONS_ADMIN) && !pl.hasPermission(QuickStart.PERMISSIONS_PREFIX + "mail.base")) {
+        if (!pl.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) && !pl.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "mail.base")) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.mail.send.error", pl.getName())));
             return CommandResult.empty();
         }

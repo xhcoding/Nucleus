@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Permissions
+@Permissions(includeUser = true)
 @RunAsync
 @Modules(PluginModule.MAILS)
 @NoWarmup

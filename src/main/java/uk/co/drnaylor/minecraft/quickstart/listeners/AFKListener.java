@@ -13,11 +13,11 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class AFKListener extends ListenerBase {
 
     private void updateAFK(final Player player) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-            if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && !player.hasPermission(QuickStart.PERMISSIONS_PREFIX + "afk.exempt")) {
+            if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && !player.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exempt")) {
                 MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(player), TextColors.GRAY, " " + Util.messageBundle.getString("afk.fromafk")));
             }
         });

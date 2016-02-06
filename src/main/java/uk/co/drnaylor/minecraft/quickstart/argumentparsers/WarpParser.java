@@ -9,14 +9,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
-import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -83,7 +81,7 @@ public class WarpParser extends CommandElement {
         }
 
         // No permissions, no entry!
-        return (src.hasPermission(QuickStart.PERMISSIONS_PREFIX + "warp." + name.toLowerCase()) || src.hasPermission(QuickStart.PERMISSIONS_ADMIN));
+        return (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warp." + name.toLowerCase()) || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
     }
 
     private void getService() {

@@ -15,7 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 /**
  * Permission is "quickstart.mail.base", because a player should always be able to clear mail if they can read it.
  */
-@Permissions(alias = "mail")
+@Permissions(alias = "mail", includeUser = true)
 @NoWarmup
 @NoCooldown
 @NoCost

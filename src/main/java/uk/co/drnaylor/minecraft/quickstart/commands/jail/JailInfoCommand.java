@@ -18,7 +18,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "jail")
+@Permissions(root = "jail", includeMod = true)
 @RunAsync
 public class JailInfoCommand extends CommandBase {
     private final String jailKey = "jail";

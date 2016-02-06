@@ -1,12 +1,18 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.base.Preconditions;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class PermissionUtil {
+
+    public final static String PERMISSIONS_PREFIX = "quickstart.";
+    public final static String PERMISSIONS_ADMIN = PERMISSIONS_PREFIX + "admin";
+    public final static String PERMISSIONS_MOD = PERMISSIONS_PREFIX + "mod";
+    public final static String PERMISSIONS_USER = PERMISSIONS_PREFIX + "user";
 
     private final Permissions ps;
     private final String commandAlias;
@@ -45,7 +51,7 @@ public final class PermissionUtil {
         Set<String> perms = new HashSet<>();
 
         if (ps.useDefault()) {
-            StringBuilder perm = new StringBuilder(QuickStart.PERMISSIONS_PREFIX);
+            StringBuilder perm = new StringBuilder(PERMISSIONS_PREFIX);
             if (!ps.root().isEmpty()) {
                 perm.append(ps.root()).append(".");
             }
@@ -60,7 +66,15 @@ public final class PermissionUtil {
         }
 
         if (ps.includeAdmin()) {
-            perms.add(QuickStart.PERMISSIONS_ADMIN);
+            perms.add(PERMISSIONS_ADMIN);
+        }
+
+        if (ps.includeMod()) {
+            perms.add(PERMISSIONS_MOD);
+        }
+
+        if (ps.includeUser()) {
+            perms.add(PERMISSIONS_USER);
         }
 
         return perms;

@@ -17,13 +17,13 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchWorldException;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.LocationNode;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
@@ -170,7 +170,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public boolean isSocialSpy() {
-        socialSpy = socialSpy && (user.hasPermission(QuickStart.PERMISSIONS_PREFIX + "socialspy.base") || user.hasPermission(QuickStart.PERMISSIONS_ADMIN));
+        socialSpy = socialSpy && (user.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "socialspy.base") || user.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
         return socialSpy;
     }
 

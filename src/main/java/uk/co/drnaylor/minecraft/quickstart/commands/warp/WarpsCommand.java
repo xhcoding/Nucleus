@@ -26,7 +26,7 @@ import java.text.MessageFormat;
  * If <code>warp.separate-permissions</code> = <code>true</code> in the commands config, also requires
  * <code>quickstart.warps.[warpname]</code> permission, or the QuickStart admin permission.
  */
-@Permissions
+@Permissions(includeUser = true)
 @Modules(PluginModule.WARPS)
 public class WarpsCommand extends CommandBase<Player> {
     static final String seperatePermissionsConfigEntryName = "separate-permissions";

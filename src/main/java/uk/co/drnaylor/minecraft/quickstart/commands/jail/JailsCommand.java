@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @NoCost
 @NoWarmup
 @RunAsync
-@Permissions(root = "jail", alias = "list")
+@Permissions(root = "jail", alias = "list", includeMod = true)
 public class JailsCommand extends CommandBase {
     @Inject
     private JailHandler handler;

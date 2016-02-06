@@ -91,6 +91,20 @@ public @interface Permissions {
     String sub() default "";
 
     /**
+     * Include the user permission in this check.
+     *
+     * @return <code>true</code> if the admin permission is also permissible.
+     */
+    boolean includeUser() default false;
+
+    /**
+     * Include the mod permission in this check.
+     *
+     * @return <code>true</code> if the admin permission is also permissible.
+     */
+    boolean includeMod() default false;
+
+    /**
      * Include the admin permission in this check.
      *
      * @return <code>true</code> if the admin permission is also permissible.

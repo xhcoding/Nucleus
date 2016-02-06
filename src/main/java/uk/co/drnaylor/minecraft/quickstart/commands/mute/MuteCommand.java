@@ -14,14 +14,14 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
@@ -30,7 +30,6 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
  * Permission: quickstart.mute.base
  * Notify: quickstart.mute.notify
  */
-@Permissions
+@Permissions(includeMod = true)
 @RunAsync
 @Modules(PluginModule.MUTES)
 @NoWarmup
@@ -53,7 +52,7 @@ public class MuteCommand extends CommandBase {
 
     @Inject private UserConfigLoader userConfigLoader;
 
-    private final String permission = QuickStart.PERMISSIONS_PREFIX + "mute.notify";
+    private final String permission = PermissionUtil.PERMISSIONS_PREFIX + "mute.notify";
 
     private String playerArgument = "Player";
     private String timespanArgument = "Time";
@@ -106,7 +105,7 @@ public class MuteCommand extends CommandBase {
         }
 
         List<CommandSource> lmc = Sponge.getServer().getOnlinePlayers().stream()
-                .filter(x -> x.hasPermission(permission) || x.hasPermission(QuickStart.PERMISSIONS_ADMIN)).collect(Collectors.toList());
+                .filter(x -> x.hasPermission(permission) || x.hasPermission(PermissionUtil.PERMISSIONS_ADMIN)).collect(Collectors.toList());
         lmc.add(Sponge.getServer().getConsole());
 
         MessageChannel mc = MessageChannel.fixed(lmc);

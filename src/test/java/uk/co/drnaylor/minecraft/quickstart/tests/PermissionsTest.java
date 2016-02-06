@@ -8,8 +8,8 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.Arrays;
@@ -28,21 +28,21 @@ public class PermissionsTest {
         @Parameterized.Parameters(name = "{index}: Permission {0} on {1}")
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][] {
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionOne.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionOne.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "root.test.base", PermissionRoot.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionRoot.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.sub.base", PermissionSub.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionSub.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "root.test.sub.base", PermissionRootSub.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionRootSub.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionNoAdmin.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionNoDefault.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionOne.class },
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionOne.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "root.test.base", PermissionRoot.class },
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionRoot.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.sub.base", PermissionSub.class },
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionSub.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "root.test.sub.base", PermissionRootSub.class },
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionRootSub.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionNoAdmin.class },
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionNoDefault.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
                     { "test.test", PermissionCustom.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionCustom.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionAlias.class }
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionCustom.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class },
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionAlias.class }
             });
         }
 
@@ -68,15 +68,15 @@ public class PermissionsTest {
         @Parameterized.Parameters
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][] {
-                    { QuickStart.PERMISSIONS_PREFIX + "test2.base", PermissionOne.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionRoot.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionSub.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionRootSub.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class },
-                    { QuickStart.PERMISSIONS_ADMIN, PermissionNoAdmin.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionNoDefault.class },
-                    { QuickStart.PERMISSIONS_PREFIX + "test.base", PermissionAlias.class }
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test2.base", PermissionOne.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionRoot.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionSub.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionRootSub.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class },
+                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionNoAdmin.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionNoDefault.class },
+                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionAlias.class }
             });
         }
 

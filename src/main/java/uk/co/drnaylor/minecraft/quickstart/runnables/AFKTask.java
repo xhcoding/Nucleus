@@ -9,6 +9,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class AFKTask implements Consumer<Task> {
         if (c.getAfkTime() > 0) {
             List<UUID> afking = plugin.getAfkHandler().checkForAfk(c.getAfkTime());
             if (!afking.isEmpty()) {
-                Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(QuickStart.PERMISSIONS_PREFIX + "afk.exempt") &&
+                Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exempt") &&
                             afking.contains(x.getUniqueId())).map(Util::getName)
                         .forEach(x -> MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", x, TextColors.GRAY, " " + Util.messageBundle.getString("afk.toafk"))));
             }
@@ -44,7 +45,7 @@ public class AFKTask implements Consumer<Task> {
         if (c.getAfkTimeToKick() > 0) {
             List<UUID> afking = plugin.getAfkHandler().checkForAfkKick(c.getAfkTimeToKick());
             if (!afking.isEmpty()) {
-                Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(QuickStart.PERMISSIONS_PREFIX + "afk.exemptkick") &&
+                Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exemptkick") &&
                         afking.contains(x.getUniqueId()))
                         .forEach(x -> {
                             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Text.of(Util.messageBundle.getString("afk.kickreason"))));

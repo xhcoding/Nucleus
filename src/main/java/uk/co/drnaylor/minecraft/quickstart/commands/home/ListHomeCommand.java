@@ -18,16 +18,19 @@ import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@Permissions(root = "home", alias = "list")
+@Permissions(root = "home", alias = "list", includeMod = true)
 @Modules(PluginModule.HOMES)
 @RunAsync
 @NoCooldown
@@ -38,8 +41,11 @@ public class ListHomeCommand extends CommandBase {
 
     @Override
     public CommandSpec createSpec() {
+        Set<String> p = permissions.getPermissionWithSuffix("others");
+        p.add(PermissionUtil.PERMISSIONS_MOD);
+        p.add(PermissionUtil.PERMISSIONS_ADMIN);
         return CommandSpec.builder()
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(new UserParser(Text.of(player)))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(new RequireOneOfPermission(new UserParser(Text.of(player)), p))))
                 .executor(this).build();
     }
 

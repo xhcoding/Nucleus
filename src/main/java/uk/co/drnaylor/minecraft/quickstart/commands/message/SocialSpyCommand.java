@@ -1,16 +1,13 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.message;
 
 import com.google.inject.Inject;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
@@ -18,9 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
-import java.io.IOException;
-
-@Permissions
+@Permissions(includeMod = true)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 @NoWarmup

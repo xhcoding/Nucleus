@@ -12,7 +12,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.format.TextColors;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
@@ -27,10 +26,13 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 // quickstart.jail.notify
-@Permissions
+@Permissions(includeMod = true)
 @Modules(PluginModule.JAILS)
 @NoWarmup
 @NoCooldown
@@ -115,11 +117,10 @@ public class JailCommand extends CommandBase {
         }
 
         if (handler.jailPlayer(user, jd)) {
-            MutableMessageChannel mmc = MessageChannel.permission(QuickStart.PERMISSIONS_PREFIX + "jail.notify").asMutable();
-            mmc.addMember(Sponge.getServer().getConsole());
-            mmc.addMember(src);
-
-            MessageChannel mc = MessageChannel.combined(mmc, MessageChannel.permission(QuickStart.PERMISSIONS_ADMIN));
+            Set<String> s = permissions.getPermissionWithSuffix("notify");
+            List<MessageChannel> collect = s.stream().map(MessageChannel::permission).collect(Collectors.toList());
+            MutableMessageChannel mc = MessageChannel.combined(collect.toArray(new MessageChannel[collect.size()])).asMutable();
+            mc.addMember(Sponge.getServer().getConsole());
             mc.send(message);
             mc.send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("standard.reason", reason)));
 

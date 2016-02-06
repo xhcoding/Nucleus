@@ -15,8 +15,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -35,7 +34,7 @@ import java.util.Optional;
  * Command Usage: /checkmute user
  * Permission: quickstart.checkmute.base
  */
-@Permissions
+@Permissions(includeMod = true)
 @RunAsync
 @Modules(PluginModule.MUTES)
 @NoWarmup
