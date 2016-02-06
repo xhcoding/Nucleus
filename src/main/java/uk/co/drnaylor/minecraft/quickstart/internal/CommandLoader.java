@@ -13,7 +13,6 @@ import uk.co.drnaylor.minecraft.quickstart.commands.environment.TimeCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.WeatherCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.home.*;
 import uk.co.drnaylor.minecraft.quickstart.commands.jail.CheckJailCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.jail.JailCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.jail.JailsCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickAllCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickCommand;
@@ -78,7 +77,6 @@ public class CommandLoader {
         // Jail
         cmds.add(JailsCommand.class);
         cmds.add(CheckJailCommand.class);
-        cmds.add(JailCommand.class);
 
         // Homes
         cmds.add(HomeCommand.class);
