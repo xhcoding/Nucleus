@@ -14,11 +14,10 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 /**
  * Parses an argument and tries to match it up against any user, online or offline.
@@ -66,7 +65,7 @@ public class UserParser extends CommandElement {
             return Sponge.getGame().getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
         }
 
-        return Sponge.getGame().getServer().getOnlinePlayers().stream().filter(x -> x.getName().toLowerCase().startsWith(peek))
+        return Sponge.getGame().getServer().getOnlinePlayers().stream().filter(x -> x.getName().toLowerCase().startsWith(peek.toLowerCase()))
                 .map(Player::getName).collect(Collectors.toList());
     }
 }
