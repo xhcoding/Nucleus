@@ -40,7 +40,7 @@ public class ListWarpCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
-                .description(Text.of("Lists the warp available to you.")).build();
+                .description(Text.of("Lists the warps available to you.")).build();
     }
 
     @Override
@@ -76,6 +76,6 @@ public class ListWarpCommand extends CommandBase {
     private boolean canView(CommandSource src, String warp) {
         return !mainConfig.useSeparatePermissionsForWarp()
                 || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN)
-                || src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warp." + warp);
+                || src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warps." + warp.toLowerCase());
     }
 }

@@ -81,7 +81,7 @@ public class WarpParser extends CommandElement {
         }
 
         // No permissions, no entry!
-        return (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warp." + name.toLowerCase()) || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
+        return (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warps." + name.toLowerCase()) || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
     }
 
     private void getService() {
