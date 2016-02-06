@@ -96,7 +96,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         }
 
         homeData.clear();
-        node.getChildrenMap().forEach((k, v) -> homeData.put(k.toString().toLowerCase(), new LocationNode(v)));
+        node.getNode("homes").getChildrenMap().forEach((k, v) -> homeData.put(k.toString().toLowerCase(), new LocationNode(v)));
     }
 
     @Override
@@ -133,7 +133,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             node.getNode("world").setValue(locationOnLogin.getExtent().getUniqueId());
         }
 
-        homeData.forEach((k, v) -> v.populateNode(node.getNode(k.toLowerCase())));
+        homeData.forEach((k, v) -> v.populateNode(node.getNode("homes").getNode(k.toLowerCase())));
         super.save();
     }
 
@@ -288,8 +288,8 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             return false;
         }
 
-
-        return false;
+        homeData.put(home.toLowerCase(), new LocationNode(location, rotation));
+        return true;
     }
 
     @Override
