@@ -25,7 +25,6 @@ public class HomeCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
-                .children(this.createChildCommands(HomeOtherCommand.class))
                 .arguments(GenericArguments.onlyOne(GenericArguments.optional(new HomeParser(Text.of(home), plugin))))
                 .build();
     }

@@ -12,21 +12,20 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeOtherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
-@Permissions(root = "home")
+@Permissions(root = "home", alias = "other")
 public class HomeOtherCommand extends CommandBase<Player> {
     private final String home = "home";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
-                .children(this.createChildCommands(HomeOtherCommand.class))
                 .arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(home), plugin)))
                 .build();
     }
 
     @Override
     public String[] getAliases() {
-        return new String[] { "other" };
+        return new String[] { "homeother" };
     }
 
     @Override
