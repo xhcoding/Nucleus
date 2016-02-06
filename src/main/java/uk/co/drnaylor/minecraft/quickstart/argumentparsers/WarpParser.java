@@ -76,12 +76,12 @@ public class WarpParser extends CommandElement {
     }
 
     private boolean checkPermission(CommandSource src, String name) {
-        if (!permissionCheck || !plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode("warp").getNode("separate-permissions").getBoolean(false)) {
+        if (!permissionCheck || !plugin.getConfig(ConfigMap.MAIN_CONFIG).get().useSeparatePermissionsForWarp()) {
             return true;
         }
 
         // No permissions, no entry!
-        return (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warp." + name.toLowerCase()) || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
+        return (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warps." + name.toLowerCase()) || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
     }
 
     private void getService() {

@@ -135,6 +135,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
+        n.getNode("enabled").setComment(Util.messageBundle.getString("config.enabled")).setValue(true);
+
         if (!bypassCooldown) {
             n.getNode("cooldown").setComment(Util.messageBundle.getString("config.cooldown")).setValue(0);
         }

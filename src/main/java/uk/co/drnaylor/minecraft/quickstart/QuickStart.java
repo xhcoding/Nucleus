@@ -210,6 +210,10 @@ public class QuickStart {
         return configMap.getConfig(key);
     }
 
+    public void reload() {
+        configMap.reloadAll();
+    }
+
     public MessageHandler getMessageHandler() {
         return messageHandler;
     }

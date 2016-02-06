@@ -1,6 +1,5 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.warp;
 
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -29,7 +28,6 @@ import java.text.MessageFormat;
 @Permissions(includeUser = true)
 @Modules(PluginModule.WARPS)
 public class WarpsCommand extends CommandBase<Player> {
-    static final String seperatePermissionsConfigEntryName = "separate-permissions";
     static final String warpNameArg = Util.messageBundle.getString("args.name.warpname");
 
     @Override
@@ -67,12 +65,5 @@ public class WarpsCommand extends CommandBase<Player> {
         }
 
         return CommandResult.success();
-    }
-
-    @Override
-    public CommentedConfigurationNode getDefaults() {
-        CommentedConfigurationNode cn = super.getDefaults();
-        cn.getNode(seperatePermissionsConfigEntryName).setComment(Util.messageBundle.getString("config.warps.separate")).setValue(false);
-        return cn;
     }
 }

@@ -14,7 +14,10 @@ import uk.co.drnaylor.minecraft.quickstart.config.enumerations.ModuleOptions;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
 
@@ -22,6 +25,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private final String modulesSection = "modules";
     private int afkTime;
     private int afkTimeKick;
+    private boolean serperateWarpPermissions = false;
     private List<String> allowedCommandsInJail;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
@@ -53,9 +57,15 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
             }
         });
 
+        // AFK
         afkTime = node.getNode("afk", "afktime").getInt(300);
         afkTimeKick = node.getNode("afk", "afktimetokick").getInt(0);
+
+        // Jail
         allowedCommandsInJail = node.getNode("jail", "allowed-commands").getList(TypeToken.of(String.class));
+
+        // Warps
+        serperateWarpPermissions = node.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).getBoolean(false);
     }
 
     @Override
@@ -78,12 +88,13 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         afkc.getNode("afktimetokick").setComment(Util.messageBundle.getString("config.afk.timetokick")).setValue(0);
 
         try {
-            node.getNode("jail", "allowed-commands").setComment(Util.messageBundle.getString("config.jail.commands")).setValue(new TypeToken<List<String>>() {},
+            ccn.getNode("jail", "allowed-commands").setComment(Util.messageBundle.getString("config.jail.commands")).setValue(new TypeToken<List<String>>() {},
                         Lists.newArrayList("m", "msg", "r", "mail", "rules", "info"));
         } catch (ObjectMappingException e) {
             e.printStackTrace();
         }
 
+        ccn.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).setValue(false);
         return ccn;
     }
 
@@ -101,5 +112,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public List<String> getAllowedCommandsInJail() {
         return ImmutableList.copyOf(allowedCommandsInJail);
+    }
+
+    public boolean useSeparatePermissionsForWarp() {
+        return serperateWarpPermissions;
     }
 }

@@ -30,8 +30,9 @@ public class QuickStartCommand extends CommandBase {
     private Text modules = null;
 
     @Override
+    @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return CommandSpec.builder().children(this.createChildCommands(ReloadCommand.class)).executor(this).build();
     }
 
     @Override
