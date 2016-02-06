@@ -1,12 +1,13 @@
 package uk.co.drnaylor.minecraft.quickstart.api.data;
 
-import org.spongepowered.api.data.DataTransactionResult;
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
-import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -117,4 +118,37 @@ public interface QuickStartUser {
      * @return The {@link Instant}
      */
     Instant getLastLogout();
+
+    /**
+     * Gets the specified home for the player.
+     *
+     * @param home The name of the home to get.
+     * @return An {@link Optional} containing the {@link WarpLocation}, if it exists.
+     */
+    Optional<WarpLocation> getHome(String home);
+
+    /**
+     * Gets all of the homes for a player.
+     *
+     * @return An {@link Map} containing the {@link WarpLocation}s of the homes, using the name of the homes as a key.
+     */
+    Map<String, WarpLocation> getHomes();
+
+    /**
+     * Sets a player's home. Will not overwrite a home that exists. Does not respect limits set in permissions and options.
+     *
+     * @param home The name of the home to create.
+     * @param location The {@link Location} of the home.
+     * @param rotation The {@link Vector3d} that represents the rotation.
+     * @return <code>true</code> if successful.
+     */
+    boolean setHome(String home, Location<World> location, Vector3d rotation);
+
+    /**
+     * Deletes the named home.
+     *
+     * @param home The name of the home to delete.
+     * @return <code>true</code> if it was deleted.
+     */
+    boolean deleteHome(String home);
 }

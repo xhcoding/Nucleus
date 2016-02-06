@@ -1,7 +1,9 @@
 package uk.co.drnaylor.minecraft.quickstart.config;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
@@ -18,15 +20,20 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
+import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchWorldException;
+import uk.co.drnaylor.minecraft.quickstart.config.serialisers.LocationNode;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements InternalQuickStartUser {
     private final User user;
@@ -40,6 +47,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private JailData jailData;
     private Location<World> locationOnLogin;
     private boolean jailOffline = false;
+    private Map<String, LocationNode> homeData;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -81,6 +89,14 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
                 locationOnLogin = new Location<>(Sponge.getServer().getWorld(wp.getUniqueId()).get(), wp.getSpawnPosition());
             }
         }
+
+        // Homes
+        if (homeData == null) {
+            homeData = Maps.newHashMap();
+        }
+
+        homeData.clear();
+        node.getChildrenMap().forEach((k, v) -> homeData.put(k.toString().toLowerCase(), new LocationNode(v)));
     }
 
     @Override
@@ -117,6 +133,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             node.getNode("world").setValue(locationOnLogin.getExtent().getUniqueId());
         }
 
+        homeData.forEach((k, v) -> v.populateNode(node.getNode(k.toLowerCase())));
         super.save();
     }
 
@@ -238,6 +255,51 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public Instant getLastLogout() {
         return logout;
+    }
+
+    @Override
+    public Optional<WarpLocation> getHome(String home) {
+        LocationNode ln = homeData.get(home.toLowerCase());
+        if (ln != null) {
+            try {
+                return Optional.of(new WarpLocation(home.toLowerCase(), ln.getLocation(), ln.getRotation()));
+            } catch (NoSuchWorldException e) {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Map<String, WarpLocation> getHomes() {
+        return homeData.entrySet().stream().map(x -> {
+            try {
+                return new WarpLocation(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
+            } catch (NoSuchWorldException e) {
+                return null;
+            }
+        }).filter(x -> x != null).collect(Collectors.toMap(WarpLocation::getName, y -> new WarpLocation(y.getName(), y.getLocation(), y.getRotation())));
+    }
+
+    @Override
+    public boolean setHome(String home, Location<World> location, Vector3d rotation) {
+        if (homeData.containsKey(home.toLowerCase())) {
+            return false;
+        }
+
+
+        return false;
+    }
+
+    @Override
+    public boolean deleteHome(String home) {
+        if (homeData.containsKey(home.toLowerCase())) {
+            homeData.remove(home.toLowerCase());
+            return true;
+        }
+
+        return false;
     }
 
     @Override
