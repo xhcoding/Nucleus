@@ -126,7 +126,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         configSection = cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase();
-        generateDefaults = cca != null && cca.generate();
+        generateDefaults = cca == null || cca.generate();
     }
 
     public final boolean mergeDefaults() {
