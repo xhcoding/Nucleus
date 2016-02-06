@@ -19,6 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStar
 
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Permissions(root = "home", alias = "set")
 @Modules(PluginModule.HOMES)
@@ -26,6 +27,7 @@ import java.util.Set;
 public class SetHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";
+    private final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
 
     @Override
     public CommandSpec createSpec() {
@@ -48,6 +50,11 @@ public class SetHomeCommand extends CommandBase<Player> {
         InternalQuickStartUser iqsu = plugin.getUserLoader().getUser(src);
         Map<String, WarpLocation> msw = iqsu.getHomes();
 
+        if (!warpName.matcher(home).matches()) {
+            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.sethome.name")));
+            return CommandResult.empty();
+        }
+
         int c = getCount(src);
         if (msw.size() >= c) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sethome.limit", String.valueOf(c))));
@@ -60,7 +67,7 @@ public class SetHomeCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sethome.set", home)));
+        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.sethome.set", home)));
         return CommandResult.success();
     }
 

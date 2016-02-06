@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements InternalQuickStartUser {
@@ -284,7 +285,9 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public boolean setHome(String home, Location<World> location, Vector3d rotation) {
-        if (homeData.containsKey(home.toLowerCase())) {
+        final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
+
+        if (homeData.containsKey(home.toLowerCase()) || !warpName.matcher(home).matches()) {
             return false;
         }
 

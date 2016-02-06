@@ -68,18 +68,18 @@ public class ListHomeCommand extends CommandBase {
         }
 
         Map<String, WarpLocation> msw = plugin.getUserLoader().getUser(user).getHomes();
-        List<Text> lt = msw.entrySet().stream().map(x -> {
+        List<Text> lt = msw.entrySet().stream().sorted((x, y) -> x.getKey().compareTo(y.getKey())).map(x -> {
             Location<World> lw = x.getValue().getLocation();
             return Text.builder().append(
                     Text.builder(x.getKey()).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onHover(TextActions.showText(
                             Text.of(Util.getMessageWithFormat("home.warphover", x.getKey()))
-                    )).onClick(TextActions.runCommand(other ? "/home " + user.getName() + " " + x.getValue().getName() : "/home " + x.getValue().getName())).build()
+                    )).onClick(TextActions.runCommand(other ? "/homeother " + user.getName() + " " + x.getValue().getName() : "/home " + x.getValue().getName())).build()
             ).append(Text.of(TextColors.YELLOW,
                     Util.getMessageWithFormat("home.location", lw.getExtent().getName(), String.valueOf(lw.getBlockX()), String.valueOf(lw.getBlockY()), String.valueOf(lw.getBlockZ())))).build();
         }).collect(Collectors.toList());
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().header(Text.of(TextColors.YELLOW, header)).paddingString("-").contents(lt).sendTo(src);
+        ps.builder().title(Text.of(TextColors.YELLOW, header)).paddingString("-").contents(lt).sendTo(src);
         return CommandResult.success();
     }
 }
