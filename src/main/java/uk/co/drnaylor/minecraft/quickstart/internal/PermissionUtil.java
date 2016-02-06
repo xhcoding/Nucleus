@@ -24,7 +24,7 @@ public final class PermissionUtil {
     }
 
     public Set<String> getBasePermissions() {
-        Set<String> perms = getPermissionWithSuffix("base");
+        Set<String> perms = getPermissionWithSuffix("base", true);
         perms.addAll(Arrays.asList(ps.value()));
         return perms;
     }
@@ -48,6 +48,10 @@ public final class PermissionUtil {
     }
 
     public Set<String> getPermissionWithSuffix(String suffix) {
+        return getPermissionWithSuffix(suffix, false);
+    }
+
+    public Set<String> getPermissionWithSuffix(String suffix, boolean includeNonAdmin) {
         Set<String> perms = new HashSet<>();
 
         if (ps.useDefault()) {
@@ -69,12 +73,14 @@ public final class PermissionUtil {
             perms.add(PERMISSIONS_ADMIN);
         }
 
-        if (ps.includeMod()) {
-            perms.add(PERMISSIONS_MOD);
-        }
+        if (includeNonAdmin) {
+            if (ps.includeMod()) {
+                perms.add(PERMISSIONS_MOD);
+            }
 
-        if (ps.includeUser()) {
-            perms.add(PERMISSIONS_USER);
+            if (ps.includeUser()) {
+                perms.add(PERMISSIONS_USER);
+            }
         }
 
         return perms;
