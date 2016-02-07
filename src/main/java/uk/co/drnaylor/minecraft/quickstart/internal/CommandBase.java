@@ -325,7 +325,13 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         return cost;
     }
 
-    private double getCost(CommandSource src) {
+    /**
+     * Gets the cost for this command, or zero if the player does not have to pay.
+     *
+     * @param src The {@link CommandSource}
+     * @return The cost.
+     */
+    protected double getCost(CommandSource src) {
         // If the player or command itself is exempt, return a zero.
         if (bypassCost || !(src instanceof Player) || cost.isEmpty() || cost.stream().anyMatch(src::hasPermission)) {
             return 0.;

@@ -57,6 +57,8 @@ public class QuickStart {
     private MessageHandler messageHandler = new MessageHandler();
     private MailHandler mailHandler;
     private JailHandler jailHandler;
+    private WarmupManager warmupManager;
+    private TeleportHandler tpHandler = new TeleportHandler(this);
 
     private AFKHandler afkHandler = new AFKHandler();
 
@@ -76,6 +78,7 @@ public class QuickStart {
             configMap.putConfig(ConfigMap.COMMANDS_CONFIG, new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
             configLoader = new UserConfigLoader(this);
             moduleRegistration = new ModuleRegistration(this);
+            warmupManager = new WarmupManager();
         } catch (IOException | ObjectMappingException e) {
             isErrored = true;
             e.printStackTrace();
@@ -84,7 +87,7 @@ public class QuickStart {
 
         // We register the ModuleService NOW so that others can hook into it.
         game.getServiceManager().setProvider(this, QuickStartModuleService.class, moduleRegistration);
-        game.getServiceManager().setProvider(this, QuickStartWarmupManagerService.class, new WarmupManager());
+        game.getServiceManager().setProvider(this, QuickStartWarmupManagerService.class, warmupManager);
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this, configLoader));
     }
 
@@ -226,5 +229,13 @@ public class QuickStart {
 
     public JailHandler getJailHandler() {
         return jailHandler;
+    }
+
+    public WarmupManager getWarmupManager() {
+        return warmupManager;
+    }
+
+    public TeleportHandler getTpHandler() {
+        return tpHandler;
     }
 }

@@ -4,9 +4,11 @@ import com.google.common.collect.Maps;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.CancellableTask;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class WarmupManager implements QuickStartWarmupManagerService {
 
@@ -17,6 +19,11 @@ public class WarmupManager implements QuickStartWarmupManagerService {
         Task t = warmupTasks.put(player, task);
         if (t != null) {
             t.cancel();
+
+            Consumer<Task> ct = t.getConsumer();
+            if (ct instanceof CancellableTask) {
+                ((CancellableTask) ct).onCancel();
+            }
         }
     }
 
