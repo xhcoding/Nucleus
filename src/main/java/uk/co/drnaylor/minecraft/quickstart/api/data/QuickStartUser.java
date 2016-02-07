@@ -151,4 +151,18 @@ public interface QuickStartUser {
      * @return <code>true</code> if it was deleted.
      */
     boolean deleteHome(String home);
+
+    /**
+     * Gets whether the player allows others to teleport to them.
+     *
+     * @return <code>true</code> if so.
+     */
+    boolean isTeleportToggled();
+
+    /**
+     * Sets whether the player allows others to teleport to them.
+     *
+     * @param toggle <code>true</code> if so.
+     */
+    void setTeleportToggled(boolean toggle);
 }

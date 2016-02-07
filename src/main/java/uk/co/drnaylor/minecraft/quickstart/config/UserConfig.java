@@ -49,6 +49,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     private Location<World> locationOnLogin;
     private boolean jailOffline = false;
     private Map<String, LocationNode> homeData;
+    private boolean isTeleportToggled;
 
     public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
         super(file);
@@ -98,6 +99,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
         homeData.clear();
         node.getNode("homes").getChildrenMap().forEach((k, v) -> homeData.put(k.toString().toLowerCase(), new LocationNode(v)));
+        node.getNode("teleportToggled").getBoolean(true);
     }
 
     @Override
@@ -135,6 +137,7 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         }
 
         homeData.forEach((k, v) -> v.populateNode(node.getNode("homes").getNode(k.toLowerCase())));
+        node.getNode("teleportToggled").setValue(isTeleportToggled);
         super.save();
     }
 
@@ -303,6 +306,16 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isTeleportToggled() {
+        return isTeleportToggled;
+    }
+
+    @Override
+    public void setTeleportToggled(boolean toggle) {
+        isTeleportToggled = toggle;
     }
 
     @Override

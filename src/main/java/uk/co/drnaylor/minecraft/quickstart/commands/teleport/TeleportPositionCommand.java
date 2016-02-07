@@ -7,10 +7,12 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
+@NoWarmup
 public class TeleportPositionCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
@@ -19,7 +21,7 @@ public class TeleportPositionCommand extends CommandBase {
 
     @Override
     public String[] getAliases() {
-        return new String[0];
+        return new String[] { "tppos" };
     }
 
     @Override

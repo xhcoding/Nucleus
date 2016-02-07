@@ -27,6 +27,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private int afkTimeKick;
     private boolean serperateWarpPermissions = false;
     private List<String> allowedCommandsInJail;
+    private int teleportWarmup;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -66,6 +67,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
         // Warps
         serperateWarpPermissions = node.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).getBoolean(false);
+
+        // Teleports
+        teleportWarmup = node.getNode("teleport", "warmup").getInt(3);
     }
 
     @Override
@@ -95,6 +99,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         }
 
         ccn.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).setValue(false);
+
+        ccn.getNode("teleport", "warmup").setComment(Util.messageBundle.getString("config.teleport.warmup")).setValue(3);
         return ccn;
     }
 
@@ -116,5 +122,13 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public boolean useSeparatePermissionsForWarp() {
         return serperateWarpPermissions;
+    }
+
+    public int getTeleportWarmup() {
+        if (teleportWarmup < 0) {
+            return 0;
+        }
+
+        return teleportWarmup;
     }
 }

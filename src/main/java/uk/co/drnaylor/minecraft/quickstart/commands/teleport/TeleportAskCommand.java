@@ -24,7 +24,7 @@ public class TeleportAskCommand extends CommandBase<Player> {
 
     @Override
     public String[] getAliases() {
-        return new String[0];
+        return new String[] { "tpa", "teleportask" };
     }
 
     @Override

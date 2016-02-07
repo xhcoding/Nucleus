@@ -7,10 +7,12 @@ import org.spongepowered.api.entity.living.player.Player;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
+@NoWarmup
 public class TeleportAllHereCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
@@ -19,7 +21,7 @@ public class TeleportAllHereCommand extends CommandBase<Player> {
 
     @Override
     public String[] getAliases() {
-        return new String[0];
+        return new String[] { "tpall" };
     }
 
     @Override
