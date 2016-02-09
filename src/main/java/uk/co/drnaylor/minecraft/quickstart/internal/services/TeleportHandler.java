@@ -27,11 +27,38 @@ public class TeleportHandler {
         this.plugin = plugin;
     }
 
-    public boolean startTeleport(Player from, Player to, boolean checkToggle) throws Exception {
-        return startTeleport(from, to, 0, true, checkToggle);
+    /**
+     * Requests a teleportation for a player to another player.
+     *
+     * @param from The {@link Player} teleport.
+     * @param to The {@link Player} to teleport to.
+     * @param checkToggle <code>true</code> if /tptoggle needs to be checked.
+     * @param bypassWarmup <code>true</code> if the warmup is to be bypassed
+     * @return <code>true</code> if the teleportation is to go ahead.
+     * @throws Exception If there is a problem!
+     */
+    public boolean startTeleport(Player from, Player to, boolean checkToggle, boolean bypassWarmup) throws Exception {
+        return startTeleport(from, to, 0, null, checkToggle, bypassWarmup);
     }
 
-    public boolean startTeleport(Player from, Player to, double cost, boolean chargeFrom, boolean checkToggle) throws Exception {
+    /**
+     * Requests a teleportation for a player to another player.
+     *
+     * @param from The {@link Player} teleport.
+     * @param to The {@link Player} to teleport to.
+     * @param cost The cost to refund, if any, if the teleportation fails.
+     * @param charge The {@link Player} to refund, if the teleportation fails.
+     * @param checkToggle <code>true</code> if /tptoggle needs to be checked.
+     * @param bypassWarmup <code>true</code> if the warmup is to be bypassed
+     * @return <code>true</code> if the teleportation is to go ahead.
+     * @throws Exception If there is a problem!
+     */
+    public boolean startTeleport(Player from, Player to, double cost, Player charge, boolean checkToggle, boolean bypassWarmup) throws Exception {
+        if (from.equals(to)) {
+            from.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.teleport.self")));
+            return false;
+        }
+
         InternalQuickStartUser toPlayer = plugin.getUserLoader().getUser(to);
         if (checkToggle && !toPlayer.isTeleportToggled() && !canBypass(from)) {
             from.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail.targettoggle", to.getName())));
@@ -39,20 +66,22 @@ public class TeleportHandler {
         }
 
         TeleportTask tt;
-        if (cost > 0) {
-            tt = new TeleportTask(from, to, chargeFrom ? from : to, cost);
+        if (cost > 0 && charge != null) {
+            tt = new TeleportTask(from, to, charge, cost);
         } else {
             tt = new TeleportTask(from, to);
         }
 
-        if (requiresWarmup(from)) {
+        long time = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getTeleportWarmup();
+        if (!bypassWarmup && time > 0 && requiresWarmup(from)) {
+            from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.warmup", String.valueOf(time))));
             plugin.getWarmupManager().addWarmup(from.getUniqueId(),
-                    Sponge.getScheduler().createTaskBuilder().delay(plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getTeleportWarmup(), TimeUnit.SECONDS)
+                    Sponge.getScheduler().createTaskBuilder().delay(time, TimeUnit.SECONDS)
                         .execute(tt).name("QuickStart - Teleport Waiter").submit(plugin));
-            return true;
+        } else {
+            tt.run();
         }
 
-        tt.run();
         return true;
     }
 
@@ -89,8 +118,9 @@ public class TeleportHandler {
             if (to.isOnline()) {
                 from.setLocationAndRotationSafely(to.getLocation(), to.getRotation());
                 from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.success", to.getName())));
+                to.sendMessage(Text.of(Util.getMessageWithFormat("teleport.from.success", from.getName())));
             } else {
-                to.sendMessage(Text.of(Util.messageBundle.getString("teleport.fail")));
+                from.sendMessage(Text.of(Util.messageBundle.getString("teleport.fail")));
                 onCancel();
             }
         }
