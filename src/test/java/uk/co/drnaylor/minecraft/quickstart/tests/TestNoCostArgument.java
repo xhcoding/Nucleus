@@ -23,7 +23,8 @@ import java.util.List;
 
 public class TestNoCostArgument {
 
-    private static void setFinalStatic(Field field, Object newValue) throws Exception {
+    // Thanks to http://stackoverflow.com/a/3301720
+    private static void setFinalStatic(Field field) throws Exception {
         field.setAccessible(true);
 
         Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -45,7 +46,7 @@ public class TestNoCostArgument {
 
     @Before
     public void testSetup() throws Exception {
-        setFinalStatic(TextSerializers.class.getField("PLAIN"), true);
+        setFinalStatic(TextSerializers.class.getField("PLAIN"));
     }
 
     @Test
