@@ -2,30 +2,39 @@ package uk.co.drnaylor.minecraft.quickstart.commands.teleport;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
+import java.util.Optional;
+
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
 @NoWarmup
-public class TeleportCommand extends CommandBase<Player> {
+public class TeleportCommand extends CommandBase {
 
     private String[] aliases = null;
+    private String playerFromKey = "playerFrom";
     private String playerKey = "player";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
+                // TODO: Test
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(new NoCostArgument(new RequireOneOfPermission(GenericArguments.player(Text.of(playerFromKey)), permissions.getPermissionWithSuffix("others"))))),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
         ).build();
     }
@@ -44,14 +53,38 @@ public class TeleportCommand extends CommandBase<Player> {
     }
 
     @Override
-    public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        boolean self = true;
+        boolean noCost = args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
+        Optional<Player> ofrom = args.<Player>getOne(playerFromKey);
+        Player from;
+        if (ofrom.isPresent()) {
+            from = ofrom.get();
+            self = from.equals(src);
+
+            // They should be paying if they haven't got the permission.
+            if (self) {
+                noCost = false;
+
+                // No pay, no TP!
+                if (applyCost(from) == null) {
+                    return CommandResult.empty();
+                }
+            }
+        } else if (src instanceof Player) {
+            from = (Player)src;
+        } else {
+            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+            return CommandResult.empty();
+        }
+
         Player pl = args.<Player>getOne(playerKey).get();
         double cost = getCost(src);
 
-        if (cost > 0.) {
-            plugin.getTpHandler().startTeleport(src, pl, cost, src, true, true);
+        if (!noCost && cost > 0.) {
+            plugin.getTpHandler().startTeleport(from, pl, cost, from, true, true);
         } else {
-            plugin.getTpHandler().startTeleport(src, pl, true, true);
+            plugin.getTpHandler().startTeleport(from, pl, true, true);
         }
 
         return CommandResult.success();

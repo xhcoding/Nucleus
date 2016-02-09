@@ -27,6 +27,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarmupManagerService;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.lang.reflect.Method;
@@ -205,9 +206,10 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
                 warmupService.removeWarmup(p.getUniqueId());
 
                 // Do we charge the player?
-                Double cost = applyCost(src);
-                if (cost == null) {
-                    return;
+                if (!args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false)) {
+                    if (applyCost(src) == null) {
+                        return;
+                    }
                 }
 
                 startExecute(src, args);
@@ -230,11 +232,13 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         } else {
 
             // Do we charge the player?
-            Double cost = applyCost(src);
-            if (cost == null) {
-                // If we get a null, we're assuming something failed, so we return an empty. The user
-                // has already been notified.
-                return CommandResult.empty();
+            if (!args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false)) {
+                Double cost = applyCost(src);
+                if (cost == null) {
+                    // If we get a null, we're assuming something failed, so we return an empty. The user
+                    // has already been notified.
+                    return CommandResult.empty();
+                }
             }
 
             // If we're running async...
@@ -290,7 +294,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      * @param src The {@link CommandSource}
      * @return <code>null</code> if there is a problem, or a non-negative value containing the amount charged.
      */
-    private Double applyCost(CommandSource src) {
+    protected Double applyCost(CommandSource src) {
         double cost = getCost(src);
         if (cost == 0.) {
             return 0.;
@@ -392,7 +396,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             }
 
             // For the tests, keep this here so we can skip the hard to test code below.
-            final double cost = getCost(p);
+            final double cost = !args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false) ? 0 : getCost(p);
             if (cost > 0) {
                 // We need the economy service if we are to reverse the charge!
                 Optional<EconomyService> oes = Sponge.getServiceManager().provide(EconomyService.class);

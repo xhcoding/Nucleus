@@ -3,6 +3,7 @@ package uk.co.drnaylor.minecraft.quickstart;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
@@ -156,6 +157,18 @@ public class Util {
         }
 
         return Util.messageBundle.getString("standard.unknown");
+    }
+
+    public static Optional<Player> getPlayerFromOptionalOrSource(Optional<Player> pl, CommandSource src) {
+        if (pl.isPresent()) {
+            return pl;
+        }
+
+        if (src instanceof Player) {
+            return Optional.of((Player)src);
+        }
+
+        return Optional.empty();
     }
 
     private static void appendComma(StringBuilder sb) {
