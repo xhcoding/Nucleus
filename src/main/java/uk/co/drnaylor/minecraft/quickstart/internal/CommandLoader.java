@@ -23,6 +23,8 @@ import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.misc.*;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.CheckMuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.teleport.TeleportCommand;
+import uk.co.drnaylor.minecraft.quickstart.commands.teleport.TeleportToggleCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 
@@ -85,6 +87,10 @@ public class CommandLoader {
         cmds.add(SetHomeCommand.class);
         cmds.add(DeleteHomeCommand.class);
         cmds.add(DeleteOtherHomeCommand.class);
+
+        // Teleportation
+        cmds.add(TeleportToggleCommand.class);
+        cmds.add(TeleportCommand.class);
 
         return cmds;
     }
