@@ -12,6 +12,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireMoreArguments;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
@@ -34,7 +35,7 @@ public class TeleportCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
                 // TODO: Test
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(new NoCostArgument(new RequireOneOfPermission(GenericArguments.player(Text.of(playerFromKey)), permissions.getPermissionWithSuffix("others"))))),
+                new RequireMoreArguments(GenericArguments.onlyOne(new NoCostArgument(new RequireOneOfPermission(GenericArguments.player(Text.of(playerFromKey)), permissions.getPermissionWithSuffix("others")))), 2),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
         ).build();
     }
@@ -42,10 +43,11 @@ public class TeleportCommand extends CommandBase {
     @Override
     public String[] getAliases() {
         if (aliases == null) {
+            // Some people want /tp to be held by minecraft. This will allow us to do so.
             if (plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode("teleport").getNode("use-tp-command").getBoolean(true)) {
                 aliases = new String[] { "teleport", "tp" };
             } else {
-                aliases = new String[]{ "teleport" };
+                aliases = new String[] { "teleport" };
             }
         }
 
@@ -54,13 +56,12 @@ public class TeleportCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        boolean self = true;
         boolean noCost = args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
         Optional<Player> ofrom = args.<Player>getOne(playerFromKey);
         Player from;
         if (ofrom.isPresent()) {
             from = ofrom.get();
-            self = from.equals(src);
+            boolean self = from.equals(src);
 
             // They should be paying if they haven't got the permission.
             if (self) {
