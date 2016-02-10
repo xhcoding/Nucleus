@@ -83,9 +83,9 @@ public class TeleportCommand extends CommandBase {
         double cost = getCost(src);
 
         if (!noCost && cost > 0.) {
-            plugin.getTpHandler().startTeleport(from, pl, cost, from, true, true);
+            plugin.getTpHandler().startTeleport(from, pl, cost, from, true, false);
         } else {
-            plugin.getTpHandler().startTeleport(from, pl, true, true);
+            plugin.getTpHandler().startTeleport(from, pl, true, false);
         }
 
         return CommandResult.success();
