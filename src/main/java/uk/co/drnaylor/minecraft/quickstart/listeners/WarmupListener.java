@@ -20,7 +20,10 @@ public class WarmupListener extends ListenerBase {
 
     @Listener(order = Order.LAST)
     public void onPlayerMovement(DisplaceEntityEvent.Move event, @First Player player) {
-        cancelWarmup(player);
+        // Rotating is OK!
+        if (event.getFromTransform().getLocation().equals(event.getToTransform().getLocation())) {
+            cancelWarmup(player);
+        }
     }
 
     @Listener(order = Order.LAST)
