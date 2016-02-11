@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.sun.istack.internal.Nullable;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
@@ -26,6 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.time.Instant;

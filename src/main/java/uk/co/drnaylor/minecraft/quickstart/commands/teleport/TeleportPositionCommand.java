@@ -22,13 +22,13 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 public class TeleportPositionCommand extends CommandBase {
     private final String key = "player";
-    private final String world = "world";
     private final String location = "location";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(
-            GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
+                GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+                GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
                 GenericArguments.onlyOne(GenericArguments.location(Text.of(location)))
         ).executor(this).build();
     }
@@ -42,6 +42,15 @@ public class TeleportPositionCommand extends CommandBase {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(key).get();
         Location<World> loc = args.<Location<World>>getOne(location).get();
+
+        if (args.<Boolean>getOne("f").orElse(false)) {
+            pl.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.tppos.success")));
+            if (src.equals(pl)) {
+                src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success.other", pl.getName())));
+            }
+
+            return CommandResult.success();
+        }
 
         if (pl.setLocationSafely(loc)) {
             pl.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.tppos.success")));
