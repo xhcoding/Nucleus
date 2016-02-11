@@ -204,9 +204,20 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // Command Execution
     // -------------------------------------
 
+    /**
+     * Runs any checks that need to occur before the warmup, cooldown and cost checks.
+     *
+     * @param source The source of the command.
+     * @param args The arguments.
+     * @return Whether to continue or not.
+     */
+    protected ContinueMode preProcessChecks(T source, CommandContext args) throws Exception {
+        return ContinueMode.CONTINUE;
+    }
+
     @Override
     @NonnullByDefault
-    public CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
+    public final CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
         // If the implementing class has defined a generic parameter, then check the source type.
         if (!checkSourceType(source)) {
             return CommandResult.empty();
@@ -220,11 +231,23 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             throw new CommandPermissionException();
         }
 
+        try {
+            ContinueMode mode = preProcessChecks(src, args);
+            if (!mode.cont) {
+                return mode.returnType;
+            }
+        } catch (Exception e) {
+            // If it doesn't, just tell the user something went wrong.
+            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("command.error")));
+            e.printStackTrace();
+            return CommandResult.empty();
+        }
+
         if (src instanceof Player) {
             ContinueMode cm = runChecks((Player)src, args);
 
             if (!cm.cont) {
-                return (cm == ContinueMode.STOP) ? CommandResult.empty() : CommandResult.success();
+                return cm.returnType;
             }
         }
 
@@ -448,22 +471,24 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         /**
          * Continue executing the command.
          */
-        CONTINUE(true),
+        CONTINUE(true, null),
 
         /**
          * Stop executing, but mark as success.
          */
-        STOP_SUCCESS(false),
+        STOP_SUCCESS(false, CommandResult.success()),
 
         /**
          * Stop executing, mark as empty.
          */
-        STOP(false);
+        STOP(false, CommandResult.empty());
 
         final boolean cont;
+        final CommandResult returnType;
 
-        ContinueMode(boolean cont) {
+        ContinueMode(boolean cont, CommandResult returnType) {
             this.cont = cont;
+            this.returnType = returnType;
         }
     }
 }

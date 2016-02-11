@@ -19,6 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import java.util.Optional;
 
@@ -37,6 +38,20 @@ public class TeleportCommand extends CommandBase {
                 new RequireMoreArguments(GenericArguments.onlyOne(new NoWarmupArgument(new NoCostArgument(new RequireOneOfPermission(GenericArguments.player(Text.of(playerFromKey)), permissions.getPermissionWithSuffix("others"))))), 2),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
         ).build();
+    }
+
+    @Override
+    public ContinueMode preProcessChecks(CommandSource source, CommandContext args) throws Exception {
+        // Do the /tptoggle check now, no need to go through a warmup then...
+        if (source instanceof Player && !TeleportHandler.canBypassTpToggle((Player) source)) {
+            Player to = args.<Player>getOne(playerKey).get();
+            if (!plugin.getUserLoader().getUser(to).isTeleportToggled()) {
+                source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail.targettoggle", to.getName())));
+                return ContinueMode.STOP;
+            }
+        }
+
+        return ContinueMode.CONTINUE;
     }
 
     @Override

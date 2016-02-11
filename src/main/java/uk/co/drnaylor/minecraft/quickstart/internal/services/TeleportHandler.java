@@ -23,6 +23,8 @@ public class TeleportHandler {
 
     private final QuickStart plugin;
 
+    public static final String tptoggleBypassPermission = PermissionUtil.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
+
     public TeleportHandler(QuickStart plugin) {
         this.plugin = plugin;
     }
@@ -60,7 +62,7 @@ public class TeleportHandler {
         }
 
         InternalQuickStartUser toPlayer = plugin.getUserLoader().getUser(to);
-        if (checkToggle && !toPlayer.isTeleportToggled() && !canBypass(from)) {
+        if (checkToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(from)) {
             from.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail.targettoggle", to.getName())));
             return false;
         }
@@ -85,8 +87,8 @@ public class TeleportHandler {
         return true;
     }
 
-    public boolean canBypass(Player from) {
-        return from.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) || from.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt");
+    public static boolean canBypassTpToggle(Player from) {
+        return from.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) || from.hasPermission(tptoggleBypassPermission);
     }
 
     public boolean requiresWarmup(Player from) {
