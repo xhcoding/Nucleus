@@ -70,7 +70,6 @@ public class TeleportCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        boolean noCost = args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
         Optional<Player> ofrom = args.<Player>getOne(playerFromKey);
         Player from;
         if (ofrom.isPresent()) {
@@ -87,11 +86,11 @@ public class TeleportCommand extends CommandBase {
         }
 
         Player pl = args.<Player>getOne(playerKey).get();
-        from.setLocationAndRotation(pl.getLocation(), pl.getRotation());
-        from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.success", pl.getName())));
-        pl.sendMessage(Text.of(Util.getMessageWithFormat("teleport.from.success", from.getName())));
+        if (plugin.getTpHandler().getBuilder().setSource(src).setFrom(from).setTo(pl).startTeleport()) {
+            return CommandResult.success();
+        }
 
-        return CommandResult.success();
+        return CommandResult.empty();
     }
 
     @Override

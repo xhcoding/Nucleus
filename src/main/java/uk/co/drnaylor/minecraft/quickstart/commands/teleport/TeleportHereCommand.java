@@ -38,7 +38,7 @@ public class TeleportHereCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Player target = args.<Player>getOne(playerKey).get();
-        plugin.getTpHandler().startTeleport(target, src, true, true);
+        plugin.getTpHandler().getBuilder().setFrom(target).setTo(src).startTeleport();
         return CommandResult.success();
     }
 }

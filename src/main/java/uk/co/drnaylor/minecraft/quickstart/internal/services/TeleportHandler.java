@@ -1,22 +1,18 @@
 package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
+import com.google.common.base.Preconditions;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.service.economy.EconomyService;
-import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
-import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.CancellableTask;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
-import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class TeleportHandler {
@@ -29,70 +25,12 @@ public class TeleportHandler {
         this.plugin = plugin;
     }
 
-    /**
-     * Requests a teleportation for a player to another player.
-     *
-     * @param from The {@link Player} teleport.
-     * @param to The {@link Player} to teleport to.
-     * @param checkToggle <code>true</code> if /tptoggle needs to be checked.
-     * @param bypassWarmup <code>true</code> if the warmup is to be bypassed
-     * @return <code>true</code> if the teleportation is to go ahead.
-     * @throws Exception If there is a problem!
-     */
-    public boolean startTeleport(Player from, Player to, boolean checkToggle, boolean bypassWarmup) throws Exception {
-        return startTeleport(from, to, 0, null, checkToggle, bypassWarmup);
+    public TeleportBuilder getBuilder() {
+        return new TeleportBuilder(plugin);
     }
 
-    /**
-     * Requests a teleportation for a player to another player.
-     *
-     * @param from The {@link Player} teleport.
-     * @param to The {@link Player} to teleport to.
-     * @param cost The cost to refund, if any, if the teleportation fails.
-     * @param charge The {@link Player} to refund, if the teleportation fails.
-     * @param checkToggle <code>true</code> if /tptoggle needs to be checked.
-     * @param bypassWarmup <code>true</code> if the warmup is to be bypassed
-     * @return <code>true</code> if the teleportation is to go ahead.
-     * @throws Exception If there is a problem!
-     */
-    public boolean startTeleport(Player from, Player to, double cost, Player charge, boolean checkToggle, boolean bypassWarmup) throws Exception {
-        if (from.equals(to)) {
-            from.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.teleport.self")));
-            return false;
-        }
-
-        InternalQuickStartUser toPlayer = plugin.getUserLoader().getUser(to);
-        if (checkToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(from)) {
-            from.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail.targettoggle", to.getName())));
-            return false;
-        }
-
-        TeleportTask tt;
-        if (cost > 0 && charge != null) {
-            tt = new TeleportTask(from, to, charge, cost);
-        } else {
-            tt = new TeleportTask(from, to);
-        }
-
-        long time = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getTeleportWarmup();
-        if (!bypassWarmup && time > 0 && requiresWarmup(from)) {
-            from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.warmup", String.valueOf(time))));
-            plugin.getWarmupManager().addWarmup(from.getUniqueId(),
-                    Sponge.getScheduler().createTaskBuilder().delay(time, TimeUnit.SECONDS)
-                        .execute(tt).name("QuickStart - Teleport Waiter").submit(plugin));
-        } else {
-            tt.run();
-        }
-
-        return true;
-    }
-
-    public static boolean canBypassTpToggle(Player from) {
+    public static boolean canBypassTpToggle(CommandSource from) {
         return from.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) || from.hasPermission(tptoggleBypassPermission);
-    }
-
-    public boolean requiresWarmup(Player from) {
-        return from.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) || from.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "teleport.warmup.exempt");
     }
 
     public static class TeleportTask implements CancellableTask {
@@ -101,28 +39,53 @@ public class TeleportHandler {
         private final Player to;
         private final Player charged;
         private final double cost;
+        private final boolean safe;
+        private final CommandSource source;
+        private final QuickStart plugin;
+        private final boolean silentSouce;
 
-        private TeleportTask(Player from, Player to) {
-            this.from = from;
-            this.to = to;
-            this.cost = 0;
-            this.charged = null;
+        private TeleportTask(QuickStart plugin, CommandSource source, Player from, Player to, boolean safe, boolean silentSouce) {
+            this(plugin, source, from, to, null, 0, safe, silentSouce);
         }
 
-        private TeleportTask(Player from, Player to, Player charged, double cost) {
+        private TeleportTask(QuickStart plugin, CommandSource source, Player from, Player to, Player charged, double cost, boolean safe, boolean silentSouce) {
+            this.plugin = plugin;
+            this.source = source;
             this.from = from;
             this.to = to;
             this.cost = cost;
             this.charged = charged;
+            this.safe = safe;
+            this.silentSouce = silentSouce;
         }
 
         private void run() {
             if (to.isOnline()) {
-                from.setLocationAndRotationSafely(to.getLocation(), to.getRotation());
-                from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.success", to.getName())));
-                to.sendMessage(Text.of(Util.getMessageWithFormat("teleport.from.success", from.getName())));
+                if (safe && !from.setLocationAndRotationSafely(to.getLocation(), to.getRotation())) {
+                    if (!silentSouce) {
+                        source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("teleport.nosafe")));
+                    }
+
+                    onCancel();
+                    return;
+                } else {
+                    from.setLocationAndRotation(to.getLocation(), to.getRotation());
+                }
+
+                if (!source.equals(from) && !silentSouce) {
+                    source.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.success.source", from.getName(), to.getName())));
+                }
+
+                from.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.success", to.getName())));
+
+                if (!silentSouce) {
+                    to.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.from.success", from.getName())));
+                }
             } else {
-                from.sendMessage(Text.of(Util.messageBundle.getString("teleport.fail")));
+                if (!silentSouce) {
+                    source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("teleport.fail")));
+                }
+
                 onCancel();
             }
         }
@@ -134,15 +97,115 @@ public class TeleportHandler {
 
         @Override
         public void onCancel() {
-            if (charged == null || cost <= 0) {
-                return;
+            if (!silentSouce) {
+                source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("teleport.cancelled")));
             }
 
-            Optional<EconomyService> oes = Sponge.getServiceManager().provide(EconomyService.class);
-            if (oes.isPresent()) {
-                Optional<UniqueAccount> oua = oes.get().getAccount(charged.getUniqueId());
-                oua.get().deposit(oes.get().getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(this));
+            if (charged != null && cost > 0) {
+                plugin.getEconHelper().depositInPlayer(charged, cost);
             }
+        }
+    }
+
+    public static class TeleportBuilder {
+
+        private CommandSource source;
+        private Player from;
+        private Player to;
+        private Player charge;
+        private double cost;
+        private int warmupTime = 0;
+        private boolean bypassToggle = false;
+        private boolean safe = true;
+        private boolean silentSource = false;
+
+        private final QuickStart plugin;
+
+        private TeleportBuilder(QuickStart plugin) {
+            this.plugin = plugin;
+        }
+
+        public TeleportBuilder setSafe(boolean safe) {
+            this.safe = safe;
+            return this;
+        }
+
+        public TeleportBuilder setSource(CommandSource source) {
+            this.source = source;
+            return this;
+        }
+
+        public TeleportBuilder setFrom(Player from) {
+            this.from = from;
+            return this;
+        }
+
+        public TeleportBuilder setTo(Player to) {
+            this.to = to;
+            return this;
+        }
+
+        public TeleportBuilder setCharge(Player charge) {
+            this.charge = charge;
+            return this;
+        }
+
+        public TeleportBuilder setCost(double cost) {
+            this.cost = cost;
+            return this;
+        }
+
+        public TeleportBuilder setWarmupTime(int warmupTime) {
+            this.warmupTime = warmupTime;
+            return this;
+        }
+
+        public TeleportBuilder setBypassToggle(boolean bypassToggle) {
+            this.bypassToggle = bypassToggle;
+            return this;
+        }
+
+        public TeleportBuilder setSilentSource(boolean silent) {
+            this.silentSource = silent;
+            return this;
+        }
+
+        public boolean startTeleport() throws Exception {
+            Preconditions.checkNotNull(from);
+            Preconditions.checkNotNull(to);
+
+            if (source == null) {
+                source = from;
+            }
+
+            if (from.equals(to)) {
+                source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.teleport.self")));
+                return false;
+            }
+
+            InternalQuickStartUser toPlayer = plugin.getUserLoader().getUser(to);
+            if (!bypassToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(source)) {
+                from.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail.targettoggle", to.getName())));
+                return false;
+            }
+
+            TeleportTask tt;
+            if (cost > 0 && charge != null) {
+                tt = new TeleportTask(plugin, source, from, to, charge, cost, safe, silentSource);
+            } else {
+                tt = new TeleportTask(plugin, source, from, to, safe, silentSource);
+            }
+
+            if (warmupTime > 0) {
+                from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.warmup", String.valueOf(warmupTime))));
+                plugin.getWarmupManager().addWarmup(from.getUniqueId(),
+                        Sponge.getScheduler().createTaskBuilder().delay(warmupTime, TimeUnit.SECONDS)
+                                .execute(tt).name("QuickStart - Teleport Waiter").submit(plugin));
+            } else {
+                tt.run();
+            }
+
+            return true;
         }
     }
 }
