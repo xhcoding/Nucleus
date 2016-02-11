@@ -12,19 +12,18 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoWarmupArgument;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireMoreArguments;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.Optional;
 
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
-@NoWarmup
 public class TeleportCommand extends CommandBase {
 
     private String[] aliases = null;
@@ -35,7 +34,7 @@ public class TeleportCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
                 // TODO: Test
-                new RequireMoreArguments(GenericArguments.onlyOne(new NoCostArgument(new RequireOneOfPermission(GenericArguments.player(Text.of(playerFromKey)), permissions.getPermissionWithSuffix("others")))), 2),
+                new RequireMoreArguments(GenericArguments.onlyOne(new NoWarmupArgument(new NoCostArgument(new RequireOneOfPermission(GenericArguments.player(Text.of(playerFromKey)), permissions.getPermissionWithSuffix("others"))))), 2),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
         ).build();
     }
@@ -61,16 +60,9 @@ public class TeleportCommand extends CommandBase {
         Player from;
         if (ofrom.isPresent()) {
             from = ofrom.get();
-            boolean self = from.equals(src);
-
-            // They should be paying if they haven't got the permission.
-            if (self) {
-                noCost = false;
-
-                // No pay, no TP!
-                if (applyCost(from) == null) {
-                    return CommandResult.empty();
-                }
+            if (from.equals(src)) {
+                src.sendMessage(Text.of(Util.messageBundle.getString("command.teleport.player.noself")));
+                return CommandResult.empty();
             }
         } else if (src instanceof Player) {
             from = (Player)src;
@@ -80,13 +72,9 @@ public class TeleportCommand extends CommandBase {
         }
 
         Player pl = args.<Player>getOne(playerKey).get();
-        double cost = getCost(src);
-
-        if (!noCost && cost > 0.) {
-            plugin.getTpHandler().startTeleport(from, pl, cost, from, true, false);
-        } else {
-            plugin.getTpHandler().startTeleport(from, pl, true, false);
-        }
+        from.setLocationAndRotation(pl.getLocation(), pl.getRotation());
+        from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.success", pl.getName())));
+        pl.sendMessage(Text.of(Util.getMessageWithFormat("teleport.from.success", from.getName())));
 
         return CommandResult.success();
     }
@@ -94,7 +82,6 @@ public class TeleportCommand extends CommandBase {
     @Override
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode ccn = super.getDefaults();
-        ccn.setComment(Util.messageBundle.getString("config.command.teleport.warmup"));
         ccn.getNode("use-tp-command").setComment(Util.messageBundle.getString("config.command.teleport.tp")).setValue(true);
         return ccn;
     }
