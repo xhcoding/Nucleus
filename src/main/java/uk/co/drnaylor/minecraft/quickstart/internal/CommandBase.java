@@ -96,14 +96,14 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         //
         // Adding a "root" and/or "sub" string will generate:
         //
-        // quickstart.(root).(primaryalias).(sub).use
+        // quickstart.(root).(primaryalias).(sub).base
         //
-        // For warmup, cooldown and cost exemption, replace use with:
+        // For warmup, cooldown and cost exemption, replace base with:
         //
         // exempt.(cooldown|warmup|cost)
         //
-        // By default, the permission "quickstart.admin" also gets permission to run and bypass all warmup,
-        // cooldown and costs, but this can be turned off in the annotation.
+        // By default, the permission "quickstart.admin" also gets permission to run and bypass all warmups,
+        // cooldowns and costs, but this can be turned off in the annotation.
         Permissions op = this.getClass().getAnnotation(Permissions.class);
         additionalPermissions = Sets.newHashSet();
         cooldown = Sets.newHashSet();
