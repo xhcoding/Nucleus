@@ -7,21 +7,21 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
+import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.TaskBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 
-public class AFKTask implements Consumer<Task> {
-    private final QuickStart plugin;
-
-    public AFKTask(QuickStart plugin) {
-        this.plugin = plugin;
-    }
+@Modules(PluginModule.AFK)
+public class AFKTask implements TaskBase {
+    @Inject private QuickStart plugin;
 
     @Override
     public void accept(Task task) {
@@ -53,5 +53,15 @@ public class AFKTask implements Consumer<Task> {
                         });
             }
         }
+    }
+
+    @Override
+    public boolean isAsync() {
+        return true;
+    }
+
+    @Override
+    public int secondsPerRun() {
+        return 2;
     }
 }

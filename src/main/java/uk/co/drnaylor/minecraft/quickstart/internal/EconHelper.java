@@ -2,6 +2,7 @@ package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
@@ -62,26 +63,28 @@ public class EconHelper {
         return true;
     }
 
-    public boolean depositInPlayer(Player src, double cost) {
+    public boolean depositInPlayer(User src, double cost) {
         Optional<EconomyService> oes = Sponge.getServiceManager().provide(EconomyService.class);
         if (oes.isPresent()) {
             // Check balance.
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getAccount(src.getUniqueId());
-            if (!a.isPresent()) {
-                src.sendMessage(Text.builder(Util.messageBundle.getString("cost.noaccount"))
+            if (!a.isPresent() && src.isOnline()) {
+                src.getPlayer().get().sendMessage(Text.builder(Util.messageBundle.getString("cost.noaccount"))
                         .color(TextColors.YELLOW).build());
                 return false;
             }
 
             TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(plugin));
-            if (tr.getResult() != ResultType.SUCCESS) {
-                src.sendMessage(Text.builder(Util.messageBundle.getString("cost.error"))
+            if (tr.getResult() != ResultType.SUCCESS && src.isOnline()) {
+                src.getPlayer().get().sendMessage(Text.builder(Util.messageBundle.getString("cost.error"))
                         .color(TextColors.YELLOW).build());
                 return false;
             }
 
-            src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("cost.refund", getCurrencySymbol(cost))));
+            if (src.isOnline()) {
+                src.getPlayer().get().sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("cost.refund", getCurrencySymbol(cost))));
+            }
         }
 
         return true;

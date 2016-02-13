@@ -6,7 +6,9 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.scheduler.Task;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
+import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.environment.TimeCommand;
@@ -26,16 +28,36 @@ import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
 import uk.co.drnaylor.minecraft.quickstart.commands.teleport.*;
 import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
+import uk.co.drnaylor.minecraft.quickstart.listeners.*;
+import uk.co.drnaylor.minecraft.quickstart.runnables.AFKTask;
+import uk.co.drnaylor.minecraft.quickstart.runnables.JailTask;
+import uk.co.drnaylor.minecraft.quickstart.runnables.TeleportTask;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public class CommandLoader {
+public class PluginSystemsLoader {
     private final QuickStart quickStart;
-    private final BaseLoader<CommandBase> base = new BaseLoader<>();
 
-    public CommandLoader(QuickStart quickStart) {
+    public PluginSystemsLoader(QuickStart quickStart) {
         this.quickStart = quickStart;
+    }
+
+    private final QuickStartModuleService service = Sponge.getServiceManager().provideUnchecked(QuickStartModuleService.class);
+
+    private final Predicate<Class<?>> moduleCheck = o -> {
+        Modules annotation = o.getAnnotation(Modules.class);
+        // No annotation, include it.
+        return annotation == null || service.getModulesToLoad().stream().anyMatch(a -> Arrays.asList(annotation.value()).contains(a));
+    };
+
+    <T> Set<Class<? extends T>> filterOutModules(Set<Class<? extends T>> objectsToFilter) {
+        return objectsToFilter.stream().filter(moduleCheck).collect(Collectors.toSet());
     }
 
     private Set<Class<? extends CommandBase>> getCommands() {
@@ -91,14 +113,42 @@ public class CommandLoader {
         cmds.add(TeleportToggleCommand.class);
         cmds.add(TeleportCommand.class);
         cmds.add(TeleportHereCommand.class);
+        cmds.add(TeleportAllHereCommand.class);
         cmds.add(TPNativeCommand.class);
         cmds.add(TeleportPositionCommand.class);
 
         return cmds;
     }
 
-    public void loadCommands() {
-        Set<Class<? extends CommandBase>> commandsToLoad = base.filterOutModules(getCommands());
+    private Set<Class<? extends ListenerBase>> getEvents() {
+        Set<Class<? extends ListenerBase>> events = Sets.newHashSet();
+        events.add(CoreListener.class);
+        events.add(MuteListener.class);
+        events.add(WarmupListener.class);
+        events.add(AFKListener.class);
+        events.add(MailListener.class);
+        events.add(MiscListener.class);
+        events.add(JailListener.class);
+        events.add(CommandLoggingListener.class);
+        return events;
+    }
+
+    private Set<Class<? extends TaskBase>> getTasks() {
+        Set<Class<? extends TaskBase>> runnables = Sets.newHashSet();
+        runnables.add(AFKTask.class);
+        runnables.add(JailTask.class);
+        runnables.add(TeleportTask.class);
+        return runnables;
+    }
+
+    public void load() {
+        loadCommands();
+        loadEvents();
+        loadRunnables();
+    }
+
+    private void loadCommands() {
+        Set<Class<? extends CommandBase>> commandsToLoad = filterOutModules(getCommands());
         Injector injector = quickStart.getInjector();
 
         // Commands config!
@@ -131,5 +181,42 @@ public class CommandLoader {
             quickStart.getLogger().error("Could not save defaults.");
             e.printStackTrace();
         }
+    }
+
+    private void loadEvents() {
+        Set<Class<? extends ListenerBase>> commandsToLoad = filterOutModules(getEvents());
+        Injector injector = quickStart.getInjector();
+        commandsToLoad.stream().map(x -> {
+            try {
+                ListenerBase lb = x.newInstance();
+                injector.injectMembers(lb);
+                return lb;
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(lb -> lb != null).forEach(c -> Sponge.getEventManager().registerListeners(quickStart, c));
+    }
+
+    private void loadRunnables() {
+        Set<Class<? extends TaskBase>> commandsToLoad = filterOutModules(getTasks());
+        Injector injector = quickStart.getInjector();
+        commandsToLoad.stream().map(x -> {
+            try {
+                TaskBase lb = x.newInstance();
+                injector.injectMembers(lb);
+                return lb;
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(lb -> lb != null).forEach(c -> {
+            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.secondsPerRun(), TimeUnit.SECONDS);
+            if (c.isAsync()) {
+                tb.async();
+            }
+
+            tb.submit(quickStart);
+        });
     }
 }

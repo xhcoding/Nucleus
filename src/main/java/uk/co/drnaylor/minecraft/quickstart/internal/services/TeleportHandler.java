@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -13,11 +14,18 @@ import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.CancellableTask;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class TeleportHandler {
 
     private final QuickStart plugin;
+    private final Map<UUID, TeleportPrep> ask = new HashMap<>();
 
     public static final String tptoggleBypassPermission = PermissionUtil.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
 
@@ -31,6 +39,47 @@ public class TeleportHandler {
 
     public static boolean canBypassTpToggle(CommandSource from) {
         return from.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) || from.hasPermission(tptoggleBypassPermission);
+    }
+
+    public void addAskQuestion(UUID target, TeleportPrep tp) {
+        clearExpired();
+        get(target).ifPresent(this::cancel);
+        ask.put(target, tp);
+    }
+
+    public void clearExpired() {
+        Instant now = Instant.now();
+        ask.entrySet().stream().filter(x -> now.isBefore(x.getValue().getExpire())).map(Map.Entry::getKey).collect(Collectors.toList())
+                .forEach(x -> cancel(ask.remove(x)));
+    }
+
+    public boolean getAndExecute(UUID uuid) throws Exception {
+        Optional<TeleportPrep> otp = get(uuid);
+        if (otp.isPresent()) {
+            otp.get().tpbuilder.startTeleport();
+            return true;
+        }
+
+        return false;
+    }
+
+    public Optional<TeleportPrep> get(UUID uuid) {
+        clearExpired();
+        return Optional.ofNullable(ask.remove(uuid));
+    }
+
+    private void cancel(TeleportPrep prep) {
+        if (prep == null) {
+            return;
+        }
+
+        if (prep.charged != null && prep.cost > 0) {
+            if (prep.charged.isOnline()) {
+                prep.charged.getPlayer().ifPresent(x -> x.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.prep.cancel", plugin.getEconHelper().getCurrencySymbol(prep.cost)))));
+            }
+
+            plugin.getEconHelper().depositInPlayer(prep.charged, prep.cost);
+        }
     }
 
     public static class TeleportTask implements CancellableTask {
@@ -206,6 +255,36 @@ public class TeleportHandler {
             }
 
             return true;
+        }
+    }
+
+    public static class TeleportPrep {
+        private final Instant expire;
+        private final User charged;
+        private final double cost;
+        private final TeleportBuilder tpbuilder;
+
+        public TeleportPrep(Instant expire, User charged, double cost, TeleportBuilder tpbuilder) {
+            this.expire = expire;
+            this.charged = charged;
+            this.cost = cost;
+            this.tpbuilder = tpbuilder;
+        }
+
+        public Instant getExpire() {
+            return expire;
+        }
+
+        public User getCharged() {
+            return charged;
+        }
+
+        public double getCost() {
+            return cost;
+        }
+
+        public TeleportBuilder getTpbuilder() {
+            return tpbuilder;
         }
     }
 }

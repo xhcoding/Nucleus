@@ -6,7 +6,6 @@ import com.google.inject.Injector;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
@@ -24,14 +23,11 @@ import uk.co.drnaylor.minecraft.quickstart.config.AbstractConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.WarpsConfig;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EconHelper;
-import uk.co.drnaylor.minecraft.quickstart.internal.EventLoader;
+import uk.co.drnaylor.minecraft.quickstart.internal.PluginSystemsLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.*;
-import uk.co.drnaylor.minecraft.quickstart.runnables.AFKTask;
-import uk.co.drnaylor.minecraft.quickstart.runnables.JailTask;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -126,9 +122,6 @@ public class QuickStart {
 
                 jailHandler = new JailHandler(this);
                 game.getServiceManager().setProvider(this, QuickStartJailService.class, jailHandler);
-
-                Sponge.getScheduler().createTaskBuilder().async().name("QuickStart - Jails").delay(2, TimeUnit.SECONDS)
-                        .interval(2, TimeUnit.SECONDS).execute(new JailTask(this)).submit(this);
             } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.JAILS);
@@ -141,11 +134,6 @@ public class QuickStart {
             }
         }
 
-        if (modules.contains(PluginModule.AFK)) {
-            Sponge.getScheduler().createTaskBuilder().async().name("QuickStart - AFK").delay(2, TimeUnit.SECONDS)
-                    .interval(2, TimeUnit.SECONDS).execute(new AFKTask(this)).submit(this);
-        }
-
         if (modules.contains(PluginModule.MAILS)) {
             mailHandler = new MailHandler(game, this);
             game.getServiceManager().setProvider(this, QuickStartMailService.class, mailHandler);
@@ -153,9 +141,8 @@ public class QuickStart {
 
         modulesLoaded = true;
 
-        // Register commands
-        new CommandLoader(this).loadCommands();
-        new EventLoader(this).loadEvents();
+        // Register commands, events and runnables.
+        new PluginSystemsLoader(this).load();
 
         // Register services
         game.getServiceManager().setProvider(this, QuickStartUserService.class, configLoader);
