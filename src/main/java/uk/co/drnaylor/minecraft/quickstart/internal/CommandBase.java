@@ -45,6 +45,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     protected final PermissionUtil permissions;
     private final Class<T> sourceType;
     private final boolean bypassWarmup;
+    private final boolean generateWarmupAnyway;
     private final boolean bypassCooldown;
     private final boolean bypassCost;
     private final String configSection;
@@ -84,7 +85,10 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
         // For these flags, we simply need to get whether the annotation was declared. If they were not, we simply get back
         // a null - so the check is based around that.
-        bypassWarmup = this.getClass().getAnnotation(NoWarmup.class) != null;
+        NoWarmup w = this.getClass().getAnnotation(NoWarmup.class);
+        bypassWarmup = w != null;
+        generateWarmupAnyway = !bypassWarmup || w.generateConfigEntry();
+
         bypassCooldown = this.getClass().getAnnotation(NoCooldown.class) != null;
         bypassCost = this.getClass().getAnnotation(NoCost.class) != null;
 
@@ -173,7 +177,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             n.getNode("cooldown").setComment(Util.messageBundle.getString("config.cooldown")).setValue(0);
         }
 
-        if (!bypassWarmup) {
+        if (!bypassWarmup || generateWarmupAnyway) {
             n.getNode("warmup").setComment(Util.messageBundle.getString("config.warmup")).setValue(0);
         }
 

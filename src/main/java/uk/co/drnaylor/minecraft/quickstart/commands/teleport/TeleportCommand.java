@@ -13,8 +13,8 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoWarmupArgument;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireMoreArguments;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TwoPlayersArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
@@ -34,9 +34,18 @@ public class TeleportCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
-                // TODO: Test
-                new RequireMoreArguments(GenericArguments.onlyOne(new NoWarmupArgument(new NoCostArgument(new RequireOneOfPermission(GenericArguments.player(Text.of(playerFromKey)), permissions.getPermissionWithSuffix("others"))))), 2),
+            GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+
+                // Either we get two arguments, or we get one.
+            GenericArguments.firstParsing(
+                // <player> <player>
+                GenericArguments.onlyOne(new NoWarmupArgument(new NoCostArgument(
+                    new RequireOneOfPermission(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey)), permissions.getPermissionWithSuffix("others"), false)))),
+
+            // <player>
+            GenericArguments.seq(
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
+            ))
         ).build();
     }
 
@@ -86,7 +95,7 @@ public class TeleportCommand extends CommandBase {
         }
 
         Player pl = args.<Player>getOne(playerKey).get();
-        if (plugin.getTpHandler().getBuilder().setSource(src).setFrom(from).setTo(pl).startTeleport()) {
+        if (plugin.getTpHandler().getBuilder().setSource(src).setFrom(from).setTo(pl).setSafe(!args.<Boolean>getOne("f").orElse(false)).startTeleport()) {
             return CommandResult.success();
         }
 

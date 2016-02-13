@@ -9,4 +9,11 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 public @interface NoWarmup {
+
+    /**
+     * Whether to generate the Warmup Config entry.
+     *
+     * @return <code>true</code> if so.
+     */
+    boolean generateConfigEntry() default false;
 }
