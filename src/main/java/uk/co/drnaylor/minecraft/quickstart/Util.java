@@ -42,6 +42,10 @@ public class Util {
         return getTimeStringFromSeconds(time / 1000);
     }
 
+    public static String getTimeToNow(Instant time) {
+        return getTimeStringFromSeconds(Instant.now().getEpochSecond() - time.getEpochSecond());
+    }
+
     public static String getTimeStringFromSeconds(long time) {
         long sec = time % 60;
         long min = (time / 60) % 60;
