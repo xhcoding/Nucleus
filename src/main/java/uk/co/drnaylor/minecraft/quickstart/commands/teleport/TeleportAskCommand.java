@@ -51,7 +51,7 @@ public class TeleportAskCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Player target = args.<Player>getOne(playerKey).get();
         if (src.equals(target)) {
-            src.sendMessage(Text.of(Util.messageBundle.getString("command.teleport.self")));
+            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.teleport.self")));
             return CommandResult.empty();
         }
 
