@@ -14,6 +14,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.CancellableTask;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,8 +57,7 @@ public class TeleportHandler {
     public boolean getAndExecute(UUID uuid) throws Exception {
         Optional<TeleportPrep> otp = get(uuid);
         if (otp.isPresent()) {
-            otp.get().tpbuilder.startTeleport();
-            return true;
+            return otp.get().tpbuilder.startTeleport();
         }
 
         return false;
@@ -68,7 +68,13 @@ public class TeleportHandler {
         return Optional.ofNullable(ask.remove(uuid));
     }
 
-    private void cancel(TeleportPrep prep) {
+    public boolean remove(UUID uuid) {
+        TeleportPrep tp = ask.remove(uuid);
+        cancel(tp);
+        return tp != null;
+    }
+
+    private void cancel(@Nullable TeleportPrep prep) {
         if (prep == null) {
             return;
         }
