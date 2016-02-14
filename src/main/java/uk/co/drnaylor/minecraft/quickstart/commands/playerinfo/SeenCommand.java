@@ -54,7 +54,7 @@ public class SeenCommand extends CommandBase {
         // Everyone gets the last online time.
         if (user.isOnline()) {
             messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.iscurrently", user.getName()) + " ", TextColors.GREEN, Util.messageBundle.getString("standard.online")));
-            messages.add(Text.of(TextColors.AQUA, Util.messageBundle.getString("command.seen.displayname") + " ", Util.getName(user)));
+            messages.add(Text.builder(Util.messageBundle.getString("command.seen.displayname") + " ").color(TextColors.AQUA).append(Util.getName(user)).build());
             messages.add(Text.of(TextColors.AQUA, Util.messageBundle.getString("command.seen.loggedon") + " ", TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogin())));
         } else {
             messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.iscurrently", user.getName()) + " ", TextColors.RED, Util.messageBundle.getString("standard.offline")));
@@ -66,14 +66,14 @@ public class SeenCommand extends CommandBase {
                 messages.add(Text.of(TextColors.AQUA, Util.messageBundle.getString("command.seen.ipaddress") + " ", TextColors.GREEN, user.getPlayer().get().getConnection().getAddress().getAddress().toString()));
             }
 
-            messages.add(Text.of(TextColors.AQUA, Util.messageBundle.getString("command.seen.isjailed") + " ",
-                    getTrueOrFalse(iqsu.getJailData().isPresent(), TextActions.runCommand("/checkjail " + user.getName()))));
-            messages.add(Text.of(TextColors.AQUA, Util.messageBundle.getString("command.seen.ismuted") + " ",
-                    getTrueOrFalse(iqsu.getMuteData().isPresent(), TextActions.runCommand("/checkmute " + user.getName()))));
+            messages.add(Text.builder(Util.messageBundle.getString("command.seen.isjailed") + " ").color(TextColors.AQUA).append(
+                    getTrueOrFalse(iqsu.getJailData().isPresent(), TextActions.runCommand("/checkjail " + user.getName()))).build());
+            messages.add(Text.builder(Util.messageBundle.getString("command.seen.ismuted") + " ").color(TextColors.AQUA).append(
+                    getTrueOrFalse(iqsu.getMuteData().isPresent(), TextActions.runCommand("/checkmute " + user.getName()))).build());
 
             BanService bs = Sponge.getServiceManager().provideUnchecked(BanService.class);
-            messages.add(Text.of(TextColors.AQUA, Util.messageBundle.getString("command.seen.isbanned") + " ",
-                    getTrueOrFalse(bs.getBanFor(user.getProfile()).isPresent(), TextActions.runCommand("/checkban " + user.getName()))));
+            messages.add(Text.builder(Util.messageBundle.getString("command.seen.isbanned") + " ").color(TextColors.AQUA).append(
+                    getTrueOrFalse(bs.getBanFor(user.getProfile()).isPresent(), TextActions.runCommand("/checkban " + user.getName()))).build());
         }
 
         src.sendMessages(messages);
