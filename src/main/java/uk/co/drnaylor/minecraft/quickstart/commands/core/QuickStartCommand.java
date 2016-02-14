@@ -24,6 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class QuickStartCommand extends CommandBase {
 
     private final Text version = Text.of(QuickStart.MESSAGE_PREFIX, TextColors.GREEN, QuickStart.NAME + " version " + QuickStart.VERSION);

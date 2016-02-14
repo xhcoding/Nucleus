@@ -14,6 +14,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 @Permissions(root = "home", alias = "set", includeUser = true)
 @Modules(PluginModule.HOMES)
 @RunAsync
+@RootCommand
 public class SetHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";

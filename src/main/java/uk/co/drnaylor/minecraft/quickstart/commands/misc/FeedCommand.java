@@ -17,12 +17,14 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 import java.util.Optional;
 import java.util.Set;
 
 @Permissions
 @Modules(PluginModule.MISC)
+@RootCommand
 public class FeedCommand extends CommandBase {
     private static final String player = "player";
 

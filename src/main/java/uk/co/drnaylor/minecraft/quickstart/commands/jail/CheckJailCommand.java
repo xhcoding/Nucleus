@@ -30,6 +30,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class CheckJailCommand extends CommandBase {
     private final String playerKey = "playerKey";
     @Inject

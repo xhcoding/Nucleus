@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class MuteCommand extends CommandBase {
 
     @Inject private UserConfigLoader userConfigLoader;

@@ -8,10 +8,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.*;
 
 public class QuickStartInjectorModule extends AbstractModule {
     private final QuickStart plugin;
@@ -33,5 +30,6 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(MailHandler.class).toProvider(plugin::getMailHandler);
         bind(JailHandler.class).toProvider(plugin::getJailHandler);
         bind(WarmupManager.class).toProvider(plugin::getWarmupManager);
+        bind(TeleportHandler.class).toProvider(plugin::getTpHandler);
     }
 }

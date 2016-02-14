@@ -13,11 +13,13 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
 @NoWarmup
+@RootCommand
 public class TeleportToggleCommand extends CommandBase<Player> {
     private final String key = "toggle";
 

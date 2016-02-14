@@ -40,6 +40,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class CheckMuteCommand extends CommandBase {
 
     @Inject private UserConfigLoader userConfigLoader;

@@ -8,6 +8,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
+@RootCommand
 @Permissions
 @Modules(PluginModule.BANS)
 @NoWarmup

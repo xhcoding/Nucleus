@@ -19,12 +19,14 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import java.util.Optional;
 
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
+@RootCommand
 public class TeleportCommand extends CommandBase {
 
     private String[] aliases = null;
@@ -66,6 +68,10 @@ public class TeleportCommand extends CommandBase {
     @Override
     public String[] getAliases() {
         if (aliases == null) {
+            if (plugin == null) {
+
+            }
+
             // Some people want /tp to be held by minecraft. This will allow us to do so.
             if (plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode("teleport").getNode("use-tp-command").getBoolean(true)) {
                 aliases = new String[] { "teleport", "tp" };

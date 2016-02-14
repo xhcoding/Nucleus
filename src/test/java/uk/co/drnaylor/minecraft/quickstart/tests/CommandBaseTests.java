@@ -38,6 +38,7 @@ public class CommandBaseTests {
     public void testThatPlayersCanExecutePlayerCommand() throws CommandException {
         PlayerCommand cmd = new PlayerCommand();
         getInjector().injectMembers(cmd);
+        cmd.postInit();
         Player mock = getMockPlayer();
         CommandResult result = cmd.execute(mock, getContext());
 
@@ -54,6 +55,7 @@ public class CommandBaseTests {
     public void testThatCommandSourcesCannotExecutePlayerCommands() throws CommandException {
         PlayerCommand cmd = new PlayerCommand();
         getInjector().injectMembers(cmd);
+        cmd.postInit();
         CommandSource mock = getMockCommandSource();
         CommandResult result = cmd.execute(mock, getContext());
         Assert.assertTrue("There should have been no successes!", !result.getSuccessCount().isPresent() || result.getSuccessCount().get() == 0);
@@ -68,6 +70,7 @@ public class CommandBaseTests {
     public void testThatCommandSourcesCanExecuteStandardCommand() throws CommandException {
         BasicCommand cmd = new BasicCommand();
         getInjector().injectMembers(cmd);
+        cmd.postInit();
         CommandSource mock = getMockCommandSource();
         CommandResult result = cmd.execute(mock, getContext());
         Assert.assertTrue("There should have been one success!", result.getSuccessCount().orElse(0) == 1);
@@ -82,6 +85,7 @@ public class CommandBaseTests {
     public void testThatPlayerSourcesCanExecuteStandardCommand() throws CommandException {
         BasicCommand cmd = new BasicCommand();
         getInjector().injectMembers(cmd);
+        cmd.postInit();
         Player mock = getMockPlayer();
         CommandResult result = cmd.execute(mock, getContext());
         Assert.assertTrue("There should have been one success!", result.getSuccessCount().orElse(0) == 1);
@@ -107,7 +111,7 @@ public class CommandBaseTests {
 
         @Override
         public CommandSpec createSpec() {
-            return null;
+            return CommandSpec.builder().executor(this).build();
         }
 
         @Override
@@ -125,7 +129,7 @@ public class CommandBaseTests {
 
         @Override
         public CommandSpec createSpec() {
-            return null;
+            return CommandSpec.builder().executor(this).build();
         }
 
         @Override

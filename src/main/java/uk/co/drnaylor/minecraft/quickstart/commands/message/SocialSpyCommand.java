@@ -21,6 +21,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class SocialSpyCommand extends CommandBase<Player> {
     private final String arg = "Social Spy";
     @Inject private UserConfigLoader userConfigLoader;

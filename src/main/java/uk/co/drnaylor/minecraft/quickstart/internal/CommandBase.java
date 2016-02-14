@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -36,20 +37,21 @@ import java.util.concurrent.TimeUnit;
 public abstract class CommandBase<T extends CommandSource> implements CommandExecutor {
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
-    private final Set<String> additionalPermissions;
-    private final Set<String> cooldown;
-    private final Set<String> warmup;
-    private final Set<String> cost;
+    private Set<String> additionalPermissions;
+    private Set<String> cooldown;
+    private Set<String> warmup;
+    private Set<String> cost;
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
-    protected final PermissionUtil permissions;
+    protected PermissionUtil permissions;
     private final Class<T> sourceType;
-    private final boolean bypassWarmup;
-    private final boolean generateWarmupAnyway;
-    private final boolean bypassCooldown;
-    private final boolean bypassCost;
-    private final String configSection;
-    private final boolean generateDefaults;
+    private boolean bypassWarmup;
+    private boolean generateWarmupAnyway;
+    private boolean bypassCooldown;
+    private boolean bypassCost;
+    private String configSection;
+    private boolean generateDefaults;
+    private CommandSpec cs = null;
 
     @Inject protected QuickStart plugin;
     @Inject private WarmupManager warmupService;
@@ -82,6 +84,12 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         } else {
             sourceType = (Class<T>) CommandSource.class;
         }
+    }
+
+    public final void postInit() {
+        // Checks.
+        Preconditions.checkNotNull(this.getAliases());
+        Preconditions.checkArgument(this.getAliases().length > 0);
 
         // For these flags, we simply need to get whether the annotation was declared. If they were not, we simply get back
         // a null - so the check is based around that.
@@ -164,6 +172,18 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
     // Metadata
     // -------------------------------------
+
+    public CommandSpec getSpec() {
+        if (cs != null) {
+            return cs;
+        }
+
+        try {
+            return createSpec();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public final boolean mergeDefaults() {
         return generateDefaults;
@@ -464,8 +484,14 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     protected final Map<List<String>, CommandCallable> createChildCommands(Class<? extends CommandBase>... bases) {
         Map<List<String>, CommandCallable> map = Maps.newHashMap();
         Arrays.asList(bases).forEach(cb -> {
-            CommandBase c = plugin.getInjector().getInstance(cb);
-            map.put(Arrays.asList(c.getAliases()), c.createSpec());
+            CommandBase c = null;
+            try {
+                c = cb.newInstance();
+                plugin.getInjector().injectMembers(c);
+                map.put(Arrays.asList(c.getAliases()), c.createSpec());
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         });
 
         return map;

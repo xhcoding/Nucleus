@@ -9,6 +9,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 /**
  * Sends a request to a player to teleport to them, using click handlers.
@@ -16,6 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
 @NoWarmup
+@RootCommand
 public class TeleportAskCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {

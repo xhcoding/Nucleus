@@ -9,10 +9,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCooldown;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCost;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 /**
  * This is a wrapper class for /minecraft:tp to map to "tpn", for those who want that.
@@ -21,6 +18,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 @NoCost
 @NoWarmup
 @Modules(PluginModule.TELEPORT)
+@RootCommand
 public class TPNativeCommand extends CommandBase {
     private final String a = "args";
 

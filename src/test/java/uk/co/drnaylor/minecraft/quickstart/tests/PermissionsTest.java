@@ -56,7 +56,9 @@ public class PermissionsTest {
 
         @Test
         public void testPermissionIsValid() throws IllegalAccessException, InstantiationException {
-            Assert.assertTrue("The permission " + permission + " was not available for " + clazz.getName(), clazz.newInstance().getCommandPermissions().contains(permission));
+            CommandBase c = clazz.newInstance();
+            c.postInit();
+            Assert.assertTrue("The permission " + permission + " was not available for " + clazz.getName(), c.getCommandPermissions().contains(permission));
         }
 
     }
@@ -92,7 +94,9 @@ public class PermissionsTest {
 
         @Test
         public void testPermissionIsNotValid() throws IllegalAccessException, InstantiationException {
-            Assert.assertFalse("The permission " + permission + " was not available for " + clazz.getName(), clazz.newInstance().getCommandPermissions().contains(permission));
+            CommandBase c = clazz.newInstance();
+            c.postInit();
+            Assert.assertFalse("The permission " + permission + " was not available for " + clazz.getName(), c.getCommandPermissions().contains(permission));
         }
     }
 
@@ -101,7 +105,7 @@ public class PermissionsTest {
 
         @Override
         public CommandSpec createSpec() {
-            return null;
+            return CommandSpec.builder().executor(this).build();
         }
 
         @Override

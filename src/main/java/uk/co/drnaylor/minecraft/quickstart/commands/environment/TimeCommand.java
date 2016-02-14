@@ -17,6 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 @Permissions(includeUser = true)
 @Modules(PluginModule.ENVIRONMENT)
+@RootCommand
 public class TimeCommand extends CommandBase {
     private final String world = "world";
 

@@ -13,6 +13,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WarpParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 import java.text.MessageFormat;
 
@@ -27,6 +28,7 @@ import java.text.MessageFormat;
  */
 @Permissions(includeUser = true)
 @Modules(PluginModule.WARPS)
+@RootCommand
 public class WarpsCommand extends CommandBase<Player> {
     static final String warpNameArg = Util.messageBundle.getString("args.name.warpname");
 

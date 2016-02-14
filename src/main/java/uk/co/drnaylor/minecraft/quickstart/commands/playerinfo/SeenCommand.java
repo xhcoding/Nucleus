@@ -9,11 +9,13 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 @Permissions
 @RunAsync
 @Modules(PluginModule.PLAYERINFO)
+@RootCommand
 public class SeenCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {

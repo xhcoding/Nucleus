@@ -20,6 +20,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCooldown
 @NoCost
 @NoWarmup
+@RootCommand
 public class DeleteHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";

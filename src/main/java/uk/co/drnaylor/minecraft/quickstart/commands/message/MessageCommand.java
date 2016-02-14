@@ -11,6 +11,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.PlayerConsoleArgument
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 
@@ -22,6 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 @Permissions(includeUser = true)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
+@RootCommand
 public class MessageCommand extends CommandBase {
     private final String to = "to";
     private final String message = "message";

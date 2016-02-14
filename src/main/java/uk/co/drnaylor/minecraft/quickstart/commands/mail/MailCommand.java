@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class MailCommand extends CommandBase<Player> {
     @Inject private MailHandler handler;
     private final String filters = "filters";

@@ -9,10 +9,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 @Permissions(root = "teleport")
 @Modules(PluginModule.TELEPORT)
 @NoWarmup
+@RootCommand
 public class TeleportAllHereAskCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {

@@ -8,11 +8,13 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 @Permissions(includeUser = true)
 @RunAsync
 @Modules(PluginModule.MISC)
+@RootCommand
 public class MotdCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {

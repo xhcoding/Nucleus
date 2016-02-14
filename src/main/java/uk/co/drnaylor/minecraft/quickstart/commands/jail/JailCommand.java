@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class JailCommand extends CommandBase {
     @Inject private JailHandler handler;
     private final String playerKey = "player";

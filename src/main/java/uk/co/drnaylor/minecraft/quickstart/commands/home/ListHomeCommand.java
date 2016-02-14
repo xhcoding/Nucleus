@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoWarmup
 @NoCost
+@RootCommand
 public class ListHomeCommand extends CommandBase {
     private final String player = "player";
 

@@ -142,7 +142,13 @@ public class QuickStart {
         modulesLoaded = true;
 
         // Register commands, events and runnables.
-        new PluginSystemsLoader(this).load();
+        try {
+            new PluginSystemsLoader(this).load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            isErrored = true;
+            return;
+        }
 
         // Register services
         game.getServiceManager().setProvider(this, QuickStartUserService.class, configLoader);

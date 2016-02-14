@@ -1,6 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
-import com.google.common.collect.Sets;
+import com.google.common.reflect.ClassPath;
 import com.google.inject.Injector;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -9,30 +9,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
-import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.core.QuickStartCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.environment.TimeCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.environment.WeatherCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.home.*;
-import uk.co.drnaylor.minecraft.quickstart.commands.jail.CheckJailCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.jail.JailsCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickAllCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.kick.KickCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.mail.MailCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.message.MessageCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.message.ReplyCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.misc.*;
-import uk.co.drnaylor.minecraft.quickstart.commands.mute.CheckMuteCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.mute.MuteCommand;
-import uk.co.drnaylor.minecraft.quickstart.commands.teleport.*;
-import uk.co.drnaylor.minecraft.quickstart.commands.warp.WarpsCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.listeners.*;
-import uk.co.drnaylor.minecraft.quickstart.runnables.AFKTask;
-import uk.co.drnaylor.minecraft.quickstart.runnables.JailTask;
-import uk.co.drnaylor.minecraft.quickstart.runnables.TeleportTask;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -60,95 +39,20 @@ public class PluginSystemsLoader {
         return objectsToFilter.stream().filter(moduleCheck).collect(Collectors.toSet());
     }
 
-    private Set<Class<? extends CommandBase>> getCommands() {
-        Set<Class<? extends CommandBase>> cmds = Sets.newHashSet();
-        cmds.add(QuickStartCommand.class);
-
-        // AFK
-        cmds.add(AFKCommand.class);
-
-        // Warps
-        cmds.add(WarpsCommand.class);
-
-        // Chat
-        cmds.add(MuteCommand.class);
-        cmds.add(CheckMuteCommand.class);
-
-        // Messages
-        cmds.add(MessageCommand.class);
-        cmds.add(ReplyCommand.class);
-        cmds.add(SocialSpyCommand.class);
-
-        // Kick
-        cmds.add(KickAllCommand.class);
-        cmds.add(KickCommand.class);
-
-        // Environment
-        cmds.add(WeatherCommand.class);
-        cmds.add(TimeCommand.class);
-
-        // Misc
-        cmds.add(GodCommand.class);
-        cmds.add(FlyCommand.class);
-        cmds.add(HealCommand.class);
-        cmds.add(FeedCommand.class);
-        cmds.add(BroadcastCommand.class);
-
-        // Mail
-        cmds.add(MailCommand.class);
-
-        // Jail
-        cmds.add(JailsCommand.class);
-        cmds.add(CheckJailCommand.class);
-
-        // Homes
-        cmds.add(HomeCommand.class);
-        cmds.add(HomeOtherCommand.class);
-        cmds.add(ListHomeCommand.class);
-        cmds.add(SetHomeCommand.class);
-        cmds.add(DeleteHomeCommand.class);
-        cmds.add(DeleteOtherHomeCommand.class);
-
-        // Teleportation
-        cmds.add(TeleportToggleCommand.class);
-        cmds.add(TeleportCommand.class);
-        cmds.add(TeleportHereCommand.class);
-        cmds.add(TeleportAllHereCommand.class);
-        cmds.add(TPNativeCommand.class);
-        cmds.add(TeleportPositionCommand.class);
-
-        return cmds;
-    }
-
-    private Set<Class<? extends ListenerBase>> getEvents() {
-        Set<Class<? extends ListenerBase>> events = Sets.newHashSet();
-        events.add(CoreListener.class);
-        events.add(MuteListener.class);
-        events.add(WarmupListener.class);
-        events.add(AFKListener.class);
-        events.add(MailListener.class);
-        events.add(MiscListener.class);
-        events.add(JailListener.class);
-        events.add(CommandLoggingListener.class);
-        return events;
-    }
-
-    private Set<Class<? extends TaskBase>> getTasks() {
-        Set<Class<? extends TaskBase>> runnables = Sets.newHashSet();
-        runnables.add(AFKTask.class);
-        runnables.add(JailTask.class);
-        runnables.add(TeleportTask.class);
-        return runnables;
-    }
-
-    public void load() {
+    public void load() throws IOException {
         loadCommands();
         loadEvents();
         loadRunnables();
     }
 
-    private void loadCommands() {
-        Set<Class<? extends CommandBase>> commandsToLoad = filterOutModules(getCommands());
+    private <T> Set<Class<? extends T>> getClasses(Class<T> base, String pack) throws IOException {
+        Set<ClassPath.ClassInfo> ci = ClassPath.from(this.getClass().getClassLoader()).getTopLevelClassesRecursive(pack);
+        return ci.stream().map(ClassPath.ClassInfo::load).map(x -> x.asSubclass(base)).collect(Collectors.toSet());
+    }
+
+    private void loadCommands() throws IOException {
+        // Get commands
+        Set<Class<? extends CommandBase>> commandsToLoad = filterOutModules(getClasses(CommandBase.class, "uk.co.drnaylor.minecraft.quickstart.commands"));
         Injector injector = quickStart.getInjector();
 
         // Commands config!
@@ -156,22 +60,36 @@ public class PluginSystemsLoader {
         CommandsConfig cc = quickStart.getConfig(ConfigMap.COMMANDS_CONFIG).get();
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandsToLoad.stream().map(x -> {
+            if (!x.isAnnotationPresent(RootCommand.class)) {
+                // If not a root command, return nothing.
+                return null;
+            }
+
             try {
-                CommandBase cb = x.newInstance();
-                injector.injectMembers(cb);
+                CommandBase cb = injector.getInstance(x); // x.newInstance();
                 return cb;
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
                 return null;
             }
         }).filter(x -> x != null).forEach(c -> {
+            try {
+                c.postInit();
+            } catch (Exception e) {
+                return;
+            }
+
+            // No spec, no return.
+            if (c.getSpec() == null) {
+                return;
+            }
+
             // Merge in config defaults.
             if (c.mergeDefaults()) {
                 sn.getNode(c.getAliases()[0].toLowerCase()).setValue(c.getDefaults());
             }
 
             // Register the commands.
-            Sponge.getCommandManager().register(quickStart, c.createSpec(), c.getAliases());
+            Sponge.getCommandManager().register(quickStart, c.getSpec(), c.getAliases());
         });
 
         try {
@@ -183,8 +101,8 @@ public class PluginSystemsLoader {
         }
     }
 
-    private void loadEvents() {
-        Set<Class<? extends ListenerBase>> commandsToLoad = filterOutModules(getEvents());
+    private void loadEvents() throws IOException {
+        Set<Class<? extends ListenerBase>> commandsToLoad = filterOutModules(getClasses(ListenerBase.class, "uk.co.drnaylor.minecraft.quickstart.listeners"));
         Injector injector = quickStart.getInjector();
         commandsToLoad.stream().map(x -> {
             try {
@@ -198,8 +116,8 @@ public class PluginSystemsLoader {
         }).filter(lb -> lb != null).forEach(c -> Sponge.getEventManager().registerListeners(quickStart, c));
     }
 
-    private void loadRunnables() {
-        Set<Class<? extends TaskBase>> commandsToLoad = filterOutModules(getTasks());
+    private void loadRunnables() throws IOException {
+        Set<Class<? extends TaskBase>> commandsToLoad = filterOutModules(getClasses(TaskBase.class, "uk.co.drnaylor.minecraft.quickstart.runnables"));
         Injector injector = quickStart.getInjector();
         commandsToLoad.stream().map(x -> {
             try {

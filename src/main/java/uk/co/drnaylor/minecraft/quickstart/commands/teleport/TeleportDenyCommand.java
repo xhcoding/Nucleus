@@ -22,6 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class TeleportDenyCommand extends CommandBase<Player> {
     @Inject private TeleportHandler teleportHandler;
 

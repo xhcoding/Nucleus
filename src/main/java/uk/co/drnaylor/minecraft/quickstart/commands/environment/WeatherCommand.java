@@ -21,12 +21,14 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WeatherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 import java.text.MessageFormat;
 import java.util.Optional;
 
 @Permissions
 @Modules(PluginModule.ENVIRONMENT)
+@RootCommand
 public class WeatherCommand extends CommandBase {
     private final String world = "world";
     private final String weather = "weather";

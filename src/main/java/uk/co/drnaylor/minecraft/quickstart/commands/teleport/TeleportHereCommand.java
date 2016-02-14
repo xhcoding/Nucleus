@@ -19,6 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class TeleportHereCommand extends CommandBase<Player> {
 
     private final String playerKey = "player";

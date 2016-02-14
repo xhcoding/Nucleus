@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
+@RootCommand
 public class KickCommand extends CommandBase {
     private final String player = "player";
     private final String reason = "reason";

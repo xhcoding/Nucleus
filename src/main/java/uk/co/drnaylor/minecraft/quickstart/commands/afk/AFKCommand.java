@@ -14,6 +14,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
+@RootCommand
 @Permissions(includeUser = true)
 @Modules(PluginModule.AFK)
 @NoCooldown
