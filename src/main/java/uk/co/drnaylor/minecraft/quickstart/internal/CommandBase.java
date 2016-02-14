@@ -497,6 +497,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             try {
                 c = cb.newInstance();
                 plugin.getInjector().injectMembers(c);
+                c.postInit();
                 map.put(Arrays.asList(c.getAliases()), c.createSpec());
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
