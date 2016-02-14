@@ -68,10 +68,6 @@ public class TeleportCommand extends CommandBase {
     @Override
     public String[] getAliases() {
         if (aliases == null) {
-            if (plugin == null) {
-
-            }
-
             // Some people want /tp to be held by minecraft. This will allow us to do so.
             if (plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode("teleport").getNode("use-tp-command").getBoolean(true)) {
                 aliases = new String[] { "teleport", "tp" };
