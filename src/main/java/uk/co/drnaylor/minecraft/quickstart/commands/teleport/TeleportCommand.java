@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import java.util.Optional;
 
-@Permissions(root = "teleport")
+@Permissions(root = "teleport", includeMod = true)
 @Modules(PluginModule.TELEPORT)
 @RootCommand
 public class TeleportCommand extends CommandBase {

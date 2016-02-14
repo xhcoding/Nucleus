@@ -10,16 +10,16 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
-@Permissions(root = "teleport")
+@Permissions(root = "teleport", includeUser = true, includeMod = true)
 @Modules(PluginModule.TELEPORT)
 @NoWarmup
+@NoCooldown
+@NoCost
 @RootCommand
+@RunAsync
 public class TeleportToggleCommand extends CommandBase<Player> {
     private final String key = "toggle";
 

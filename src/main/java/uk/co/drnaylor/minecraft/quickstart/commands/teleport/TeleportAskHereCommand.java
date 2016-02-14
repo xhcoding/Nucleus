@@ -20,15 +20,12 @@ import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Sends a request to a player to teleport to them, using click handlers.
- */
-@Permissions(root = "teleport", includeUser = true, includeMod = true)
+@Permissions(root = "teleport", includeMod = true)
 @Modules(PluginModule.TELEPORT)
+@RunAsync
 @NoWarmup(generateConfigEntry = true)
 @RootCommand
-@RunAsync
-public class TeleportAskCommand extends CommandBase<Player> {
+public class TeleportAskHereCommand extends CommandBase<Player> {
     @Inject
     private TeleportHandler tpHandler;
 
@@ -39,12 +36,12 @@ public class TeleportAskCommand extends CommandBase<Player> {
         return CommandSpec.builder().arguments(
                 new RequireOneOfPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("force")),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
-                .executor(this).build();
+            .executor(this).build();
     }
 
     @Override
     public String[] getAliases() {
-        return new String[] { "tpa", "teleportask" };
+        return new String[] { "tpahere", "tpaskhere", "teleportaskhere" };
     }
 
     @Override
@@ -55,8 +52,8 @@ public class TeleportAskCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        TeleportHandler.TeleportBuilder tb = tpHandler.getBuilder().setFrom(src).setTo(target).setSafe(!args.<Boolean>getOne("f").orElse(false));
-        int warmup = getWarmup(src);
+        TeleportHandler.TeleportBuilder tb = tpHandler.getBuilder().setFrom(target).setTo(src).setSafe(!args.<Boolean>getOne("f").orElse(false));
+        int warmup = getWarmup(target);
         if (warmup > 0) {
             tb.setWarmupTime(warmup);
         }
@@ -67,7 +64,7 @@ public class TeleportAskCommand extends CommandBase<Player> {
         }
 
         tpHandler.addAskQuestion(src.getUniqueId(), new TeleportHandler.TeleportPrep(Instant.now().plus(30, ChronoUnit.SECONDS), src, cost, tb));
-        target.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpa.question", src.getName())));
+        target.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpahere.question", src.getName())));
         target.sendMessage(Text.builder()
                 .append(
                         Text.builder(Util.messageBundle.getString("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)

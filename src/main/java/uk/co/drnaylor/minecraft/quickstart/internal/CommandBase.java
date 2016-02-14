@@ -363,14 +363,23 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
     // Warmups
     // -------------------------------------
+    protected int getWarmup(final Player src) {
+        if (warmup.isEmpty() || warmup.stream().anyMatch(src::hasPermission)) {
+            return 0;
+        }
+
+        // Get the warmup time.
+        return plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("warmup").getInt();
+    }
+
     @SuppressWarnings("unchecked")
     private ContinueMode setupWarmup(final Player src, CommandContext args) {
-        if (bypassWarmup || warmup.isEmpty() || warmup.stream().anyMatch(src::hasPermission)) {
+        if (bypassWarmup) {
             return ContinueMode.CONTINUE;
         }
 
         // Get the warmup time.
-        int warmupTime = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("warmup").getInt();
+        int warmupTime = getWarmup(src);
         if (warmupTime <= 0) {
             return ContinueMode.CONTINUE;
         }
