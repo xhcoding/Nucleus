@@ -19,7 +19,6 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.time.Instant;
@@ -27,7 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 @RootCommand
-@Permissions
+@Permissions(root = "ban", includeMod = true)
 @Modules(PluginModule.BANS)
 @NoWarmup
 @NoCooldown
@@ -36,8 +35,6 @@ public class TempBanCommand extends CommandBase {
     private final String user = "user";
     private final String reason = "reason";
     private final String duration = "duration";
-
-    private PermissionUtil banPermissionUtil = null;
 
     @Override
     public CommandSpec createSpec() {
@@ -77,20 +74,11 @@ public class TempBanCommand extends CommandBase {
         }
 
         // Get the permission, "quickstart.ban.notify"
-        Set<String> notify = banPermissionUtil.getPermissionWithSuffix("notify");
-        notify.add(PermissionUtil.PERMISSIONS_MOD);
+        Set<String> notify = permissions.getPermissionWithSuffixFromRootOnly("notify", true);
         MessageChannel send = Util.getMessageChannel(pl, notify.toArray(new String[notify.size()]));
         send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName())));
         send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", reason)));
 
         return CommandResult.success();
-    }
-
-    private PermissionUtil getBanPermissionUtil() {
-        if (banPermissionUtil == null) {
-            banPermissionUtil = new PermissionUtil(BanCommand.class.getAnnotation(Permissions.class), "ban");
-        }
-
-        return banPermissionUtil;
     }
 }

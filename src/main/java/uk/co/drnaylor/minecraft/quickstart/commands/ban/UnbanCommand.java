@@ -30,8 +30,6 @@ import java.util.Set;
 @NoCost
 public class UnbanCommand extends CommandBase {
     private final String key = "player";
-    private PermissionUtil banPermissionUtil = null;
-
 
     @Override
     public CommandSpec createSpec() {
@@ -57,7 +55,7 @@ public class UnbanCommand extends CommandBase {
 
         service.removeBan(obp.get());
 
-        Set<String> n = getBanPermissionUtil().getPermissionWithSuffix("notify");
+        Set<String> n = permissions.getPermissionWithSuffixFromRootOnly("notify", true);
         n.add(PermissionUtil.PERMISSIONS_MOD);
         String[] notify = n.toArray(new String[n.size()]);
         Player pl = null;
@@ -67,13 +65,5 @@ public class UnbanCommand extends CommandBase {
 
         Util.getMessageChannel(pl, notify).send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.unban.success", obp.get().getProfile().getName(), src.getName())));
         return CommandResult.success();
-    }
-
-    private PermissionUtil getBanPermissionUtil() {
-        if (banPermissionUtil == null) {
-            banPermissionUtil = new PermissionUtil(BanCommand.class.getAnnotation(Permissions.class), "ban");
-        }
-
-        return banPermissionUtil;
     }
 }

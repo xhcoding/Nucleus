@@ -17,7 +17,7 @@ public final class PermissionUtil {
     private final Permissions ps;
     private final String commandAlias;
 
-    public PermissionUtil(Permissions ps, String commandAlias) {
+    PermissionUtil(Permissions ps, String commandAlias) {
         Preconditions.checkNotNull(ps);
         this.ps = ps;
         this.commandAlias = ps.alias().isEmpty() ? commandAlias : ps.alias().toLowerCase();
@@ -47,6 +47,21 @@ public final class PermissionUtil {
         return perms;
     }
 
+    public Set<String> getPermissionWithSuffixFromRootOnly(String suffix, boolean includeNonAdmin) {
+        Set<String> perms = new HashSet<>();
+
+        if (ps.useDefault()) {
+            StringBuilder perm = new StringBuilder(PERMISSIONS_PREFIX);
+            if (!ps.root().isEmpty()) {
+                perm.append(ps.root()).append(".");
+            }
+
+            perms.add(perm.append(suffix).toString());
+        }
+
+        return includeStock(perms, includeNonAdmin);
+    }
+
     public Set<String> getPermissionWithSuffix(String suffix) {
         return getPermissionWithSuffix(suffix, false);
     }
@@ -69,6 +84,10 @@ public final class PermissionUtil {
             perms.add(perm.append(suffix).toString());
         }
 
+        return includeStock(perms, includeNonAdmin);
+    }
+
+    private Set<String> includeStock(Set<String> perms, boolean includeNonAdmin) {
         if (ps.includeAdmin()) {
             perms.add(PERMISSIONS_ADMIN);
         }
