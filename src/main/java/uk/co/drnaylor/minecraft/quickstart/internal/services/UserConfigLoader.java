@@ -102,11 +102,23 @@ public class UserConfigLoader implements QuickStartUserService {
         });
     }
 
+    public void forceUnloadPlayerWithoutSaving(UUID uuid) {
+        purgeNotOnline();
+        if (loadedUsers.containsKey(uuid)) {
+            // Really is no need to save at this point.
+            loadedUsers.remove(uuid);
+        }
+
+        if (softLoadedUsers.containsKey(uuid)) {
+            softLoadedUsers.remove(uuid);
+        }
+    }
+
     private void clearNullSoftReferences() {
         softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() == null).map(Map.Entry::getKey).forEach(softLoadedUsers::remove);
     }
 
-    private Path getUserPath(UUID uuid) throws IOException {
+    public Path getUserPath(UUID uuid) throws IOException {
         String u = uuid.toString();
         String f = u.substring(0, 2);
         Path file = plugin.getDataPath().resolve(String.format("userdata%1$s%2$s%1$s%3$s.json", File.separator, f, u));
