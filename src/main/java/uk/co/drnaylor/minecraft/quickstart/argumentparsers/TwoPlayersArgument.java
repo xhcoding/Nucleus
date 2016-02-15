@@ -58,4 +58,9 @@ public class TwoPlayersArgument extends CommandElement {
             return Sponge.getServer().getOnlinePlayers().stream().map(User::getName).collect(Collectors.toList());
         }
     }
+
+    @Override
+    public Text getUsage(CommandSource src) {
+        return Text.of("<player to teleport> <target>");
+    }
 }

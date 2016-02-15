@@ -17,6 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermissio
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TwoPlayersArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ConfigCommandAlias;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
@@ -24,9 +25,10 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import java.util.Optional;
 
-@Permissions(root = "teleport", includeMod = true)
+@Permissions(root = "teleport", alias = "teleport", includeMod = true)
 @Modules(PluginModule.TELEPORT)
 @RootCommand
+@ConfigCommandAlias("teleport")
 public class TeleportCommand extends CommandBase {
 
     private String[] aliases = null;
@@ -70,7 +72,7 @@ public class TeleportCommand extends CommandBase {
         if (aliases == null) {
             // Some people want /tp to be held by minecraft. This will allow us to do so.
             if (plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode("teleport").getNode("use-tp-command").getBoolean(true)) {
-                aliases = new String[] { "teleport", "tp" };
+                aliases = new String[] { "tp", "teleport" };
             } else {
                 aliases = new String[] { "teleport" };
             }

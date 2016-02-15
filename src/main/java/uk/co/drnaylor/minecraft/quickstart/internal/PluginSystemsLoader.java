@@ -85,7 +85,7 @@ public class PluginSystemsLoader {
 
             // Merge in config defaults.
             if (c.mergeDefaults()) {
-                sn.getNode(c.getAliases()[0].toLowerCase()).setValue(c.getDefaults());
+                sn.getNode(c.getCommandConfigAlias()).setValue(c.getDefaults());
             }
 
             // Register the commands.

@@ -52,6 +52,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private String configSection;
     private boolean generateDefaults;
     private CommandSpec cs = null;
+    private String commandConfigAlias = null;
 
     @Inject protected QuickStart plugin;
     @Inject private WarmupManager warmupService;
@@ -172,6 +173,13 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
     // Metadata
     // -------------------------------------
+    public String getCommandConfigAlias() {
+        if (configSection == null) {
+            return getAliases()[0];
+        }
+
+        return configSection;
+    }
 
     public CommandSpec getSpec() {
         if (cs != null) {
