@@ -28,6 +28,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private boolean serperateWarpPermissions = false;
     private List<String> allowedCommandsInJail;
     private long teleportWarmup;
+    private boolean modifyChat = false;
+    private String chatTemplate;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -70,6 +72,10 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
         // Teleports
         teleportWarmup = node.getNode("teleport", "warmup").getLong(3);
+
+        // Chat
+        modifyChat = node.getNode("chat", "modifychat").getBoolean(true);
+        chatTemplate = node.getNode("chat", "template").getString("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
     }
 
     @Override
@@ -101,6 +107,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         ccn.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).setValue(false);
 
         ccn.getNode("teleport", "warmup").setComment(Util.messageBundle.getString("config.teleport.warmup")).setValue(3);
+
+        ccn.getNode("chat", "modifychat").setComment(Util.messageBundle.getString("config.chat.modify")).setValue(false);
+        ccn.getNode("chat", "template").setComment(Util.messageBundle.getString("config.chat.template")).setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
         return ccn;
     }
 
@@ -130,5 +139,13 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         }
 
         return teleportWarmup;
+    }
+
+    public boolean getModifyChat() {
+        return modifyChat;
+    }
+
+    public String getChatTemplate() {
+        return chatTemplate;
     }
 }
