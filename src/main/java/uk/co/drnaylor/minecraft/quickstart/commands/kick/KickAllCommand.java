@@ -12,13 +12,11 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Kicks all players
@@ -38,6 +36,7 @@ public class KickAllCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Kicks all players.")).executor(this)
             .arguments(
+                    new RequireOneOfPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("whitelist", false)),
                     GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
             ).build();
     }
@@ -50,16 +49,22 @@ public class KickAllCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String r = args.<String>getOne(reason).orElse(Util.messageBundle.getString("command.kick.defaultreason"));
+        Boolean f = args.<Boolean>getOne("f").orElse(false);
+
+        if (f) {
+             Sponge.getServer().setHasWhitelist(true);
+        }
 
         Sponge.getServer().getOnlinePlayers().stream().filter(x -> !(src instanceof Player) || ((Player) src).getUniqueId().equals(x.getUniqueId())).forEach(x -> x.kick(Text.of(TextColors.RED, r)));
-
-        List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "kick.notify"))
-                .map(y -> (CommandSource)y).collect(Collectors.toList());
-        lcs.add(Sponge.getServer().getConsole());
 
         MessageChannel mc = MessageChannel.fixed(Sponge.getServer().getConsole(), src);
         mc.send(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.kickall.message")));
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.reason"), r)));
+        if (f) {
+            mc.send(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.kickall.whitelist")));
+        }
+
+
         return CommandResult.success();
     }
 }
