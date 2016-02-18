@@ -13,6 +13,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 
 import java.text.MessageFormat;
@@ -23,8 +24,9 @@ import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 @Modules(PluginModule.CHAT)
-public class ChatListener {
+public class ChatListener extends ListenerBase {
     private final Pattern p;
+    private final Pattern match;
 
     private final Map<String, BiFunction<Player, Text, Text>> tokens;
 
@@ -37,8 +39,9 @@ public class ChatListener {
         StringBuilder sb = new StringBuilder("(");
         tokens.forEach((k, v) -> sb.append(k.replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}")).append("|"));
 
-        sb.deleteCharAt(sb.length() - 1).append(")");
-        p = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", sb.toString()), Pattern.CASE_INSENSITIVE);
+        String m = sb.deleteCharAt(sb.length() - 1).append(")").toString();
+        match = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
+        p = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
     }
 
     private Map<String, BiFunction<Player, Text, Text>> createTokens() {
@@ -66,13 +69,25 @@ public class ChatListener {
 
         Text.Builder tb = Text.builder();
 
+        boolean isEmpty = true;
         for (String textElement : s) {
-            if (p.matcher(textElement).matches()) {
+            if (match.matcher(textElement).matches()) {
                 // If we have a token, do the replacement as specified by the function
-                tb.append(tokens.get(textElement.toLowerCase()).apply(player, rawMessage));
+                Text message = tokens.get(textElement.toLowerCase()).apply(player, rawMessage);
+                if (!message.isEmpty()) {
+                    isEmpty = false;
+                    tb.append(message);
+                }
             } else {
-                // Just convert the colour codes, but that's it.
-                tb.append(TextSerializers.formattingCode('&').deserialize(textElement));
+                if (isEmpty) {
+                    textElement = textElement.replaceAll("^\\s+", "");
+                }
+
+                if (!textElement.isEmpty()) {
+                    // Just convert the colour codes, but that's it.
+                    tb.append(TextSerializers.formattingCode('&').deserialize(textElement));
+                    isEmpty = false;
+                }
             }
         }
 

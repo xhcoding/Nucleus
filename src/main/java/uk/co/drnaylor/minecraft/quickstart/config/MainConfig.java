@@ -25,10 +25,10 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private final String modulesSection = "modules";
     private int afkTime;
     private int afkTimeKick;
-    private boolean serperateWarpPermissions = false;
+    private boolean serperateWarpPermissions;
     private List<String> allowedCommandsInJail;
     private long teleportWarmup;
-    private boolean modifyChat = false;
+    private boolean modifyChat;
     private String chatTemplate;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
@@ -105,8 +105,6 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         }
 
         ccn.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).setValue(false);
-
-        ccn.getNode("teleport", "warmup").setComment(Util.messageBundle.getString("config.teleport.warmup")).setValue(3);
 
         ccn.getNode("chat", "modifychat").setComment(Util.messageBundle.getString("config.chat.modify")).setValue(false);
         ccn.getNode("chat", "template").setComment(Util.messageBundle.getString("config.chat.template")).setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
