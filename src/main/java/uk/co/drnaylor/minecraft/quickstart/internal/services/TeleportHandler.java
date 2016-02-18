@@ -50,7 +50,7 @@ public class TeleportHandler {
 
     public void clearExpired() {
         Instant now = Instant.now();
-        ask.entrySet().stream().filter(x -> now.isBefore(x.getValue().getExpire())).map(Map.Entry::getKey).collect(Collectors.toList())
+        ask.entrySet().stream().filter(x -> now.isAfter(x.getValue().getExpire())).map(Map.Entry::getKey).collect(Collectors.toList())
                 .forEach(x -> cancel(ask.remove(x)));
     }
 

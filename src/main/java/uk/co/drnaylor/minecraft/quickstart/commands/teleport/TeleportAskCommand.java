@@ -66,7 +66,7 @@ public class TeleportAskCommand extends CommandBase<Player> {
             tb.setCharge(src).setCost(cost);
         }
 
-        tpHandler.addAskQuestion(src.getUniqueId(), new TeleportHandler.TeleportPrep(Instant.now().plus(30, ChronoUnit.SECONDS), src, cost, tb));
+        tpHandler.addAskQuestion(target.getUniqueId(), new TeleportHandler.TeleportPrep(Instant.now().plus(30, ChronoUnit.SECONDS), src, cost, tb));
         target.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpa.question", src.getName())));
         target.sendMessage(Text.builder()
                 .append(
