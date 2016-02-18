@@ -7,7 +7,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyles;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
@@ -29,6 +31,7 @@ public class TeleportHandler {
     private final Map<UUID, TeleportPrep> ask = new HashMap<>();
 
     public static final String tptoggleBypassPermission = PermissionUtil.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
+    private Text acceptDeny;
 
     public TeleportHandler(QuickStart plugin) {
         this.plugin = plugin;
@@ -72,6 +75,21 @@ public class TeleportHandler {
         TeleportPrep tp = ask.remove(uuid);
         cancel(tp);
         return tp != null;
+    }
+
+    public Text getAcceptDenyMessage() {
+        if (acceptDeny == null) {
+            acceptDeny = Text.builder()
+                    .append(
+                            Text.builder(Util.getMessageWithFormat("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                                    .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.accept.hover")))).onClick(TextActions.runCommand("/tpaccept")).build())
+                    .append(Text.of(" - "))
+                    .append(Text.builder(Util.getMessageWithFormat("standard.deny")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                            .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
+                    .build();
+        }
+
+        return acceptDeny;
     }
 
     private void cancel(@Nullable TeleportPrep prep) {

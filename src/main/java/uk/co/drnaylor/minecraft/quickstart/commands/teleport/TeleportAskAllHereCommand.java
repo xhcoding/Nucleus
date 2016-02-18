@@ -7,9 +7,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
@@ -52,14 +50,7 @@ public class TeleportAskAllHereCommand extends CommandBase<Player> {
 
             x.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpahere.question", src.getName())));
 
-            x.sendMessage(Text.builder()
-                .append(
-                    Text.builder(Util.getMessageWithFormat("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                        .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.accept.hover")))).onClick(TextActions.runCommand("/tpaccept")).build())
-                .append(Text.of(" - "))
-                .append(Text.builder(Util.getMessageWithFormat("standard.deny")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                        .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
-                .build());
+            x.sendMessage(tpHandler.getAcceptDenyMessage());
         });
 
         src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpaall.success")));
