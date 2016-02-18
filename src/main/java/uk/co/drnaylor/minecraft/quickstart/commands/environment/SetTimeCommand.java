@@ -1,7 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.environment;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -11,7 +10,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WorldTimeParser;
@@ -48,14 +46,14 @@ public class SetTimeCommand extends CommandBase {
             } else if (src instanceof CommandBlockSource) {
                 pr = ((CommandBlockSource) src).getWorld().getProperties();
             } else {
-                src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.settime.default")));
+                src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.settime.default")));
                 pr = Sponge.getServer().getDefaultWorld().get();
             }
         }
 
         int tick = args.<Integer>getOne(time).get();
         pr.setWorldTime(tick);
-        src.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.messageBundle.getString("command.settime.done"), Util.getTimeFromTicks(tick))));
+        src.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.getMessageWithFormat("command.settime.done"), Util.getTimeFromTicks(tick))));
         return CommandResult.success();
     }
 }

@@ -62,21 +62,21 @@ public class CheckJailCommand extends CommandBase {
             name = Sponge.getServer().getConsole().getName();
         } else {
             Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getJailer());
-            name = ou.isPresent() ? ou.get().getName() : Util.messageBundle.getString("standard.unknown");
+            name = ou.isPresent() ? ou.get().getName() : Util.getMessageWithFormat("standard.unknown");
         }
 
         String time = "";
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
             time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
-            forString = " " + Util.messageBundle.getString("standard.for") + " ";
+            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
             time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = " " + Util.messageBundle.getString("standard.for") + " ";
+            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.checkjail.jailed"), user.getName(), md.getJailName(), name, forString, time)));
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), md.getReason())));
+        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.checkjail.jailed"), user.getName(), md.getJailName(), name, forString, time)));
+        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), md.getReason())));
         return CommandResult.success();
     }
 }

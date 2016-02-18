@@ -79,7 +79,7 @@ public class WorldTimeParser extends CommandElement {
             // Get the number, multiply by 1000, return.
             int i = Integer.parseInt(m1.group(1));
             if (i > 23 || i < 0) {
-                throw args.createError(Text.of(Util.messageBundle.getString("args.worldtime.24herror")));
+                throw args.createError(Text.of(Util.getMessageWithFormat("args.worldtime.24herror")));
             }
 
             i -= 6;
@@ -96,7 +96,7 @@ public class WorldTimeParser extends CommandElement {
             // Get the number, multiply by 1000, return.
             int i = Integer.parseInt(m2.group(1));
             if (i > 12 || i < 1) {
-                throw args.createError(Text.of(Util.messageBundle.getString("args.worldtime.12herror")));
+                throw args.createError(Text.of(Util.getMessageWithFormat("args.worldtime.12herror")));
             }
 
             // Modify to 24 hour time, based on am/pm
@@ -125,10 +125,10 @@ public class WorldTimeParser extends CommandElement {
                 return i;
             }
 
-            throw args.createError(Text.of(Util.messageBundle.getString("args.worldtime.ticks")));
+            throw args.createError(Text.of(Util.getMessageWithFormat("args.worldtime.ticks")));
         }
 
-        throw args.createError(Text.of(MessageFormat.format(Util.messageBundle.getString("args.worldtime.error"), arg)));
+        throw args.createError(Text.of(MessageFormat.format(Util.getMessageWithFormat("args.worldtime.error"), arg)));
     }
 
     @Override

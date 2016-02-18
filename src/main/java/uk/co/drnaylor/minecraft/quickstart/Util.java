@@ -68,9 +68,9 @@ public class Util {
         if (day > 0) {
             sb.append(day).append(" ");
             if (day > 1) {
-                sb.append(Util.messageBundle.getString("standard.days"));
+                sb.append(Util.getMessageWithFormat("standard.days"));
             } else {
-                sb.append(Util.messageBundle.getString("standard.day"));
+                sb.append(Util.getMessageWithFormat("standard.day"));
             }
         }
 
@@ -78,9 +78,9 @@ public class Util {
             appendComma(sb);
             sb.append(hour).append(" ");
             if (hour > 1) {
-                sb.append(Util.messageBundle.getString("standard.hours"));
+                sb.append(Util.getMessageWithFormat("standard.hours"));
             } else {
-                sb.append(Util.messageBundle.getString("standard.hour"));
+                sb.append(Util.getMessageWithFormat("standard.hour"));
             }
         }
 
@@ -88,9 +88,9 @@ public class Util {
             appendComma(sb);
             sb.append(min).append(" ");
             if (min > 1) {
-                sb.append(Util.messageBundle.getString("standard.minutes"));
+                sb.append(Util.getMessageWithFormat("standard.minutes"));
             } else {
-                sb.append(Util.messageBundle.getString("standard.minute"));
+                sb.append(Util.getMessageWithFormat("standard.minute"));
             }
         }
 
@@ -98,16 +98,16 @@ public class Util {
             appendComma(sb);
             sb.append(sec).append(" ");
             if (sec > 1) {
-                sb.append(Util.messageBundle.getString("standard.seconds"));
+                sb.append(Util.getMessageWithFormat("standard.seconds"));
             } else {
-                sb.append(Util.messageBundle.getString("standard.second"));
+                sb.append(Util.getMessageWithFormat("standard.second"));
             }
         }
 
         if (sb.length() > 0) {
             return sb.toString();
         } else {
-            return Util.messageBundle.getString("standard.unknown");
+            return Util.getMessageWithFormat("standard.unknown");
         }
     }
 
@@ -172,7 +172,7 @@ public class Util {
             return user.get().getName();
         }
 
-        return Util.messageBundle.getString("standard.unknown");
+        return Util.getMessageWithFormat("standard.unknown");
     }
 
     public static Optional<Player> getPlayerFromOptionalOrSource(Optional<Player> pl, CommandSource src) {

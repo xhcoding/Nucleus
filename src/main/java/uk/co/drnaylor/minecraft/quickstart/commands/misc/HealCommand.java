@@ -46,20 +46,20 @@ public class HealCommand extends CommandBase {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<Player> opl = Util.getPlayerFromOptionalOrSource(args.<Player>getOne(player), src);
         if (!opl.isPresent()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
             return CommandResult.empty();
         }
 
         Player pl = opl.get();
         if (pl.offer(Keys.HEALTH, pl.get(Keys.MAX_HEALTH).get()).isSuccessful()) {
-            pl.sendMessages(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.heal.success")));
+            pl.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.heal.success")));
             if (!pl.equals(src)) {
                 src.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.heal.success.other", pl.getName())));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessages(Text.of(TextColors.RED, Util.messageBundle.getString("command.heal.error")));
+            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.heal.error")));
             return CommandResult.empty();
         }
     }

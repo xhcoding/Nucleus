@@ -66,12 +66,12 @@ public class ListHomeCommand extends CommandBase {
             user = ou.get();
         } else {
             if (!(src instanceof Player)) {
-                src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.listhome.player")));
+                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.listhome.player")));
                 return CommandResult.empty();
             }
 
             user = (User)src;
-            header = Util.messageBundle.getString("home.title");
+            header = Util.getMessageWithFormat("home.title");
         }
 
         Map<String, WarpLocation> msw = plugin.getUserLoader().getUser(user).getHomes();

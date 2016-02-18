@@ -53,15 +53,15 @@ public class ResetUser extends CommandBase {
         final User user = args.<User>getOne(userKey).get();
 
         List<Text> messages = new ArrayList<>();
-        messages.add(Text.of(TextColors.DARK_RED, Util.messageBundle.getString("command.quickstart.reset.warning")));
+        messages.add(Text.of(TextColors.DARK_RED, Util.getMessageWithFormat("command.quickstart.reset.warning")));
         messages.add(Text.of(TextColors.RED, Util.getMessageWithFormat("command.quickstart.reset.warning2", user.getName())));
-        messages.add(Text.of(TextColors.RED, Util.messageBundle.getString("command.quickstart.reset.warning3")));
-        messages.add(Text.of(TextColors.RED, Util.messageBundle.getString("command.quickstart.reset.warning4")));
-        messages.add(Text.of(TextColors.RED, Util.messageBundle.getString("command.quickstart.reset.warning5")));
-        messages.add(Text.of(TextColors.RED, Util.messageBundle.getString("command.quickstart.reset.warning6")));
-        messages.add(Text.of(TextColors.RED, Util.messageBundle.getString("command.quickstart.reset.warning7")));
+        messages.add(Text.of(TextColors.RED, Util.getMessageWithFormat("command.quickstart.reset.warning3")));
+        messages.add(Text.of(TextColors.RED, Util.getMessageWithFormat("command.quickstart.reset.warning4")));
+        messages.add(Text.of(TextColors.RED, Util.getMessageWithFormat("command.quickstart.reset.warning5")));
+        messages.add(Text.of(TextColors.RED, Util.getMessageWithFormat("command.quickstart.reset.warning6")));
+        messages.add(Text.of(TextColors.RED, Util.getMessageWithFormat("command.quickstart.reset.warning7")));
         messages.add(
-            Text.builder(Util.messageBundle.getString("command.quickstart.reset.reset")).color(TextColors.GREEN)
+            Text.builder(Util.getMessageWithFormat("command.quickstart.reset.reset")).color(TextColors.GREEN)
                 .style(TextStyles.UNDERLINE).onClick(TextActions.executeCallback(new Delete(plugin, user))).build()
         );
 
@@ -82,7 +82,7 @@ public class ResetUser extends CommandBase {
         @Override
         public void accept(CommandSource source) {
             if (user.isOnline()) {
-                user.getPlayer().get().kick(Text.of(Util.messageBundle.getString("command.kick.defaultreason")));
+                user.getPlayer().get().kick(Text.of(Util.getMessageWithFormat("command.kick.defaultreason")));
             }
 
             // Ban temporarily.

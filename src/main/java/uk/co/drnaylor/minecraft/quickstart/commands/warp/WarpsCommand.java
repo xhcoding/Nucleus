@@ -30,7 +30,7 @@ import java.text.MessageFormat;
 @Modules(PluginModule.WARPS)
 @RootCommand
 public class WarpsCommand extends CommandBase<Player> {
-    static final String warpNameArg = Util.messageBundle.getString("args.name.warpname");
+    static final String warpNameArg = Util.getMessageWithFormat("args.name.warpname");
 
     @Override
     public CommandSpec createSpec() {
@@ -54,13 +54,13 @@ public class WarpsCommand extends CommandBase<Player> {
         WarpParser.WarpData wd = args.<WarpParser.WarpData>getOne(warpNameArg).get();
 
         // We have a warp data, warp them.
-        pl.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.messageBundle.getString("command.warps.start"), wd.warp)));
+        pl.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.getMessageWithFormat("command.warps.start"), wd.warp)));
 
         // Warp them.
         if (args.getOne("f").isPresent()) { // Force the position.
             pl.setLocationAndRotation(wd.loc.getLocation(), wd.loc.getRotation());
         } else if(!pl.setLocationAndRotationSafely(wd.loc.getLocation(), wd.loc.getRotation())) { // No force, try teleport, if failed, tell them.
-            pl.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.warps.nosafe")));
+            pl.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.nosafe")));
 
             // Don't add the cooldown if enabled.
             return CommandResult.empty();

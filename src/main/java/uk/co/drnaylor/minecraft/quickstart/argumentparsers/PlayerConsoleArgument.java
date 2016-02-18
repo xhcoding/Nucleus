@@ -31,7 +31,7 @@ public class PlayerConsoleArgument extends CommandElement {
         }
 
         return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().equalsIgnoreCase(name)).findFirst().orElseThrow(() ->
-            args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("args.playerconsole.noexist"))));
+            args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.playerconsole.noexist"))));
     }
 
     @Override

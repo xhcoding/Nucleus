@@ -53,12 +53,12 @@ public class TimeCommand extends CommandBase {
             } else if (src instanceof CommandBlockSource) {
                 pr = ((CommandBlockSource) src).getWorld().getProperties();
             } else {
-                src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.settime.default")));
+                src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.settime.default")));
                 pr = Sponge.getServer().getDefaultWorld().get();
             }
         }
 
-        src.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.messageBundle.getString("command.time"), pr.getWorldName(), Util.getTimeFromTicks(pr.getWorldTime()))));
+        src.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.getMessageWithFormat("command.time"), pr.getWorldName(), Util.getTimeFromTicks(pr.getWorldTime()))));
         return CommandResult.success();
     }
 }

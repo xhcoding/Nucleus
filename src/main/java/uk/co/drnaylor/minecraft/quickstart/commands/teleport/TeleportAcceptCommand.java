@@ -39,11 +39,11 @@ public class TeleportAcceptCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         if (teleportHandler.getAndExecute(src.getUniqueId())) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.tpaccept.success")));
+            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpaccept.success")));
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.tpaccept.nothing")));
+        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tpaccept.nothing")));
         return CommandResult.empty();
     }
 }

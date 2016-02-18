@@ -47,15 +47,15 @@ public class BroadcastCommand extends CommandBase {
     @Override
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode ccn = super.getDefaults();
-        ccn.getNode("broadcast-tag").setComment(Util.messageBundle.getString("config.broadcast.tag")).setValue(Util.messageBundle.getString("broadcast.tag"));
-        ccn.getNode("broadcast-colour").setComment(Util.messageBundle.getString("config.broadcast.msg")).setValue("a");
+        ccn.getNode("broadcast-tag").setComment(Util.getMessageWithFormat("config.broadcast.tag")).setValue(Util.getMessageWithFormat("broadcast.tag"));
+        ccn.getNode("broadcast-colour").setComment(Util.getMessageWithFormat("config.broadcast.msg")).setValue("a");
         return ccn;
     }
 
     private Text constructMessage(String message) {
         CommentedConfigurationNode ccn = commandsConfig.getCommandNode(getAliases()[0]);
         String colour = ccn.getNode("broadcast-colour").getString("a").substring(0, 1);
-        String tag = ccn.getNode("broadcast-tag").getString(Util.messageBundle.getString("broadcast.tag"));
+        String tag = ccn.getNode("broadcast-tag").getString(Util.getMessageWithFormat("broadcast.tag"));
         return Text.builder().append(TextSerializers.formattingCode('&').deserialize(tag))
                 .append(TextSerializers.formattingCode('&').deserialize(" &" + colour + message)).build();
     }

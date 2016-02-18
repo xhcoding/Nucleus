@@ -47,7 +47,7 @@ public class SetWarpCommand extends CommandBase<Player> {
 
         // Needs to match the name...
         if (!warpRegex.matcher(warp).matches()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.warps.invalidname")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.invalidname")));
             return CommandResult.empty();
         }
 
@@ -55,19 +55,19 @@ public class SetWarpCommand extends CommandBase<Player> {
         QuickStartWarpService qs = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
         if (qs.getWarp(warp).isPresent()) {
             // You have to delete to set the same name
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.warps.nooverwrite")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.nooverwrite")));
             return CommandResult.empty();
         }
 
         // OK! Set it.
         if (qs.setWarp(warp, src.getLocation(), src.getRotation())) {
             // Worked. Tell them.
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.warps.set"), warp)));
+            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.warps.set"), warp)));
             return CommandResult.success();
         }
 
         // Didn't work. Tell them.
-        src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.warps.seterror")));
+        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.seterror")));
         return CommandResult.empty();
     }
 }

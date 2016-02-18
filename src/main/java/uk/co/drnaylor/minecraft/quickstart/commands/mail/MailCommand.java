@@ -63,7 +63,7 @@ public class MailCommand extends CommandBase<Player> {
         }
 
         if (lmd.isEmpty()) {
-            src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString(!lmf.isEmpty() ? "command.mail.none.filter" : "command.mail.none")));
+            src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat(!lmf.isEmpty() ? "command.mail.none.filter" : "command.mail.none")));
             return CommandResult.success();
         }
 
@@ -73,8 +73,8 @@ public class MailCommand extends CommandBase<Player> {
 
         // Paginate the mail.
         PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().paddingString("-").title(Text.of(TextColors.YELLOW, Util.messageBundle.getString(lmf.isEmpty() ? "mail.title" : "mail.title.filter")))
-                .header(Text.of(TextColors.YELLOW, Util.messageBundle.getString("mail.header"))).contents(mails)
+        ps.builder().paddingString("-").title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat(lmf.isEmpty() ? "mail.title" : "mail.title.filter")))
+                .header(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("mail.header"))).contents(mails)
                 .sendTo(src);
 
         return CommandResult.success();
@@ -85,11 +85,11 @@ public class MailCommand extends CommandBase<Player> {
         return Text.builder().append(Text.builder(Util.getNameFromUUID(md.getUuid()))
                 .color(TextColors.GREEN)
                 .style(TextStyles.UNDERLINE)
-                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.mail.hover"))))
+                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.hover"))))
                 .onClick(TextActions.executeCallback(src -> {
-                    src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.mail.date") + " ", TextColors.WHITE, dtf.format(md.getDate())));
-                    src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.mail.sender") + " ", TextColors.WHITE, Util.getNameFromUUID(md.getUuid())));
-                    src.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.mail.message")));
+                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.date") + " ", TextColors.WHITE, dtf.format(md.getDate())));
+                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.sender") + " ", TextColors.WHITE, Util.getNameFromUUID(md.getUuid())));
+                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.message")));
                     src.sendMessage(Text.of(TextColors.WHITE, md.getMessage()));
                 })).build())
                 .append(Text.of(": " + md.getMessage())).build();

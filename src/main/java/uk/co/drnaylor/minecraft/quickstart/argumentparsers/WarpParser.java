@@ -48,15 +48,15 @@ public class WarpParser extends CommandElement {
         String warpName = args.next();
         String warp = warpName.toLowerCase();
         if (!service.warpExists(warp)) {
-            throw args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("args.warps.noexist")));
+            throw args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noexist")));
         }
 
         if (!checkPermission(source, warpName)) {
-            throw args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("args.warps.noperms")));
+            throw args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noperms")));
         }
 
         if (includeWarpData) {
-            return new WarpData(warpName, service.getWarp(warp).orElseThrow(() -> args.createError(Text.of(Util.messageBundle.getString("args.warps.notavailable")))));
+            return new WarpData(warpName, service.getWarp(warp).orElseThrow(() -> args.createError(Text.of(Util.getMessageWithFormat("args.warps.notavailable")))));
         } else {
             return new WarpData(warpName, null);
         }

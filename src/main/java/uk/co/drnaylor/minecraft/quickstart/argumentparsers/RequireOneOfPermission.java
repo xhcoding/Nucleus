@@ -52,7 +52,7 @@ public class RequireOneOfPermission extends CommandElement {
             if (isWeak) {
                 return;
             } else {
-                throw args.createError(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("args.permission.deny"), getKey())));
+                throw args.createError(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("args.permission.deny"), getKey())));
             }
         }
 

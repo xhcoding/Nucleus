@@ -39,7 +39,7 @@ public class WarmupListener extends ListenerBase {
     private void cancelWarmup(Player player) {
         service.cleanup();
         if (service.removeWarmup(player.getUniqueId()) && player.isOnline()) {
-            player.sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("warmup.cancel")));
+            player.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("warmup.cancel")));
         }
     }
 }

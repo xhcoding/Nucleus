@@ -67,12 +67,12 @@ public class CheckMuteCommand extends CommandBase {
             uc = userConfigLoader.getUser(user);
         } catch (IOException | ObjectMappingException e) {
             e.printStackTrace();
-            throw new CommandException(Text.of(TextColors.RED, Util.messageBundle.getString("command.file.load")), e);
+            throw new CommandException(Text.of(TextColors.RED, Util.getMessageWithFormat("command.file.load")), e);
         }
 
         Optional<MuteData> omd = uc.getMuteData();
         if (!omd.isPresent()) {
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.checkmute.none"), user.getName())));
+            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.checkmute.none"), user.getName())));
             return CommandResult.success();
         }
 
@@ -83,21 +83,21 @@ public class CheckMuteCommand extends CommandBase {
             name = Sponge.getServer().getConsole().getName();
         } else {
             Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getMuter());
-            name = ou.isPresent() ? ou.get().getName() : Util.messageBundle.getString("standard.unknown");
+            name = ou.isPresent() ? ou.get().getName() : Util.getMessageWithFormat("standard.unknown");
         }
 
         String time = "";
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
             time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
-            forString = Util.messageBundle.getString("standard.for") + " ";
+            forString = Util.getMessageWithFormat("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
             time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = Util.messageBundle.getString("standard.for") + " ";
+            forString = Util.getMessageWithFormat("standard.for") + " ";
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.checkmute.mute"), user.getName(), name, forString, time)));
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), md.getReason())));
+        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.checkmute.mute"), user.getName(), name, forString, time)));
+        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), md.getReason())));
         return CommandResult.success();
     }
 }

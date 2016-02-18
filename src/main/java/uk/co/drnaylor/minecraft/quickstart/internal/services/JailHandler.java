@@ -133,7 +133,7 @@ public class JailHandler implements QuickStartJailService {
             Player player = user.getPlayer().get();
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 player.setLocation(ow.isPresent() ? ow.get() : player.getWorld().getSpawnLocation());
-                player.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("jail.elapsed")));
+                player.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("jail.elapsed")));
             });
         } else {
             iqsu.sendToLocationOnLogin(ow.isPresent() ? ow.get() : new Location<>(Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorld().get().getUniqueId()).get(),

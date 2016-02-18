@@ -40,7 +40,7 @@ public class TeleportToggleCommand extends CommandBase<Player> {
         final InternalQuickStartUser iqsu = plugin.getUserLoader().getUser(src);
         boolean flip = args.<Boolean>getOne(key).orElseGet(() -> !iqsu.isTeleportToggled());
         iqsu.setTeleportToggled(flip);
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tptoggle.success", Util.messageBundle.getString(flip ? "enabled" : "disabled"))));
+        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tptoggle.success", Util.getMessageWithFormat(flip ? "enabled" : "disabled"))));
         return CommandResult.success();
     }
 }

@@ -31,10 +31,10 @@ public class MailListener extends ListenerBase {
                 event.getTargetEntity().sendMessage(Text.builder()
                         .append(Text.builder("/mail").color(TextColors.AQUA).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/mail"))
                                 .onHover(TextActions.showText(Text.of("Click here to read your mail."))).build())
-                        .append(Text.of(TextColors.YELLOW, " " + Util.messageBundle.getString("mail.toread") + " "))
+                        .append(Text.of(TextColors.YELLOW, " " + Util.getMessageWithFormat("mail.toread") + " "))
                         .append(Text.builder("/mail clear").color(TextColors.AQUA).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/mail clear"))
                                 .onHover(TextActions.showText(Text.of("Click here to delete your mail."))).build())
-                        .append(Text.of(TextColors.YELLOW, " " + Util.messageBundle.getString("mail.toclear")))
+                        .append(Text.of(TextColors.YELLOW, " " + Util.getMessageWithFormat("mail.toclear")))
                         .build()
                 );
             }

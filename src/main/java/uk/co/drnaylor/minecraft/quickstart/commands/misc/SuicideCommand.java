@@ -34,7 +34,7 @@ public class SuicideCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         GameMode gm = src.gameMode().getDirect().orElse(src.gameMode().getDefault());
         if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.suicide.wronggm")));
+            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.suicide.wronggm")));
             return CommandResult.empty();
         }
 

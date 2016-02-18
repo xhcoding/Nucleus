@@ -13,8 +13,8 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
+import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +77,7 @@ public class MuteListener extends ListenerBase {
         Optional<MuteData> omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
         if (omd.isPresent()) {
             onMute(omd.get(), player);
-            MessageChannel.TO_CONSOLE.send(Text.of(player.getName() + " (" + Util.messageBundle.getString("muted") + "): ").toBuilder().append(event.getRawMessage()).build());
+            MessageChannel.TO_CONSOLE.send(Text.of(player.getName() + " (" + Util.getMessageWithFormat("muted") + "): ").toBuilder().append(event.getRawMessage()).build());
             event.setCancelled(true);
         }
     }
@@ -86,10 +85,10 @@ public class MuteListener extends ListenerBase {
     private void onMute(MuteData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
             user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(
-                    Util.messageBundle.getString("mute.playernotify.time"),
+                    Util.getMessageWithFormat("mute.playernotify.time"),
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS)))));
         } else {
-            user.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("mute.playernotify")));
+            user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("mute.playernotify")));
         }
     }
 }

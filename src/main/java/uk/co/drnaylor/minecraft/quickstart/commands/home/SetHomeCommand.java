@@ -53,7 +53,7 @@ public class SetHomeCommand extends CommandBase<Player> {
         Map<String, WarpLocation> msw = iqsu.getHomes();
 
         if (!warpName.matcher(home).matches()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.sethome.name")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sethome.name")));
             return CommandResult.empty();
         }
 

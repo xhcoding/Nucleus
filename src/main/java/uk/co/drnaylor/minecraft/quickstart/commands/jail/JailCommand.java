@@ -84,13 +84,13 @@ public class JailCommand extends CommandBase {
     private CommandResult onJail(CommandSource src, CommandContext args, User user) throws Exception {
         Optional<WarpLocation> owl = args.<WarpLocation>getOne(jailKey);
         if (!owl.isPresent()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.jail.jail.nojail")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.jail.jail.nojail")));
             return CommandResult.empty();
         }
 
         // This might not be there.
         Optional<Long> duration = args.getOne(durationKey);
-        String reason = args.<String>getOne(reasonKey).orElse(Util.messageBundle.getString("command.jail.reason"));
+        String reason = args.<String>getOne(reasonKey).orElse(Util.getMessageWithFormat("command.jail.reason"));
         JailData jd;
         Text message;
         Text messageTo;
@@ -103,10 +103,10 @@ public class JailCommand extends CommandBase {
 
             message = Text.of(TextColors.GREEN,
                     Util.getMessageWithFormat("command.checkjail.jailed",
-                            user.getName(), owl.get().getName(), src.getName(), " " + Util.messageBundle.getString("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get())));
+                            user.getName(), owl.get().getName(), src.getName(), " " + Util.getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get())));
             messageTo = Text.of(TextColors.RED,
                     Util.getMessageWithFormat("command.jail.jailed",
-                            owl.get().getName(), src.getName(), " " + Util.messageBundle.getString("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get())));
+                            owl.get().getName(), src.getName(), " " + Util.getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get())));
         } else {
             jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, user.isOnline() ? user.getPlayer().get().getLocation() : null);
             message = Text.of(TextColors.GREEN,
@@ -133,7 +133,7 @@ public class JailCommand extends CommandBase {
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.jail.error")));
+        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.jail.error")));
         return CommandResult.empty();
     }
 }

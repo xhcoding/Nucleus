@@ -52,7 +52,7 @@ public class KickCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(player).get();
-        String r = args.<String>getOne(reason).orElse(Util.messageBundle.getString("command.kick.defaultreason"));
+        String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("command.kick.defaultreason"));
         pl.kick(Text.of(r));
 
         List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) && x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "kick.notify"))
@@ -60,8 +60,8 @@ public class KickCommand extends CommandBase {
         lcs.add(Sponge.getServer().getConsole());
 
         MessageChannel mc = MessageChannel.fixed(lcs);
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.kick.message"), pl.getName(), src.getName())));
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.reason"), reason)));
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.kick.message"), pl.getName(), src.getName())));
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.reason"), reason)));
         return CommandResult.success();
     }
 }

@@ -56,7 +56,7 @@ public class AFKListener extends ListenerBase {
     private void updateAFK(final Player player) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
             if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && !player.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exempt")) {
-                MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(player), TextColors.GRAY, " " + Util.messageBundle.getString("afk.fromafk")));
+                MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(player), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
             }
         });
     }

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class MessageHandler {
 
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
-    private final Text me = Text.of(TextColors.GRAY, Util.messageBundle.getString("message.me"));
+    private final Text me = Text.of(TextColors.GRAY, Util.getMessageWithFormat("message.me"));
 
     public void update(UUID from, UUID to) {
         Preconditions.checkNotNull(from);
@@ -61,7 +61,7 @@ public class MessageHandler {
             return sendMessage(sender, cs.get(), message);
         }
 
-        sender.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("message.noreply")));
+        sender.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("message.noreply")));
         return false;
     }
 
@@ -78,7 +78,7 @@ public class MessageHandler {
                 QuickStartUser q = qs.getUser(pl);
                 if (Util.testForEndTimestamp(q.getMuteData(), q::removeMuteData).isPresent()) {
                     // Cancel.
-                    pl.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("mute.playernotify")));
+                    pl.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("mute.playernotify")));
                     return false;
                 }
             } catch (IOException | ObjectMappingException e) {
@@ -88,7 +88,7 @@ public class MessageHandler {
 
         // Message is about to be sent. Send the event out. If canceled, then that's that.
         if (Sponge.getEventManager().post(new MessageEvent(sender, receiver, message))) {
-            sender.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("message.cancel")));
+            sender.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("message.cancel")));
             return false;
         }
 
@@ -122,7 +122,7 @@ public class MessageHandler {
     }
 
     private Text constructSSMessage(Text from, Text to, String message) {
-        return Text.builder("[" + Util.messageBundle.getString("message.socialspy") + "] ").color(TextColors.GRAY)
+        return Text.builder("[" + Util.getMessageWithFormat("message.socialspy") + "] ").color(TextColors.GRAY)
                 .append(from).append(Text.of(TextColors.GRAY, " -> ")).append(to).append(Text.of(TextColors.GRAY, ": "))
                 .append(Text.of(TextColors.GRAY, message)).build();
     }

@@ -53,7 +53,7 @@ public class JailsCommand extends CommandBase {
                 .onClick(TextActions.runCommand("/jails info " + x.getKey().toLowerCase()))
                 .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.jails.jailprompt", x.getKey().toLowerCase())))).build()).collect(Collectors.toList());
 
-        ps.builder().title(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.jails.list.header")))
+        ps.builder().title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.jails.list.header")))
                 .paddingString("-").contents(lt).sendTo(src);
         return CommandResult.success();
     }

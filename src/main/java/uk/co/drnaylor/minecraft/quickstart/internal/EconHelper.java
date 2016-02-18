@@ -41,18 +41,18 @@ public class EconHelper {
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getAccount(src.getUniqueId());
             if (!a.isPresent()) {
-                src.sendMessage(Text.builder(Util.messageBundle.getString("cost.noaccount"))
+                src.sendMessage(Text.builder(Util.getMessageWithFormat("cost.noaccount"))
                         .color(TextColors.YELLOW).build());
                 return false;
             }
 
             TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(plugin));
             if (tr.getResult() == ResultType.ACCOUNT_NO_FUNDS) {
-                src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("cost.nofunds"), es.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain()))
+                src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cost.nofunds"), es.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain()))
                         .color(TextColors.YELLOW).build());
                 return false;
             } else if (tr.getResult() != ResultType.SUCCESS) {
-                src.sendMessage(Text.builder(Util.messageBundle.getString("cost.error"))
+                src.sendMessage(Text.builder(Util.getMessageWithFormat("cost.error"))
                         .color(TextColors.YELLOW).build());
                 return false;
             }
@@ -70,14 +70,14 @@ public class EconHelper {
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getAccount(src.getUniqueId());
             if (!a.isPresent() && src.isOnline()) {
-                src.getPlayer().get().sendMessage(Text.builder(Util.messageBundle.getString("cost.noaccount"))
+                src.getPlayer().get().sendMessage(Text.builder(Util.getMessageWithFormat("cost.noaccount"))
                         .color(TextColors.YELLOW).build());
                 return false;
             }
 
             TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(plugin));
             if (tr.getResult() != ResultType.SUCCESS && src.isOnline()) {
-                src.getPlayer().get().sendMessage(Text.builder(Util.messageBundle.getString("cost.error"))
+                src.getPlayer().get().sendMessage(Text.builder(Util.getMessageWithFormat("cost.error"))
                         .color(TextColors.YELLOW).build());
                 return false;
             }

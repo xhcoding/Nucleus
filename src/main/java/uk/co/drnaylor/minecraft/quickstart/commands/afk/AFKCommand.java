@@ -38,7 +38,7 @@ public class AFKCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         AFKHandler afkHandler = plugin.getAfkHandler();
         if (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exempt") || afkHandler.getAFKData(src).notTracked()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.afk.exempt")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.afk.exempt")));
             return CommandResult.empty();
         }
 
@@ -46,10 +46,10 @@ public class AFKCommand extends CommandBase<Player> {
 
         if (isAFK) {
             afkHandler.updateUserActivity(src.getUniqueId());
-            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(src), TextColors.GRAY, " " + Util.messageBundle.getString("afk.fromafk")));
+            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
         } else {
             afkHandler.setAFK(src.getUniqueId(), true);
-            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(src), TextColors.GRAY, " " + Util.messageBundle.getString("afk.toafk")));
+            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk")));
         }
 
         return CommandResult.success();

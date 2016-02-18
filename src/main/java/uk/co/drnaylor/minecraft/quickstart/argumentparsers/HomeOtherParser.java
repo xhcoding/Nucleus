@@ -31,7 +31,7 @@ public class HomeOtherParser extends HomeParser {
         Optional<String> ohome = args.nextIfPresent();
 
         if (!ohome.isPresent()) {
-            throw args.createError(Text.of(TextColors.RED, Util.messageBundle.getString("args.homeother.notenough")));
+            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.homeother.notenough")));
         }
 
         Optional<User> ouser = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(player);

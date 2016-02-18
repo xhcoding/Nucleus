@@ -96,7 +96,7 @@ public class MailHandler implements QuickStartMailService {
 
         Text from = playerFrom == null ? Text.of(game.getServer().getConsole().getName()) : Util.getName(playerFrom);
         if (playerTo.isOnline()) {
-            playerTo.getPlayer().get().sendMessage(Text.of(TextColors.YELLOW, Util.messageBundle.getString("mail.youvegotmail") + " ", from));
+            playerTo.getPlayer().get().sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("mail.youvegotmail") + " ", from));
         }
     }
 

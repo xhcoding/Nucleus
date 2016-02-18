@@ -51,7 +51,7 @@ public class TeleportAskCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Player target = args.<Player>getOne(playerKey).get();
         if (src.equals(target)) {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.teleport.self")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.teleport.self")));
             return CommandResult.empty();
         }
 
@@ -70,11 +70,11 @@ public class TeleportAskCommand extends CommandBase<Player> {
         target.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpa.question", src.getName())));
         target.sendMessage(Text.builder()
                 .append(
-                        Text.builder(Util.messageBundle.getString("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                                .onHover(TextActions.showText(Text.of(Util.messageBundle.getString("teleport.accept.hover")))).onClick(TextActions.runCommand("/tpaccept")).build())
+                        Text.builder(Util.getMessageWithFormat("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                                .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.accept.hover")))).onClick(TextActions.runCommand("/tpaccept")).build())
                 .append(Text.of(" - "))
-                .append(Text.builder(Util.messageBundle.getString("standard.deny")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                        .onHover(TextActions.showText(Text.of(Util.messageBundle.getString("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
+                .append(Text.builder(Util.getMessageWithFormat("standard.deny")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                        .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
                 .build());
 
         src.sendMessage(Text.of(Util.getMessageWithFormat("command.tpask.sent")));

@@ -48,7 +48,7 @@ public class KickAllCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        String r = args.<String>getOne(reason).orElse(Util.messageBundle.getString("command.kick.defaultreason"));
+        String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("command.kick.defaultreason"));
         Boolean f = args.<Boolean>getOne("f").orElse(false);
 
         if (f) {
@@ -58,10 +58,10 @@ public class KickAllCommand extends CommandBase {
         Sponge.getServer().getOnlinePlayers().stream().filter(x -> !(src instanceof Player) || ((Player) src).getUniqueId().equals(x.getUniqueId())).forEach(x -> x.kick(Text.of(TextColors.RED, r)));
 
         MessageChannel mc = MessageChannel.fixed(Sponge.getServer().getConsole(), src);
-        mc.send(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.kickall.message")));
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.reason"), r)));
+        mc.send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.kickall.message")));
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.reason"), r)));
         if (f) {
-            mc.send(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.kickall.whitelist")));
+            mc.send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.kickall.whitelist")));
         }
 
 

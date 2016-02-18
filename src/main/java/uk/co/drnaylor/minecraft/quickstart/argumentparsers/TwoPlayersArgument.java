@@ -41,7 +41,7 @@ public class TwoPlayersArgument extends CommandElement {
         Optional<String> osp2 = args.nextIfPresent();
 
         if (!osp2.isPresent()) {
-            throw args.createError(Text.of(TextColors.RED, Util.messageBundle.getString("args.twoplayer.notenough")));
+            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.twoplayer.notenough")));
         }
 
         String sp2 = osp2.get();

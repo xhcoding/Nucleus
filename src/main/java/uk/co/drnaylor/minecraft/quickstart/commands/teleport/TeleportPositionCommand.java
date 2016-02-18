@@ -45,7 +45,7 @@ public class TeleportPositionCommand extends CommandBase {
         Location<World> loc = args.<Location<World>>getOne(location).get();
 
         if (args.<Boolean>getOne("f").orElse(false)) {
-            pl.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.tppos.success")));
+            pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success")));
             if (src.equals(pl)) {
                 src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success.other", pl.getName())));
             }
@@ -54,14 +54,14 @@ public class TeleportPositionCommand extends CommandBase {
         }
 
         if (pl.setLocationSafely(loc)) {
-            pl.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.tppos.success")));
+            pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success")));
             if (src.equals(pl)) {
                 src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success.other", pl.getName())));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.tppos.nosafe")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tppos.nosafe")));
             return CommandResult.empty();
         }
     }

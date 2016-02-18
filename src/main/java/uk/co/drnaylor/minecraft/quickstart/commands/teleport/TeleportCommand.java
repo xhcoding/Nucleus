@@ -88,13 +88,13 @@ public class TeleportCommand extends CommandBase {
         if (ofrom.isPresent()) {
             from = ofrom.get();
             if (from.equals(src)) {
-                src.sendMessage(Text.of(Util.messageBundle.getString("command.teleport.player.noself")));
+                src.sendMessage(Text.of(Util.getMessageWithFormat("command.teleport.player.noself")));
                 return CommandResult.empty();
             }
         } else if (src instanceof Player) {
             from = (Player)src;
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
             return CommandResult.empty();
         }
 
@@ -109,7 +109,7 @@ public class TeleportCommand extends CommandBase {
     @Override
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode ccn = super.getDefaults();
-        ccn.getNode("use-tp-command").setComment(Util.messageBundle.getString("config.command.teleport.tp")).setValue(true);
+        ccn.getNode("use-tp-command").setComment(Util.getMessageWithFormat("config.command.teleport.tp")).setValue(true);
         return ccn;
     }
 }

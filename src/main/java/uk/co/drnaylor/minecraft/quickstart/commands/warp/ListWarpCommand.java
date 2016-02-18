@@ -63,12 +63,12 @@ public class ListWarpCommand extends CommandBase {
                                 .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.warps.warpprompt", s)))).build();
                     } else {
                         return Text.builder(s).color(TextColors.RED)
-                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.warps.unavailable")))).build();
+                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.warps.unavailable")))).build();
                     }
                 })
                 .collect(Collectors.toList());
 
-        ps.builder().title(Text.of(TextColors.YELLOW, Util.messageBundle.getString("command.warps.list.header")))
+        ps.builder().title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.warps.list.header")))
                 .paddingString("-").contents(lt).sendTo(src);
         return CommandResult.success();
     }

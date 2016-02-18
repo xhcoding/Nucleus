@@ -52,7 +52,7 @@ public class TempBanCommand extends CommandBase {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User u = args.<User>getOne(user).get();
         Long time = args.<Long>getOne(duration).get();
-        String r = args.<String>getOne(reason).orElse(Util.messageBundle.getString("ban.defaultreason"));
+        String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("ban.defaultreason"));
 
         BanService service = Sponge.getServiceManager().provideUnchecked(BanService.class);
 

@@ -199,18 +199,18 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
-        n.getNode("enabled").setComment(Util.messageBundle.getString("config.enabled")).setValue(true);
+        n.getNode("enabled").setComment(Util.getMessageWithFormat("config.enabled")).setValue(true);
 
         if (!bypassCooldown) {
-            n.getNode("cooldown").setComment(Util.messageBundle.getString("config.cooldown")).setValue(0);
+            n.getNode("cooldown").setComment(Util.getMessageWithFormat("config.cooldown")).setValue(0);
         }
 
         if (!bypassWarmup || generateWarmupAnyway) {
-            n.getNode("warmup").setComment(Util.messageBundle.getString("config.warmup")).setValue(0);
+            n.getNode("warmup").setComment(Util.getMessageWithFormat("config.warmup")).setValue(0);
         }
 
         if (!bypassCost) {
-            n.getNode("cost").setComment(Util.messageBundle.getString("config.cost")).setValue(0);
+            n.getNode("cost").setComment(Util.getMessageWithFormat("config.cost")).setValue(0);
         }
 
         return n;
@@ -270,7 +270,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             }
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("command.error")));
+            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
             e.printStackTrace();
             return CommandResult.empty();
         }
@@ -309,7 +309,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             cr = CommandResult.empty();
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.messageBundle.getString("command.error")));
+            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
             e.printStackTrace();
             cr = CommandResult.empty();
         }
@@ -337,13 +337,13 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
     private boolean checkSourceType(CommandSource source) {
         if (sourceType.equals(Player.class) && !(source instanceof Player)) {
-            source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+            source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
             return false;
         } else if (sourceType.equals(ConsoleSource.class) && !(source instanceof Player)) {
-            source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.consoleonly")));
+            source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.consoleonly")));
             return false;
         } else if (sourceType.equals(CommandBlockSource.class) && !(source instanceof CommandBlockSource)) {
-            source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.commandblockonly")));
+            source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.commandblockonly")));
             return false;
         }
 
@@ -398,7 +398,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             new CostCancellableTask(plugin, src, getCost(src, args)) {
                 @Override
                 public void accept(Task task) {
-                    src.sendMessage(Text.builder(Util.messageBundle.getString("warmup.end")).color(TextColors.YELLOW).build());
+                    src.sendMessage(Text.builder(Util.getMessageWithFormat("warmup.end")).color(TextColors.YELLOW).build());
                     warmupService.removeWarmup(src.getUniqueId());
                     startExecute((T)src, args);
                 }
@@ -413,7 +413,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         warmupService.addWarmup(src.getUniqueId(), tb.submit(plugin));
 
         // Tell the user we're warming up.
-        src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("warmup.start"), Util.getTimeStringFromSeconds(warmupTime)))
+        src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("warmup.start"), Util.getTimeStringFromSeconds(warmupTime)))
                 .color(TextColors.YELLOW).build());
 
         // Sponge should think the command was run successfully.
@@ -430,7 +430,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         // If they are still in there, then tell them they are still cooling down.
         if (!bypassCooldown && !cooldown.stream().anyMatch(src::hasPermission) && cooldownStore.containsKey(src.getUniqueId())) {
             Instant l = cooldownStore.get(src.getUniqueId());
-            src.sendMessage(Text.builder(MessageFormat.format(Util.messageBundle.getString("cooldown.message"), Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))))
+            src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cooldown.message"), Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))))
                     .color(TextColors.YELLOW).build());
             return ContinueMode.STOP;
         }

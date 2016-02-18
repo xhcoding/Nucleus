@@ -44,12 +44,12 @@ public class SocialSpyCommand extends CommandBase<Player> {
         QuickStartUser qs = userConfigLoader.getUser(src);
         boolean spy = args.<Boolean>getOne(arg).orElse(!qs.isSocialSpy());
         if (qs.setSocialSpy(spy)) {
-            String message = Util.messageBundle.getString(spy ? "command.socialspy.on" : "command.socialspy.off");
+            String message = Util.getMessageWithFormat(spy ? "command.socialspy.on" : "command.socialspy.off");
             src.sendMessage(Text.of(TextColors.GREEN, message));
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.socialspy.unable")));
+        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.socialspy.unable")));
         return CommandResult.empty();
     }
 }

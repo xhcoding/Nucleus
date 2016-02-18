@@ -83,7 +83,7 @@ public class MuteCommand extends CommandBase {
             uc = userConfigLoader.getUser(user);
         } catch (IOException | ObjectMappingException e) {
             e.printStackTrace();
-            throw new CommandException(Text.of(TextColors.RED, Util.messageBundle.getString("command.file.load")), e);
+            throw new CommandException(Text.of(TextColors.RED, Util.getMessageWithFormat("command.file.load")), e);
         }
 
         Optional<Long> time = args.<Long>getOne(timespanArgument);
@@ -94,12 +94,12 @@ public class MuteCommand extends CommandBase {
         if (omd.isPresent() && !time.isPresent() && !reas.isPresent()) {
             // Unmute.
             uc.removeMuteData();
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.unmute.success"), user.getName(), src.getName())));
+            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.unmute.success"), user.getName(), src.getName())));
             return CommandResult.success();
         }
 
         // Do we have a time?
-        String rs = reas.orElse(Util.messageBundle.getString("command.mute.defaultreason"));
+        String rs = reas.orElse(Util.getMessageWithFormat("command.mute.defaultreason"));
         UUID ua = Util.consoleFakeUUID;
         if (src instanceof Player) {
             ua = ((Player) src).getUniqueId();
@@ -124,31 +124,31 @@ public class MuteCommand extends CommandBase {
 
     private MuteData onlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {
         String ts = Util.getTimeStringFromSeconds(time);
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.mute.success.time"),
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.mute.success.time"),
                 user.getName(), src.getName(), ts)));
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), rs)));
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), rs)));
 
-        user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("mute.playernotify.time"), ts)));
-        user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("command.reason"), rs)));
+        user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("mute.playernotify.time"), ts)));
+        user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("command.reason"), rs)));
         return new MuteData(ua, rs, Instant.now().plus(time, ChronoUnit.SECONDS));
     }
 
     private MuteData offlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {
         String ts = Util.getTimeStringFromSeconds(time);
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.mute.success.time"),
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.mute.success.time"),
                 user.getName(), src.getName(), ts)));
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), rs)));
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), rs)));
         return new MuteData(ua, rs, Duration.of(time, ChronoUnit.SECONDS));
     }
 
     private MuteData permMute(CommandSource src, User user, String rs, UUID ua, MessageChannel mc) {
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.mute.success"),
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.mute.success"),
                 user.getName(), src.getName())));
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("standard.reason"), rs)));
+        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), rs)));
 
         if (user.isOnline()) {
-            user.getPlayer().get().sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("mute.playernotify")));
-            user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.messageBundle.getString("command.reason"), rs)));
+            user.getPlayer().get().sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("mute.playernotify")));
+            user.getPlayer().get().sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("command.reason"), rs)));
         }
 
         return new MuteData(ua, rs);

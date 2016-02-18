@@ -84,11 +84,11 @@ public class WeatherCommand extends CommandBase {
         if (oi.isPresent()) {
             // YES! I should get a job at the weather service and show them how it's done!
             w.forecast(we, oi.get());
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.weather.time"), we.getName(), w.getName(), Util.getTimeStringFromSeconds(oi.get()))));
+            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.weather.time"), we.getName(), w.getName(), Util.getTimeStringFromSeconds(oi.get()))));
         } else {
             // No, probably because I've already gotten a job at the weather service...
             w.forecast(we);
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString("command.weather"), we.getName(), w.getName())));
+            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.weather"), we.getName(), w.getName())));
         }
 
         // The weather control device has been activated!

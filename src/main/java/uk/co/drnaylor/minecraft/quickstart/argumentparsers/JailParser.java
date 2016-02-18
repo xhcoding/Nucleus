@@ -34,7 +34,7 @@ public class JailParser extends CommandElement {
             return owl.get();
         }
 
-        throw args.createError(Text.of(TextColors.RED, Util.messageBundle.getString("args.jail.nojail")));
+        throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.jail.nojail")));
     }
 
     @Override

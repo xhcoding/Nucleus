@@ -51,7 +51,7 @@ public class GodCommand extends CommandBase {
             if (src instanceof Player) {
                 pl = (Player)src;
             } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
                 return CommandResult.empty();
             }
         }
@@ -60,15 +60,15 @@ public class GodCommand extends CommandBase {
         boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
 
         if (!uc.setInvulnerable(god)) {
-            src.sendMessages(Text.of(TextColors.RED, Util.messageBundle.getString("command.god.error")));
+            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.god.error")));
             return CommandResult.empty();
         }
 
         if (pl != src) {
-            src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString(god ? "command.god.player.on" : "command.god.player.off"), pl.getName())));
+            src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat(god ? "command.god.player.on" : "command.god.player.off"), pl.getName())));
         }
 
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString(god ? "command.god.on" : "command.god.off")));
+        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat(god ? "command.god.on" : "command.god.off")));
         return CommandResult.success();
     }
 }

@@ -118,7 +118,7 @@ public class TeleportHandler {
             if (to.isOnline()) {
                 if (safe && !from.setLocationAndRotationSafely(to.getLocation(), to.getRotation())) {
                     if (!silentSouce) {
-                        source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("teleport.nosafe")));
+                        source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.nosafe")));
                     }
 
                     onCancel();
@@ -138,7 +138,7 @@ public class TeleportHandler {
                 }
             } else {
                 if (!silentSouce) {
-                    source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("teleport.fail")));
+                    source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail")));
                 }
 
                 onCancel();
@@ -153,7 +153,7 @@ public class TeleportHandler {
         @Override
         public void onCancel() {
             if (!silentSouce) {
-                source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("teleport.cancelled")));
+                source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.cancelled")));
             }
 
             if (charged != null && cost > 0) {
@@ -234,7 +234,7 @@ public class TeleportHandler {
             }
 
             if (from.equals(to)) {
-                source.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.teleport.self")));
+                source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.teleport.self")));
                 return false;
             }
 

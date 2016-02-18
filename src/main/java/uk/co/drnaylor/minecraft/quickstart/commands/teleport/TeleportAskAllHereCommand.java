@@ -54,15 +54,15 @@ public class TeleportAskAllHereCommand extends CommandBase<Player> {
 
             x.sendMessage(Text.builder()
                 .append(
-                    Text.builder(Util.messageBundle.getString("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                        .onHover(TextActions.showText(Text.of(Util.messageBundle.getString("teleport.accept.hover")))).onClick(TextActions.runCommand("/tpaccept")).build())
+                    Text.builder(Util.getMessageWithFormat("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                        .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.accept.hover")))).onClick(TextActions.runCommand("/tpaccept")).build())
                 .append(Text.of(" - "))
-                .append(Text.builder(Util.messageBundle.getString("standard.deny")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                        .onHover(TextActions.showText(Text.of(Util.messageBundle.getString("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
+                .append(Text.builder(Util.getMessageWithFormat("standard.deny")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                        .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
                 .build());
         });
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.tpaall.success")));
+        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpaall.success")));
         return CommandResult.success();
     }
 }

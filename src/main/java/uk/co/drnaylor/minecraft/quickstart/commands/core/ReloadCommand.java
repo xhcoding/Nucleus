@@ -29,8 +29,8 @@ public class ReloadCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         plugin.reload();
-        src.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.reload.one")));
-        src.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.reload.two")));
+        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.reload.one")));
+        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.reload.two")));
         return CommandResult.success();
     }
 }

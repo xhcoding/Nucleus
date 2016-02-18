@@ -81,7 +81,7 @@ public class JailListener extends ListenerBase {
             if (timeLeft.isPresent()) {
                 message = Text.of(TextColors.RED,
                         Util.getMessageWithFormat("command.jail.jailed",
-                                owl.get().getName(), Util.getNameFromUUID(jd.getJailer()), Util.messageBundle.getString("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds())));
+                                owl.get().getName(), Util.getNameFromUUID(jd.getJailer()), Util.getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds())));
             } else {
                 message = Text.of(TextColors.RED,
                         Util.getMessageWithFormat("command.jail.jailed",
@@ -165,10 +165,10 @@ public class JailListener extends ListenerBase {
     private void onJail(JailData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
             user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(
-                    Util.messageBundle.getString("jail.playernotify.time"),
+                    Util.getMessageWithFormat("jail.playernotify.time"),
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS)))));
         } else {
-            user.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("jail.playernotify")));
+            user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("jail.playernotify")));
         }
 
         user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", md.getReason())));

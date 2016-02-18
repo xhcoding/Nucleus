@@ -39,7 +39,7 @@ public class TeleportDenyCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         boolean denied = teleportHandler.remove(src.getUniqueId());
-        src.sendMessage(Text.of(denied ? TextColors.GREEN : TextColors.RED, Util.messageBundle.getString(denied ? "command.tpdeny.deny" : "command.tpdeny.fail")));
+        src.sendMessage(Text.of(denied ? TextColors.GREEN : TextColors.RED, Util.getMessageWithFormat(denied ? "command.tpdeny.deny" : "command.tpdeny.fail")));
         return CommandResult.success();
     }
 }

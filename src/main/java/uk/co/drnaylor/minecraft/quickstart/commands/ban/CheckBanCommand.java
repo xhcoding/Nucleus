@@ -55,7 +55,7 @@ public class CheckBanCommand extends CommandBase {
         String f = "";
         String t = "";
         if (bp.getExpirationDate().isPresent()) {
-            f = Util.messageBundle.getString("standard.for");
+            f = Util.getMessageWithFormat("standard.for");
             t = Util.getTimeToNow(bp.getExpirationDate().get());
         }
 
@@ -63,7 +63,7 @@ public class CheckBanCommand extends CommandBase {
         if (bp.getBanSource().isPresent()) {
             reason = bp.getBanSource().get().toPlain();
         } else {
-            reason = Util.messageBundle.getString("standard.unknown");
+            reason = Util.getMessageWithFormat("standard.unknown");
         }
 
         src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.checkban.banned", u.getName(), reason, f, t)));

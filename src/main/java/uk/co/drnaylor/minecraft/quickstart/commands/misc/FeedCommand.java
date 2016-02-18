@@ -52,21 +52,21 @@ public class FeedCommand extends CommandBase {
             if (src instanceof Player) {
                 pl = (Player)src;
             } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
                 return CommandResult.empty();
             }
         }
 
         // TODO: If max food level appears, use that instead.
         if (pl.offer(Keys.FOOD_LEVEL, 20).isSuccessful()) {
-            pl.sendMessages(Text.of(TextColors.GREEN, Util.messageBundle.getString("command.feed.success")));
+            pl.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.feed.success")));
             if (!pl.equals(src)) {
                 src.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.feed.success.other", pl.getName())));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessages(Text.of(TextColors.RED, Util.messageBundle.getString("command.feed.error")));
+            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.feed.error")));
             return CommandResult.empty();
         }
     }

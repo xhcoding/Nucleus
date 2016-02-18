@@ -37,7 +37,7 @@ public class AFKTask implements TaskBase {
             if (!afking.isEmpty()) {
                 Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exempt") &&
                             afking.contains(x.getUniqueId())).map(Util::getName)
-                        .forEach(x -> MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", x, TextColors.GRAY, " " + Util.messageBundle.getString("afk.toafk"))));
+                        .forEach(x -> MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", x, TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk"))));
             }
         }
 
@@ -48,8 +48,8 @@ public class AFKTask implements TaskBase {
                 Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exemptkick") &&
                         afking.contains(x.getUniqueId()))
                         .forEach(x -> {
-                            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Text.of(Util.messageBundle.getString("afk.kickreason"))));
-                            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(x), TextColors.GRAY, " " + Util.messageBundle.getString("afk.kickedafk")));
+                            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Text.of(Util.getMessageWithFormat("afk.kickreason"))));
+                            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(x), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.kickedafk")));
                         });
             }
         }

@@ -55,7 +55,7 @@ public class FlyCommand extends CommandBase {
             if (src instanceof Player) {
                 pl = (Player)src;
             } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
                 return CommandResult.empty();
             }
         }
@@ -64,15 +64,15 @@ public class FlyCommand extends CommandBase {
         boolean fly = args.<Boolean>getOne(toggle).orElse(!uc.isFlying());
 
         if (!uc.setFlying(fly)) {
-            src.sendMessages(Text.of(TextColors.RED, Util.messageBundle.getString("command.fly.error")));
+            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.fly.error")));
             return CommandResult.empty();
         }
 
         if (pl != src) {
-            src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.messageBundle.getString(fly ? "command.fly.player.on" : "command.fly.player.off"), pl.getName())));
+            src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat(fly ? "command.fly.player.on" : "command.fly.player.off"), pl.getName())));
         }
 
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.messageBundle.getString(fly ? "command.fly.on" : "command.fly.off")));
+        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat(fly ? "command.fly.on" : "command.fly.off")));
         return CommandResult.success();
     }
 }

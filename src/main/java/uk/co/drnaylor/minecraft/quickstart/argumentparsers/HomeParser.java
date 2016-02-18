@@ -33,7 +33,7 @@ public class HomeParser extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!(source instanceof User)) {
-            throw args.createError(Text.of(TextColors.RED, Util.messageBundle.getString("command.playeronly")));
+            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
         }
 
         return getHome((User)source, args.next(), args);

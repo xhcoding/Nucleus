@@ -68,7 +68,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         allowedCommandsInJail = node.getNode("jail", "allowed-commands").getList(TypeToken.of(String.class));
 
         // Warps
-        serperateWarpPermissions = node.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).getBoolean(false);
+        serperateWarpPermissions = node.getNode("warps", "separate-permissions").setComment(Util.getMessageWithFormat("config.warps.separate")).getBoolean(false);
 
         // Teleports
         teleportWarmup = node.getNode("teleport", "warmup").getLong(3);
@@ -93,21 +93,21 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         Arrays.asList(PluginModule.values()).forEach(m -> modules.getNode(m.getKey().toLowerCase()).setValue(ModuleOptions.DEFAULT.name().toLowerCase()));
 
         // AFK module
-        CommentedConfigurationNode afkc = ccn.getNode("afk").setComment(Util.messageBundle.getString("config.afk"));
-        afkc.getNode("afktime").setComment(Util.messageBundle.getString("config.afk.time")).setValue(300);
-        afkc.getNode("afktimetokick").setComment(Util.messageBundle.getString("config.afk.timetokick")).setValue(0);
+        CommentedConfigurationNode afkc = ccn.getNode("afk").setComment(Util.getMessageWithFormat("config.afk"));
+        afkc.getNode("afktime").setComment(Util.getMessageWithFormat("config.afk.time")).setValue(300);
+        afkc.getNode("afktimetokick").setComment(Util.getMessageWithFormat("config.afk.timetokick")).setValue(0);
 
         try {
-            ccn.getNode("jail", "allowed-commands").setComment(Util.messageBundle.getString("config.jail.commands")).setValue(new TypeToken<List<String>>() {},
+            ccn.getNode("jail", "allowed-commands").setComment(Util.getMessageWithFormat("config.jail.commands")).setValue(new TypeToken<List<String>>() {},
                         Lists.newArrayList("m", "msg", "r", "mail", "rules", "info"));
         } catch (ObjectMappingException e) {
             e.printStackTrace();
         }
 
-        ccn.getNode("warps", "separate-permissions").setComment(Util.messageBundle.getString("config.warps.separate")).setValue(false);
+        ccn.getNode("warps", "separate-permissions").setComment(Util.getMessageWithFormat("config.warps.separate")).setValue(false);
 
-        ccn.getNode("chat", "modifychat").setComment(Util.messageBundle.getString("config.chat.modify")).setValue(false);
-        ccn.getNode("chat", "template").setComment(Util.messageBundle.getString("config.chat.template")).setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
+        ccn.getNode("chat", "modifychat").setComment(Util.getMessageWithFormat("config.chat.modify")).setValue(false);
+        ccn.getNode("chat", "template").setComment(Util.getMessageWithFormat("config.chat.template")).setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
         return ccn;
     }
 
