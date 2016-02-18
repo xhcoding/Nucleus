@@ -77,7 +77,7 @@ public class TeleportAskCommand extends CommandBase<Player> {
                         .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
                 .build());
 
-        src.sendMessage(Text.of(Util.getMessageWithFormat("command.tpask.sent")));
+        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpask.sent", target.getName())));
         return CommandResult.success();
     }
 }

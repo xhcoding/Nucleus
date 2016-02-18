@@ -40,9 +40,9 @@ public class TeleportAllHereCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         MessageChannel.TO_ALL.send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpall.broadcast", src.getName())));
         Sponge.getServer().getOnlinePlayers().forEach(x -> {
-            if (x.equals(src)) {
+            if (!x.equals(src)) {
                 try {
-                    handler.getBuilder().setFrom(x).setTo(src).setSafe(!args.<Boolean>getOne("f").get()).setSilentSource(true).setBypassToggle(true).startTeleport();
+                    handler.getBuilder().setFrom(x).setTo(src).setSafe(!args.<Boolean>getOne("f").orElse(false)).setSilentSource(true).setBypassToggle(true).startTeleport();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
