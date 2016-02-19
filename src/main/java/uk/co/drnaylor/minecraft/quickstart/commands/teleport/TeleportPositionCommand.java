@@ -66,7 +66,7 @@ public class TeleportPositionCommand extends CommandBase {
         if (args.<Boolean>getOne("f").orElse(false)) {
             pl.setLocation(loc);
             pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success")));
-            if (src.equals(pl)) {
+            if (!src.equals(pl)) {
                 src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success.other", pl.getName())));
             }
 
@@ -75,7 +75,7 @@ public class TeleportPositionCommand extends CommandBase {
 
         if (pl.setLocationSafely(loc)) {
             pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success")));
-            if (src.equals(pl)) {
+            if (!src.equals(pl)) {
                 src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success.other", pl.getName())));
             }
 
