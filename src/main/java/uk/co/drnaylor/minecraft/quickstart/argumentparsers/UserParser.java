@@ -13,6 +13,7 @@ import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.Util;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -46,7 +47,7 @@ public class UserParser extends CommandElement {
         List<User> listUser = Sponge.getGame().getServer().getOnlinePlayers().stream()
                 .filter(x -> x.getName().toLowerCase().startsWith(user.toLowerCase())).collect(Collectors.toList());
         if (listUser.isEmpty()) {
-            throw args.createError(Text.of(TextColors.RED, "Could not find user with the name " + user));
+            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.user.nouser", user)));
         }
 
         if (listUser.size() == 1) {
