@@ -16,9 +16,11 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 @Modules(PluginModule.ADMIN)
 @Permissions
+@RootCommand
 public class SudoCommand extends CommandBase {
     private final String playerKey = "player";
     private final String commandKey = "command";
