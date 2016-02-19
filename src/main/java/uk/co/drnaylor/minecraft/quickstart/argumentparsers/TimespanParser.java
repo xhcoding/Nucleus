@@ -7,6 +7,8 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.Util;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -35,7 +37,7 @@ public class TimespanParser extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!args.hasNext()) {
-            throw args.createError(Text.of("No time was specified"));
+            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.timespan.notime")));
         }
 
         String s = args.next();
@@ -52,7 +54,7 @@ public class TimespanParser extends CommandElement {
             }
         }
 
-        throw args.createError(Text.of("Could not parse " + s + " - must use w, d, h, m and/or s in that order."));
+        throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.timespan.incorrectformat", s)));
     }
 
     private int amount(String g, int multipler) {
