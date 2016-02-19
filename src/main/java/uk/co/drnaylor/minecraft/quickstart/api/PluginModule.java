@@ -17,7 +17,8 @@ public enum PluginModule {
     MISC("misc"),
     FUN("fun"),
     AFK("afk"),
-    COMMAND_LOGGING("command-logging");
+    COMMAND_LOGGING("command-logging"),
+    SPAWN("spawn");
 
     String key;
 
