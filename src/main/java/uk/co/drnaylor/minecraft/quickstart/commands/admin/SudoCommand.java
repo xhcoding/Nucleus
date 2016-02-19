@@ -42,10 +42,14 @@ public class SudoCommand extends CommandBase {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(playerKey).get();
         String cmd = args.<String>getOne(commandKey).get();
+        if (pl.equals(src) || permissions.getPermissionWithSuffix("exempt").stream().anyMatch(pl::hasPermission)) {
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sudo.noperms")));
+            return CommandResult.empty();
+        }
 
         if (cmd.startsWith("c:")) {
             if (cmd.equals("c:")) {
-                src.sendMessage(Text.of(Util.getMessageWithFormat("command.sudo.chatfail")));
+                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sudo.chatfail")));
                 return CommandResult.empty();
             }
 
