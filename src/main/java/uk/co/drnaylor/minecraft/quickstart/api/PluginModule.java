@@ -18,7 +18,8 @@ public enum PluginModule {
     FUN("fun"),
     AFK("afk"),
     COMMAND_LOGGING("command-logging"),
-    SPAWN("spawn");
+    SPAWN("spawn"),
+    ADMIN("admin");
 
     String key;
 
