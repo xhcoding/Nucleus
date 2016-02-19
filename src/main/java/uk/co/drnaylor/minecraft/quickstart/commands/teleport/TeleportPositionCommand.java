@@ -1,5 +1,6 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.teleport;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -10,6 +11,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
@@ -23,14 +25,20 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @RootCommand
 public class TeleportPositionCommand extends CommandBase {
     private final String key = "player";
-    private final String location = "location";
+    private final String location = "world";
+    private final String x = "x";
+    private final String y = "y";
+    private final String z = "z";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(
                 GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
                 GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
-                GenericArguments.onlyOne(GenericArguments.location(Text.of(location)))
+                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
+                GenericArguments.onlyOne(GenericArguments.integer(Text.of(x))),
+                GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
+                GenericArguments.onlyOne(GenericArguments.integer(Text.of(z)))
         ).executor(this).build();
     }
 
@@ -42,8 +50,19 @@ public class TeleportPositionCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(key).get();
-        Location<World> loc = args.<Location<World>>getOne(location).get();
+        WorldProperties wp = args.<WorldProperties>getOne(location).orElse(pl.getWorld().getProperties());
+        World world = Sponge.getServer().getWorld(wp.getUniqueId()).get();
 
+        int yy = args.<Integer>getOne(y).get();
+        if (yy < 0) {
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tppos.ysmall")));
+            return CommandResult.empty();
+        }
+
+        // Create the location
+        Location<World> loc = new Location<>(world, args.<Integer>getOne(x).get(), yy, args.<Integer>getOne(z).get());
+
+        // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
             pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success")));
             if (src.equals(pl)) {
