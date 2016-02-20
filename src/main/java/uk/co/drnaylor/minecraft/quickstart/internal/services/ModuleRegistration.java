@@ -1,3 +1,7 @@
+/*
+ * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * at the root of this project for more details.
+ */
 package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import com.google.common.collect.ImmutableSet;
@@ -6,7 +10,6 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.ModulesLoadedException;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.UnremovableModuleException;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
-import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.enumerations.ModuleOptions;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 

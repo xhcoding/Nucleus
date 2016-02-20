@@ -1,3 +1,7 @@
+/*
+ * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * at the root of this project for more details.
+ */
 package uk.co.drnaylor.minecraft.quickstart.api.data;
 
 import ninja.leaping.configurate.objectmapping.Setting;
@@ -9,7 +13,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.jar.Pack200;
 
 @ConfigSerializable
 public final class MuteData extends EndTimestamp {

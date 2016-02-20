@@ -1,7 +1,13 @@
+plugins {
+    id "com.github.hierynomus.license" version "0.12.1"
+}
+
 group 'uk.co.drnaylor.minecraft'
-version '1.0-SNAPSHOT'
+version '0.5-SNAPSHOT'
 
 apply plugin: 'java'
+
+defaultTasks 'licenseFormat'
 
 sourceCompatibility = 1.8
 
@@ -19,4 +25,22 @@ dependencies {
     testCompile "org.mockito:mockito-all:1.10.19"
     testCompile "org.powermock:powermock-module-junit4:1.6.4"
     testCompile "org.powermock:powermock-api-mockito:1.6.4"
+}
+
+license {
+    ext.name = "QuickStart"
+
+    exclude "**/*.info"
+    exclude "assets/**"
+    exclude "*.properties"
+
+    header file('HEADER.txt')
+    sourceSets = project.sourceSets
+
+    ignoreFailures false
+    strictCheck true
+
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
 }

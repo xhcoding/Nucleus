@@ -1,3 +1,7 @@
+/*
+ * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * at the root of this project for more details.
+ */
 package uk.co.drnaylor.minecraft.quickstart.commands.message;
 
 import org.spongepowered.api.command.CommandResult;
@@ -13,7 +17,6 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
-
 
 /**
  * Messages a player.

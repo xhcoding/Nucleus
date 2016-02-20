@@ -1,5 +1,8 @@
+/*
+ * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * at the root of this project for more details.
+ */
 package uk.co.drnaylor.minecraft.quickstart.argumentparsers;
-
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
