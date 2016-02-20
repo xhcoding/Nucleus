@@ -19,7 +19,8 @@ public enum PluginModule {
     AFK("afk"),
     COMMAND_LOGGING("command-logging"),
     SPAWN("spawn"),
-    ADMIN("admin");
+    ADMIN("admin"),
+    VANISH("vanish");
 
     String key;
 
