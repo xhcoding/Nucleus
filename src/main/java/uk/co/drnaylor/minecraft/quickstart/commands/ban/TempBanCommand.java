@@ -23,6 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.time.Instant;
@@ -78,7 +79,7 @@ public class TempBanCommand extends CommandBase {
         }
 
         // Get the permission, "quickstart.ban.notify"
-        Set<String> notify = permissions.getPermissionWithSuffixFromRootOnly("notify", true);
+        Set<String> notify = permissions.getPermissionWithSuffixFromRootOnly("notify", PermissionUtil.PermissionLevel.DEFAULT_USER);
         MessageChannel send = Util.getMessageChannel(pl, notify.toArray(new String[notify.size()]));
         send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName())));
         send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", reason)));

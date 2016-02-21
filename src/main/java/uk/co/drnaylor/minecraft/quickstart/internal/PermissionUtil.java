@@ -21,14 +21,14 @@ public final class PermissionUtil {
     private final Permissions ps;
     private final String commandAlias;
 
-    PermissionUtil(Permissions ps, String commandAlias) {
+    public PermissionUtil(Permissions ps, String commandAlias) {
         Preconditions.checkNotNull(ps);
         this.ps = ps;
         this.commandAlias = ps.alias().isEmpty() ? commandAlias : ps.alias().toLowerCase();
     }
 
     public Set<String> getBasePermissions() {
-        Set<String> perms = getPermissionWithSuffix("base", true);
+        Set<String> perms = getPermissionWithSuffix("base", PermissionLevel.DEFAULT_USER);
         perms.addAll(Arrays.asList(ps.value()));
         return perms;
     }
@@ -51,7 +51,11 @@ public final class PermissionUtil {
         return perms;
     }
 
-    public Set<String> getPermissionWithSuffixFromRootOnly(String suffix, boolean includeNonAdmin) {
+    public Set<String> getPermissionWithSuffixFromRootOnly(String suffix) {
+        return getPermissionWithSuffixFromRootOnly(suffix, PermissionLevel.DEFAULT);
+    }
+
+    public Set<String> getPermissionWithSuffixFromRootOnly(String suffix, PermissionLevel level) {
         Set<String> perms = new HashSet<>();
 
         if (ps.useDefault()) {
@@ -63,14 +67,14 @@ public final class PermissionUtil {
             perms.add(perm.append(suffix).toString());
         }
 
-        return includeStock(perms, includeNonAdmin);
+        return includeStock(perms, level);
     }
 
     public Set<String> getPermissionWithSuffix(String suffix) {
-        return getPermissionWithSuffix(suffix, false);
+        return getPermissionWithSuffix(suffix, PermissionLevel.DEFAULT);
     }
 
-    public Set<String> getPermissionWithSuffix(String suffix, boolean includeNonAdmin) {
+    public Set<String> getPermissionWithSuffix(String suffix, PermissionLevel pl) {
         Set<String> perms = new HashSet<>();
 
         if (ps.useDefault()) {
@@ -88,24 +92,37 @@ public final class PermissionUtil {
             perms.add(perm.append(suffix).toString());
         }
 
-        return includeStock(perms, includeNonAdmin);
+        return includeStock(perms, pl);
     }
 
-    private Set<String> includeStock(Set<String> perms, boolean includeNonAdmin) {
-        if (ps.includeAdmin()) {
+    private Set<String> includeStock(Set<String> perms, PermissionLevel pl) {
+        if ((pl == PermissionLevel.DEFAULT || pl == PermissionLevel.DEFAULT_USER) && ps.includeAdmin() || pl.key >= PermissionLevel.ADMIN.key) {
             perms.add(PERMISSIONS_ADMIN);
         }
 
-        if (includeNonAdmin) {
-            if (ps.includeMod()) {
-                perms.add(PERMISSIONS_MOD);
-            }
+        if (pl == PermissionLevel.DEFAULT_USER && ps.includeMod() || pl.key >= PermissionLevel.MOD.key) {
+            perms.add(PERMISSIONS_MOD);
+        }
 
-            if (ps.includeUser()) {
-                perms.add(PERMISSIONS_USER);
-            }
+        if (pl == PermissionLevel.DEFAULT_USER && ps.includeUser() || pl.key >= PermissionLevel.USER.key) {
+            perms.add(PERMISSIONS_USER);
         }
 
         return perms;
+    }
+
+    public enum PermissionLevel {
+        NONE(0),
+        ADMIN(1),
+        MOD(2),
+        USER(3),
+        DEFAULT(-1),
+        DEFAULT_USER(-2);
+
+        private final int key;
+
+        PermissionLevel(int key) {
+            this.key = key;
+        }
     }
 }

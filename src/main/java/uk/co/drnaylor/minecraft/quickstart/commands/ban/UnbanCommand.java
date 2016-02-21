@@ -59,7 +59,7 @@ public class UnbanCommand extends CommandBase {
 
         service.removeBan(obp.get());
 
-        Set<String> n = permissions.getPermissionWithSuffixFromRootOnly("notify", true);
+        Set<String> n = permissions.getPermissionWithSuffixFromRootOnly("notify", PermissionUtil.PermissionLevel.DEFAULT_USER);
         n.add(PermissionUtil.PERMISSIONS_MOD);
         String[] notify = n.toArray(new String[n.size()]);
         Player pl = null;

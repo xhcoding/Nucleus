@@ -40,7 +40,7 @@ public class KickAllCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Kicks all players.")).executor(this)
             .arguments(
-                    new RequireOneOfPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("whitelist", false)),
+                    new RequireOneOfPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("whitelist")),
                     GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
             ).build();
     }

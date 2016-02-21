@@ -14,12 +14,11 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
 @RootCommand
-@Permissions(includeUser = true)
+@Permissions(includeUser = true, includeMod = true)
 @Modules(PluginModule.AFK)
 @NoCooldown
 @NoWarmup
@@ -41,7 +40,7 @@ public class AFKCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         AFKHandler afkHandler = plugin.getAfkHandler();
-        if (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exempt") || afkHandler.getAFKData(src).notTracked()) {
+        if (permissions.getPermissionWithSuffix("exempt").stream().anyMatch(src::hasPermission) || afkHandler.getAFKData(src).notTracked()) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.afk.exempt")));
             return CommandResult.empty();
         }

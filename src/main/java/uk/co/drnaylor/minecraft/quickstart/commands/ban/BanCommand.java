@@ -22,6 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.util.Set;
@@ -69,7 +70,7 @@ public class BanCommand extends CommandBase {
         }
 
         // Get the permission, "quickstart.ban.notify"
-        Set<String> notify = permissions.getPermissionWithSuffixFromRootOnly("notify", true);
+        Set<String> notify = permissions.getPermissionWithSuffixFromRootOnly("notify", PermissionUtil.PermissionLevel.DEFAULT_USER);
         MessageChannel send = Util.getMessageChannel(pl, notify.toArray(new String[notify.size()]));
 
         send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("command.ban.applied", u.getName(), src.getName())));
