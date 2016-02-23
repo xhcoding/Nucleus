@@ -9,6 +9,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
@@ -55,7 +56,7 @@ public class JailListener extends ListenerBase {
      *
      * @param event The event.
      */
-    @Listener
+    @Listener(order = Order.LATE)
     public void onPlayerLogin(final ClientConnectionEvent.Join event) {
         final Player user = event.getTargetEntity();
         InternalQuickStartUser qs;

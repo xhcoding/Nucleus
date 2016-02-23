@@ -14,7 +14,6 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchPlayerException;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartUserService;
-import uk.co.drnaylor.minecraft.quickstart.config.UserConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.File;
@@ -31,8 +30,8 @@ import java.util.stream.Collectors;
 public class UserConfigLoader implements QuickStartUserService {
 
     private final QuickStart plugin;
-    private final Map<UUID, UserConfig> loadedUsers = Maps.newHashMap();
-    private final Map<UUID, SoftReference<UserConfig>> softLoadedUsers = Maps.newHashMap();
+    private final Map<UUID, UserService> loadedUsers = Maps.newHashMap();
+    private final Map<UUID, SoftReference<UserService>> softLoadedUsers = Maps.newHashMap();
 
     public UserConfigLoader(QuickStart plugin) {
         this.plugin = plugin;
@@ -66,14 +65,14 @@ public class UserConfigLoader implements QuickStartUserService {
         // just acting as a cache.
         clearNullSoftReferences();
         if (softLoadedUsers.containsKey(user.getUniqueId())) {
-            UserConfig uc = softLoadedUsers.get(user.getUniqueId()).get();
+            UserService uc = softLoadedUsers.get(user.getUniqueId()).get();
             softLoadedUsers.remove(user.getUniqueId());
             loadedUsers.put(user.getUniqueId(), uc);
             return uc;
         }
 
         // Load the file in.
-        UserConfig uc = new UserConfig(getUserPath(user.getUniqueId()), user);
+        UserService uc = new UserService(getUserPath(user.getUniqueId()), user);
         loadedUsers.put(user.getUniqueId(), uc);
         return uc;
     }
@@ -95,7 +94,7 @@ public class UserConfigLoader implements QuickStartUserService {
         // Collector to list should prevent CMEs.
         loadedUsers.keySet().stream().filter(x -> !onlineUUIDs.contains(x)).collect(Collectors.toList()).forEach(x -> {
             try {
-                UserConfig uc = loadedUsers.get(x);
+                UserService uc = loadedUsers.get(x);
                 uc.save();
                 loadedUsers.remove(x);
                 softLoadedUsers.put(x, new SoftReference<>(uc));

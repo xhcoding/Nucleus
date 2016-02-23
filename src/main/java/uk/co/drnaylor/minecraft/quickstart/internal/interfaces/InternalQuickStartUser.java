@@ -18,6 +18,8 @@ public interface InternalQuickStartUser extends QuickStartUser {
 
     void setLastLogin(Instant login);
 
+    void removeLocationOnLogin();
+
     void setLastLogout(Instant logout);
 
     List<MailData> getMail();

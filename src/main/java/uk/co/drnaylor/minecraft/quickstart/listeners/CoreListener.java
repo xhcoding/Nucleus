@@ -34,15 +34,16 @@ public class CoreListener extends ListenerBase {
         });
     }
 
-    @Listener
+    @Listener(order = Order.DEFAULT)
     public void onPlayerJoin(final ClientConnectionEvent.Join event) {
         try {
-            // If we have a location to send them to in the config, send them there now!
             InternalQuickStartUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
+
+            // If we have a location to send them to in the config, send them there now!
             Optional<Location<World>> olw = qsu.getLocationOnLogin();
             if (olw.isPresent()) {
                 event.getTargetEntity().setLocation(olw.get());
-                qsu.sendToLocationOnLogin(null);
+                qsu.removeLocationOnLogin();
             }
         } catch (IOException | ObjectMappingException e) {
             e.printStackTrace();

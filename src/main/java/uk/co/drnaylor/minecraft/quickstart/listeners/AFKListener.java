@@ -30,7 +30,7 @@ import java.util.Arrays;
 @Modules(PluginModule.AFK)
 public class AFKListener extends ListenerBase {
 
-    private final PermissionUtil permissionUtil = new PermissionUtil(AFKListener.class.getAnnotation(Permissions.class), null);
+    private final PermissionUtil permissionUtil = new PermissionUtil(AFKCommand.class.getAnnotation(Permissions.class), null);
 
     @Listener(order = Order.FIRST)
     public void onPlayerLogin(final ClientConnectionEvent.Login event) {

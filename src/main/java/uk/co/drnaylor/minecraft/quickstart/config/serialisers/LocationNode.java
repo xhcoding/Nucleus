@@ -6,6 +6,8 @@ package uk.co.drnaylor.minecraft.quickstart.config.serialisers;
 
 import com.flowpowered.math.vector.Vector3d;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.Setting;
+import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -14,15 +16,31 @@ import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchWorldException;
 import java.util.Optional;
 import java.util.UUID;
 
+@ConfigSerializable
 public class LocationNode {
 
-    private final double x;
-    private final double y;
-    private final double z;
-    private final double rotx;
-    private final double roty;
-    private final double rotz;
-    private final UUID world;
+    @Setting
+    private double x;
+
+    @Setting
+    private double y;
+
+    @Setting
+    private double z;
+
+    @Setting
+    private double rotx;
+
+    @Setting
+    private double roty;
+
+    @Setting
+    private double rotz;
+
+    @Setting
+    private UUID world;
+
+    public LocationNode() { }
 
     public LocationNode(ConfigurationNode locationNode) {
         this.x = locationNode.getNode("x").getDouble();
@@ -32,6 +50,10 @@ public class LocationNode {
         this.roty = locationNode.getNode("roty").getDouble();
         this.rotz = locationNode.getNode("rotz").getDouble();
         this.world = UUID.fromString(locationNode.getNode("world").getString());
+    }
+
+    public LocationNode(Location<World> length) {
+        this(length, new Vector3d());
     }
 
     public LocationNode(Location<World> length, Vector3d rotation) {

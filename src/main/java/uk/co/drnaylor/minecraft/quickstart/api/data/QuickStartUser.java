@@ -6,6 +6,7 @@ package uk.co.drnaylor.minecraft.quickstart.api.data;
 
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -169,4 +170,30 @@ public interface QuickStartUser {
      * @param toggle <code>true</code> if so.
      */
     void setTeleportToggled(boolean toggle);
+
+    /**
+     * Gets the player's nickname as Text.
+     *
+     * @return The player's nickname.
+     */
+    Text getNicknameAsText();
+
+    /**
+     * Gets the player's nickname as a String object, using legacy colour codes prefixed with an ampersand.
+     *
+     * @return The player's nickname
+     */
+    String getNicknameAsString();
+
+    /**
+     * Sets the player's nickname, using legacy colour/style codes prefixed with an ampersand.
+     *
+     * @param nick The nickname to set.
+     */
+    void setNickname(String nick);
+
+    /**
+     * Removes the player's nickname.
+     */
+    void removeNickname();
 }

@@ -2,7 +2,7 @@
  * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
  * at the root of this project for more details.
  */
-package uk.co.drnaylor.minecraft.quickstart.config;
+package uk.co.drnaylor.minecraft.quickstart.internal.services;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableList;
@@ -13,146 +13,54 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchWorldException;
+import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.LocationNode;
+import uk.co.drnaylor.minecraft.quickstart.config.serialisers.UserConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements InternalQuickStartUser {
+public class UserService implements InternalQuickStartUser {
     private final User user;
-    private MuteData muteData;
-    private boolean socialSpy;
-    private Instant login;
-    private Instant logout;
-    private boolean invulnerable;
-    private boolean fly;
-    private List<MailData> mailDataList;
-    private JailData jailData;
-    private Location<World> locationOnLogin;
-    private boolean jailOffline = false;
-    private Map<String, LocationNode> homeData;
-    private boolean isTeleportToggled;
+    private UserConfig config;
+    private final GsonConfigurationLoader loader;
 
-    public UserConfig(Path file, User user) throws IOException, ObjectMappingException {
-        super(file);
+    public UserService(Path file, User user) throws IOException, ObjectMappingException {
+        this.loader = GsonConfigurationLoader.builder().setPath(file).build();
         this.user = user;
+
+        load();
     }
 
-    @Override
-    public void load() throws IOException, ObjectMappingException {
-        node = loader.load();
-        if (node.getNode("mute").isVirtual()) {
-            muteData = null;
-        } else {
-            muteData = node.getNode("mute").getValue(TypeToken.of(MuteData.class));
-        }
-
-        if (node.getNode("jail").isVirtual()) {
-            jailData = null;
-        } else {
-            jailData = node.getNode("jail").getValue(TypeToken.of(JailData.class));
-        }
-
-        jailOffline = node.getNode("jailOnLogin").getBoolean(false);
-        socialSpy = node.getNode("socialspy").getBoolean(false);
-        login = Instant.ofEpochMilli(node.getNode("timestamp", "login").getLong());
-        logout = Instant.ofEpochMilli(node.getNode("timestamp", "logout").getLong());
-        invulnerable = node.getNode("invulnerable").getBoolean();
-        fly = node.getNode("fly").getBoolean();
-
-        // This returned an immutable list, so we want to make it mutable.
-        mailDataList = Lists.newArrayList(node.getNode("mail").getList(TypeToken.of(MailData.class)));
-
-        ConfigurationNode ccn = node.getNode("locationOnLogin");
-        if (!ccn.isVirtual()) {
-            Optional<World> ow = Sponge.getServer().getWorld(ccn.getNode("world").getValue(TypeToken.of(UUID.class)));
-            if (ow.isPresent()) {
-                locationOnLogin = new Location<>(ow.get(), node.getNode("x").getDouble(), node.getNode("y").getDouble(), node.getNode("z").getDouble());
-            } else {
-                WorldProperties wp = Sponge.getServer().getDefaultWorld().get();
-                locationOnLogin = new Location<>(Sponge.getServer().getWorld(wp.getUniqueId()).get(), wp.getSpawnPosition());
-            }
-        }
-
-        // Homes
-        if (homeData == null) {
-            homeData = Maps.newHashMap();
-        }
-
-        homeData.clear();
-        node.getNode("homes").getChildrenMap().forEach((k, v) -> homeData.put(k.toString().toLowerCase(), new LocationNode(v)));
-        node.getNode("teleportToggled").getBoolean(true);
+    private void load() throws IOException, ObjectMappingException {
+        ConfigurationNode cn = loader.load();
+        config = cn.getValue(TypeToken.of(UserConfig.class), new UserConfig());
     }
 
-    @Override
     public void save() throws IOException, ObjectMappingException {
-        if (muteData == null) {
-            node.removeChild("mute");
-        } else {
-            node.getNode("mute").setValue(TypeToken.of(MuteData.class), muteData);
-        }
-
-        if (jailData == null) {
-            node.removeChild("jail");
-        } else {
-            node.getNode("jail").setValue(TypeToken.of(JailData.class), jailData);
-        }
-
-        node.getNode("socialspy").setValue(isSocialSpy());
-        node.getNode("timestamp", "login").setValue(login.toEpochMilli());
-        node.getNode("timestamp", "logout").setValue(logout.toEpochMilli());
-        node.getNode("invulnerable").setValue(invulnerable);
-        node.getNode("fly").setValue(fly);
-        node.getNode("jailOnLogin").setValue(jailOffline);
-
-        // Type erasure! Thanks to Google's Type Token, we work around it.
-        node.getNode("mail").setValue(new TypeToken<List<MailData>>() {}, mailDataList);
-
-        if (locationOnLogin == null) {
-            node.removeChild("locationOnLogin");
-        } else {
-            ConfigurationNode ccn = node.getNode("locationOnLogin");
-            node.getNode("x").setValue(locationOnLogin.getX());
-            node.getNode("y").setValue(locationOnLogin.getY());
-            node.getNode("z").setValue(locationOnLogin.getZ());
-            node.getNode("world").setValue(locationOnLogin.getExtent().getUniqueId());
-        }
-
-        homeData.forEach((k, v) -> v.populateNode(node.getNode("homes").getNode(k.toLowerCase())));
-        node.getNode("teleportToggled").setValue(isTeleportToggled);
-        super.save();
-    }
-
-    @Override
-    protected GsonConfigurationLoader getLoader(Path file) {
-        return GsonConfigurationLoader.builder().setPath(file).build();
-    }
-
-    @Override
-    protected ConfigurationNode getDefaults() {
-        return SimpleConfigurationNode.root();
+        ConfigurationNode cn = SimpleConfigurationNode.root();
+        cn.setValue(TypeToken.of(UserConfig.class), config);
+        loader.save(cn);
     }
 
     @Override
@@ -162,28 +70,28 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public Optional<MuteData> getMuteData() {
-        return Optional.ofNullable(muteData);
+        return Optional.ofNullable(config.getMuteData());
     }
 
     @Override
     public void setMuteData(MuteData data) {
-        this.muteData = data;
+        config.setMuteData(data);
     }
 
     @Override
     public void removeMuteData() {
-        this.muteData = null;
+        config.setMuteData(null);
     }
 
     @Override
     public boolean isSocialSpy() {
-        socialSpy = socialSpy && (user.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "socialspy.base") || user.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
-        return socialSpy;
+        // Only a spy if they have the permission!
+        return config.isSocialspy() && getPermissionUtil(SocialSpyCommand.class).getBasePermissions().stream().anyMatch(user::hasPermission);
     }
 
     @Override
     public boolean setSocialSpy(boolean socialSpy) {
-        this.socialSpy = socialSpy;
+        config.setSocialspy(socialSpy);
 
         // Permission checks! Return true if it's what we wanted.
         return isSocialSpy() == socialSpy;
@@ -192,10 +100,10 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public boolean isInvulnerable() {
         if (user.isOnline()) {
-            invulnerable = user.getPlayer().get().get(Keys.INVULNERABILITY_TICKS).orElse(0) > 0;
+            config.setInvulnerable(user.getPlayer().get().get(Keys.INVULNERABILITY_TICKS).orElse(0) > 0);
         }
 
-        return invulnerable;
+        return config.isInvulnerable();
     }
 
     @Override
@@ -215,17 +123,17 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             }
         }
 
-        invulnerable = invuln;
+        config.setInvulnerable(invuln);
         return true;
     }
 
     @Override
     public boolean isFlying() {
         if (user.isOnline()) {
-            fly = user.getPlayer().get().get(Keys.CAN_FLY).orElse(false);
+            config.setFly(user.getPlayer().get().get(Keys.CAN_FLY).orElse(false));
         }
 
-        return fly;
+        return config.isFly();
     }
 
     @Override
@@ -241,33 +149,37 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
             }
         }
 
-        this.fly = fly;
+        config.setFly(fly);
         return true;
     }
 
     @Override
     public Optional<JailData> getJailData() {
-        return Optional.ofNullable(jailData);
+        return Optional.ofNullable(config.getJailData());
     }
 
     @Override
     public Instant getLastLogin() {
-        return login;
+        return Instant.ofEpochMilli(config.getLogin());
     }
 
     @Override
     public void setLastLogin(Instant login) {
-        this.login = login;
+        config.setLogin(login.toEpochMilli());
     }
 
     @Override
     public Instant getLastLogout() {
-        return logout;
+        return Instant.ofEpochMilli(config.getLogout());
     }
 
     @Override
     public Optional<WarpLocation> getHome(String home) {
-        LocationNode ln = homeData.get(home.toLowerCase());
+        if (config.getHomeData() == null) {
+            return Optional.empty();
+        }
+
+        LocationNode ln = config.getHomeData().get(home.toLowerCase());
         if (ln != null) {
             try {
                 return Optional.of(new WarpLocation(home.toLowerCase(), ln.getLocation(), ln.getRotation()));
@@ -281,7 +193,11 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public Map<String, WarpLocation> getHomes() {
-        return homeData.entrySet().stream().map(x -> {
+        if (config.getHomeData() == null) {
+            return Maps.newHashMap();
+        }
+
+        return config.getHomeData().entrySet().stream().map(x -> {
             try {
                 return new WarpLocation(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
             } catch (NoSuchWorldException e) {
@@ -294,18 +210,30 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     public boolean setHome(String home, Location<World> location, Vector3d rotation) {
         final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
 
+        Map<String, LocationNode> homeData = config.getHomeData();
+        if (homeData == null) {
+            homeData = Maps.newHashMap();
+        }
+
         if (homeData.containsKey(home.toLowerCase()) || !warpName.matcher(home).matches()) {
             return false;
         }
 
         homeData.put(home.toLowerCase(), new LocationNode(location, rotation));
+        config.setHomeData(homeData);
         return true;
     }
 
     @Override
     public boolean deleteHome(String home) {
+        Map<String, LocationNode> homeData = config.getHomeData();
+        if (homeData == null) {
+            return false;
+        }
+
         if (homeData.containsKey(home.toLowerCase())) {
             homeData.remove(home.toLowerCase());
+            config.setHomeData(homeData);
             return true;
         }
 
@@ -314,42 +242,68 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public boolean isTeleportToggled() {
-        return isTeleportToggled;
+        return config.isTeleportToggled();
     }
 
     @Override
     public void setTeleportToggled(boolean toggle) {
-        isTeleportToggled = toggle;
+        config.setTeleportToggled(toggle);
+    }
+
+    @Override
+    public Text getNicknameAsText() {
+        return null;
+    }
+
+    @Override
+    public String getNicknameAsString() {
+        return null;
+    }
+
+    @Override
+    public void setNickname(String nick) {
+
+    }
+
+    @Override
+    public void removeNickname() {
+
     }
 
     @Override
     public List<MailData> getMail() {
-        return ImmutableList.copyOf(mailDataList);
+        return ImmutableList.copyOf(config.getMailDataList());
     }
 
     @Override
     public void addMail(MailData mailData) {
+        List<MailData> mailDataList = config.getMailDataList();
+        if (mailDataList == null) {
+            mailDataList = Lists.newArrayList();
+        }
+
         mailDataList.add(mailData);
+        config.setMailDataList(mailDataList);
     }
 
     @Override
     public void clearMail() {
-        mailDataList.clear();
+        config.setMailDataList(Lists.newArrayList());
     }
 
     @Override
     public boolean isFlyingSafe() {
-        return fly;
+        return config.isFly();
     }
 
     @Override
     public boolean isInvulnerableSafe() {
-        return invulnerable;
+        return config.isInvulnerable();
     }
 
     @Override
     public void setJailData(JailData data) {
-        jailData = data;
+        config.setJailData(data);
     }
 
     @Override
@@ -368,17 +322,31 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public Optional<Location<World>> getLocationOnLogin() {
-        return Optional.ofNullable(locationOnLogin);
+        LocationNode ln = config.getLocationOnLogin();
+        if (ln == null) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.ofNullable(ln.getLocation());
+        } catch (NoSuchWorldException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public void sendToLocationOnLogin(Location<World> worldLocation) {
-        locationOnLogin = worldLocation;
+        config.setLocationOnLogin(new LocationNode(worldLocation));
+    }
+
+    @Override
+    public void removeLocationOnLogin() {
+        config.setLocationOnLogin(null);
     }
 
     @Override
     public void setLastLogout(Instant logout) {
-        this.logout = logout;
+        config.setLogout(logout.toEpochMilli());
     }
 
     @Override
@@ -388,11 +356,22 @@ public class UserConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
     @Override
     public boolean jailOnNextLogin() {
-        return jailOffline;
+        return config.isJailOffline();
     }
 
     @Override
     public void setJailOnNextLogin(boolean set) {
-        jailOffline = !user.isOnline() && set;
+        config.setJailOffline(!user.isOnline() && set);
     }
+
+    private PermissionUtil getPermissionUtil(Class<? extends CommandBase> c) {
+        if (!util.containsKey(c)) {
+            Permissions p = c.getAnnotation(Permissions.class);
+            util.put(c, new PermissionUtil(p, null));
+        }
+
+        return util.get(c);
+    }
+
+    private Map<Class<? extends CommandBase>, PermissionUtil> util = new HashMap<>();
 }
