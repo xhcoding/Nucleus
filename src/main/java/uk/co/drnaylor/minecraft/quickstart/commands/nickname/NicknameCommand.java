@@ -97,8 +97,11 @@ public class NicknameCommand extends CommandBase {
                     TextColors.RESET, set));
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.nick.success") + " - ",
-                TextColors.RESET, set));
+        if (pl.isOnline()) {
+            pl.getPlayer().get().sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.nick.success") + " - ",
+                    TextColors.RESET, set));
+        }
+
         return CommandResult.success();
     }
 }

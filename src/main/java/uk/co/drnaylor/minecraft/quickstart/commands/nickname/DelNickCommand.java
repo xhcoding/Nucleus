@@ -67,7 +67,10 @@ public class DelNickCommand extends CommandBase {
             src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.delnick.success.other", pl.getName())));
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.delnick.success")));
+        if (pl.isOnline()) {
+            pl.getPlayer().get().sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.delnick.success")));
+        }
+
         return CommandResult.success();
     }
 }
