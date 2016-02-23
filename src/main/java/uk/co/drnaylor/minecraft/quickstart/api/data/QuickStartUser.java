@@ -176,14 +176,14 @@ public interface QuickStartUser {
      *
      * @return The player's nickname.
      */
-    Text getNicknameAsText();
+    Optional<Text> getNicknameAsText();
 
     /**
      * Gets the player's nickname as a String object, using legacy colour codes prefixed with an ampersand.
      *
      * @return The player's nickname
      */
-    String getNicknameAsString();
+    Optional<String> getNicknameAsString();
 
     /**
      * Sets the player's nickname, using legacy colour/style codes prefixed with an ampersand.

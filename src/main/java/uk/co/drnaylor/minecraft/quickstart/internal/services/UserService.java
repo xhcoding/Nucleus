@@ -18,6 +18,7 @@ import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
@@ -251,23 +252,30 @@ public class UserService implements InternalQuickStartUser {
     }
 
     @Override
-    public Text getNicknameAsText() {
-        return null;
+    public Optional<Text> getNicknameAsText() {
+        Optional<String> os = getNicknameAsString();
+        if (!os.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(TextSerializers.formattingCode('&').deserialize(os.get()));
     }
 
     @Override
-    public String getNicknameAsString() {
-        return null;
+    public Optional<String> getNicknameAsString() {
+        return Optional.ofNullable(config.getNickname());
     }
 
     @Override
     public void setNickname(String nick) {
-
+        user.offer(Keys.DISPLAY_NAME, TextSerializers.formattingCode('&').deserialize(nick));
+        config.setNickname(nick);
     }
 
     @Override
     public void removeNickname() {
-
+        user.remove(Keys.DISPLAY_NAME);
+        config.setNickname(null);
     }
 
     @Override

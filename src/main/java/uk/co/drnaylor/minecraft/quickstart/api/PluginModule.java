@@ -24,7 +24,8 @@ public enum PluginModule {
     COMMAND_LOGGING("command-logging"),
     SPAWN("spawn"),
     ADMIN("admin"),
-    VANISH("vanish");
+    VANISH("vanish"),
+    NICKNAME("nickname");
 
     String key;
 

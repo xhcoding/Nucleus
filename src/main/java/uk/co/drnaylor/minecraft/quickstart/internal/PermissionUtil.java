@@ -5,6 +5,7 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.Arrays;
@@ -68,6 +69,15 @@ public final class PermissionUtil {
         }
 
         return includeStock(perms, level);
+    }
+
+    public Set<String> getPermissionsWithSuffixes(PermissionLevel pl, String... suffixes) {
+        Set<String> perms = Sets.newHashSet();
+        for (String suffix : suffixes) {
+            perms.addAll(getPermissionWithSuffix(suffix, pl));
+        }
+
+        return perms;
     }
 
     public Set<String> getPermissionWithSuffix(String suffix) {
