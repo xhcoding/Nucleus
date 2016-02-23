@@ -2,7 +2,7 @@
  * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
  * at the root of this project for more details.
  */
-package uk.co.drnaylor.minecraft.quickstart.commands.chat;
+package uk.co.drnaylor.minecraft.quickstart.commands.nickname;
 
 import com.google.inject.Inject;
 import org.spongepowered.api.command.CommandResult;
