@@ -16,6 +16,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
@@ -38,7 +39,7 @@ public class DelNickCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(
-                GenericArguments.optionalWeak(new RequireOneOfPermission(GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))), permissions.getPermissionWithSuffix("other")))
+                GenericArguments.optionalWeak(new RequireOneOfPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("other")))
         ).executor(this).build();
     }
 
