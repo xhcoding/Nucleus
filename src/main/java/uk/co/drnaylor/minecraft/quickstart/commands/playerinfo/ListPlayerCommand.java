@@ -4,6 +4,7 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.commands.playerinfo;
 
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -20,6 +21,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 @Modules(PluginModule.PLAYERINFO)
 @RootCommand
 public class ListPlayerCommand extends CommandBase {
+    @Inject private UserConfigLoader loader;
     private Text hidden;
 
     @Override
@@ -38,12 +41,13 @@ public class ListPlayerCommand extends CommandBase {
 
     @Override
     public String[] getAliases() {
-        return new String[] { "listplayers", "list" };
+        return new String[] { "list", "listplayers" };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         boolean showVanished = permissions.getPermissionWithSuffix("seevanished").stream().anyMatch(src::hasPermission);
+        long hiddenCount = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.get(Keys.INVISIBLE).orElse(false)).count();
 
         List<Text> playerList = Sponge.getServer().getOnlinePlayers().stream().filter(x -> showVanished || !x.get(Keys.INVISIBLE).orElse(false))
                 .sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName())).map(x -> {
@@ -52,26 +56,38 @@ public class ListPlayerCommand extends CommandBase {
                         tb.append(getHidden());
                     }
 
-                    return tb.append(NameUtil.getName(x)).build();
+                    return tb.append(NameUtil.getName(x, loader)).build();
                 })
                 .collect(Collectors.toList());
 
-        boolean isFirst = true;
-        Text.Builder tb = Text.builder();
-        for (Text text : playerList) {
-            if (!isFirst) {
-                tb.append(Text.of(TextColors.WHITE, ", "));
-            }
-
-            tb.append(text);
-            isFirst = false;
+        String header;
+        if (showVanished && hiddenCount > 0) {
+            header = Util.getMessageWithFormat("command.list.playercount.hidden", String.valueOf(playerList.size()), String.valueOf(Sponge.getServer().getMaxPlayers()), String.valueOf(hiddenCount));
+        } else {
+            header = Util.getMessageWithFormat("command.list.playercount", String.valueOf(playerList.size()), String.valueOf(Sponge.getServer().getMaxPlayers()));
         }
 
-        src.sendMessage(tb.build());
+        src.sendMessage(Text.of(TextColors.YELLOW, header));
+
+        if (!playerList.isEmpty()) {
+            boolean isFirst = true;
+            Text.Builder tb = Text.builder();
+            for (Text text : playerList) {
+                if (!isFirst) {
+                    tb.append(Text.of(TextColors.WHITE, ", "));
+                }
+
+                tb.append(text);
+                isFirst = false;
+            }
+
+            src.sendMessage(tb.build());
+        }
+
         return CommandResult.success();
     }
 
     private Text getHidden() {
-        return Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden"));
+        return Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden") + " ");
     }
 }

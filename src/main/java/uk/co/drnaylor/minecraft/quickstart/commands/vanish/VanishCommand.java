@@ -42,7 +42,7 @@ public class VanishCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         // If we don't specify whether to vanish, toggle
-        boolean toVanish = args.<Boolean>getOne(b).orElse(src.get(Keys.INVISIBLE).orElse(false));
+        boolean toVanish = args.<Boolean>getOne(b).orElse(!src.get(Keys.INVISIBLE).orElse(false));
 
         DataTransactionResult dtr = src.offer(Keys.INVISIBLE, toVanish);
         src.offer(Keys.INVISIBILITY_IGNORES_COLLISION, toVanish);
