@@ -39,7 +39,7 @@ public class DelNickCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(
-                GenericArguments.optionalWeak(new RequireOneOfPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("other")))
+                GenericArguments.optional(new RequireOneOfPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("other")))
         ).executor(this).build();
     }
 
