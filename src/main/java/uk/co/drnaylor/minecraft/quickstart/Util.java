@@ -4,6 +4,7 @@
  */
 package uk.co.drnaylor.minecraft.quickstart;
 
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -15,9 +16,12 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.util.Identifiable;
 import uk.co.drnaylor.minecraft.quickstart.api.data.interfaces.EndTimestamp;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.VoidFunction;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.*;
@@ -153,6 +157,19 @@ public class Util {
         }
 
         return getName((User)src);
+    }
+
+    public static Text getName(User player, UserConfigLoader loader) {
+        try {
+            InternalQuickStartUser iq = loader.getUser(player);
+            Optional<Text> n = iq.getNicknameAsText();
+            if (n.isPresent()) {
+                return n.get();
+            }
+        } catch (IOException | ObjectMappingException e) {
+        }
+
+        return getName(player);
     }
 
     public static Text getName(User player) {

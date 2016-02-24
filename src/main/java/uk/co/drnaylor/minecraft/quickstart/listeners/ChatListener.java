@@ -5,7 +5,9 @@
 package uk.co.drnaylor.minecraft.quickstart.listeners;
 
 import com.google.inject.Inject;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
@@ -13,13 +15,17 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
+import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
+import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +42,9 @@ public class ChatListener extends ListenerBase {
 
     @Inject
     private MainConfig config;
+
+    @Inject
+    private UserConfigLoader loader;
 
     // Zero args for the injector
     public ChatListener() {
@@ -54,7 +63,7 @@ public class ChatListener extends ListenerBase {
         t.put("{{name}}", (p, te) -> Text.of(p.getName()));
         t.put("{{prefix}}", (p, te) -> getTextFromOption(p, "prefix"));
         t.put("{{suffix}}", (p, te) -> getTextFromOption(p, "suffix"));
-        t.put("{{displayname}}", (p, te) -> Util.getName(p));
+        t.put("{{displayname}}", (p, te) -> getNameWithHover(p));
         t.put("{{message}}", (p, te) -> te);
         return t;
     }
@@ -110,5 +119,27 @@ public class ChatListener extends ListenerBase {
     private Optional<OptionSubject> getSubject(Player player) {
         Subject subject = player.getContainingCollection().get(player.getIdentifier());
         return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
+    }
+
+    private Text getNameWithHover(User player) {
+        return getName(player).toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
+    }
+
+    private Text getName(User player) {
+        try {
+            InternalQuickStartUser iq = loader.getUser(player);
+            Optional<Text> n = iq.getNicknameAsText();
+            if (n.isPresent()) {
+                String t = config.getNickPrefix();
+                if (t == null || t.isEmpty()) {
+                    return n.get();
+                } else {
+                    return Text.join(TextSerializers.formattingCode('&').deserialize(config.getNickPrefix()), n.get());
+                }
+            }
+        } catch (IOException | ObjectMappingException e) {
+        }
+
+        return Util.getName(player);
     }
 }

@@ -17,6 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
+import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
@@ -34,13 +35,14 @@ import java.util.regex.Pattern;
 public class NicknameCommand extends CommandBase {
 
     @Inject private UserConfigLoader loader;
+    @Inject private MainConfig mainConfig;
 
     private final String playerKey = "player";
     private final String nickName = "nickname";
 
     private final Pattern colourPattern = Pattern.compile("&[0-9a-f]", Pattern.CASE_INSENSITIVE);
-    private final Pattern stylePattern = Pattern.compile("&[omn]", Pattern.CASE_INSENSITIVE);
-    private final Pattern magicPattern = Pattern.compile("&[0-9a-f]", Pattern.CASE_INSENSITIVE);
+    private final Pattern stylePattern = Pattern.compile("&[omnl]", Pattern.CASE_INSENSITIVE);
+    private final Pattern magicPattern = Pattern.compile("&k", Pattern.CASE_INSENSITIVE);
 
     @Override
     public CommandSpec createSpec() {
@@ -85,6 +87,12 @@ public class NicknameCommand extends CommandBase {
         // Giving player must have the colour permissions and whatnot.
         if (stylePattern.matcher(name).find() && permissions.getPermissionWithSuffix("style").stream().noneMatch(src::hasPermission)) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.style.noperms")));
+            return CommandResult.empty();
+        }
+
+        // Do a regex remove to check minimum length requirements.
+        if (name.replaceAll("&[0-9a-fomlnk]","").length() < Math.max(mainConfig.getMinNickLength(), 1)) {
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.tooshort")));
             return CommandResult.empty();
         }
 

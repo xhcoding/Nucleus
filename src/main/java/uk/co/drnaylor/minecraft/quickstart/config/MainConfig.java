@@ -34,6 +34,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private long teleportWarmup;
     private boolean modifyChat;
     private String chatTemplate;
+    private int minNickLength;
+    private String nickprefix;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -80,6 +82,10 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         // Chat
         modifyChat = node.getNode("chat", "modifychat").getBoolean(true);
         chatTemplate = node.getNode("chat", "template").getString("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
+
+        // Nicknames
+        minNickLength = node.getNode("nicknames", "min-nickname-length").getInt(3);
+        nickprefix = node.getNode("nicknames", "prefix").getString("&b~");
     }
 
     @Override
@@ -112,6 +118,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
         ccn.getNode("chat", "modifychat").setComment(Util.getMessageWithFormat("config.chat.modify")).setValue(false);
         ccn.getNode("chat", "template").setComment(Util.getMessageWithFormat("config.chat.template")).setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
+
+        ccn.getNode("nicknames", "min-nickname-length").setComment(Util.getMessageWithFormat("config.nicknames.min")).setValue(3);
+        ccn.getNode("nicknames", "prefix").setComment(Util.getMessageWithFormat("config.nicknames.prefix")).setValue("&b~");
         return ccn;
     }
 
@@ -149,5 +158,13 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public String getChatTemplate() {
         return chatTemplate;
+    }
+
+    public int getMinNickLength() {
+        return minNickLength;
+    }
+
+    public String getNickPrefix() {
+        return nickprefix;
     }
 }

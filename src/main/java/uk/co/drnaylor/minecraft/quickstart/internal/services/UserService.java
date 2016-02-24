@@ -46,6 +46,9 @@ public class UserService implements InternalQuickStartUser {
     private UserConfig config;
     private final GsonConfigurationLoader loader;
 
+    // Used a cache.
+    private Text nickname = null;
+
     public UserService(Path file, User user) throws IOException, ObjectMappingException {
         this.loader = GsonConfigurationLoader.builder().setPath(file).build();
         this.user = user;
@@ -253,6 +256,10 @@ public class UserService implements InternalQuickStartUser {
 
     @Override
     public Optional<Text> getNicknameAsText() {
+        if (this.nickname != null) {
+            return Optional.of(this.nickname);
+        }
+
         Optional<String> os = getNicknameAsString();
         if (!os.isPresent()) {
             return Optional.empty();
@@ -267,14 +274,19 @@ public class UserService implements InternalQuickStartUser {
     }
 
     @Override
-    public void setNickname(String nick) {
-        user.offer(Keys.DISPLAY_NAME, TextSerializers.formattingCode('&').deserialize(nick));
-        config.setNickname(nick);
+    public void setNickname(String nickname) {
+        Text nick = TextSerializers.formattingCode('&').deserialize(nickname);
+        user.offer(Keys.DISPLAY_NAME, nick);
+        user.offer(Keys.SHOWS_DISPLAY_NAME, true);
+        this.nickname = null;
+        config.setNickname(nickname);
     }
 
     @Override
     public void removeNickname() {
+        nickname = null;
         user.remove(Keys.DISPLAY_NAME);
+        user.offer(Keys.SHOWS_DISPLAY_NAME, false);
         config.setNickname(null);
     }
 
