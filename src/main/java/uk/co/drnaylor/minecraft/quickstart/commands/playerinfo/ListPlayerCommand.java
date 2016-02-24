@@ -12,6 +12,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
@@ -51,7 +52,7 @@ public class ListPlayerCommand extends CommandBase {
                         tb.append(getHidden());
                     }
 
-                    return tb.append(Util.getName(x)).build();
+                    return tb.append(NameUtil.getName(x)).build();
                 })
                 .collect(Collectors.toList());
 

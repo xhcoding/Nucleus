@@ -11,6 +11,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
@@ -49,10 +50,10 @@ public class AFKCommand extends CommandBase<Player> {
 
         if (isAFK) {
             afkHandler.updateUserActivity(src.getUniqueId());
-            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
+            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
         } else {
             afkHandler.setAFK(src.getUniqueId(), true);
-            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk")));
+            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk")));
         }
 
         return CommandResult.success();

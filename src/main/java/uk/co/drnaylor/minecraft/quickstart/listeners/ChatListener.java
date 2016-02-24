@@ -6,7 +6,6 @@ package uk.co.drnaylor.minecraft.quickstart.listeners;
 
 import com.google.inject.Inject;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
@@ -14,9 +13,8 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import uk.co.drnaylor.minecraft.quickstart.Util;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
@@ -60,7 +58,7 @@ public class ChatListener extends ListenerBase {
         t.put("{{name}}", (p, te) -> Text.of(p.getName()));
         t.put("{{prefix}}", (p, te) -> getTextFromOption(p, "prefix"));
         t.put("{{suffix}}", (p, te) -> getTextFromOption(p, "suffix"));
-        t.put("{{displayname}}", (p, te) -> getNameWithHover(p));
+        t.put("{{displayname}}", (p, te) -> NameUtil.getNameWithHover(p, loader));
         t.put("{{message}}", (p, te) -> te);
         return t;
     }
@@ -116,9 +114,5 @@ public class ChatListener extends ListenerBase {
     private Optional<OptionSubject> getSubject(Player player) {
         Subject subject = player.getContainingCollection().get(player.getIdentifier());
         return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
-    }
-
-    private Text getNameWithHover(User player) {
-        return Util.getName(player, loader).toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
     }
 }

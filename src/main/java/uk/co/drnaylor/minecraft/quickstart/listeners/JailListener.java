@@ -19,6 +19,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
@@ -86,11 +87,11 @@ public class JailListener extends ListenerBase {
             if (timeLeft.isPresent()) {
                 message = Text.of(TextColors.RED,
                         Util.getMessageWithFormat("command.jail.jailed",
-                                owl.get().getName(), Util.getNameFromUUID(jd.getJailer()), Util.getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds())));
+                                owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()), Util.getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds())));
             } else {
                 message = Text.of(TextColors.RED,
                         Util.getMessageWithFormat("command.jail.jailed",
-                                owl.get().getName(), Util.getNameFromUUID(jd.getJailer()), "", ""));
+                                owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()), "", ""));
             }
 
             qs.setFlying(false);

@@ -17,6 +17,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
@@ -63,7 +64,7 @@ public class AFKListener extends ListenerBase {
     private void updateAFK(final Player player) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
             if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && permissionUtil.getPermissionWithSuffix("exempt", PermissionUtil.PermissionLevel.NONE).stream().anyMatch(player::hasPermission)) {
-                MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(player), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
+                MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(player), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
             }
         });
     }

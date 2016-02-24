@@ -13,11 +13,13 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.ban.BanService;
+import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
@@ -58,13 +60,13 @@ public class SeenCommand extends CommandBase {
         // Everyone gets the last online time.
         if (user.isOnline()) {
             messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.iscurrently", user.getName()) + " ", TextColors.GREEN, Util.getMessageWithFormat("standard.online")));
-            messages.add(Text.builder(Util.getMessageWithFormat("command.seen.displayname") + " ").color(TextColors.AQUA).append(Util.getName(user)).build());
             messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.loggedon") + " ", TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogin())));
         } else {
             messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.iscurrently", user.getName()) + " ", TextColors.RED, Util.getMessageWithFormat("standard.offline")));
             messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.loggedoff") + " ", TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogout())));
         }
 
+        messages.add(Text.builder(Util.getMessageWithFormat("command.seen.displayname") + " ").color(TextColors.AQUA).append(NameUtil.getName(user, iqsu)).build());
         if (permissions.getPermissionWithSuffix("extended").stream().anyMatch(src::hasPermission)) {
             if (user.isOnline()) {
                 messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.ipaddress") + " ", TextColors.GREEN, user.getPlayer().get().getConnection().getAddress().getAddress().toString()));
@@ -80,7 +82,8 @@ public class SeenCommand extends CommandBase {
                     getTrueOrFalse(bs.getBanFor(user.getProfile()).isPresent(), TextActions.runCommand("/checkban " + user.getName()))).build());
         }
 
-        src.sendMessages(messages);
+        PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
+        ps.builder().contents(messages).paddingString("-").title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.seen.title", user.getName()))).sendTo(src);
         return CommandResult.success();
     }
 

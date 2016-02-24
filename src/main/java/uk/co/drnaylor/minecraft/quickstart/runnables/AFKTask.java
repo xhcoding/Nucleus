@@ -9,6 +9,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
@@ -40,7 +41,7 @@ public class AFKTask implements TaskBase {
             List<UUID> afking = plugin.getAfkHandler().checkForAfk(c.getAfkTime());
             if (!afking.isEmpty()) {
                 Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "afk.exempt") &&
-                            afking.contains(x.getUniqueId())).map(Util::getName)
+                            afking.contains(x.getUniqueId())).map(NameUtil::getName)
                         .forEach(x -> MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", x, TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk"))));
             }
         }
@@ -53,7 +54,7 @@ public class AFKTask implements TaskBase {
                         afking.contains(x.getUniqueId()))
                         .forEach(x -> {
                             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Text.of(Util.getMessageWithFormat("afk.kickreason"))));
-                            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", Util.getName(x), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.kickedafk")));
+                            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(x), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.kickedafk")));
                         });
             }
         }

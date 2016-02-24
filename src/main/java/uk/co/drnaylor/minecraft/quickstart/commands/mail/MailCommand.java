@@ -16,6 +16,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
@@ -86,13 +87,13 @@ public class MailCommand extends CommandBase<Player> {
 
     private Text createMessage(final MailData md) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM dd").withZone(ZoneId.systemDefault());
-        return Text.builder().append(Text.builder(Util.getNameFromUUID(md.getUuid()))
+        return Text.builder().append(Text.builder(NameUtil.getNameFromUUID(md.getUuid()))
                 .color(TextColors.GREEN)
                 .style(TextStyles.UNDERLINE)
                 .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.hover"))))
                 .onClick(TextActions.executeCallback(src -> {
                     src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.date") + " ", TextColors.WHITE, dtf.format(md.getDate())));
-                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.sender") + " ", TextColors.WHITE, Util.getNameFromUUID(md.getUuid())));
+                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.sender") + " ", TextColors.WHITE, NameUtil.getNameFromUUID(md.getUuid())));
                     src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.message")));
                     src.sendMessage(Text.of(TextColors.WHITE, md.getMessage()));
                 })).build())

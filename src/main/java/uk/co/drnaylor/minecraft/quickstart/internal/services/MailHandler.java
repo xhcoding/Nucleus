@@ -11,6 +11,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.BetweenInstantsData;
@@ -98,7 +99,7 @@ public class MailHandler implements QuickStartMailService {
         MailData md = new MailData(playerFrom == null ? Util.consoleFakeUUID : playerFrom.getUniqueId(), Instant.now(), message);
         iqsu.addMail(md);
 
-        Text from = playerFrom == null ? Text.of(game.getServer().getConsole().getName()) : Util.getName(playerFrom);
+        Text from = playerFrom == null ? Text.of(game.getServer().getConsole().getName()) : NameUtil.getName(playerFrom);
         if (playerTo.isOnline()) {
             playerTo.getPlayer().get().sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("mail.youvegotmail") + " ", from));
         }

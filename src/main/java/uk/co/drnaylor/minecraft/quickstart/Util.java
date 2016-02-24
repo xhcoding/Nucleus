@@ -4,24 +4,15 @@
  */
 package uk.co.drnaylor.minecraft.quickstart;
 
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.user.UserStorageService;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.util.Identifiable;
 import uk.co.drnaylor.minecraft.quickstart.api.data.interfaces.EndTimestamp;
-import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.VoidFunction;
-import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.*;
@@ -149,51 +140,6 @@ public class Util {
             long ahours = hours == 0 ? 12 : hours;
             return MessageFormat.format(messageBundle.getString("time.pm"), ahours, hours, mins);
         }
-    }
-
-    public static Text getNameFromCommandSource(CommandSource src) {
-        if (!(src instanceof User)) {
-            return Text.of(src.getName());
-        }
-
-        return getName((User)src);
-    }
-
-    public static Text getName(User player, UserConfigLoader loader) {
-        try {
-            InternalQuickStartUser iq = loader.getUser(player);
-            Optional<Text> n = iq.getNicknameWithPrefix();
-            if (n.isPresent()) {
-                return n.get();
-            }
-        } catch (IOException | ObjectMappingException e) {
-        }
-
-        return getName(player);
-    }
-
-    public static Text getName(User player) {
-        Optional<Text> vt = player.get(Keys.DISPLAY_NAME);
-        boolean b = player.get(Keys.SHOWS_DISPLAY_NAME).orElse(false);
-        if (b) {
-            return vt.get();
-        }
-
-        return Text.of(player.getName());
-    }
-
-    public static String getNameFromUUID(UUID uuid) {
-        if (Util.consoleFakeUUID.equals(uuid)) {
-            return Sponge.getServer().getConsole().getName();
-        }
-
-        UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
-        Optional<User> user = uss.get(uuid);
-        if (user.isPresent()) {
-            return user.get().getName();
-        }
-
-        return Util.getMessageWithFormat("standard.unknown");
     }
 
     public static Optional<Player> getPlayerFromOptionalOrSource(Optional<Player> pl, CommandSource src) {
