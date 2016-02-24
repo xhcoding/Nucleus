@@ -171,6 +171,8 @@ public interface QuickStartUser {
      */
     void setTeleportToggled(boolean toggle);
 
+    Optional<Text> getNicknameWithPrefix();
+
     /**
      * Gets the player's nickname as Text.
      *

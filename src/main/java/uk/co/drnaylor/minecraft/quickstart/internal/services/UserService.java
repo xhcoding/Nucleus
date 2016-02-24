@@ -21,6 +21,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
@@ -30,6 +31,7 @@ import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.LocationNode;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.UserConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
@@ -42,14 +44,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class UserService implements InternalQuickStartUser {
+    private final QuickStart plugin;
     private final User user;
     private UserConfig config;
     private final GsonConfigurationLoader loader;
 
-    // Used a cache.
+    // Used as a cache.
     private Text nickname = null;
 
-    public UserService(Path file, User user) throws IOException, ObjectMappingException {
+    public UserService(QuickStart plugin, Path file, User user) throws IOException, ObjectMappingException {
+        this.plugin = plugin;
         this.loader = GsonConfigurationLoader.builder().setPath(file).build();
         this.user = user;
 
@@ -255,6 +259,20 @@ public class UserService implements InternalQuickStartUser {
     }
 
     @Override
+    public Optional<Text> getNicknameWithPrefix() {
+        if (getNicknameAsText().isPresent()) {
+            String p = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getNickPrefix();
+            if (p == null || p.isEmpty()) {
+                return getNicknameAsText();
+            }
+
+            return Optional.of(Text.join(TextSerializers.formattingCode('&').deserialize(p), getNicknameAsText().get()));
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
     public Optional<Text> getNicknameAsText() {
         if (this.nickname != null) {
             return Optional.of(this.nickname);
@@ -265,7 +283,8 @@ public class UserService implements InternalQuickStartUser {
             return Optional.empty();
         }
 
-        return Optional.of(TextSerializers.formattingCode('&').deserialize(os.get()));
+        nickname = TextSerializers.formattingCode('&').deserialize(os.get());
+        return Optional.of(nickname);
     }
 
     @Override
@@ -275,11 +294,16 @@ public class UserService implements InternalQuickStartUser {
 
     @Override
     public void setNickname(String nickname) {
+        config.setNickname(nickname);
+        this.nickname = null;
+        String p = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getNickPrefix();
+        if (p != null && !p.isEmpty()) {
+            nickname = p + nickname;
+        }
+
         Text nick = TextSerializers.formattingCode('&').deserialize(nickname);
         user.offer(Keys.DISPLAY_NAME, nick);
         user.offer(Keys.SHOWS_DISPLAY_NAME, true);
-        this.nickname = null;
-        config.setNickname(nickname);
     }
 
     @Override

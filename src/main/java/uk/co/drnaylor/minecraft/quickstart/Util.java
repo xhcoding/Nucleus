@@ -162,7 +162,7 @@ public class Util {
     public static Text getName(User player, UserConfigLoader loader) {
         try {
             InternalQuickStartUser iq = loader.getUser(player);
-            Optional<Text> n = iq.getNicknameAsText();
+            Optional<Text> n = iq.getNicknameWithPrefix();
             if (n.isPresent()) {
                 return n.get();
             }

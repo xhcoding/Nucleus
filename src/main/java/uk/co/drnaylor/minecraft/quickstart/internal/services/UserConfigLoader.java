@@ -72,7 +72,7 @@ public class UserConfigLoader implements QuickStartUserService {
         }
 
         // Load the file in.
-        UserService uc = new UserService(getUserPath(user.getUniqueId()), user);
+        UserService uc = new UserService(plugin, getUserPath(user.getUniqueId()), user);
         loadedUsers.put(user.getUniqueId(), uc);
         return uc;
     }
