@@ -17,6 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(includeUser = true)
 @Modules(PluginModule.PLAYERINFO)
+@RootCommand
 public class ListPlayerCommand extends CommandBase {
     private Text hidden;
 
