@@ -11,6 +11,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -71,6 +72,16 @@ public class SeenCommand extends CommandBase {
             if (user.isOnline()) {
                 messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.ipaddress") + " ", TextColors.GREEN, user.getPlayer().get().getConnection().getAddress().getAddress().toString()));
             }
+
+            messages.add(Text.builder()
+                    .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.walk")))
+                    .append(Text.of(" "))
+                    .append(Text.of(TextColors.YELLOW, user.get(Keys.WALKING_SPEED).orElse(1d))).build());
+
+            messages.add(Text.builder()
+                    .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.flying")))
+                    .append(Text.of(" "))
+                    .append(Text.of(TextColors.YELLOW, user.get(Keys.WALKING_SPEED).orElse(1d))).build());
 
             messages.add(Text.builder(Util.getMessageWithFormat("command.seen.isjailed") + " ").color(TextColors.AQUA).append(
                     getTrueOrFalse(iqsu.getJailData().isPresent(), TextActions.runCommand("/checkjail " + user.getName()))).build());

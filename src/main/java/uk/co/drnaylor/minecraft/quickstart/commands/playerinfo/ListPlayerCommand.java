@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RootCommand
 public class ListPlayerCommand extends CommandBase {
     @Inject private UserConfigLoader loader;
-    private Text hidden;
+    private Text hidden = Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden") + " ");
 
     @Override
     public CommandSpec createSpec() {
@@ -53,7 +53,7 @@ public class ListPlayerCommand extends CommandBase {
                 .sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName())).map(x -> {
                     Text.Builder tb = Text.builder();
                     if (x.get(Keys.INVISIBLE).orElse(false)) {
-                        tb.append(getHidden());
+                        tb.append(hidden);
                     }
 
                     return tb.append(NameUtil.getName(x, loader)).build();
@@ -85,9 +85,5 @@ public class ListPlayerCommand extends CommandBase {
         }
 
         return CommandResult.success();
-    }
-
-    private Text getHidden() {
-        return Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden") + " ");
     }
 }
