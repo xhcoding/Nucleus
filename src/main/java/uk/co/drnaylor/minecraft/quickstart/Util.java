@@ -24,7 +24,7 @@ public class Util {
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    public static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
+    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
 
     public static MessageChannel getMessageChannel(@Nullable Player player, String... permissions) {
         Set<MessageChannel> l = Arrays.asList(permissions).stream().map(MessageChannel::permission).collect(Collectors.toSet());
@@ -47,10 +47,6 @@ public class Util {
 
     public static String getMessageWithFormat(String key, String... substitutions) {
         return MessageFormat.format(messageBundle.getString(key), (Object[])substitutions);
-    }
-
-    public static String getTimeStringFromMillseconds(long time) {
-        return getTimeStringFromSeconds(time / 1000);
     }
 
     public static String getTimeToNow(Instant time) {
