@@ -2,7 +2,7 @@
  * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
  * at the root of this project for more details.
  */
-package uk.co.drnaylor.minecraft.quickstart.commands.misc;
+package uk.co.drnaylor.minecraft.quickstart.commands.admin;
 
 import com.google.inject.Inject;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -21,7 +21,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 @RunAsync
-@Modules(PluginModule.MISC)
+@Modules(PluginModule.ADMIN)
 @NoCooldown
 @NoCost
 @NoWarmup
