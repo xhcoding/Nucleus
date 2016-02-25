@@ -12,6 +12,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -24,6 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
+import uk.co.drnaylor.minecraft.quickstart.commands.misc.SpeedCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
@@ -70,18 +72,19 @@ public class SeenCommand extends CommandBase {
         messages.add(Text.builder(Util.getMessageWithFormat("command.seen.displayname") + " ").color(TextColors.AQUA).append(NameUtil.getName(user, iqsu)).build());
         if (permissions.getPermissionWithSuffix("extended").stream().anyMatch(src::hasPermission)) {
             if (user.isOnline()) {
-                messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.ipaddress") + " ", TextColors.GREEN, user.getPlayer().get().getConnection().getAddress().getAddress().toString()));
+                Player pl = user.getPlayer().get();
+                messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.ipaddress") + " ", TextColors.GREEN, pl.getConnection().getAddress().getAddress().toString()));
+
+                messages.add(Text.builder()
+                        .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.walk")))
+                        .append(Text.of(" "))
+                        .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * SpeedCommand.multiplier))).build());
+
+                messages.add(Text.builder()
+                        .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.flying")))
+                        .append(Text.of(" "))
+                        .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))).build());
             }
-
-            messages.add(Text.builder()
-                    .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.walk")))
-                    .append(Text.of(" "))
-                    .append(Text.of(TextColors.YELLOW, user.get(Keys.WALKING_SPEED).orElse(1d))).build());
-
-            messages.add(Text.builder()
-                    .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.flying")))
-                    .append(Text.of(" "))
-                    .append(Text.of(TextColors.YELLOW, user.get(Keys.WALKING_SPEED).orElse(1d))).build());
 
             messages.add(Text.builder(Util.getMessageWithFormat("command.seen.isjailed") + " ").color(TextColors.AQUA).append(
                     getTrueOrFalse(iqsu.getJailData().isPresent(), TextActions.runCommand("/checkjail " + user.getName()))).build());
