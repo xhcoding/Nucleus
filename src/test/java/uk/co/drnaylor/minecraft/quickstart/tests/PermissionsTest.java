@@ -16,7 +16,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.service.permission.Subject;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.Arrays;
@@ -35,12 +35,12 @@ public class PermissionsTest {
         @Parameterized.Parameters(name = "{index}: Permission {0} on {1}")
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][] {
-                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionOne.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "root.test.base", PermissionRoot.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "test.sub.base", PermissionSub.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "root.test.sub.base", PermissionRootSub.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class }
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test.base", PermissionOne.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "root.test.base", PermissionRoot.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test.sub.base", PermissionSub.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "root.test.sub.base", PermissionRootSub.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class }
             });
         }
 
@@ -72,12 +72,12 @@ public class PermissionsTest {
         @Parameterized.Parameters
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][] {
-                    { PermissionService.PERMISSIONS_PREFIX + "test2.base", PermissionOne.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionRoot.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionSub.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionRootSub.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
-                    { PermissionService.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class }
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test2.base", PermissionOne.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test.base", PermissionRoot.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test.base", PermissionSub.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test.base", PermissionRootSub.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
+                    { CommandPermissionHandler.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class }
             });
         }
 

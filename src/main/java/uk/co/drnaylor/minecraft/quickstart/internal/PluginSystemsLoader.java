@@ -19,6 +19,8 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 
 public class PluginSystemsLoader {
     private final QuickStart quickStart;
+
+    private final Map<String, CommandPermissionHandler.SuggestedLevel> lvl = new HashMap<>();
 
     public PluginSystemsLoader(QuickStart quickStart) {
         this.quickStart = quickStart;
@@ -91,6 +95,9 @@ public class PluginSystemsLoader {
                 sn.getNode(c.getCommandConfigAlias()).setValue(c.getDefaults());
             }
 
+            // Register suggested permissions
+            lvl.putAll(c.permissions.getSuggestedPermissions());
+
             // Register the commands.
             Sponge.getCommandManager().register(quickStart, c.getSpec(), c.getAliases());
         });
@@ -116,7 +123,11 @@ public class PluginSystemsLoader {
                 e.printStackTrace();
                 return null;
             }
-        }).filter(lb -> lb != null).forEach(c -> Sponge.getEventManager().registerListeners(quickStart, c));
+        }).filter(lb -> lb != null).forEach(c -> {
+            // Register suggested permissions
+            lvl.putAll(c.getPermissions());
+            Sponge.getEventManager().registerListeners(quickStart, c);
+        });
     }
 
     private void loadRunnables() throws IOException {
@@ -132,6 +143,7 @@ public class PluginSystemsLoader {
                 return null;
             }
         }).filter(lb -> lb != null).forEach(c -> {
+            lvl.putAll(c.getPermissions());
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.secondsPerRun(), TimeUnit.SECONDS);
             if (c.isAsync()) {
                 tb.async();

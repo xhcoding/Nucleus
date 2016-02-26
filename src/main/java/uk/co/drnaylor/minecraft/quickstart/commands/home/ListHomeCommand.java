@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Permissions(root = "home", alias = "list", suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(root = "home", alias = "list", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
 @RunAsync
 @NoCooldown
@@ -44,9 +44,9 @@ public class ListHomeCommand extends CommandBase {
     private final String player = "player";
 
     @Override
-    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
-        m.put("others", PermissionService.SuggestedLevel.ADMIN);
+    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
+        m.put("others", CommandPermissionHandler.SuggestedLevel.ADMIN);
         return m;
     }
 

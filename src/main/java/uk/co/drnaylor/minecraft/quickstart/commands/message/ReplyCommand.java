@@ -12,7 +12,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 /**
@@ -20,7 +20,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
  *
  * Permission: quickstart.message.base
  */
-@Permissions(alias = "message", suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(alias = "message", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)

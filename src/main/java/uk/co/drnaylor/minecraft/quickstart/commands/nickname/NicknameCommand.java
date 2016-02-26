@@ -18,7 +18,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
@@ -46,13 +46,13 @@ public class NicknameCommand extends CommandBase {
     private final Pattern magicPattern = Pattern.compile("&k", Pattern.CASE_INSENSITIVE);
 
     @Override
-    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
-        m.put("others", PermissionService.SuggestedLevel.ADMIN);
-        m.put("colour", PermissionService.SuggestedLevel.ADMIN);
-        m.put("color", PermissionService.SuggestedLevel.ADMIN);
-        m.put("style", PermissionService.SuggestedLevel.ADMIN);
-        m.put("magic", PermissionService.SuggestedLevel.ADMIN);
+    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
+        m.put("others", CommandPermissionHandler.SuggestedLevel.ADMIN);
+        m.put("colour", CommandPermissionHandler.SuggestedLevel.ADMIN);
+        m.put("color", CommandPermissionHandler.SuggestedLevel.ADMIN);
+        m.put("style", CommandPermissionHandler.SuggestedLevel.ADMIN);
+        m.put("magic", CommandPermissionHandler.SuggestedLevel.ADMIN);
         return m;
     }
 

@@ -30,8 +30,8 @@ import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchWorldException;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.LocationNode;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.UserConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
@@ -95,7 +95,7 @@ public class UserService implements InternalQuickStartUser {
     @Override
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
-        Optional<PermissionService> ps = PermissionService.getService(SocialSpyCommand.class);
+        Optional<CommandPermissionHandler> ps = CommandPermissionHandler.getService(SocialSpyCommand.class);
         if (ps.isPresent()) {
             return config.isSocialspy() && ps.get().testBase(user);
         }

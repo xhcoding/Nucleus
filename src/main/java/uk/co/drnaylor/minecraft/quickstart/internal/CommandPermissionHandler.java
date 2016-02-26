@@ -13,11 +13,11 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import java.util.Map;
 import java.util.Optional;
 
-public class PermissionService {
+public class CommandPermissionHandler {
 
-    private final static Map<Class<? extends CommandBase>, PermissionService> serviceRegistry = Maps.newHashMap();
+    private final static Map<Class<? extends CommandBase>, CommandPermissionHandler> serviceRegistry = Maps.newHashMap();
 
-    public static Optional<PermissionService> getService(Class<? extends CommandBase> command) {
+    public static Optional<CommandPermissionHandler> getService(Class<? extends CommandBase> command) {
         return Optional.ofNullable(serviceRegistry.get(command));
     }
 
@@ -29,7 +29,7 @@ public class PermissionService {
     private final String cooldown;
     private final String cost;
 
-    public PermissionService(CommandBase cb) {
+    public CommandPermissionHandler(CommandBase cb) {
         Permissions c = cb.getClass().getAnnotation(Permissions.class);
         Preconditions.checkNotNull(c);
 
@@ -102,8 +102,14 @@ public class PermissionService {
     }
 
     public enum SuggestedLevel {
-        ADMIN,
-        MOD,
-        USER
+        ADMIN("admin"),
+        MOD("staff"),
+        USER("user");
+
+        public final String role;
+
+        SuggestedLevel(String role) {
+            this.role = role;
+        }
     }
 }

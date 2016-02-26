@@ -14,11 +14,11 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeOtherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
-@Permissions(root = "home", alias = "other", suggestedLevel = PermissionService.SuggestedLevel.MOD)
+@Permissions(root = "home", alias = "other", suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
 @RootCommand
 public class HomeOtherCommand extends CommandBase<Player> {
     private final String home = "home";

@@ -18,7 +18,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
@@ -42,9 +42,9 @@ public class SudoCommand extends CommandBase {
     }
 
     @Override
-    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
-        m.put("exempt.target", PermissionService.SuggestedLevel.ADMIN);
+    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
+        m.put("exempt.target", CommandPermissionHandler.SuggestedLevel.ADMIN);
         return m;
     }
 

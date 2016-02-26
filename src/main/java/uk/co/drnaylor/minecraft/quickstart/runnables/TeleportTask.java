@@ -13,7 +13,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 import javax.inject.Inject;
 
 @Modules(PluginModule.TELEPORT)
-public class TeleportTask implements TaskBase {
+public class TeleportTask extends TaskBase {
     @Inject private TeleportHandler handler;
 
     @Override

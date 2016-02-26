@@ -16,7 +16,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * Permission - "quickstart.mail.send.use"
  */
-@Permissions(root = "mail", suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(root = "mail", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @RunAsync
 public class SendMailCommand extends CommandBase {
     @Inject private MailHandler handler;
@@ -51,7 +51,7 @@ public class SendMailCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = args.<User>getOne(player).get();
-        Optional<PermissionService> oservice = PermissionService.getService(MailCommand.class);
+        Optional<CommandPermissionHandler> oservice = CommandPermissionHandler.getService(MailCommand.class);
 
         // Only send mails to players that can read them.
         if (oservice.isPresent() && oservice.get().testBase(pl)) {

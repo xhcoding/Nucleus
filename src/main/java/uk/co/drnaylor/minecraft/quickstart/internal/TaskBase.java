@@ -6,11 +6,19 @@ package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import org.spongepowered.api.scheduler.Task;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
-public interface TaskBase extends Consumer<Task> {
+public abstract class TaskBase implements Consumer<Task> {
 
-    boolean isAsync();
+    public abstract boolean isAsync();
 
-    int secondsPerRun();
+    public abstract int secondsPerRun();
+
+    protected Map<String, CommandPermissionHandler.SuggestedLevel> getPermissions() {
+        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
+        m.put("exempt.kick", CommandPermissionHandler.SuggestedLevel.ADMIN);
+        return m;
+    }
 }

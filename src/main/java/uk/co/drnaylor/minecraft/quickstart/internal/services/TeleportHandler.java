@@ -16,7 +16,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.CancellableTask;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
@@ -34,7 +34,7 @@ public class TeleportHandler {
     private final QuickStart plugin;
     private final Map<UUID, TeleportPrep> ask = new HashMap<>();
 
-    public static final String tptoggleBypassPermission = PermissionService.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
+    public static final String tptoggleBypassPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
     private Text acceptDeny;
 
     public TeleportHandler(QuickStart plugin) {

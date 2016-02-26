@@ -15,15 +15,12 @@ import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RootCommand
-@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @Modules(PluginModule.AFK)
 @NoCooldown
 @NoWarmup
@@ -35,13 +32,6 @@ public class AFKCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
-        m.put("exempt.kick", PermissionService.SuggestedLevel.ADMIN);
-        return m;
     }
 
     @Override

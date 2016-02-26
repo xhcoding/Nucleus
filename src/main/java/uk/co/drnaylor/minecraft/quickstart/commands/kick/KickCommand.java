@@ -16,7 +16,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.text.MessageFormat;
@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * Permission: quickstart.kick.base
  */
-@Permissions(suggestedLevel = PermissionService.SuggestedLevel.MOD)
+@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
 @Modules(PluginModule.KICKS)
 @NoWarmup
 @NoCooldown
@@ -48,9 +48,9 @@ public class KickCommand extends CommandBase {
     }
 
     @Override
-    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
-        m.put("notify", PermissionService.SuggestedLevel.MOD);
+    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
+        m.put("notify", CommandPermissionHandler.SuggestedLevel.MOD);
         return m;
     }
 

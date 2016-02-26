@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 @Modules(PluginModule.JAILS)
-public class JailTask implements TaskBase {
+public class JailTask extends TaskBase {
     @Inject
     private QuickStart plugin;
 

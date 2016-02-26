@@ -23,7 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.JailParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
@@ -35,14 +35,14 @@ import java.util.Map;
 import java.util.Optional;
 
 // quickstart.jail.notify
-@Permissions(suggestedLevel = PermissionService.SuggestedLevel.MOD)
+@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
 @Modules(PluginModule.JAILS)
 @NoWarmup
 @NoCooldown
 @NoCost
 @RootCommand
 public class JailCommand extends CommandBase {
-    public static final String notifyPermission = PermissionService.PERMISSIONS_PREFIX + "jail.notify";
+    public static final String notifyPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "jail.notify";
 
     @Inject private JailHandler handler;
     private final String playerKey = "player";
@@ -51,9 +51,9 @@ public class JailCommand extends CommandBase {
     private final String reasonKey = "reason";
 
     @Override
-    public Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
-        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
-        m.put(notifyPermission, PermissionService.SuggestedLevel.MOD);
+    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionsToRegister() {
+        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
+        m.put(notifyPermission, CommandPermissionHandler.SuggestedLevel.MOD);
         return m;
     }
 

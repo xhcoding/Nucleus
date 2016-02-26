@@ -16,14 +16,14 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
 import java.util.Optional;
 
-@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
 @RootCommand
 public class HomeCommand extends CommandBase<Player> {

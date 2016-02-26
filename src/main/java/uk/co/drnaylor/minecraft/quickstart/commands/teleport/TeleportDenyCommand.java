@@ -14,7 +14,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
@@ -22,7 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
  * /tpdeny.
  */
 @Modules(PluginModule.TELEPORT)
-@Permissions(root = "teleport", suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(root = "teleport", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @NoWarmup
 @NoCooldown
 @NoCost

@@ -4,7 +4,7 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.internal.annotations;
 
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 
 import java.lang.annotation.*;
 
@@ -50,8 +50,8 @@ public @interface Permissions {
     /**
      * The suggested permission level.
      *
-     * @return The {@link PermissionService.SuggestedLevel}
+     * @return The {@link CommandPermissionHandler.SuggestedLevel}
      */
-    PermissionService.SuggestedLevel suggestedLevel() default PermissionService.SuggestedLevel.ADMIN;
+    CommandPermissionHandler.SuggestedLevel suggestedLevel() default CommandPermissionHandler.SuggestedLevel.ADMIN;
 
 }

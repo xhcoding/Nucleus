@@ -15,7 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WarpParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
@@ -31,7 +31,7 @@ import java.text.MessageFormat;
  * If <code>warp.separate-permissions</code> = <code>true</code> in the commands config, also requires
  * <code>quickstart.warps.[warpname]</code> permission, or the QuickStart admin permission.
  */
-@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @Modules(PluginModule.WARPS)
 @RootCommand
 public class WarpsCommand extends CommandBase<Player> {

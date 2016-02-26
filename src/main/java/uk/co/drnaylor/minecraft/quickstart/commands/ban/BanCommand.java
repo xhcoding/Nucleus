@@ -23,26 +23,26 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.util.Map;
 
 @RootCommand
-@Permissions(root = "ban", suggestedLevel = PermissionService.SuggestedLevel.MOD)
+@Permissions(root = "ban", suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
 @Modules(PluginModule.BANS)
 @NoWarmup
 @NoCooldown
 @NoCost
 public class BanCommand extends CommandBase {
-    public static final String notifyPermission = PermissionService.PERMISSIONS_PREFIX + "ban.notify";
+    public static final String notifyPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "ban.notify";
     private final String user = "user";
     private final String reason = "reason";
 
     @Override
-    public Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
-        Map<String, PermissionService.SuggestedLevel> ps = Maps.newHashMap();
-        ps.put(notifyPermission, PermissionService.SuggestedLevel.MOD);
+    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionsToRegister() {
+        Map<String, CommandPermissionHandler.SuggestedLevel> ps = Maps.newHashMap();
+        ps.put(notifyPermission, CommandPermissionHandler.SuggestedLevel.MOD);
         return ps;
     }
 

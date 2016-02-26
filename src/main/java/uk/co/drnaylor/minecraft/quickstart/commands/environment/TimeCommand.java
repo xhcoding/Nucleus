@@ -19,7 +19,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
+@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
 @Modules(PluginModule.ENVIRONMENT)
 @RootCommand
 public class TimeCommand extends CommandBase {

@@ -15,27 +15,33 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.TaskBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Modules(PluginModule.AFK)
-public class AFKTask implements TaskBase {
+public class AFKTask extends TaskBase {
     @Inject private QuickStart plugin;
-    private PermissionService afkService = null;
+    private CommandPermissionHandler afkService = null;
+
+    @Override
+    protected Map<String, CommandPermissionHandler.SuggestedLevel> getPermissions() {
+        return super.getPermissions();
+    }
 
     @Override
     public void accept(Task task) {
         // Don't run the task until we have a permission service.
         if (afkService == null) {
-            Optional<PermissionService> ops = PermissionService.getService(AFKCommand.class);
+            Optional<CommandPermissionHandler> ops = CommandPermissionHandler.getService(AFKCommand.class);
             if (!ops.isPresent()) {
                 return;
             }

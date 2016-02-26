@@ -41,7 +41,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
-    protected PermissionService permissions;
+    protected CommandPermissionHandler permissions;
     private final Class<T> sourceType;
     private boolean bypassWarmup;
     private boolean generateWarmupAnyway;
@@ -115,7 +115,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         //
         // By default, the permission "quickstart.admin" also gets permission to run and bypass all warmups,
         // cooldowns and costs, but this can be turned off in the annotation.
-        permissions = new PermissionService(this);
+        permissions = new CommandPermissionHandler(this);
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         configSection = cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase();
@@ -166,7 +166,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      *
      * @return A map containing the extra permission suffixes to register.
      */
-    protected Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+    protected Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
         return Maps.newHashMap();
     }
 
@@ -175,11 +175,11 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      *
      * @return A map containing the extra permissions to register.
      */
-    protected Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
+    protected Map<String, CommandPermissionHandler.SuggestedLevel> permissionsToRegister() {
         return Maps.newHashMap();
     }
 
-    public final PermissionService getPermissionHandler() {
+    public final CommandPermissionHandler getPermissionHandler() {
         return permissions;
     }
 

@@ -21,8 +21,8 @@ import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 
 import java.util.Arrays;
@@ -30,11 +30,11 @@ import java.util.Arrays;
 @Modules(PluginModule.AFK)
 public class AFKListener extends ListenerBase {
 
-    private PermissionService s = null;
+    private CommandPermissionHandler s = null;
 
-    private PermissionService getPermissionUtil() {
+    private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = PermissionService.getService(AFKCommand.class).orElseGet(() -> new PermissionService(new AFKCommand()));
+            s = CommandPermissionHandler.getService(AFKCommand.class).orElseGet(() -> new CommandPermissionHandler(new AFKCommand()));
         }
 
         return s;
