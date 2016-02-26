@@ -27,6 +27,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.commands.misc.SpeedCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
@@ -34,7 +35,9 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Permissions
 @RunAsync
@@ -42,6 +45,13 @@ import java.util.List;
 @RootCommand
 public class SeenCommand extends CommandBase {
     private final String playerKey = "player";
+
+    @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("extended", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
 
     @Override
     public CommandSpec createSpec() {
@@ -70,7 +80,7 @@ public class SeenCommand extends CommandBase {
         }
 
         messages.add(Text.builder(Util.getMessageWithFormat("command.seen.displayname") + " ").color(TextColors.AQUA).append(NameUtil.getName(user, iqsu)).build());
-        if (permissions.getPermissionWithSuffix("extended").stream().anyMatch(src::hasPermission)) {
+        if (permissions.testSuffix(src, "extended")) {
             if (user.isOnline()) {
                 Player pl = user.getPlayer().get();
                 messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.ipaddress") + " ", TextColors.GREEN, pl.getConnection().getAddress().getAddress().toString()));

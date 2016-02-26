@@ -22,19 +22,18 @@ import org.spongepowered.api.world.World;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-@Permissions(root = "home", alias = "list", includeMod = true)
+@Permissions(root = "home", alias = "list", suggestedLevel = PermissionService.SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
 @RunAsync
 @NoCooldown
@@ -45,12 +44,16 @@ public class ListHomeCommand extends CommandBase {
     private final String player = "player";
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("others", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public CommandSpec createSpec() {
-        Set<String> p = permissions.getPermissionWithSuffix("others");
-        p.add(PermissionUtil.PERMISSIONS_MOD);
-        p.add(PermissionUtil.PERMISSIONS_ADMIN);
         return CommandSpec.builder()
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(new RequireOneOfPermission(new UserParser(Text.of(player)), p))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.requiringPermission(new UserParser(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
                 .executor(this).build();
     }
 

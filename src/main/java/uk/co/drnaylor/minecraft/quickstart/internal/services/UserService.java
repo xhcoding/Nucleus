@@ -30,16 +30,17 @@ import uk.co.drnaylor.minecraft.quickstart.api.exceptions.NoSuchWorldException;
 import uk.co.drnaylor.minecraft.quickstart.commands.message.SocialSpyCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.LocationNode;
 import uk.co.drnaylor.minecraft.quickstart.config.serialisers.UserConfig;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -94,7 +95,12 @@ public class UserService implements InternalQuickStartUser {
     @Override
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
-        return config.isSocialspy() && getPermissionUtil(SocialSpyCommand.class).getBasePermissions().stream().anyMatch(user::hasPermission);
+        Optional<PermissionService> ps = PermissionService.getService(SocialSpyCommand.class);
+        if (ps.isPresent()) {
+            return config.isSocialspy() && ps.get().testBase(user);
+        }
+
+        return config.isSocialspy();
     }
 
     @Override
@@ -407,15 +413,4 @@ public class UserService implements InternalQuickStartUser {
     public void setJailOnNextLogin(boolean set) {
         config.setJailOffline(!user.isOnline() && set);
     }
-
-    private PermissionUtil getPermissionUtil(Class<? extends CommandBase> c) {
-        if (!util.containsKey(c)) {
-            Permissions p = c.getAnnotation(Permissions.class);
-            util.put(c, new PermissionUtil(p, null));
-        }
-
-        return util.get(c);
-    }
-
-    private Map<Class<? extends CommandBase>, PermissionUtil> util = new HashMap<>();
 }

@@ -16,18 +16,20 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Kicks all players
  *
  * Permission: quickstart.kickall.base
  */
-@Permissions(includeMod = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @Modules(PluginModule.KICKS)
 @NoWarmup
 @NoCooldown
@@ -40,9 +42,16 @@ public class KickAllCommand extends CommandBase {
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Kicks all players.")).executor(this)
             .arguments(
-                    new RequireOneOfPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("whitelist")),
+                    GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("whitelist")),
                     GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
             ).build();
+    }
+
+    @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("whitelist", PermissionService.SuggestedLevel.ADMIN);
+        return m;
     }
 
     @Override

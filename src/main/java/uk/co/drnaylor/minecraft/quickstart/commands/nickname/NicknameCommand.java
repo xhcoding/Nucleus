@@ -15,17 +15,18 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -45,9 +46,20 @@ public class NicknameCommand extends CommandBase {
     private final Pattern magicPattern = Pattern.compile("&k", Pattern.CASE_INSENSITIVE);
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("others", PermissionService.SuggestedLevel.ADMIN);
+        m.put("colour", PermissionService.SuggestedLevel.ADMIN);
+        m.put("color", PermissionService.SuggestedLevel.ADMIN);
+        m.put("style", PermissionService.SuggestedLevel.ADMIN);
+        m.put("magic", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(
-                GenericArguments.optionalWeak(new RequireOneOfPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("other"))),
+                GenericArguments.optionalWeak(GenericArguments.requiringPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
                 GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))
         ).executor(this).build();
     }
@@ -73,19 +85,19 @@ public class NicknameCommand extends CommandBase {
         String name = args.<String>getOne(nickName).get();
 
         // Giving player must have the colour permissions and whatnot. Also, colour and color are the two spellings we support. (RULE BRITANNIA!)
-        if (colourPattern.matcher(name).find() && permissions.getPermissionsWithSuffixes(PermissionUtil.PermissionLevel.ADMIN, "colour", "color").stream().noneMatch(src::hasPermission)) {
+        if (colourPattern.matcher(name).find() && (permissions.testSuffix(src, "colour") || permissions.testSuffix(src, "color"))) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.colour.noperms")));
             return CommandResult.empty();
         }
 
         // Giving player must have the colour permissions and whatnot.
-        if (magicPattern.matcher(name).find() && permissions.getPermissionWithSuffix("magic").stream().noneMatch(src::hasPermission)) {
+        if (magicPattern.matcher(name).find() && permissions.testSuffix(src, "magic")) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.magic.noperms")));
             return CommandResult.empty();
         }
 
         // Giving player must have the colour permissions and whatnot.
-        if (stylePattern.matcher(name).find() && permissions.getPermissionWithSuffix("style").stream().noneMatch(src::hasPermission)) {
+        if (stylePattern.matcher(name).find() && permissions.testSuffix(src, "style")) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.style.noperms")));
             return CommandResult.empty();
         }

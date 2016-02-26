@@ -4,7 +4,6 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.commands.kick;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -17,19 +16,19 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Kicks a player
  *
  * Permission: quickstart.kick.base
  */
-@Permissions(includeMod = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @Modules(PluginModule.KICKS)
 @NoWarmup
 @NoCooldown
@@ -49,6 +48,13 @@ public class KickCommand extends CommandBase {
     }
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("notify", PermissionService.SuggestedLevel.MOD);
+        return m;
+    }
+
+    @Override
     public String[] getAliases() {
         return new String[] { "kick" };
     }
@@ -59,11 +65,7 @@ public class KickCommand extends CommandBase {
         String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("command.kick.defaultreason"));
         pl.kick(Text.of(r));
 
-        List<CommandSource> lcs = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.hasPermission(PermissionUtil.PERMISSIONS_ADMIN) && x.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "kick.notify"))
-                .map(y -> (CommandSource)y).collect(Collectors.toList());
-        lcs.add(Sponge.getServer().getConsole());
-
-        MessageChannel mc = MessageChannel.fixed(lcs);
+        MessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify"));
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.kick.message"), pl.getName(), src.getName())));
         mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.reason"), reason)));
         return CommandResult.success();

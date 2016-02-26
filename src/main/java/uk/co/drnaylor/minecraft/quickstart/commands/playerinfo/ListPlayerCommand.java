@@ -17,22 +17,32 @@ import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RunAsync
-@Permissions(includeUser = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
 @Modules(PluginModule.PLAYERINFO)
 @RootCommand
 public class ListPlayerCommand extends CommandBase {
     @Inject private UserConfigLoader loader;
     private Text hidden = Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden") + " ");
+
+    @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("seevanished", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
 
     @Override
     public CommandSpec createSpec() {
@@ -46,7 +56,7 @@ public class ListPlayerCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        boolean showVanished = permissions.getPermissionWithSuffix("seevanished").stream().anyMatch(src::hasPermission);
+        boolean showVanished = permissions.testSuffix(src, "seevanished");
         long hiddenCount = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.get(Keys.INVISIBLE).orElse(false)).count();
 
         List<Text> playerList = Sponge.getServer().getOnlinePlayers().stream().filter(x -> showVanished || !x.get(Keys.INVISIBLE).orElse(false))

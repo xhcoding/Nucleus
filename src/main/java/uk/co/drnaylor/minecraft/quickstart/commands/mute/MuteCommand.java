@@ -6,7 +6,6 @@ package uk.co.drnaylor.minecraft.quickstart.commands.mute;
 
 import com.google.inject.Inject;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -17,6 +16,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
@@ -34,10 +34,10 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Mutes or unmutes a player.
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * Permission: quickstart.mute.base
  * Notify: quickstart.mute.notify
  */
-@Permissions(includeMod = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @RunAsync
 @Modules(PluginModule.MUTES)
 @NoWarmup
@@ -57,11 +57,18 @@ public class MuteCommand extends CommandBase {
 
     @Inject private UserConfigLoader userConfigLoader;
 
-    private final String permission = PermissionUtil.PERMISSIONS_PREFIX + "mute.notify";
+    private final String notifyPermission = PermissionService.PERMISSIONS_PREFIX + "mute.notify";
 
     private String playerArgument = "Player";
     private String timespanArgument = "Time";
     private String reason = "Reason";
+
+    @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put(notifyPermission, PermissionService.SuggestedLevel.MOD);
+        return m;
+    }
 
     @Override
     public CommandSpec createSpec() {
@@ -109,12 +116,8 @@ public class MuteCommand extends CommandBase {
             ua = ((Player) src).getUniqueId();
         }
 
-        List<CommandSource> lmc = Sponge.getServer().getOnlinePlayers().stream()
-                .filter(x -> x.hasPermission(permission) || x.hasPermission(PermissionUtil.PERMISSIONS_ADMIN)).collect(Collectors.toList());
-        lmc.add(Sponge.getServer().getConsole());
-
-        MessageChannel mc = MessageChannel.fixed(lmc);
-
+        MutableMessageChannel mc = MessageChannel.permission(notifyPermission).asMutable();
+        mc.addMember(src);
         MuteData md;
         if (time.isPresent()) {
             md = user.isOnline() ? onlineTimedMute(src, user, time.get(), rs, ua, mc) : offlineTimedMute(src, user, time.get(), rs, ua, mc);

@@ -10,9 +10,10 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
-@Permissions(includeUser = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
 @RunAsync
 @Modules(PluginModule.MISC)
 @RootCommand

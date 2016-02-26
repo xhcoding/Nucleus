@@ -14,12 +14,14 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Permissions
@@ -33,9 +35,16 @@ public class GodCommand extends CommandBase {
     private final String invulnKey = "invuln";
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("others", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
-                new RequireOneOfPermission(GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey))), permissions.getPermissionWithSuffix("others")),
+                GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey))), permissions.getPermissionWithSuffix("others")),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(invulnKey))))
         ).build();
     }

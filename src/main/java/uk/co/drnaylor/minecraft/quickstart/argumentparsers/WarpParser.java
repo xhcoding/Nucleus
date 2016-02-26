@@ -18,7 +18,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -85,7 +85,7 @@ public class WarpParser extends CommandElement {
         }
 
         // No permissions, no entry!
-        return (src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warps." + name.toLowerCase()) || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN));
+        return src.hasPermission(PermissionService.PERMISSIONS_PREFIX + "warps." + name.toLowerCase());
     }
 
     private void getService() {

@@ -15,11 +15,15 @@ import uk.co.drnaylor.minecraft.quickstart.NameUtil;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RootCommand
-@Permissions(includeUser = true, includeMod = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
 @Modules(PluginModule.AFK)
 @NoCooldown
 @NoWarmup
@@ -34,6 +38,13 @@ public class AFKCommand extends CommandBase<Player> {
     }
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("exempt.kick", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public String[] getAliases() {
         return AFKCommand.getAfkAliases();
     }
@@ -41,7 +52,7 @@ public class AFKCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         AFKHandler afkHandler = plugin.getAfkHandler();
-        if (permissions.getPermissionWithSuffix("exempt").stream().anyMatch(src::hasPermission) || afkHandler.getAFKData(src).notTracked()) {
+        if (permissions.testSuffix(src, "exempt.toggle")) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.afk.exempt")));
             return CommandResult.empty();
         }

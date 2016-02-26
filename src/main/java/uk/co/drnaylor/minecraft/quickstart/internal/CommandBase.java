@@ -5,9 +5,7 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -41,13 +39,9 @@ import java.util.concurrent.TimeUnit;
 public abstract class CommandBase<T extends CommandSource> implements CommandExecutor {
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
-    private Set<String> additionalPermissions;
-    private Set<String> cooldown;
-    private Set<String> warmup;
-    private Set<String> cost;
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
-    protected PermissionUtil permissions;
+    protected PermissionService permissions;
     private final Class<T> sourceType;
     private boolean bypassWarmup;
     private boolean generateWarmupAnyway;
@@ -121,21 +115,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         //
         // By default, the permission "quickstart.admin" also gets permission to run and bypass all warmups,
         // cooldowns and costs, but this can be turned off in the annotation.
-        Permissions op = this.getClass().getAnnotation(Permissions.class);
-        additionalPermissions = Sets.newHashSet();
-        cooldown = Sets.newHashSet();
-        warmup = Sets.newHashSet();
-        cost = Sets.newHashSet();
-
-        if (op == null) {
-            permissions = null;
-        } else {
-            permissions = new PermissionUtil(op, getAliases()[0]);
-            additionalPermissions.addAll(permissions.getBasePermissions());
-            cooldown.addAll(permissions.getCooldownPermissions());
-            warmup.addAll(permissions.getWarmupPermissions());
-            cost.addAll(permissions.getCostPermissions());
-        }
+        permissions = new PermissionService(this);
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         configSection = cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase();
@@ -177,6 +157,29 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
     // Metadata
     // -------------------------------------
+
+    /**
+     * Contains extra permission suffixes that are to be registered in the permission service.
+     *
+     * @return A map containing the extra permission suffixes to register.
+     */
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        return Maps.newHashMap();
+    }
+
+    /**
+     * Contains extra permissions that are to be registered in the permission service.
+     *
+     * @return A map containing the extra permissions to register.
+     */
+    public Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
+        return Maps.newHashMap();
+    }
+
+    public final PermissionService getPermissionHandler() {
+        return permissions;
+    }
+
     public String getCommandConfigAlias() {
         if (configSection == null) {
             return getAliases()[0];
@@ -220,22 +223,6 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         return n;
     }
 
-    public final Set<String> getCommandPermissions() {
-        return ImmutableSet.copyOf(additionalPermissions);
-    }
-
-    public final Set<String> getWarmupExemptPermissions() {
-        return ImmutableSet.copyOf(warmup);
-    }
-
-    public final Set<String> getCooldownExemptPermissions() {
-        return ImmutableSet.copyOf(cooldown);
-    }
-
-    public final Set<String> getCostExemptPermissions() {
-        return ImmutableSet.copyOf(cost);
-    }
-
     // -------------------------------------
     // Command Execution
     // -------------------------------------
@@ -263,7 +250,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         @SuppressWarnings("unchecked") T src = (T)source;
 
         // If they don't match ANY permission, throw 'em.
-        if (!additionalPermissions.isEmpty() && !additionalPermissions.stream().anyMatch(src::hasPermission)) {
+        if (!permissions.testBase(src)) {
             throw new CommandPermissionException();
         }
 
@@ -376,7 +363,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // Warmups
     // -------------------------------------
     protected int getWarmup(final Player src) {
-        if (warmup.isEmpty() || warmup.stream().anyMatch(src::hasPermission)) {
+        if (permissions.testWarmupExempt(src)) {
             return 0;
         }
 
@@ -432,7 +419,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         cleanCooldowns();
 
         // If they are still in there, then tell them they are still cooling down.
-        if (!bypassCooldown && !cooldown.stream().anyMatch(src::hasPermission) && cooldownStore.containsKey(src.getUniqueId())) {
+        if (!bypassCooldown && !permissions.testCooldownExempt(src)) {
             Instant l = cooldownStore.get(src.getUniqueId());
             src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cooldown.message"), Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))))
                     .color(TextColors.YELLOW).build());
@@ -443,7 +430,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     private void setCooldown(Player src) {
-        if (!cooldown.stream().anyMatch(src::hasPermission)) {
+        if (!permissions.testCooldownExempt(src)) {
             // Get the cooldown time.
             int cooldownTime = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("cooldown").getInt();
             if (cooldownTime > 0) {
@@ -488,7 +475,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         boolean noCost = args != null && !args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
 
         // If the player or command itself is exempt, return a zero.
-        if (bypassCost || noCost || cost.isEmpty() || cost.stream().anyMatch(src::hasPermission)) {
+        if (bypassCost || noCost || permissions.testCostExempt(src)) {
             return 0.;
         }
 

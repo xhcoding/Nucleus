@@ -10,6 +10,7 @@ import com.google.inject.Injector;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -25,6 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -100,17 +102,22 @@ public class CommandBaseTests {
     }
 
     private Player getMockPlayer() {
-        return Mockito.mock(Player.class);
+        Player pl = Mockito.mock(Player.class);
+        Mockito.when(pl.hasPermission(Matchers.any())).thenReturn(true);
+        return pl;
     }
 
     private CommandSource getMockCommandSource() {
-        return Mockito.mock(CommandSource.class);
+        CommandSource pl = Mockito.mock(CommandSource.class);
+        Mockito.when(pl.hasPermission(Matchers.any())).thenReturn(true);
+        return pl;
     }
 
     private Injector getInjector() {
         return Guice.createInjector(new TestModule());
     }
 
+    @Permissions
     private class PlayerCommand extends CommandBase<Player> {
 
         @Override
@@ -129,6 +136,7 @@ public class CommandBaseTests {
         }
     }
 
+    @Permissions
     private class BasicCommand extends CommandBase {
 
         @Override

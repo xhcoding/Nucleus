@@ -4,6 +4,8 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.internal.annotations;
 
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
+
 import java.lang.annotation.*;
 
 /**
@@ -25,60 +27,11 @@ public @interface Permissions {
     String[] value() default {};
 
     /**
-     * Use the default permission - "prefix.(root).command.{sub}.base"
-     *
-     * @return <code>true</code> if this permission should be used.
-     */
-    boolean useDefault() default true;
-
-    /**
      * Replaces the command portion of the permssion with the specified alias - "prefix.alias.base"
      *
      * @return The name of the alias to use
      */
     String alias() default "";
-
-    /**
-     * Additional permissions for cooldown exemption.
-     *
-     * @return The list of permissions
-     */
-    String[] cooldownExempt() default {};
-
-    /**
-     * Additional permissions for warmup exemption.
-     *
-     * @return The list of permissions
-     */
-    String[] warmupExempt() default {};
-
-    /**
-     * Additional permissions for cost exemption.
-     *
-     * @return The list of permissions
-     */
-    String[] costExempt() default {};
-
-    /**
-     * Use the default permission - "prefix.(root).command.{sub}.exempt.cooldown"
-     *
-     * @return <code>true</code> if this permission should be used.
-     */
-    boolean useDefaultCooldownExempt() default true;
-
-    /**
-     * Use the default permission - "prefix.(root).command.{sub}.exempt.warmup"
-     *
-     * @return <code>true</code> if this permission should be used.
-     */
-    boolean useDefaultWarmupExempt() default true;
-
-    /**
-     * Use the default permission - "prefix.(root).command.{sub}.exempt.cost"
-     *
-     * @return <code>true</code> if this permission should be used.
-     */
-    boolean useDefaultCostExempt() default true;
 
     /**
      * The root permission to use
@@ -95,23 +48,10 @@ public @interface Permissions {
     String sub() default "";
 
     /**
-     * Include the user permission in this check.
+     * The suggested permission level.
      *
-     * @return <code>true</code> if the admin permission is also permissible.
+     * @return The {@link PermissionService.SuggestedLevel}
      */
-    boolean includeUser() default false;
+    PermissionService.SuggestedLevel suggestedLevel() default PermissionService.SuggestedLevel.ADMIN;
 
-    /**
-     * Include the mod permission in this check.
-     *
-     * @return <code>true</code> if the admin permission is also permissible.
-     */
-    boolean includeMod() default false;
-
-    /**
-     * Include the admin permission in this check.
-     *
-     * @return <code>true</code> if the admin permission is also permissible.
-     */
-    boolean includeAdmin() default true;
 }

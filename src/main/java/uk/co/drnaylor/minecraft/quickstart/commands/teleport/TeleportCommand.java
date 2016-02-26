@@ -17,19 +17,21 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoWarmupArgument;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TwoPlayersArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ConfigCommandAlias;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-@Permissions(root = "teleport", alias = "teleport", includeMod = true)
+@Permissions(root = "teleport", alias = "teleport", suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @Modules(PluginModule.TELEPORT)
 @RootCommand
 @ConfigCommandAlias("teleport")
@@ -40,15 +42,22 @@ public class TeleportCommand extends CommandBase {
     private String playerKey = "player";
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("others", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
             GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
 
-                // Either we get two arguments, or we get one.
+            // Either we get two arguments, or we get one.
             GenericArguments.firstParsing(
                 // <player> <player>
                 GenericArguments.onlyOne(new NoWarmupArgument(new NoCostArgument(
-                    new RequireOneOfPermission(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey)), permissions.getPermissionWithSuffix("others"), false)))),
+                    GenericArguments.requiringPermission(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey)), permissions.getPermissionWithSuffix("others"))))),
 
             // <player>
             GenericArguments.seq(

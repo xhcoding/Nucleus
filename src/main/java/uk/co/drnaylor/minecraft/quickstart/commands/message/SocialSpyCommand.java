@@ -16,10 +16,11 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
-@Permissions(includeMod = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 @NoWarmup

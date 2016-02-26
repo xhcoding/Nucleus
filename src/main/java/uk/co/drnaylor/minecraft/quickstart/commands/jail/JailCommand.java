@@ -5,7 +5,6 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.jail;
 
 import com.google.inject.Inject;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -24,30 +23,39 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.JailParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 // quickstart.jail.notify
-@Permissions(includeMod = true)
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @Modules(PluginModule.JAILS)
 @NoWarmup
 @NoCooldown
 @NoCost
 @RootCommand
 public class JailCommand extends CommandBase {
+    public static final String notifyPermission = PermissionService.PERMISSIONS_PREFIX + "jail.notify";
+
     @Inject private JailHandler handler;
     private final String playerKey = "player";
     private final String jailKey = "jail";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
+
+    @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put(notifyPermission, PermissionService.SuggestedLevel.MOD);
+        return m;
+    }
 
     @Override
     public CommandSpec createSpec() {
@@ -122,10 +130,8 @@ public class JailCommand extends CommandBase {
         }
 
         if (handler.jailPlayer(user, jd)) {
-            Set<String> s = permissions.getPermissionWithSuffix("notify");
-            List<MessageChannel> collect = s.stream().map(MessageChannel::permission).collect(Collectors.toList());
-            MutableMessageChannel mc = MessageChannel.combined(collect.toArray(new MessageChannel[collect.size()])).asMutable();
-            mc.addMember(Sponge.getServer().getConsole());
+            MutableMessageChannel mc = MessageChannel.permission(notifyPermission).asMutable();
+            mc.addMember(src);
             mc.send(message);
             mc.send(Text.of(TextColors.GREEN, Util.getMessageWithFormat("standard.reason", reason)));
 

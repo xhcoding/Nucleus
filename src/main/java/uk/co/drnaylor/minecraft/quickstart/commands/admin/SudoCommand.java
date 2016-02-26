@@ -18,9 +18,13 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Modules(PluginModule.ADMIN)
 @Permissions
@@ -38,15 +42,22 @@ public class SudoCommand extends CommandBase {
     }
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("exempt.target", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public String[] getAliases() {
-        return new String[] { "sudo"};
+        return new String[] { "sudo" };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(playerKey).get();
         String cmd = args.<String>getOne(commandKey).get();
-        if (pl.equals(src) || permissions.getPermissionWithSuffix("exempt").stream().anyMatch(pl::hasPermission)) {
+        if (pl.equals(src) || permissions.testSuffix(src, "exempt.target")) {
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sudo.noperms")));
             return CommandResult.empty();
         }

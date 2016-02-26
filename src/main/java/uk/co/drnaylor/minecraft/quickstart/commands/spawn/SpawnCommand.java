@@ -17,24 +17,33 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-@Permissions
+@Permissions(suggestedLevel = PermissionService.SuggestedLevel.USER)
 @RootCommand
 @Modules(PluginModule.SPAWN)
 public class SpawnCommand extends CommandBase<Player> {
     private final String key = "world";
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("otherworlds", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder()
-                .arguments(GenericArguments.optional(new RequireOneOfPermission(GenericArguments.onlyOne(GenericArguments.world(Text.of(key))), permissions.getPermissionWithSuffix("otherworld"))))
+                .arguments(GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.world(Text.of(key))), permissions.getPermissionWithSuffix("otherworlds"))))
                 .executor(this).build();
     }
 

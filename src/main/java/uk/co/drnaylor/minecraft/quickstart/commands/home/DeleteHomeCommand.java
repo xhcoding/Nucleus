@@ -16,9 +16,10 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
-@Permissions(alias = "home", includeUser = true)
+@Permissions(alias = "home", suggestedLevel = PermissionService.SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
 @RunAsync
 @NoCooldown

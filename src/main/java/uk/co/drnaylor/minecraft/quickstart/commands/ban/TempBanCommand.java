@@ -10,11 +10,11 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
@@ -23,15 +23,14 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Set;
 
 @RootCommand
-@Permissions(root = "ban", includeMod = true)
+@Permissions(root = "ban", suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @Modules(PluginModule.BANS)
 @NoWarmup
 @NoCooldown
@@ -73,14 +72,8 @@ public class TempBanCommand extends CommandBase {
         Ban bp = Ban.builder().profile(u.getProfile()).source(src).expirationDate(date).reason(Text.of(r)).type(BanTypes.PROFILE).build();
         service.addBan(bp);
 
-        Player pl = null;
-        if (src instanceof Player) {
-            pl = (Player) src;
-        }
-
-        // Get the permission, "quickstart.ban.notify"
-        Set<String> notify = permissions.getPermissionWithSuffixFromRootOnly("notify", PermissionUtil.PermissionLevel.DEFAULT_USER);
-        MessageChannel send = Util.getMessageChannel(pl, notify.toArray(new String[notify.size()]));
+        MutableMessageChannel send = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
+        send.addMember(src);
         send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName())));
         send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", reason)));
 

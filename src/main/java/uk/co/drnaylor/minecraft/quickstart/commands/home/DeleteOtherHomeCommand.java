@@ -17,7 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeOtherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
-@Permissions(root = "home", alias = "deleteother", includeUser = true)
+@Permissions(root = "home", alias = "deleteother")
 @Modules(PluginModule.HOMES)
 @RunAsync
 @NoCooldown

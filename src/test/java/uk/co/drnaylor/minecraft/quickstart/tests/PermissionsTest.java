@@ -8,12 +8,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.service.permission.Subject;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.Arrays;
@@ -32,23 +35,12 @@ public class PermissionsTest {
         @Parameterized.Parameters(name = "{index}: Permission {0} on {1}")
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][] {
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionOne.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionOne.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "root.test.base", PermissionRoot.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionRoot.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.sub.base", PermissionSub.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionSub.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "root.test.sub.base", PermissionRootSub.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionRootSub.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionNoAdmin.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionNoDefault.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
-                    { "test.test", PermissionCustom.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionCustom.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionAlias.class },
-                    { PermissionUtil.PERMISSIONS_MOD, PermissionMod.class },
-                    { PermissionUtil.PERMISSIONS_USER, PermissionUser.class }
+                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionOne.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "root.test.base", PermissionRoot.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "test.sub.base", PermissionSub.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "root.test.sub.base", PermissionRootSub.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class }
             });
         }
 
@@ -62,7 +54,11 @@ public class PermissionsTest {
         public void testPermissionIsValid() throws IllegalAccessException, InstantiationException {
             CommandBase c = clazz.newInstance();
             c.postInit();
-            Assert.assertTrue("The permission " + permission + " was not available for " + clazz.getName(), c.getCommandPermissions().contains(permission));
+            Subject s = Mockito.mock(Subject.class);
+            Mockito.when(s.hasPermission(Matchers.any())).thenReturn(false);
+            Mockito.when(s.hasPermission(Matchers.eq(permission))).thenReturn(true);
+            Mockito.validateMockitoUsage();
+            Assert.assertTrue("The permission " + permission + " was not available for " + clazz.getName(), c.getPermissionHandler().testBase(s));
         }
 
     }
@@ -76,17 +72,12 @@ public class PermissionsTest {
         @Parameterized.Parameters
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][] {
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test2.base", PermissionOne.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionRoot.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionSub.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionRootSub.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class },
-                    { PermissionUtil.PERMISSIONS_ADMIN, PermissionNoAdmin.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionNoDefault.class },
-                    { PermissionUtil.PERMISSIONS_PREFIX + "test.base", PermissionAlias.class },
-                    { PermissionUtil.PERMISSIONS_MOD, PermissionNoAdmin.class },
-                    { PermissionUtil.PERMISSIONS_USER, PermissionNoAdmin.class }
+                    { PermissionService.PERMISSIONS_PREFIX + "test2.base", PermissionOne.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionRoot.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionSub.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "test.base", PermissionRootSub.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
+                    { PermissionService.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class }
             });
         }
 
@@ -100,7 +91,11 @@ public class PermissionsTest {
         public void testPermissionIsNotValid() throws IllegalAccessException, InstantiationException {
             CommandBase c = clazz.newInstance();
             c.postInit();
-            Assert.assertFalse("The permission " + permission + " was not available for " + clazz.getName(), c.getCommandPermissions().contains(permission));
+            Subject s = Mockito.mock(Subject.class);
+            Mockito.when(s.hasPermission(Matchers.any())).thenReturn(false);
+            Mockito.when(s.hasPermission(Matchers.eq(permission))).thenReturn(true);
+            Mockito.validateMockitoUsage();
+            Assert.assertFalse("The permission " + permission + " was not available for " + clazz.getName(), c.getPermissionHandler().testBase(s));
         }
     }
 
@@ -135,18 +130,6 @@ public class PermissionsTest {
     @Permissions(alias = "alias")
     public static class PermissionAlias extends PermissionOne { }
 
-    @Permissions(includeAdmin = false)
-    public static class PermissionNoAdmin extends PermissionOne { }
-
-    @Permissions(useDefault = false)
-    public static class PermissionNoDefault extends PermissionOne { }
-
     @Permissions({"test.test"})
     public static class PermissionCustom extends PermissionOne { }
-
-    @Permissions(includeMod = true)
-    public static class PermissionMod extends PermissionOne { }
-
-    @Permissions(includeUser = true)
-    public static class PermissionUser extends PermissionOne { }
 }

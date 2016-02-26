@@ -13,19 +13,21 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
-import uk.co.drnaylor.minecraft.quickstart.argumentparsers.RequireOneOfPermission;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Sends a request to a player to teleport to them, using click handlers.
  */
-@Permissions(root = "teleport", includeUser = true, includeMod = true)
+@Permissions(root = "teleport", suggestedLevel = PermissionService.SuggestedLevel.USER)
 @Modules(PluginModule.TELEPORT)
 @NoWarmup(generateConfigEntry = true)
 @RootCommand
@@ -37,9 +39,16 @@ public class TeleportAskCommand extends CommandBase<Player> {
     private final String playerKey = "player";
 
     @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("force", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
+
+    @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(
-                new RequireOneOfPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("force")),
+                GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("force")),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
                 .executor(this).build();
     }

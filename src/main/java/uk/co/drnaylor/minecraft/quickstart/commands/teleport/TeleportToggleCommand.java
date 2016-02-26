@@ -14,10 +14,14 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
-@Permissions(root = "teleport", includeUser = true, includeMod = true)
+import java.util.HashMap;
+import java.util.Map;
+
+@Permissions(root = "teleport", suggestedLevel = PermissionService.SuggestedLevel.USER)
 @Modules(PluginModule.TELEPORT)
 @NoWarmup
 @NoCooldown
@@ -26,6 +30,13 @@ import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStar
 @RunAsync
 public class TeleportToggleCommand extends CommandBase<Player> {
     private final String key = "toggle";
+
+    @Override
+    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, PermissionService.SuggestedLevel> m = new HashMap<>();
+        m.put("exempt", PermissionService.SuggestedLevel.ADMIN);
+        return m;
+    }
 
     @Override
     public CommandSpec createSpec() {

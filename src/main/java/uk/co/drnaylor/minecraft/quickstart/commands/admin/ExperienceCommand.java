@@ -76,6 +76,9 @@ public class ExperienceCommand extends CommandBase {
         return CommandResult.success();
     }
 
+    @NoCooldown
+    @NoWarmup
+    @NoCost
     @Permissions(root = "exp")
     public static class TakeExperience extends CommandBase {
 
@@ -103,6 +106,9 @@ public class ExperienceCommand extends CommandBase {
         }
     }
 
+    @NoCooldown
+    @NoWarmup
+    @NoCost
     @Permissions(root = "exp")
     public static class GiveExperience extends CommandBase {
 
@@ -130,6 +136,9 @@ public class ExperienceCommand extends CommandBase {
         }
     }
 
+    @NoCooldown
+    @NoWarmup
+    @NoCost
     @Permissions(root = "exp")
     public static class SetExperience extends CommandBase {
 

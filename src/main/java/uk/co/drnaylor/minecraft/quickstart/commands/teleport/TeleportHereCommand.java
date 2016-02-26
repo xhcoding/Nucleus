@@ -12,13 +12,14 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 /**
  * NOTE: TeleportHere is considered an admin command, as there is a potential for abuse for non-admin players trying to
  * pull players. No cost or warmups will be applied. /tpahere should be used instead in these circumstances.
  */
-@Permissions(root = "teleport")
+@Permissions(root = "teleport", suggestedLevel = PermissionService.SuggestedLevel.ADMIN)
 @Modules(PluginModule.TELEPORT)
 @NoWarmup
 @NoCooldown

@@ -70,8 +70,7 @@ public class PluginSystemsLoader {
             }
 
             try {
-                CommandBase cb = injector.getInstance(x); // x.newInstance();
-                return cb;
+                return injector.getInstance(x);
             } catch (Exception e) {
                 return null;
             }

@@ -17,10 +17,9 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
-import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
@@ -34,11 +33,10 @@ import java.util.stream.Collectors;
  * Command Usage: /warp list
  * Permission: quickstart.warp.list.base
  */
-@Permissions(root = "warp", includeUser = true)
+@Permissions(root = "warp", suggestedLevel = PermissionService.SuggestedLevel.USER)
 @RunAsync
 public class ListWarpCommand extends CommandBase {
     private final QuickStartWarpService service = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
-    @Inject private CommandsConfig commandsConfig;
     @Inject private MainConfig mainConfig;
 
     @Override
@@ -79,7 +77,6 @@ public class ListWarpCommand extends CommandBase {
 
     private boolean canView(CommandSource src, String warp) {
         return !mainConfig.useSeparatePermissionsForWarp()
-                || src.hasPermission(PermissionUtil.PERMISSIONS_ADMIN)
-                || src.hasPermission(PermissionUtil.PERMISSIONS_PREFIX + "warps." + warp.toLowerCase());
+                || src.hasPermission(PermissionService.PERMISSIONS_PREFIX + "warps." + warp.toLowerCase());
     }
 }

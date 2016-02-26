@@ -22,16 +22,23 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.PermissionUtil;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.Arrays;
 
 @Modules(PluginModule.AFK)
 public class AFKListener extends ListenerBase {
 
-    private final PermissionUtil permissionUtil = new PermissionUtil(AFKCommand.class.getAnnotation(Permissions.class), null);
+    private PermissionService s = null;
+
+    private PermissionService getPermissionUtil() {
+        if (s == null) {
+            s = PermissionService.getService(AFKCommand.class).orElseGet(() -> new PermissionService(new AFKCommand()));
+        }
+
+        return s;
+    }
 
     @Listener(order = Order.FIRST)
     public void onPlayerLogin(final ClientConnectionEvent.Login event) {
@@ -63,7 +70,7 @@ public class AFKListener extends ListenerBase {
 
     private void updateAFK(final Player player) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-            if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && permissionUtil.getPermissionWithSuffix("exempt", PermissionUtil.PermissionLevel.NONE).stream().anyMatch(player::hasPermission)) {
+            if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && getPermissionUtil().testSuffix(player, "exempt")) {
                 MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(player), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
             }
         });

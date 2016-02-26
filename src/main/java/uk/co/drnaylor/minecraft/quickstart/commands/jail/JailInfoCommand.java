@@ -16,13 +16,14 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.JailParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "jail", includeMod = true)
+@Permissions(root = "jail", suggestedLevel = PermissionService.SuggestedLevel.MOD)
 @RunAsync
 public class JailInfoCommand extends CommandBase {
     private final String jailKey = "jail";
