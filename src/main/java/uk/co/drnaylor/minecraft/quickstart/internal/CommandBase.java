@@ -120,6 +120,9 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         configSection = cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase();
         generateDefaults = cca == null || cca.generate();
+
+        permissionsToRegister().forEach((k, v) -> permissions.registerPermssion(k, v));
+        permissionSuffixesToRegister().forEach((k, v) -> permissions.registerPermssionSuffix(k, v));
     }
 
     // Abstract functions - for implementation.
@@ -163,7 +166,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      *
      * @return A map containing the extra permission suffixes to register.
      */
-    public Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
+    protected Map<String, PermissionService.SuggestedLevel> permissionSuffixesToRegister() {
         return Maps.newHashMap();
     }
 
@@ -172,7 +175,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      *
      * @return A map containing the extra permissions to register.
      */
-    public Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
+    protected Map<String, PermissionService.SuggestedLevel> permissionsToRegister() {
         return Maps.newHashMap();
     }
 
