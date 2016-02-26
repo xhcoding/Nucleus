@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import org.spongepowered.api.service.permission.Subject;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,6 +20,12 @@ public class CommandPermissionHandler {
 
     public static Optional<CommandPermissionHandler> getService(Class<? extends CommandBase> command) {
         return Optional.ofNullable(serviceRegistry.get(command));
+    }
+
+    public static Map<String, SuggestedLevel> getPermissions() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        serviceRegistry.values().forEach(x -> m.putAll(x.getSuggestedPermissions()));
+        return m;
     }
 
     public final static String PERMISSIONS_PREFIX = "quickstart.";

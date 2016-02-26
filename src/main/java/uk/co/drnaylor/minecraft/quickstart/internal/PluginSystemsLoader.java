@@ -95,12 +95,12 @@ public class PluginSystemsLoader {
                 sn.getNode(c.getCommandConfigAlias()).setValue(c.getDefaults());
             }
 
-            // Register suggested permissions
-            lvl.putAll(c.permissions.getSuggestedPermissions());
-
             // Register the commands.
             Sponge.getCommandManager().register(quickStart, c.getSpec(), c.getAliases());
         });
+
+        // Register suggested permissions (this will include children)
+        lvl.putAll(CommandPermissionHandler.getPermissions());
 
         try {
             cc.mergeDefaults(sn);

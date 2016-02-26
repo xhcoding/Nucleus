@@ -37,7 +37,7 @@ public class QuickStartCommand extends CommandBase {
     @Override
     @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
-        return CommandSpec.builder().children(this.createChildCommands(ReloadCommand.class, ResetUser.class)).executor(this).build();
+        return CommandSpec.builder().children(this.createChildCommands(ReloadCommand.class, ResetUser.class, SuggestedPermissionsCommand.class)).executor(this).build();
     }
 
     @Override
