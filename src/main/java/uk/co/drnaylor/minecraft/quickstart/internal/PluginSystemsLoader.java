@@ -10,6 +10,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -98,8 +99,9 @@ public class PluginSystemsLoader {
                 return;
             }
 
-            // No spec, no return.
-            if (c.getSpec() == null) {
+            // No spec, no return. We also don't want to run it twice...
+            CommandSpec spec = c.getSpec();
+            if (spec == null) {
                 return;
             }
 
@@ -109,7 +111,8 @@ public class PluginSystemsLoader {
             }
 
             // Register the commands.
-            Sponge.getCommandManager().register(quickStart, c.getSpec(), c.getAliases());
+            System.out.println(c.getClass().getName());
+            Sponge.getCommandManager().register(quickStart, spec, c.getAliases());
         });
 
         try {

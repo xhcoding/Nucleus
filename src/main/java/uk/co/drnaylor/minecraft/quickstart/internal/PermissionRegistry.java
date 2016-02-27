@@ -22,7 +22,8 @@ public class PermissionRegistry {
 
     public void addHandler(Class<? extends CommandBase> cb, CommandPermissionHandler cph) {
         if (serviceRegistry.containsKey(cb)) {
-            throw new IllegalArgumentException();
+            // Silently discard.
+            return;
         }
 
         serviceRegistry.put(cb, cph);
@@ -30,7 +31,8 @@ public class PermissionRegistry {
 
     public void registerOtherPermission(String otherPermission, SuggestedLevel level) {
         if (otherPermissions.containsKey(otherPermission)) {
-            throw new IllegalArgumentException();
+            // Silently discard.
+            return;
         }
 
         otherPermissions.put(otherPermission, level);
