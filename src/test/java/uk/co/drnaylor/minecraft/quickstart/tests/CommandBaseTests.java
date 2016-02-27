@@ -4,34 +4,21 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.tests;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.entity.living.player.Player;
-import uk.co.drnaylor.minecraft.quickstart.QuickStart;
-import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
+import uk.co.drnaylor.minecraft.quickstart.tests.util.TestModule;
 
 public class CommandBaseTests {
 
@@ -155,37 +142,4 @@ public class CommandBaseTests {
         }
     }
 
-    private class TestModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            Path test;
-            Path test2;
-            try {
-                test = Files.createTempDirectory("quick");
-                test2 = Files.createTempFile(test, "quick", "conf");
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-
-            this.bind(Path.class).annotatedWith(DefaultConfig.class).toInstance(test2);
-            this.bind(Path.class).annotatedWith(ConfigDir.class).toInstance(test);
-            this.bind(Game.class).toInstance(Mockito.mock(Game.class));
-            this.bind(Logger.class).toInstance(Mockito.mock(Logger.class));
-            this.bind(QuickStart.class).toInstance(getMockPlugin());
-        }
-
-        private QuickStart getMockPlugin() {
-            QuickStart plugin = Mockito.mock(QuickStart.class);
-            try {
-                Path file = Files.createTempFile("quickstartcmdtest", "conf");
-                CommandsConfig cc = new CommandsConfig(file);
-                Mockito.when(plugin.getConfig(ConfigMap.COMMANDS_CONFIG)).thenReturn(Optional.of(cc));
-                return plugin;
-            } catch (IOException | ObjectMappingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 }

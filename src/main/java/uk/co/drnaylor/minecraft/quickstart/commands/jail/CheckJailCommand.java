@@ -20,8 +20,8 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.JailData;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
 import java.text.MessageFormat;
@@ -29,7 +29,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-@Permissions(root = "jail", suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @Modules(PluginModule.JAILS)
 @NoWarmup

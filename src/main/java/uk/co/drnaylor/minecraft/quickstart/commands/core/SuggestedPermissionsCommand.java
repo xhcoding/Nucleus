@@ -11,9 +11,9 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -40,10 +40,11 @@ public class SuggestedPermissionsCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Map<String, CommandPermissionHandler.SuggestedLevel> l = CommandPermissionHandler.getPermissions();
-        List<String> admin = l.entrySet().stream().filter(x -> x.getValue() == CommandPermissionHandler.SuggestedLevel.ADMIN).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<String> mod = l.entrySet().stream().filter(x -> x.getValue() == CommandPermissionHandler.SuggestedLevel.MOD).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<String> user = l.entrySet().stream().filter(x -> x.getValue() == CommandPermissionHandler.SuggestedLevel.USER).map(Map.Entry::getKey).collect(Collectors.toList());
+        Map<String, SuggestedLevel> l = plugin.getPermissionRegistry().getPermissions();
+        List<String> notsuggested = l.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.NONE).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> admin = l.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.ADMIN).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> mod = l.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.MOD).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> user = l.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.USER).map(Map.Entry::getKey).collect(Collectors.toList());
 
         BufferedWriter f = new BufferedWriter(new FileWriter(file));
         Consumer<String> permWriter = x -> {
@@ -54,6 +55,12 @@ public class SuggestedPermissionsCommand extends CommandBase {
                 e.printStackTrace();
             }
         };
+
+        f.write("Not Suggested");
+        f.write("-----");
+        f.newLine();
+        notsuggested.stream().sorted().forEach(permWriter);
+        f.newLine();
 
         f.write("Admin");
         f.write("-----");

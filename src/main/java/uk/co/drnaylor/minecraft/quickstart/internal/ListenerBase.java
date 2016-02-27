@@ -7,6 +7,7 @@ package uk.co.drnaylor.minecraft.quickstart.internal;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public abstract class ListenerBase {
     @Inject
     protected QuickStart plugin;
 
-    protected Map<String, CommandPermissionHandler.SuggestedLevel> getPermissions() {
+    protected Map<String, SuggestedLevel> getPermissions() {
         return Maps.newHashMap();
     }
 }

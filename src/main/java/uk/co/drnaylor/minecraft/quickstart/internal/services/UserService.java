@@ -95,7 +95,7 @@ public class UserService implements InternalQuickStartUser {
     @Override
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
-        Optional<CommandPermissionHandler> ps = CommandPermissionHandler.getService(SocialSpyCommand.class);
+        Optional<CommandPermissionHandler> ps = plugin.getPermissionRegistry().getService(SocialSpyCommand.class);
         if (ps.isPresent()) {
             return config.isSocialspy() && ps.get().testBase(user);
         }

@@ -25,6 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
 import java.time.Duration;
@@ -35,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 
 // quickstart.jail.notify
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.JAILS)
 @NoWarmup
 @NoCooldown
@@ -51,9 +52,9 @@ public class JailCommand extends CommandBase {
     private final String reasonKey = "reason";
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionsToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put(notifyPermission, CommandPermissionHandler.SuggestedLevel.MOD);
+    public Map<String, SuggestedLevel> permissionsToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put(notifyPermission, SuggestedLevel.MOD);
         return m;
     }
 

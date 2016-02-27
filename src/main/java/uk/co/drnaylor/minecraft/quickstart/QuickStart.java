@@ -29,6 +29,7 @@ import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.WarpsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.EconHelper;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
 import uk.co.drnaylor.minecraft.quickstart.internal.PluginSystemsLoader;
 import uk.co.drnaylor.minecraft.quickstart.internal.guice.QuickStartInjectorModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.*;
@@ -61,6 +62,7 @@ public class QuickStart {
     private WarmupManager warmupManager;
     private TeleportHandler tpHandler = new TeleportHandler(this);
     private EconHelper econHelper = new EconHelper(this);
+    private PermissionRegistry permissionRegistry = new PermissionRegistry();
 
     private AFKHandler afkHandler = new AFKHandler();
 
@@ -240,5 +242,9 @@ public class QuickStart {
 
     public EconHelper getEconHelper() {
         return econHelper;
+    }
+
+    public PermissionRegistry getPermissionRegistry() {
+        return permissionRegistry;
     }
 }

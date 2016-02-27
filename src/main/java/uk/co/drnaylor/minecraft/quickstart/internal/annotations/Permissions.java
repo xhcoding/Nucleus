@@ -4,7 +4,7 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.internal.annotations;
 
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.lang.annotation.*;
 
@@ -50,8 +50,8 @@ public @interface Permissions {
     /**
      * The suggested permission level.
      *
-     * @return The {@link CommandPermissionHandler.SuggestedLevel}
+     * @return The {@link SuggestedLevel}
      */
-    CommandPermissionHandler.SuggestedLevel suggestedLevel() default CommandPermissionHandler.SuggestedLevel.ADMIN;
+    SuggestedLevel suggestedLevel() default SuggestedLevel.ADMIN;
 
 }

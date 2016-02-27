@@ -22,6 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
  * Command Usage: /warp list
  * Permission: quickstart.warp.list.base
  */
-@Permissions(root = "warp", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(root = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 public class ListWarpCommand extends CommandBase {
     private final QuickStartWarpService service = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);

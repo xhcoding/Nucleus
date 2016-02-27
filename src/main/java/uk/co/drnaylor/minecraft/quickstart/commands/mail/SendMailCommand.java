@@ -17,8 +17,10 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 import java.util.Optional;
@@ -26,10 +28,12 @@ import java.util.Optional;
 /**
  * Permission - "quickstart.mail.send.use"
  */
-@Permissions(root = "mail", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(root = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 public class SendMailCommand extends CommandBase {
     @Inject private MailHandler handler;
+    @Inject private PermissionRegistry permissionRegistry;
+
     private final String player = "player";
     private final String message = "message";
 
@@ -51,7 +55,7 @@ public class SendMailCommand extends CommandBase {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = args.<User>getOne(player).get();
-        Optional<CommandPermissionHandler> oservice = CommandPermissionHandler.getService(MailCommand.class);
+        Optional<CommandPermissionHandler> oservice = permissionRegistry.getService(MailCommand.class);
 
         // Only send mails to players that can read them.
         if (oservice.isPresent() && oservice.get().testBase(pl)) {

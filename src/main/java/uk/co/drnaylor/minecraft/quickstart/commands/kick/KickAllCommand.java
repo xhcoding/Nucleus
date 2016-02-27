@@ -17,8 +17,8 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * Permission: quickstart.kickall.base
  */
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.KICKS)
 @NoWarmup
 @NoCooldown
@@ -48,9 +48,9 @@ public class KickAllCommand extends CommandBase {
     }
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put("whitelist", CommandPermissionHandler.SuggestedLevel.ADMIN);
+    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put("whitelist", SuggestedLevel.ADMIN);
         return m;
     }
 

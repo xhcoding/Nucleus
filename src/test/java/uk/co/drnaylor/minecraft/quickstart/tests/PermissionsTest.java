@@ -4,6 +4,8 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.tests;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +20,7 @@ import org.spongepowered.api.service.permission.Subject;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.tests.util.TestModule;
 
 import java.util.Arrays;
 
@@ -53,6 +56,7 @@ public class PermissionsTest {
         @Test
         public void testPermissionIsValid() throws IllegalAccessException, InstantiationException {
             CommandBase c = clazz.newInstance();
+            getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);
             Mockito.when(s.hasPermission(Matchers.any())).thenReturn(false);
@@ -90,6 +94,7 @@ public class PermissionsTest {
         @Test
         public void testPermissionIsNotValid() throws IllegalAccessException, InstantiationException {
             CommandBase c = clazz.newInstance();
+            getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);
             Mockito.when(s.hasPermission(Matchers.any())).thenReturn(false);
@@ -132,4 +137,8 @@ public class PermissionsTest {
 
     @Permissions({"test.test"})
     public static class PermissionCustom extends PermissionOne { }
+
+    private static Injector getInjector() {
+        return Guice.createInjector(new TestModule());
+    }
 }

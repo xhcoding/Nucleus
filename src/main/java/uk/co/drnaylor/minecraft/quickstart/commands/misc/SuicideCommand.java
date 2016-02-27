@@ -16,12 +16,12 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(suggestedLevel = SuggestedLevel.USER)
 @RootCommand
 @Modules(PluginModule.MISC)
 public class SuicideCommand extends CommandBase<Player> {

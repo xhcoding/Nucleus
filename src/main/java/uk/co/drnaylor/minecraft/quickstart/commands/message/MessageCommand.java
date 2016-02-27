@@ -13,18 +13,18 @@ import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.PlayerConsoleArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 /**
  * Messages a player.
  *
  * Permission: quickstart.message.base
  */
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 @RootCommand

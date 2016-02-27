@@ -19,8 +19,8 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @RunAsync
 @RootCommand
-@Permissions(root = "jail", alias = "list", suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(root = "jail", alias = "list", suggestedLevel = SuggestedLevel.MOD)
 public class JailsCommand extends CommandBase {
     @Inject
     private JailHandler handler;

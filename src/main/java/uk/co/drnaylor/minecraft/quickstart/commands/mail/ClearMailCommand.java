@@ -13,14 +13,14 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 /**
  * Permission is "quickstart.mail.base", because a player should always be able to clear mail if they can read it.
  */
-@Permissions(alias = "mail", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(alias = "mail", suggestedLevel = SuggestedLevel.USER)
 @NoWarmup
 @NoCooldown
 @NoCost

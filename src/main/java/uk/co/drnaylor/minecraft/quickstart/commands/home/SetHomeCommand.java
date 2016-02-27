@@ -16,18 +16,18 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-@Permissions(root = "home", alias = "set", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(root = "home", alias = "set", suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
 @RunAsync
 @RootCommand
@@ -44,9 +44,9 @@ public class SetHomeCommand extends CommandBase<Player> {
     }
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put("unlimited", CommandPermissionHandler.SuggestedLevel.ADMIN);
+    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put("unlimited", SuggestedLevel.ADMIN);
         return m;
     }
 

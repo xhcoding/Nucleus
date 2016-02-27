@@ -18,25 +18,25 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(suggestedLevel = SuggestedLevel.USER)
 @RootCommand
 @Modules(PluginModule.SPAWN)
 public class SpawnCommand extends CommandBase<Player> {
     private final String key = "world";
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put("otherworlds", CommandPermissionHandler.SuggestedLevel.ADMIN);
+    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put("otherworlds", SuggestedLevel.ADMIN);
         return m;
     }
 

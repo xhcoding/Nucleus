@@ -15,8 +15,8 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
 
 import java.text.MessageFormat;
@@ -35,9 +35,9 @@ public class GodCommand extends CommandBase {
     private final String invulnKey = "invuln";
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put("others", CommandPermissionHandler.SuggestedLevel.ADMIN);
+    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put("others", SuggestedLevel.ADMIN);
         return m;
     }
 

@@ -4,6 +4,7 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.listeners;
 
+import com.google.inject.Inject;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -23,6 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.ListenerBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 
 import java.util.Arrays;
@@ -30,11 +32,13 @@ import java.util.Arrays;
 @Modules(PluginModule.AFK)
 public class AFKListener extends ListenerBase {
 
+    @Inject private PermissionRegistry permissionRegistry;
+
     private CommandPermissionHandler s = null;
 
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = CommandPermissionHandler.getService(AFKCommand.class).orElseGet(() -> new CommandPermissionHandler(new AFKCommand()));
+            s = permissionRegistry.getService(AFKCommand.class).orElseGet(() -> new CommandPermissionHandler(new AFKCommand()));
         }
 
         return s;

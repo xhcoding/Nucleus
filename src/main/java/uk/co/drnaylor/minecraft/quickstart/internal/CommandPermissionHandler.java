@@ -12,24 +12,11 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCooldown;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCost;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class CommandPermissionHandler {
-
-    private final static Map<Class<? extends CommandBase>, CommandPermissionHandler> serviceRegistry = Maps.newHashMap();
-
-    public static Optional<CommandPermissionHandler> getService(Class<? extends CommandBase> command) {
-        return Optional.ofNullable(serviceRegistry.get(command));
-    }
-
-    public static Map<String, SuggestedLevel> getPermissions() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        serviceRegistry.values().forEach(x -> m.putAll(x.getSuggestedPermissions()));
-        return m;
-    }
 
     public final static String PERMISSIONS_PREFIX = "quickstart.";
     private final Map<String, SuggestedLevel> mssl = Maps.newHashMap();
@@ -80,7 +67,7 @@ public class CommandPermissionHandler {
             mssl.put(cost, SuggestedLevel.ADMIN);
         }
 
-        serviceRegistry.put(cb.getClass(), this);
+        cb.plugin.getPermissionRegistry().addHandler(cb.getClass(), this);
     }
 
     public boolean testBase(Subject src) {
@@ -119,15 +106,4 @@ public class CommandPermissionHandler {
         return ImmutableMap.copyOf(mssl);
     }
 
-    public enum SuggestedLevel {
-        ADMIN("admin"),
-        MOD("staff"),
-        USER("user");
-
-        public final String role;
-
-        SuggestedLevel(String role) {
-            this.role = role;
-        }
-    }
 }

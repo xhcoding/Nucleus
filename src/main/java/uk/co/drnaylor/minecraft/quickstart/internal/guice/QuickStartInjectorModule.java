@@ -12,6 +12,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.*;
 
 public class QuickStartInjectorModule extends AbstractModule {
@@ -35,5 +36,6 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(JailHandler.class).toProvider(plugin::getJailHandler);
         bind(WarmupManager.class).toProvider(plugin::getWarmupManager);
         bind(TeleportHandler.class).toProvider(plugin::getTpHandler);
+        bind(PermissionRegistry.class).toProvider(plugin::getPermissionRegistry);
     }
 }

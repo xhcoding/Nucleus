@@ -25,11 +25,12 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.util.Map;
 
 @RootCommand
-@Permissions(root = "ban", suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(root = "ban", suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.BANS)
 @NoWarmup
 @NoCooldown
@@ -40,9 +41,9 @@ public class BanCommand extends CommandBase {
     private final String reason = "reason";
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionsToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> ps = Maps.newHashMap();
-        ps.put(notifyPermission, CommandPermissionHandler.SuggestedLevel.MOD);
+    public Map<String, SuggestedLevel> permissionsToRegister() {
+        Map<String, SuggestedLevel> ps = Maps.newHashMap();
+        ps.put(notifyPermission, SuggestedLevel.MOD);
         return ps;
     }
 

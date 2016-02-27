@@ -19,19 +19,19 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoWarmupArgument;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TwoPlayersArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ConfigCommandAlias;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions(root = "teleport", alias = "teleport", suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(root = "teleport", alias = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.TELEPORT)
 @RootCommand
 @ConfigCommandAlias("teleport")
@@ -42,9 +42,9 @@ public class TeleportCommand extends CommandBase {
     private String playerKey = "player";
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put("others", CommandPermissionHandler.SuggestedLevel.ADMIN);
+    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put("others", SuggestedLevel.ADMIN);
         return m;
     }
 

@@ -21,14 +21,14 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.util.Optional;
 
 @RootCommand
 @Modules(PluginModule.BANS)
-@Permissions(root = "ban", suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(root = "ban", suggestedLevel = SuggestedLevel.MOD)
 @NoWarmup
 @NoCooldown
 @NoCost

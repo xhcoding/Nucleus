@@ -23,8 +23,8 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailFilter;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.MailFilterParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 import java.time.ZoneId;
@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @Modules(PluginModule.MAILS)
 @NoWarmup

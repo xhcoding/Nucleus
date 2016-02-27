@@ -23,8 +23,8 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.MuteData;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.util.Optional;
  * Command Usage: /checkmute user
  * Permission: quickstart.checkmute.base
  */
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @Modules(PluginModule.MUTES)
 @NoWarmup

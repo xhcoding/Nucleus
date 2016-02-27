@@ -11,16 +11,19 @@ import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.permission.PermissionDescription;
+import org.spongepowered.api.service.permission.PermissionService;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -28,8 +31,6 @@ import java.util.stream.Collectors;
 
 public class PluginSystemsLoader {
     private final QuickStart quickStart;
-
-    private final Map<String, CommandPermissionHandler.SuggestedLevel> lvl = new HashMap<>();
 
     public PluginSystemsLoader(QuickStart quickStart) {
         this.quickStart = quickStart;
@@ -51,6 +52,18 @@ public class PluginSystemsLoader {
         loadCommands();
         loadEvents();
         loadRunnables();
+
+        // Register permissions
+        Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
+        if (ops.isPresent()) {
+            Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(quickStart);
+            if (opdb.isPresent()) {
+                Map<String, SuggestedLevel> m = quickStart.getPermissionRegistry().getPermissions();
+                m.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.ADMIN).map(Map.Entry::getKey).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_ADMIN, true).id(k).register());
+                m.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.MOD).map(Map.Entry::getKey).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_STAFF, true).id(k).register());
+                m.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.USER).map(Map.Entry::getKey).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_USER, true).id(k).register());
+            }
+        }
     }
 
     private <T> Set<Class<? extends T>> getClasses(Class<T> base, String pack) throws IOException {
@@ -99,9 +112,6 @@ public class PluginSystemsLoader {
             Sponge.getCommandManager().register(quickStart, c.getSpec(), c.getAliases());
         });
 
-        // Register suggested permissions (this will include children)
-        lvl.putAll(CommandPermissionHandler.getPermissions());
-
         try {
             cc.mergeDefaults(sn);
             cc.save();
@@ -125,7 +135,7 @@ public class PluginSystemsLoader {
             }
         }).filter(lb -> lb != null).forEach(c -> {
             // Register suggested permissions
-            lvl.putAll(c.getPermissions());
+            c.getPermissions().forEach((k, v) -> quickStart.getPermissionRegistry().registerOtherPermission(k, v));
             Sponge.getEventManager().registerListeners(quickStart, c);
         });
     }
@@ -143,7 +153,7 @@ public class PluginSystemsLoader {
                 return null;
             }
         }).filter(lb -> lb != null).forEach(c -> {
-            lvl.putAll(c.getPermissions());
+            c.getPermissions().forEach((k, v) -> quickStart.getPermissionRegistry().registerOtherPermission(k, v));
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.secondsPerRun(), TimeUnit.SECONDS);
             if (c.isAsync()) {
                 tb.async();

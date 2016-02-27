@@ -17,31 +17,34 @@ import uk.co.drnaylor.minecraft.quickstart.commands.afk.AFKCommand;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
+import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
 import uk.co.drnaylor.minecraft.quickstart.internal.TaskBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Modules(PluginModule.AFK)
 public class AFKTask extends TaskBase {
     @Inject private QuickStart plugin;
+    @Inject private PermissionRegistry permissionRegistry;
     private CommandPermissionHandler afkService = null;
 
     @Override
-    protected Map<String, CommandPermissionHandler.SuggestedLevel> getPermissions() {
-        return super.getPermissions();
+    protected Map<String, SuggestedLevel> getPermissions() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put(CommandPermissionHandler.PERMISSIONS_PREFIX + "afk.exempt.toggle", SuggestedLevel.NONE);
+        m.put(CommandPermissionHandler.PERMISSIONS_PREFIX + "afk.exempt.kick", SuggestedLevel.ADMIN);
+        return m;
     }
 
     @Override
     public void accept(Task task) {
         // Don't run the task until we have a permission service.
         if (afkService == null) {
-            Optional<CommandPermissionHandler> ops = CommandPermissionHandler.getService(AFKCommand.class);
+            Optional<CommandPermissionHandler> ops = permissionRegistry.getService(AFKCommand.class);
             if (!ops.isPresent()) {
                 return;
             }

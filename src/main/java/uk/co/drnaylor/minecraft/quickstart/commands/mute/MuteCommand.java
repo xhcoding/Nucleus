@@ -27,6 +27,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ import java.util.UUID;
  * Permission: quickstart.mute.base
  * Notify: quickstart.mute.notify
  */
-@Permissions(suggestedLevel = CommandPermissionHandler.SuggestedLevel.MOD)
+@Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @Modules(PluginModule.MUTES)
 @NoWarmup
@@ -64,9 +65,9 @@ public class MuteCommand extends CommandBase {
     private String reason = "Reason";
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionsToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put(notifyPermission, CommandPermissionHandler.SuggestedLevel.MOD);
+    public Map<String, SuggestedLevel> permissionsToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put(notifyPermission, SuggestedLevel.MOD);
         return m;
     }
 

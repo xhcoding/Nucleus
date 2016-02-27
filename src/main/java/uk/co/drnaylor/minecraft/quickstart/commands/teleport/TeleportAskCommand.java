@@ -14,8 +14,8 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import javax.inject.Inject;
@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Sends a request to a player to teleport to them, using click handlers.
  */
-@Permissions(root = "teleport", suggestedLevel = CommandPermissionHandler.SuggestedLevel.USER)
+@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.TELEPORT)
 @NoWarmup(generateConfigEntry = true)
 @RootCommand
@@ -39,9 +39,9 @@ public class TeleportAskCommand extends CommandBase<Player> {
     private final String playerKey = "player";
 
     @Override
-    public Map<String, CommandPermissionHandler.SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, CommandPermissionHandler.SuggestedLevel> m = new HashMap<>();
-        m.put("force", CommandPermissionHandler.SuggestedLevel.ADMIN);
+    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
+        Map<String, SuggestedLevel> m = new HashMap<>();
+        m.put("force", SuggestedLevel.ADMIN);
         return m;
     }
 
