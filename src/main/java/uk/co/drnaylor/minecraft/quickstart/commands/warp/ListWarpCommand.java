@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Permissions(root = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @ChildOf(parentCommandClass = WarpCommand.class, parentCommand = "warp")
-public class ListWarpCommand extends CommandBase {
+public class ListWarpCommand extends CommandBase<CommandSource> {
     private final QuickStartWarpService service = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
     @Inject private MainConfig mainConfig;
 

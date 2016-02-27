@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 @NoCooldown
 @NoCost
 @ChildOf(parentCommandClass = QuickStartCommand.class, parentCommand = "quickstart")
-public class ResetUser extends CommandBase {
+public class ResetUser extends CommandBase<CommandSource> {
     private final String userKey = "user";
 
     @Override

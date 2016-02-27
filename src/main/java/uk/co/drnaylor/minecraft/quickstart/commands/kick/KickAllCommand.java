@@ -18,6 +18,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.text.MessageFormat;
@@ -35,7 +36,7 @@ import java.util.Map;
 @NoCooldown
 @NoCost
 @RegisterCommand
-public class KickAllCommand extends CommandBase {
+public class KickAllCommand extends CommandBase<CommandSource> {
     private final String reason = "reason";
 
     @Override
@@ -48,9 +49,9 @@ public class KickAllCommand extends CommandBase {
     }
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("whitelist", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("whitelist", new PermissionInformation(Util.getMessageWithFormat("permission.kickall.whitelist"), SuggestedLevel.ADMIN));
         return m;
     }
 

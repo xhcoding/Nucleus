@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 @RegisterCommand
 @Permissions
 @Modules(PluginModule.NICKNAME)
-public class NicknameCommand extends CommandBase {
+public class NicknameCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader loader;
     @Inject private MainConfig mainConfig;

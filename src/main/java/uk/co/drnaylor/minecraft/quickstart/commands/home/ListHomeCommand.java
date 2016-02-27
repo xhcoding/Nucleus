@@ -25,6 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.HashMap;
@@ -40,13 +41,13 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCost
 @RegisterCommand
-public class ListHomeCommand extends CommandBase {
+public class ListHomeCommand extends CommandBase<CommandSource> {
     private final String player = "player";
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("others", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others"), SuggestedLevel.ADMIN));
         return m;
     }
 

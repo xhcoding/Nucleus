@@ -30,7 +30,7 @@ import java.util.Optional;
 @Permissions
 @Modules(PluginModule.MISC)
 @RegisterCommand
-public class FlyCommand extends CommandBase {
+public class FlyCommand extends CommandBase<CommandSource> {
     private static final String player = "player";
     private static final String toggle = "toggle";
 

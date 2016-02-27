@@ -19,7 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 @Permissions
 @RunAsync
 @Modules(PluginModule.CHAT)
-public class RealnameCommand extends CommandBase {
+public class RealnameCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;

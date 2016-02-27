@@ -17,7 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 @Permissions
 @Modules(PluginModule.ITEMS)
 @RegisterCommand
-public class GiveCommand extends CommandBase {
+public class GiveCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;

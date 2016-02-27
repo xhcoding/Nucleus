@@ -32,7 +32,7 @@ import java.util.Optional;
 @Permissions(root = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @ChildOf(parentCommandClass = MailCommand.class, parentCommand = "mail")
-public class SendMailCommand extends CommandBase {
+public class SendMailCommand extends CommandBase<CommandSource> {
     @Inject private MailHandler handler;
     @Inject private PermissionRegistry permissionRegistry;
 

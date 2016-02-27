@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 @NoWarmup
 @RegisterCommand
-public class DeleteOtherHomeCommand extends CommandBase {
+public class DeleteOtherHomeCommand extends CommandBase<CommandSource> {
 
     private final String homeKey = "home";
 

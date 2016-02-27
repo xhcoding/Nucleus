@@ -20,7 +20,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class RulesCommand extends CommandBase {
+public class RulesCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;

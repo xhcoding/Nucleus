@@ -36,7 +36,7 @@ import java.util.Optional;
 @Modules(PluginModule.TELEPORT)
 @RegisterCommand
 @ConfigCommandAlias("teleport")
-public class TeleportCommand extends CommandBase {
+public class TeleportCommand extends CommandBase<CommandSource> {
 
     private String[] aliases = null;
     private String playerFromKey = "playerFrom";

@@ -21,29 +21,19 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
-import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RegisterCommand
 @Permissions(alias = "nick")
 @Modules(PluginModule.NICKNAME)
-public class DelNickCommand extends CommandBase {
+public class DelNickCommand extends CommandBase<CommandSource> {
     @Inject
     private UserConfigLoader loader;
 
     private final String playerKey = "player";
     private final String nickName = "nickname";
-
-    @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("others", SuggestedLevel.ADMIN);
-        return m;
-    }
 
     @Override
     public CommandSpec createSpec() {

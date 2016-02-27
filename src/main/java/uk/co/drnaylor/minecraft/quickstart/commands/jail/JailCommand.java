@@ -25,6 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
@@ -42,7 +43,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand
-public class JailCommand extends CommandBase {
+public class JailCommand extends CommandBase<CommandSource> {
     public static final String notifyPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "jail.notify";
 
     @Inject private JailHandler handler;
@@ -52,9 +53,9 @@ public class JailCommand extends CommandBase {
     private final String reasonKey = "reason";
 
     @Override
-    public Map<String, SuggestedLevel> permissionsToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put(notifyPermission, SuggestedLevel.MOD);
+    public Map<String, PermissionInformation> permissionsToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put(notifyPermission, new PermissionInformation(Util.getMessageWithFormat("permission.jail.notify"), SuggestedLevel.MOD));
         return m;
     }
 

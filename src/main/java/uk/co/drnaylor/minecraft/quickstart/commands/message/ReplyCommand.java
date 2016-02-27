@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)
 @RegisterCommand
-public class ReplyCommand extends CommandBase {
+public class ReplyCommand extends CommandBase<CommandSource> {
     private final String message = "message";
 
     @Override

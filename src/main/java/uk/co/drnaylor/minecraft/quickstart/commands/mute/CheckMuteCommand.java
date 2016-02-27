@@ -46,7 +46,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand
-public class CheckMuteCommand extends CommandBase {
+public class CheckMuteCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
     private final String playerArgument = "Player";

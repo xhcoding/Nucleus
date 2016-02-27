@@ -36,7 +36,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand
-public class CheckJailCommand extends CommandBase {
+public class CheckJailCommand extends CommandBase<CommandSource> {
     private final String playerKey = "playerKey";
     @Inject
     private JailHandler handler;

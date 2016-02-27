@@ -29,7 +29,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCooldown
 @NoCost
 @RegisterCommand
-public class QuickStartCommand extends CommandBase {
+public class QuickStartCommand extends CommandBase<CommandSource> {
 
     private final Text version = Text.of(QuickStart.MESSAGE_PREFIX, TextColors.GREEN, QuickStart.NAME + " version " + QuickStart.VERSION);
     private Text modules = null;

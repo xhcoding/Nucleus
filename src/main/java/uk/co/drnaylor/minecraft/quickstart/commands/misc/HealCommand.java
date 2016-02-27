@@ -29,7 +29,7 @@ import java.util.Optional;
 @Permissions
 @Modules(PluginModule.MISC)
 @RegisterCommand
-public class HealCommand extends CommandBase {
+public class HealCommand extends CommandBase<CommandSource> {
     private static final String player = "player";
 
     @Override

@@ -55,7 +55,7 @@ import java.util.UUID;
 @NoCooldown
 @NoCost
 @RegisterCommand
-public class MuteCommand extends CommandBase {
+public class MuteCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
 

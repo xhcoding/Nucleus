@@ -35,7 +35,7 @@ import java.util.Map;
 @NoCooldown
 @NoCost
 @RegisterCommand
-public class KickCommand extends CommandBase {
+public class KickCommand extends CommandBase<CommandSource> {
     private final String player = "player";
     private final String reason = "reason";
 

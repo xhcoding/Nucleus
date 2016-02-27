@@ -31,7 +31,7 @@ import java.util.Map;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.ENVIRONMENT)
 @RegisterCommand
-public class TimeCommand extends CommandBase {
+public class TimeCommand extends CommandBase<CommandSource> {
     private final String world = "world";
 
     @Override

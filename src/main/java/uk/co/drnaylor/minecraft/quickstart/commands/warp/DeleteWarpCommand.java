@@ -31,7 +31,7 @@ import java.text.MessageFormat;
 @Permissions(root = "warp")
 @RunAsync
 @ChildOf(parentCommandClass = WarpCommand.class, parentCommand = "warp")
-public class DeleteWarpCommand extends CommandBase {
+public class DeleteWarpCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)

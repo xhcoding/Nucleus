@@ -35,7 +35,7 @@ import java.time.temporal.ChronoUnit;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class TempBanCommand extends CommandBase {
+public class TempBanCommand extends CommandBase<CommandSource> {
     private final String user = "user";
     private final String reason = "reason";
     private final String duration = "duration";

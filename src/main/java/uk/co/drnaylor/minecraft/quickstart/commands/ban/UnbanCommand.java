@@ -32,7 +32,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class UnbanCommand extends CommandBase {
+public class UnbanCommand extends CommandBase<CommandSource> {
     private final String key = "player";
 
     @Override

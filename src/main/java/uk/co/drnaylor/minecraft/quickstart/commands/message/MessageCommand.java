@@ -28,7 +28,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 @RegisterCommand
-public class MessageCommand extends CommandBase {
+public class MessageCommand extends CommandBase<CommandSource> {
     private final String to = "to";
     private final String message = "message";
 

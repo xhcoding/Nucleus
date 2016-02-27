@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.PLAYERINFO)
 @RegisterCommand
-public class ListPlayerCommand extends CommandBase {
+public class ListPlayerCommand extends CommandBase<CommandSource> {
     @Inject private UserConfigLoader loader;
     private Text hidden = Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden") + " ");
 

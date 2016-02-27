@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 @Permissions
 @RegisterCommand
 @Modules(PluginModule.MISC)
-public class KillCommand extends CommandBase {
+public class KillCommand extends CommandBase<CommandSource> {
     private final String key = "player";
 
     @Override

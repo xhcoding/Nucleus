@@ -44,7 +44,7 @@ import java.util.Map;
 @RunAsync
 @Modules(PluginModule.PLAYERINFO)
 @RegisterCommand
-public class SeenCommand extends CommandBase {
+public class SeenCommand extends CommandBase<CommandSource> {
     private final String playerKey = "player";
 
     @Override

@@ -29,7 +29,7 @@ import java.util.Optional;
 @Permissions
 @Modules(PluginModule.MISC)
 @RegisterCommand
-public class FeedCommand extends CommandBase {
+public class FeedCommand extends CommandBase<CommandSource> {
     private static final String player = "player";
 
     @Override

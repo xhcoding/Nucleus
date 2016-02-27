@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(root = "quickstart")
 @ChildOf(parentCommandClass = QuickStartCommand.class, parentCommand = "quickstart")
-public class SuggestedPermissionsCommand extends CommandBase {
+public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
     private final String file = "quickstart-essentials-perms.txt";
 
     @Override

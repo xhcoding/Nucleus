@@ -29,7 +29,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-public class ExperienceCommand extends CommandBase {
+public class ExperienceCommand extends CommandBase<CommandSource> {
 
     private static final String playerKey = "player";
     private static final String experienceKey = "experience";
@@ -81,7 +81,7 @@ public class ExperienceCommand extends CommandBase {
     @NoCost
     @Permissions(root = "exp")
     @ChildOf(parentCommandClass = ExperienceCommand.class, parentCommand = "exp")
-    public static class TakeExperience extends CommandBase {
+    public static class TakeExperience extends CommandBase<CommandSource> {
 
         @Override
         public CommandSpec createSpec() {
@@ -112,7 +112,7 @@ public class ExperienceCommand extends CommandBase {
     @NoCost
     @Permissions(root = "exp")
     @ChildOf(parentCommandClass = ExperienceCommand.class, parentCommand = "exp")
-    public static class GiveExperience extends CommandBase {
+    public static class GiveExperience extends CommandBase<CommandSource> {
 
         @Override
         public CommandSpec createSpec() {
@@ -143,7 +143,7 @@ public class ExperienceCommand extends CommandBase {
     @NoCost
     @Permissions(root = "exp")
     @ChildOf(parentCommandClass = ExperienceCommand.class, parentCommand = "exp")
-    public static class SetExperience extends CommandBase {
+    public static class SetExperience extends CommandBase<CommandSource> {
 
         private final String levelKey = "level";
 

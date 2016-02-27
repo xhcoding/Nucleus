@@ -31,7 +31,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RunAsync
-public class CheckBanCommand extends CommandBase {
+public class CheckBanCommand extends CommandBase<CommandSource> {
     private final String key = "player";
 
     @Override

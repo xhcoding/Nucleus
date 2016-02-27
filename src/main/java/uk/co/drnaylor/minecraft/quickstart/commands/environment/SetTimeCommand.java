@@ -25,7 +25,7 @@ import java.text.MessageFormat;
 
 @Permissions(root = "time")
 @ChildOf(parentCommandClass = TimeCommand.class, parentCommand = "time")
-public class SetTimeCommand extends CommandBase {
+public class SetTimeCommand extends CommandBase<CommandSource> {
     private final String time = "time";
     private final String world = "world";
 

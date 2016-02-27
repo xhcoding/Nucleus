@@ -36,7 +36,7 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class BanCommand extends CommandBase {
+public class BanCommand extends CommandBase<CommandSource> {
     public static final String notifyPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "ban.notify";
     private final String user = "user";
     private final String reason = "reason";

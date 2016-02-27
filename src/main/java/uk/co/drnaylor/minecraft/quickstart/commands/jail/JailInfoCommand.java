@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 @Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @ChildOf(parentCommandClass = JailInfoCommand.class, parentCommand = "jails")
-public class JailInfoCommand extends CommandBase {
+public class JailInfoCommand extends CommandBase<CommandSource> {
     private final String jailKey = "jail";
     @Inject private JailHandler handler;
 

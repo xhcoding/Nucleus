@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @RegisterCommand
 @Permissions(root = "jail", alias = "list", suggestedLevel = SuggestedLevel.MOD)
-public class JailsCommand extends CommandBase {
+public class JailsCommand extends CommandBase<CommandSource> {
     @Inject
     private JailHandler handler;
 

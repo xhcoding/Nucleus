@@ -31,7 +31,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand
-public class GodCommand extends CommandBase {
+public class GodCommand extends CommandBase<CommandSource> {
     private final String playerKey = "player";
     private final String invulnKey = "invuln";
 

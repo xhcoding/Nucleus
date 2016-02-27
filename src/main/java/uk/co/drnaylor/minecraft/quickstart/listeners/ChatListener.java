@@ -63,7 +63,8 @@ public class ChatListener extends ListenerBase {
         return t;
     }
 
-    @Listener(order = Order.LATE)
+    // We do this first so that other plugins can alter it later if needs be.
+    @Listener(order = Order.FIRST)
     public void onPlayerChat(MessageChannelEvent.Chat event, @First Player player) {
         if (!config.getModifyChat()) {
             return;

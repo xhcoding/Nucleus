@@ -33,7 +33,7 @@ import java.util.Optional;
 @Permissions
 @Modules(PluginModule.ENVIRONMENT)
 @RegisterCommand
-public class WeatherCommand extends CommandBase {
+public class WeatherCommand extends CommandBase<CommandSource> {
     private final String world = "world";
     private final String weather = "weather";
     private final String duration = "duration";

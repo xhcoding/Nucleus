@@ -21,6 +21,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.Map;
 @Modules(PluginModule.ADMIN)
 @Permissions
 @RegisterCommand
-public class SudoCommand extends CommandBase {
+public class SudoCommand extends CommandBase<CommandSource> {
     private final String playerKey = "player";
     private final String commandKey = "command";
 
@@ -42,9 +43,9 @@ public class SudoCommand extends CommandBase {
     }
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("exempt.target", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.sudo.exempt"), SuggestedLevel.ADMIN));
         return m;
     }
 
