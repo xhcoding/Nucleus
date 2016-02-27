@@ -56,19 +56,22 @@ public class SuggestedPermissionsCommand extends CommandBase {
         };
 
         f.write("Admin");
+        f.write("-----");
         f.newLine();
 
-        admin.forEach(permWriter);
+        admin.stream().sorted().forEach(permWriter);
         f.newLine();
         f.write("Mod");
+        f.write("-----");
         f.newLine();
 
-        mod.forEach(permWriter);
+        mod.stream().sorted().forEach(permWriter);
         f.newLine();
         f.write("User");
+        f.write("-----");
         f.newLine();
 
-        user.forEach(permWriter);
+        user.stream().sorted().forEach(permWriter);
         f.flush();
         f.close();
 

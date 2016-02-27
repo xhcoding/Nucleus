@@ -8,6 +8,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.service.permission.Subject;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCooldown;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCost;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.util.HashMap;
@@ -65,9 +68,17 @@ public class CommandPermissionHandler {
         cooldown = prefix + "exempt.cooldown";
         cost = prefix + "exempt.cost";
 
-        mssl.put(warmup, SuggestedLevel.ADMIN);
-        mssl.put(cooldown, SuggestedLevel.ADMIN);
-        mssl.put(cost, SuggestedLevel.ADMIN);
+        if (!cb.getClass().isAnnotationPresent(NoWarmup.class)) {
+            mssl.put(warmup, SuggestedLevel.ADMIN);
+        }
+
+        if (!cb.getClass().isAnnotationPresent(NoCooldown.class)) {
+            mssl.put(cooldown, SuggestedLevel.ADMIN);
+        }
+
+        if (!cb.getClass().isAnnotationPresent(NoCost.class)) {
+            mssl.put(cost, SuggestedLevel.ADMIN);
+        }
 
         serviceRegistry.put(cb.getClass(), this);
     }
