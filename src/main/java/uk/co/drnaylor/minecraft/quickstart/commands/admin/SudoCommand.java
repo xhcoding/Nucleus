@@ -20,15 +20,15 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Modules(PluginModule.ADMIN)
 @Permissions
-@RootCommand
+@RegisterCommand
 public class SudoCommand extends CommandBase {
     private final String playerKey = "player";
     private final String commandKey = "command";

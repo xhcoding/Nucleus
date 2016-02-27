@@ -15,7 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 /**
@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class TeleportDenyCommand extends CommandBase<Player> {
     @Inject private TeleportHandler teleportHandler;
 

@@ -17,7 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.JailParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 
 @NoCooldown
@@ -25,6 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 @NoWarmup
 @Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
+@ChildOf(parentCommandClass = JailInfoCommand.class, parentCommand = "jails")
 public class JailInfoCommand extends CommandBase {
     private final String jailKey = "jail";
     @Inject private JailHandler handler;

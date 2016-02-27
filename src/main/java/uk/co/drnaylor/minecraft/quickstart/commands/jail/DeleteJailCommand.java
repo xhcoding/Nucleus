@@ -24,6 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 @NoWarmup
 @NoCooldown
 @NoCost
+@ChildOf(parentCommandClass = JailsCommand.class, parentCommand = "jails")
 public class DeleteJailCommand extends CommandBase {
     @Inject private JailHandler handler;
     private final String jailKey = "jail";

@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoWarmup
 @NoCost
-@RootCommand
+@RegisterCommand
 public class ListHomeCommand extends CommandBase {
     private final String player = "player";
 

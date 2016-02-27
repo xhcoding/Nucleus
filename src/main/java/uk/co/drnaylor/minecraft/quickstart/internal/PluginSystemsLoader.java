@@ -18,8 +18,9 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartModuleService;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -59,10 +60,10 @@ public class PluginSystemsLoader {
         if (ops.isPresent()) {
             Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(quickStart);
             if (opdb.isPresent()) {
-                Map<String, SuggestedLevel> m = quickStart.getPermissionRegistry().getPermissions();
-                m.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.ADMIN).map(Map.Entry::getKey).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_ADMIN, true).id(k).register());
-                m.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.MOD).map(Map.Entry::getKey).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_STAFF, true).id(k).register());
-                m.entrySet().stream().filter(x -> x.getValue() == SuggestedLevel.USER).map(Map.Entry::getKey).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_USER, true).id(k).register());
+                Map<String, PermissionInformation> m = quickStart.getPermissionRegistry().getPermissions();
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
             }
         }
     }
@@ -82,7 +83,7 @@ public class PluginSystemsLoader {
         CommandsConfig cc = quickStart.getConfig(ConfigMap.COMMANDS_CONFIG).get();
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandsToLoad.stream().map(x -> {
-            if (!x.isAnnotationPresent(RootCommand.class)) {
+            if (!x.isAnnotationPresent(RegisterCommand.class)) {
                 // If not a root command, return nothing.
                 return null;
             }
@@ -111,7 +112,6 @@ public class PluginSystemsLoader {
             }
 
             // Register the commands.
-            System.out.println(c.getClass().getName());
             Sponge.getCommandManager().register(quickStart, spec, c.getAliases());
         });
 

@@ -13,7 +13,7 @@ import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 /**
  * Replies to the last player who sent a message.
@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)
-@RootCommand
+@RegisterCommand
 public class ReplyCommand extends CommandBase {
     private final String message = "message";
 

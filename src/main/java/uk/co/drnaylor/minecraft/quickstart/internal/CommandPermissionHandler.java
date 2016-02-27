@@ -8,18 +8,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.service.permission.Subject;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCooldown;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoCost;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.NoWarmup;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.Util;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.Map;
 
 public class CommandPermissionHandler {
 
     public final static String PERMISSIONS_PREFIX = "quickstart.";
-    private final Map<String, SuggestedLevel> mssl = Maps.newHashMap();
+    private final Map<String, PermissionInformation> mssl = Maps.newHashMap();
     private final String prefix;
     private final String base;
     private final String warmup;
@@ -49,22 +48,30 @@ public class CommandPermissionHandler {
         prefix = sb.toString();
 
         base = prefix + "base";
-        mssl.put(base, c.suggestedLevel());
+
+        // Get command name.
+        String command = cb.getAliases()[0];
+        ChildOf co = cb.getClass().getAnnotation(ChildOf.class);
+        if (co != null) {
+            command = String.format("%s %s", co.parentCommand(), command);
+        }
+
+        mssl.put(base, new PermissionInformation(Util.getMessageWithFormat("permission.base", command), c.suggestedLevel()));
 
         warmup = prefix + "exempt.warmup";
         cooldown = prefix + "exempt.cooldown";
         cost = prefix + "exempt.cost";
 
         if (!cb.getClass().isAnnotationPresent(NoWarmup.class)) {
-            mssl.put(warmup, SuggestedLevel.ADMIN);
+            mssl.put(warmup, new PermissionInformation(Util.getMessageWithFormat("permission.exempt.warmup", command), SuggestedLevel.ADMIN));
         }
 
         if (!cb.getClass().isAnnotationPresent(NoCooldown.class)) {
-            mssl.put(cooldown, SuggestedLevel.ADMIN);
+            mssl.put(cooldown, new PermissionInformation(Util.getMessageWithFormat("permission.exempt.cooldown", command), SuggestedLevel.ADMIN));
         }
 
         if (!cb.getClass().isAnnotationPresent(NoCost.class)) {
-            mssl.put(cost, SuggestedLevel.ADMIN);
+            mssl.put(cost, new PermissionInformation(Util.getMessageWithFormat("permission.exempt.cost", command), SuggestedLevel.ADMIN));
         }
 
         cb.plugin.getPermissionRegistry().addHandler(cb.getClass(), this);
@@ -86,12 +93,20 @@ public class CommandPermissionHandler {
         return src.hasPermission(cost);
     }
 
-    public void registerPermssionSuffix(String suffix, SuggestedLevel level) {
-        this.mssl.put(prefix + suffix, level);
+    public void registerPermssionSuffix(String suffix, PermissionInformation pi) {
+        this.mssl.put(prefix + suffix, pi);
     }
 
-    public void registerPermssion(String permission, SuggestedLevel level) {
-        this.mssl.put(permission, level);
+    public void registerPermssionSuffix(String suffix, SuggestedLevel level, String description) {
+        registerPermssionSuffix(suffix, new PermissionInformation(description, level));
+    }
+
+    public void registerPermssion(String permission, SuggestedLevel level, String description) {
+        registerPermssion(permission, new PermissionInformation(description, level));
+    }
+
+    public void registerPermssion(String permission, PermissionInformation pi) {
+        this.mssl.put(permission, pi);
     }
 
     public boolean testSuffix(Subject src, String suffix) {
@@ -102,7 +117,7 @@ public class CommandPermissionHandler {
         return prefix + suffix;
     }
 
-    public Map<String, SuggestedLevel> getSuggestedPermissions() {
+    public Map<String, PermissionInformation> getSuggestedPermissions() {
         return ImmutableMap.copyOf(mssl);
     }
 

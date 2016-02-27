@@ -26,7 +26,7 @@ import javax.inject.Inject;
 @NoWarmup
 @NoCost
 @NoCooldown
-@RootCommand
+@RegisterCommand
 public class TeleportAllHereCommand extends CommandBase<Player> {
     @Inject private TeleportHandler handler;
 

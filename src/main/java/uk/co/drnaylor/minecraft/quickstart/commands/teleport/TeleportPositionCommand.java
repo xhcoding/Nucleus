@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class TeleportPositionCommand extends CommandBase {
     private final String key = "player";
     private final String location = "world";

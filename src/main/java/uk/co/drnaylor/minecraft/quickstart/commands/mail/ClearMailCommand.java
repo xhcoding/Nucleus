@@ -14,7 +14,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 /**
@@ -25,6 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 @NoCooldown
 @NoCost
 @RunAsync
+@ChildOf(parentCommandClass = MailCommand.class, parentCommand = "mail")
 public class ClearMailCommand extends CommandBase<Player> {
     @Inject
     private MailHandler handler;

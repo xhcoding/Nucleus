@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 @NoWarmup
 @Permissions
-@RootCommand
+@RegisterCommand
 public class BroadcastCommand extends CommandBase {
     private final String message = "message";
     @Inject private CommandsConfig commandsConfig;

@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.mail.MailFilter;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.MailFilterParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 import java.time.ZoneId;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class MailCommand extends CommandBase<Player> {
     @Inject private MailHandler handler;
     private final String filters = "filters";

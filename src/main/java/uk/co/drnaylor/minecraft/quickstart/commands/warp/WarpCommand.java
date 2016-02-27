@@ -15,12 +15,16 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WarpParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Allows a user to warp to the specified warp.
@@ -33,9 +37,16 @@ import java.text.MessageFormat;
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.WARPS)
-@RootCommand
-public class WarpsCommand extends CommandBase<Player> {
+@RegisterCommand
+public class WarpCommand extends CommandBase<Player> {
     static final String warpNameArg = Util.getMessageWithFormat("args.name.warpname");
+
+    @Override
+    protected Map<String, PermissionInformation> permissionsToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put(CommandPermissionHandler.PERMISSIONS_PREFIX + "warps", new PermissionInformation(Util.getMessageWithFormat("permissions.warps"), SuggestedLevel.ADMIN));
+        return m;
+    }
 
     @Override
     public CommandSpec createSpec() {

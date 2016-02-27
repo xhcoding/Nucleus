@@ -20,10 +20,10 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
 @Permissions
-@RootCommand
+@RegisterCommand
 @Modules(PluginModule.MISC)
 public class KillCommand extends CommandBase {
     private final String key = "player";

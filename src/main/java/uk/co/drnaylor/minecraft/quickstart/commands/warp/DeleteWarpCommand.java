@@ -16,6 +16,7 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WarpParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
@@ -29,12 +30,13 @@ import java.text.MessageFormat;
  */
 @Permissions(root = "warp")
 @RunAsync
+@ChildOf(parentCommandClass = WarpCommand.class, parentCommand = "warp")
 public class DeleteWarpCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
                 .arguments(
-                        GenericArguments.onlyOne(new WarpParser(Text.of(WarpsCommand.warpNameArg), plugin, false, false))
+                        GenericArguments.onlyOne(new WarpParser(Text.of(WarpCommand.warpNameArg), plugin, false, false))
                 )
                 .description(Text.of("Deletes a warp."))
                 .build();
@@ -47,7 +49,7 @@ public class DeleteWarpCommand extends CommandBase {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        WarpParser.WarpData warp = args.<WarpParser.WarpData>getOne(WarpsCommand.warpNameArg).get();
+        WarpParser.WarpData warp = args.<WarpParser.WarpData>getOne(WarpCommand.warpNameArg).get();
         QuickStartWarpService qs = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
 
         if (qs.removeWarp(warp.warp)) {

@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class CheckMuteCommand extends CommandBase {
 
     @Inject private UserConfigLoader userConfigLoader;

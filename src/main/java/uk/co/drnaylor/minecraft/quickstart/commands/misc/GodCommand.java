@@ -16,8 +16,9 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -29,15 +30,15 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-@RootCommand
+@RegisterCommand
 public class GodCommand extends CommandBase {
     private final String playerKey = "player";
     private final String invulnKey = "invuln";
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("others", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 

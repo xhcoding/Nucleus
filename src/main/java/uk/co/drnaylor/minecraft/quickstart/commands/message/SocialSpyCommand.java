@@ -17,7 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.api.data.QuickStartUser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class SocialSpyCommand extends CommandBase<Player> {
     private final String arg = "Social Spy";
     @Inject private UserConfigLoader userConfigLoader;

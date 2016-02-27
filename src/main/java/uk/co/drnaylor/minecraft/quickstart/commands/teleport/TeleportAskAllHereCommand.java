@@ -27,7 +27,7 @@ import java.time.temporal.ChronoUnit;
 @NoWarmup
 @NoCost
 @NoCooldown
-@RootCommand
+@RegisterCommand
 @RunAsync
 public class TeleportAskAllHereCommand extends CommandBase<Player> {
     @Inject private TeleportHandler tpHandler;

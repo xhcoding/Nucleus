@@ -15,11 +15,11 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeOtherParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 @Permissions(root = "home", alias = "other", suggestedLevel = SuggestedLevel.MOD)
-@RootCommand
+@RegisterCommand
 public class HomeOtherCommand extends CommandBase<Player> {
     private final String home = "home";
 

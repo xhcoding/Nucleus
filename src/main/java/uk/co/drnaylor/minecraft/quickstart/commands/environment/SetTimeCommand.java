@@ -18,11 +18,13 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WorldTimeParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.text.MessageFormat;
 
 @Permissions(root = "time")
+@ChildOf(parentCommandClass = TimeCommand.class, parentCommand = "time")
 public class SetTimeCommand extends CommandBase {
     private final String time = "time";
     private final String world = "world";

@@ -39,6 +39,7 @@ import java.util.function.Consumer;
 @NoWarmup
 @NoCooldown
 @NoCost
+@ChildOf(parentCommandClass = QuickStartCommand.class, parentCommand = "quickstart")
 public class ResetUser extends CommandBase {
     private final String userKey = "user";
 

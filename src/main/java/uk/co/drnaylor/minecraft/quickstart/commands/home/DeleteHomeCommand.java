@@ -17,7 +17,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.data.WarpLocation;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 @Permissions(alias = "home", suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 @NoCooldown
 @NoCost
 @NoWarmup
-@RootCommand
+@RegisterCommand
 public class DeleteHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";
@@ -38,7 +38,7 @@ public class DeleteHomeCommand extends CommandBase<Player> {
 
     @Override
     public String[] getAliases() {
-        return new String[] {  "deletehome", "delhome" };
+        return new String[] { "deletehome", "delhome" };
     }
 
     @Override

@@ -23,7 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCooldown
 @NoCost
 @NoWarmup
-@RootCommand
+@RegisterCommand
 public class VanishCommand extends CommandBase<Player> {
     private final String b = "toggle";
 

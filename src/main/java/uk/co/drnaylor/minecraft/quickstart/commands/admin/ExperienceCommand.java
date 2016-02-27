@@ -23,7 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.util.Optional;
 
-@RootCommand
+@RegisterCommand
 @Modules(PluginModule.ADMIN)
 @Permissions
 @NoCooldown
@@ -80,6 +80,7 @@ public class ExperienceCommand extends CommandBase {
     @NoWarmup
     @NoCost
     @Permissions(root = "exp")
+    @ChildOf(parentCommandClass = ExperienceCommand.class, parentCommand = "exp")
     public static class TakeExperience extends CommandBase {
 
         @Override
@@ -110,6 +111,7 @@ public class ExperienceCommand extends CommandBase {
     @NoWarmup
     @NoCost
     @Permissions(root = "exp")
+    @ChildOf(parentCommandClass = ExperienceCommand.class, parentCommand = "exp")
     public static class GiveExperience extends CommandBase {
 
         @Override
@@ -140,6 +142,7 @@ public class ExperienceCommand extends CommandBase {
     @NoWarmup
     @NoCost
     @Permissions(root = "exp")
+    @ChildOf(parentCommandClass = ExperienceCommand.class, parentCommand = "exp")
     public static class SetExperience extends CommandBase {
 
         private final String levelKey = "level";

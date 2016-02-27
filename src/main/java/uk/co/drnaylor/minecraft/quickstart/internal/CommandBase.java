@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
 
 import javax.annotation.Nullable;
@@ -167,7 +167,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      *
      * @return A map containing the extra permission suffixes to register.
      */
-    protected Map<String, SuggestedLevel> permissionSuffixesToRegister() {
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return Maps.newHashMap();
     }
 
@@ -176,7 +176,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      *
      * @return A map containing the extra permissions to register.
      */
-    protected Map<String, SuggestedLevel> permissionsToRegister() {
+    protected Map<String, PermissionInformation> permissionsToRegister() {
         return Maps.newHashMap();
     }
 

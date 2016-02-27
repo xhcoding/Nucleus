@@ -20,13 +20,13 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@RootCommand
+@RegisterCommand
 @Modules(PluginModule.MISC)
 @Permissions
 public class SpeedCommand extends CommandBase<Player> {

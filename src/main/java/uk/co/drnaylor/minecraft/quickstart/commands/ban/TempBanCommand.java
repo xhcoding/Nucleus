@@ -24,13 +24,13 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.TimespanParser;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-@RootCommand
-@Permissions(root = "ban", suggestedLevel = SuggestedLevel.MOD)
+@RegisterCommand
+@Permissions(suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.BANS)
 @NoWarmup
 @NoCooldown

@@ -20,9 +20,10 @@ import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.util.HashMap;
@@ -30,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-@RootCommand
+@RegisterCommand
 @Permissions
 @Modules(PluginModule.NICKNAME)
 public class NicknameCommand extends CommandBase {
@@ -46,13 +47,13 @@ public class NicknameCommand extends CommandBase {
     private final Pattern magicPattern = Pattern.compile("&k", Pattern.CASE_INSENSITIVE);
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("others", SuggestedLevel.ADMIN);
-        m.put("colour", SuggestedLevel.ADMIN);
-        m.put("color", SuggestedLevel.ADMIN);
-        m.put("style", SuggestedLevel.ADMIN);
-        m.put("magic", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.nick.others"), SuggestedLevel.ADMIN));
+        m.put("colour", new PermissionInformation(Util.getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
+        m.put("color", new PermissionInformation(Util.getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
+        m.put("style", new PermissionInformation(Util.getMessageWithFormat("permission.nick.style"), SuggestedLevel.ADMIN));
+        m.put("magic", new PermissionInformation(Util.getMessageWithFormat("permission.nick.magic"), SuggestedLevel.ADMIN));
         return m;
     }
 

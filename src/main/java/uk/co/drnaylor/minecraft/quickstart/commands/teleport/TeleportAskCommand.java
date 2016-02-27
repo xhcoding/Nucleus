@@ -15,7 +15,8 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Permissions(root = "teleport", suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.TELEPORT)
 @NoWarmup(generateConfigEntry = true)
-@RootCommand
+@RegisterCommand
 @RunAsync
 public class TeleportAskCommand extends CommandBase<Player> {
     @Inject
@@ -39,9 +40,9 @@ public class TeleportAskCommand extends CommandBase<Player> {
     private final String playerKey = "player";
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("force", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("force", new PermissionInformation(Util.getMessageWithFormat("permission.teleport.force"), SuggestedLevel.ADMIN));
         return m;
     }
 

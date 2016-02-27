@@ -28,7 +28,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class QuickStartCommand extends CommandBase {
 
     private final Text version = Text.of(QuickStart.MESSAGE_PREFIX, TextColors.GREEN, QuickStart.NAME + " version " + QuickStart.VERSION);
@@ -42,7 +42,7 @@ public class QuickStartCommand extends CommandBase {
 
     @Override
     public String[] getAliases() {
-        return new String[] { "quickstart" };
+        return new String[] { "quickstart", "qs", "qse" };
     }
 
     @Override

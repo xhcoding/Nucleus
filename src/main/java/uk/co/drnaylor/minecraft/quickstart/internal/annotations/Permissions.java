@@ -4,7 +4,7 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.internal.annotations;
 
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.lang.annotation.*;
 
@@ -27,7 +27,7 @@ public @interface Permissions {
     String[] value() default {};
 
     /**
-     * Replaces the command portion of the permssion with the specified alias - "prefix.alias.base"
+     * Replaces the command portion of the permission with the specified alias - "prefix.alias.base"
      *
      * @return The name of the alias to use
      */
@@ -53,5 +53,4 @@ public @interface Permissions {
      * @return The {@link SuggestedLevel}
      */
     SuggestedLevel suggestedLevel() default SuggestedLevel.ADMIN;
-
 }

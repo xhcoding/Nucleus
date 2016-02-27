@@ -5,7 +5,7 @@
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
 import org.spongepowered.api.scheduler.Task;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,9 +17,7 @@ public abstract class TaskBase implements Consumer<Task> {
 
     public abstract int secondsPerRun();
 
-    protected Map<String, SuggestedLevel> getPermissions() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("exempt.kick", SuggestedLevel.ADMIN);
-        return m;
+    protected Map<String, PermissionInformation> getPermissions() {
+        return new HashMap<>();
     }
 }

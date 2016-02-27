@@ -21,8 +21,8 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.ENVIRONMENT)
-@RootCommand
+@RegisterCommand
 public class TimeCommand extends CommandBase {
     private final String world = "world";
 

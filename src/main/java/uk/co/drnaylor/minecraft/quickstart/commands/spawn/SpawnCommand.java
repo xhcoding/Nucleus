@@ -20,23 +20,24 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-@RootCommand
+@RegisterCommand
 @Modules(PluginModule.SPAWN)
 public class SpawnCommand extends CommandBase<Player> {
     private final String key = "world";
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("otherworlds", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("otherworlds", new PermissionInformation(Util.getMessageWithFormat("permission.spawn.otherworlds"), SuggestedLevel.ADMIN));
         return m;
     }
 

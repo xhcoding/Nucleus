@@ -17,7 +17,8 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class KickCommand extends CommandBase {
     private final String player = "player";
     private final String reason = "reason";
@@ -48,9 +49,9 @@ public class KickCommand extends CommandBase {
     }
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("notify", SuggestedLevel.MOD);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("notify", new PermissionInformation(Util.getMessageWithFormat("permission.kick.notify"), SuggestedLevel.MOD));
         return m;
     }
 

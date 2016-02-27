@@ -13,7 +13,7 @@ import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 /**
  * NOTE: TeleportHere is considered an admin command, as there is a potential for abuse for non-admin players trying to
@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RootCommand
+@RegisterCommand
 public class TeleportHereCommand extends CommandBase<Player> {
 
     private final String playerKey = "player";

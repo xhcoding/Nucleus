@@ -22,7 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 @NoWarmup
 @Modules(PluginModule.TELEPORT)
-@RootCommand
+@RegisterCommand
 public class TPNativeCommand extends CommandBase {
     private final String a = "args";
 

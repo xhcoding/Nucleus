@@ -18,14 +18,14 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.HomeParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
-@RootCommand
+@RegisterCommand
 public class HomeCommand extends CommandBase<Player> {
     private final String home = "home";
 

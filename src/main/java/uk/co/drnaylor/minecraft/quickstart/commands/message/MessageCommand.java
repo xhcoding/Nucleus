@@ -15,9 +15,9 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.PlayerConsoleArgument
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 /**
  * Messages a player.
@@ -27,7 +27,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
-@RootCommand
+@RegisterCommand
 public class MessageCommand extends CommandBase {
     private final String to = "to";
     private final String message = "message";

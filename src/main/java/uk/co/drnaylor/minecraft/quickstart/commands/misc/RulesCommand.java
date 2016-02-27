@@ -11,12 +11,12 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @Modules(PluginModule.MISC)
-@RootCommand
+@RegisterCommand
 @NoWarmup
 @NoCooldown
 @NoCost

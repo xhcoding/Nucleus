@@ -18,9 +18,10 @@ import uk.co.drnaylor.minecraft.quickstart.argumentparsers.UserParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 
 import java.util.Optional;
@@ -30,6 +31,7 @@ import java.util.Optional;
  */
 @Permissions(root = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
+@ChildOf(parentCommandClass = MailCommand.class, parentCommand = "mail")
 public class SendMailCommand extends CommandBase {
     @Inject private MailHandler handler;
     @Inject private PermissionRegistry permissionRegistry;

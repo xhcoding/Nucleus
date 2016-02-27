@@ -20,9 +20,10 @@ import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
  */
 @Permissions(root = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
+@ChildOf(parentCommandClass = WarpCommand.class, parentCommand = "warp")
 public class ListWarpCommand extends CommandBase {
     private final QuickStartWarpService service = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
     @Inject private MainConfig mainConfig;

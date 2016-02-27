@@ -29,10 +29,11 @@ import uk.co.drnaylor.minecraft.quickstart.commands.misc.SpeedCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.interfaces.InternalQuickStartUser;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,14 +43,14 @@ import java.util.Map;
 @Permissions
 @RunAsync
 @Modules(PluginModule.PLAYERINFO)
-@RootCommand
+@RegisterCommand
 public class SeenCommand extends CommandBase {
     private final String playerKey = "player";
 
     @Override
-    public Map<String, SuggestedLevel> permissionSuffixesToRegister() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put("extended", SuggestedLevel.ADMIN);
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("extended", new PermissionInformation(Util.getMessageWithFormat("permission.seen.extended"), SuggestedLevel.ADMIN));
         return m;
     }
 

@@ -15,6 +15,7 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 
 import java.text.MessageFormat;
@@ -27,6 +28,7 @@ import java.util.regex.Pattern;
  * Permission: quickstart.warp.set.base
  */
 @Permissions(root = "warp")
+@ChildOf(parentCommandClass = WarpCommand.class, parentCommand = "warp")
 public class SetWarpCommand extends CommandBase<Player> {
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
 
@@ -34,7 +36,7 @@ public class SetWarpCommand extends CommandBase<Player> {
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
                 .arguments(
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of(WarpsCommand.warpNameArg)))
+                        GenericArguments.onlyOne(GenericArguments.string(Text.of(WarpCommand.warpNameArg)))
                 )
                 .description(Text.of("Sets a warp at the player's location."))
                 .build();
@@ -47,7 +49,7 @@ public class SetWarpCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        String warp = args.<String>getOne(WarpsCommand.warpNameArg).get();
+        String warp = args.<String>getOne(WarpCommand.warpNameArg).get();
 
         // Needs to match the name...
         if (!warpRegex.matcher(warp).matches()) {

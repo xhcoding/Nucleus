@@ -12,11 +12,11 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RootCommand;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
 @Permissions
 @Modules(PluginModule.ITEMS)
-@RootCommand
+@RegisterCommand
 public class GiveCommand extends CommandBase {
     @Override
     public CommandSpec createSpec() {

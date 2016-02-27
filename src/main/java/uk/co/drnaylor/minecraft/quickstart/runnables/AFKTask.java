@@ -20,7 +20,8 @@ import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
 import uk.co.drnaylor.minecraft.quickstart.internal.TaskBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
-import uk.co.drnaylor.minecraft.quickstart.internal.enums.SuggestedLevel;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
+import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
 import javax.inject.Inject;
@@ -33,10 +34,10 @@ public class AFKTask extends TaskBase {
     private CommandPermissionHandler afkService = null;
 
     @Override
-    protected Map<String, SuggestedLevel> getPermissions() {
-        Map<String, SuggestedLevel> m = new HashMap<>();
-        m.put(CommandPermissionHandler.PERMISSIONS_PREFIX + "afk.exempt.toggle", SuggestedLevel.NONE);
-        m.put(CommandPermissionHandler.PERMISSIONS_PREFIX + "afk.exempt.kick", SuggestedLevel.ADMIN);
+    protected Map<String, PermissionInformation> getPermissions() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put(CommandPermissionHandler.PERMISSIONS_PREFIX + "afk.exempt.toggle", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
+        m.put(CommandPermissionHandler.PERMISSIONS_PREFIX + "afk.exempt.kick", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.NONE));
         return m;
     }
 
