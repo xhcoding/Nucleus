@@ -34,6 +34,10 @@ public class UserParser extends CommandElement {
     @Nullable
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
+        if (!args.hasNext()) {
+            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.user.none")));
+        }
+
         String user = args.next();
 
         // Check for exact match from the GameProfile service first.

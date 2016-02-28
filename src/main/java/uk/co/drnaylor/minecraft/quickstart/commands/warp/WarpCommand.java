@@ -51,9 +51,7 @@ public class WarpCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
-                .children(this.createChildCommands(
-                        DeleteWarpCommand.class, ListWarpCommand.class, SetWarpCommand.class
-                )).arguments(
+                .children(this.createChildCommands()).arguments(
                         GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.flags().flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
                         GenericArguments.onlyOne(new WarpParser(Text.of(warpNameArg), plugin, true))
                 ).build();

@@ -26,6 +26,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.NoCostArgument;
+import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
@@ -57,6 +58,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private String commandConfigAlias = null;
 
     @Inject protected QuickStart plugin;
+    @Inject private MainConfig config;
     @Inject private WarmupManager warmupService;
 
     @SuppressWarnings("unchecked")
@@ -278,7 +280,11 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
-            e.printStackTrace();
+
+            if (config.getDebugMode()) {
+                e.printStackTrace();
+            }
+
             return CommandResult.empty();
         }
 
@@ -312,12 +318,20 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         } catch (TextMessageException e) {
             // If the exception contains a text object, render it like so...
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
-            e.printStackTrace();
+
+            if (config.getDebugMode()) {
+                e.printStackTrace();
+            }
+
             cr = CommandResult.empty();
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
             src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
-            e.printStackTrace();
+
+            if (config.getDebugMode()) {
+                e.printStackTrace();
+            }
+
             cr = CommandResult.empty();
         }
 
@@ -524,7 +538,11 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         try {
              scb = PluginSystemsLoader.getCommandClasses(getClass());
         } catch (IOException e) {
-            e.printStackTrace();
+
+            if (config.getDebugMode()) {
+                e.printStackTrace();
+            }
+
             return Maps.newHashMap();
         }
 
@@ -546,7 +564,11 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
                 c.postInit();
                 map.put(Arrays.asList(c.getAliases()), c.createSpec());
             } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+                plugin.getLogger().error(Util.getMessageWithFormat("command.child.notloaded", cb.getName()));
+
+                if (config.getDebugMode()) {
+                    e.printStackTrace();
+                }
             }
         });
 

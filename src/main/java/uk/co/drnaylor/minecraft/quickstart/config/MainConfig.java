@@ -36,6 +36,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private String chatTemplate;
     private int minNickLength;
     private String nickprefix;
+    private boolean debugMode;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -86,6 +87,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         // Nicknames
         minNickLength = node.getNode("nicknames", "min-nickname-length").getInt(3);
         nickprefix = node.getNode("nicknames", "prefix").getString("&b~");
+        debugMode = node.getNode("debug-mode").getBoolean(false);
     }
 
     @Override
@@ -121,6 +123,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
         ccn.getNode("nicknames", "min-nickname-length").setComment(Util.getMessageWithFormat("config.nicknames.min")).setValue(3);
         ccn.getNode("nicknames", "prefix").setComment(Util.getMessageWithFormat("config.nicknames.prefix")).setValue("&b~");
+
+        ccn.getNode("debug-mode").setComment(Util.getMessageWithFormat("config.debugmode")).setValue(false);
         return ccn;
     }
 
@@ -166,5 +170,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public String getNickPrefix() {
         return nickprefix;
+    }
+
+    public boolean getDebugMode() {
+        return debugMode;
     }
 }

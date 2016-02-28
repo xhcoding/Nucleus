@@ -5,6 +5,7 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.mail;
 
 import com.google.inject.Inject;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -51,7 +52,7 @@ public class SendMailCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        User pl = args.<User>getOne(player).get();
+        User pl = args.<User>getOne(player).orElseThrow(() -> new CommandException(Text.of(TextColors.RED, Util.getMessageWithFormat("args.user.none"))));
         Optional<CommandPermissionHandler> oservice = permissionRegistry.getService(MailCommand.class);
 
         // Only send mails to players that can read them.
@@ -61,7 +62,7 @@ public class SendMailCommand extends CommandBase<CommandSource> {
         }
 
         // Send the message.
-        String m = args.<String>getOne(message).get();
+        String m = args.<String>getOne(message).orElseThrow(() -> new CommandException(Text.of(TextColors.RED, Util.getMessageWithFormat("args.message.none"))));
         if (src instanceof User) {
             handler.sendMail((User)src, pl, m);
         } else {
