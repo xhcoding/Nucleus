@@ -54,7 +54,7 @@ public class SpeedCommand extends CommandBase<CommandSource> {
 
         return CommandSpec.builder().arguments(
                 GenericArguments.optional(GenericArguments.seq(
-                    GenericArguments.requiringPermission(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(playerKey), keysMap, true))), permissions.getPermissionWithSuffix("others")),
+                    GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
                     GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
                     GenericArguments.integer(Text.of(speedKey))
                 ))

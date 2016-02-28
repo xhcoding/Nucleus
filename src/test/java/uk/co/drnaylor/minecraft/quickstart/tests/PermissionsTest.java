@@ -20,6 +20,7 @@ import org.spongepowered.api.service.permission.Subject;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandPermissionHandler;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.tests.util.TestModule;
 
 import java.util.Arrays;
@@ -105,16 +106,12 @@ public class PermissionsTest {
     }
 
     @Permissions
+    @RegisterCommand({"test", "test2"})
     public static class PermissionOne extends CommandBase {
 
         @Override
         public CommandSpec createSpec() {
             return CommandSpec.builder().executor(this).build();
-        }
-
-        @Override
-        public String[] getAliases() {
-            return new String[] { "test", "test2" };
         }
 
         @Override
@@ -124,18 +121,23 @@ public class PermissionsTest {
     }
 
     @Permissions(root = "root")
+    @RegisterCommand({"test", "test2"})
     public static class PermissionRoot extends PermissionOne { }
 
     @Permissions(sub = "sub")
+    @RegisterCommand({"test", "test2"})
     public static class PermissionSub extends PermissionOne { }
 
     @Permissions(root = "root", sub = "sub")
+    @RegisterCommand({"test", "test2"})
     public static class PermissionRootSub extends PermissionOne { }
 
     @Permissions(alias = "alias")
+    @RegisterCommand({"test", "test2"})
     public static class PermissionAlias extends PermissionOne { }
 
     @Permissions({"test.test"})
+    @RegisterCommand({"test", "test2"})
     public static class PermissionCustom extends PermissionOne { }
 
     private static Injector getInjector() {

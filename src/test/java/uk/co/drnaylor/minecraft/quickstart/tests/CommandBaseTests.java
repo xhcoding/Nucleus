@@ -18,6 +18,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.tests.util.TestModule;
 
 public class CommandBaseTests {
@@ -105,6 +106,7 @@ public class CommandBaseTests {
     }
 
     @Permissions
+    @RegisterCommand("test")
     private class PlayerCommand extends CommandBase<Player> {
 
         @Override
@@ -124,6 +126,7 @@ public class CommandBaseTests {
     }
 
     @Permissions
+    @RegisterCommand("test")
     private class BasicCommand extends CommandBase {
 
         @Override

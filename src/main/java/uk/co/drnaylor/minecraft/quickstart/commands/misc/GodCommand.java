@@ -45,7 +45,7 @@ public class GodCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(
-                GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey))), permissions.getPermissionWithSuffix("others")),
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(invulnKey))))
         ).build();
     }

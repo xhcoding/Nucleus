@@ -62,9 +62,9 @@ public class CommandPermissionHandler {
 
         // Get command name.
         String command = cb.getAliases()[0];
-        ChildOf co = cb.getClass().getAnnotation(ChildOf.class);
-        if (co != null) {
-            command = String.format("%s %s", co.parentCommand(), command);
+        RegisterCommand co = cb.getClass().getAnnotation(RegisterCommand.class);
+        if (co.subcommandOf() != CommandBase.class) {
+            command = String.format("%s %s", co.subcommandOf().getAnnotation(RegisterCommand.class).value()[0], command);
         }
 
         mssl.put(base, new PermissionInformation(Util.getMessageWithFormat("permission.base", command), c.suggestedLevel()));
