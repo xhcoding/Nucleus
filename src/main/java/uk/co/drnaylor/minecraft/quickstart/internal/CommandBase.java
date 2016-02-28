@@ -317,7 +317,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             cr = executeCommand(src, args);
         } catch (TextMessageException e) {
             // If the exception contains a text object, render it like so...
-            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, e.getText()));
+            Text t = e.getText();
+            src.sendMessage((t == null) ? Text.of(TextColors.RED, Util.getMessageWithFormat("command.error")) : t);
 
             if (config.getDebugMode()) {
                 e.printStackTrace();
@@ -326,7 +327,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             cr = CommandResult.empty();
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.error")));
 
             if (config.getDebugMode()) {
                 e.printStackTrace();
