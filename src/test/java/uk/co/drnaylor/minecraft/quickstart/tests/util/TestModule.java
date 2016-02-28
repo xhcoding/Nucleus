@@ -13,6 +13,7 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import uk.co.drnaylor.minecraft.quickstart.QuickStart;
 import uk.co.drnaylor.minecraft.quickstart.config.CommandsConfig;
+import uk.co.drnaylor.minecraft.quickstart.config.MainConfig;
 import uk.co.drnaylor.minecraft.quickstart.internal.ConfigMap;
 import uk.co.drnaylor.minecraft.quickstart.internal.PermissionRegistry;
 
@@ -39,6 +40,7 @@ public class TestModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(ConfigDir.class).toInstance(test);
         this.bind(Game.class).toInstance(Mockito.mock(Game.class));
         this.bind(Logger.class).toInstance(Mockito.mock(Logger.class));
+        this.bind(MainConfig.class).toInstance(Mockito.mock(MainConfig.class));
         this.bind(QuickStart.class).toInstance(getMockPlugin());
     }
 
