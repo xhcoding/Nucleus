@@ -19,16 +19,11 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @Modules(PluginModule.MISC)
-@RegisterCommand
+@RegisterCommand("info")
 public class InfoCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[0];
     }
 
     @Override

@@ -15,8 +15,8 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * Permission: quickstart.warp.set.base
  */
 @Permissions(root = "warp")
-@ChildOf(parentCommandClass = WarpCommand.class, parentCommand = "warp")
+@RegisterCommand(value = { "set" }, subcommandOf = WarpCommand.class)
 public class SetWarpCommand extends CommandBase<Player> {
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
 

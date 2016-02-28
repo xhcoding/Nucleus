@@ -23,7 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCooldown
 @NoCost
 @NoWarmup
-@RegisterCommand
+@RegisterCommand({"deletehomeother", "delhomeother"})
 public class DeleteOtherHomeCommand extends CommandBase<CommandSource> {
 
     private final String homeKey = "home";
@@ -32,11 +32,6 @@ public class DeleteOtherHomeCommand extends CommandBase<CommandSource> {
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(homeKey), plugin)))
                 .executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "deletehomeother", "delhomeother" };
     }
 
     @Override

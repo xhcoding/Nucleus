@@ -22,7 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 @NoWarmup
 @NoCooldown
 @NoCost
-@ChildOf(parentCommandClass = JailsCommand.class, parentCommand = "jails")
+@RegisterCommand(value = "set", subcommandOf = JailsCommand.class)
 public class SetJailCommand extends CommandBase<Player> {
     private final String jailName = "jail";
     @Inject private JailHandler handler;
@@ -30,11 +30,6 @@ public class SetJailCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of(jailName)))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "set" };
     }
 
     @Override

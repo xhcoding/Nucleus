@@ -39,18 +39,13 @@ import java.util.function.Consumer;
 @NoWarmup
 @NoCooldown
 @NoCost
-@ChildOf(parentCommandClass = QuickStartCommand.class, parentCommand = "quickstart")
+@RegisterCommand(value = "resetuser", subcommandOf = ResetUser.class)
 public class ResetUser extends CommandBase<CommandSource> {
     private final String userKey = "user";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(new UserParser(Text.of(userKey))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "resetuser" };
     }
 
     @Override

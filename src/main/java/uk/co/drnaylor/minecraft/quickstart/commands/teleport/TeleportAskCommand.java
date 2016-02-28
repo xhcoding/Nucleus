@@ -31,7 +31,7 @@ import java.util.Map;
 @Permissions(root = "teleport", suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.TELEPORT)
 @NoWarmup(generateConfigEntry = true)
-@RegisterCommand
+@RegisterCommand({ "tpa", "teleportask" })
 @RunAsync
 public class TeleportAskCommand extends CommandBase<Player> {
     @Inject
@@ -52,11 +52,6 @@ public class TeleportAskCommand extends CommandBase<Player> {
                 GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("force")),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
                 .executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tpa", "teleportask" };
     }
 
     @Override

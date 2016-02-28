@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
-@RegisterCommand
+@RegisterCommand("home")
 public class HomeCommand extends CommandBase<Player> {
     private final String home = "home";
 
@@ -34,11 +34,6 @@ public class HomeCommand extends CommandBase<Player> {
         return CommandSpec.builder().executor(this)
                 .arguments(GenericArguments.onlyOne(GenericArguments.optional(new HomeParser(Text.of(home), plugin))))
                 .build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "home" };
     }
 
     @Override

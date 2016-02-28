@@ -22,17 +22,12 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-@RegisterCommand
+@RegisterCommand("suicide")
 @Modules(PluginModule.MISC)
 public class SuicideCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "suicide" };
     }
 
     @Override

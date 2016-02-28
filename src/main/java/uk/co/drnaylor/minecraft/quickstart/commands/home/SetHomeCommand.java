@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @Permissions(root = "home", alias = "set", suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
 @RunAsync
-@RegisterCommand
+@RegisterCommand({ "homeset", "sethome" })
 public class SetHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";
@@ -49,11 +49,6 @@ public class SetHomeCommand extends CommandBase<Player> {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("unlimited", new PermissionInformation(Util.getMessageWithFormat("permission.homes.unlimited"), SuggestedLevel.ADMIN));
         return m;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "homeset", "sethome" };
     }
 
     @Override

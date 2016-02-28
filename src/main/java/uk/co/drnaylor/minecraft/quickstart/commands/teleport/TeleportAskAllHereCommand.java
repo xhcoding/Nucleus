@@ -27,7 +27,7 @@ import java.time.temporal.ChronoUnit;
 @NoWarmup
 @NoCost
 @NoCooldown
-@RegisterCommand
+@RegisterCommand({ "tpaall", "tpaskall" })
 @RunAsync
 public class TeleportAskAllHereCommand extends CommandBase<Player> {
     @Inject private TeleportHandler tpHandler;
@@ -35,11 +35,6 @@ public class TeleportAskAllHereCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none())).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tpaall", "tpaskall" };
     }
 
     @Override

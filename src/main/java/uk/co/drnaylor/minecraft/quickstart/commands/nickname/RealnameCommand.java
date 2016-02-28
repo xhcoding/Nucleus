@@ -15,7 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
-@RegisterCommand
+@RegisterCommand({"realname"})
 @Permissions
 @RunAsync
 @Modules(PluginModule.CHAT)
@@ -23,11 +23,6 @@ public class RealnameCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[0];
     }
 
     @Override

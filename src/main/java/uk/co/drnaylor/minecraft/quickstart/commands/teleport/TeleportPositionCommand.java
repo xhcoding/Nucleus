@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "tppos" })
 public class TeleportPositionCommand extends CommandBase<CommandSource> {
     private final String key = "player";
     private final String location = "world";
@@ -44,11 +44,6 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
                 GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
                 GenericArguments.onlyOne(GenericArguments.integer(Text.of(z)))
         ).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tppos" };
     }
 
     @Override

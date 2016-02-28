@@ -18,13 +18,13 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WorldTimeParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
 import java.text.MessageFormat;
 
 @Permissions(root = "time")
-@ChildOf(parentCommandClass = TimeCommand.class, parentCommand = "time")
+@RegisterCommand(value = "set", subcommandOf = TimeCommand.class)
 public class SetTimeCommand extends CommandBase<CommandSource> {
     private final String time = "time";
     private final String world = "world";
@@ -35,11 +35,6 @@ public class SetTimeCommand extends CommandBase<CommandSource> {
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
                 GenericArguments.onlyOne(new WorldTimeParser(Text.of(time)))
         ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "set" };
     }
 
     @Override

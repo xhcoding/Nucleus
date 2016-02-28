@@ -11,8 +11,8 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInformation;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
@@ -27,18 +27,13 @@ import java.util.stream.Collectors;
 
 @RunAsync
 @Permissions(root = "quickstart")
-@ChildOf(parentCommandClass = QuickStartCommand.class, parentCommand = "quickstart")
+@RegisterCommand(value = "printperms", subcommandOf = QuickStartCommand.class)
 public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
     private final String file = "quickstart-essentials-perms.txt";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "printperms" };
     }
 
     @Override

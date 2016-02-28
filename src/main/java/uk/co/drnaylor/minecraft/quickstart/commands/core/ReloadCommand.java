@@ -19,16 +19,11 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 @NoWarmup
 @RunAsync
-@ChildOf(parentCommandClass = QuickStartCommand.class, parentCommand = "quickstart")
+@RegisterCommand(value = "reload", subcommandOf = QuickStartCommand.class)
 public class ReloadCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "reload" };
     }
 
     @Override

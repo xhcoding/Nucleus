@@ -4,6 +4,8 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.internal.annotations;
 
+import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
+
 import java.lang.annotation.*;
 
 /**
@@ -13,4 +15,18 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 public @interface RegisterCommand {
+
+    /**
+     * The subcommand that this represents. Defaults to the {@link CommandBase} class.
+     *
+     * @return The subcommand.
+     */
+    Class<? extends CommandBase> subcommandOf() default CommandBase.class;
+
+    /**
+     * The aliases for this command.
+     *
+     * @return Aliases for this command.
+     */
+    String[] value();
 }

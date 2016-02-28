@@ -68,26 +68,28 @@ public class PluginSystemsLoader {
         }
     }
 
-    private <T> Set<Class<? extends T>> getClasses(Class<T> base, String pack) throws IOException {
-        Set<ClassPath.ClassInfo> ci = ClassPath.from(this.getClass().getClassLoader()).getTopLevelClassesRecursive(pack);
+    static <T> Set<Class<? extends T>> getClasses(Class<T> base, String pack) throws IOException {
+        Set<ClassPath.ClassInfo> ci = ClassPath.from(PluginSystemsLoader.class.getClassLoader()).getTopLevelClassesRecursive(pack);
         return ci.stream().map(ClassPath.ClassInfo::load).map(x -> x.asSubclass(base)).collect(Collectors.toSet());
+    }
+
+    static Set<Class<? extends CommandBase>> getCommandClasses(Class<? extends CommandBase> base) throws IOException {
+        Set<Class<? extends CommandBase>> cc = getClasses(CommandBase.class, "uk.co.drnaylor.minecraft.quickstart.commands");
+        return cc.stream().filter(x -> {
+            RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
+            return (rc != null && rc.subcommandOf().equals(base));
+        }).collect(Collectors.toSet());
     }
 
     private void loadCommands() throws IOException {
         // Get commands
-        Set<Class<? extends CommandBase>> commandsToLoad = filterOutModules(getClasses(CommandBase.class, "uk.co.drnaylor.minecraft.quickstart.commands"));
+        Set<Class<? extends CommandBase>> commandsToLoad = filterOutModules(getCommandClasses(CommandBase.class));
         Injector injector = quickStart.getInjector();
 
         // Commands config!
-
         CommandsConfig cc = quickStart.getConfig(ConfigMap.COMMANDS_CONFIG).get();
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandsToLoad.stream().map(x -> {
-            if (!x.isAnnotationPresent(RegisterCommand.class)) {
-                // If not a root command, return nothing.
-                return null;
-            }
-
             try {
                 return injector.getInstance(x);
             } catch (Exception e) {
@@ -97,6 +99,7 @@ public class PluginSystemsLoader {
             try {
                 c.postInit();
             } catch (Exception e) {
+                e.printStackTrace();
                 return;
             }
 

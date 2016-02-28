@@ -27,7 +27,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.MESSAGES)
 @RunAsync
-@RegisterCommand
+@RegisterCommand({ "message", "m", "msg", "whisper", "w", "tell", "t" })
 public class MessageCommand extends CommandBase<CommandSource> {
     private final String to = "to";
     private final String message = "message";
@@ -39,11 +39,6 @@ public class MessageCommand extends CommandBase<CommandSource> {
                 new PlayerConsoleArgument(Text.of(to)),
                 GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
             ).description(Text.of("Send a message to a player")).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "message", "m", "msg", "whisper", "w", "tell", "t" };
     }
 
     @Override

@@ -26,18 +26,13 @@ import javax.inject.Inject;
 @NoWarmup
 @NoCost
 @NoCooldown
-@RegisterCommand
+@RegisterCommand({ "tpall", "tpallhere" })
 public class TeleportAllHereCommand extends CommandBase<Player> {
     @Inject private TeleportHandler handler;
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none())).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tpall", "tpallhere" };
     }
 
     @Override

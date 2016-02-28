@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 @NoWarmup
 @Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
-@ChildOf(parentCommandClass = JailInfoCommand.class, parentCommand = "jails")
+@RegisterCommand(value = "jails", subcommandOf = JailsCommand.class)
 public class JailInfoCommand extends CommandBase<CommandSource> {
     private final String jailKey = "jail";
     @Inject private JailHandler handler;
@@ -33,11 +33,6 @@ public class JailInfoCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "info" };
     }
 
     @Override

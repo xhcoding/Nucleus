@@ -30,7 +30,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "god", "invuln", "invulnerability" })
 public class GodCommand extends CommandBase<CommandSource> {
     private final String playerKey = "player";
     private final String invulnKey = "invuln";
@@ -51,24 +51,13 @@ public class GodCommand extends CommandBase<CommandSource> {
     }
 
     @Override
-    public String[] getAliases() {
-        return new String[] { "god", "invuln", "invulnerability" };
-    }
-
-    @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = args.<Player>getOne(playerKey);
-        Player pl;
+        Optional<Player> opl = this.getUser(Player.class, src, playerKey, args);
         if (opl.isPresent()) {
-            pl = opl.get();
-        } else {
-            if (src instanceof Player) {
-                pl = (Player)src;
-            } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
-                return CommandResult.empty();
-            }
+            return CommandResult.empty();
         }
+
+        Player pl = opl.get();
 
         InternalQuickStartUser uc = plugin.getUserLoader().getUser(pl);
         boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
@@ -78,7 +67,7 @@ public class GodCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        if (pl != src) {
+        if (!pl.equals(src)) {
             src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat(god ? "command.god.player.on" : "command.god.player.off"), pl.getName())));
         }
 

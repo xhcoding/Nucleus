@@ -27,7 +27,7 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "tptoggle" })
 @RunAsync
 public class TeleportToggleCommand extends CommandBase<Player> {
     private final String key = "toggle";
@@ -44,11 +44,6 @@ public class TeleportToggleCommand extends CommandBase<Player> {
         return CommandSpec.builder().executor(this).arguments(
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(key))))
         ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tptoggle" };
     }
 
     @Override

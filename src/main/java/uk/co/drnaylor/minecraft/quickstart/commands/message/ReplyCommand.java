@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @Modules(PluginModule.MESSAGES)
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)
-@RegisterCommand
+@RegisterCommand({"reply", "r"})
 public class ReplyCommand extends CommandBase<CommandSource> {
     private final String message = "message";
 
@@ -34,11 +34,6 @@ public class ReplyCommand extends CommandBase<CommandSource> {
             .arguments(
                     GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
             ).description(Text.of("Send a message to the player you just sent a message to.")).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "reply", "r" };
     }
 
     @Override

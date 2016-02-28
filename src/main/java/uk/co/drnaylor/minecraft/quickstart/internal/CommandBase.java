@@ -17,6 +17,7 @@ import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -30,6 +31,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.PermissionInform
 import uk.co.drnaylor.minecraft.quickstart.internal.services.WarmupManager;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -43,6 +45,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     protected CommandPermissionHandler permissions;
+    protected String[] aliases;
     private final Class<T> sourceType;
     private boolean bypassWarmup;
     private boolean generateWarmupAnyway;
@@ -140,7 +143,16 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      *
      * @return An array of aliases.
      */
-    public abstract String[] getAliases();
+    public String[] getAliases() {
+        if (aliases == null) {
+            RegisterCommand rc = getClass().getAnnotation(RegisterCommand.class);
+            if (rc != null) {
+                aliases = rc.value();
+            }
+        }
+
+        return Arrays.copyOf(aliases, aliases.length);
+    }
 
     /**
      * Functionally similar to {@link CommandExecutor#execute(CommandSource, CommandContext)}, this contains logic that
@@ -363,6 +375,21 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         return setupWarmup(src, args);
     }
 
+    protected <U extends User> Optional<U> getUser(Class<U> clazz, CommandSource src, String argument, CommandContext args) {
+        Optional<U> opl = args.<U>getOne(argument);
+        U pl;
+        if (opl.isPresent()) {
+            pl = opl.get();
+        } else if (clazz.isInstance(src)) {
+            pl = clazz.cast(src);
+        } else {
+            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
+            return Optional.empty();
+        }
+
+        return Optional.of(pl);
+    }
+
     // -------------------------------------
     // Warmups
     // -------------------------------------
@@ -492,10 +519,26 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         return cost;
     }
 
+    protected final Map<List<String>, CommandCallable> createChildCommands() {
+        Set<Class<? extends CommandBase>> scb;
+        try {
+             scb = PluginSystemsLoader.getCommandClasses(getClass());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Maps.newHashMap();
+        }
+
+        return createChildCommands(scb);
+    }
+
     @SafeVarargs
     protected final Map<List<String>, CommandCallable> createChildCommands(Class<? extends CommandBase>... bases) {
+        return createChildCommands(Arrays.asList(bases));
+    }
+
+    protected final Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends CommandBase>> bases) {
         Map<List<String>, CommandCallable> map = Maps.newHashMap();
-        Arrays.asList(bases).forEach(cb -> {
+        bases.forEach(cb -> {
             CommandBase c = null;
             try {
                 c = cb.newInstance();

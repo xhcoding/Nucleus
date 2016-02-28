@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @Permissions
 @Modules(PluginModule.MISC)
-@RegisterCommand
+@RegisterCommand("heal")
 public class HealCommand extends CommandBase<CommandSource> {
     private static final String player = "player";
 
@@ -47,15 +47,9 @@ public class HealCommand extends CommandBase<CommandSource> {
     }
 
     @Override
-    public String[] getAliases() {
-        return new String[] { "heal" };
-    }
-
-    @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = Util.getPlayerFromOptionalOrSource(args.<Player>getOne(player), src);
-        if (!opl.isPresent()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
+        Optional<Player> opl = this.getUser(Player.class, src, player, args);
+        if (opl.isPresent()) {
             return CommandResult.empty();
         }
 

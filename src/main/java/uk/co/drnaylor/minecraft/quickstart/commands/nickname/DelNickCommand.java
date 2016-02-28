@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 
 import java.util.Optional;
 
-@RegisterCommand
+@RegisterCommand({ "delnick", "delnickname", "deletenick" })
 @Permissions(alias = "nick")
 @Modules(PluginModule.NICKNAME)
 public class DelNickCommand extends CommandBase<CommandSource> {
@@ -33,7 +33,6 @@ public class DelNickCommand extends CommandBase<CommandSource> {
     private UserConfigLoader loader;
 
     private final String playerKey = "player";
-    private final String nickName = "nickname";
 
     @Override
     public CommandSpec createSpec() {
@@ -43,23 +42,13 @@ public class DelNickCommand extends CommandBase<CommandSource> {
     }
 
     @Override
-    public String[] getAliases() {
-        return new String[] { "delnick", "delnickname", "deletenick" };
-    }
-
-    @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<User> opl = args.<User>getOne(playerKey);
-        User pl;
+        Optional<User> opl = this.getUser(User.class, src, playerKey, args);
         if (opl.isPresent()) {
-            pl = opl.get();
-        } else if (src instanceof User) {
-            pl = (User)src;
-        } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
             return CommandResult.empty();
         }
 
+        User pl = opl.get();
         InternalQuickStartUser internalQuickStartUser = loader.getUser(pl);
         internalQuickStartUser.removeNickname();
 

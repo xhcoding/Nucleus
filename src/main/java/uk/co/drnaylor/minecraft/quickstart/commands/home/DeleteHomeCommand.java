@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @NoCooldown
 @NoCost
 @NoWarmup
-@RegisterCommand
+@RegisterCommand({"deletehome", "delhome"})
 public class DeleteHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";
@@ -34,11 +34,6 @@ public class DeleteHomeCommand extends CommandBase<Player> {
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new HomeParser(Text.of(homeKey), plugin)))
                 .executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "deletehome", "delhome" };
     }
 
     @Override

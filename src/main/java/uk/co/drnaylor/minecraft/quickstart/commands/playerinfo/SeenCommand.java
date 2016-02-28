@@ -43,7 +43,7 @@ import java.util.Map;
 @Permissions
 @RunAsync
 @Modules(PluginModule.PLAYERINFO)
-@RegisterCommand
+@RegisterCommand({ "seen", "seenplayer" })
 public class SeenCommand extends CommandBase<CommandSource> {
     private final String playerKey = "player";
 
@@ -57,11 +57,6 @@ public class SeenCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerKey)))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "seen", "seenplayer" };
     }
 
     @Override

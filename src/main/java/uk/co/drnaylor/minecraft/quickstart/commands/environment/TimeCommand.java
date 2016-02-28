@@ -30,7 +30,7 @@ import java.util.Map;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.ENVIRONMENT)
-@RegisterCommand
+@RegisterCommand("time")
 public class TimeCommand extends CommandBase<CommandSource> {
     private final String world = "world";
 
@@ -41,11 +41,6 @@ public class TimeCommand extends CommandBase<CommandSource> {
         return CommandSpec.builder().executor(this)
                 .arguments(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))))
                 .children(ms).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "time" };
     }
 
     @Override

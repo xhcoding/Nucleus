@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.UserConfigLoader;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand("socialspy")
 public class SocialSpyCommand extends CommandBase<Player> {
     private final String arg = "Social Spy";
     @Inject private UserConfigLoader userConfigLoader;
@@ -37,11 +37,6 @@ public class SocialSpyCommand extends CommandBase<Player> {
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(arg)))))
                 .executor(this)
                 .build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "socialspy" };
     }
 
     @Override

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @NoCost
 @NoWarmup
 @RunAsync
-@RegisterCommand
+@RegisterCommand("jails")
 @Permissions(root = "jail", alias = "list", suggestedLevel = SuggestedLevel.MOD)
 public class JailsCommand extends CommandBase<CommandSource> {
     @Inject
@@ -41,12 +41,7 @@ public class JailsCommand extends CommandBase<CommandSource> {
     @Override
     @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).children(this.createChildCommands(SetJailCommand.class, DeleteJailCommand.class, JailInfoCommand.class)).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "jails" };
+        return CommandSpec.builder().executor(this).children(this.createChildCommands()).build();
     }
 
     @Override

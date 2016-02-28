@@ -26,18 +26,13 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.TeleportHandler;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "tpaccept", "teleportaccept" })
 public class TeleportAcceptCommand extends CommandBase<Player> {
     @Inject private TeleportHandler teleportHandler;
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tpaccept", "teleportaccept" };
     }
 
     @Override

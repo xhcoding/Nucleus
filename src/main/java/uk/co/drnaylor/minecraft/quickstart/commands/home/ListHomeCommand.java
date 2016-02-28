@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoWarmup
 @NoCost
-@RegisterCommand
+@RegisterCommand({"listhomes", "homes"})
 public class ListHomeCommand extends CommandBase<CommandSource> {
     private final String player = "player";
 
@@ -56,11 +56,6 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
         return CommandSpec.builder()
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.requiringPermission(new UserParser(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
                 .executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "listhomes", "homes" };
     }
 
     @Override

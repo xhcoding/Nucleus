@@ -16,7 +16,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @Modules(PluginModule.MISC)
-@RegisterCommand
+@RegisterCommand("rules")
 @NoWarmup
 @NoCooldown
 @NoCost
@@ -24,11 +24,6 @@ public class RulesCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[0];
     }
 
     @Override

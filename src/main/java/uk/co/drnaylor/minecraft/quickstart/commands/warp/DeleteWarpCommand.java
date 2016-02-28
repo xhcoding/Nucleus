@@ -16,8 +16,8 @@ import uk.co.drnaylor.minecraft.quickstart.Util;
 import uk.co.drnaylor.minecraft.quickstart.api.service.QuickStartWarpService;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.WarpParser;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
-import uk.co.drnaylor.minecraft.quickstart.internal.annotations.ChildOf;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
+import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RunAsync;
 
 import java.text.MessageFormat;
@@ -30,7 +30,7 @@ import java.text.MessageFormat;
  */
 @Permissions(root = "warp")
 @RunAsync
-@ChildOf(parentCommandClass = WarpCommand.class, parentCommand = "warp")
+@RegisterCommand(value = { "delete", "del" }, subcommandOf = WarpCommand.class)
 public class DeleteWarpCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
@@ -40,11 +40,6 @@ public class DeleteWarpCommand extends CommandBase<CommandSource> {
                 )
                 .description(Text.of("Deletes a warp."))
                 .build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "delete", "del" };
     }
 
     @Override

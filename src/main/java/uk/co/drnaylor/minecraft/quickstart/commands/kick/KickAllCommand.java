@@ -35,7 +35,7 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand("kickall")
 public class KickAllCommand extends CommandBase<CommandSource> {
     private final String reason = "reason";
 
@@ -53,11 +53,6 @@ public class KickAllCommand extends CommandBase<CommandSource> {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("whitelist", new PermissionInformation(Util.getMessageWithFormat("permission.kickall.whitelist"), SuggestedLevel.ADMIN));
         return m;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "kickall" };
     }
 
     @Override

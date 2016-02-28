@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.PLAYERINFO)
-@RegisterCommand
+@RegisterCommand({ "list", "listplayers" })
 public class ListPlayerCommand extends CommandBase<CommandSource> {
     @Inject private UserConfigLoader loader;
     private Text hidden = Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden") + " ");
@@ -48,11 +48,6 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "list", "listplayers" };
     }
 
     @Override

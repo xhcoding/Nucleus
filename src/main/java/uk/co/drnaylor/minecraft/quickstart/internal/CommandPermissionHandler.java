@@ -4,7 +4,6 @@
  */
 package uk.co.drnaylor.minecraft.quickstart.internal;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.spongepowered.api.service.permission.Subject;
@@ -25,9 +24,21 @@ public class CommandPermissionHandler {
     private final String cooldown;
     private final String cost;
 
+    private final boolean justReturnTrue;
+
     public CommandPermissionHandler(CommandBase cb) {
         Permissions c = cb.getClass().getAnnotation(Permissions.class);
-        Preconditions.checkNotNull(c);
+        justReturnTrue = c == null;
+
+        // If there are no permissions to assign, we just return true.
+        if (justReturnTrue) {
+            prefix = "";
+            base = "";
+            warmup = "";
+            cooldown = "";
+            cost = "";
+            return;
+        }
 
         StringBuilder sb = new StringBuilder(PERMISSIONS_PREFIX);
         if (!c.root().isEmpty()) {
@@ -78,31 +89,23 @@ public class CommandPermissionHandler {
     }
 
     public boolean testBase(Subject src) {
-        return src.hasPermission(base);
+        return justReturnTrue || src.hasPermission(base);
     }
 
     public boolean testWarmupExempt(Subject src) {
-        return src.hasPermission(warmup);
+        return justReturnTrue || src.hasPermission(warmup);
     }
 
     public boolean testCooldownExempt(Subject src) {
-        return src.hasPermission(cooldown);
+        return justReturnTrue || src.hasPermission(cooldown);
     }
 
     public boolean testCostExempt(Subject src) {
-        return src.hasPermission(cost);
+        return justReturnTrue || src.hasPermission(cost);
     }
 
     public void registerPermssionSuffix(String suffix, PermissionInformation pi) {
         this.mssl.put(prefix + suffix, pi);
-    }
-
-    public void registerPermssionSuffix(String suffix, SuggestedLevel level, String description) {
-        registerPermssionSuffix(suffix, new PermissionInformation(description, level));
-    }
-
-    public void registerPermssion(String permission, SuggestedLevel level, String description) {
-        registerPermssion(permission, new PermissionInformation(description, level));
     }
 
     public void registerPermssion(String permission, PermissionInformation pi) {
@@ -110,7 +113,7 @@ public class CommandPermissionHandler {
     }
 
     public boolean testSuffix(Subject src, String suffix) {
-        return src.hasPermission(prefix + suffix);
+        return justReturnTrue || src.hasPermission(prefix + suffix);
     }
 
     public String getPermissionWithSuffix(String suffix) {

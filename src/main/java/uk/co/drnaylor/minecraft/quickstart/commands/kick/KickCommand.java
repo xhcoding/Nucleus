@@ -34,7 +34,7 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand("kick")
 public class KickCommand extends CommandBase<CommandSource> {
     private final String player = "player";
     private final String reason = "reason";
@@ -53,11 +53,6 @@ public class KickCommand extends CommandBase<CommandSource> {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("notify", new PermissionInformation(Util.getMessageWithFormat("permission.kick.notify"), SuggestedLevel.MOD));
         return m;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "kick" };
     }
 
     @Override

@@ -54,7 +54,7 @@ import java.util.UUID;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "mute", "unmute" })
 public class MuteCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
@@ -79,11 +79,6 @@ public class MuteCommand extends CommandBase<CommandSource> {
                 GenericArguments.onlyOne(GenericArguments.optionalWeak(new TimespanParser(Text.of(timespanArgument)))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
         ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "mute", "unmute" };
     }
 
     @Override

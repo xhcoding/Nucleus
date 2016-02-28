@@ -16,16 +16,11 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
 @Permissions
 @Modules(PluginModule.ITEMS)
-@RegisterCommand
+@RegisterCommand({"give"})
 public class GiveCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[0];
     }
 
     @Override

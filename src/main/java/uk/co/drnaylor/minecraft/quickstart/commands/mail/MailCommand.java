@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand("mail")
 public class MailCommand extends CommandBase<Player> {
     @Inject private MailHandler handler;
     private final String filters = "filters";
@@ -51,11 +51,6 @@ public class MailCommand extends CommandBase<Player> {
                 .arguments(
                         GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(filters), handler)))
                 ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "mail" };
     }
 
     @Override

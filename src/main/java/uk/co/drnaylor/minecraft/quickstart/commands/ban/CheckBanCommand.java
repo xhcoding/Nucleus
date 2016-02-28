@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.Optional;
 
-@RegisterCommand
+@RegisterCommand("checkban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.BANS)
 @NoWarmup
@@ -37,11 +37,6 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(key)))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "checkban" };
     }
 
     @Override

@@ -29,7 +29,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-@RegisterCommand
+@RegisterCommand("tempban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.BANS)
 @NoWarmup
@@ -45,11 +45,6 @@ public class TempBanCommand extends CommandBase<CommandSource> {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(user))),
                 GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
                 GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tempban" };
     }
 
     @Override

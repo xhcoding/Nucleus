@@ -15,7 +15,7 @@ import uk.co.drnaylor.minecraft.quickstart.api.PluginModule;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
-@RegisterCommand
+@RegisterCommand({ "setspawn" })
 @Modules(PluginModule.SPAWN)
 @Permissions
 @NoWarmup
@@ -25,11 +25,6 @@ public class SetSpawnCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "setspawn" };
     }
 
     @Override

@@ -32,7 +32,7 @@ import java.util.Optional;
 
 @Permissions
 @Modules(PluginModule.ENVIRONMENT)
-@RegisterCommand
+@RegisterCommand("weather")
 public class WeatherCommand extends CommandBase<CommandSource> {
     private final String world = "world";
     private final String weather = "weather";
@@ -49,11 +49,6 @@ public class WeatherCommand extends CommandBase<CommandSource> {
                     GenericArguments.onlyOne(GenericArguments.optional(new TimespanParser(Text.of(timespan))))
                 )
         ).description(Text.of("Sets the weather")).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "weather" };
     }
 
     @Override

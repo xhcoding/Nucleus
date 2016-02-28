@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.WARPS)
-@RegisterCommand
+@RegisterCommand("warp")
 public class WarpCommand extends CommandBase<Player> {
     static final String warpNameArg = Util.getMessageWithFormat("args.name.warpname");
 
@@ -57,11 +57,6 @@ public class WarpCommand extends CommandBase<Player> {
                         GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.flags().flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
                         GenericArguments.onlyOne(new WarpParser(Text.of(warpNameArg), plugin, true))
                 ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "warp" };
     }
 
     @Override

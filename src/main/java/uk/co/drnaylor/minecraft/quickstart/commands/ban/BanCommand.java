@@ -30,7 +30,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.Map;
 
-@RegisterCommand
+@RegisterCommand("ban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.BANS)
 @NoWarmup
@@ -52,11 +52,6 @@ public class BanCommand extends CommandBase<CommandSource> {
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(user))),
                 GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "ban" };
     }
 
     @Override

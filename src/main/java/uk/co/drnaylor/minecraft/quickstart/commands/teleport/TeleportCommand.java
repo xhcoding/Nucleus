@@ -34,11 +34,10 @@ import java.util.Optional;
 
 @Permissions(root = "teleport", alias = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.TELEPORT)
-@RegisterCommand
+@RegisterCommand({})
 @ConfigCommandAlias("teleport")
 public class TeleportCommand extends CommandBase<CommandSource> {
 
-    private String[] aliases = null;
     private String playerFromKey = "playerFrom";
     private String playerKey = "player";
 
@@ -92,7 +91,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
             }
         }
 
-        return aliases;
+        return super.getAliases();
     }
 
     @Override

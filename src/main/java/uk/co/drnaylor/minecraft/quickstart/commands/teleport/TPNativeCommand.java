@@ -22,18 +22,13 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 @NoWarmup
 @Modules(PluginModule.TELEPORT)
-@RegisterCommand
+@RegisterCommand({ "teleportnative", "tpnative", "tpn" })
 public class TPNativeCommand extends CommandBase<CommandSource> {
     private final String a = "args";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.remainingJoinedStrings(Text.of(a))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "teleportnative", "tpnative", "tpn" };
     }
 
     @Override

@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCost
 @NoWarmup
 @Permissions
-@RegisterCommand
+@RegisterCommand({ "broadcast", "bcast", "bc" })
 public class BroadcastCommand extends CommandBase<CommandSource> {
     private final String message = "message";
     @Inject private CommandsConfig commandsConfig;
@@ -34,11 +34,6 @@ public class BroadcastCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "broadcast", "bcast", "bc" };
     }
 
     @Override

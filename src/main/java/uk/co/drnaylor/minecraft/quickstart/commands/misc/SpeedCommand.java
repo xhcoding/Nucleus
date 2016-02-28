@@ -5,6 +5,7 @@
 package uk.co.drnaylor.minecraft.quickstart.commands.misc;
 
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -22,16 +23,18 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Modules;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@RegisterCommand
+@RegisterCommand("speed")
 @Modules(PluginModule.MISC)
 @Permissions
-public class SpeedCommand extends CommandBase<Player> {
+public class SpeedCommand extends CommandBase<CommandSource> {
     private final String speedKey = "speed";
     private final String typeKey = "type";
+    private final String playerKey = "player";
 
     /**
      * As the standard flying speed is 0.05 and the standard walking speed is 0.1, we multiply it by 20 and use integers.
@@ -51,6 +54,7 @@ public class SpeedCommand extends CommandBase<Player> {
 
         return CommandSpec.builder().arguments(
                 GenericArguments.optional(GenericArguments.seq(
+                    GenericArguments.requiringPermission(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(playerKey), keysMap, true))), permissions.getPermissionWithSuffix("others")),
                     GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
                     GenericArguments.integer(Text.of(speedKey))
                 ))
@@ -58,21 +62,22 @@ public class SpeedCommand extends CommandBase<Player> {
     }
 
     @Override
-    public String[] getAliases() {
-        return new String[] { "speed" };
-    }
+    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        Optional<Player> opl = this.getUser(Player.class, src, playerKey, args);
+        if (opl.isPresent()) {
+            return CommandResult.empty();
+        }
 
-    @Override
-    public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+        Player pl = opl.get();
         Optional<Integer> ospeed = args.<Integer>getOne(speedKey);
         if (!ospeed.isPresent()) {
             Text t = Text.builder()
                     .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.walk")))
                     .append(Text.of(" "))
-                    .append(Text.of(TextColors.YELLOW, Math.round(src.get(Keys.WALKING_SPEED).orElse(0.1d) * 20)))
+                    .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * 20)))
                     .append(Text.of(TextColors.GREEN, ", " + Util.getMessageWithFormat("command.speed.flying")))
                     .append(Text.of(" "))
-                    .append(Text.of(TextColors.YELLOW, Math.round(src.get(Keys.FLYING_SPEED).orElse(0.05d) * 20)))
+                    .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * 20)))
                     .append(Text.of(TextColors.GREEN, ".")).build();
 
             src.sendMessage(t);
@@ -81,7 +86,7 @@ public class SpeedCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        SpeedType key = args.<SpeedType>getOne(typeKey).orElseGet(() -> src.get(Keys.IS_FLYING).orElse(false) ? SpeedType.FLYING : SpeedType.WALKING);
+        SpeedType key = args.<SpeedType>getOne(typeKey).orElseGet(() -> pl.get(Keys.IS_FLYING).orElse(false) ? SpeedType.FLYING : SpeedType.WALKING);
         int speed = ospeed.get();
 
         if (speed < 0) {
@@ -89,10 +94,15 @@ public class SpeedCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        DataTransactionResult dtr = src.offer(key.speedKey, (double) speed / (double) multiplier);
+        DataTransactionResult dtr = pl.offer(key.speedKey, (double) speed / (double) multiplier);
 
         if (dtr.isSuccessful()) {
             src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.success", key.name, String.valueOf(speed))));
+
+            if (!pl.equals(src)) {
+                src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.speed.success.other"), pl.getName(), key.name, String.valueOf(speed))));
+            }
+
             return CommandResult.success();
         }
 

@@ -29,7 +29,7 @@ import java.util.Map;
 @Modules(PluginModule.TELEPORT)
 @RunAsync
 @NoWarmup(generateConfigEntry = true)
-@RegisterCommand
+@RegisterCommand({ "tpahere", "tpaskhere", "teleportaskhere" })
 public class TeleportAskHereCommand extends CommandBase<Player> {
     @Inject
     private TeleportHandler tpHandler;
@@ -49,11 +49,6 @@ public class TeleportAskHereCommand extends CommandBase<Player> {
                 GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("force")),
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
             .executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tpahere", "tpaskhere", "teleportaskhere" };
     }
 
     @Override

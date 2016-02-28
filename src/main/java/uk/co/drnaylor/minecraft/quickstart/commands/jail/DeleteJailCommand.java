@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.JailHandler;
 @NoWarmup
 @NoCooldown
 @NoCost
-@ChildOf(parentCommandClass = JailsCommand.class, parentCommand = "jails")
+@RegisterCommand(value = {"delete", "del", "remove"}, subcommandOf = JailsCommand.class)
 public class DeleteJailCommand extends CommandBase<CommandSource> {
     @Inject private JailHandler handler;
     private final String jailKey = "jail";
@@ -32,11 +32,6 @@ public class DeleteJailCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "delete", "del", "remove" };
     }
 
     @Override

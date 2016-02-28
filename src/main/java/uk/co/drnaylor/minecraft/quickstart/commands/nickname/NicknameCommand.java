@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-@RegisterCommand
+@RegisterCommand({ "nick", "nickname" })
 @Permissions
 @Modules(PluginModule.NICKNAME)
 public class NicknameCommand extends CommandBase<CommandSource> {
@@ -66,23 +66,13 @@ public class NicknameCommand extends CommandBase<CommandSource> {
     }
 
     @Override
-    public String[] getAliases() {
-        return new String[] { "nick", "nickname" };
-    }
-
-    @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<User> opl = args.<User>getOne(playerKey);
-        User pl;
+        Optional<User> opl = this.getUser(User.class, src, playerKey, args);
         if (opl.isPresent()) {
-            pl = opl.get();
-        } else if (src instanceof User) {
-            pl = (User)src;
-        } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
             return CommandResult.empty();
         }
 
+        User pl = opl.get();
         String name = args.<String>getOne(nickName).get();
 
         // Giving player must have the colour permissions and whatnot. Also, colour and color are the two spellings we support. (RULE BRITANNIA!)

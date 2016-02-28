@@ -25,7 +25,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.MailHandler;
 @NoCooldown
 @NoCost
 @RunAsync
-@ChildOf(parentCommandClass = MailCommand.class, parentCommand = "mail")
+@RegisterCommand(value = "clear", subcommandOf = MailCommand.class)
 public class ClearMailCommand extends CommandBase<Player> {
     @Inject
     private MailHandler handler;
@@ -33,11 +33,6 @@ public class ClearMailCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "clear" };
     }
 
     @Override

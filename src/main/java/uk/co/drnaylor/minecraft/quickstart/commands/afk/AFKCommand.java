@@ -19,7 +19,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 
-@RegisterCommand
+@RegisterCommand("afk")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.AFK)
 @NoCooldown
@@ -27,16 +27,10 @@ import uk.co.drnaylor.minecraft.quickstart.internal.services.AFKHandler;
 @NoCost
 @RunAsync
 public class AFKCommand extends CommandBase<Player> {
-    public static String[] getAfkAliases() { return new String[] { "afk" }; }
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return AFKCommand.getAfkAliases();
     }
 
     @Override

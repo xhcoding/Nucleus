@@ -22,7 +22,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 @Permissions(root = "home", alias = "other", suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.HOMES)
-@RegisterCommand
+@RegisterCommand("homeother")
 public class HomeOtherCommand extends CommandBase<Player> {
     private final String home = "home";
 
@@ -31,11 +31,6 @@ public class HomeOtherCommand extends CommandBase<Player> {
         return CommandSpec.builder().executor(this)
                 .arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(home), plugin)))
                 .build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "homeother" };
     }
 
     @Override

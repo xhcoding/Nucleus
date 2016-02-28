@@ -23,7 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.Permissions;
 import uk.co.drnaylor.minecraft.quickstart.internal.annotations.RegisterCommand;
 
 @Permissions
-@RegisterCommand
+@RegisterCommand("kill")
 @Modules(PluginModule.MISC)
 public class KillCommand extends CommandBase<CommandSource> {
     private final String key = "player";
@@ -31,11 +31,6 @@ public class KillCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.player(Text.of(key))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "kill" };
     }
 
     @Override

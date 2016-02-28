@@ -45,7 +45,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand("checkmute")
 public class CheckMuteCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
@@ -56,11 +56,6 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
         return CommandSpec.builder().description(Text.of("Checks the mute status of that player")).executor(this).arguments(
                 GenericArguments.onlyOne(new UserParser(Text.of(playerArgument)))
         ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "checkmute" };
     }
 
     @Override

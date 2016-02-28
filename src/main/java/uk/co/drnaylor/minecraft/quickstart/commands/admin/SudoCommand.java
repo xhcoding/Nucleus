@@ -29,7 +29,7 @@ import java.util.Map;
 
 @Modules(PluginModule.ADMIN)
 @Permissions
-@RegisterCommand
+@RegisterCommand("sudo")
 public class SudoCommand extends CommandBase<CommandSource> {
     private final String playerKey = "player";
     private final String commandKey = "command";
@@ -47,11 +47,6 @@ public class SudoCommand extends CommandBase<CommandSource> {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.sudo.exempt"), SuggestedLevel.ADMIN));
         return m;
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "sudo" };
     }
 
     @Override

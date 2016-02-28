@@ -23,7 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 
 import java.util.Optional;
 
-@RegisterCommand
+@RegisterCommand({ "exp", "experience", "xp" })
 @Modules(PluginModule.ADMIN)
 @Permissions
 @NoCooldown
@@ -40,11 +40,6 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
         return CommandSpec.builder().arguments(
                 GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey)))
         ).children(this.createChildCommands(TakeExperience.class, GiveExperience.class, SetExperience.class)).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "exp", "experience", "xp" };
     }
 
     @Override

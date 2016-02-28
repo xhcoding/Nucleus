@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-@RegisterCommand
+@RegisterCommand("spawn")
 @Modules(PluginModule.SPAWN)
 public class SpawnCommand extends CommandBase<Player> {
     private final String key = "world";
@@ -46,11 +46,6 @@ public class SpawnCommand extends CommandBase<Player> {
         return CommandSpec.builder()
                 .arguments(GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.world(Text.of(key))), permissions.getPermissionWithSuffix("otherworlds"))))
                 .executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "spawn" };
     }
 
     @Override

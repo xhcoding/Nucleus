@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @Permissions
 @Modules(PluginModule.MISC)
-@RegisterCommand
+@RegisterCommand("feed")
 public class FeedCommand extends CommandBase<CommandSource> {
     private static final String player = "player";
 
@@ -49,24 +49,13 @@ public class FeedCommand extends CommandBase<CommandSource> {
     }
 
     @Override
-    public String[] getAliases() {
-        return new String[] { "feed" };
-    }
-
-    @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = args.<Player>getOne(player);
-        Player pl;
+        Optional<Player> opl = this.getUser(Player.class, src, player, args);
         if (opl.isPresent()) {
-            pl = opl.get();
-        } else {
-            if (src instanceof Player) {
-                pl = (Player)src;
-            } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
-                return CommandResult.empty();
-            }
+            return CommandResult.empty();
         }
+
+        Player pl = opl.get();
 
         // TODO: If max food level appears, use that instead.
         if (pl.offer(Keys.FOOD_LEVEL, 20).isSuccessful()) {

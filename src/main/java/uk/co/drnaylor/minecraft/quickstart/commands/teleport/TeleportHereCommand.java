@@ -24,7 +24,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "tphere", "tph" })
 public class TeleportHereCommand extends CommandBase<Player> {
 
     private final String playerKey = "player";
@@ -34,11 +34,6 @@ public class TeleportHereCommand extends CommandBase<Player> {
         return CommandSpec.builder().executor(this).arguments(
             GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
         ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "tphere", "tph" };
     }
 
     @Override

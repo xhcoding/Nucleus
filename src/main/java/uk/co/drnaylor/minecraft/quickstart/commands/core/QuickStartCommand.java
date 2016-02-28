@@ -28,7 +28,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "quickstart", "qs", "qse" })
 public class QuickStartCommand extends CommandBase<CommandSource> {
 
     private final Text version = Text.of(QuickStart.MESSAGE_PREFIX, TextColors.GREEN, QuickStart.NAME + " version " + QuickStart.VERSION);
@@ -37,12 +37,7 @@ public class QuickStartCommand extends CommandBase<CommandSource> {
     @Override
     @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
-        return CommandSpec.builder().children(this.createChildCommands(ReloadCommand.class, ResetUser.class, SuggestedPermissionsCommand.class)).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "quickstart", "qs", "qse" };
+        return CommandSpec.builder().children(this.createChildCommands()).executor(this).build();
     }
 
     @Override

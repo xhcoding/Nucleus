@@ -35,7 +35,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({ "checkjail" })
 public class CheckJailCommand extends CommandBase<CommandSource> {
     private final String playerKey = "playerKey";
     @Inject
@@ -44,11 +44,6 @@ public class CheckJailCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerKey)))).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "checkjail" };
     }
 
     @Override

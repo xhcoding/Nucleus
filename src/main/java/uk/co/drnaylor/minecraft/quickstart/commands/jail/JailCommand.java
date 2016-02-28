@@ -42,7 +42,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand
+@RegisterCommand({"jail", "unjail", "togglejail"})
 public class JailCommand extends CommandBase<CommandSource> {
     public static final String notifyPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "jail.notify";
 
@@ -67,11 +67,6 @@ public class JailCommand extends CommandBase<CommandSource> {
             GenericArguments.optionalWeak(GenericArguments.onlyOne(new TimespanParser(Text.of(durationKey)))),
             GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reasonKey))))
         ).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "jail", "unjail", "togglejail" };
     }
 
     @Override

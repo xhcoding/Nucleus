@@ -26,7 +26,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.permissions.SuggestedLevel;
 
 import java.util.Optional;
 
-@RegisterCommand
+@RegisterCommand({"unban", "pardon"})
 @Modules(PluginModule.BANS)
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoWarmup
@@ -38,11 +38,6 @@ public class UnbanCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(key)))).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "unban" };
     }
 
     @Override

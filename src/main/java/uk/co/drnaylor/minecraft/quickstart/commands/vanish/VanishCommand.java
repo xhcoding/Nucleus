@@ -23,7 +23,7 @@ import uk.co.drnaylor.minecraft.quickstart.internal.annotations.*;
 @NoCooldown
 @NoCost
 @NoWarmup
-@RegisterCommand
+@RegisterCommand({ "vanish", "v" })
 public class VanishCommand extends CommandBase<Player> {
     private final String b = "toggle";
 
@@ -32,11 +32,6 @@ public class VanishCommand extends CommandBase<Player> {
         return CommandSpec.builder().arguments(
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))
         ).executor(this).build();
-    }
-
-    @Override
-    public String[] getAliases() {
-        return new String[] { "vanish", "v" };
     }
 
     @Override
