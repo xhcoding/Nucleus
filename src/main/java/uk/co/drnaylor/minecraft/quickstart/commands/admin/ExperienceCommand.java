@@ -45,7 +45,7 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
         int exp = ehd.totalExperience().get();
         int lv = ehd.level().get();
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.exp.info", pl.getName(), String.valueOf(lv), String.valueOf(exp))));
+        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.exp.info", pl.getName(), String.valueOf(exp), String.valueOf(lv))));
         return CommandResult.success();
     }
 

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 public class ExperienceLevelArgument extends CommandElement {
     private final Pattern argumentPattern = Pattern.compile("^(l|lv|l:|lv:)(\\d+)$", Pattern.CASE_INSENSITIVE);
 
-    public ExperienceLevelArgument(@Nullable Text key, boolean reuturnAsExp) {
+    public ExperienceLevelArgument(@Nullable Text key) {
         super(key);
     }
 
@@ -33,7 +33,7 @@ public class ExperienceLevelArgument extends CommandElement {
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         Matcher m = argumentPattern.matcher(args.next());
         if (m.find(0)) {
-            return Integer.getInteger(m.group(2));
+            return Integer.parseInt(m.group(2));
         }
 
         throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.explevel.error")));

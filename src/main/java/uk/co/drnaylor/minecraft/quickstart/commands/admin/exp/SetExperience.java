@@ -13,6 +13,7 @@ import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import uk.co.drnaylor.minecraft.quickstart.argumentparsers.ExperienceLevelArgument;
 import uk.co.drnaylor.minecraft.quickstart.argumentparsers.PositiveIntegerArgument;
 import uk.co.drnaylor.minecraft.quickstart.commands.admin.ExperienceCommand;
 import uk.co.drnaylor.minecraft.quickstart.internal.CommandBase;
@@ -34,8 +35,8 @@ public class SetExperience extends CommandBase<CommandSource> {
         return CommandSpec.builder().arguments(
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.player(Text.of(ExperienceCommand.playerKey)))),
                 GenericArguments.firstParsing(
-                        GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(levelKey))),
-                        GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
+                    GenericArguments.onlyOne(new ExperienceLevelArgument(Text.of(levelKey))),
+                    GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
                 )
         ).executor(this).build();
     }
