@@ -53,7 +53,7 @@ public class GodCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<Player> opl = this.getUser(Player.class, src, playerKey, args);
-        if (opl.isPresent()) {
+        if (!opl.isPresent()) {
             return CommandResult.empty();
         }
 
