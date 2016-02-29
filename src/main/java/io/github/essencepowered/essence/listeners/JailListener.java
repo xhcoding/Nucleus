@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.listeners;
@@ -14,7 +14,7 @@ import io.github.essencepowered.essence.commands.jail.JailCommand;
 import io.github.essencepowered.essence.config.MainConfig;
 import io.github.essencepowered.essence.internal.ListenerBase;
 import io.github.essencepowered.essence.internal.annotations.Modules;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.services.JailHandler;
 import io.github.essencepowered.essence.internal.services.UserConfigLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -60,7 +60,7 @@ public class JailListener extends ListenerBase {
     @Listener(order = Order.LATE)
     public void onPlayerLogin(final ClientConnectionEvent.Join event) {
         final Player user = event.getTargetEntity();
-        InternalQuickStartUser qs;
+        InternalEssenceUser qs;
         try {
             qs = loader.getUser(user);
         } catch (IOException | ObjectMappingException e) {
@@ -147,7 +147,7 @@ public class JailListener extends ListenerBase {
     }
 
     private boolean checkJail(final Player player, boolean sendMessage) {
-        InternalQuickStartUser qs;
+        InternalEssenceUser qs;
         try {
             qs = loader.getUser(player);
         } catch (IOException | ObjectMappingException e) {

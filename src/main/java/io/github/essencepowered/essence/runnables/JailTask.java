@@ -1,10 +1,10 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.runnables;
 
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.TaskBase;
@@ -22,7 +22,7 @@ import java.util.Collection;
 @Modules(PluginModule.JAILS)
 public class JailTask extends TaskBase {
     @Inject
-    private QuickStart plugin;
+    private Essence plugin;
 
     @Override
     public void accept(Task task) {

@@ -1,10 +1,10 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.api.service;
 
-import io.github.essencepowered.essence.api.data.QuickStartUser;
+import io.github.essencepowered.essence.api.data.EssenceUser;
 import io.github.essencepowered.essence.api.exceptions.NoSuchPlayerException;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.User;
@@ -14,16 +14,16 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * A service that retrieves {@link QuickStartUser}s.
+ * A service that retrieves {@link EssenceUser}s.
  */
-public interface QuickStartUserService {
+public interface EssenceUserService {
 
     /**
-     * Gets a list of {@link QuickStartUser}s that represents the online.
+     * Gets a list of {@link EssenceUser}s that represents the online.
      *
-     * @return A {@link List} of {@link QuickStartUser}s.
+     * @return A {@link List} of {@link EssenceUser}s.
      */
-    List<QuickStartUser> getOnlineUsers();
+    List<EssenceUser> getOnlineUsers();
 
     /**
      * Gets the user data file from their UUID.
@@ -37,9 +37,9 @@ public interface QuickStartUserService {
      * </p>
      *
      * @param playerUUID The {@link UUID} of the player in question.
-     * @return The {@link QuickStartUser}
+     * @return The {@link EssenceUser}
      */
-    QuickStartUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException;
+    EssenceUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException;
 
     /**
      * Gets the user data file from the {@link User}.
@@ -53,7 +53,7 @@ public interface QuickStartUserService {
      * </p>
      *
      * @param user The {@link User} of the player in question.
-     * @return The {@link QuickStartUser}
+     * @return The {@link EssenceUser}
      */
-    QuickStartUser getUser(User user) throws IOException, ObjectMappingException;
+    EssenceUser getUser(User user) throws IOException, ObjectMappingException;
 }

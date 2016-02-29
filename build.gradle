@@ -2,7 +2,7 @@ plugins {
     id "com.github.hierynomus.license" version "0.12.1"
 }
 
-group 'uk.co.drnaylor.minecraft'
+group 'io.github.essencepowered'
 version '0.5-SNAPSHOT'
 
 apply plugin: 'java'
@@ -32,7 +32,7 @@ dependencies {
 }
 
 license {
-    ext.name = "QuickStart"
+    ext.name = "Essence"
 
     exclude "**/*.info"
     exclude "assets/**"

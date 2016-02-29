@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.config;
@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.github.essencepowered.essence.api.data.WarpLocation;
 import io.github.essencepowered.essence.api.exceptions.NoSuchWorldException;
-import io.github.essencepowered.essence.api.service.QuickStartWarpService;
+import io.github.essencepowered.essence.api.service.EssenceWarpService;
 import io.github.essencepowered.essence.config.serialisers.LocationNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements QuickStartWarpService {
+public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements EssenceWarpService {
 
     private Map<String, LocationNode> warpNodes;
 

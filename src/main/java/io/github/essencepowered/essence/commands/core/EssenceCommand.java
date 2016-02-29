@@ -1,12 +1,12 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.core;
 
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.api.PluginModule;
-import io.github.essencepowered.essence.api.service.QuickStartModuleService;
+import io.github.essencepowered.essence.api.service.EssenceModuleService;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.*;
 import org.spongepowered.api.Sponge;
@@ -18,9 +18,9 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 /**
- * Gives information about QuickStart.
+ * Gives information about Essence.
  *
- * Command Usage: /quickstart
+ * Command Usage: /essence
  * Permission: quickstart.quickstart.base
  */
 @RunAsync
@@ -28,10 +28,10 @@ import org.spongepowered.api.text.format.TextColors;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand({ "quickstart", "qs", "qse" })
-public class QuickStartCommand extends CommandBase<CommandSource> {
+@RegisterCommand({ "essence" })
+public class EssenceCommand extends CommandBase<CommandSource> {
 
-    private final Text version = Text.of(QuickStart.MESSAGE_PREFIX, TextColors.GREEN, QuickStart.NAME + " version " + QuickStart.VERSION);
+    private final Text version = Text.of(Essence.MESSAGE_PREFIX, TextColors.GREEN, Essence.NAME + " version " + Essence.VERSION);
     private Text modules = null;
 
     @Override
@@ -43,7 +43,7 @@ public class QuickStartCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         if (modules == null) {
-            QuickStartModuleService qs = Sponge.getServiceManager().provideUnchecked(QuickStartModuleService.class);
+            EssenceModuleService qs = Sponge.getServiceManager().provideUnchecked(EssenceModuleService.class);
 
             Text.Builder tb = Text.builder("Modules: ").color(TextColors.GREEN);
 

@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.interfaces;
 
+import io.github.essencepowered.essence.api.data.EssenceUser;
 import io.github.essencepowered.essence.api.data.JailData;
-import io.github.essencepowered.essence.api.data.QuickStartUser;
 import io.github.essencepowered.essence.api.data.mail.MailData;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-public interface InternalQuickStartUser extends QuickStartUser {
+public interface InternalEssenceUser extends EssenceUser {
 
     void setLastLogin(Instant login);
 
@@ -29,7 +29,7 @@ public interface InternalQuickStartUser extends QuickStartUser {
     void clearMail();
 
     /**
-     * Determines whether QuickStart thinks the player should be flying, but does not look at the current status of the
+     * Determines whether Essence thinks the player should be flying, but does not look at the current status of the
      * player. In other words, what did the data file say?
      *
      * @return <code>true</code> if so.
@@ -37,7 +37,7 @@ public interface InternalQuickStartUser extends QuickStartUser {
     boolean isFlyingSafe();
 
     /**
-     * Determines whether QuickStart thinks the player should be invulnerable, but does not look at the current status of the
+     * Determines whether Essence thinks the player should be invulnerable, but does not look at the current status of the
      * player. In other words, what did the data file say?
      *
      * @return <code>true</code> if so.

@@ -1,10 +1,10 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.argumentparsers;
 
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.data.WarpLocation;
 import org.spongepowered.api.Sponge;
@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public class HomeOtherParser extends HomeParser {
 
-    public HomeOtherParser(@Nullable Text key, QuickStart plugin) {
+    public HomeOtherParser(@Nullable Text key, Essence plugin) {
         super(key, plugin);
     }
 

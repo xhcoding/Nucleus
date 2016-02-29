@@ -1,10 +1,10 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence;
 
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.services.UserConfigLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
@@ -28,7 +28,7 @@ public class NameUtil {
         return getName((User)src);
     }
 
-    public static Text getName(User player, InternalQuickStartUser service) {
+    public static Text getName(User player, InternalEssenceUser service) {
         Optional<Text> n = service.getNicknameWithPrefix();
         if (n.isPresent()) {
             return n.get();
@@ -43,7 +43,7 @@ public class NameUtil {
 
     public static Text getName(User player, UserConfigLoader loader) {
         try {
-            InternalQuickStartUser iq = loader.getUser(player);
+            InternalEssenceUser iq = loader.getUser(player);
             return getName(player, iq);
         } catch (IOException | ObjectMappingException e) {
         }

@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.runnables;
 
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.NameUtil;
-import io.github.essencepowered.essence.QuickStart;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.commands.afk.AFKCommand;
@@ -29,7 +29,7 @@ import java.util.*;
 
 @Modules(PluginModule.AFK)
 public class AFKTask extends TaskBase {
-    @Inject private QuickStart plugin;
+    @Inject private Essence plugin;
     @Inject private PermissionRegistry permissionRegistry;
     private CommandPermissionHandler afkService = null;
 

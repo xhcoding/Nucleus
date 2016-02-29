@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.guice;
 
 import com.google.inject.AbstractModule;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.config.CommandsConfig;
 import io.github.essencepowered.essence.config.MainConfig;
 import io.github.essencepowered.essence.internal.ConfigMap;
@@ -16,17 +16,17 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 
 public class QuickStartInjectorModule extends AbstractModule {
-    private final QuickStart plugin;
+    private final Essence plugin;
     private final UserConfigLoader loader;
 
-    public QuickStartInjectorModule(QuickStart plugin, UserConfigLoader configLoader) {
+    public QuickStartInjectorModule(Essence plugin, UserConfigLoader configLoader) {
         this.plugin = plugin;
         this.loader = configLoader;
     }
 
     @Override
     protected void configure() {
-        bind(QuickStart.class).toProvider(() -> plugin);
+        bind(Essence.class).toProvider(() -> plugin);
         bind(Logger.class).toProvider(plugin::getLogger);
         bind(MainConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.MAIN_CONFIG).get());
         bind(CommandsConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get());

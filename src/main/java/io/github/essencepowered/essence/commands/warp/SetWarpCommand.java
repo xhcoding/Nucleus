@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.warp;
 
 import io.github.essencepowered.essence.Util;
-import io.github.essencepowered.essence.api.service.QuickStartWarpService;
+import io.github.essencepowered.essence.api.service.EssenceWarpService;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
@@ -58,7 +58,7 @@ public class SetWarpCommand extends CommandBase<Player> {
         }
 
         // Get the service, does the warp exist?
-        QuickStartWarpService qs = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
+        EssenceWarpService qs = Sponge.getServiceManager().provideUnchecked(EssenceWarpService.class);
         if (qs.getWarp(warp).isPresent()) {
             // You have to delete to set the same name
             src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.nooverwrite")));

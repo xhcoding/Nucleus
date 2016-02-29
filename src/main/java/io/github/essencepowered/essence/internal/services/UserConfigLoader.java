@@ -1,15 +1,15 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.services;
 
 import com.google.common.collect.Maps;
-import io.github.essencepowered.essence.QuickStart;
-import io.github.essencepowered.essence.api.data.QuickStartUser;
+import io.github.essencepowered.essence.Essence;
+import io.github.essencepowered.essence.api.data.EssenceUser;
 import io.github.essencepowered.essence.api.exceptions.NoSuchPlayerException;
-import io.github.essencepowered.essence.api.service.QuickStartUserService;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.api.service.EssenceUserService;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
@@ -27,17 +27,17 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class UserConfigLoader implements QuickStartUserService {
+public class UserConfigLoader implements EssenceUserService {
 
-    private final QuickStart plugin;
+    private final Essence plugin;
     private final Map<UUID, UserService> loadedUsers = Maps.newHashMap();
     private final Map<UUID, SoftReference<UserService>> softLoadedUsers = Maps.newHashMap();
 
-    public UserConfigLoader(QuickStart plugin) {
+    public UserConfigLoader(Essence plugin) {
         this.plugin = plugin;
     }
 
-    public List<QuickStartUser> getOnlineUsers() {
+    public List<EssenceUser> getOnlineUsers() {
         return Sponge.getServer().getOnlinePlayers().stream().map(x -> {
             try {
                 return getUser(x);
@@ -50,12 +50,12 @@ public class UserConfigLoader implements QuickStartUserService {
     }
 
     @Override
-    public InternalQuickStartUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException {
+    public InternalEssenceUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException {
         return getUser(Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(playerUUID).orElseThrow(NoSuchPlayerException::new));
     }
 
     @Override
-    public InternalQuickStartUser getUser(User user) throws IOException, ObjectMappingException {
+    public InternalEssenceUser getUser(User user) throws IOException, ObjectMappingException {
         if (loadedUsers.containsKey(user.getUniqueId())) {
             return loadedUsers.get(user.getUniqueId());
         }

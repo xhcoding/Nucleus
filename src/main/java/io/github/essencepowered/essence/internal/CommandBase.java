@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal;
@@ -7,7 +7,7 @@ package io.github.essencepowered.essence.internal;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.argumentparsers.NoCostArgument;
 import io.github.essencepowered.essence.config.MainConfig;
@@ -57,7 +57,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private CommandSpec cs = null;
     private String commandConfigAlias = null;
 
-    @Inject protected QuickStart plugin;
+    @Inject protected Essence plugin;
     @Inject private MainConfig config;
     @Inject private WarmupManager warmupService;
 
@@ -141,7 +141,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     public abstract CommandSpec createSpec();
 
     /**
-     * Gets the aliases for the command. The first alias will be the primary alias within QuickStart.
+     * Gets the aliases for the command. The first alias will be the primary alias within Essence.
      *
      * @return An array of aliases.
      */
@@ -279,7 +279,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             }
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
+            src.sendMessage(Text.of(Essence.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
 
             if (config.getDebugMode()) {
                 e.printStackTrace();

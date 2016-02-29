@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.listeners;
 
 import io.github.essencepowered.essence.internal.ListenerBase;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.services.UserConfigLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
@@ -26,7 +26,7 @@ public class CoreListener extends ListenerBase {
     public void onPlayerLogin(final ClientConnectionEvent.Login event) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
             try {
-                InternalQuickStartUser qsu = this.plugin.getUserLoader().getUser(event.getTargetUser());
+                InternalEssenceUser qsu = this.plugin.getUserLoader().getUser(event.getTargetUser());
                 qsu.setLastLogin(Instant.now());
             } catch (IOException | ObjectMappingException e) {
                 e.printStackTrace();
@@ -37,7 +37,7 @@ public class CoreListener extends ListenerBase {
     @Listener(order = Order.DEFAULT)
     public void onPlayerJoin(final ClientConnectionEvent.Join event) {
         try {
-            InternalQuickStartUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
+            InternalEssenceUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
 
             // If we have a location to send them to in the config, send them there now!
             Optional<Location<World>> olw = qsu.getLocationOnLogin();
@@ -57,7 +57,7 @@ public class CoreListener extends ListenerBase {
         Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
             UserConfigLoader ucl = this.plugin.getUserLoader();
             try {
-                InternalQuickStartUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
+                InternalEssenceUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
                 qsu.setOnLogout();
                 ucl.purgeNotOnline();
             } catch (IOException | ObjectMappingException e) {

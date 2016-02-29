@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.teleport;
@@ -8,7 +8,7 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.*;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -48,7 +48,7 @@ public class TeleportToggleCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        final InternalQuickStartUser iqsu = plugin.getUserLoader().getUser(src);
+        final InternalEssenceUser iqsu = plugin.getUserLoader().getUser(src);
         boolean flip = args.<Boolean>getOne(key).orElseGet(() -> !iqsu.isTeleportToggled());
         iqsu.setTeleportToggled(flip);
         src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tptoggle.success", Util.getMessageWithFormat(flip ? "enabled" : "disabled"))));

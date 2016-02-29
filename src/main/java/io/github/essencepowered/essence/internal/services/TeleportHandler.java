@@ -1,15 +1,15 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.services;
 
 import com.google.common.base.Preconditions;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.internal.CommandPermissionHandler;
 import io.github.essencepowered.essence.internal.interfaces.CancellableTask;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 
 public class TeleportHandler {
 
-    private final QuickStart plugin;
+    private final Essence plugin;
     private final Map<UUID, TeleportPrep> ask = new HashMap<>();
 
     public static final String tptoggleBypassPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
     private Text acceptDeny;
 
-    public TeleportHandler(QuickStart plugin) {
+    public TeleportHandler(Essence plugin) {
         this.plugin = plugin;
     }
 
@@ -118,14 +118,14 @@ public class TeleportHandler {
         private final double cost;
         private final boolean safe;
         private final CommandSource source;
-        private final QuickStart plugin;
+        private final Essence plugin;
         private final boolean silentSouce;
 
-        private TeleportTask(QuickStart plugin, CommandSource source, Player from, Player to, boolean safe, boolean silentSouce) {
+        private TeleportTask(Essence plugin, CommandSource source, Player from, Player to, boolean safe, boolean silentSouce) {
             this(plugin, source, from, to, null, 0, safe, silentSouce);
         }
 
-        private TeleportTask(QuickStart plugin, CommandSource source, Player from, Player to, Player charged, double cost, boolean safe, boolean silentSouce) {
+        private TeleportTask(Essence plugin, CommandSource source, Player from, Player to, Player charged, double cost, boolean safe, boolean silentSouce) {
             this.plugin = plugin;
             this.source = source;
             this.from = from;
@@ -196,9 +196,9 @@ public class TeleportHandler {
         private boolean safe = true;
         private boolean silentSource = false;
 
-        private final QuickStart plugin;
+        private final Essence plugin;
 
-        private TeleportBuilder(QuickStart plugin) {
+        private TeleportBuilder(Essence plugin) {
             this.plugin = plugin;
         }
 
@@ -260,7 +260,7 @@ public class TeleportHandler {
                 return false;
             }
 
-            InternalQuickStartUser toPlayer = plugin.getUserLoader().getUser(to);
+            InternalEssenceUser toPlayer = plugin.getUserLoader().getUser(to);
             if (!bypassToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(source)) {
                 from.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail.targettoggle", to.getName())));
                 return false;
@@ -277,7 +277,7 @@ public class TeleportHandler {
                 from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.warmup", String.valueOf(warmupTime))));
                 plugin.getWarmupManager().addWarmup(from.getUniqueId(),
                         Sponge.getScheduler().createTaskBuilder().delay(warmupTime, TimeUnit.SECONDS)
-                                .execute(tt).name("QuickStart - Teleport Waiter").submit(plugin));
+                                .execute(tt).name("Essence - Teleport Waiter").submit(plugin));
             } else {
                 tt.run();
             }

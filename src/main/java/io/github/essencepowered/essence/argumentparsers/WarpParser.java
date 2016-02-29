@@ -1,14 +1,14 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.data.WarpLocation;
-import io.github.essencepowered.essence.api.service.QuickStartWarpService;
+import io.github.essencepowered.essence.api.service.EssenceWarpService;
 import io.github.essencepowered.essence.internal.CommandPermissionHandler;
 import io.github.essencepowered.essence.internal.ConfigMap;
 import org.spongepowered.api.Sponge;
@@ -29,15 +29,15 @@ import java.util.stream.Collectors;
  */
 public class WarpParser extends CommandElement {
     private final boolean includeWarpData;
-    private QuickStartWarpService service;
-    private final QuickStart plugin;
+    private EssenceWarpService service;
+    private final Essence plugin;
     private final boolean permissionCheck;
 
-    public WarpParser(@Nullable Text key, QuickStart plugin, boolean permissionCheck) {
+    public WarpParser(@Nullable Text key, Essence plugin, boolean permissionCheck) {
         this(key, plugin, permissionCheck, true);
     }
 
-    public WarpParser(@Nullable Text key, QuickStart plugin, boolean permissionCheck, boolean includeWarpData) {
+    public WarpParser(@Nullable Text key, Essence plugin, boolean permissionCheck, boolean includeWarpData) {
         super(key);
         this.plugin = plugin;
         this.permissionCheck = permissionCheck;
@@ -52,11 +52,11 @@ public class WarpParser extends CommandElement {
         String warpName = args.next();
         String warp = warpName.toLowerCase();
         if (!service.warpExists(warp)) {
-            throw args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noexist")));
+            throw args.createError(Text.of(Essence.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noexist")));
         }
 
         if (!checkPermission(source, warpName)) {
-            throw args.createError(Text.of(QuickStart.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noperms")));
+            throw args.createError(Text.of(Essence.ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noperms")));
         }
 
         if (includeWarpData) {
@@ -90,7 +90,7 @@ public class WarpParser extends CommandElement {
 
     private void getService() {
         if (service == null) {
-            service = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
+            service = Sponge.getServiceManager().provideUnchecked(EssenceWarpService.class);
         }
     }
 

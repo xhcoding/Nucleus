@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.tests.util;
 
 import com.google.inject.AbstractModule;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.config.CommandsConfig;
 import io.github.essencepowered.essence.config.MainConfig;
 import io.github.essencepowered.essence.internal.ConfigMap;
@@ -41,11 +41,11 @@ public class TestModule extends AbstractModule {
         this.bind(Game.class).toInstance(Mockito.mock(Game.class));
         this.bind(Logger.class).toInstance(Mockito.mock(Logger.class));
         this.bind(MainConfig.class).toInstance(Mockito.mock(MainConfig.class));
-        this.bind(QuickStart.class).toInstance(getMockPlugin());
+        this.bind(Essence.class).toInstance(getMockPlugin());
     }
 
-    private QuickStart getMockPlugin() {
-        QuickStart plugin = Mockito.mock(QuickStart.class);
+    private Essence getMockPlugin() {
+        Essence plugin = Mockito.mock(Essence.class);
         PermissionRegistry pr = new PermissionRegistry();
         Mockito.when(plugin.getPermissionRegistry()).thenReturn(pr);
         try {

@@ -1,10 +1,10 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal;
 
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.internal.interfaces.CancellableTask;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -12,10 +12,10 @@ import org.spongepowered.api.entity.living.player.Player;
 public abstract class CostCancellableTask implements CancellableTask {
 
     private final double cost;
-    private final QuickStart plugin;
+    private final Essence plugin;
     private final Player player;
 
-    public CostCancellableTask(QuickStart plugin, Player src, double cost) {
+    public CostCancellableTask(Essence plugin, Player src, double cost) {
         this.plugin = plugin;
         this.player = src;
         this.cost = cost;

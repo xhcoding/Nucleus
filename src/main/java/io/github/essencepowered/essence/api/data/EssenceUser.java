@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.api.data;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -18,9 +18,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Represents data held about a user in {@link QuickStart}.
+ * Represents data held about a user in {@link Essence}.
  */
-public interface QuickStartUser {
+public interface EssenceUser {
 
     /**
      * Returns the user associated with this data.
@@ -71,7 +71,7 @@ public interface QuickStartUser {
     boolean setSocialSpy(boolean socialSpy);
 
     /**
-     * Gets whether QuickStart thinks the player should be invulnerable. Note, this means the player has been subject to
+     * Gets whether Essence thinks the player should be invulnerable. Note, this means the player has been subject to
      * the /god command.
      *
      * @return <code>true</code> if so.
@@ -79,7 +79,7 @@ public interface QuickStartUser {
     boolean isInvulnerable();
 
     /**
-     * Sets whether QuickStart thinks the player should be invulnerable. Note, this is the same as the player being subject to
+     * Sets whether Essence thinks the player should be invulnerable. Note, this is the same as the player being subject to
      * the /god command.
      *
      * @param invuln <code>true</code> if so, <code>false</code> otherwise.
@@ -88,7 +88,7 @@ public interface QuickStartUser {
     boolean setInvulnerable(boolean invuln);
 
     /**
-     * Gets whether QuickStart thinks the player should be flying. Note, this means the player has been subject to
+     * Gets whether Essence thinks the player should be flying. Note, this means the player has been subject to
      * the /god command.
      *
      * @return <code>true</code> if so.
@@ -96,7 +96,7 @@ public interface QuickStartUser {
     boolean isFlying();
 
     /**
-     * Sets whether QuickStart thinks the player should be flying. This does not necessarily mean that the player is
+     * Sets whether Essence thinks the player should be flying. This does not necessarily mean that the player is
      * actually flying.
      *
      * @param fly <code>true</code> if so, <code>false</code> otherwise.

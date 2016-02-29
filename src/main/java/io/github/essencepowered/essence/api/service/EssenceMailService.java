@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.api.service;
@@ -17,7 +17,7 @@ import java.util.UUID;
 /**
  * A service that handles sending and retrieving mail.
  */
-public interface QuickStartMailService {
+public interface EssenceMailService {
 
     /**
      * Gets mail for a specific player, optionally including a list of filters.

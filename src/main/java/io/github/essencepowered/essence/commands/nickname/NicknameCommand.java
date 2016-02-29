@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.nickname;
@@ -13,7 +13,7 @@ import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Modules;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import io.github.essencepowered.essence.internal.services.UserConfigLoader;
@@ -99,7 +99,7 @@ public class NicknameCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        InternalQuickStartUser internalQuickStartUser = loader.getUser(pl);
+        InternalEssenceUser internalQuickStartUser = loader.getUser(pl);
         internalQuickStartUser.setNickname(name);
         Text set = internalQuickStartUser.getNicknameAsText().get();
 

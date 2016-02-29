@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.misc;
@@ -10,7 +10,7 @@ import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Modules;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -58,7 +58,7 @@ public class FlyCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
 
-        InternalQuickStartUser uc = plugin.getUserLoader().getUser(pl);
+        InternalEssenceUser uc = plugin.getUserLoader().getUser(pl);
         boolean fly = args.<Boolean>getOne(toggle).orElse(!uc.isFlying());
 
         if (!uc.setFlying(fly)) {

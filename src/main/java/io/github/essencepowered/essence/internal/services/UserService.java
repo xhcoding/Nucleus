@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.services;
@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.api.data.JailData;
 import io.github.essencepowered.essence.api.data.MuteData;
 import io.github.essencepowered.essence.api.data.WarpLocation;
@@ -20,7 +20,7 @@ import io.github.essencepowered.essence.config.serialisers.LocationNode;
 import io.github.essencepowered.essence.config.serialisers.UserConfig;
 import io.github.essencepowered.essence.internal.CommandPermissionHandler;
 import io.github.essencepowered.essence.internal.ConfigMap;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -44,8 +44,8 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UserService implements InternalQuickStartUser {
-    private final QuickStart plugin;
+public class UserService implements InternalEssenceUser {
+    private final Essence plugin;
     private final User user;
     private UserConfig config;
     private final GsonConfigurationLoader loader;
@@ -53,7 +53,7 @@ public class UserService implements InternalQuickStartUser {
     // Used as a cache.
     private Text nickname = null;
 
-    public UserService(QuickStart plugin, Path file, User user) throws IOException, ObjectMappingException {
+    public UserService(Essence plugin, Path file, User user) throws IOException, ObjectMappingException {
         this.plugin = plugin;
         this.loader = GsonConfigurationLoader.builder().setPath(file).build();
         this.user = user;

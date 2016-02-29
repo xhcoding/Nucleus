@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.misc;
@@ -8,7 +8,7 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.*;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -59,7 +59,7 @@ public class GodCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
 
-        InternalQuickStartUser uc = plugin.getUserLoader().getUser(pl);
+        InternalEssenceUser uc = plugin.getUserLoader().getUser(pl);
         boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
 
         if (!uc.setInvulnerable(god)) {

@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.services;
@@ -8,8 +8,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.essencepowered.essence.NameUtil;
 import io.github.essencepowered.essence.Util;
-import io.github.essencepowered.essence.api.data.QuickStartUser;
-import io.github.essencepowered.essence.api.service.QuickStartUserService;
+import io.github.essencepowered.essence.api.data.EssenceUser;
+import io.github.essencepowered.essence.api.service.EssenceUserService;
 import io.github.essencepowered.essence.events.MessageEvent;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
@@ -74,13 +74,13 @@ public class MessageHandler {
         Text nameOfSender = getName(sender);
         Text nameOfReceiver = getName(receiver);
 
-        QuickStartUserService qs = Sponge.getServiceManager().provideUnchecked(QuickStartUserService.class);
+        EssenceUserService qs = Sponge.getServiceManager().provideUnchecked(EssenceUserService.class);
 
         // If a player, then mutes should be checked.
         if (sender instanceof Player) {
             Player pl = (Player)sender;
             try {
-                QuickStartUser q = qs.getUser(pl);
+                EssenceUser q = qs.getUser(pl);
                 if (Util.testForEndTimestamp(q.getMuteData(), q::removeMuteData).isPresent()) {
                     // Cancel.
                     pl.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("mute.playernotify")));
@@ -100,7 +100,7 @@ public class MessageHandler {
         // Social Spies.
         List<MessageReceiver> lm = qs.getOnlineUsers().stream().filter(x ->
                 !getUUID(sender).equals(x.getUniqueID()) && !getUUID(receiver).equals(x.getUniqueID())
-        ).filter(QuickStartUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
+        ).filter(EssenceUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
 
         if (getUUID(sender) != Util.consoleFakeUUID && getUUID(receiver) != Util.consoleFakeUUID) {
             lm.add(Sponge.getServer().getConsole());

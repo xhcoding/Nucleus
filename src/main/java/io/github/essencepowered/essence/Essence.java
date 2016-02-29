@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence;
@@ -42,11 +42,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = QuickStart.ID, name = QuickStart.NAME, version = QuickStart.VERSION)
-public class QuickStart {
-    public final static String ID = "quickstart";
-    public final static String NAME = "Quick Start";
-    public final static String VERSION = "0.1";
+@Plugin(id = Essence.ID, name = Essence.NAME, version = Essence.VERSION)
+public class Essence {
+    public final static String ID = "essence";
+    public final static String NAME = "Essence";
+    public final static String VERSION = "0.5";
     public final static Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "] ");
     public final static Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "] ");
 
@@ -74,7 +74,7 @@ public class QuickStart {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
-        dataDir = game.getSavesDirectory().resolve("quickstart-essentials");
+        dataDir = game.getSavesDirectory().resolve("essence");
         // Get the mandatory config files.
         try {
             Files.createDirectories(dataDir);
@@ -90,8 +90,8 @@ public class QuickStart {
         }
 
         // We register the ModuleService NOW so that others can hook into it.
-        game.getServiceManager().setProvider(this, QuickStartModuleService.class, moduleRegistration);
-        game.getServiceManager().setProvider(this, QuickStartWarmupManagerService.class, warmupManager);
+        game.getServiceManager().setProvider(this, EssenceModuleService.class, moduleRegistration);
+        game.getServiceManager().setProvider(this, EssenceWarmupManagerService.class, warmupManager);
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this, configLoader));
     }
 
@@ -109,7 +109,7 @@ public class QuickStart {
                 configMap.putConfig(ConfigMap.WARPS_CONFIG, new WarpsConfig(Paths.get(dataDir.toString(), "warp.json")));
 
                 // Put the warp service into the service manager.
-                game.getServiceManager().setProvider(this, QuickStartWarpService.class, configMap.getConfig(ConfigMap.WARPS_CONFIG).get());
+                game.getServiceManager().setProvider(this, EssenceWarpService.class, configMap.getConfig(ConfigMap.WARPS_CONFIG).get());
             } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.WARPS);
@@ -127,7 +127,7 @@ public class QuickStart {
                 configMap.putConfig(ConfigMap.JAILS_CONFIG, new WarpsConfig(Paths.get(dataDir.toString(), "jails.json")));
 
                 jailHandler = new JailHandler(this);
-                game.getServiceManager().setProvider(this, QuickStartJailService.class, jailHandler);
+                game.getServiceManager().setProvider(this, EssenceJailService.class, jailHandler);
             } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.JAILS);
@@ -142,7 +142,7 @@ public class QuickStart {
 
         if (modules.contains(PluginModule.MAILS)) {
             mailHandler = new MailHandler(game, this);
-            game.getServiceManager().setProvider(this, QuickStartMailService.class, mailHandler);
+            game.getServiceManager().setProvider(this, EssenceMailService.class, mailHandler);
         }
 
         modulesLoaded = true;
@@ -157,10 +157,10 @@ public class QuickStart {
         }
 
         // Register services
-        game.getServiceManager().setProvider(this, QuickStartUserService.class, configLoader);
+        game.getServiceManager().setProvider(this, EssenceUserService.class, configLoader);
 
         // Start tasks, save every thirty seconds
-        game.getScheduler().createTaskBuilder().async().name("QuickStart Cleanup Task").delay(30, TimeUnit.SECONDS).interval(30, TimeUnit.SECONDS)
+        game.getScheduler().createTaskBuilder().async().name("Essence Cleanup Task").delay(30, TimeUnit.SECONDS).interval(30, TimeUnit.SECONDS)
             .execute(() -> {
                 this.getUserLoader().purgeNotOnline();
                 this.configLoader.saveAll();

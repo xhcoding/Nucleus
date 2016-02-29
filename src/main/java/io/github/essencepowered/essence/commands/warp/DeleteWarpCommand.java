@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.warp;
 
 import io.github.essencepowered.essence.Util;
-import io.github.essencepowered.essence.api.service.QuickStartWarpService;
+import io.github.essencepowered.essence.api.service.EssenceWarpService;
 import io.github.essencepowered.essence.argumentparsers.WarpParser;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
@@ -45,7 +45,7 @@ public class DeleteWarpCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         WarpParser.WarpData warp = args.<WarpParser.WarpData>getOne(WarpCommand.warpNameArg).get();
-        QuickStartWarpService qs = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
+        EssenceWarpService qs = Sponge.getServiceManager().provideUnchecked(EssenceWarpService.class);
 
         if (qs.removeWarp(warp.warp)) {
             // Worked. Tell them.

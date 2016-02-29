@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.listeners;
@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.ListenerBase;
 import io.github.essencepowered.essence.internal.annotations.Modules;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.services.UserConfigLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.data.key.Keys;
@@ -28,7 +28,7 @@ public class NicknameListener extends ListenerBase {
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player) {
-        InternalQuickStartUser iqsu;
+        InternalEssenceUser iqsu;
         try {
             iqsu = ucl.getUser(player);
         } catch (IOException | ObjectMappingException e) {

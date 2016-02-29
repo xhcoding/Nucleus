@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.home;
@@ -12,7 +12,7 @@ import io.github.essencepowered.essence.internal.annotations.Modules;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import io.github.essencepowered.essence.internal.annotations.RunAsync;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -57,7 +57,7 @@ public class SetHomeCommand extends CommandBase<Player> {
         String home = args.<String>getOne(homeKey).orElse("home").toLowerCase();
 
         // Get the homes.
-        InternalQuickStartUser iqsu = plugin.getUserLoader().getUser(src);
+        InternalEssenceUser iqsu = plugin.getUserLoader().getUser(src);
         Map<String, WarpLocation> msw = iqsu.getHomes();
 
         if (!warpName.matcher(home).matches()) {

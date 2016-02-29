@@ -1,13 +1,13 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal;
 
 import com.google.common.reflect.ClassPath;
 import com.google.inject.Injector;
-import io.github.essencepowered.essence.QuickStart;
-import io.github.essencepowered.essence.api.service.QuickStartModuleService;
+import io.github.essencepowered.essence.Essence;
+import io.github.essencepowered.essence.api.service.EssenceModuleService;
 import io.github.essencepowered.essence.config.CommandsConfig;
 import io.github.essencepowered.essence.internal.annotations.Modules;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
@@ -32,13 +32,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class PluginSystemsLoader {
-    private final QuickStart quickStart;
+    private final Essence essence;
 
-    public PluginSystemsLoader(QuickStart quickStart) {
-        this.quickStart = quickStart;
+    public PluginSystemsLoader(Essence essence) {
+        this.essence = essence;
     }
 
-    private final QuickStartModuleService service = Sponge.getServiceManager().provideUnchecked(QuickStartModuleService.class);
+    private final EssenceModuleService service = Sponge.getServiceManager().provideUnchecked(EssenceModuleService.class);
 
     private final Predicate<Class<?>> moduleCheck = o -> {
         Modules annotation = o.getAnnotation(Modules.class);
@@ -58,12 +58,12 @@ public class PluginSystemsLoader {
         // Register permissions
         Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
         if (ops.isPresent()) {
-            Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(quickStart);
+            Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(essence);
             if (opdb.isPresent()) {
-                Map<String, PermissionInformation> m = quickStart.getPermissionRegistry().getPermissions();
-                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
-                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
-                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).forEach(k -> ops.get().newDescriptionBuilder(quickStart).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
+                Map<String, PermissionInformation> m = essence.getPermissionRegistry().getPermissions();
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN).forEach(k -> ops.get().newDescriptionBuilder(essence).get().assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD).forEach(k -> ops.get().newDescriptionBuilder(essence).get().assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).forEach(k -> ops.get().newDescriptionBuilder(essence).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
             }
         }
     }
@@ -84,10 +84,10 @@ public class PluginSystemsLoader {
     private void loadCommands() throws IOException {
         // Get commands
         Set<Class<? extends CommandBase>> commandsToLoad = filterOutModules(getCommandClasses(CommandBase.class));
-        Injector injector = quickStart.getInjector();
+        Injector injector = essence.getInjector();
 
         // Commands config!
-        CommandsConfig cc = quickStart.getConfig(ConfigMap.COMMANDS_CONFIG).get();
+        CommandsConfig cc = essence.getConfig(ConfigMap.COMMANDS_CONFIG).get();
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandsToLoad.stream().map(x -> {
             try {
@@ -115,21 +115,21 @@ public class PluginSystemsLoader {
             }
 
             // Register the commands.
-            Sponge.getCommandManager().register(quickStart, spec, c.getAliases());
+            Sponge.getCommandManager().register(essence, spec, c.getAliases());
         });
 
         try {
             cc.mergeDefaults(sn);
             cc.save();
         } catch (IOException | ObjectMappingException e) {
-            quickStart.getLogger().error("Could not save defaults.");
+            essence.getLogger().error("Could not save defaults.");
             e.printStackTrace();
         }
     }
 
     private void loadEvents() throws IOException {
         Set<Class<? extends ListenerBase>> commandsToLoad = filterOutModules(getClasses(ListenerBase.class, "uk.co.drnaylor.minecraft.quickstart.listeners"));
-        Injector injector = quickStart.getInjector();
+        Injector injector = essence.getInjector();
         commandsToLoad.stream().map(x -> {
             try {
                 ListenerBase lb = x.newInstance();
@@ -141,14 +141,14 @@ public class PluginSystemsLoader {
             }
         }).filter(lb -> lb != null).forEach(c -> {
             // Register suggested permissions
-            c.getPermissions().forEach((k, v) -> quickStart.getPermissionRegistry().registerOtherPermission(k, v));
-            Sponge.getEventManager().registerListeners(quickStart, c);
+            c.getPermissions().forEach((k, v) -> essence.getPermissionRegistry().registerOtherPermission(k, v));
+            Sponge.getEventManager().registerListeners(essence, c);
         });
     }
 
     private void loadRunnables() throws IOException {
         Set<Class<? extends TaskBase>> commandsToLoad = filterOutModules(getClasses(TaskBase.class, "uk.co.drnaylor.minecraft.quickstart.runnables"));
-        Injector injector = quickStart.getInjector();
+        Injector injector = essence.getInjector();
         commandsToLoad.stream().map(x -> {
             try {
                 TaskBase lb = x.newInstance();
@@ -159,13 +159,13 @@ public class PluginSystemsLoader {
                 return null;
             }
         }).filter(lb -> lb != null).forEach(c -> {
-            c.getPermissions().forEach((k, v) -> quickStart.getPermissionRegistry().registerOtherPermission(k, v));
+            c.getPermissions().forEach((k, v) -> essence.getPermissionRegistry().registerOtherPermission(k, v));
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.secondsPerRun(), TimeUnit.SECONDS);
             if (c.isAsync()) {
                 tb.async();
             }
 
-            tb.submit(quickStart);
+            tb.submit(essence);
         });
     }
 }

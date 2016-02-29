@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.core;
@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 
 @RunAsync
 @Permissions(root = "quickstart")
-@RegisterCommand(value = "printperms", subcommandOf = QuickStartCommand.class)
+@RegisterCommand(value = "printperms", subcommandOf = EssenceCommand.class)
 public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
-    private final String file = "quickstart-essentials-perms.txt";
+    private final String file = "essence-perms.txt";
 
     @Override
     public CommandSpec createSpec() {

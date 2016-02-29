@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.listeners;
@@ -7,8 +7,8 @@ package io.github.essencepowered.essence.listeners;
 import com.google.inject.Inject;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
+import io.github.essencepowered.essence.api.data.EssenceUser;
 import io.github.essencepowered.essence.api.data.MuteData;
-import io.github.essencepowered.essence.api.data.QuickStartUser;
 import io.github.essencepowered.essence.internal.ListenerBase;
 import io.github.essencepowered.essence.internal.annotations.Modules;
 import io.github.essencepowered.essence.internal.services.UserConfigLoader;
@@ -46,7 +46,7 @@ public class MuteListener extends ListenerBase {
         Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS)
                 .execute(() -> {
                     Player user = event.getTargetEntity();
-                    QuickStartUser qs;
+                    EssenceUser qs;
                     try {
                         qs = loader.getUser(user);
                     } catch (IOException | ObjectMappingException e) {
@@ -70,7 +70,7 @@ public class MuteListener extends ListenerBase {
 
     @Listener
     public void onPlayerChat(MessageChannelEvent.Chat event, @First Player player) {
-        QuickStartUser qs;
+        EssenceUser qs;
         try {
             qs = loader.getUser(player);
         } catch (IOException | ObjectMappingException e) {

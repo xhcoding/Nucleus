@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.core;
@@ -19,7 +19,7 @@ import org.spongepowered.api.text.format.TextColors;
 @NoCost
 @NoWarmup
 @RunAsync
-@RegisterCommand(value = "reload", subcommandOf = QuickStartCommand.class)
+@RegisterCommand(value = "reload", subcommandOf = EssenceCommand.class)
 public class ReloadCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {

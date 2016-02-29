@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.mute;
@@ -7,8 +7,8 @@ package io.github.essencepowered.essence.commands.mute;
 import com.google.inject.Inject;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
+import io.github.essencepowered.essence.api.data.EssenceUser;
 import io.github.essencepowered.essence.api.data.MuteData;
-import io.github.essencepowered.essence.api.data.QuickStartUser;
 import io.github.essencepowered.essence.argumentparsers.TimespanParser;
 import io.github.essencepowered.essence.argumentparsers.UserParser;
 import io.github.essencepowered.essence.internal.CommandBase;
@@ -86,7 +86,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
 
         // Get the user.
         User user = args.<User>getOne(playerArgument).get();
-        QuickStartUser uc;
+        EssenceUser uc;
         try {
             uc = userConfigLoader.getUser(user);
         } catch (IOException | ObjectMappingException e) {

@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.listeners;
 
 import io.github.essencepowered.essence.Util;
-import io.github.essencepowered.essence.api.service.QuickStartWarmupManagerService;
+import io.github.essencepowered.essence.api.service.EssenceWarmupManagerService;
 import io.github.essencepowered.essence.internal.ListenerBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -20,7 +20,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 public class WarmupListener extends ListenerBase {
 
-    private QuickStartWarmupManagerService service = Sponge.getGame().getServiceManager().provideUnchecked(QuickStartWarmupManagerService.class);
+    private EssenceWarmupManagerService service = Sponge.getGame().getServiceManager().provideUnchecked(EssenceWarmupManagerService.class);
 
     @Listener(order = Order.LAST)
     public void onPlayerMovement(DisplaceEntityEvent.Move event, @First Player player) {

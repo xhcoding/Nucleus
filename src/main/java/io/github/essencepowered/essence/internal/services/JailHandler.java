@@ -1,18 +1,18 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.services;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.data.JailData;
 import io.github.essencepowered.essence.api.data.WarpLocation;
-import io.github.essencepowered.essence.api.service.QuickStartJailService;
+import io.github.essencepowered.essence.api.service.EssenceJailService;
 import io.github.essencepowered.essence.config.WarpsConfig;
 import io.github.essencepowered.essence.internal.ConfigMap;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -28,11 +28,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class JailHandler implements QuickStartJailService {
+public class JailHandler implements EssenceJailService {
 
-    private final QuickStart plugin;
+    private final Essence plugin;
 
-    public JailHandler(QuickStart plugin) {
+    public JailHandler(Essence plugin) {
         this.plugin = plugin;
     }
 
@@ -76,7 +76,7 @@ public class JailHandler implements QuickStartJailService {
 
     @Override
     public boolean jailPlayer(User user, JailData data) {
-        InternalQuickStartUser iqsu;
+        InternalEssenceUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(user);
         } catch (IOException | ObjectMappingException e) {
@@ -118,7 +118,7 @@ public class JailHandler implements QuickStartJailService {
 
     @Override
     public boolean unjailPlayer(User user) {
-        InternalQuickStartUser iqsu;
+        InternalEssenceUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(user);
         } catch (IOException | ObjectMappingException e) {

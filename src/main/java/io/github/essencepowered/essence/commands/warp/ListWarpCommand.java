@@ -1,12 +1,12 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.warp;
 
 import com.google.inject.Inject;
 import io.github.essencepowered.essence.Util;
-import io.github.essencepowered.essence.api.service.QuickStartWarpService;
+import io.github.essencepowered.essence.api.service.EssenceWarpService;
 import io.github.essencepowered.essence.config.MainConfig;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.CommandPermissionHandler;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @RegisterCommand(value = { "list" }, subcommandOf = WarpCommand.class)
 public class ListWarpCommand extends CommandBase<CommandSource> {
-    private final QuickStartWarpService service = Sponge.getServiceManager().provideUnchecked(QuickStartWarpService.class);
+    private final EssenceWarpService service = Sponge.getServiceManager().provideUnchecked(EssenceWarpService.class);
     @Inject private MainConfig mainConfig;
 
     @Override

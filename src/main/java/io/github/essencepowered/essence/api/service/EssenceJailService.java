@@ -1,12 +1,12 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
+import io.github.essencepowered.essence.api.data.EssenceUser;
 import io.github.essencepowered.essence.api.data.JailData;
-import io.github.essencepowered.essence.api.data.QuickStartUser;
 import io.github.essencepowered.essence.api.data.WarpLocation;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * A service that handles player jailing.
  */
-public interface QuickStartJailService {
+public interface EssenceJailService {
     /**
      * Sets a jail location in the world.
      *
@@ -64,7 +64,7 @@ public interface QuickStartJailService {
      * Returns information about why a player is jailed, if they are indeed jailed.
      *
      * <p>
-     *     This is equivalent to {@link QuickStartUser#getJailData()}
+     *     This is equivalent to {@link EssenceUser#getJailData()}
      * </p>
      *
      * @param user The {@link User} to check

@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.warp;
@@ -33,7 +33,7 @@ import java.util.Map;
  * Permission: quickstart.warp.base
  *
  * If <code>warp.separate-permissions</code> = <code>true</code> in the commands config, also requires
- * <code>quickstart.warps.[warpname]</code> permission, or the QuickStart admin permission.
+ * <code>quickstart.warps.[warpname]</code> permission, or the Essence admin permission.
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.WARPS)

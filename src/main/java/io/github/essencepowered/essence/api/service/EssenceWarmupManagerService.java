@@ -1,5 +1,5 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.api.service;
@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Manages the warmups.
  */
-public interface QuickStartWarmupManagerService {
+public interface EssenceWarmupManagerService {
 
     /**
      * Adds a warmup to the warmup manager

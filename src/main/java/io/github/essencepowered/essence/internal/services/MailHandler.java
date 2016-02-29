@@ -1,19 +1,19 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal.services;
 
 import com.google.common.base.Preconditions;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.NameUtil;
-import io.github.essencepowered.essence.QuickStart;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.data.mail.BetweenInstantsData;
 import io.github.essencepowered.essence.api.data.mail.MailData;
 import io.github.essencepowered.essence.api.data.mail.MailFilter;
 import io.github.essencepowered.essence.api.exceptions.NoSuchPlayerException;
-import io.github.essencepowered.essence.api.service.QuickStartMailService;
-import io.github.essencepowered.essence.internal.interfaces.InternalQuickStartUser;
+import io.github.essencepowered.essence.api.service.EssenceMailService;
+import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.User;
@@ -30,19 +30,19 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class MailHandler implements QuickStartMailService {
+public class MailHandler implements EssenceMailService {
 
     private final Game game;
-    private final QuickStart plugin;
+    private final Essence plugin;
 
-    public MailHandler(Game game, QuickStart plugin) {
+    public MailHandler(Game game, Essence plugin) {
         this.game = game;
         this.plugin = plugin;
     }
 
     @Override
     public List<MailData> getMail(User player, MailFilter... filters) {
-        InternalQuickStartUser iqsu;
+        InternalEssenceUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(player);
         } catch (IOException | ObjectMappingException e) {
@@ -88,7 +88,7 @@ public class MailHandler implements QuickStartMailService {
 
     @Override
     public void sendMail(User playerFrom, User playerTo, String message) {
-        InternalQuickStartUser iqsu;
+        InternalEssenceUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(playerTo);
         } catch (IOException | ObjectMappingException e) {
@@ -112,7 +112,7 @@ public class MailHandler implements QuickStartMailService {
 
     @Override
     public void clearUserMail(User player) {
-        InternalQuickStartUser iqsu;
+        InternalEssenceUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(player);
         } catch (IOException | ObjectMappingException e) {

@@ -1,10 +1,10 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.commands.core;
 
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.argumentparsers.UserParser;
 import io.github.essencepowered.essence.internal.CommandBase;
@@ -72,9 +72,9 @@ public class ResetUser extends CommandBase<CommandSource> {
     private class Delete implements Consumer<CommandSource> {
 
         private final User user;
-        private final QuickStart plugin;
+        private final Essence plugin;
 
-        public Delete(QuickStart plugin, User user) {
+        public Delete(Essence plugin, User user) {
             this.user = user;
             this.plugin = plugin;
         }

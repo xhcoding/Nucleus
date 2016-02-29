@@ -1,10 +1,10 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.internal;
 
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,9 +23,9 @@ import java.util.Optional;
 
 public class EconHelper {
 
-    private final QuickStart plugin;
+    private final Essence plugin;
 
-    public EconHelper(QuickStart plugin) {
+    public EconHelper(Essence plugin) {
         this.plugin = plugin;
     }
 

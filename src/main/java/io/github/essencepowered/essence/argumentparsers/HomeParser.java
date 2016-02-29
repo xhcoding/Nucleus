@@ -1,11 +1,11 @@
 /*
- * This file is part of QuickStart, licensed under the MIT License (MIT). See the LICENCE.txt file
+ * This file is part of Essence, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
 package io.github.essencepowered.essence.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.essencepowered.essence.QuickStart;
+import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.data.WarpLocation;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -26,9 +26,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HomeParser extends CommandElement {
-    private final QuickStart plugin;
+    private final Essence plugin;
 
-    public HomeParser(@Nullable Text key, QuickStart plugin) {
+    public HomeParser(@Nullable Text key, Essence plugin) {
         super(key);
         this.plugin = plugin;
     }
