@@ -74,7 +74,7 @@ public class PluginSystemsLoader {
     }
 
     static Set<Class<? extends CommandBase>> getCommandClasses(Class<? extends CommandBase> base) throws IOException {
-        Set<Class<? extends CommandBase>> cc = getClasses(CommandBase.class, "uk.co.drnaylor.minecraft.quickstart.commands");
+        Set<Class<? extends CommandBase>> cc = getClasses(CommandBase.class, "io.github.essencepowered.essence.commands");
         return cc.stream().filter(x -> {
             RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
             return (rc != null && rc.subcommandOf().equals(base));
@@ -128,7 +128,7 @@ public class PluginSystemsLoader {
     }
 
     private void loadEvents() throws IOException {
-        Set<Class<? extends ListenerBase>> commandsToLoad = filterOutModules(getClasses(ListenerBase.class, "uk.co.drnaylor.minecraft.quickstart.listeners"));
+        Set<Class<? extends ListenerBase>> commandsToLoad = filterOutModules(getClasses(ListenerBase.class, "io.github.essencepowered.essence.listeners"));
         Injector injector = essence.getInjector();
         commandsToLoad.stream().map(x -> {
             try {
@@ -147,7 +147,7 @@ public class PluginSystemsLoader {
     }
 
     private void loadRunnables() throws IOException {
-        Set<Class<? extends TaskBase>> commandsToLoad = filterOutModules(getClasses(TaskBase.class, "uk.co.drnaylor.minecraft.quickstart.runnables"));
+        Set<Class<? extends TaskBase>> commandsToLoad = filterOutModules(getClasses(TaskBase.class, "io.github.essencepowered.essence.runnables"));
         Injector injector = essence.getInjector();
         commandsToLoad.stream().map(x -> {
             try {
