@@ -68,7 +68,7 @@ public class NicknameCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<User> opl = this.getUser(User.class, src, playerKey, args);
-        if (opl.isPresent()) {
+        if (!opl.isPresent()) {
             return CommandResult.empty();
         }
 
