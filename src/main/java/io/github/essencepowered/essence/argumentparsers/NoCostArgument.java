@@ -46,4 +46,9 @@ public class NoCostArgument extends CommandElement {
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         return this.element.complete(src, args, context);
     }
+
+    @Override
+    public Text getUsage(CommandSource src) {
+        return this.element.getUsage(src);
+    }
 }
