@@ -16,7 +16,7 @@ import io.github.essencepowered.essence.internal.CommandPermissionHandler;
 import io.github.essencepowered.essence.internal.annotations.*;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
-import io.github.essencepowered.essence.internal.services.UserConfigLoader;
+import io.github.essencepowered.essence.internal.services.datastore.UserConfigLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
