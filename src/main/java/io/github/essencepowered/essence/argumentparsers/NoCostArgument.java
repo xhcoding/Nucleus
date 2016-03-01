@@ -37,7 +37,7 @@ public class NoCostArgument extends CommandElement {
         this.element.parse(source, args, context);
 
         // We'll get here if there are no exceptions thrown.
-        if (context.getOne(key.toPlain()).isPresent()) {
+        if (key != null && context.getOne(key.toPlain()).isPresent()) {
             context.putArg(NO_COST_ARGUMENT, true);
         }
     }

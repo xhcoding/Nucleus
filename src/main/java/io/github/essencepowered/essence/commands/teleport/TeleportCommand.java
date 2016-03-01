@@ -44,7 +44,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation("permission.teleport.others", SuggestedLevel.ADMIN));
+            m.put("others", new PermissionInformation("permission.teleport.others", SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -56,13 +56,11 @@ public class TeleportCommand extends CommandBase<CommandSource> {
             // Either we get two arguments, or we get one.
             GenericArguments.firstParsing(
                 // <player> <player>
-                GenericArguments.onlyOne(new NoWarmupArgument(new NoCostArgument(
-                    GenericArguments.requiringPermission(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey)), permissions.getPermissionWithSuffix("others"))))),
+                new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey), permissions.getPermissionWithSuffix("others")))),
 
-            // <player>
-            GenericArguments.seq(
+                // <player>
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
-            ))
+            )
         ).build();
     }
 
@@ -101,7 +99,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
         if (ofrom.isPresent()) {
             from = ofrom.get();
             if (from.equals(src)) {
-                src.sendMessage(Text.of(Util.getMessageWithFormat("command.teleport.player.noself")));
+                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.teleport.player.noself")));
                 return CommandResult.empty();
             }
         } else if (src instanceof Player) {
