@@ -46,11 +46,15 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     public void load() throws IOException, ObjectMappingException {
         super.load();
 
-        // Because we execute this command from the superclass constructor, if we create moduleOptions
-        // as part of the declaration, it apparently doesn't get constructed until AFTER the superclass constructor
-        // runs. This means that when this is called from the superclass, moduleOptions actually doesn't exist.
+        // Because we execute this command from the superclass constructor, if
+        // we create moduleOptions
+        // as part of the declaration, it apparently doesn't get constructed
+        // until AFTER the superclass constructor
+        // runs. This means that when this is called from the superclass,
+        // moduleOptions actually doesn't exist.
         //
-        // So, the solution is to just construct it here, rather than call load in every config file I create.
+        // So, the solution is to just construct it here, rather than call load
+        // in every config file I create.
         if (moduleOptions == null) {
             moduleOptions = new HashMap<>();
         }
@@ -75,7 +79,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         allowedCommandsInJail = node.getNode("jail", "allowed-commands").getList(TypeToken.of(String.class));
 
         // Warps
-        serperateWarpPermissions = node.getNode("warps", "separate-permissions").setComment(Util.getMessageWithFormat("config.warps.separate")).getBoolean(false);
+        serperateWarpPermissions =
+                node.getNode("warps", "separate-permissions").setComment(Util.getMessageWithFormat("config.warps.separate")).getBoolean(false);
 
         // Teleports
         teleportWarmup = node.getNode("teleport", "warmup").getLong(3);
@@ -100,9 +105,10 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         CommentedConfigurationNode ccn = SimpleCommentedConfigurationNode.root();
 
         // Load in the modules.
-        CommentedConfigurationNode modules = ccn.getNode(modulesSection)
-                .setComment(Util.getMessageWithFormat("config.modules", "default", "forceload", "disabled"));
-        Arrays.asList(PluginModule.values()).forEach(m -> modules.getNode(m.getKey().toLowerCase()).setValue(ModuleOptions.DEFAULT.name().toLowerCase()));
+        CommentedConfigurationNode modules =
+                ccn.getNode(modulesSection).setComment(Util.getMessageWithFormat("config.modules", "default", "forceload", "disabled"));
+        Arrays.asList(PluginModule.values())
+                .forEach(m -> modules.getNode(m.getKey().toLowerCase()).setValue(ModuleOptions.DEFAULT.name().toLowerCase()));
 
         // AFK module
         CommentedConfigurationNode afkc = ccn.getNode("afk").setComment(Util.getMessageWithFormat("config.afk"));
@@ -110,8 +116,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         afkc.getNode("afktimetokick").setComment(Util.getMessageWithFormat("config.afk.timetokick")).setValue(0);
 
         try {
-            ccn.getNode("jail", "allowed-commands").setComment(Util.getMessageWithFormat("config.jail.commands")).setValue(new TypeToken<List<String>>() {},
-                        Lists.newArrayList("m", "msg", "r", "mail", "rules", "info"));
+            ccn.getNode("jail", "allowed-commands").setComment(Util.getMessageWithFormat("config.jail.commands")).setValue(new TypeToken<List<String>>() {
+            }, Lists.newArrayList("m", "msg", "r", "mail", "rules", "info"));
         } catch (ObjectMappingException e) {
             e.printStackTrace();
         }
@@ -119,7 +125,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         ccn.getNode("warps", "separate-permissions").setComment(Util.getMessageWithFormat("config.warps.separate")).setValue(false);
 
         ccn.getNode("chat", "modifychat").setComment(Util.getMessageWithFormat("config.chat.modify")).setValue(false);
-        ccn.getNode("chat", "template").setComment(Util.getMessageWithFormat("config.chat.template")).setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
+        ccn.getNode("chat", "template").setComment(Util.getMessageWithFormat("config.chat.template"))
+                .setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
 
         ccn.getNode("nicknames", "min-nickname-length").setComment(Util.getMessageWithFormat("config.nicknames.min")).setValue(3);
         ccn.getNode("nicknames", "prefix").setComment(Util.getMessageWithFormat("config.nicknames.prefix")).setValue("&b~");

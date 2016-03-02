@@ -7,7 +7,11 @@ package io.github.essencepowered.essence.commands.teleport;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import io.github.essencepowered.essence.internal.services.TeleportHandler;
@@ -17,22 +21,22 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 @Permissions(root = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.TELEPORT)
 @RunAsync
 @NoWarmup(generateConfigEntry = true)
-@RegisterCommand({ "tpahere", "tpaskhere", "teleportaskhere" })
+@RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})
 public class TeleportAskHereCommand extends CommandBase<Player> {
-    @Inject
-    private TeleportHandler tpHandler;
+
+    @Inject private TeleportHandler tpHandler;
 
     private final String playerKey = "player";
 
@@ -45,17 +49,17 @@ public class TeleportAskHereCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
-                GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()), permissions.getPermissionWithSuffix("force")),
-                GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
-            .executor(this).build();
+        return CommandSpec.builder()
+                .arguments(GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+                        permissions.getPermissionWithSuffix("force")), GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
+                .executor(this).build();
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Player target = args.<Player>getOne(playerKey).get();
         if (src.equals(target)) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.teleport.self")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.teleport.self"));
             return CommandResult.empty();
         }
 
@@ -72,10 +76,10 @@ public class TeleportAskHereCommand extends CommandBase<Player> {
 
         // The question needs to be asked of the target
         tpHandler.addAskQuestion(target.getUniqueId(), new TeleportHandler.TeleportPrep(Instant.now().plus(30, ChronoUnit.SECONDS), src, cost, tb));
-        target.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpahere.question", src.getName())));
+        target.sendMessage(Util.getTextMessageWithFormat("command.tpahere.question", src.getName()));
         target.sendMessage(tpHandler.getAcceptDenyMessage());
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tpask.sent")));
+        src.sendMessage(Util.getTextMessageWithFormat("command.tpask.sent"));
         return CommandResult.success();
     }
 }

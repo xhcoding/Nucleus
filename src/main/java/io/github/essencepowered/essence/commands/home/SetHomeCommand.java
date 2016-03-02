@@ -22,7 +22,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,7 @@ import java.util.regex.Pattern;
 @Permissions(root = "home", alias = "set", suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.HOMES)
 @RunAsync
-@RegisterCommand({ "homeset", "sethome" })
+@RegisterCommand({"homeset", "sethome"})
 public class SetHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";
@@ -39,9 +38,8 @@ public class SetHomeCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
-                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.string(Text.of(homeKey))))
-        ).executor(this).build();
+        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.string(Text.of(homeKey)))))
+                .executor(this).build();
     }
 
     @Override
@@ -61,23 +59,23 @@ public class SetHomeCommand extends CommandBase<Player> {
         Map<String, WarpLocation> msw = iqsu.getHomes();
 
         if (!warpName.matcher(home).matches()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sethome.name")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.name"));
             return CommandResult.empty();
         }
 
         int c = getCount(src);
         if (msw.size() >= c) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sethome.limit", String.valueOf(c))));
+            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
             return CommandResult.empty();
         }
 
         // Does the home exist?
         if (msw.containsKey(home) || !iqsu.setHome(home, src.getLocation(), src.getRotation())) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sethome.seterror", home)));
+            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.seterror", home));
             return CommandResult.empty();
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.sethome.set", home)));
+        src.sendMessage(Util.getTextMessageWithFormat("command.sethome.set", home));
         return CommandResult.success();
     }
 

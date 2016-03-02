@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-@RegisterCommand({ "nick", "nickname" })
+@RegisterCommand({"nick", "nickname"})
 @Permissions
 @Modules(PluginModule.NICKNAME)
 public class NicknameCommand extends CommandBase<CommandSource> {
@@ -59,10 +59,11 @@ public class NicknameCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
-                GenericArguments.optionalWeak(GenericArguments.requiringPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
-                GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))
-        ).executor(this).build();
+        return CommandSpec.builder()
+                .arguments(
+                        GenericArguments.optionalWeak(GenericArguments.requiringPermission(
+                                GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
+                GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))).executor(this).build();
     }
 
     @Override
@@ -75,27 +76,28 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         User pl = opl.get();
         String name = args.<String>getOne(nickName).get();
 
-        // Giving player must have the colour permissions and whatnot. Also, colour and color are the two spellings we support. (RULE BRITANNIA!)
+        // Giving player must have the colour permissions and whatnot. Also,
+        // colour and color are the two spellings we support. (RULE BRITANNIA!)
         if (colourPattern.matcher(name).find() && (permissions.testSuffix(src, "colour") || permissions.testSuffix(src, "color"))) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.colour.noperms")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.nick.colour.noperms"));
             return CommandResult.empty();
         }
 
         // Giving player must have the colour permissions and whatnot.
         if (magicPattern.matcher(name).find() && permissions.testSuffix(src, "magic")) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.magic.noperms")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.nick.magic.noperms"));
             return CommandResult.empty();
         }
 
         // Giving player must have the colour permissions and whatnot.
         if (stylePattern.matcher(name).find() && permissions.testSuffix(src, "style")) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.style.noperms")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.nick.style.noperms"));
             return CommandResult.empty();
         }
 
         // Do a regex remove to check minimum length requirements.
-        if (name.replaceAll("&[0-9a-fomlnk]","").length() < Math.max(mainConfig.getMinNickLength(), 1)) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.nick.tooshort")));
+        if (name.replaceAll("&[0-9a-fomlnk]", "").length() < Math.max(mainConfig.getMinNickLength(), 1)) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.nick.tooshort"));
             return CommandResult.empty();
         }
 
@@ -104,13 +106,13 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         Text set = internalQuickStartUser.getNicknameAsText().get();
 
         if (!src.equals(pl)) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.nick.success.other", pl.getName()) + " - ",
-                    TextColors.RESET, set));
+            src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.nick.success.other", pl.getName()))
+                    .append(Text.of(" - ", TextColors.RESET, set)).build());
         }
 
         if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.nick.success") + " - ",
-                    TextColors.RESET, set));
+            pl.getPlayer().get().sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.nick.success"))
+                    .append(Text.of(" - ", TextColors.RESET, set)).build());
         }
 
         return CommandResult.success();

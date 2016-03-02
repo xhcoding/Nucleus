@@ -14,7 +14,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 /**
  * Teleports you to the world spawn.
@@ -33,7 +32,7 @@ public class WorldSpawnCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {
         pl.setLocation(pl.getWorld().getSpawnLocation());
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.spawn.success")));
+        pl.sendMessage(Util.getTextMessageWithFormat("command.world.spawn.success"));
         return CommandResult.success();
     }
 }

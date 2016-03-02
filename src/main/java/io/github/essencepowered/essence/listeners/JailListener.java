@@ -43,14 +43,11 @@ import java.util.concurrent.TimeUnit;
 @Modules(PluginModule.JAILS)
 public class JailListener extends ListenerBase {
 
-    @Inject
-    private UserConfigLoader loader;
+    @Inject private UserConfigLoader loader;
 
-    @Inject
-    private JailHandler handler;
+    @Inject private JailHandler handler;
 
-    @Inject
-    private MainConfig config;
+    @Inject private MainConfig config;
 
     /**
      * At the time the player joins, check to see if the player is muted.
@@ -72,7 +69,8 @@ public class JailListener extends ListenerBase {
         if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
             Optional<WarpLocation> owl = handler.getWarpLocation(user);
             if (!owl.isPresent()) {
-                MessageChannel.permission(JailCommand.notifyPermission).send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
+                MessageChannel.permission(JailCommand.notifyPermission)
+                        .send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
                 handler.unjailPlayer(user);
                 return;
             }
@@ -85,37 +83,33 @@ public class JailListener extends ListenerBase {
             Optional<Duration> timeLeft = jd.getTimeLeft();
             Text message;
             if (timeLeft.isPresent()) {
-                message = Text.of(TextColors.RED,
-                        Util.getMessageWithFormat("command.jail.jailed",
-                                owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()), Util.getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds())));
+                message = Util.getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()),
+                        Util.getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds()));
             } else {
-                message = Text.of(TextColors.RED,
-                        Util.getMessageWithFormat("command.jail.jailed",
-                                owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()), "", ""));
+                message = Util.getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()), "", "");
             }
 
             qs.setFlying(false);
             user.sendMessage(message);
-            user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", jd.getReason())));
+            user.sendMessage(Util.getTextMessageWithFormat("standard.reason", jd.getReason()));
         }
 
         qs.setJailOnNextLogin(false);
 
         // Kick off a scheduled task.
-        Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS)
-                .execute(() -> {
-                    Optional<JailData> omd = qs.getJailData();
-                    if (omd.isPresent()) {
-                        JailData md = omd.get();
-                        md.nextLoginToTimestamp();
+        Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS).execute(() -> {
+            Optional<JailData> omd = qs.getJailData();
+            if (omd.isPresent()) {
+                JailData md = omd.get();
+                md.nextLoginToTimestamp();
 
-                        omd = Util.testForEndTimestamp(qs.getJailData(), () -> handler.unjailPlayer(user));
-                        if (omd.isPresent()) {
-                            md = omd.get();
-                            onJail(md, event.getTargetEntity());
-                        }
-                    }
-                }).submit(plugin);
+                omd = Util.testForEndTimestamp(qs.getJailData(), () -> handler.unjailPlayer(user));
+                if (omd.isPresent()) {
+                    md = omd.get();
+                    onJail(md, event.getTargetEntity());
+                }
+            }
+        }).submit(plugin);
     }
 
     @Listener
@@ -170,14 +164,13 @@ public class JailListener extends ListenerBase {
 
     private void onJail(JailData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(
-                    Util.getMessageWithFormat("jail.playernotify.time"),
+            user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("jail.playernotify.time"),
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS)))));
         } else {
-            user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("jail.playernotify")));
+            user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify"));
         }
 
-        user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", md.getReason())));
+        user.sendMessage(Util.getTextMessageWithFormat("standard.reason", md.getReason()));
     }
 
 }

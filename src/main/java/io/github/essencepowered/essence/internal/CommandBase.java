@@ -4,6 +4,8 @@
  */
 package io.github.essencepowered.essence.internal;
 
+import static io.github.essencepowered.essence.PluginInfo.ERROR_MESSAGE_PREFIX;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -11,13 +13,22 @@ import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.argumentparsers.NoCostArgument;
 import io.github.essencepowered.essence.config.MainConfig;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.ConfigCommandAlias;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.services.WarmupManager;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.*;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -31,16 +42,21 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.essencepowered.essence.PluginInfo.ERROR_MESSAGE_PREFIX;
+import javax.annotation.Nullable;
 
 public abstract class CommandBase<T extends CommandSource> implements CommandExecutor {
 
@@ -65,26 +81,34 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
     @SuppressWarnings("unchecked")
     protected CommandBase() {
-        // I hate type erasure - it leads to a hack like this. Admittedly, I could've just created a subclass that does
+        // I hate type erasure - it leads to a hack like this. Admittedly, I
+        // could've just created a subclass that does
         // the same thing, but I like to beat the system! :)
         //
-        // This code reflectively looks for methods called "executeCommand", which is defined in this class. However,
-        // due to type erasure, if a generic type is specified, there are two "executeCommand" methods, one that satisfies
-        // this abstract class (with the CommandSource argument) and a second method that fulfils the generic type T.
+        // This code reflectively looks for methods called "executeCommand",
+        // which is defined in this class. However,
+        // due to type erasure, if a generic type is specified, there are two
+        // "executeCommand" methods, one that satisfies
+        // this abstract class (with the CommandSource argument) and a second
+        // method that fulfils the generic type T.
         //
-        // Thus, we need to check that there is a method called executeCommand that has a more restrictive argument than
+        // Thus, we need to check that there is a method called executeCommand
+        // that has a more restrictive argument than
         // "CommandSource" in order to check for the generic type.
         //
-        // This allows us to then have code that filters out non-Players by simply specifying the generic type "Player".
+        // This allows us to then have code that filters out non-Players by
+        // simply specifying the generic type "Player".
         //
-        // The provided stream filters out the standard executeCommand method, and checks to see if there is a second that makes
+        // The provided stream filters out the standard executeCommand method,
+        // and checks to see if there is a second that makes
         // use of the generic parameter.
-        Optional<Method> me = Arrays.asList(getClass().getMethods()).stream().filter(x -> x.getName().equals("executeCommand") &&
-                x.getParameterTypes().length == 2 &&
-                x.getParameterTypes()[1].isAssignableFrom(CommandContext.class) &&
-                !x.getParameterTypes()[0].equals(CommandSource.class)).findFirst();
+        Optional<Method> me = Arrays.asList(getClass().getMethods()).stream()
+                .filter(x -> x.getName().equals("executeCommand") && x.getParameterTypes().length == 2
+                        && x.getParameterTypes()[1].isAssignableFrom(CommandContext.class) && !x.getParameterTypes()[0].equals(CommandSource.class))
+                .findFirst();
 
-        // If there is a second executeCommand method, then we know that's the type that we need and we can do our source
+        // If there is a second executeCommand method, then we know that's the
+        // type that we need and we can do our source
         // checks against it accordingly.
         if (me.isPresent()) {
             sourceType = (Class<T>) (me.get().getParameterTypes()[0]);
@@ -98,7 +122,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         Preconditions.checkNotNull(this.getAliases());
         Preconditions.checkArgument(this.getAliases().length > 0);
 
-        // For these flags, we simply need to get whether the annotation was declared. If they were not, we simply get back
+        // For these flags, we simply need to get whether the annotation was
+        // declared. If they were not, we simply get back
         // a null - so the check is based around that.
         NoWarmup w = this.getClass().getAnnotation(NoWarmup.class);
         bypassWarmup = w != null;
@@ -107,9 +132,12 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         bypassCooldown = this.getClass().getAnnotation(NoCooldown.class) != null;
         bypassCost = this.getClass().getAnnotation(NoCost.class) != null;
 
-        // The Permissions annotation provides the backbone of the permissions system for the commands.
-        // The standard permisson is based on the getAliases command, specifically, the first argument in the
-        // returned array, such that the permission it will generated if this annotation is defined is:
+        // The Permissions annotation provides the backbone of the permissions
+        // system for the commands.
+        // The standard permisson is based on the getAliases command,
+        // specifically, the first argument in the
+        // returned array, such that the permission it will generated if this
+        // annotation is defined is:
         //
         // quickstart.(primaryalias).base
         //
@@ -121,7 +149,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         //
         // exempt.(cooldown|warmup|cost)
         //
-        // By default, the permission "quickstart.admin" also gets permission to run and bypass all warmups,
+        // By default, the permission "quickstart.admin" also gets permission to
+        // run and bypass all warmups,
         // cooldowns and costs, but this can be turned off in the annotation.
         permissions = new CommandPermissionHandler(this);
 
@@ -143,7 +172,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     public abstract CommandSpec createSpec();
 
     /**
-     * Gets the aliases for the command. The first alias will be the primary alias within Essence.
+     * Gets the aliases for the command. The first alias will be the primary
+     * alias within Essence.
      *
      * @return An array of aliases.
      */
@@ -159,18 +189,18 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     /**
-     * Functionally similar to {@link CommandExecutor#execute(CommandSource, CommandContext)}, this contains logic that
-     * actually executes the command.
+     * Functionally similar to
+     * {@link CommandExecutor#execute(CommandSource, CommandContext)}, this
+     * contains logic that actually executes the command.
      *
-     * <p>
-     *     Note that the {@link CommandResult} is important here. A success is treated differently to a non-success!
-     * </p>
+     * <p> Note that the {@link CommandResult} is important here. A success is
+     * treated differently to a non-success! </p>
      *
      * @param src The executor of the command.
      * @param args The arguments for the command.
      * @return The {@link CommandResult}
-     * @throws Exception If thrown, {@link TextMessageException#getText()} or {@link Exception#getMessage()} will be
-     *                   sent to the user.
+     * @throws Exception If thrown, {@link TextMessageException#getText()} or
+     *         {@link Exception#getMessage()} will be sent to the user.
      */
     public abstract CommandResult executeCommand(T src, CommandContext args) throws Exception;
 
@@ -179,7 +209,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
 
     /**
-     * Contains extra permission suffixes that are to be registered in the permission service.
+     * Contains extra permission suffixes that are to be registered in the
+     * permission service.
      *
      * @return A map containing the extra permission suffixes to register.
      */
@@ -188,7 +219,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     /**
-     * Contains extra permissions that are to be registered in the permission service.
+     * Contains extra permissions that are to be registered in the permission
+     * service.
      *
      * @return A map containing the extra permissions to register.
      */
@@ -248,13 +280,15 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
 
     /**
-     * Runs any checks that need to occur before the warmup, cooldown and cost checks.
+     * Runs any checks that need to occur before the warmup, cooldown and cost
+     * checks.
      *
      * @param source The source of the command.
      * @param args The arguments.
      * @return Whether to continue or not.
      *
-     * @throws Exception Thrown if there is a problem that means the command cannot continue.
+     * @throws Exception Thrown if there is a problem that means the command
+     *         cannot continue.
      */
     protected ContinueMode preProcessChecks(T source, CommandContext args) throws Exception {
         return ContinueMode.CONTINUE;
@@ -263,13 +297,15 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     @Override
     @NonnullByDefault
     public final CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
-        // If the implementing class has defined a generic parameter, then check the source type.
+        // If the implementing class has defined a generic parameter, then check
+        // the source type.
         if (!checkSourceType(source)) {
             return CommandResult.empty();
         }
 
         // Cast as required.
-        @SuppressWarnings("unchecked") T src = (T)source;
+        @SuppressWarnings("unchecked")
+        T src = (T) source;
 
         // If they don't match ANY permission, throw 'em.
         if (!permissions.testBase(src)) {
@@ -283,7 +319,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             }
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.of(ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("command.error")));
+            src.sendMessage(Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("command.error")).build());
 
             if (config.getDebugMode()) {
                 e.printStackTrace();
@@ -293,7 +329,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         if (src instanceof Player) {
-            ContinueMode cm = runChecks((Player)src, args);
+            ContinueMode cm = runChecks((Player) src, args);
 
             if (!cm.cont) {
                 return cm.returnType;
@@ -322,7 +358,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         } catch (TextMessageException e) {
             // If the exception contains a text object, render it like so...
             Text t = e.getText();
-            src.sendMessage((t == null) ? Text.of(TextColors.RED, Util.getMessageWithFormat("command.error")) : t);
+            src.sendMessage((t == null) ? Util.getTextMessageWithFormat("command.error") : t);
 
             if (config.getDebugMode()) {
                 e.printStackTrace();
@@ -331,7 +367,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             cr = CommandResult.empty();
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.error")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.error"));
 
             if (config.getDebugMode()) {
                 e.printStackTrace();
@@ -342,12 +378,13 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
         if (src instanceof Player) {
             // If the player is subject to cooling down, apply the cooldown.
-            final Player p = (Player)src;
+            final Player p = (Player) src;
 
             if (cr.getSuccessCount().orElse(0) > 0) {
                 setCooldown(p);
             } else {
-                // For the tests, keep this here so we can skip the hard to test code below.
+                // For the tests, keep this here so we can skip the hard to test
+                // code below.
                 final double cost = getCost(p, args);
                 if (cost > 0) {
                     Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> plugin.getEconHelper().depositInPlayer(p, cost));
@@ -363,13 +400,13 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     // -------------------------------------
     private boolean checkSourceType(CommandSource source) {
         if (sourceType.equals(Player.class) && !(source instanceof Player)) {
-            source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
+            source.sendMessage(Util.getTextMessageWithFormat("command.playeronly"));
             return false;
         } else if (sourceType.equals(ConsoleSource.class) && !(source instanceof Player)) {
-            source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.consoleonly")));
+            source.sendMessage(Util.getTextMessageWithFormat("command.consoleonly"));
             return false;
         } else if (sourceType.equals(CommandBlockSource.class) && !(source instanceof CommandBlockSource)) {
-            source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.commandblockonly")));
+            source.sendMessage(Util.getTextMessageWithFormat("command.commandblockonly"));
             return false;
         }
 
@@ -402,7 +439,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         } else if (clazz.isInstance(src)) {
             pl = clazz.cast(src);
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.playeronly"));
             return Optional.empty();
         }
 
@@ -433,17 +470,19 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             return ContinueMode.CONTINUE;
         }
 
-        // We create a task that executes the command at a later time. Because we already know we have permission,
+        // We create a task that executes the command at a later time. Because
+        // we already know we have permission,
         // we can skip those checks.
-        Task.Builder tb = Sponge.getScheduler().createTaskBuilder().delay(warmupTime, TimeUnit.SECONDS).execute(
-            new CostCancellableTask(plugin, src, getCost(src, args)) {
-                @Override
-                public void accept(Task task) {
-                    src.sendMessage(Text.builder(Util.getMessageWithFormat("warmup.end")).color(TextColors.YELLOW).build());
-                    warmupService.removeWarmup(src.getUniqueId());
-                    startExecute((T)src, args);
-                }
-        }).name("Command Warmup - " + src.getName());
+        Task.Builder tb = Sponge.getScheduler().createTaskBuilder().delay(warmupTime, TimeUnit.SECONDS)
+                .execute(new CostCancellableTask(plugin, src, getCost(src, args)) {
+
+                    @Override
+                    public void accept(Task task) {
+                        src.sendMessage(Util.getTextMessageWithFormat("warmup.end"));
+                        warmupService.removeWarmup(src.getUniqueId());
+                        startExecute((T) src, args);
+                    }
+                }).name("Command Warmup - " + src.getName());
 
         // Run an async command async, of course!
         if (isAsync) {
@@ -468,11 +507,12 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         // Remove any expired cooldowns.
         cleanCooldowns();
 
-        // If they are still in there, then tell them they are still cooling down.
+        // If they are still in there, then tell them they are still cooling
+        // down.
         if (!bypassCooldown && !permissions.testCooldownExempt(src)) {
             Instant l = cooldownStore.get(src.getUniqueId());
-            src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cooldown.message"), Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))))
-                    .color(TextColors.YELLOW).build());
+            src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cooldown.message"),
+                    Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS)))).color(TextColors.YELLOW).build());
             return ContinueMode.STOP;
         }
 
@@ -484,7 +524,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             // Get the cooldown time.
             int cooldownTime = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("cooldown").getInt();
             if (cooldownTime > 0) {
-                // If there is a cooldown, add the cooldown to the list, with the end time as an Instant.
+                // If there is a cooldown, add the cooldown to the list, with
+                // the end time as an Instant.
                 cooldownStore.put(src.getUniqueId(), Instant.now().plus(cooldownTime, ChronoUnit.SECONDS));
             }
         }
@@ -518,7 +559,8 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     /**
-     * Gets the cost for this command, or zero if the player does not have to pay.
+     * Gets the cost for this command, or zero if the player does not have to
+     * pay.
      *
      * @param src The {@link CommandSource}
      * @param args The {@link CommandContext}
@@ -544,7 +586,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     protected final Map<List<String>, CommandCallable> createChildCommands() {
         Set<Class<? extends CommandBase>> scb;
         try {
-             scb = PluginSystemsLoader.getCommandClasses(getClass());
+            scb = PluginSystemsLoader.getCommandClasses(getClass());
         } catch (IOException e) {
 
             if (config.getDebugMode()) {

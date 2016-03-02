@@ -21,24 +21,25 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
-@RegisterCommand({ "delnick", "delnickname", "deletenick" })
+@RegisterCommand({"delnick", "delnickname", "deletenick"})
 @Permissions(alias = "nick")
 @Modules(PluginModule.NICKNAME)
 public class DelNickCommand extends CommandBase<CommandSource> {
-    @Inject
-    private UserConfigLoader loader;
+
+    @Inject private UserConfigLoader loader;
 
     private final String playerKey = "player";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
-                GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("others")))
-        ).executor(this).build();
+        return CommandSpec.builder()
+                .arguments(
+                        GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))),
+                                permissions.getPermissionWithSuffix("others"))))
+                .executor(this).build();
     }
 
     @Override
@@ -53,11 +54,11 @@ public class DelNickCommand extends CommandBase<CommandSource> {
         internalQuickStartUser.removeNickname();
 
         if (!src.equals(pl)) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.delnick.success.other", pl.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.delnick.success.other", pl.getName()));
         }
 
         if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.delnick.success")));
+            pl.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.delnick.success"));
         }
 
         return CommandResult.success();

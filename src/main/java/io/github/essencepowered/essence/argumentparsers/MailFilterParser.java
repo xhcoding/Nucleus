@@ -18,9 +18,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -29,7 +27,10 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 public class MailFilterParser extends CommandElement {
+
     private static final Pattern before = Pattern.compile("b:(\\d+)]");
     private static final Pattern after = Pattern.compile("a:(\\d+)]");
     private static final Pattern message = Pattern.compile("m:(.+?)(?= [abmp]:|$)");
@@ -67,7 +68,7 @@ public class MailFilterParser extends CommandElement {
                         try {
                             lmf.add(handler.createPlayerFilter(u));
                         } catch (NoSuchPlayerException e) {
-                            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.mailfilter.player", players.group(1))));
+                            throw args.createError(Util.getTextMessageWithFormat("args.mailfilter.player", players.group(1)));
                         }
                     }
                 }

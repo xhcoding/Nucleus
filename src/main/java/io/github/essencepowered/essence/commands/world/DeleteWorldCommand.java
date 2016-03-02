@@ -16,7 +16,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -56,7 +55,7 @@ public class DeleteWorldCommand extends CommandBase<CommandSource> {
         }
 
         worldProperties.setEnabled(false);
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.delete")));
+        src.sendMessage(Util.getTextMessageWithFormat("command.world.delete"));
         return CommandResult.success();
     }
 }

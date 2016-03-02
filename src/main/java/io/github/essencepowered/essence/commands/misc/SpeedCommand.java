@@ -23,7 +23,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,13 +31,15 @@ import java.util.Optional;
 @Modules(PluginModule.MISC)
 @Permissions
 public class SpeedCommand extends CommandBase<CommandSource> {
+
     private final String speedKey = "speed";
     private final String typeKey = "type";
     private final String playerKey = "player";
 
     /**
-     * As the standard flying speed is 0.05 and the standard walking speed is 0.1, we multiply it by 20 and use integers.
-     * Standard walking speed is therefore 2, standard flying speed - 1.
+     * As the standard flying speed is 0.05 and the standard walking speed is
+     * 0.1, we multiply it by 20 and use integers. Standard walking speed is
+     * therefore 2, standard flying speed - 1.
      */
     public static final int multiplier = 20;
 
@@ -52,13 +53,12 @@ public class SpeedCommand extends CommandBase<CommandSource> {
         keysMap.put("walk", SpeedType.WALKING);
         keysMap.put("w", SpeedType.WALKING);
 
-        return CommandSpec.builder().arguments(
-                GenericArguments.optional(GenericArguments.seq(
-                    GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
-                    GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
-                    GenericArguments.integer(Text.of(speedKey))
-                ))
-        ).executor(this).build();
+        return CommandSpec.builder()
+                .arguments(GenericArguments.optional(GenericArguments.seq(
+                        GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
+                                .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
+                GenericArguments.integer(Text.of(speedKey))))).executor(this).build();
     }
 
     @Override
@@ -71,13 +71,11 @@ public class SpeedCommand extends CommandBase<CommandSource> {
         Player pl = opl.get();
         Optional<Integer> ospeed = args.<Integer>getOne(speedKey);
         if (!ospeed.isPresent()) {
-            Text t = Text.builder()
-                    .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.walk")))
-                    .append(Text.of(" "))
+            Text t = Text.builder().append(Util.getTextMessageWithFormat("command.speed.walk")).append(Text.of(" "))
                     .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * 20)))
-                    .append(Text.of(TextColors.GREEN, ", " + Util.getMessageWithFormat("command.speed.flying")))
-                    .append(Text.of(" "))
-                    .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * 20)))
+                    .append(Text.builder().append(Text.of(TextColors.GREEN, ", ")).append(Util.getTextMessageWithFormat("command.speed.flying"))
+                            .build())
+                    .append(Text.of(" ")).append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * 20)))
                     .append(Text.of(TextColors.GREEN, ".")).build();
 
             src.sendMessage(t);
@@ -90,29 +88,28 @@ public class SpeedCommand extends CommandBase<CommandSource> {
         int speed = ospeed.get();
 
         if (speed < 0) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.speed.negative")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.speed.negative"));
             return CommandResult.empty();
         }
 
         DataTransactionResult dtr = pl.offer(key.speedKey, (double) speed / (double) multiplier);
 
         if (dtr.isSuccessful()) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.success", key.name, String.valueOf(speed))));
+            src.sendMessage(Util.getTextMessageWithFormat("command.speed.success", key.name, String.valueOf(speed)));
 
             if (!pl.equals(src)) {
-                src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.speed.success.other"), pl.getName(), key.name, String.valueOf(speed))));
+                src.sendMessages(Util.getTextMessageWithFormat("command.speed.success.other", pl.getName(), key.name, String.valueOf(speed)));
             }
 
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.speed.fail", key.name)));
+        src.sendMessage(Util.getTextMessageWithFormat("command.speed.fail", key.name));
         return CommandResult.empty();
     }
 
     private enum SpeedType {
-        WALKING(Keys.WALKING_SPEED, Util.getMessageWithFormat("standard.walking")),
-        FLYING(Keys.FLYING_SPEED, Util.getMessageWithFormat("standard.flying"));
+        WALKING(Keys.WALKING_SPEED, Util.getMessageWithFormat("standard.walking")), FLYING(Keys.FLYING_SPEED, Util.getMessageWithFormat("standard.flying"));
 
         final Key<Value<Double>> speedKey;
         final String name;

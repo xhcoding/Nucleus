@@ -9,7 +9,13 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.api.data.WarpLocation;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import io.github.essencepowered.essence.internal.services.JailHandler;
 import org.spongepowered.api.Sponge;
@@ -35,11 +41,10 @@ import java.util.stream.Collectors;
 @RegisterCommand("jails")
 @Permissions(root = "jail", alias = "list", suggestedLevel = SuggestedLevel.MOD)
 public class JailsCommand extends CommandBase<CommandSource> {
-    @Inject
-    private JailHandler handler;
+
+    @Inject private JailHandler handler;
 
     @Override
-    @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).children(this.createChildCommands()).build();
     }
@@ -49,12 +54,13 @@ public class JailsCommand extends CommandBase<CommandSource> {
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
 
         Map<String, WarpLocation> mjs = handler.getJails();
-        List<Text> lt = mjs.entrySet().stream().map(x -> Text.builder(x.getKey().toLowerCase()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                .onClick(TextActions.runCommand("/jails info " + x.getKey().toLowerCase()))
-                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.jails.jailprompt", x.getKey().toLowerCase())))).build()).collect(Collectors.toList());
+        List<Text> lt = mjs.entrySet().stream()
+                .map(x -> Text.builder(x.getKey().toLowerCase()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                        .onClick(TextActions.runCommand("/jails info " + x.getKey().toLowerCase()))
+                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.jails.jailprompt", x.getKey().toLowerCase()))).build())
+                .collect(Collectors.toList());
 
-        ps.builder().title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.jails.list.header")))
-                .paddingString("-").contents(lt).sendTo(src);
+        ps.builder().title(Util.getTextMessageWithFormat("command.jails.list.header")).paddingString("-").contents(lt).sendTo(src);
         return CommandResult.success();
     }
 }

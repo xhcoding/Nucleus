@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 @NoCost
 @RegisterCommand("mail")
 public class MailCommand extends CommandBase<Player> {
+
     @Inject private MailHandler handler;
     private final String filters = "filters";
     @Inject private Game game;
@@ -48,9 +49,7 @@ public class MailCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).children(this.createChildCommands(ClearMailCommand.class, SendMailCommand.class))
-                .arguments(
-                        GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(filters), handler)))
-                ).build();
+                .arguments(GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(filters), handler)))).build();
     }
 
     @Override
@@ -64,35 +63,33 @@ public class MailCommand extends CommandBase<Player> {
         }
 
         if (lmd.isEmpty()) {
-            src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat(!lmf.isEmpty() ? "command.mail.none.filter" : "command.mail.none")));
+            src.sendMessage(Util.getTextMessageWithFormat(!lmf.isEmpty() ? "command.mail.none.filter" : "command.mail.none"));
             return CommandResult.success();
         }
 
-        List<Text> mails = lmd.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate()))
-                .map(this::createMessage)
-                .collect(Collectors.toList());
+        List<Text> mails = lmd.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(this::createMessage).collect(Collectors.toList());
 
         // Paginate the mail.
         PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().paddingString("-").title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat(lmf.isEmpty() ? "mail.title" : "mail.title.filter")))
-                .header(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("mail.header"))).contents(mails)
-                .sendTo(src);
+        ps.builder().paddingString("-").title(Util.getTextMessageWithFormat(lmf.isEmpty() ? "mail.title" : "mail.title.filter"))
+                .header(Util.getTextMessageWithFormat("mail.header")).contents(mails).sendTo(src);
 
         return CommandResult.success();
     }
 
     private Text createMessage(final MailData md) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM dd").withZone(ZoneId.systemDefault());
-        return Text.builder().append(Text.builder(NameUtil.getNameFromUUID(md.getUuid()))
-                .color(TextColors.GREEN)
-                .style(TextStyles.UNDERLINE)
-                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.hover"))))
-                .onClick(TextActions.executeCallback(src -> {
-                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.date") + " ", TextColors.WHITE, dtf.format(md.getDate())));
-                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.sender") + " ", TextColors.WHITE, NameUtil.getNameFromUUID(md.getUuid())));
-                    src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.mail.message")));
-                    src.sendMessage(Text.of(TextColors.WHITE, md.getMessage()));
-                })).build())
+        return Text.builder()
+                .append(Text.builder(NameUtil.getNameFromUUID(md.getUuid())).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.mail.hover")))
+                        .onClick(TextActions.executeCallback(src -> {
+                            src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.mail.date"))
+                                    .append(Text.of(" ", TextColors.WHITE, dtf.format(md.getDate()))).build());
+                            src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.mail.sender"))
+                                    .append(Text.of(" ", TextColors.WHITE, NameUtil.getNameFromUUID(md.getUuid()))).build());
+                            src.sendMessage(Util.getTextMessageWithFormat("command.mail.message"));
+                            src.sendMessage(Text.of(TextColors.WHITE, md.getMessage()));
+                        })).build())
                 .append(Text.of(": " + md.getMessage())).build();
     }
 }

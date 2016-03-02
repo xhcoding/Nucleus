@@ -20,9 +20,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +29,7 @@ import java.util.Optional;
 @Modules(PluginModule.MISC)
 @RegisterCommand("fly")
 public class FlyCommand extends CommandBase<CommandSource> {
+
     private static final String player = "player";
     private static final String toggle = "toggle";
 
@@ -43,10 +42,11 @@ public class FlyCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(GenericArguments.player(Text.of(player)), permissions.getPermissionWithSuffix("others")))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
-        ).build();
+        return CommandSpec.builder().executor(this)
+                .arguments(
+                        GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
+                                .requiringPermission(GenericArguments.player(Text.of(player)), permissions.getPermissionWithSuffix("others")))),
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))).build();
     }
 
     @Override
@@ -62,15 +62,15 @@ public class FlyCommand extends CommandBase<CommandSource> {
         boolean fly = args.<Boolean>getOne(toggle).orElse(!uc.isFlying());
 
         if (!uc.setFlying(fly)) {
-            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.fly.error")));
+            src.sendMessages(Util.getTextMessageWithFormat("command.fly.error"));
             return CommandResult.empty();
         }
 
         if (pl != src) {
-            src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat(fly ? "command.fly.player.on" : "command.fly.player.off"), pl.getName())));
+            src.sendMessages(Util.getTextMessageWithFormat(fly ? "command.fly.player.on" : "command.fly.player.off", pl.getName()));
         }
 
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat(fly ? "command.fly.on" : "command.fly.off")));
+        pl.sendMessage(Util.getTextMessageWithFormat(fly ? "command.fly.on" : "command.fly.off"));
         return CommandResult.success();
     }
 }

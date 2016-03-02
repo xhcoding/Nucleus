@@ -9,7 +9,12 @@ import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.argumentparsers.TimespanParser;
 import io.github.essencepowered.essence.argumentparsers.UserParser;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -36,15 +41,17 @@ import java.time.temporal.ChronoUnit;
 @NoCooldown
 @NoCost
 public class TempBanCommand extends CommandBase<CommandSource> {
+
     private final String user = "user";
     private final String reason = "reason";
     private final String duration = "duration";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(user))),
-                GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
-                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))).executor(this).build();
+        return CommandSpec.builder()
+                .arguments(GenericArguments.onlyOne(new UserParser(Text.of(user))), GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
+                        GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason))))
+                .executor(this).build();
     }
 
     @Override
@@ -69,8 +76,8 @@ public class TempBanCommand extends CommandBase<CommandSource> {
 
         MutableMessageChannel send = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
         send.addMember(src);
-        send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName())));
-        send.send(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.reason", reason)));
+        send.send(Util.getTextMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName()));
+        send.send(Util.getTextMessageWithFormat("standard.reason", reason));
 
         return CommandResult.success();
     }

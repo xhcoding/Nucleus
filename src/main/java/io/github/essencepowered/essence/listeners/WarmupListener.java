@@ -15,8 +15,6 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 public class WarmupListener extends ListenerBase {
 
@@ -43,7 +41,7 @@ public class WarmupListener extends ListenerBase {
     private void cancelWarmup(Player player) {
         service.cleanup();
         if (service.removeWarmup(player.getUniqueId()) && player.isOnline()) {
-            player.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("warmup.cancel")));
+            player.sendMessage(Util.getTextMessageWithFormat("warmup.cancel"));
         }
     }
 }

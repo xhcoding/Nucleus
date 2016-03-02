@@ -47,7 +47,7 @@ public class SetTimeCommand extends CommandBase<CommandSource> {
             } else if (src instanceof CommandBlockSource) {
                 pr = ((CommandBlockSource) src).getWorld().getProperties();
             } else {
-                src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.settime.default")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.settime.default"));
                 pr = Sponge.getServer().getDefaultWorld().get();
             }
         }

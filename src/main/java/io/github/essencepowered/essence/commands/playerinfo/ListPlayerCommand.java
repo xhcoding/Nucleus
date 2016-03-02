@@ -33,8 +33,9 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @Modules(PluginModule.PLAYERINFO)
-@RegisterCommand({ "list", "listplayers" })
+@RegisterCommand({"list", "listplayers"})
 public class ListPlayerCommand extends CommandBase<CommandSource> {
+
     @Inject private UserConfigLoader loader;
     private Text hidden = Text.of(TextColors.GRAY, Util.getMessageWithFormat("command.list.hidden") + " ");
 
@@ -63,17 +64,18 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
                     }
 
                     return tb.append(NameUtil.getName(x, loader)).build();
-                })
-                .collect(Collectors.toList());
+                }).collect(Collectors.toList());
 
-        String header;
+        Text header;
         if (showVanished && hiddenCount > 0) {
-            header = Util.getMessageWithFormat("command.list.playercount.hidden", String.valueOf(playerList.size()), String.valueOf(Sponge.getServer().getMaxPlayers()), String.valueOf(hiddenCount));
+            header = Util.getTextMessageWithFormat("command.list.playercount.hidden", String.valueOf(playerList.size()),
+                    String.valueOf(Sponge.getServer().getMaxPlayers()), String.valueOf(hiddenCount));
         } else {
-            header = Util.getMessageWithFormat("command.list.playercount", String.valueOf(playerList.size()), String.valueOf(Sponge.getServer().getMaxPlayers()));
+            header = Util.getTextMessageWithFormat("command.list.playercount", String.valueOf(playerList.size()),
+                    String.valueOf(Sponge.getServer().getMaxPlayers()));
         }
 
-        src.sendMessage(Text.of(TextColors.YELLOW, header));
+        src.sendMessage(header);
 
         if (!playerList.isEmpty()) {
             boolean isFirst = true;

@@ -7,7 +7,12 @@ package io.github.essencepowered.essence.commands.kick;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -18,9 +23,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.format.TextColors;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,16 +39,16 @@ import java.util.Map;
 @NoCost
 @RegisterCommand("kick")
 public class KickCommand extends CommandBase<CommandSource> {
+
     private final String player = "player";
     private final String reason = "reason";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Kicks a player.")).executor(this)
-                .arguments(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))),
-                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
-                ).build();
+                .arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of(player))),
+                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))))
+                .build();
     }
 
     @Override
@@ -62,8 +65,8 @@ public class KickCommand extends CommandBase<CommandSource> {
         pl.kick(Text.of(r));
 
         MessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify"));
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.kick.message"), pl.getName(), src.getName())));
-        mc.send(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.reason"), reason)));
+        mc.send(Util.getTextMessageWithFormat("command.kick.message", pl.getName(), src.getName()));
+        mc.send(Util.getTextMessageWithFormat("command.reason", reason));
         return CommandResult.success();
     }
 }

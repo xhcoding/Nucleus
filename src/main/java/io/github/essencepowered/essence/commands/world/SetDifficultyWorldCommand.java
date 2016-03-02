@@ -17,7 +17,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -26,8 +25,8 @@ import java.util.Optional;
 /**
  * Sets difficulty of world.
  *
- * Command Usage: /world setdifficulty [difficulty] [world] 
- * Permission: essence.world.setdifficulty.base
+ * Command Usage: /world setdifficulty [difficulty] [world] Permission:
+ * essence.world.setdifficulty.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setdifficulty"}, subcommandOf = WorldCommand.class)
@@ -52,14 +51,14 @@ public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
 
         if (optWorldProperties.isPresent()) {
             optWorldProperties.get().setDifficulty(difficultyInput);
-            src.sendMessage(Text.of(Util.getMessageWithFormat("command.world.setdifficulty.success")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.world.setdifficulty.success"));
         } else {
             if (src instanceof Player) {
                 Player player = (Player) src;
                 player.getWorld().getProperties().setDifficulty(difficultyInput);
-                src.sendMessage(Text.of(Util.getMessageWithFormat("command.world.setdifficulty.success")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.setdifficulty.success"));
             } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.player")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.player"));
                 return CommandResult.empty();
             }
         }

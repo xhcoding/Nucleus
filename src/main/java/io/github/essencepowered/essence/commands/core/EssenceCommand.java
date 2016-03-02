@@ -4,11 +4,19 @@
  */
 package io.github.essencepowered.essence.commands.core;
 
-import io.github.essencepowered.essence.Essence;
+import static io.github.essencepowered.essence.PluginInfo.MESSAGE_PREFIX;
+import static io.github.essencepowered.essence.PluginInfo.NAME;
+import static io.github.essencepowered.essence.PluginInfo.VERSION;
+
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.api.service.EssenceModuleService;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -16,8 +24,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-
-import static io.github.essencepowered.essence.PluginInfo.*;
 
 /**
  * Gives information about Essence.
@@ -37,7 +43,6 @@ public class EssenceCommand extends CommandBase<CommandSource> {
     private Text modules = null;
 
     @Override
-    @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
         return CommandSpec.builder().children(this.createChildCommands()).executor(this).build();
     }

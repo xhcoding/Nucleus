@@ -20,7 +20,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +29,7 @@ import java.util.Optional;
 @Modules(PluginModule.MISC)
 @RegisterCommand("heal")
 public class HealCommand extends CommandBase<CommandSource> {
+
     private static final String player = "player";
 
     @Override
@@ -41,9 +41,8 @@ public class HealCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
-            GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))
-        ).build();
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.optional(GenericArguments.requiringPermission(
+                GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))).build();
     }
 
     @Override
@@ -55,14 +54,14 @@ public class HealCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
         if (pl.offer(Keys.HEALTH, pl.get(Keys.MAX_HEALTH).get()).isSuccessful()) {
-            pl.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.heal.success")));
+            pl.sendMessages(Util.getTextMessageWithFormat("command.heal.success"));
             if (!pl.equals(src)) {
-                src.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.heal.success.other", pl.getName())));
+                src.sendMessages(Util.getTextMessageWithFormat("command.heal.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.heal.error")));
+            src.sendMessages(Util.getTextMessageWithFormat("command.heal.error"));
             return CommandResult.empty();
         }
     }

@@ -11,17 +11,19 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 /**
- * Takes an argument of the form "l30" or "lv30" or "l:30" or "lv:30". Returns the integer.
+ * Takes an argument of the form "l30" or "lv30" or "l:30" or "lv:30". Returns
+ * the integer.
  */
 public class ExperienceLevelArgument extends CommandElement {
+
     private final Pattern argumentPattern = Pattern.compile("^(l|lv|l:|lv:)(\\d+)$", Pattern.CASE_INSENSITIVE);
 
     public ExperienceLevelArgument(@Nullable Text key) {
@@ -36,7 +38,7 @@ public class ExperienceLevelArgument extends CommandElement {
             return Integer.parseInt(m.group(2));
         }
 
-        throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.explevel.error")));
+        throw args.createError(Util.getTextMessageWithFormat("args.explevel.error"));
     }
 
     @Override

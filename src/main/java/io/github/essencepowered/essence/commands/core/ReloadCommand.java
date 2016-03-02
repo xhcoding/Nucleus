@@ -6,13 +6,16 @@ package io.github.essencepowered.essence.commands.core;
 
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 @Permissions(root = "quickstart")
 @NoCooldown
@@ -21,6 +24,7 @@ import org.spongepowered.api.text.format.TextColors;
 @RunAsync
 @RegisterCommand(value = "reload", subcommandOf = EssenceCommand.class)
 public class ReloadCommand extends CommandBase<CommandSource> {
+
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
@@ -29,8 +33,8 @@ public class ReloadCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         plugin.reload();
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.reload.one")));
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.reload.two")));
+        src.sendMessage(Util.getTextMessageWithFormat("command.reload.one"));
+        src.sendMessage(Util.getTextMessageWithFormat("command.reload.two"));
         return CommandResult.success();
     }
 }

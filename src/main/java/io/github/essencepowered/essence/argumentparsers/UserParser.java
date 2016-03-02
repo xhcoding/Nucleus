@@ -16,17 +16,19 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 /**
- * Parses an argument and tries to match it up against any user, online or offline.
+ * Parses an argument and tries to match it up against any user, online or
+ * offline.
  */
 public class UserParser extends CommandElement {
+
     public UserParser(@Nullable Text key) {
         super(key);
     }
@@ -35,7 +37,7 @@ public class UserParser extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!args.hasNext()) {
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.user.none")));
+            throw args.createError(Util.getTextMessageWithFormat("args.user.none"));
         }
 
         String user = args.next();
@@ -54,7 +56,7 @@ public class UserParser extends CommandElement {
         List<User> listUser = Sponge.getGame().getServer().getOnlinePlayers().stream()
                 .filter(x -> x.getName().toLowerCase().startsWith(user.toLowerCase())).collect(Collectors.toList());
         if (listUser.isEmpty()) {
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.user.nouser", user)));
+            throw args.createError(Util.getTextMessageWithFormat("args.user.nouser", user));
         }
 
         if (listUser.size() == 1) {

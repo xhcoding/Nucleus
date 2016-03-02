@@ -4,6 +4,8 @@
  */
 package io.github.essencepowered.essence.argumentparsers;
 
+import static io.github.essencepowered.essence.PluginInfo.ERROR_MESSAGE_PREFIX;
+
 import com.google.common.collect.Lists;
 import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
@@ -18,20 +20,17 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.github.essencepowered.essence.PluginInfo.ERROR_MESSAGE_PREFIX;
-
-import static io.github.essencepowered.essence.PluginInfo.ERROR_MESSAGE_PREFIX;
+import javax.annotation.Nullable;
 
 /**
  * Returns a {@link WarpData}
  */
 public class WarpParser extends CommandElement {
+
     private final boolean includeWarpData;
     private EssenceWarpService service;
     private final Essence plugin;
@@ -56,15 +55,18 @@ public class WarpParser extends CommandElement {
         String warpName = args.next();
         String warp = warpName.toLowerCase();
         if (!service.warpExists(warp)) {
-            throw args.createError(Text.of(ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noexist")));
+            throw args.createError(
+                    Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.warps.noexist")).build());
         }
 
         if (!checkPermission(source, warpName)) {
-            throw args.createError(Text.of(ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.warps.noperms")));
+            throw args.createError(
+                    Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.warps.noperms")).build());
         }
 
         if (includeWarpData) {
-            return new WarpData(warpName, service.getWarp(warp).orElseThrow(() -> args.createError(Text.of(Util.getMessageWithFormat("args.warps.notavailable")))));
+            return new WarpData(warpName,
+                    service.getWarp(warp).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.warps.notavailable"))));
         } else {
             return new WarpData(warpName, null);
         }
@@ -99,6 +101,7 @@ public class WarpParser extends CommandElement {
     }
 
     public class WarpData {
+
         public final String warp;
         public final WarpLocation loc;
 

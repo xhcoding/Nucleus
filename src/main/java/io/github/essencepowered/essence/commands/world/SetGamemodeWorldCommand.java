@@ -18,7 +18,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Optional;
@@ -26,8 +25,8 @@ import java.util.Optional;
 /**
  * Sets gamemode of world.
  *
- * Command Usage: /world setgamemode [gamemode] [world] 
- * Permission: essence.world.setgamemode.base
+ * Command Usage: /world setgamemode [gamemode] [world] Permission:
+ * essence.world.setgamemode.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setgamemode", "setgm"}, subcommandOf = WorldCommand.class)
@@ -52,14 +51,14 @@ public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
 
         if (optWorldProperties.isPresent()) {
             optWorldProperties.get().setGameMode(gamemodeInput);
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.setgamemode.success")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.world.setgamemode.success"));
         } else {
             if (src instanceof Player) {
                 Player player = (Player) src;
                 player.getWorld().getProperties().setGameMode(gamemodeInput);
-                src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.setgamemode.success")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.setgamemode.success"));
             } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.player")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.player"));
                 return CommandResult.empty();
             }
         }

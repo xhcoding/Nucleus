@@ -14,7 +14,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 /**
  * Sets spawn of world.
@@ -33,7 +32,7 @@ public class SetSpawnWorldCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {
         pl.getWorld().getProperties().setSpawnPosition(pl.getLocation().getBlockPosition());
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.setspawn.success")));
+        pl.sendMessage(Util.getTextMessageWithFormat("command.world.setspawn.success"));
         return CommandResult.success();
     }
 }

@@ -7,7 +7,12 @@ package io.github.essencepowered.essence.commands.admin;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -17,9 +22,8 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.ExperienceHolderData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-@RegisterCommand({ "exp", "experience", "xp" })
+@RegisterCommand({"exp", "experience", "xp"})
 @Modules(PluginModule.ADMIN)
 @Permissions
 @NoCooldown
@@ -32,9 +36,8 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().children(this.createChildCommands()).arguments(
-                GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey)))
-        ).executor(this).build();
+        return CommandSpec.builder().children(this.createChildCommands())
+                .arguments(GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey)))).executor(this).build();
     }
 
     @Override
@@ -45,13 +48,13 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
         int exp = ehd.totalExperience().get();
         int lv = ehd.level().get();
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.exp.info", pl.getName(), String.valueOf(exp), String.valueOf(lv))));
+        src.sendMessage(Util.getTextMessageWithFormat("command.exp.info", pl.getName(), String.valueOf(exp), String.valueOf(lv)));
         return CommandResult.success();
     }
 
     public static CommandResult tellUserAboutExperience(CommandSource src, Player pl, boolean isSuccess) {
         if (!isSuccess) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.exp.set.error")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.exp.set.error"));
             return CommandResult.empty();
         }
 
@@ -59,10 +62,10 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
         int newLvl = pl.get(Keys.EXPERIENCE_LEVEL).get();
 
         if (!src.equals(pl)) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.exp.set.new.other", pl.getName(), String.valueOf(exp), String.valueOf(newLvl))));
+            src.sendMessage(Util.getTextMessageWithFormat("command.exp.set.new.other", pl.getName(), String.valueOf(exp), String.valueOf(newLvl)));
         }
 
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.exp.set.new", String.valueOf(exp), String.valueOf(newLvl))));
+        pl.sendMessage(Util.getTextMessageWithFormat("command.exp.set.new", String.valueOf(exp), String.valueOf(newLvl)));
         return CommandResult.success();
     }
 

@@ -19,7 +19,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -32,6 +31,7 @@ import java.util.Optional;
 @RegisterCommand("spawn")
 @Modules(PluginModule.SPAWN)
 public class SpawnCommand extends CommandBase<Player> {
+
     private final String key = "world";
 
     @Override
@@ -44,7 +44,9 @@ public class SpawnCommand extends CommandBase<Player> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder()
-                .arguments(GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.world(Text.of(key))), permissions.getPermissionWithSuffix("otherworlds"))))
+                .arguments(
+                        GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.world(Text.of(key))),
+                                permissions.getPermissionWithSuffix("otherworlds"))))
                 .executor(this).build();
     }
 
@@ -54,16 +56,16 @@ public class SpawnCommand extends CommandBase<Player> {
         Optional<World> ow = Sponge.getServer().getWorld(wp.getUniqueId());
 
         if (!ow.isPresent()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.spawn.noworld")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.spawn.noworld"));
             return CommandResult.empty();
         }
 
         if (src.setLocationSafely(new Location<>(ow.get(), wp.getSpawnPosition()))) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.spawn.success")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.spawn.success"));
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.spawn.fail")));
+        src.sendMessage(Util.getTextMessageWithFormat("command.spawn.fail"));
         return CommandResult.empty();
     }
 }

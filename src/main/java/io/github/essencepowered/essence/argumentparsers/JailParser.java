@@ -14,14 +14,15 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 public class JailParser extends CommandElement {
+
     private JailHandler handler;
 
     public JailParser(@Nullable Text key, JailHandler handler) {
@@ -38,7 +39,7 @@ public class JailParser extends CommandElement {
             return owl.get();
         }
 
-        throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.jail.nojail")));
+        throw args.createError(Util.getTextMessageWithFormat("args.jail.nojail"));
     }
 
     @Override

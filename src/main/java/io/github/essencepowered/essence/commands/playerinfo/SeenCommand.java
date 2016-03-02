@@ -4,7 +4,6 @@
  */
 package io.github.essencepowered.essence.commands.playerinfo;
 
-
 import io.github.essencepowered.essence.NameUtil;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
@@ -43,8 +42,9 @@ import java.util.Map;
 @Permissions
 @RunAsync
 @Modules(PluginModule.PLAYERINFO)
-@RegisterCommand({ "seen", "seenplayer" })
+@RegisterCommand({"seen", "seenplayer"})
 public class SeenCommand extends CommandBase<CommandSource> {
+
     private final String playerKey = "player";
 
     @Override
@@ -68,51 +68,54 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
         // Everyone gets the last online time.
         if (user.isOnline()) {
-            messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.iscurrently", user.getName()) + " ", TextColors.GREEN, Util.getMessageWithFormat("standard.online")));
-            messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.loggedon") + " ", TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogin())));
+            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.iscurrently", user.getName())).append(Text.of(" "))
+                    .append(Util.getTextMessageWithFormat("standard.online")).build());
+            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.loggedon")).append(Text.of(" "))
+                    .append(Text.of(TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogin()))).build());
         } else {
-            messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.iscurrently", user.getName()) + " ", TextColors.RED, Util.getMessageWithFormat("standard.offline")));
-            messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.loggedoff") + " ", TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogout())));
+            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.iscurrently", user.getName()))
+                    .append(Text.of(" ", TextColors.RED, Util.getTextMessageWithFormat("standard.offline"))).build());
+            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.loggedoff"))
+                    .append(Text.of(" ", TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogout()))).build());
         }
 
-        messages.add(Text.builder(Util.getMessageWithFormat("command.seen.displayname") + " ").color(TextColors.AQUA).append(NameUtil.getName(user, iqsu)).build());
+        messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.displayname")).append(Text.of(" "))
+                .append(NameUtil.getName(user, iqsu)).build());
         if (permissions.testSuffix(src, "extended")) {
             if (user.isOnline()) {
                 Player pl = user.getPlayer().get();
-                messages.add(Text.of(TextColors.AQUA, Util.getMessageWithFormat("command.seen.ipaddress") + " ", TextColors.GREEN, pl.getConnection().getAddress().getAddress().toString()));
+                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.ipaddress"))
+                        .append(Text.of(" ", pl.getConnection().getAddress().getAddress().toString())).build());
 
-                messages.add(Text.builder()
-                        .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.walk")))
-                        .append(Text.of(" "))
+                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.speed.walk")).append(Text.of(" "))
                         .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * SpeedCommand.multiplier))).build());
 
-                messages.add(Text.builder()
-                        .append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.speed.flying")))
-                        .append(Text.of(" "))
+                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.speed.flying")).append(Text.of(" "))
                         .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))).build());
             }
 
-            messages.add(Text.builder(Util.getMessageWithFormat("command.seen.isjailed") + " ").color(TextColors.AQUA).append(
-                    getTrueOrFalse(iqsu.getJailData().isPresent(), TextActions.runCommand("/checkjail " + user.getName()))).build());
-            messages.add(Text.builder(Util.getMessageWithFormat("command.seen.ismuted") + " ").color(TextColors.AQUA).append(
-                    getTrueOrFalse(iqsu.getMuteData().isPresent(), TextActions.runCommand("/checkmute " + user.getName()))).build());
+            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.isjailed")).append(Text.of(" ")).color(TextColors.AQUA)
+                    .append(getTrueOrFalse(iqsu.getJailData().isPresent(), TextActions.runCommand("/checkjail " + user.getName()))).build());
+            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.ismuted")).append(Text.of(" ")).color(TextColors.AQUA)
+                    .append(getTrueOrFalse(iqsu.getMuteData().isPresent(), TextActions.runCommand("/checkmute " + user.getName()))).build());
 
             BanService bs = Sponge.getServiceManager().provideUnchecked(BanService.class);
-            messages.add(Text.builder(Util.getMessageWithFormat("command.seen.isbanned") + " ").color(TextColors.AQUA).append(
-                    getTrueOrFalse(bs.getBanFor(user.getProfile()).isPresent(), TextActions.runCommand("/checkban " + user.getName()))).build());
+            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.isbanned")).append(Text.of(" ")).color(TextColors.AQUA)
+                    .append(getTrueOrFalse(bs.getBanFor(user.getProfile()).isPresent(), TextActions.runCommand("/checkban " + user.getName())))
+                    .build());
         }
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().contents(messages).paddingString("-").title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.seen.title", user.getName()))).sendTo(src);
+        ps.builder().contents(messages).paddingString("-").title(Util.getTextMessageWithFormat("command.seen.title", user.getName())).sendTo(src);
         return CommandResult.success();
     }
 
     private Text getTrueOrFalse(boolean is, ClickAction ifTrue) {
         if (is) {
-            return Text.builder(Util.getMessageWithFormat("true")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                    .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("standard.clicktoseemore")))).onClick(ifTrue).build();
+            return Text.builder().append(Util.getTextMessageWithFormat("true")).style(TextStyles.UNDERLINE)
+                    .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).onClick(ifTrue).build();
         }
 
-        return Text.of(TextColors.RED, Util.getMessageWithFormat("false"));
+        return Text.of(Util.getTextMessageWithFormat("false"));
     }
 }

@@ -19,7 +19,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
@@ -27,13 +26,13 @@ import java.util.Optional;
 @Modules(PluginModule.HOMES)
 @RegisterCommand("home")
 public class HomeCommand extends CommandBase<Player> {
+
     private final String home = "home";
 
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
-                .arguments(GenericArguments.onlyOne(GenericArguments.optional(new HomeParser(Text.of(home), plugin))))
-                .build();
+                .arguments(GenericArguments.onlyOne(GenericArguments.optional(new HomeParser(Text.of(home), plugin)))).build();
     }
 
     @Override
@@ -44,7 +43,7 @@ public class HomeCommand extends CommandBase<Player> {
             owl = plugin.getUserLoader().getUser(src).getHome("home");
 
             if (!owl.isPresent()) {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("args.home.nohome", "home")));
+                src.sendMessage(Util.getTextMessageWithFormat("args.home.nohome", "home"));
                 return CommandResult.empty();
             }
         }
@@ -53,10 +52,10 @@ public class HomeCommand extends CommandBase<Player> {
 
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.getLocation(), wl.getRotation())) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.home.success", wl.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.home.success", wl.getName()));
             return CommandResult.success();
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.home.fail", wl.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.home.fail", wl.getName()));
             return CommandResult.empty();
         }
     }

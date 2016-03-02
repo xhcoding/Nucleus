@@ -17,8 +17,6 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -137,11 +135,12 @@ public class JailHandler implements EssenceJailService {
             Player player = user.getPlayer().get();
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 player.setLocation(ow.isPresent() ? ow.get() : player.getWorld().getSpawnLocation());
-                player.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("jail.elapsed")));
+                player.sendMessage(Util.getTextMessageWithFormat("jail.elapsed"));
             });
         } else {
-            iqsu.sendToLocationOnLogin(ow.isPresent() ? ow.get() : new Location<>(Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorld().get().getUniqueId()).get(),
-                    Sponge.getServer().getDefaultWorld().get().getSpawnPosition()));
+            iqsu.sendToLocationOnLogin(ow.isPresent() ? ow.get()
+                    : new Location<>(Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorld().get().getUniqueId()).get(),
+                            Sponge.getServer().getDefaultWorld().get().getSpawnPosition()));
         }
 
         return true;

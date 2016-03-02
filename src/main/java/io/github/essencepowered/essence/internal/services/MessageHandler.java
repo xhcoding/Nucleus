@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class MessageHandler {
 
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
-    private final Text me = Text.of(TextColors.GRAY, Util.getMessageWithFormat("message.me"));
+    private final Text me = Util.getTextMessageWithFormat("message.me");
 
     public void update(UUID from, UUID to) {
         Preconditions.checkNotNull(from);
@@ -50,8 +50,7 @@ public class MessageHandler {
             return Optional.of(Sponge.getServer().getConsole());
         }
 
-        return Sponge.getServer().getOnlinePlayers().stream()
-                .filter(x -> x.getUniqueId().equals(to)).map(y -> (CommandSource)y).findFirst();
+        return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getUniqueId().equals(to)).map(y -> (CommandSource) y).findFirst();
     }
 
     public void clearUUID(UUID uuid) {
@@ -66,7 +65,7 @@ public class MessageHandler {
             return sendMessage(sender, cs.get(), message);
         }
 
-        sender.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("message.noreply")));
+        sender.sendMessage(Util.getTextMessageWithFormat("message.noreply"));
         return false;
     }
 
@@ -78,12 +77,12 @@ public class MessageHandler {
 
         // If a player, then mutes should be checked.
         if (sender instanceof Player) {
-            Player pl = (Player)sender;
+            Player pl = (Player) sender;
             try {
                 EssenceUser q = qs.getUser(pl);
                 if (Util.testForEndTimestamp(q.getMuteData(), q::removeMuteData).isPresent()) {
                     // Cancel.
-                    pl.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("mute.playernotify")));
+                    pl.sendMessage(Util.getTextMessageWithFormat("mute.playernotify"));
                     return false;
                 }
             } catch (IOException | ObjectMappingException e) {
@@ -91,16 +90,17 @@ public class MessageHandler {
             }
         }
 
-        // Message is about to be sent. Send the event out. If canceled, then that's that.
+        // Message is about to be sent. Send the event out. If canceled, then
+        // that's that.
         if (Sponge.getEventManager().post(new MessageEvent(sender, receiver, message))) {
-            sender.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("message.cancel")));
+            sender.sendMessage(Util.getTextMessageWithFormat("message.cancel"));
             return false;
         }
 
         // Social Spies.
-        List<MessageReceiver> lm = qs.getOnlineUsers().stream().filter(x ->
-                !getUUID(sender).equals(x.getUniqueID()) && !getUUID(receiver).equals(x.getUniqueID())
-        ).filter(EssenceUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
+        List<MessageReceiver> lm =
+                qs.getOnlineUsers().stream().filter(x -> !getUUID(sender).equals(x.getUniqueID()) && !getUUID(receiver).equals(x.getUniqueID()))
+                        .filter(EssenceUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
 
         if (getUUID(sender) != Util.consoleFakeUUID && getUUID(receiver) != Util.consoleFakeUUID) {
             lm.add(Sponge.getServer().getConsole());
@@ -127,14 +127,13 @@ public class MessageHandler {
     }
 
     private Text constructSSMessage(Text from, Text to, String message) {
-        return Text.builder("[" + Util.getMessageWithFormat("message.socialspy") + "] ").color(TextColors.GRAY)
-                .append(from).append(Text.of(TextColors.GRAY, " -> ")).append(to).append(Text.of(TextColors.GRAY, ": "))
-                .append(Text.of(TextColors.GRAY, message)).build();
+        return Text.builder().append(Text.of(TextColors.GRAY, "[")).append(Util.getTextMessageWithFormat("message.socialspy"))
+                .append(Text.of(TextColors.GRAY, "] ")).append(from).append(Text.of(TextColors.GRAY, " -> ")).append(to)
+                .append(Text.of(TextColors.GRAY, ": ")).append(Text.of(TextColors.GRAY, message)).build();
     }
 
     private Text constructMessage(Text from, Text to, String message) {
-        return Text.of(from).toBuilder()
-                .append(Text.of(TextColors.GRAY, " -> ")).append(to).append(Text.of(TextColors.GRAY, ": "))
+        return Text.of(from).toBuilder().append(Text.of(TextColors.GRAY, " -> ")).append(to).append(Text.of(TextColors.GRAY, ": "))
                 .append(Text.of(TextColors.GRAY, message)).build();
     }
 }
