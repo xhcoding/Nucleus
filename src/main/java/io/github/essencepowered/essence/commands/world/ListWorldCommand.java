@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
  * Command Usage: /world list Permission: essence.world.list.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RunAsync
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class)
 public class ListWorldCommand extends CommandBase<CommandSource> {
 

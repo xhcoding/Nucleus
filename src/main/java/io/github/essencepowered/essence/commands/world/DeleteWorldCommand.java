@@ -8,7 +8,6 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -27,7 +26,6 @@ import org.spongepowered.api.world.storage.WorldProperties;
  * Command Usage: /world delete [world] Permission: essence.world.delete.base
  */
 @Permissions(root = "world")
-@RunAsync
 @RegisterCommand(value = {"delete", "del"}, subcommandOf = WorldCommand.class)
 public class DeleteWorldCommand extends CommandBase<CommandSource> {
 

@@ -8,7 +8,6 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
@@ -36,7 +35,6 @@ import java.util.Optional;
  * [difficulty] Permission: essence.world.create.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RunAsync
 @RegisterCommand(value = {"create"}, subcommandOf = WorldCommand.class)
 public class CreateWorldCommand extends CommandBase<CommandSource> {
 

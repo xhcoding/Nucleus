@@ -8,7 +8,6 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +30,6 @@ import java.util.Optional;
  * Permission: essence.world.teleport.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RunAsync
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
 public class TeleportWorldCommand extends CommandBase<CommandSource> {
 
@@ -41,8 +39,8 @@ public class TeleportWorldCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Teleport World Command"))
-                .arguments(GenericArguments.seq(GenericArguments.world(Text.of("world")),
-                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))))))
+                .arguments(GenericArguments.seq(GenericArguments.world(Text.of(world)),
+                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of(player))))))
                 .executor(this).build();
     }
 

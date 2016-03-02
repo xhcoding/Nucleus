@@ -8,7 +8,6 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +30,6 @@ import java.util.Optional;
  * Permission: essence.world.setdifficulty.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RunAsync
 @RegisterCommand(value = {"setdifficulty"}, subcommandOf = WorldCommand.class)
 public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
 
@@ -62,7 +60,7 @@ public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
                 src.sendMessage(Text.of(Util.getMessageWithFormat("command.world.setdifficulty.success")));
             } else {
                 src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.player")));
-                return CommandResult.success();
+                return CommandResult.empty();
             }
         }
 

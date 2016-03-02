@@ -8,7 +8,6 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.internal.CommandBase;
 import io.github.essencepowered.essence.internal.annotations.Permissions;
 import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
-import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +30,6 @@ import java.util.Optional;
  * Permission: essence.world.setgamemode.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RunAsync
 @RegisterCommand(value = {"setgamemode", "setgm"}, subcommandOf = WorldCommand.class)
 public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
 
@@ -62,7 +60,7 @@ public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
                 src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.setgamemode.success")));
             } else {
                 src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.player")));
-                return CommandResult.success();
+                return CommandResult.empty();
             }
         }
 
