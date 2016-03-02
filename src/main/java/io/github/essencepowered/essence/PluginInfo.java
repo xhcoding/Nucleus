@@ -24,7 +24,6 @@ public final class PluginInfo {
     // Preparing for 4.0.0 SpongeAPI
     public static final String DESCRIPTION = "@description@";
     public static final String URL = "@url@";
-    public static final String[] AUTHORS = {"HassanS6000", "dualspiral", "KingGoesGaming"};
 
     public static final Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "] ");
     public static final Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "] ");
