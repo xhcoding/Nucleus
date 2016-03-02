@@ -12,7 +12,7 @@ import io.github.essencepowered.essence.api.data.MuteData;
 import io.github.essencepowered.essence.argumentparsers.TimespanParser;
 import io.github.essencepowered.essence.argumentparsers.UserParser;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.CommandPermissionHandler;
+import io.github.essencepowered.essence.internal.PermissionRegistry;
 import io.github.essencepowered.essence.internal.annotations.Modules;
 import io.github.essencepowered.essence.internal.annotations.NoCooldown;
 import io.github.essencepowered.essence.internal.annotations.NoCost;
@@ -22,7 +22,7 @@ import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
-import io.github.essencepowered.essence.internal.services.UserConfigLoader;
+import io.github.essencepowered.essence.internal.services.datastore.UserConfigLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -62,7 +62,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
 
-    private final String notifyPermission = CommandPermissionHandler.PERMISSIONS_PREFIX + "mute.notify";
+    private final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "mute.notify";
 
     private String playerArgument = "Player";
     private String timespanArgument = "Time";

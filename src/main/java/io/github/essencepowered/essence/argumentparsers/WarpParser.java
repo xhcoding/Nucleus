@@ -11,8 +11,8 @@ import io.github.essencepowered.essence.Essence;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.data.WarpLocation;
 import io.github.essencepowered.essence.api.service.EssenceWarpService;
-import io.github.essencepowered.essence.internal.CommandPermissionHandler;
 import io.github.essencepowered.essence.internal.ConfigMap;
+import io.github.essencepowered.essence.internal.PermissionRegistry;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -91,7 +91,7 @@ public class WarpParser extends CommandElement {
         }
 
         // No permissions, no entry!
-        return src.hasPermission(CommandPermissionHandler.PERMISSIONS_PREFIX + "warps." + name.toLowerCase());
+        return src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "warps." + name.toLowerCase());
     }
 
     private void getService() {

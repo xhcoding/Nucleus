@@ -16,7 +16,7 @@ import java.util.UUID;
 /**
  * A service that retrieves {@link EssenceUser}s.
  */
-public interface EssenceUserService {
+public interface EssenceUserLoaderService {
 
     /**
      * Gets a list of {@link EssenceUser}s that represents the online.

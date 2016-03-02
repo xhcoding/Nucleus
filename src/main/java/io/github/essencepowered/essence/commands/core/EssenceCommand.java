@@ -29,7 +29,7 @@ import org.spongepowered.api.text.format.TextColors;
  * Gives information about Essence.
  *
  * Command Usage: /essence
- * Permission: quickstart.quickstart.base
+ * Permission: essence.essence.base
  */
 @RunAsync
 @Permissions

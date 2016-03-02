@@ -17,7 +17,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 
-@Permissions(root = "quickstart")
+@Permissions(root = "essence")
 @NoCooldown
 @NoCost
 @NoWarmup
