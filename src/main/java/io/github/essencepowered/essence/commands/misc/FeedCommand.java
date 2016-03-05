@@ -20,7 +20,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +29,7 @@ import java.util.Optional;
 @Modules(PluginModule.MISC)
 @RegisterCommand("feed")
 public class FeedCommand extends CommandBase<CommandSource> {
+
     private static final String player = "player";
 
     @Override
@@ -41,9 +41,9 @@ public class FeedCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
-            GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(GenericArguments.player(Text.of(player)), permissions.getPermissionWithSuffix("others"))))
-        ).build();
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.optionalWeak(GenericArguments.onlyOne(
+                GenericArguments.requiringPermission(GenericArguments.player(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
+                .build();
     }
 
     @Override
@@ -57,14 +57,14 @@ public class FeedCommand extends CommandBase<CommandSource> {
 
         // TODO: If max food level appears, use that instead.
         if (pl.offer(Keys.FOOD_LEVEL, 20).isSuccessful()) {
-            pl.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.feed.success")));
+            pl.sendMessages(Util.getTextMessageWithFormat("command.feed.success"));
             if (!pl.equals(src)) {
-                src.sendMessages(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.feed.success.other", pl.getName())));
+                src.sendMessages(Util.getTextMessageWithFormat("command.feed.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.feed.error")));
+            src.sendMessages(Util.getTextMessageWithFormat("command.feed.error"));
             return CommandResult.empty();
         }
     }

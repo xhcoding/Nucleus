@@ -35,11 +35,11 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand({ "checkjail" })
+@RegisterCommand({"checkjail"})
 public class CheckJailCommand extends CommandBase<CommandSource> {
+
     private final String playerKey = "playerKey";
-    @Inject
-    private JailHandler handler;
+    @Inject private JailHandler handler;
 
     @Override
     public CommandSpec createSpec() {
@@ -52,7 +52,7 @@ public class CheckJailCommand extends CommandBase<CommandSource> {
         Optional<JailData> jail = handler.getPlayerJailData(user);
 
         if (!jail.isPresent()) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.checkjail.nojail", user.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.checkjail.nojail", user.getName()));
             return CommandResult.success();
         }
 
@@ -75,7 +75,8 @@ public class CheckJailCommand extends CommandBase<CommandSource> {
             forString = " " + Util.getMessageWithFormat("standard.for") + " ";
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.checkjail.jailed"), user.getName(), md.getJailName(), name, forString, time)));
+        src.sendMessage(Text.of(TextColors.GREEN,
+                MessageFormat.format(Util.getMessageWithFormat("command.checkjail.jailed"), user.getName(), md.getJailName(), name, forString, time)));
         src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), md.getReason())));
         return CommandResult.success();
     }

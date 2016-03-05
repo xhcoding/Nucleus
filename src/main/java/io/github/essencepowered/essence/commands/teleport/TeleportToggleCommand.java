@@ -7,7 +7,13 @@ package io.github.essencepowered.essence.commands.teleport;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
@@ -17,7 +23,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +32,10 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand({ "tptoggle" })
+@RegisterCommand({"tptoggle"})
 @RunAsync
 public class TeleportToggleCommand extends CommandBase<Player> {
+
     private final String key = "toggle";
 
     @Override
@@ -41,9 +47,8 @@ public class TeleportToggleCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(key))))
-        ).build();
+        return CommandSpec.builder().executor(this)
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(key))))).build();
     }
 
     @Override
@@ -51,7 +56,8 @@ public class TeleportToggleCommand extends CommandBase<Player> {
         final InternalEssenceUser iqsu = plugin.getUserLoader().getUser(src);
         boolean flip = args.<Boolean>getOne(key).orElseGet(() -> !iqsu.isTeleportToggled());
         iqsu.setTeleportToggled(flip);
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tptoggle.success", Util.getMessageWithFormat(flip ? "enabled" : "disabled"))));
+        src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.tptoggle.success"))
+                .append(Util.getTextMessageWithFormat(flip ? "enabled" : "disabled")).build());
         return CommandResult.success();
     }
 }

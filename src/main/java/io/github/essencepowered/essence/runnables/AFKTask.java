@@ -24,11 +24,17 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import javax.inject.Inject;
-import java.util.*;
 
 @Modules(PluginModule.AFK)
 public class AFKTask extends TaskBase {
+
     @Inject private Essence plugin;
     @Inject private PermissionRegistry permissionRegistry;
     private CommandPermissionHandler afkService = null;
@@ -36,8 +42,10 @@ public class AFKTask extends TaskBase {
     @Override
     protected Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(PermissionRegistry.PERMISSIONS_PREFIX + "afk.exempt.toggle", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
-        m.put(PermissionRegistry.PERMISSIONS_PREFIX + "afk.exempt.kick", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
+        m.put(PermissionRegistry.PERMISSIONS_PREFIX + "afk.exempt.toggle",
+                new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
+        m.put(PermissionRegistry.PERMISSIONS_PREFIX + "afk.exempt.kick",
+                new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -63,9 +71,11 @@ public class AFKTask extends TaskBase {
         if (c.getAfkTime() > 0) {
             List<UUID> afking = plugin.getAfkHandler().checkForAfk(c.getAfkTime());
             if (!afking.isEmpty()) {
-                Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.toggle")) &&
-                            afking.contains(x.getUniqueId())).map(NameUtil::getName)
-                        .forEach(x -> MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", x, TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk"))));
+                Sponge.getServer().getOnlinePlayers().stream()
+                        .filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.toggle")) && afking.contains(x.getUniqueId()))
+                        .map(NameUtil::getName)
+                        .forEach(x -> MessageChannel.TO_ALL.send(Text.builder().append(Text.of(TextColors.GRAY, "* ", x, TextColors.GRAY, " "))
+                                .append(Util.getTextMessageWithFormat("afk.toafk")).build()));
             }
         }
 
@@ -73,11 +83,13 @@ public class AFKTask extends TaskBase {
         if (c.getAfkTimeToKick() > 0) {
             List<UUID> afking = plugin.getAfkHandler().checkForAfkKick(c.getAfkTimeToKick());
             if (!afking.isEmpty()) {
-                Sponge.getServer().getOnlinePlayers().stream().filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.kick")) &&
-                        afking.contains(x.getUniqueId()))
+                Sponge.getServer().getOnlinePlayers().stream()
+                        .filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.kick")) && afking.contains(x.getUniqueId()))
                         .forEach(x -> {
-                            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Text.of(Util.getMessageWithFormat("afk.kickreason"))));
-                            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(x), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.kickedafk")));
+                            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Util.getTextMessageWithFormat("afk.kickreason")));
+                            MessageChannel.TO_ALL
+                                    .send(Text.builder().append(Text.of(TextColors.GRAY, "* ", NameUtil.getName(x), TextColors.GRAY, " "))
+                                            .append(Util.getTextMessageWithFormat("afk.kickedafk")).build());
                         });
             }
         }

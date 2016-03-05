@@ -23,7 +23,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Optional;
 
@@ -34,6 +33,7 @@ import java.util.Optional;
 @RunAsync
 @RegisterCommand(value = {"send", "s"}, subcommandOf = MailCommand.class)
 public class SendMailCommand extends CommandBase<CommandSource> {
+
     @Inject private MailHandler handler;
     @Inject private PermissionRegistry permissionRegistry;
 
@@ -42,34 +42,30 @@ public class SendMailCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
-                .arguments(
-                        GenericArguments.onlyOne(new UserParser(Text.of(player))),
-                        GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
-                )
-                .build();
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new UserParser(Text.of(player))),
+                GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))).build();
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        User pl = args.<User>getOne(player).orElseThrow(() -> new CommandException(Text.of(TextColors.RED, Util.getMessageWithFormat("args.user.none"))));
+        User pl = args.<User>getOne(player).orElseThrow(() -> new CommandException(Util.getTextMessageWithFormat("args.user.none")));
         Optional<CommandPermissionHandler> oservice = permissionRegistry.getService(MailCommand.class);
 
         // Only send mails to players that can read them.
         if (oservice.isPresent() && oservice.get().testBase(pl)) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.mail.send.error", pl.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.mail.send.error", pl.getName()));
             return CommandResult.empty();
         }
 
         // Send the message.
-        String m = args.<String>getOne(message).orElseThrow(() -> new CommandException(Text.of(TextColors.RED, Util.getMessageWithFormat("args.message.none"))));
+        String m = args.<String>getOne(message).orElseThrow(() -> new CommandException(Util.getTextMessageWithFormat("args.message.none")));
         if (src instanceof User) {
-            handler.sendMail((User)src, pl, m);
+            handler.sendMail((User) src, pl, m);
         } else {
             handler.sendMailFromConsole(pl, m);
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.mail.send", pl.getName())));
+        src.sendMessage(Util.getTextMessageWithFormat("command.mail.send", pl.getName()));
         return CommandResult.success();
     }
 }

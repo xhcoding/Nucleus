@@ -67,7 +67,8 @@ public class AFKListener extends ListenerBase {
 
     @Listener
     public void onPlayerCommand(final SendCommandEvent event, @First Player player) {
-        // Did the player run /afk? Then don't do anything, we'll toggle it anyway.
+        // Did the player run /afk? Then don't do anything, we'll toggle it
+        // anyway.
         if (!Arrays.asList(AFKCommand.class.getAnnotation(RegisterCommand.class).value()).contains(event.getCommand().toLowerCase())) {
             updateAFK(player);
         }
@@ -76,7 +77,8 @@ public class AFKListener extends ListenerBase {
     private void updateAFK(final Player player) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
             if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && getPermissionUtil().testSuffix(player, "exempt")) {
-                MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(player), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
+                MessageChannel.TO_ALL.send(Text.builder().append(Text.of(TextColors.GRAY, "* ", NameUtil.getName(player), TextColors.GRAY, " "))
+                        .append(Util.getTextMessageWithFormat("afk.fromafk")).build());
             }
         });
     }

@@ -22,29 +22,26 @@ import java.text.MessageFormat;
 import java.util.regex.Pattern;
 
 /**
- * Creates a warp where the player is currently standing. The warp must not exist.
+ * Creates a warp where the player is currently standing. The warp must not
+ * exist.
  *
- * Command Usage: /warp set [warp]
- * Permission: quickstart.warp.set.base
+ * Command Usage: /warp set [warp] Permission: quickstart.warp.set.base
  */
 @Permissions(root = "warp")
-@RegisterCommand(value = { "set" }, subcommandOf = WarpCommand.class)
+@RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class)
 public class SetWarpCommand extends CommandBase<Player> {
+
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
-                .arguments(
-                        GenericArguments.onlyOne(GenericArguments.string(Text.of(WarpCommand.warpNameArg)))
-                )
-                .description(Text.of("Sets a warp at the player's location."))
-                .build();
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of(WarpCommand.warpNameArg))))
+                .description(Text.of("Sets a warp at the player's location.")).build();
     }
 
     @Override
     public String[] getAliases() {
-        return new String[] { "set" };
+        return new String[] {"set"};
     }
 
     @Override
@@ -53,7 +50,7 @@ public class SetWarpCommand extends CommandBase<Player> {
 
         // Needs to match the name...
         if (!warpRegex.matcher(warp).matches()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.invalidname")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.warps.invalidname"));
             return CommandResult.empty();
         }
 
@@ -61,7 +58,7 @@ public class SetWarpCommand extends CommandBase<Player> {
         EssenceWarpService qs = Sponge.getServiceManager().provideUnchecked(EssenceWarpService.class);
         if (qs.getWarp(warp).isPresent()) {
             // You have to delete to set the same name
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.nooverwrite")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.warps.nooverwrite"));
             return CommandResult.empty();
         }
 
@@ -73,7 +70,7 @@ public class SetWarpCommand extends CommandBase<Player> {
         }
 
         // Didn't work. Tell them.
-        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.warps.seterror")));
+        src.sendMessage(Util.getTextMessageWithFormat("command.warps.seterror"));
         return CommandResult.empty();
     }
 }

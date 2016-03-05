@@ -7,7 +7,12 @@ package io.github.essencepowered.essence.commands.vanish;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -16,22 +21,21 @@ import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 @Modules(PluginModule.VANISH)
 @Permissions
 @NoCooldown
 @NoCost
 @NoWarmup
-@RegisterCommand({ "vanish", "v" })
+@RegisterCommand({"vanish", "v"})
 public class VanishCommand extends CommandBase<Player> {
+
     private final String b = "toggle";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))
-        ).executor(this).build();
+        return CommandSpec.builder().arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))).executor(this)
+                .build();
     }
 
     @Override
@@ -43,14 +47,12 @@ public class VanishCommand extends CommandBase<Player> {
         src.offer(Keys.INVISIBILITY_IGNORES_COLLISION, toVanish);
         src.offer(Keys.INVISIBILITY_PREVENTS_TARGETING, toVanish);
         if (dtr.isSuccessful()) {
-            src.sendMessage(Text.of(
-                TextColors.GREEN,
-                Util.getMessageWithFormat("command.vanish.success",
-                    toVanish ? Util.getMessageWithFormat("command.vanish.vanished") : Util.getMessageWithFormat("command.vanish.visible"))));
+            src.sendMessage(Util.getTextMessageWithFormat("command.vanish.success",
+                    toVanish ? Util.getMessageWithFormat("command.vanish.vanished") : Util.getMessageWithFormat("command.vanish.visible")));
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.vanish.fail")));
+        src.sendMessage(Util.getTextMessageWithFormat("command.vanish.fail"));
         return CommandResult.empty();
     }
 }

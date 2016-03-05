@@ -15,12 +15,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 public class HomeOtherParser extends HomeParser {
 
@@ -35,12 +35,12 @@ public class HomeOtherParser extends HomeParser {
         Optional<String> ohome = args.nextIfPresent();
 
         if (!ohome.isPresent()) {
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.homeother.notenough")));
+            throw args.createError(Util.getTextMessageWithFormat("args.homeother.notenough"));
         }
 
         Optional<User> ouser = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(player);
         if (!ouser.isPresent()) {
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.homeother.nouser", player)));
+            throw args.createError(Util.getTextMessageWithFormat("args.homeother.nouser", player));
         }
 
         User user = ouser.get();

@@ -7,7 +7,12 @@ package io.github.essencepowered.essence.commands.teleport;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -16,7 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -26,8 +30,9 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand({ "tppos" })
+@RegisterCommand({"tppos"})
 public class TeleportPositionCommand extends CommandBase<CommandSource> {
+
     private final String key = "player";
     private final String location = "world";
     private final String x = "x";
@@ -36,14 +41,14 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
-                GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
-                GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
-                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
-                GenericArguments.onlyOne(GenericArguments.integer(Text.of(x))),
-                GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
-                GenericArguments.onlyOne(GenericArguments.integer(Text.of(z)))
-        ).executor(this).build();
+        return CommandSpec.builder()
+                .arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+                        GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
+                        GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
+                        GenericArguments.onlyOne(GenericArguments.integer(Text.of(x))),
+                        GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
+                        GenericArguments.onlyOne(GenericArguments.integer(Text.of(z))))
+                .executor(this).build();
     }
 
     @Override
@@ -54,7 +59,7 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
 
         int yy = args.<Integer>getOne(y).get();
         if (yy < 0) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tppos.ysmall")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.tppos.ysmall"));
             return CommandResult.empty();
         }
 
@@ -64,23 +69,23 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
             pl.setLocation(loc);
-            pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success")));
+            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success"));
             if (!src.equals(pl)) {
-                src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success.other", pl.getName())));
+                src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         }
 
         if (pl.setLocationSafely(loc)) {
-            pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success")));
+            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success"));
             if (!src.equals(pl)) {
-                src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.tppos.success.other", pl.getName())));
+                src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.tppos.nosafe")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.tppos.nosafe"));
             return CommandResult.empty();
         }
     }

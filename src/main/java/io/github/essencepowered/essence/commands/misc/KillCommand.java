@@ -20,12 +20,12 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 @Permissions
 @RegisterCommand("kill")
 @Modules(PluginModule.MISC)
 public class KillCommand extends CommandBase<CommandSource> {
+
     private final String key = "player";
 
     @Override
@@ -38,13 +38,13 @@ public class KillCommand extends CommandBase<CommandSource> {
         Player pl = args.<Player>getOne(key).get();
         GameMode gm = pl.gameMode().getDirect().orElse(pl.gameMode().getDefault());
         if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.kill.wronggm", pl.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.kill.wronggm", pl.getName()));
             return CommandResult.empty();
         }
 
         pl.offer(Keys.HEALTH, 0d);
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.kill.killed", pl.getName())));
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.kill.killedby", src.getName())));
+        src.sendMessage(Util.getTextMessageWithFormat("command.kill.killed", pl.getName()));
+        pl.sendMessage(Util.getTextMessageWithFormat("command.kill.killedby", src.getName()));
         return CommandResult.success();
     }
 }

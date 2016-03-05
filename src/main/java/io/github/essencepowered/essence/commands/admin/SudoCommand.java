@@ -22,7 +22,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +30,14 @@ import java.util.Map;
 @Permissions
 @RegisterCommand("sudo")
 public class SudoCommand extends CommandBase<CommandSource> {
+
     private final String playerKey = "player";
     private final String commandKey = "command";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
-                GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
-                GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(commandKey)))
-        ).executor(this).build();
+        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
+                GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(commandKey)))).executor(this).build();
     }
 
     @Override
@@ -54,13 +52,13 @@ public class SudoCommand extends CommandBase<CommandSource> {
         Player pl = args.<Player>getOne(playerKey).get();
         String cmd = args.<String>getOne(commandKey).get();
         if (pl.equals(src) || permissions.testSuffix(src, "exempt.target")) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sudo.noperms")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.sudo.noperms"));
             return CommandResult.empty();
         }
 
         if (cmd.startsWith("c:")) {
             if (cmd.equals("c:")) {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.sudo.chatfail")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.sudo.chatfail"));
                 return CommandResult.empty();
             }
 
@@ -69,7 +67,7 @@ public class SudoCommand extends CommandBase<CommandSource> {
             return CommandResult.success();
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.sudo.force", pl.getName(), cmd)));
+        src.sendMessage(Util.getTextMessageWithFormat("command.sudo.force", pl.getName(), cmd));
         Sponge.getCommandManager().process(pl, cmd);
         return CommandResult.success();
     }

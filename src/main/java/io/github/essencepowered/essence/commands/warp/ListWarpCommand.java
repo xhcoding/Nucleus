@@ -32,25 +32,24 @@ import java.util.stream.Collectors;
 /**
  * Lists all the warps that a player can access.
  *
- * Command Usage: /warp list
- * Permission: quickstart.warp.list.base
+ * Command Usage: /warp list Permission: quickstart.warp.list.base
  */
 @Permissions(root = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
-@RegisterCommand(value = { "list" }, subcommandOf = WarpCommand.class)
+@RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class)
 public class ListWarpCommand extends CommandBase<CommandSource> {
+
     private final EssenceWarpService service = Sponge.getServiceManager().provideUnchecked(EssenceWarpService.class);
     @Inject private MainConfig mainConfig;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
-                .description(Text.of("Lists the warps available to you.")).build();
+        return CommandSpec.builder().executor(this).description(Text.of("Lists the warps available to you.")).build();
     }
 
     @Override
     public String[] getAliases() {
-        return new String[] { "list" };
+        return new String[] {"list"};
     }
 
     @Override
@@ -59,22 +58,17 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
 
         // Get the warp list.
         Set<String> ws = service.getWarpNames();
-        List<Text> lt = ws.stream()
-                .filter(s -> canView(src, s.toLowerCase()))
-                .map(s -> {
-                    if (service.getWarp(s).isPresent()) {
-                        return Text.builder(s).color(TextColors.GREEN)
-                                .style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
-                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.warps.warpprompt", s)))).build();
-                    } else {
-                        return Text.builder(s).color(TextColors.RED)
-                                .onHover(TextActions.showText(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.warps.unavailable")))).build();
-                    }
-                })
-                .collect(Collectors.toList());
+        List<Text> lt = ws.stream().filter(s -> canView(src, s.toLowerCase())).map(s -> {
+            if (service.getWarp(s).isPresent()) {
+                return Text.builder(s).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
+                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.warps.warpprompt", s))).build();
+            } else {
+                return Text.builder(s).color(TextColors.RED).onHover(TextActions.showText(Util.getTextMessageWithFormat("command.warps.unavailable")))
+                        .build();
+            }
+        }).collect(Collectors.toList());
 
-        ps.builder().title(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.warps.list.header")))
-                .paddingString("-").contents(lt).sendTo(src);
+        ps.builder().title(Util.getTextMessageWithFormat("command.warps.list.header")).paddingString("-").contents(lt).sendTo(src);
         return CommandResult.success();
     }
 

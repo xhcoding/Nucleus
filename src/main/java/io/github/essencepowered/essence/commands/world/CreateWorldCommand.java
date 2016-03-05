@@ -18,7 +18,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.World;
@@ -63,7 +62,7 @@ public class CreateWorldCommand extends CommandBase<CommandSource> {
         GameMode gamemodeInput = args.<GameMode>getOne(gamemode).get();
         Difficulty difficultyInput = args.<Difficulty>getOne(difficulty).get();
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.create.begin", nameInput)));
+        src.sendMessage(Util.getTextMessageWithFormat("command.world.create.begin", nameInput));
 
         WorldCreationSettings worldSettings = Sponge.getRegistry().createBuilder(WorldCreationSettings.Builder.class).name(nameInput).enabled(true)
                 .loadsOnStartup(true).keepsSpawnLoaded(true).dimension(dimensionInput).generator(generatorInput).gameMode(gamemodeInput).build();
@@ -75,12 +74,12 @@ public class CreateWorldCommand extends CommandBase<CommandSource> {
 
             if (world.isPresent()) {
                 world.get().getProperties().setDifficulty(difficultyInput);
-                src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.create.success", nameInput)));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.create.success", nameInput));
             } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.create.fail", nameInput)));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.create.fail", nameInput));
             }
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.create.fail", nameInput)));
+            src.sendMessage(Util.getTextMessageWithFormat("command.world.create.fail", nameInput));
         }
 
         return CommandResult.success();

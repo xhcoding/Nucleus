@@ -8,7 +8,13 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.argumentparsers.UserParser;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -19,7 +25,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.ban.Ban;
 
 import java.util.Optional;
@@ -32,6 +37,7 @@ import java.util.Optional;
 @NoCost
 @RunAsync
 public class CheckBanCommand extends CommandBase<CommandSource> {
+
     private final String key = "player";
 
     @Override
@@ -47,7 +53,7 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
 
         Optional<Ban.Profile> obp = service.getBanFor(u.getProfile());
         if (!obp.isPresent()) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.checkban.notset", u.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.checkban.notset", u.getName()));
             return CommandResult.success();
         }
 
@@ -66,8 +72,8 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
             reason = Util.getMessageWithFormat("standard.unknown");
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.checkban.banned", u.getName(), reason, f, t)));
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("standard.reason", bp.getReason().toPlain())));
+        src.sendMessage(Util.getTextMessageWithFormat("command.checkban.banned", u.getName(), reason, f, t));
+        src.sendMessage(Util.getTextMessageWithFormat("standard.reason", bp.getReason().toPlain()));
         return CommandResult.success();
     }
 }

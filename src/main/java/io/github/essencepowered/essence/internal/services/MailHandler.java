@@ -19,7 +19,6 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -56,15 +55,16 @@ public class MailHandler implements EssenceMailService {
         }
 
         List<MailFilter> lmf = Arrays.asList(filters);
-        Optional<DateFilter> odf = lmf.stream().filter(d -> d instanceof DateFilter).map(d -> (DateFilter)d).findFirst();
+        Optional<DateFilter> odf = lmf.stream().filter(d -> d instanceof DateFilter).map(d -> (DateFilter) d).findFirst();
         if (odf.isPresent()) {
             BetweenInstantsData df = odf.get().getSuppliedData();
-            lmd = lmd.stream().filter(x -> df.from().orElseGet(() -> Instant.ofEpochSecond(0)).isBefore(x.getDate()) &&
-                    df.to().orElseGet(() -> Instant.now().plus(1, ChronoUnit.DAYS)).isAfter(x.getDate())).collect(Collectors.toList());
+            lmd = lmd.stream().filter(x -> df.from().orElseGet(() -> Instant.ofEpochSecond(0)).isBefore(x.getDate())
+                    && df.to().orElseGet(() -> Instant.now().plus(1, ChronoUnit.DAYS)).isAfter(x.getDate())).collect(Collectors.toList());
         }
 
         // Get players.
-        List<UUID> pf = lmf.stream().filter(x -> x instanceof PlayerFilter).map(d -> ((PlayerFilter) d).getSuppliedData()).collect(Collectors.toList());
+        List<UUID> pf =
+                lmf.stream().filter(x -> x instanceof PlayerFilter).map(d -> ((PlayerFilter) d).getSuppliedData()).collect(Collectors.toList());
         if (lmf.stream().filter(x -> x instanceof ConsoleFilter).findFirst().isPresent()) {
             pf.add(Util.consoleFakeUUID);
         }
@@ -79,8 +79,10 @@ public class MailHandler implements EssenceMailService {
         List<String> m = lmf.stream().filter(x -> x instanceof MessageFilter).map(d -> ((MessageFilter) d).getSuppliedData().toLowerCase())
                 .collect(Collectors.toList());
         if (!m.isEmpty()) {
-            // For each mail, check to see if any filters match after everything goes lowercase.
-            lmd = lmd.stream().filter(x -> m.stream().allMatch(a -> x.getMessage().toLowerCase().contains(a.toLowerCase()))).collect(Collectors.toList());
+            // For each mail, check to see if any filters match after everything
+            // goes lowercase.
+            lmd = lmd.stream().filter(x -> m.stream().allMatch(a -> x.getMessage().toLowerCase().contains(a.toLowerCase())))
+                    .collect(Collectors.toList());
         }
 
         return lmd;
@@ -101,7 +103,8 @@ public class MailHandler implements EssenceMailService {
 
         Text from = playerFrom == null ? Text.of(game.getServer().getConsole().getName()) : NameUtil.getName(playerFrom);
         if (playerTo.isOnline()) {
-            playerTo.getPlayer().get().sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("mail.youvegotmail") + " ", from));
+            playerTo.getPlayer().get()
+                    .sendMessage(Text.builder().append(Util.getTextMessageWithFormat("mail.youvegotmail")).append(Text.of(" ", from)).build());
         }
     }
 
@@ -149,8 +152,11 @@ public class MailHandler implements EssenceMailService {
     }
 
     private static class ConsoleFilter implements MailFilter<Void> {
+
         @Override
-        public Void getSuppliedData() { return null; }
+        public Void getSuppliedData() {
+            return null;
+        }
     }
 
     private static class PlayerFilter implements MailFilter<UUID> {

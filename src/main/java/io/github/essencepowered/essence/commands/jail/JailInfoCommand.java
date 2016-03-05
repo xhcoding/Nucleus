@@ -9,7 +9,12 @@ import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.data.WarpLocation;
 import io.github.essencepowered.essence.argumentparsers.JailParser;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import io.github.essencepowered.essence.internal.services.JailHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -27,6 +32,7 @@ import org.spongepowered.api.text.format.TextColors;
 @RunAsync
 @RegisterCommand(value = "jails", subcommandOf = JailsCommand.class)
 public class JailInfoCommand extends CommandBase<CommandSource> {
+
     private final String jailKey = "jail";
     @Inject private JailHandler handler;
 
@@ -38,8 +44,10 @@ public class JailInfoCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         WarpLocation wl = args.<WarpLocation>getOne(jailKey).get();
-        src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.jail.info.name") + ": ", TextColors.GREEN, wl.getName()));
-        src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.jail.info.location") + ": ", TextColors.GREEN, wl.toLocationString()));
+        src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.jail.info.name"))
+                .append(Text.of(": ", TextColors.GREEN, wl.getName())).build());
+        src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.jail.info.location"))
+                .append(Text.of(": ", TextColors.GREEN, wl.toLocationString())).build());
         return CommandResult.success();
     }
 }

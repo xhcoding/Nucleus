@@ -43,29 +43,28 @@ public class MuteListener extends ListenerBase {
     @Listener
     public void onPlayerLogin(final ClientConnectionEvent.Join event) {
         // Kick off a scheduled task.
-        Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS)
-                .execute(() -> {
-                    Player user = event.getTargetEntity();
-                    EssenceUser qs;
-                    try {
-                        qs = loader.getUser(user);
-                    } catch (IOException | ObjectMappingException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+        Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS).execute(() -> {
+            Player user = event.getTargetEntity();
+            EssenceUser qs;
+            try {
+                qs = loader.getUser(user);
+            } catch (IOException | ObjectMappingException e) {
+                e.printStackTrace();
+                return;
+            }
 
-                    Optional<MuteData> omd = qs.getMuteData();
-                    if (omd.isPresent()) {
-                        MuteData md = omd.get();
-                        md.nextLoginToTimestamp();
+            Optional<MuteData> omd = qs.getMuteData();
+            if (omd.isPresent()) {
+                MuteData md = omd.get();
+                md.nextLoginToTimestamp();
 
-                        omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
-                        if (omd.isPresent()) {
-                            md = omd.get();
-                            onMute(md, event.getTargetEntity());
-                        }
-                    }
-                }).submit(plugin);
+                omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
+                if (omd.isPresent()) {
+                    md = omd.get();
+                    onMute(md, event.getTargetEntity());
+                }
+            }
+        }).submit(plugin);
     }
 
     @Listener
@@ -81,18 +80,18 @@ public class MuteListener extends ListenerBase {
         Optional<MuteData> omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
         if (omd.isPresent()) {
             onMute(omd.get(), player);
-            MessageChannel.TO_CONSOLE.send(Text.of(player.getName() + " (" + Util.getMessageWithFormat("muted") + "): ").toBuilder().append(event.getRawMessage()).build());
+            MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(Util.getTextMessageWithFormat("muted"))
+                    .append(Text.of("): ")).append(event.getRawMessage()).build());
             event.setCancelled(true);
         }
     }
 
     private void onMute(MuteData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(
-                    Util.getMessageWithFormat("mute.playernotify.time"),
+            user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("mute.playernotify.time"),
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS)))));
         } else {
-            user.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("mute.playernotify")));
+            user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify"));
         }
     }
 }

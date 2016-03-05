@@ -12,12 +12,12 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 /**
  * Parses an argument and tries to get a timespan. Returns in seconds.
@@ -41,7 +41,7 @@ public class TimespanParser extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!args.hasNext()) {
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.timespan.notime")));
+            throw args.createError(Util.getTextMessageWithFormat("args.timespan.notime"));
         }
 
         String s = args.next();
@@ -58,7 +58,7 @@ public class TimespanParser extends CommandElement {
             }
         }
 
-        throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.timespan.incorrectformat", s)));
+        throw args.createError(Util.getTextMessageWithFormat("args.timespan.incorrectformat", s));
     }
 
     private int amount(String g, int multipler) {

@@ -7,7 +7,12 @@ package io.github.essencepowered.essence.commands.misc;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
 import io.github.essencepowered.essence.internal.interfaces.InternalEssenceUser;
 import io.github.essencepowered.essence.internal.permissions.PermissionInformation;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
@@ -18,9 +23,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,8 +33,9 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-@RegisterCommand({ "god", "invuln", "invulnerability" })
+@RegisterCommand({"god", "invuln", "invulnerability"})
 public class GodCommand extends CommandBase<CommandSource> {
+
     private final String playerKey = "player";
     private final String invulnKey = "invuln";
 
@@ -44,10 +48,11 @@ public class GodCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(invulnKey))))
-        ).build();
+        return CommandSpec.builder().executor(this)
+                .arguments(
+                        GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
+                                .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(invulnKey))))).build();
     }
 
     @Override
@@ -63,15 +68,15 @@ public class GodCommand extends CommandBase<CommandSource> {
         boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
 
         if (!uc.setInvulnerable(god)) {
-            src.sendMessages(Text.of(TextColors.RED, Util.getMessageWithFormat("command.god.error")));
+            src.sendMessages(Util.getTextMessageWithFormat("command.god.error"));
             return CommandResult.empty();
         }
 
         if (!pl.equals(src)) {
-            src.sendMessages(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat(god ? "command.god.player.on" : "command.god.player.off"), pl.getName())));
+            src.sendMessages(Util.getTextMessageWithFormat(god ? "command.god.player.on" : "command.god.player.off", pl.getName()));
         }
 
-        pl.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat(god ? "command.god.on" : "command.god.off")));
+        pl.sendMessage(Util.getTextMessageWithFormat(god ? "command.god.on" : "command.god.off"));
         return CommandResult.success();
     }
 }

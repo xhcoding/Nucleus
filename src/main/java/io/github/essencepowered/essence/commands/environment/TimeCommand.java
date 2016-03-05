@@ -32,15 +32,14 @@ import java.util.Map;
 @Modules(PluginModule.ENVIRONMENT)
 @RegisterCommand("time")
 public class TimeCommand extends CommandBase<CommandSource> {
+
     private final String world = "world";
 
     @Override
-    @SuppressWarnings("unchecked")
     public CommandSpec createSpec() {
         Map<List<String>, CommandCallable> ms = this.createChildCommands(SetTimeCommand.class);
         return CommandSpec.builder().executor(this)
-                .arguments(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))))
-                .children(ms).build();
+                .arguments(GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world))))).children(ms).build();
     }
 
     @Override
@@ -53,12 +52,13 @@ public class TimeCommand extends CommandBase<CommandSource> {
             } else if (src instanceof CommandBlockSource) {
                 pr = ((CommandBlockSource) src).getWorld().getProperties();
             } else {
-                src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("command.settime.default")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.settime.default"));
                 pr = Sponge.getServer().getDefaultWorld().get();
             }
         }
 
-        src.sendMessage(Text.of(TextColors.YELLOW, MessageFormat.format(Util.getMessageWithFormat("command.time"), pr.getWorldName(), Util.getTimeFromTicks(pr.getWorldTime()))));
+        src.sendMessage(Text.of(TextColors.YELLOW,
+                MessageFormat.format(Util.getMessageWithFormat("command.time"), pr.getWorldName(), Util.getTimeFromTicks(pr.getWorldTime()))));
         return CommandResult.success();
     }
 }

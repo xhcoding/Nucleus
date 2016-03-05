@@ -4,6 +4,8 @@
  */
 package io.github.essencepowered.essence.argumentparsers;
 
+import static io.github.essencepowered.essence.PluginInfo.ERROR_MESSAGE_PREFIX;
+
 import io.github.essencepowered.essence.Util;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -13,13 +15,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.github.essencepowered.essence.PluginInfo.ERROR_MESSAGE_PREFIX;
+import javax.annotation.Nullable;
 
 public class PlayerConsoleArgument extends CommandElement {
 
@@ -36,7 +36,7 @@ public class PlayerConsoleArgument extends CommandElement {
         }
 
         return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().equalsIgnoreCase(name)).findFirst().orElseThrow(() ->
-            args.createError(Text.of(ERROR_MESSAGE_PREFIX, TextColors.RED, Util.getMessageWithFormat("args.playerconsole.noexist"))));
+            args.createError(Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.playerconsole.noexist")).build()));
     }
 
     @Override

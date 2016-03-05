@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HomeParser extends CommandElement {
+
     private final Essence plugin;
 
     public HomeParser(@Nullable Text key, Essence plugin) {
@@ -37,10 +38,10 @@ public class HomeParser extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!(source instanceof User)) {
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("command.playeronly")));
+            throw args.createError(Util.getTextMessageWithFormat("command.playeronly"));
         }
 
-        return getHome((User)source, args.next(), args);
+        return getHome((User) source, args.next(), args);
     }
 
     protected WarpLocation getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
@@ -50,7 +51,7 @@ public class HomeParser extends CommandElement {
                 return owl.get();
             }
 
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.home.nohome", home.toLowerCase())));
+            throw args.createError(Util.getTextMessageWithFormat("args.home.nohome", home.toLowerCase()));
         } catch (IOException | ObjectMappingException e) {
             e.printStackTrace();
             throw args.createError(Text.of(TextColors.RED, "An unspecified error occured"));
@@ -63,7 +64,7 @@ public class HomeParser extends CommandElement {
             return null;
         }
 
-        User u = (User)src;
+        User u = (User) src;
         Set<String> s;
         try {
             s = plugin.getUserLoader().getUser(u).getHomes().keySet();

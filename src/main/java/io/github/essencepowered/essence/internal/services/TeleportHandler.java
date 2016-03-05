@@ -17,10 +17,8 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +26,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class TeleportHandler {
 
@@ -84,12 +84,13 @@ public class TeleportHandler {
     public Text getAcceptDenyMessage() {
         if (acceptDeny == null) {
             acceptDeny = Text.builder()
-                    .append(
-                            Text.builder(Util.getMessageWithFormat("standard.accept")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                                    .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.accept.hover")))).onClick(TextActions.runCommand("/tpaccept")).build())
+                    .append(Text.builder().append(Util.getTextMessageWithFormat("standard.accept")).style(TextStyles.UNDERLINE)
+                            .onHover(TextActions.showText(Util.getTextMessageWithFormat("teleport.accept.hover")))
+                            .onClick(TextActions.runCommand("/tpaccept")).build())
                     .append(Text.of(" - "))
-                    .append(Text.builder(Util.getMessageWithFormat("standard.deny")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                            .onHover(TextActions.showText(Text.of(Util.getMessageWithFormat("teleport.deny.hover")))).onClick(TextActions.runCommand("/tpdeny")).build())
+                    .append(Text.builder().append(Util.getTextMessageWithFormat("standard.deny")).style(TextStyles.UNDERLINE)
+                            .onHover(TextActions.showText(Util.getTextMessageWithFormat("teleport.deny.hover")))
+                            .onClick(TextActions.runCommand("/tpdeny")).build())
                     .build();
         }
 
@@ -103,7 +104,8 @@ public class TeleportHandler {
 
         if (prep.charged != null && prep.cost > 0) {
             if (prep.charged.isOnline()) {
-                prep.charged.getPlayer().ifPresent(x -> x.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.prep.cancel", plugin.getEconHelper().getCurrencySymbol(prep.cost)))));
+                prep.charged.getPlayer().ifPresent(x -> x
+                        .sendMessage(Util.getTextMessageWithFormat("teleport.prep.cancel", plugin.getEconHelper().getCurrencySymbol(prep.cost))));
             }
 
             plugin.getEconHelper().depositInPlayer(prep.charged, prep.cost);
@@ -125,7 +127,8 @@ public class TeleportHandler {
             this(plugin, source, from, to, null, 0, safe, silentSouce);
         }
 
-        private TeleportTask(Essence plugin, CommandSource source, Player from, Player to, Player charged, double cost, boolean safe, boolean silentSouce) {
+        private TeleportTask(Essence plugin, CommandSource source, Player from, Player to, Player charged, double cost, boolean safe,
+                boolean silentSouce) {
             this.plugin = plugin;
             this.source = source;
             this.from = from;
@@ -140,7 +143,7 @@ public class TeleportHandler {
             if (to.isOnline()) {
                 if (safe && !from.setLocationAndRotationSafely(to.getLocation(), to.getRotation())) {
                     if (!silentSouce) {
-                        source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.nosafe")));
+                        source.sendMessage(Util.getTextMessageWithFormat("teleport.nosafe"));
                     }
 
                     onCancel();
@@ -150,17 +153,17 @@ public class TeleportHandler {
                 }
 
                 if (!source.equals(from) && !silentSouce) {
-                    source.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.success.source", from.getName(), to.getName())));
+                    source.sendMessage(Util.getTextMessageWithFormat("teleport.success.source", from.getName(), to.getName()));
                 }
 
-                from.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.success", to.getName())));
+                from.sendMessage(Util.getTextMessageWithFormat("teleport.success", to.getName()));
 
                 if (!silentSouce) {
-                    to.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("teleport.from.success", from.getName())));
+                    to.sendMessage(Util.getTextMessageWithFormat("teleport.from.success", from.getName()));
                 }
             } else {
                 if (!silentSouce) {
-                    source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail")));
+                    source.sendMessage(Util.getTextMessageWithFormat("teleport.fail"));
                 }
 
                 onCancel();
@@ -175,7 +178,7 @@ public class TeleportHandler {
         @Override
         public void onCancel() {
             if (!silentSouce) {
-                source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.cancelled")));
+                source.sendMessage(Util.getTextMessageWithFormat("teleport.cancelled"));
             }
 
             if (charged != null && cost > 0) {
@@ -256,13 +259,13 @@ public class TeleportHandler {
             }
 
             if (from.equals(to)) {
-                source.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.teleport.self")));
+                source.sendMessage(Util.getTextMessageWithFormat("command.teleport.self"));
                 return false;
             }
 
             InternalEssenceUser toPlayer = plugin.getUserLoader().getUser(to);
             if (!bypassToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(source)) {
-                from.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("teleport.fail.targettoggle", to.getName())));
+                from.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return false;
             }
 
@@ -274,10 +277,9 @@ public class TeleportHandler {
             }
 
             if (warmupTime > 0) {
-                from.sendMessage(Text.of(Util.getMessageWithFormat("teleport.warmup", String.valueOf(warmupTime))));
-                plugin.getWarmupManager().addWarmup(from.getUniqueId(),
-                        Sponge.getScheduler().createTaskBuilder().delay(warmupTime, TimeUnit.SECONDS)
-                                .execute(tt).name("Essence - Teleport Waiter").submit(plugin));
+                from.sendMessage(Util.getTextMessageWithFormat("teleport.warmup", String.valueOf(warmupTime)));
+                plugin.getWarmupManager().addWarmup(from.getUniqueId(), Sponge.getScheduler().createTaskBuilder().delay(warmupTime, TimeUnit.SECONDS)
+                        .execute(tt).name("Essence - Teleport Waiter").submit(plugin));
             } else {
                 tt.run();
             }
@@ -287,6 +289,7 @@ public class TeleportHandler {
     }
 
     public static class TeleportPrep {
+
         private final Instant expire;
         private final User charged;
         private final double cost;

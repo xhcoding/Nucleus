@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 @NoCost
 @RegisterCommand({"listhomes", "homes"})
 public class ListHomeCommand extends CommandBase<CommandSource> {
+
     private final String player = "player";
 
     @Override
@@ -54,38 +55,43 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder()
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.requiringPermission(new UserParser(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(
+                        GenericArguments.requiringPermission(new UserParser(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
                 .executor(this).build();
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<User> ou = args.<User>getOne(player);
-        String header;
+        Text header;
         User user;
         boolean other = ou.isPresent();
         if (other) {
-            header = Util.getMessageWithFormat("home.title.name", ou.get().getName());
+            header = Util.getTextMessageWithFormat("home.title.name", ou.get().getName());
             user = ou.get();
         } else {
             if (!(src instanceof Player)) {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.listhome.player")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.listhome.player"));
                 return CommandResult.empty();
             }
 
-            user = (User)src;
-            header = Util.getMessageWithFormat("home.title");
+            user = (User) src;
+            header = Util.getTextMessageWithFormat("home.title");
         }
 
         Map<String, WarpLocation> msw = plugin.getUserLoader().getUser(user).getHomes();
         List<Text> lt = msw.entrySet().stream().sorted((x, y) -> x.getKey().compareTo(y.getKey())).map(x -> {
             Location<World> lw = x.getValue().getLocation();
-            return Text.builder().append(
-                    Text.builder(x.getKey()).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onHover(TextActions.showText(
-                            Text.of(Util.getMessageWithFormat("home.warphover", x.getKey()))
-                    )).onClick(TextActions.runCommand(other ? "/homeother " + user.getName() + " " + x.getValue().getName() : "/home " + x.getValue().getName())).build()
-            ).append(Text.of(TextColors.YELLOW,
-                    Util.getMessageWithFormat("home.location", lw.getExtent().getName(), String.valueOf(lw.getBlockX()), String.valueOf(lw.getBlockY()), String.valueOf(lw.getBlockZ())))).build();
+            return Text
+                    .builder().append(
+                            Text.builder(x.getKey()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                                    .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphover", x.getKey())))
+                                    .onClick(TextActions.runCommand(other ? "/homeother " + user.getName() + " " + x.getValue().getName()
+                                            : "/home " + x.getValue().getName()))
+                                    .build())
+                    .append(Util.getTextMessageWithFormat("home.location", lw.getExtent().getName(), String.valueOf(lw.getBlockX()),
+                            String.valueOf(lw.getBlockY()), String.valueOf(lw.getBlockZ())))
+                    .build();
         }).collect(Collectors.toList());
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);

@@ -18,19 +18,17 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 @Permissions(root = "home", alias = "other", suggestedLevel = SuggestedLevel.MOD)
 @Modules(PluginModule.HOMES)
 @RegisterCommand("homeother")
 public class HomeOtherCommand extends CommandBase<Player> {
+
     private final String home = "home";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
-                .arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(home), plugin)))
-                .build();
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(home), plugin))).build();
     }
 
     @Override
@@ -40,10 +38,10 @@ public class HomeOtherCommand extends CommandBase<Player> {
 
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.location.getLocation(), wl.location.getRotation())) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.homeother.success", wl.user.getName(), wl.location.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.homeother.success", wl.user.getName(), wl.location.getName()));
             return CommandResult.success();
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.homeother.fail", wl.user.getName(), wl.location.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.homeother.fail", wl.user.getName(), wl.location.getName()));
             return CommandResult.empty();
         }
     }

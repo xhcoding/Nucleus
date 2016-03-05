@@ -12,10 +12,10 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class PositiveIntegerArgument extends CommandElement {
 
@@ -29,7 +29,7 @@ public class PositiveIntegerArgument extends CommandElement {
         try {
             return Integer.parseUnsignedInt(args.next());
         } catch (NumberFormatException e) {
-            throw args.createError(Text.of(TextColors.RED, Util.getMessageWithFormat("args.positiveint.negative")));
+            throw args.createError(Util.getTextMessageWithFormat("args.positiveint.negative"));
         }
     }
 

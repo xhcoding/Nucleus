@@ -15,7 +15,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.text.Text;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 @Permissions(root = "essence")
 @RegisterCommand(value = "printperms", subcommandOf = EssenceCommand.class)
 public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
+
     private final String file = "essence-perms.txt";
 
     @Override
@@ -39,10 +39,14 @@ public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Map<String, PermissionInformation> l = plugin.getPermissionRegistry().getPermissions();
-        List<String> notsuggested = l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.NONE).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<String> admin = l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<String> mod = l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<String> user = l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> notsuggested =
+                l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.NONE).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> admin =
+                l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> mod =
+                l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<String> user =
+                l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).map(Map.Entry::getKey).collect(Collectors.toList());
 
         BufferedWriter f = new BufferedWriter(new FileWriter(file));
         Consumer<String> permWriter = x -> {
@@ -80,7 +84,7 @@ public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
         f.flush();
         f.close();
 
-        src.sendMessage(Text.of(Util.getMessageWithFormat("command.printperms", file)));
+        src.sendMessage(Util.getTextMessageWithFormat("command.printperms", file));
         return CommandResult.success();
     }
 }

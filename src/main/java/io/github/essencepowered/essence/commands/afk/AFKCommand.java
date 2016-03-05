@@ -8,7 +8,13 @@ import io.github.essencepowered.essence.NameUtil;
 import io.github.essencepowered.essence.Util;
 import io.github.essencepowered.essence.api.PluginModule;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import io.github.essencepowered.essence.internal.services.AFKHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -37,7 +43,7 @@ public class AFKCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         AFKHandler afkHandler = plugin.getAfkHandler();
         if (permissions.testSuffix(src, "exempt.toggle")) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.afk.exempt")));
+            src.sendMessage(Util.getTextMessageWithFormat("command.afk.exempt"));
             return CommandResult.empty();
         }
 
@@ -45,10 +51,12 @@ public class AFKCommand extends CommandBase<Player> {
 
         if (isAFK) {
             afkHandler.updateUserActivity(src.getUniqueId());
-            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
+            MessageChannel.TO_ALL
+                    .send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
         } else {
             afkHandler.setAFK(src.getUniqueId(), true);
-            MessageChannel.TO_ALL.send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk")));
+            MessageChannel.TO_ALL
+                    .send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk")));
         }
 
         return CommandResult.success();

@@ -11,7 +11,13 @@ import io.github.essencepowered.essence.api.data.EssenceUser;
 import io.github.essencepowered.essence.api.data.MuteData;
 import io.github.essencepowered.essence.argumentparsers.UserParser;
 import io.github.essencepowered.essence.internal.CommandBase;
-import io.github.essencepowered.essence.internal.annotations.*;
+import io.github.essencepowered.essence.internal.annotations.Modules;
+import io.github.essencepowered.essence.internal.annotations.NoCooldown;
+import io.github.essencepowered.essence.internal.annotations.NoCost;
+import io.github.essencepowered.essence.internal.annotations.NoWarmup;
+import io.github.essencepowered.essence.internal.annotations.Permissions;
+import io.github.essencepowered.essence.internal.annotations.RegisterCommand;
+import io.github.essencepowered.essence.internal.annotations.RunAsync;
 import io.github.essencepowered.essence.internal.permissions.SuggestedLevel;
 import io.github.essencepowered.essence.internal.services.datastore.UserConfigLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -25,10 +31,8 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -36,8 +40,7 @@ import java.util.Optional;
 /**
  * Checks the mute status of a player.
  *
- * Command Usage: /checkmute user
- * Permission: quickstart.checkmute.base
+ * Command Usage: /checkmute user Permission: quickstart.checkmute.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
@@ -53,9 +56,8 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Checks the mute status of that player")).executor(this).arguments(
-                GenericArguments.onlyOne(new UserParser(Text.of(playerArgument)))
-        ).build();
+        return CommandSpec.builder().description(Text.of("Checks the mute status of that player")).executor(this)
+                .arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerArgument)))).build();
     }
 
     @Override
@@ -67,12 +69,12 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
             uc = userConfigLoader.getUser(user);
         } catch (IOException | ObjectMappingException e) {
             e.printStackTrace();
-            throw new CommandException(Text.of(TextColors.RED, Util.getMessageWithFormat("command.file.load")), e);
+            throw new CommandException(Util.getTextMessageWithFormat("command.file.load"), e);
         }
 
         Optional<MuteData> omd = uc.getMuteData();
         if (!omd.isPresent()) {
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.checkmute.none"), user.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.checkmute.none", user.getName()));
             return CommandResult.success();
         }
 
@@ -96,8 +98,8 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
             forString = Util.getMessageWithFormat("standard.for") + " ";
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.checkmute.mute"), user.getName(), name, forString, time)));
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), md.getReason())));
+        src.sendMessage(Util.getTextMessageWithFormat("command.checkmute.mute", user.getName(), name, forString, time));
+        src.sendMessage(Util.getTextMessageWithFormat("standard.reason", md.getReason()));
         return CommandResult.success();
     }
 }

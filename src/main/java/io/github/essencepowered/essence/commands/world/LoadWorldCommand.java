@@ -19,7 +19,6 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorType;
@@ -35,8 +34,8 @@ import java.util.Optional;
 /**
  * Loads worlds.
  *
- * Command Usage: /world load [name] [dimension] [generator] [gamemode] [difficulty]
- * Permission: essence.world.load.base
+ * Command Usage: /world load [name] [dimension] [generator] [gamemode]
+ * [difficulty] Permission: essence.world.load.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"load"}, subcommandOf = WorldCommand.class)
@@ -73,7 +72,7 @@ public class LoadWorldCommand extends CommandBase<CommandSource> {
         GeneratorType generator = generatorInput.orElse(GeneratorTypes.OVERWORLD);
         GameMode gamemode = gamemodeInput.orElse(GameModes.SURVIVAL);
 
-        src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.load.begin", nameInput)));
+        src.sendMessage(Util.getTextMessageWithFormat("command.world.load.begin", nameInput));
 
         WorldCreationSettings worldSettings = Sponge.getRegistry().createBuilder(WorldCreationSettings.Builder.class).name(nameInput).enabled(true)
                 .loadsOnStartup(true).keepsSpawnLoaded(true).dimension(dimension).generator(generator).gameMode(gamemode).build();
@@ -85,12 +84,12 @@ public class LoadWorldCommand extends CommandBase<CommandSource> {
 
             if (world.isPresent()) {
                 world.get().getProperties().setDifficulty(difficulty);
-                src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.world.load.success", nameInput)));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.load.success", nameInput));
             } else {
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.load.fail", nameInput)));
+                src.sendMessage(Util.getTextMessageWithFormat("command.world.load.fail", nameInput));
             }
         } else {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.world.load.fail", nameInput)));
+            src.sendMessage(Util.getTextMessageWithFormat("command.world.load.fail", nameInput));
         }
 
         return CommandResult.success();

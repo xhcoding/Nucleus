@@ -8,19 +8,28 @@ import io.github.essencepowered.essence.api.data.interfaces.EndTimestamp;
 import io.github.essencepowered.essence.internal.interfaces.VoidFunction;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
 
-import javax.annotation.Nullable;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class Util {
 
-    private Util() { }
+    private Util() {
+    }
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
@@ -46,7 +55,11 @@ public class Util {
     }
 
     public static String getMessageWithFormat(String key, String... substitutions) {
-        return MessageFormat.format(messageBundle.getString(key), (Object[])substitutions);
+        return MessageFormat.format(messageBundle.getString(key), (Object[]) substitutions);
+    }
+
+    public static Text getTextMessageWithFormat(String key, String... substitutions) {
+        return TextSerializers.FORMATTING_CODE.deserialize(MessageFormat.format(messageBundle.getString(key), (Object[]) substitutions));
     }
 
     public static String getTimeToNow(Instant time) {
@@ -125,7 +138,7 @@ public class Util {
             ticks = ticks % 24000;
         }
 
-        int mins = (int)((ticks % 1000) / (100./6.));
+        int mins = (int) ((ticks % 1000) / (100. / 6.));
         long hours = (ticks / 1000 + 6) % 24;
 
         if (hours < 12) {
@@ -144,7 +157,7 @@ public class Util {
         }
 
         if (src instanceof Player) {
-            return Optional.of((Player)src);
+            return Optional.of((Player) src);
         }
 
         return Optional.empty();

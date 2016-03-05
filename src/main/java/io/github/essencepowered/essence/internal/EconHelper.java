@@ -45,23 +45,21 @@ public class EconHelper {
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getAccount(src.getUniqueId());
             if (!a.isPresent()) {
-                src.sendMessage(Text.builder(Util.getMessageWithFormat("cost.noaccount"))
-                        .color(TextColors.YELLOW).build());
+                src.sendMessage(Util.getTextMessageWithFormat("cost.noaccount"));
                 return false;
             }
 
             TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(plugin));
             if (tr.getResult() == ResultType.ACCOUNT_NO_FUNDS) {
-                src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cost.nofunds"), es.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain()))
-                        .color(TextColors.YELLOW).build());
+                src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cost.nofunds"),
+                        es.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain())).color(TextColors.YELLOW).build());
                 return false;
             } else if (tr.getResult() != ResultType.SUCCESS) {
-                src.sendMessage(Text.builder(Util.getMessageWithFormat("cost.error"))
-                        .color(TextColors.YELLOW).build());
+                src.sendMessage(Util.getTextMessageWithFormat("cost.error"));
                 return false;
             }
 
-            src.sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("cost.complete", getCurrencySymbol(cost))));
+            src.sendMessage(Util.getTextMessageWithFormat("cost.complete", getCurrencySymbol(cost)));
         }
 
         return true;
@@ -74,20 +72,18 @@ public class EconHelper {
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getAccount(src.getUniqueId());
             if (!a.isPresent() && src.isOnline()) {
-                src.getPlayer().get().sendMessage(Text.builder(Util.getMessageWithFormat("cost.noaccount"))
-                        .color(TextColors.YELLOW).build());
+                src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.noaccount"));
                 return false;
             }
 
             TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(plugin));
             if (tr.getResult() != ResultType.SUCCESS && src.isOnline()) {
-                src.getPlayer().get().sendMessage(Text.builder(Util.getMessageWithFormat("cost.error"))
-                        .color(TextColors.YELLOW).build());
+                src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.error"));
                 return false;
             }
 
             if (src.isOnline()) {
-                src.getPlayer().get().sendMessage(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("cost.refund", getCurrencySymbol(cost))));
+                src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.refund", getCurrencySymbol(cost)));
             }
         }
 
