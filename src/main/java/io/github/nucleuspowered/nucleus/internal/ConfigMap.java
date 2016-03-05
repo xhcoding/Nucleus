@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.config.AbstractConfig;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.config.WarpsConfig;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -44,4 +45,5 @@ public class ConfigMap {
     public static final Key<CommandsConfig> COMMANDS_CONFIG = new Key<>();
     public static final Key<WarpsConfig> WARPS_CONFIG = new Key<>();
     public static final Key<WarpsConfig> JAILS_CONFIG = new Key<>();
+    public static final Key<KitsConfig> KITS_CONFIG = new Key<>();
 }

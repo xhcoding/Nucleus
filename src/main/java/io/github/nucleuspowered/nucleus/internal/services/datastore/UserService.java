@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class UserService implements InternalNucleusUser {
+
     private final Nucleus plugin;
     private final User user;
     private UserConfig config;
@@ -217,7 +218,8 @@ public class UserService implements InternalNucleusUser {
             } catch (NoSuchWorldException e) {
                 return null;
             }
-        }).filter(x -> x != null).collect(Collectors.toMap(WarpLocation::getName, y -> new WarpLocation(y.getName(), y.getLocation(), y.getRotation())));
+        }).filter(x -> x != null)
+                .collect(Collectors.toMap(WarpLocation::getName, y -> new WarpLocation(y.getName(), y.getLocation(), y.getRotation())));
     }
 
     @Override
@@ -412,5 +414,29 @@ public class UserService implements InternalNucleusUser {
     @Override
     public void setJailOnNextLogin(boolean set) {
         config.setJailOffline(!user.isOnline() && set);
+    }
+
+    @Override
+    public Map<String, Long> getKitLastUsedTime() {
+        return config.getKitLastUsedTime();
+    }
+
+    @Override
+    public void setKitLastUsedTime(Map<String, Long> kitLastUsedTime) {
+        config.setKitLastUsedTime(kitLastUsedTime);
+    }
+
+    @Override
+    public void addKitLastUsedTime(String kitName, long currentTimeMillis) {
+        Map<String, Long> kitLastUsedTime = config.getKitLastUsedTime();
+        kitLastUsedTime.put(kitName, currentTimeMillis);
+        config.setKitLastUsedTime(kitLastUsedTime);
+    }
+
+    @Override
+    public void removeKitLastUsedTime(String kitName) {
+        Map<String, Long> kitLastUsedTime = config.getKitLastUsedTime();
+        kitLastUsedTime.remove(kitName);
+        config.setKitLastUsedTime(kitLastUsedTime);
     }
 }

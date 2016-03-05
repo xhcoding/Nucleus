@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.api.exceptions.UnremovableModuleExceptio
 import io.github.nucleuspowered.nucleus.api.service.*;
 import io.github.nucleuspowered.nucleus.config.AbstractConfig;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.config.WarpsConfig;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
@@ -141,6 +142,21 @@ public class Nucleus {
         if (modules.contains(PluginModule.MAILS)) {
             mailHandler = new MailHandler(game, this);
             game.getServiceManager().setProvider(this, NucleusMailService.class, mailHandler);
+        }
+
+        if (modules.contains(PluginModule.KITS)) {
+            try {
+                configMap.putConfig(ConfigMap.KITS_CONFIG, new KitsConfig(Paths.get(dataDir.toString(), "kits.conf")));
+            } catch (IOException | ObjectMappingException ex) {
+                try {
+                    moduleRegistration.removeModule(PluginModule.KITS);
+                } catch (ModulesLoadedException | UnremovableModuleException e) {
+                    // Nope.
+                }
+
+                logger.warn("Could not load the kits module for the reason below.");
+                ex.printStackTrace();
+            }
         }
 
         modulesLoaded = true;
