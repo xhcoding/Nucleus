@@ -3,7 +3,7 @@ Nucleus
 
 [![GitHub license](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square)](/LICENSE.txt) |
 [![JitPack](https://img.shields.io/badge/Dependency-JitPack-brightgreen.svg?style=flat-square)](https://jitpack.io/#NucleusPowered/Nucleus) |
-[![Travis branch](https://img.shields.io/travis/EssencePowered/Essence/master.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
+[![Travis branch](https://img.shields.io/travis/NucleusPowered/Nucleus/master.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
 
 * [Source]
 * [Issues] | [![GitHub issues](https://img.shields.io/github/issues/NucleusPowered/Nucleus.svg?style=flat-square)](http://www.github.com/NucleusPowered/Nucleus/issues/)
@@ -25,7 +25,7 @@ Some of commands will have the ability for warmups and cooldowns to take place, 
 ## Contributions
 
 Are you a talented programmer wanting to contribute some code? Perhaps someone who likes to write documentation? Do you 
-have a bug that you want to report? Or perhaps you have an idea for a cool new idea that would fit in with Essence? We'd
+have a bug that you want to report? Or perhaps you have an idea for a cool new idea that would fit in with Nucleus? We'd
 be grateful for your contributions - we're an open community that appreciates any help you are willing to give!
 
 * Read our [guidelines].
@@ -37,10 +37,10 @@ To get a copy of the Nucleus source, ensure you have Git installed, and run the 
 or terminal:
 
 1. `git clone git@github.com:NucleusPowered/Nucleus.git`
-2. `cd Essence`
+2. `cd Nucleus`
 3. `cp scripts/pre-commit .git/hooks`
 
-To build Essence, navigate to the source directory and run either:
+To build Nucleus, navigate to the source directory and run either:
 
 * `./gradlew build` on UNIX and UNIX like systems (including OS X and Linux)
 * `gradlew build` on Windows systems

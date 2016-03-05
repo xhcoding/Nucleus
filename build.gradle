@@ -17,10 +17,10 @@ plugins {
 }
 
 ext.spongeapi = '3.1.0-SNAPSHOT'
-ext.descriptions = 'Essence is a Sponge plugin that allows you to quickly start your server with essential commands, events, and other tidbits that you might need. '
+ext.descriptions = 'Nucleus is a Sponge plugin that allows you to quickly start your server with essential commands, events, and other tidbits that you might need. '
 ext.url = 'http://essencepowered.github.io'
 
-group 'io.github.essencepowered'
+group 'io.github.nucleuspowered'
 version '0.1.0-SNAPSHOT'
 
 apply plugin: 'SpongeStart'
@@ -71,13 +71,15 @@ sponge{
 }
 
 blossom {
-    replaceToken '@id@', project.name.toLowerCase(), 'src/main/java/io/github/essencepowered/essence/PluginInfo.java'
-    replaceToken '@name@', project.name, 'src/main/java/io/github/essencepowered/essence/PluginInfo.java'
-    replaceToken '@version@', project.version, 'src/main/java/io/github/essencepowered/essence/PluginInfo.java'
-    replaceToken '@informativeVersion@', project.version + "+" + getGitHash(), 'src/main/java/io/github/essencepowered/essence/PluginInfo.java'
+    def location = 'src/main/java/io/github/nucleuspowered/nucleus/PluginInfo.java'
 
-    replaceToken '@description@', project.descriptions, 'src/main/java/io/github/essencepowered/essence/PluginInfo.java'
-    replaceToken '@url@', project.url, 'src/main/java/io/github/essencepowered/essence/PluginInfo.java'
+    // replaceToken '@id@', project.name.toLowerCase(), location
+    replaceToken '@name@', project.name, location
+    replaceToken '@version@', project.version, location
+    replaceToken '@informativeVersion@', project.version + "+" + getGitHash(), location
+
+    replaceToken '@description@', project.descriptions, location
+    replaceToken '@url@', project.url, location
 }
 
 jar {
