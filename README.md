@@ -12,7 +12,7 @@ Nucleus
 
 Nucleus is a Sponge plugin that forms a solid base for your server, providing essential commands, events, and other
 tidbits that you might need. Extremely configurable, only loading up the commands and modules you want (and providing a way for
-plugins to disable modules that they replace the functionality of), and providing a simple and rich API, Essence is an
+plugins to disable modules that they replace the functionality of), and providing a simple and rich API, Nucleus is an
 elite plugin for providing simple server tasks.
  
 Nucleus is the unbeatable combination of HassanS6000's EssentialCmds and experience of writing an essentials plugin, with the
