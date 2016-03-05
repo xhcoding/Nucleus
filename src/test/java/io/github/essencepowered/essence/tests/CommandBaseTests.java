@@ -21,7 +21,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 
-public class CommandBaseTests {
+public class CommandBaseTests extends TestBase {
 
     /**
      * Tests that if a {@link Player} is provided, they can execute a command for players.

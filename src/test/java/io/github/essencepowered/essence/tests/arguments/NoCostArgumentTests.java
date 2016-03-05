@@ -5,6 +5,7 @@
 package io.github.essencepowered.essence.tests.arguments;
 
 import io.github.essencepowered.essence.argumentparsers.NoCostArgument;
+import io.github.essencepowered.essence.tests.TestBase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -20,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoCostArgumentTests extends ArgumentBase {
+public class NoCostArgumentTests extends TestBase {
 
     @Test
     public void testNoCostOk() throws ArgumentParseException {
