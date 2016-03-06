@@ -56,6 +56,9 @@ public class UserConfig {
     @Setting
     private String nickname;
 
+    @Setting
+    private Map<String, Long> kitLastUsedTime = Maps.newHashMap();
+
     public MuteData getMuteData() {
         return muteData;
     }
@@ -158,5 +161,13 @@ public class UserConfig {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public Map<String, Long> getKitLastUsedTime() {
+        return kitLastUsedTime;
+    }
+
+    public void setKitLastUsedTime(Map<String, Long> kitLastUsedTime) {
+        this.kitLastUsedTime = kitLastUsedTime;
     }
 }

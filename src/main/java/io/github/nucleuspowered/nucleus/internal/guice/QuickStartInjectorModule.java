@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.guice;
 import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -33,6 +34,7 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(Logger.class).toProvider(plugin::getLogger);
         bind(MainConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.MAIN_CONFIG).get());
         bind(CommandsConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get());
+        bind(KitsConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.KITS_CONFIG).get());
         bind(UserConfigLoader.class).toProvider(plugin::getUserLoader);
         bind(WorldConfigLoader.class).toProvider(plugin::getWorldLoader);
         bind(Game.class).toProvider(Sponge::getGame);

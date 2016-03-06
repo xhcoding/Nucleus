@@ -12,6 +12,7 @@ import org.spongepowered.api.world.World;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface InternalNucleusUser extends NucleusUser {
@@ -57,4 +58,12 @@ public interface InternalNucleusUser extends NucleusUser {
     boolean jailOnNextLogin();
 
     void setJailOnNextLogin(boolean set);
+
+    Map<String, Long> getKitLastUsedTime();
+
+    void setKitLastUsedTime(Map<String, Long> kitLastUsedTime);
+
+    void addKitLastUsedTime(String kitName, long currentTimeMillis);
+
+    void removeKitLastUsedTime(String kitName);
 }

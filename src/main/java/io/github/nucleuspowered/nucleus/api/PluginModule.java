@@ -26,7 +26,8 @@ public enum PluginModule {
     ADMIN("admin"),
     VANISH("vanish"),
     NICKNAME("nickname"),
-    WORLDS("worlds");
+    WORLDS("worlds"),
+    KITS("kits");
 
     String key;
 

@@ -30,6 +30,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private int afkTime;
     private int afkTimeKick;
     private boolean serperateWarpPermissions;
+    private boolean serperateKitPermissions;
     private List<String> allowedCommandsInJail;
     private long teleportWarmup;
     private boolean modifyChat;
@@ -81,6 +82,10 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         // Warps
         serperateWarpPermissions =
                 node.getNode("warps", "separate-permissions").setComment(Util.getMessageWithFormat("config.warps.separate")).getBoolean(false);
+
+        // Kits
+        serperateKitPermissions =
+                node.getNode("kits", "separate-permissions").setComment(Util.getMessageWithFormat("config.kits.separate")).getBoolean(false);
 
         // Teleports
         teleportWarmup = node.getNode("teleport", "warmup").getLong(3);
@@ -153,6 +158,10 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public boolean useSeparatePermissionsForWarp() {
         return serperateWarpPermissions;
+    }
+    
+    public boolean useSeparatePermissionsForKits() {
+        return serperateKitPermissions;
     }
 
     public long getTeleportWarmup() {
