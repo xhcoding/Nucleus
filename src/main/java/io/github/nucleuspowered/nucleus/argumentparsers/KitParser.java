@@ -72,6 +72,6 @@ public class KitParser extends CommandElement {
         }
 
         // No permissions, no entry!
-        return src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kit." + name.toLowerCase());
+        return src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + name.toLowerCase());
     }
 }
