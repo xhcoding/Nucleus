@@ -56,6 +56,9 @@ public class UserConfig {
     @Setting
     private String nickname;
 
+    /**
+     * In seconds
+     */
     @Setting
     private Map<String, Long> kitLastUsedTime = Maps.newHashMap();
 

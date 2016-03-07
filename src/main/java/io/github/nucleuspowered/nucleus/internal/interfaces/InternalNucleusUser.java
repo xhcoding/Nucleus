@@ -59,11 +59,9 @@ public interface InternalNucleusUser extends NucleusUser {
 
     void setJailOnNextLogin(boolean set);
 
-    Map<String, Long> getKitLastUsedTime();
+    Map<String, Instant> getKitLastUsedTime();
 
-    void setKitLastUsedTime(Map<String, Long> kitLastUsedTime);
-
-    void addKitLastUsedTime(String kitName, long currentTimeMillis);
+    void addKitLastUsedTime(String kitName, Instant lastTime);
 
     void removeKitLastUsedTime(String kitName);
 }

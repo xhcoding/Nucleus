@@ -415,19 +415,16 @@ public class UserService implements InternalNucleusUser {
     }
 
     @Override
-    public Map<String, Long> getKitLastUsedTime() {
-        return config.getKitLastUsedTime();
+    public Map<String, Instant> getKitLastUsedTime() {
+        final Map<String, Instant> r = Maps.newHashMap();
+        config.getKitLastUsedTime().forEach((k, v) -> r.put(k, Instant.ofEpochSecond(v)));
+        return r;
     }
 
     @Override
-    public void setKitLastUsedTime(Map<String, Long> kitLastUsedTime) {
-        config.setKitLastUsedTime(kitLastUsedTime);
-    }
-
-    @Override
-    public void addKitLastUsedTime(String kitName, long currentTimeMillis) {
+    public void addKitLastUsedTime(String kitName, Instant lastTime) {
         Map<String, Long> kitLastUsedTime = config.getKitLastUsedTime();
-        kitLastUsedTime.put(kitName, currentTimeMillis);
+        kitLastUsedTime.put(kitName, lastTime.getEpochSecond());
         config.setKitLastUsedTime(kitLastUsedTime);
     }
 

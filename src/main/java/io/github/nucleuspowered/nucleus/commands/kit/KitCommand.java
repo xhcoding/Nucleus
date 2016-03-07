@@ -4,17 +4,20 @@
  */
 package io.github.nucleuspowered.nucleus.commands.kit;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.Kit;
+import io.github.nucleuspowered.nucleus.config.serialisers.Kit;
+import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
 import org.spongepowered.api.command.CommandResult;
@@ -23,12 +26,15 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.text.Text;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Map;
 
 /**
- * Allows a user to warp to the specified warp.
+ * Allows a user to redeem a kit.
  *
  * Command Usage: /kit Permission: nucleus.kit.base
  */
@@ -49,74 +55,71 @@ public class KitCommand extends CommandBase<Player> {
     }
 
     @Override
+    protected Map<String, PermissionInformation> permissionsToRegister() {
+        Map<String, PermissionInformation> pi = Maps.newHashMap();
+        pi.put(PermissionRegistry.PERMISSIONS_PREFIX + "kits", new PermissionInformation(Util.getMessageWithFormat("permission.kits"), SuggestedLevel.ADMIN));
+        return pi;
+    }
+
+    @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> pi = Maps.newHashMap();
+        pi.put("exempt.cooldown", new PermissionInformation(Util.getMessageWithFormat("permission.kit.exempt"), SuggestedLevel.ADMIN));
+        return pi;
+    }
+
+    @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
         String kitName = args.<String>getOne(kit).get();
         InternalNucleusUser user = userConfigLoader.getUser(player.getUniqueId());
         Kit kit = kitConfig.getKit(kitName);
+        Instant now = Instant.now();
 
-        if (kit.getInterval() > 0) {
+        // If we have a cooldown for the kit, and we don't have permission to bypass it...
+        if (!player.hasPermission(permissions.getPermissionWithSuffix("exempt.cooldown")) && kit.getInterval().getSeconds() > 0) {
+
+            // If the kit was used before...
             if (user.getKitLastUsedTime().containsKey(kitName)) {
-                if ((user.getKitLastUsedTime().get(kitName) + kit.getInterval()) > System.currentTimeMillis()) {
-                    player.sendMessage(Util.getTextMessageWithFormat("command.kit.cooldown",
-                            this.getTimeRemaining(user.getKitLastUsedTime().get(kitName), kit.getInterval())));
+
+                // ...and we haven't reached the cooldown point yet...
+                Instant timeForNextUse = user.getKitLastUsedTime().get(kitName).plus(kit.getInterval());
+                if (timeForNextUse.isAfter(now)) {
+                    Duration d = Duration.between(now, timeForNextUse);
+
+                    // tell the user.
+                    player.sendMessage(Util.getTextMessageWithFormat("command.kit.cooldown", Util.getTimeStringFromSeconds(d.getSeconds())));
                     return CommandResult.empty();
                 } else {
                     user.removeKitLastUsedTime(kitName);
-                    user.addKitLastUsedTime(kitName, System.currentTimeMillis());
                 }
-            } else {
-                user.addKitLastUsedTime(kitName, System.currentTimeMillis());
             }
         }
 
+        boolean isConsumed = false;
         for (ItemStack stack : kit.getStacks()) {
-            player.getInventory().offer(stack);
+            // Give them the kit.
+            InventoryTransactionResult itr = player.getInventory().offer(stack);
+
+            // If some items were rejected...
+            if (!itr.getRejectedItems().isEmpty()) {
+                // ...tell the user and break out.
+                player.sendMessage(Util.getTextMessageWithFormat("command.kit.fullinventory"));
+                break;
+            }
+
+            isConsumed = true;
         }
 
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.spawned", kitName));
-        return CommandResult.success();
-    }
-
-    public String getTimeRemaining(long timeUsed, long interval) {
-        long timeEnding = timeUsed + interval;
-        return this.getDurationBreakdown(timeEnding - System.currentTimeMillis());
-    }
-
-    public String getDurationBreakdown(long millis) {
-        if (millis < 0) {
-            throw new IllegalArgumentException("Duration must be greater than zero!");
+        // If something was consumed, consider a success.
+        if (isConsumed) {
+            // Register the last used time. Do it for everyone, in case permissions or cooldowns change later
+            user.addKitLastUsedTime(kitName, now);
+            player.sendMessage(Util.getTextMessageWithFormat("command.kit.spawned", kitName));
+            return CommandResult.success();
+        } else {
+            // Failed.
+            player.sendMessage(Util.getTextMessageWithFormat("command.kit.fail", kitName));
+            return CommandResult.empty();
         }
-
-        long days = TimeUnit.MILLISECONDS.toDays(millis);
-        millis -= TimeUnit.DAYS.toMillis(days);
-        long hours = TimeUnit.MILLISECONDS.toHours(millis);
-        millis -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-        millis -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-
-        StringBuilder sb = new StringBuilder(64);
-
-        if (days > 0) {
-            sb.append(days);
-            sb.append(" Days ");
-        }
-
-        if (hours > 0) {
-            sb.append(hours);
-            sb.append(" Hours ");
-        }
-
-        if (minutes > 0) {
-            sb.append(minutes);
-            sb.append(" Minutes ");
-        }
-
-        if (seconds > 0) {
-            sb.append(seconds);
-            sb.append(" Seconds");
-        }
-
-        return (sb.toString());
     }
 }

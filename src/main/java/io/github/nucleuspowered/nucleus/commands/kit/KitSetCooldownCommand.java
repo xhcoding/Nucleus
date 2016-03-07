@@ -20,6 +20,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,10 +48,10 @@ public class KitSetCooldownCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
         String kitName = args.<String>getOne(kit).get();
-        long interval = TimeUnit.MILLISECONDS.convert(args.<Long>getOne(duration).get(), TimeUnit.SECONDS);
-        kitConfig.setInterval(kitName, interval);
+        long seconds = args.<Long>getOne(duration).get();
+        kitConfig.setInterval(kitName, Duration.ofSeconds(seconds));
         kitConfig.save();
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitName));
+        player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitName, Util.getTimeStringFromSeconds(seconds)));
         return CommandResult.success();
     }
 }

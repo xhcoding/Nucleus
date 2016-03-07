@@ -55,7 +55,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
         }
 
         PaginationList.Builder paginationBuilder =
-                paginationService.builder().contents(kitText).title(Text.of(TextColors.GREEN, "Showing Kits")).padding(Text.of(TextColors.GREEN, "-"));
+                paginationService.builder().contents(kitText).title(Util.getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
         paginationBuilder.sendTo(src);
 
         return CommandResult.success();

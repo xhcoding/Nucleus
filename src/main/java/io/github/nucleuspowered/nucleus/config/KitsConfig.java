@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.Kit;
+import io.github.nucleuspowered.nucleus.config.serialisers.Kit;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -20,9 +20,9 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 public class KitsConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
@@ -93,20 +93,16 @@ public class KitsConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public void saveInventoryAsKit(Player player, String kitName) {
         List<Inventory> slots = Lists.newArrayList(player.getInventory().slots());
-        List<ItemStack> stacks = Lists.newArrayList();
+        final List<ItemStack> stacks = Lists.newArrayList();
 
-        for (int i = 0; i < slots.size(); i++) {
-            Optional<ItemStack> stack = slots.get(i).peek();
-            if (stack.isPresent()) {
-                stacks.add(stack.get());
-            }
-        }
+        // Add all the stacks into the kit list.
+        slots.forEach(s -> s.peek().ifPresent(stacks::add));
 
         Kit kitInventory = new Kit(stacks);
         kitNodes.put(kitName, kitInventory);
     }
 
-    public void setInterval(String kitName, long interval) {
+    public void setInterval(String kitName, Duration interval) {
         this.kitNodes.get(kitName).setInterval(interval);
     }
 }
