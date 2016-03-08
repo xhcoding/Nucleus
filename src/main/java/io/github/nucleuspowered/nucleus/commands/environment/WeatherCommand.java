@@ -92,11 +92,11 @@ public class WeatherCommand extends CommandBase<CommandSource> {
 
         if (oi.isPresent()) {
             // YES! I should get a job at the weather service and show them how it's done!
-            w.forecast(we, oi.get());
+            w.setWeather(we, oi.get());
             src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.weather.time"), we.getName(), w.getName(), Util.getTimeStringFromSeconds(oi.get()))));
         } else {
             // No, probably because I've already gotten a job at the weather service...
-            w.forecast(we);
+            w.setWeather(we);
             src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.weather"), we.getName(), w.getName())));
         }
 

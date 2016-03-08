@@ -6,6 +6,8 @@ package io.github.nucleuspowered.nucleus;
 
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.asset.AssetManager;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -27,18 +29,11 @@ public class Util {
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    private static final ResourceBundle messageBundle = ResourceBundle.getBundle("messages", Locale.getDefault());
-
-    public static MessageChannel getMessageChannel(@Nullable Player player, String... permissions) {
-        Set<MessageChannel> l = Arrays.asList(permissions).stream().map(MessageChannel::permission).collect(Collectors.toSet());
-        l.add(MessageChannel.TO_CONSOLE);
-        MutableMessageChannel mmc = MessageChannel.combined(l).asMutable();
-        if (player != null) {
-            mmc.addMember(player);
-        }
-
-        return mmc;
-    }
+    /**
+     * This bundle is being used as this is what existed in Nucleus before the Sponge API 4.0.1 update. This will eventually be updated
+     * to use the AssetManager and possibly move to a config file based solution - but right now, this is the easiest solution.
+     */
+    private static ResourceBundle messageBundle = ResourceBundle.getBundle("assets.io.github.nucleuspowered.nucleus.messages", Locale.getDefault());
 
     public static UUID getUUID(CommandSource src) {
         if (src instanceof Identifiable) {
@@ -143,18 +138,6 @@ public class Util {
             long ahours = hours == 0 ? 12 : hours;
             return MessageFormat.format(messageBundle.getString("time.pm"), ahours, hours, mins);
         }
-    }
-
-    public static Optional<Player> getPlayerFromOptionalOrSource(Optional<Player> pl, CommandSource src) {
-        if (pl.isPresent()) {
-            return pl;
-        }
-
-        if (src instanceof Player) {
-            return Optional.of((Player) src);
-        }
-
-        return Optional.empty();
     }
 
     private static void appendComma(StringBuilder sb) {

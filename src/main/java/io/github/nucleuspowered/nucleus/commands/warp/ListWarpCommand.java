@@ -68,7 +68,7 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
             }
         }).collect(Collectors.toList());
 
-        ps.builder().title(Util.getTextMessageWithFormat("command.warps.list.header")).paddingString("-").contents(lt).sendTo(src);
+        ps.builder().title(Util.getTextMessageWithFormat("command.warps.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt).sendTo(src);
         return CommandResult.success();
     }
 

@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.commands.nickname;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
@@ -62,7 +61,7 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         return CommandSpec.builder()
                 .arguments(
                         GenericArguments.optionalWeak(GenericArguments.requiringPermission(
-                                GenericArguments.onlyOne(new UserParser(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
+                                GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
                 GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))).executor(this).build();
     }
 

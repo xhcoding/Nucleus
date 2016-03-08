@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.commands.playerinfo;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.commands.misc.SpeedCommand;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
@@ -56,7 +55,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerKey)))).executor(this).build();
+        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))).executor(this).build();
     }
 
     @Override
@@ -106,7 +105,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
         }
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().contents(messages).paddingString("-").title(Util.getTextMessageWithFormat("command.seen.title", user.getName())).sendTo(src);
+        ps.builder().contents(messages).padding(Text.of(TextColors.GREEN, "-")).title(Util.getTextMessageWithFormat("command.seen.title", user.getName())).sendTo(src);
         return CommandResult.success();
     }
 

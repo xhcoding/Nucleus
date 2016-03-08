@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
@@ -72,7 +71,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Mutes or unmutes a player")).executor(this)
-                .arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerArgument))),
+                .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerArgument))),
                         GenericArguments.onlyOne(GenericArguments.optionalWeak(new TimespanParser(Text.of(timespanArgument)))),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))))
                 .build();

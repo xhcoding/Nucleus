@@ -9,7 +9,6 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -51,7 +50,7 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().description(Text.of("Checks the mute status of that player")).executor(this)
-                .arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerArgument)))).build();
+                .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerArgument)))).build();
     }
 
     @Override

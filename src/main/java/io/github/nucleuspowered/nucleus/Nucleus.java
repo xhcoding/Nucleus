@@ -44,7 +44,7 @@ import java.util.Set;
 
 import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 
-@Plugin(id = ID, name = NAME, version = INFORMATIVE_VERSION)
+@Plugin(id = GROUP_ID, name = NAME, version = INFORMATIVE_VERSION, description = DESCRIPTION)
 public class Nucleus {
 
     private ModuleRegistration moduleRegistration;
@@ -72,6 +72,8 @@ public class Nucleus {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
+        logger.info(Util.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
+
         dataDir = game.getSavesDirectory().resolve("nucleus");
         // Get the mandatory config files.
         try {
@@ -100,6 +102,7 @@ public class Nucleus {
             return;
         }
 
+        logger.info(Util.getMessageWithFormat("startup.postinit", PluginInfo.NAME));
         Set<PluginModule> modules = moduleRegistration.getModulesToLoad();
 
         // Load the following services only if necessary.
@@ -173,11 +176,13 @@ public class Nucleus {
         // Register services
         game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, configLoader);
         game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldConfigLoader);
+        logger.info(Util.getMessageWithFormat("startup.started", PluginInfo.NAME));
     }
 
     @Listener
     public void onServerStop(GameStoppedServerEvent event) {
         if (!isErrored) {
+            logger.info(Util.getMessageWithFormat("startup.stopped", PluginInfo.NAME));
             configLoader.saveAll();
         }
     }

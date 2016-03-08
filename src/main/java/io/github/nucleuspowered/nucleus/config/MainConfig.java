@@ -34,7 +34,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private List<String> allowedCommandsInJail;
     private long teleportWarmup;
     private boolean modifyChat;
-    private String chatTemplate;
+    private String chatTemplatePrefix;
+    private String chatTemplateSuffix;
     private int minNickLength;
     private String nickprefix;
     private boolean debugMode;
@@ -92,7 +93,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
         // Chat
         modifyChat = node.getNode("chat", "modifychat").getBoolean(true);
-        chatTemplate = node.getNode("chat", "template").getString("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
+        chatTemplatePrefix = node.getNode("chat", "template", "prefix").getString("{{prefix}} {{name}}&f: ");
+        chatTemplateSuffix = node.getNode("chat", "template", "suffix").getString(" {{suffix}}");
 
         // Nicknames
         minNickLength = node.getNode("nicknames", "min-nickname-length").getInt(3);
@@ -130,8 +132,10 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         ccn.getNode("warps", "separate-permissions").setComment(Util.getMessageWithFormat("config.warps.separate")).setValue(false);
 
         ccn.getNode("chat", "modifychat").setComment(Util.getMessageWithFormat("config.chat.modify")).setValue(true);
-        ccn.getNode("chat", "template").setComment(Util.getMessageWithFormat("config.chat.template"))
-                .setValue("{{prefix}} {{name}}&f: {{message}} {{suffix}}");
+        ccn.getNode("chat", "template", "prefix").setComment(Util.getMessageWithFormat("config.chat.template.prefix"))
+                .setValue("{{prefix}} {{name}}&f: ");
+        ccn.getNode("chat", "template", "suffix").setComment(Util.getMessageWithFormat("config.chat.template.suffix"))
+                .setValue(" {{suffix}}");
 
         ccn.getNode("nicknames", "min-nickname-length").setComment(Util.getMessageWithFormat("config.nicknames.min")).setValue(3);
         ccn.getNode("nicknames", "prefix").setComment(Util.getMessageWithFormat("config.nicknames.prefix")).setValue("&b~");
@@ -176,8 +180,12 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         return modifyChat;
     }
 
-    public String getChatTemplate() {
-        return chatTemplate;
+    public String getChatTemplatePrefix() {
+        return chatTemplatePrefix;
+    }
+
+    public String getChatTemplateSuffix() {
+        return chatTemplateSuffix;
     }
 
     public int getMinNickLength() {

@@ -17,7 +17,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.service.pagination.PaginationBuilder;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -54,8 +54,8 @@ public class KitListCommand extends CommandBase<CommandSource> {
             kitText.add(item);
         }
 
-        PaginationBuilder paginationBuilder =
-                paginationService.builder().contents(kitText).title(Text.of(TextColors.GREEN, "Showing Kits")).paddingString("-");
+        PaginationList.Builder paginationBuilder =
+                paginationService.builder().contents(kitText).title(Text.of(TextColors.GREEN, "Showing Kits")).padding(Text.of(TextColors.GREEN, "-"));
         paginationBuilder.sendTo(src);
 
         return CommandResult.success();

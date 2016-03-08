@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.commands.ban;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -36,7 +35,7 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(key)))).executor(this).build();
+        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(key)))).executor(this).build();
     }
 
     @Override
@@ -67,7 +66,7 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
         }
 
         src.sendMessage(Util.getTextMessageWithFormat("command.checkban.banned", u.getName(), reason, f, t));
-        src.sendMessage(Util.getTextMessageWithFormat("standard.reason", bp.getReason().toPlain()));
+        src.sendMessage(Util.getTextMessageWithFormat("standard.reason", bp.getReason().orElse(Util.getTextMessageWithFormat("ban.defaultreason")).toString()));
         return CommandResult.success();
     }
 }

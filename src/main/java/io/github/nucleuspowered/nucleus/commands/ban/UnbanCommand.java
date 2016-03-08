@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.commands.ban;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -37,7 +36,7 @@ public class UnbanCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(key)))).executor(this).build();
+        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(key)))).executor(this).build();
     }
 
     @Override
@@ -56,7 +55,7 @@ public class UnbanCommand extends CommandBase<CommandSource> {
 
         MutableMessageChannel notify = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
         notify.addMember(src);
-        notify.send(Util.getTextMessageWithFormat("command.unban.success", obp.get().getProfile().getName(), src.getName()));
+        notify.send(Util.getTextMessageWithFormat("command.unban.success", obp.get().getProfile().getName().orElse("standard.unknown"), src.getName()));
         return CommandResult.success();
     }
 }

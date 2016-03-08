@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.events;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
 public class MessageEvent extends AbstractEvent implements Cancellable {
@@ -24,7 +25,7 @@ public class MessageEvent extends AbstractEvent implements Cancellable {
 
     @Override
     public Cause getCause() {
-        return Cause.of(from);
+        return Cause.of(NamedCause.source(from));
     }
 
     public CommandSource getSender() {

@@ -16,7 +16,7 @@ plugins {
     id 'net.ellune.blossom' version '1.0.1'
 }
 
-ext.spongeapi = '3.1.0-SNAPSHOT'
+ext.spongeapi = '4.0.1-SNAPSHOT'
 ext.descriptions = 'Nucleus is a Sponge plugin that allows you to quickly start your server with essential commands, events, and other tidbits that you might need. '
 ext.url = 'http://nucleuspowered.github.io'
 
@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.spongepowered:spongeapi:3.1.0-SNAPSHOT"
+    compile "org.spongepowered:spongeapi:4.0.1"
 
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-all:1.10.19"
@@ -74,6 +74,7 @@ blossom {
     def location = 'src/main/java/io/github/nucleuspowered/nucleus/PluginInfo.java'
 
     // replaceToken '@id@', project.name.toLowerCase(), location
+    replaceToken '@group@', project.group, location
     replaceToken '@name@', project.name, location
     replaceToken '@version@', project.version, location
     replaceToken '@informativeVersion@', project.version + "+" + getGitHash(), location

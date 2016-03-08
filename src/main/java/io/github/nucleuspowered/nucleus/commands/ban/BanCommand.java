@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.commands.ban;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
@@ -50,7 +49,7 @@ public class BanCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new UserParser(Text.of(user))),
+        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(user))),
                 GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))).executor(this).build();
     }
 

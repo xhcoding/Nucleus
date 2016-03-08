@@ -71,7 +71,7 @@ public class MailCommand extends CommandBase<Player> {
 
         // Paginate the mail.
         PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().paddingString("-").title(Util.getTextMessageWithFormat(lmf.isEmpty() ? "mail.title" : "mail.title.filter"))
+        ps.builder().padding(Text.of(TextColors.GREEN, "-")).title(Util.getTextMessageWithFormat(lmf.isEmpty() ? "mail.title" : "mail.title.filter"))
                 .header(Util.getTextMessageWithFormat("mail.header")).contents(mails).sendTo(src);
 
         return CommandResult.success();

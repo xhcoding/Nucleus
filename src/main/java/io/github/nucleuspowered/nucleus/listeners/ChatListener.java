@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -43,7 +41,7 @@ public class ChatListener extends ListenerBase {
 
     private final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
 
-    private final Map<String, BiFunction<Player, Text, Text>> tokens;
+    private final Map<String, Function<Player, Text>> tokens;
     private final Map<String[], Function<String, String>> replacements;
 
     @Inject
@@ -77,14 +75,13 @@ public class ChatListener extends ListenerBase {
         return super.getPermissions();
     }
 
-    private Map<String, BiFunction<Player, Text, Text>> createTokens() {
-        Map<String, BiFunction<Player, Text, Text>> t = new HashMap<>();
+    private Map<String, Function<Player, Text>> createTokens() {
+        Map<String, Function<Player, Text>> t = new HashMap<>();
 
-        t.put("{{name}}", (p, te) -> Text.of(p.getName()));
-        t.put("{{prefix}}", (p, te) -> getTextFromOption(p, "prefix"));
-        t.put("{{suffix}}", (p, te) -> getTextFromOption(p, "suffix"));
-        t.put("{{displayname}}", (p, te) -> NameUtil.getNameWithHover(p, loader));
-        t.put("{{message}}", this::useMessage);
+        t.put("{{name}}", (p) -> Text.of(p.getName()));
+        t.put("{{prefix}}", (p) -> getTextFromOption(p, "prefix"));
+        t.put("{{suffix}}", (p) -> getTextFromOption(p, "suffix"));
+        t.put("{{displayname}}", (p) -> NameUtil.getNameWithHover(p, loader));
         return t;
     }
 
@@ -120,36 +117,36 @@ public class ChatListener extends ListenerBase {
         }
 
         Text rawMessage = event.getRawMessage();
+        event.setMessage(getFromTemplate(config.getChatTemplatePrefix(), player, true), useMessage(player, rawMessage), getFromTemplate(config.getChatTemplateSuffix(), player, false));
+    }
 
-        // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
-        // to do the replacements!
-        String[] s = p.split(config.getChatTemplate());
+    // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
+    // to do the replacements!
+    private Text getFromTemplate(String template, Player player, boolean trimTrailingSpace) {
 
         Text.Builder tb = Text.builder();
-
-        boolean isEmpty = true;
-        for (String textElement : s) {
+        for (String textElement : p.split(template)) {
             if (match.matcher(textElement).matches()) {
                 // If we have a token, do the replacement as specified by the function
-                Text message = tokens.get(textElement.toLowerCase()).apply(player, rawMessage);
+                Text message = tokens.get(textElement.toLowerCase()).apply(player);
                 if (!message.isEmpty()) {
-                    isEmpty = false;
+                    trimTrailingSpace = false;
                     tb.append(message);
                 }
             } else {
-                if (isEmpty) {
+                if (trimTrailingSpace) {
                     textElement = textElement.replaceAll("^\\s+", "");
                 }
 
                 if (!textElement.isEmpty()) {
                     // Just convert the colour codes, but that's it.
                     tb.append(TextSerializers.formattingCode('&').deserialize(textElement));
-                    isEmpty = false;
+                    trimTrailingSpace = false;
                 }
             }
         }
 
-        event.setMessage(tb.build());
+        return tb.build();
     }
 
     private Text getTextFromOption(Player player, String option) {

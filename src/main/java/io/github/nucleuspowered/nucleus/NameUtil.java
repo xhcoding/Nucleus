@@ -52,13 +52,7 @@ public class NameUtil {
     }
 
     public static Text getName(User player) {
-        Optional<Text> vt = player.get(Keys.DISPLAY_NAME);
-        boolean b = player.get(Keys.SHOWS_DISPLAY_NAME).orElse(false);
-        if (b) {
-            return vt.get();
-        }
-
-        return Text.of(player.getName());
+        return player.get(Keys.DISPLAY_NAME).orElse(Text.of(player.getName()));
     }
 
     public static String getNameFromUUID(UUID uuid) {

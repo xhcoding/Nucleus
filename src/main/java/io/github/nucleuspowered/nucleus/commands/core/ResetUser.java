@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.commands.core;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
@@ -14,6 +13,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.ban.BanService;
@@ -45,7 +45,7 @@ public class ResetUser extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(new UserParser(Text.of(userKey))).executor(this).build();
+        return CommandSpec.builder().arguments(GenericArguments.user(Text.of(userKey))).executor(this).build();
     }
 
     @Override

@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.commands.home;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -56,7 +55,7 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(
-                        GenericArguments.requiringPermission(new UserParser(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
+                        GenericArguments.requiringPermission(GenericArguments.user(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
                 .executor(this).build();
     }
 
@@ -95,7 +94,7 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
         }).collect(Collectors.toList());
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().title(Text.of(TextColors.YELLOW, header)).paddingString("-").contents(lt).sendTo(src);
+        ps.builder().title(Text.of(TextColors.YELLOW, header)).padding(Text.of(TextColors.GREEN, "-")).contents(lt).sendTo(src);
         return CommandResult.success();
     }
 }

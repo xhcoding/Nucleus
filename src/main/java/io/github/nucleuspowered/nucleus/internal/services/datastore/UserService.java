@@ -311,14 +311,12 @@ public class UserService implements InternalNucleusUser {
 
         Text nick = TextSerializers.formattingCode('&').deserialize(nickname);
         user.offer(Keys.DISPLAY_NAME, nick);
-        user.offer(Keys.SHOWS_DISPLAY_NAME, true);
     }
 
     @Override
     public void removeNickname() {
         nickname = null;
         user.remove(Keys.DISPLAY_NAME);
-        user.offer(Keys.SHOWS_DISPLAY_NAME, false);
         config.setNickname(null);
     }
 

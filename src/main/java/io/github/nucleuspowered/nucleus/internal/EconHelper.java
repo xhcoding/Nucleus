@@ -43,13 +43,13 @@ public class EconHelper {
         if (oes.isPresent()) {
             // Check balance.
             EconomyService es = oes.get();
-            Optional<UniqueAccount> a = es.getAccount(src.getUniqueId());
+            Optional<UniqueAccount> a = es.getOrCreateAccount(src.getUniqueId());
             if (!a.isPresent()) {
                 src.sendMessage(Util.getTextMessageWithFormat("cost.noaccount"));
                 return false;
             }
 
-            TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(plugin));
+            TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
             if (tr.getResult() == ResultType.ACCOUNT_NO_FUNDS) {
                 src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cost.nofunds"),
                         es.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain())).color(TextColors.YELLOW).build());
@@ -70,13 +70,13 @@ public class EconHelper {
         if (oes.isPresent()) {
             // Check balance.
             EconomyService es = oes.get();
-            Optional<UniqueAccount> a = es.getAccount(src.getUniqueId());
+            Optional<UniqueAccount> a = es.getOrCreateAccount(src.getUniqueId());
             if (!a.isPresent() && src.isOnline()) {
                 src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.noaccount"));
                 return false;
             }
 
-            TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.of(plugin));
+            TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
             if (tr.getResult() != ResultType.SUCCESS && src.isOnline()) {
                 src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.error"));
                 return false;

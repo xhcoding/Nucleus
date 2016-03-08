@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -43,7 +42,7 @@ public class CheckJailCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerKey)))).build();
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))).build();
     }
 
     @Override

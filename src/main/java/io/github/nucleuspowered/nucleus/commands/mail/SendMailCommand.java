@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.commands.mail;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -42,7 +41,7 @@ public class SendMailCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new UserParser(Text.of(player))),
+        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(player))),
                 GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))).build();
     }
 

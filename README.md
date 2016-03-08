@@ -9,6 +9,7 @@ Nucleus
 * [Issues] | [![GitHub issues](https://img.shields.io/github/issues/NucleusPowered/Nucleus.svg?style=flat-square)](http://www.github.com/NucleusPowered/Nucleus/issues/)
 * [Wiki]
 * [Downloads] | [![Github Releases](https://img.shields.io/github/downloads/NucleusPowered/Nucleus/total.svg?style=flat-square)](http://www.github.com/NucleusPowered/Nucleus/releases)
+* [TeamCity]
 
 Nucleus is a Sponge plugin that forms a solid base for your server, providing essential commands, events, and other
 tidbits that you might need. Extremely configurable, only loading up the commands and modules you want (and providing a way for
@@ -21,6 +22,8 @@ system loading technology of dualspiral's QuickStart, making Nucleus an essentia
 ...or so we hope, soon! With a website full of documentation and everything!
 
 Some of commands will have the ability for warmups and cooldowns to take place, as well as charging users (if an Economy plugin is installed).
+
+Nucleus requires Sponge API 4.0.1 or higher to run.
 
 ## Contributions
 
@@ -52,3 +55,4 @@ You will find the compiled JAR which will be named like `Nucleus-x.x.x.jar` in `
 [Wiki]: https://github.com/NucleusPowered/Nucleus/wiki
 [Downloads]: https://github.com/NucleusPowered/Nucleus/releases
 [guidelines]: Contributing.md
+[TeamCity]: https://teamcity.drnaylor.co.uk/project.html?projectId=QuickStart&tab=projectOverview

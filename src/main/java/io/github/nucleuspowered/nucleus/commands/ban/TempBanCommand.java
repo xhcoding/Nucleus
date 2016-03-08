@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.commands.ban;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -44,7 +43,7 @@ public class TempBanCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder()
-                .arguments(GenericArguments.onlyOne(new UserParser(Text.of(user))), GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
+                .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(user))), GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
                         GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason))))
                 .executor(this).build();
     }

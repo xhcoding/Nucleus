@@ -37,7 +37,6 @@ public class NicknameListener extends ListenerBase {
         }
 
         Optional<Text> d = iqsu.getNicknameAsText();
-        player.offer(Keys.SHOWS_DISPLAY_NAME, true);
         if (d.isPresent()) {
             player.offer(Keys.DISPLAY_NAME, d.get());
         } else {

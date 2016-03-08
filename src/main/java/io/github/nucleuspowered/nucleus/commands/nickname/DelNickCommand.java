@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.commands.nickname;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -37,7 +36,7 @@ public class DelNickCommand extends CommandBase<CommandSource> {
     public CommandSpec createSpec() {
         return CommandSpec.builder()
                 .arguments(
-                        GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))),
+                        GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))),
                                 permissions.getPermissionWithSuffix("others"))))
                 .executor(this).build();
     }

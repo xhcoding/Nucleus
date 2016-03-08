@@ -11,7 +11,6 @@ import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.argumentparsers.UserParser;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
@@ -62,7 +61,7 @@ public class JailCommand extends CommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this)
-                .arguments(GenericArguments.onlyOne(new UserParser(Text.of(playerKey))),
+                .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))),
                         GenericArguments.optional(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))),
                         GenericArguments.optionalWeak(GenericArguments.onlyOne(new TimespanParser(Text.of(durationKey)))),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reasonKey)))))
