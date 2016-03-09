@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.commands.items;
+package io.github.nucleuspowered.nucleus.commands.item;
 
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
