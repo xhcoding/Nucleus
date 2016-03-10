@@ -11,11 +11,7 @@ import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.api.exceptions.ModulesLoadedException;
 import io.github.nucleuspowered.nucleus.api.exceptions.UnremovableModuleException;
 import io.github.nucleuspowered.nucleus.api.service.*;
-import io.github.nucleuspowered.nucleus.config.AbstractConfig;
-import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
-import io.github.nucleuspowered.nucleus.config.MainConfig;
-import io.github.nucleuspowered.nucleus.config.WarpsConfig;
+import io.github.nucleuspowered.nucleus.config.*;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -28,7 +24,6 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -66,9 +61,14 @@ public class Nucleus {
 
     @Inject private Game game;
     @Inject private Logger logger;
-    @Inject @DefaultConfig(sharedRoot = false) private Path path;
-    @Inject @ConfigDir(sharedRoot = false) private Path configDir;
+    private Path configDir;
     private Path dataDir;
+
+    // We inject this into the constructor so we can build the config path ourselves.
+    @Inject
+    public Nucleus(@ConfigDir(sharedRoot = true) Path configDir) {
+        this.configDir = configDir.resolve(PluginInfo.ID);
+    }
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
@@ -77,8 +77,9 @@ public class Nucleus {
         dataDir = game.getSavesDirectory().resolve("nucleus");
         // Get the mandatory config files.
         try {
+            Files.createDirectories(this.configDir);
             Files.createDirectories(dataDir);
-            configMap.putConfig(ConfigMap.MAIN_CONFIG, new MainConfig(path));
+            configMap.putConfig(ConfigMap.MAIN_CONFIG, new MainConfig(Paths.get(configDir.toString(), "main.conf")));
             configMap.putConfig(ConfigMap.COMMANDS_CONFIG, new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
             configLoader = new UserConfigLoader(this);
             worldConfigLoader = new WorldConfigLoader(this);
