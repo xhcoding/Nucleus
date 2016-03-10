@@ -57,7 +57,7 @@ public class TempBanCommand extends CommandBase<CommandSource> {
         BanService service = Sponge.getServiceManager().provideUnchecked(BanService.class);
 
         if (service.isBanned(u.getProfile())) {
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.ban.alreadyset", u.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.ban.alreadyset", u.getName()));
             return CommandResult.empty();
         }
 

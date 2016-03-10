@@ -52,28 +52,21 @@ public class LockWeatherCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<WorldProperties> world = args.<WorldProperties>getOne(worldKey);
-        WorldProperties wp;
-        if (world.isPresent()) {
-            // World was specified
-            wp = world.get();
-        } else if (src instanceof LocatedSource) {
-            // Player/CommandBlock world
-            wp = ((LocatedSource) src).getWorld().getProperties();
-        } else {
-            // Default world - console!
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.specifyworld")));
+        Optional<WorldProperties> world = getWorldProperties(src, worldKey, args);
+        if (!world.isPresent()) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.specifyworld"));
             return CommandResult.empty();
         }
 
+        WorldProperties wp = world.get();
         NucleusWorld ws = loader.getWorld(wp.getUniqueId());
         boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!ws.isLockWeather());
 
         ws.setLockWeather(toggle);
         if (toggle) {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.lockweather.locked", wp.getWorldName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.lockweather.locked", wp.getWorldName()));
         } else {
-            src.sendMessage(Text.of(TextColors.GREEN, Util.getMessageWithFormat("command.lockweather.unlocked", wp.getWorldName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.lockweather.unlocked", wp.getWorldName()));
         }
 
         return CommandResult.success();

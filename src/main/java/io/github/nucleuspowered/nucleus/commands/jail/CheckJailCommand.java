@@ -74,8 +74,7 @@ public class CheckJailCommand extends CommandBase<CommandSource> {
             forString = " " + Util.getMessageWithFormat("standard.for") + " ";
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN,
-                MessageFormat.format(Util.getMessageWithFormat("command.checkjail.jailed"), user.getName(), md.getJailName(), name, forString, time)));
+        src.sendMessage(Util.getTextMessageWithFormat("command.checkjail.jailed", user.getName(), md.getJailName(), name, forString, time));
         src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), md.getReason())));
         return CommandResult.success();
     }

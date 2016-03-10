@@ -14,6 +14,8 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.serializer.TextSerializer;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -53,6 +55,10 @@ public class NameUtil {
 
     public static Text getName(User player) {
         return player.get(Keys.DISPLAY_NAME).orElse(Text.of(player.getName()));
+    }
+
+    public static String getSerialisedName(User player) {
+        return TextSerializers.FORMATTING_CODE.serialize(getName(player));
     }
 
     public static String getNameFromUUID(UUID uuid) {

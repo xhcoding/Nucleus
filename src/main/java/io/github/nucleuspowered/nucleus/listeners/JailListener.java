@@ -164,8 +164,8 @@ public class JailListener extends ListenerBase {
 
     private void onJail(JailData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("jail.playernotify.time"),
-                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS)))));
+            user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify.time",
+                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
         } else {
             user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify"));
         }

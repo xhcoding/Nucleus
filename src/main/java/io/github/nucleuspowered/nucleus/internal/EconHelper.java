@@ -51,8 +51,7 @@ public class EconHelper {
 
             TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
             if (tr.getResult() == ResultType.ACCOUNT_NO_FUNDS) {
-                src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cost.nofunds"),
-                        es.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain())).color(TextColors.YELLOW).build());
+                src.sendMessage(Util.getTextMessageWithFormat("cost.nofunds", getCurrencySymbol(cost)));
                 return false;
             } else if (tr.getResult() != ResultType.SUCCESS) {
                 src.sendMessage(Util.getTextMessageWithFormat("cost.error"));

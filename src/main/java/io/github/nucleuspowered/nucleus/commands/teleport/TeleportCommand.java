@@ -66,7 +66,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
     @Override
     public ContinueMode preProcessChecks(CommandSource source, CommandContext args) throws Exception {
         // Do the /tptoggle check now, no need to go through a warmup then...
-        if (source instanceof Player && !TeleportHandler.canBypassTpToggle((Player) source)) {
+        if (source instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
             Player to = args.<Player>getOne(playerKey).get();
             if (!plugin.getUserLoader().getUser(to).isTeleportToggled()) {
                 source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));

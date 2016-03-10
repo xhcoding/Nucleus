@@ -67,7 +67,7 @@ public class WeatherCommand extends CommandBase<CommandSource> {
                 w = ((LocatedSource) src).getWorld();
             } else {
                 // As supreme overlord of the worlds... you have to specify one.
-                src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.specifyworld")));
+                src.sendMessage(Util.getTextMessageWithFormat("command.specifyworld"));
                 return CommandResult.empty();
             }
         }
@@ -76,7 +76,7 @@ public class WeatherCommand extends CommandBase<CommandSource> {
         NucleusWorld ew = loader.getWorld(w);
         if (ew.isLockWeather()) {
             // Tell the user to unlock first.
-            src.sendMessage(Text.of(TextColors.RED, Util.getMessageWithFormat("command.weather.locked", w.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.weather.locked", w.getName()));
             return CommandResult.empty();
         }
 
@@ -93,11 +93,11 @@ public class WeatherCommand extends CommandBase<CommandSource> {
         if (oi.isPresent()) {
             // YES! I should get a job at the weather service and show them how it's done!
             w.setWeather(we, oi.get());
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.weather.time"), we.getName(), w.getName(), Util.getTimeStringFromSeconds(oi.get()))));
+            src.sendMessage(Util.getTextMessageWithFormat("command.weather.time", we.getName(), w.getName(), Util.getTimeStringFromSeconds(oi.get())));
         } else {
             // No, probably because I've already gotten a job at the weather service...
             w.setWeather(we);
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.weather"), we.getName(), w.getName())));
+            src.sendMessage(Util.getTextMessageWithFormat("command.weather", we.getName(), w.getName()));
         }
 
         // The weather control device has been activated!

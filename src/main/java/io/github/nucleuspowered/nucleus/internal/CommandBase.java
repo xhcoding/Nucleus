@@ -21,6 +21,7 @@ import org.spongepowered.api.command.*;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.command.source.LocatedSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -30,6 +31,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -413,6 +415,38 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         return setupWarmup(src, args);
+    }
+
+    /**
+     * Gets the world properties from the specified argument.
+     *
+     * @param src The {@link CommandSource} executing the command.
+     * @param argument The key of the argument to get the world properties from.
+     * @param args The {@link CommandContext} with the data
+     * @return An {@link Optional} containing the {@link WorldProperties}, if appropriate.
+     */
+    protected final Optional<WorldProperties> getWorldProperties(CommandSource src, String argument, CommandContext args) {
+        Optional<WorldProperties> pr = args.<WorldProperties>getOne(argument);
+        if (pr.isPresent()) {
+            return pr;
+        }
+
+        // Actually, we just care about where we are.
+        if (src instanceof LocatedSource) {
+            return Optional.of(((LocatedSource) src).getWorld().getProperties());
+        }
+
+        return Optional.empty();
+    }
+
+    protected final WorldProperties getWorldPropertiesOrDefault(CommandSource src, String argument, CommandContext args) {
+        Optional<WorldProperties> pr = getWorldProperties(src, argument, args);
+        if (pr.isPresent()) {
+            return pr.get();
+        }
+
+        src.sendMessage(Util.getTextMessageWithFormat("args.worldproperties.default"));
+        return Sponge.getServer().getDefaultWorld().get();
     }
 
     protected <U extends User> Optional<U> getUser(Class<U> clazz, CommandSource src, String argument, CommandContext args) {

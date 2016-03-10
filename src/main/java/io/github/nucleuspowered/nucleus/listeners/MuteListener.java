@@ -89,8 +89,8 @@ public class MuteListener extends ListenerBase {
 
     private void onMute(MuteData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(Text.of(TextColors.RED, MessageFormat.format(Util.getMessageWithFormat("mute.playernotify.time"),
-                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS)))));
+            user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify.time",
+                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
         } else {
             user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify"));
         }

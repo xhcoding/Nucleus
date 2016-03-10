@@ -132,7 +132,7 @@ public class WorldTimeParser extends CommandElement {
             throw args.createError(Util.getTextMessageWithFormat("args.worldtime.ticks"));
         }
 
-        throw args.createError(Text.of(MessageFormat.format(Util.getMessageWithFormat("args.worldtime.error"), arg)));
+        throw args.createError(Util.getTextMessageWithFormat("args.worldtime.error", arg));
     }
 
     @Override

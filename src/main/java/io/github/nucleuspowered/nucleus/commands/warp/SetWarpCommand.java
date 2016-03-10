@@ -65,7 +65,7 @@ public class SetWarpCommand extends CommandBase<Player> {
         // OK! Set it.
         if (qs.setWarp(warp, src.getLocation(), src.getRotation())) {
             // Worked. Tell them.
-            src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("command.warps.set"), warp)));
+            src.sendMessage(Util.getTextMessageWithFormat("command.warps.set", warp));
             return CommandResult.success();
         }
 

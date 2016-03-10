@@ -49,7 +49,7 @@ public class WeatherParser extends CommandElement {
             return weather.get(arg);
         }
 
-        throw args.createError(Text.of(MessageFormat.format(Util.getMessageWithFormat("args.weather.noexist"), "clear, rain, storm")));
+        throw args.createError(Util.getTextMessageWithFormat("args.weather.noexist", "clear, rain, storm"));
     }
 
     @Override

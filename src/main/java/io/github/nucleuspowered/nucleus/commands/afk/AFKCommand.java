@@ -46,11 +46,11 @@ public class AFKCommand extends CommandBase<Player> {
         if (isAFK) {
             afkHandler.updateUserActivity(src.getUniqueId());
             MessageChannel.TO_ALL
-                    .send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.fromafk")));
+                    .send(Util.getTextMessageWithFormat("afk.fromafk", NameUtil.getSerialisedName(src)));
         } else {
             afkHandler.setAFK(src.getUniqueId(), true);
             MessageChannel.TO_ALL
-                    .send(Text.of(TextColors.GRAY, "* ", NameUtil.getName(src), TextColors.GRAY, " " + Util.getMessageWithFormat("afk.toafk")));
+                    .send(Util.getTextMessageWithFormat("afk.toafk", NameUtil.getSerialisedName(src)));
         }
 
         return CommandResult.success();
