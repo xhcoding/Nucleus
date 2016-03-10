@@ -77,19 +77,19 @@ public class NicknameCommand extends CommandBase<CommandSource> {
 
         // Giving player must have the colour permissions and whatnot. Also,
         // colour and color are the two spellings we support. (RULE BRITANNIA!)
-        if (colourPattern.matcher(name).find() && (permissions.testSuffix(src, "colour") || permissions.testSuffix(src, "color"))) {
+        if (colourPattern.matcher(name).find() && !(permissions.testSuffix(src, "colour") || permissions.testSuffix(src, "color"))) {
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.colour.noperms"));
             return CommandResult.empty();
         }
 
         // Giving player must have the colour permissions and whatnot.
-        if (magicPattern.matcher(name).find() && permissions.testSuffix(src, "magic")) {
+        if (magicPattern.matcher(name).find() && !permissions.testSuffix(src, "magic")) {
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.magic.noperms"));
             return CommandResult.empty();
         }
 
         // Giving player must have the colour permissions and whatnot.
-        if (stylePattern.matcher(name).find() && permissions.testSuffix(src, "style")) {
+        if (stylePattern.matcher(name).find() && !permissions.testSuffix(src, "style")) {
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.style.noperms"));
             return CommandResult.empty();
         }
