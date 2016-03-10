@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.commands.afk;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
@@ -28,6 +29,8 @@ import org.spongepowered.api.text.format.TextColors;
 @RunAsync
 public class AFKCommand extends CommandBase<Player> {
 
+    @Inject private AFKHandler afkHandler;
+
     @Override
     public CommandSpec createSpec() {
         return CommandSpec.builder().executor(this).build();
@@ -35,7 +38,6 @@ public class AFKCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        AFKHandler afkHandler = plugin.getAfkHandler();
         if (permissions.testSuffix(src, "exempt.toggle")) {
             src.sendMessage(Util.getTextMessageWithFormat("command.afk.exempt"));
             return CommandResult.empty();

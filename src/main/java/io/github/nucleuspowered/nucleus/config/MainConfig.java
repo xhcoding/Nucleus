@@ -39,6 +39,7 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private int minNickLength;
     private String nickprefix;
     private boolean debugMode;
+    private boolean listSeparateGroups;
 
     public MainConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -100,6 +101,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         minNickLength = node.getNode("nicknames", "min-nickname-length").getInt(3);
         nickprefix = node.getNode("nicknames", "prefix").getString("&b~");
         debugMode = node.getNode("debug-mode").getBoolean(false);
+
+        // List
+        listSeparateGroups = node.getNode("playerinfo", "list", "group-by-permission-groups").getBoolean(false);
     }
 
     @Override
@@ -141,6 +145,8 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
         ccn.getNode("nicknames", "prefix").setComment(Util.getMessageWithFormat("config.nicknames.prefix")).setValue("&b~");
 
         ccn.getNode("debug-mode").setComment(Util.getMessageWithFormat("config.debugmode")).setValue(false);
+
+        ccn.getNode("playerinfo", "list", "group-by-permission-groups").setComment(Util.getMessageWithFormat("config.playerinfo.list.groups")).setValue(false);
         return ccn;
     }
 
@@ -198,5 +204,9 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
 
     public boolean getDebugMode() {
         return debugMode;
+    }
+
+    public boolean getListByPermissionGroups() {
+        return listSeparateGroups;
     }
 }
