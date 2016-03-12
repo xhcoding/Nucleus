@@ -477,4 +477,24 @@ public class UserService implements InternalNucleusUser {
     public void setPowertoolToggle(boolean set) {
         config.setPowertoolToggle(set);
     }
+
+    @Override
+    public List<UUID> getIgnoreList() {
+        return ImmutableList.copyOf(config.getIgnoreList());
+    }
+
+    @Override
+    public boolean addToIgnoreList(UUID uuid) {
+        if (!config.getIgnoreList().contains(uuid)) {
+            config.getIgnoreList().add(uuid);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean removeFromIgnoreList(UUID uuid) {
+        return config.getIgnoreList().remove(uuid);
+    }
 }

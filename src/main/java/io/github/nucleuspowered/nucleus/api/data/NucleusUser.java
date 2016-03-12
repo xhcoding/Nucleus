@@ -223,4 +223,27 @@ public interface NucleusUser {
      * @param set Sets whether powertools are enabled for this user.
      */
     void setPowertoolToggle(boolean set);
+
+    /**
+     * Gets the UUID of the users that should be ignored.
+     *
+     * @return The {@link List} of {@link UUID}s that represent the users that are ignored.
+     */
+    List<UUID> getIgnoreList();
+
+    /**
+     * Adds a user to the ignore list.
+     *
+     * @param uuid The {@link UUID} of the user to ignore.
+     * @return <code>true</code> if successful.
+     */
+    boolean addToIgnoreList(UUID uuid);
+
+    /**
+     * Remove a user from the ignore list.
+     *
+     * @param uuid The {@link UUID} of the user to stop ignoring.
+     * @return <code>true</code> if successful.
+     */
+    boolean removeFromIgnoreList(UUID uuid);
 }

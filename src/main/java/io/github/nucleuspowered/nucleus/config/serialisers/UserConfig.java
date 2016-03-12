@@ -14,6 +14,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @ConfigSerializable
 public class UserConfig {
@@ -67,6 +68,9 @@ public class UserConfig {
 
     @Setting
     private Map<String, List<String>> powertools = Maps.newHashMap();
+
+    @Setting
+    private List<UUID> ignoreList = Lists.newArrayList();
 
     public MuteData getMuteData() {
         return muteData;
@@ -194,5 +198,13 @@ public class UserConfig {
 
     public void setPowertoolToggle(boolean set) {
         this.powertoolToggle = set;
+    }
+
+    public List<UUID> getIgnoreList() {
+        return this.ignoreList;
+    }
+
+    public void setIgnoreList(List<UUID> ignoreList) {
+        this.ignoreList = ignoreList;
     }
 }
