@@ -18,11 +18,3 @@ before_install:
   - chmod +x gradlew
 install: true
 script: "./gradlew build"
-
-notifications:
-  irc:
-    channels: "irc.esper.net#nucleus"
-    template:
-      - "Travis: %{repository}/%{branch} (%{commit}) : '%{commit_message}' by %{author}"
-      - "Result: %{result}. %{message}"
-      - "Build details: %{build_url}"
