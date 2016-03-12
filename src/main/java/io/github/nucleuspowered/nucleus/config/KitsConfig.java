@@ -9,9 +9,10 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.config.serialisers.Kit;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class KitsConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
+public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> {
 
     @Inject private Logger logger;
 
@@ -68,15 +69,13 @@ public class KitsConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     }
 
     @Override
-    protected HoconConfigurationLoader getLoader(Path file) {
-        return HoconConfigurationLoader.builder().setPath(file).build();
+    protected GsonConfigurationLoader getLoader(Path file) {
+        return GsonConfigurationLoader.builder().setPath(file).build();
     }
 
     @Override
-    protected CommentedConfigurationNode getDefaults() {
-        CommentedConfigurationNode ccn = SimpleCommentedConfigurationNode.root();
-        ccn.setComment("Contains all Kits.");
-        return ccn;
+    protected ConfigurationNode getDefaults() {
+        return SimpleConfigurationNode.root();
     }
 
     public Set<String> getKits() {

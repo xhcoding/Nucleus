@@ -150,7 +150,7 @@ public class Nucleus {
 
         if (modules.contains(PluginModule.KITS)) {
             try {
-                configMap.putConfig(ConfigMap.KITS_CONFIG, new KitsConfig(Paths.get(dataDir.toString(), "kits.conf")));
+                configMap.putConfig(ConfigMap.KITS_CONFIG, new KitsConfig(Paths.get(dataDir.toString(), "kits.json")));
             } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.KITS);
