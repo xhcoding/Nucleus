@@ -13,9 +13,11 @@ import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailFilter;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
+import io.github.nucleuspowered.nucleus.events.NucleusMailEvent;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
@@ -95,6 +97,13 @@ public class MailHandler implements NucleusMailService {
             iqsu = plugin.getUserLoader().getUser(playerTo);
         } catch (IOException | ObjectMappingException e) {
             e.printStackTrace();
+            return;
+        }
+
+        // Message is about to be sent. Send the event out. If canceled, then
+        // that's that.
+        if (Sponge.getEventManager().post(new NucleusMailEvent(playerFrom, playerTo, message))) {
+            playerFrom.getPlayer().ifPresent(x -> x.sendMessage(Util.getTextMessageWithFormat("message.cancel")));
             return;
         }
 

@@ -10,7 +10,7 @@ import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
-import io.github.nucleuspowered.nucleus.events.MessageEvent;
+import io.github.nucleuspowered.nucleus.events.NucleusMessageEvent;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -92,7 +92,7 @@ public class MessageHandler {
 
         // Message is about to be sent. Send the event out. If canceled, then
         // that's that.
-        if (Sponge.getEventManager().post(new MessageEvent(sender, receiver, message))) {
+        if (Sponge.getEventManager().post(new NucleusMessageEvent(sender, receiver, message))) {
             sender.sendMessage(Util.getTextMessageWithFormat("message.cancel"));
             return false;
         }

@@ -5,19 +5,18 @@
 package io.github.nucleuspowered.nucleus.events;
 
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
-public class MessageEvent extends AbstractEvent implements Cancellable {
+public class NucleusMessageEvent extends AbstractEvent implements io.github.nucleuspowered.nucleus.api.events.MessageEvent {
 
     private final CommandSource from;
     private final CommandSource to;
     private final String message;
     private boolean isCancelled = false;
 
-    public MessageEvent(CommandSource from, CommandSource to, String message) {
+    public NucleusMessageEvent(CommandSource from, CommandSource to, String message) {
         this.from = from;
         this.to = to;
         this.message = message;
@@ -28,14 +27,17 @@ public class MessageEvent extends AbstractEvent implements Cancellable {
         return Cause.of(NamedCause.source(from));
     }
 
+    @Override
     public CommandSource getSender() {
         return from;
     }
 
+    @Override
     public CommandSource getRecipient() {
         return to;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }
