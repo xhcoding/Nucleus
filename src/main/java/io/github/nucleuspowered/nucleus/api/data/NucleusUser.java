@@ -7,12 +7,14 @@ package io.github.nucleuspowered.nucleus.api.data;
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -199,4 +201,26 @@ public interface NucleusUser {
      * Removes the player's nickname.
      */
     void removeNickname();
+
+    /**
+     * Gets whether the user has a powertool bound to the {@link ItemType} specified, and what that is.
+     * @param item The {@link ItemType} to check.
+     *
+     * @return An {@link Optional} that contains the list of commands to execute if there is a powertool.
+     */
+    Optional<List<String>> getPowertoolForItem(ItemType item);
+
+    /**
+     * Gets whether the user has powertools enabled.
+     *
+     * @return <code>true</code> if interacting <code>might</code> activate a powertool.
+     */
+    boolean isPowertoolToggled();
+
+    /**
+     * Sets whether the user has powertools enabled.
+     *
+     * @param set Sets whether powertools are enabled for this user.
+     */
+    void setPowertoolToggle(boolean set);
 }

@@ -62,6 +62,12 @@ public class UserConfig {
     @Setting
     private Map<String, Long> kitLastUsedTime = Maps.newHashMap();
 
+    @Setting
+    private boolean powertoolToggle = true;
+
+    @Setting
+    private Map<String, List<String>> powertools = Maps.newHashMap();
+
     public MuteData getMuteData() {
         return muteData;
     }
@@ -172,5 +178,21 @@ public class UserConfig {
 
     public void setKitLastUsedTime(Map<String, Long> kitLastUsedTime) {
         this.kitLastUsedTime = kitLastUsedTime;
+    }
+
+    public Map<String, List<String>> getPowertools() {
+        return this.powertools;
+    }
+
+    public void setPowertools(Map<String, List<String>> powertools) {
+        this.powertools = powertools;
+    }
+
+    public boolean isPowertoolToggle(){
+        return powertoolToggle;
+    }
+
+    public void setPowertoolToggle(boolean set) {
+        this.powertoolToggle = set;
     }
 }

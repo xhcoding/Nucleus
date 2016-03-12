@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.interfaces;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -64,4 +65,13 @@ public interface InternalNucleusUser extends NucleusUser {
     void addKitLastUsedTime(String kitName, Instant lastTime);
 
     void removeKitLastUsedTime(String kitName);
+
+    // -- Powertools
+    Map<String, List<String>> getPowertools();
+
+    void setPowertool(ItemType type, List<String> commands);
+
+    void clearPowertool(ItemType type);
+
+    void clearPowertool(String type);
 }

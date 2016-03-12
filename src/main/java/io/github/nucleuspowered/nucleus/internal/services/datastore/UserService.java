@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.services.datastore;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -29,6 +30,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
@@ -433,5 +435,46 @@ public class UserService implements InternalNucleusUser {
         Map<String, Long> kitLastUsedTime = config.getKitLastUsedTime();
         kitLastUsedTime.remove(kitName);
         config.setKitLastUsedTime(kitLastUsedTime);
+    }
+
+    // -- Powertools
+    @Override
+    public Map<String, List<String>> getPowertools() {
+        return ImmutableMap.copyOf(config.getPowertools());
+    }
+
+    @Override
+    public Optional<List<String>> getPowertoolForItem(ItemType item) {
+        List<String> tools = config.getPowertools().get(item.getId());
+        if (tools != null) {
+            return Optional.of(ImmutableList.copyOf(tools));
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public void setPowertool(ItemType type, List<String> commands) {
+        config.getPowertools().put(type.getId(), commands);
+    }
+
+    @Override
+    public void clearPowertool(ItemType type) {
+        config.getPowertools().remove(type.getId());
+    }
+
+    @Override
+    public void clearPowertool(String type) {
+        config.getPowertools().remove(type);
+    }
+
+    @Override
+    public boolean isPowertoolToggled() {
+        return config.isPowertoolToggle();
+    }
+
+    @Override
+    public void setPowertoolToggle(boolean set) {
+        config.setPowertoolToggle(set);
     }
 }

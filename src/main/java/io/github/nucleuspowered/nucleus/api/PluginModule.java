@@ -27,7 +27,8 @@ public enum PluginModule {
     VANISH("vanish"),
     NICKNAME("nickname"),
     WORLDS("worlds"),
-    KITS("kits");
+    KITS("kits"),
+    POWERTOOL("powertool");
 
     String key;
 
