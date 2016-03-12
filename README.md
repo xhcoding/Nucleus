@@ -10,6 +10,7 @@ Nucleus
 * [Wiki]
 * [Downloads] | [![Github Releases](https://img.shields.io/github/downloads/NucleusPowered/Nucleus/total.svg?style=flat-square)](http://www.github.com/NucleusPowered/Nucleus/releases)
 * [TeamCity]
+* [IRC] | EsperNet - #nucleus
 
 Nucleus is a Sponge plugin that forms a solid base for your server, providing essential commands, events, and other
 tidbits that you might need. Extremely configurable, only loading up the commands and modules you want (and providing a way for
@@ -56,3 +57,4 @@ You will find the compiled JAR which will be named like `Nucleus-x.x.x.jar` in `
 [Downloads]: https://github.com/NucleusPowered/Nucleus/releases
 [guidelines]: Contributing.md
 [TeamCity]: https://teamcity.drnaylor.co.uk/project.html?projectId=QuickStart&tab=projectOverview
+[IRC]: http://esper.net/publicirc.php
