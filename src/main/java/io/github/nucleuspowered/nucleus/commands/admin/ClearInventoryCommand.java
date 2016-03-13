@@ -7,11 +7,7 @@ package io.github.nucleuspowered.nucleus.commands.admin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -26,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@RegisterCommand({"clear", "clearinv", "clearinventory"})
+@RegisterCommand({"clear", "clearinv", "clearinventory", "ci"})
 @Modules(PluginModule.ADMIN)
 @NoCooldown
 @NoWarmup
