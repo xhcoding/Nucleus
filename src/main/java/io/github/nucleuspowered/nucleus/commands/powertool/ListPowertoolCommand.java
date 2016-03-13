@@ -61,7 +61,6 @@ public class ListPowertoolCommand extends CommandBase<Player> {
         Map<String, List<String>> powertools = inu.getPowertools();
 
         if (powertools.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.toggle", Util.getMessageWithFormat(toggle ? "enabled" : "disabled")));
             src.sendMessage(Util.getTextMessageWithFormat("command.powertool.list.none"));
             return CommandResult.success();
         }
