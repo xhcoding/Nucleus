@@ -25,9 +25,11 @@ public interface NucleusModuleService {
      * Removes a module from Nucleus pragmatically, so plugins can override the behaviour if required.
      *
      * @param module The {@link PluginModule} to disable.
+     * @param plugin The plugin that is requesting to disable the module. Used for logging purposes - telling the
+     *               user who is disabling the plugin.
      * @throws ModulesLoadedException Thrown if the modules have now been loaded and can no longer be removed.
      * @throws UnremovableModuleException Thrown if the module has been marked "cannot be disabled". Plugins are expected
      *         to honour this.
      */
-    void removeModule(PluginModule module) throws ModulesLoadedException, UnremovableModuleException;
+    void removeModule(PluginModule module, Object plugin) throws ModulesLoadedException, UnremovableModuleException;
 }

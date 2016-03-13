@@ -115,7 +115,7 @@ public class Nucleus {
                 game.getServiceManager().setProvider(this, NucleusWarpService.class, configMap.getConfig(ConfigMap.WARPS_CONFIG).get());
             } catch (IOException | ObjectMappingException ex) {
                 try {
-                    moduleRegistration.removeModule(PluginModule.WARPS);
+                    moduleRegistration.removeModule(PluginModule.WARPS, this);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {
                     // Nope.
                 }
@@ -133,7 +133,7 @@ public class Nucleus {
                 game.getServiceManager().setProvider(this, NucleusJailService.class, jailHandler);
             } catch (IOException | ObjectMappingException ex) {
                 try {
-                    moduleRegistration.removeModule(PluginModule.JAILS);
+                    moduleRegistration.removeModule(PluginModule.JAILS, this);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {
                     // Nope.
                 }
@@ -155,7 +155,7 @@ public class Nucleus {
                 game.getServiceManager().setProvider(this, NucleusKitService.class, config);
             } catch (IOException | ObjectMappingException ex) {
                 try {
-                    moduleRegistration.removeModule(PluginModule.KITS);
+                    moduleRegistration.removeModule(PluginModule.KITS, this);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {
                     // Nope.
                 }
