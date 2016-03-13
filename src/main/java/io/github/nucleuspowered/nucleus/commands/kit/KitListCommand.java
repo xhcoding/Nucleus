@@ -9,8 +9,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -33,6 +32,10 @@ import java.util.ArrayList;
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = KitCommand.class)
+@RunAsync
+@NoWarmup
+@NoCooldown
+@NoCost
 public class KitListCommand extends CommandBase<CommandSource> {
 
     @Inject private KitsConfig kitConfig;

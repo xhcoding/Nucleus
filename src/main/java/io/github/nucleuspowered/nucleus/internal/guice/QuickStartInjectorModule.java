@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
+import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.services.*;
 import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
@@ -41,5 +42,6 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(WarmupManager.class).toProvider(plugin::getWarmupManager);
         bind(TeleportHandler.class).toProvider(plugin::getTpHandler);
         bind(PermissionRegistry.class).toProvider(plugin::getPermissionRegistry);
+        bind(EconHelper.class).toProvider(plugin::getEconHelper);
     }
 }

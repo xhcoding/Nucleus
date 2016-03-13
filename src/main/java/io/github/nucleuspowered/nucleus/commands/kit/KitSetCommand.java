@@ -9,8 +9,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,6 +25,9 @@ import org.spongepowered.api.text.Text;
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"set", "update"}, subcommandOf = KitCommand.class)
+@NoWarmup
+@NoCooldown
+@NoCost
 public class KitSetCommand extends CommandBase<Player> {
 
     @Inject private KitsConfig kitConfig;

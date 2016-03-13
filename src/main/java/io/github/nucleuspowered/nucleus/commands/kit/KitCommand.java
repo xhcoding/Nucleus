@@ -12,8 +12,10 @@ import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
@@ -41,12 +43,14 @@ import java.util.Map;
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @Modules(PluginModule.KITS)
 @RegisterCommand("kit")
+@NoCost // This is determined by the kit itself.
 public class KitCommand extends CommandBase<Player> {
 
     private final String kit = "kit";
 
     @Inject private KitsConfig kitConfig;
     @Inject private UserConfigLoader userConfigLoader;
+    @Inject private EconHelper econHelper;
 
     @Override
     public CommandSpec createSpec() {
@@ -75,6 +79,18 @@ public class KitCommand extends CommandBase<Player> {
         Kit kit = kitInfo.kit;
         String kitName = kitInfo.name.toLowerCase();
         Instant now = Instant.now();
+
+        double cost = kitInfo.kit.getCost();
+        if (permissions.testCostExempt(player)) {
+            // If exempt - no cost.
+            cost = 0;
+        }
+
+        // If we have a cost for the kit, check we have funds.
+        if (cost > 0 && !econHelper.hasBalance(player, cost)) {
+            player.sendMessage(Util.getTextMessageWithFormat("command.kit.notenough", kitName, econHelper.getCurrencySymbol(cost)));
+            return CommandResult.empty();
+        }
 
         // If we have a cooldown for the kit, and we don't have permission to bypass it...
         if (!player.hasPermission(permissions.getPermissionWithSuffix("exempt.cooldown")) && kit.getInterval().getSeconds() > 0) {
@@ -113,6 +129,11 @@ public class KitCommand extends CommandBase<Player> {
 
         // If something was consumed, consider a success.
         if (isConsumed) {
+            // Charge, if necessary
+            if (cost > 0 && econHelper.economyServiceExists()) {
+                econHelper.withdrawFromPlayer(player, cost);
+            }
+
             // Register the last used time. Do it for everyone, in case permissions or cooldowns change later
             user.addKitLastUsedTime(kitName, now);
             player.sendMessage(Util.getTextMessageWithFormat("command.kit.spawned", kitName));
