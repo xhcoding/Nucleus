@@ -21,7 +21,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Sets kit items.
@@ -47,11 +46,13 @@ public class KitSetCooldownCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
-        String kitName = args.<String>getOne(kit).get();
+        KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
         long seconds = args.<Long>getOne(duration).get();
-        kitConfig.setInterval(kitName, Duration.ofSeconds(seconds));
+
+        // This Kit is a reference back to the version in list, so we don't need to update it explicitly
+        kitInfo.kit.setInterval(Duration.ofSeconds(seconds));
         kitConfig.save();
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitName, Util.getTimeStringFromSeconds(seconds)));
+        player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitInfo.name, Util.getTimeStringFromSeconds(seconds)));
         return CommandResult.success();
     }
 }

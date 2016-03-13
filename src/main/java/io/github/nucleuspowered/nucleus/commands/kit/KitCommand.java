@@ -8,10 +8,10 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
+import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.config.serialisers.Kit;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -25,7 +25,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.text.Text;
 
@@ -70,9 +70,10 @@ public class KitCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
-        String kitName = args.<String>getOne(kit).get();
+        KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
         InternalNucleusUser user = userConfigLoader.getUser(player.getUniqueId());
-        Kit kit = kitConfig.getKit(kitName);
+        Kit kit = kitInfo.kit;
+        String kitName = kitInfo.name.toLowerCase();
         Instant now = Instant.now();
 
         // If we have a cooldown for the kit, and we don't have permission to bypass it...
@@ -87,7 +88,7 @@ public class KitCommand extends CommandBase<Player> {
                     Duration d = Duration.between(now, timeForNextUse);
 
                     // tell the user.
-                    player.sendMessage(Util.getTextMessageWithFormat("command.kit.cooldown", Util.getTimeStringFromSeconds(d.getSeconds())));
+                    player.sendMessage(Util.getTextMessageWithFormat("command.kit.cooldown", Util.getTimeStringFromSeconds(d.getSeconds()), kitName));
                     return CommandResult.empty();
                 } else {
                     user.removeKitLastUsedTime(kitName);
@@ -96,9 +97,9 @@ public class KitCommand extends CommandBase<Player> {
         }
 
         boolean isConsumed = false;
-        for (ItemStack stack : kit.getStacks()) {
+        for (ItemStackSnapshot stack : kit.getStacks()) {
             // Give them the kit.
-            InventoryTransactionResult itr = player.getInventory().offer(stack);
+            InventoryTransactionResult itr = player.getInventory().offer(stack.createStack());
 
             // If some items were rejected...
             if (!itr.getRejectedItems().isEmpty()) {

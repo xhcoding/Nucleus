@@ -40,10 +40,10 @@ public class KitRemoveCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
-        String kitName = args.<String>getOne(kit).get();
-        kitConfig.removeKit(kitName);
+        KitParser.KitInfo kitName = args.<KitParser.KitInfo>getOne(kit).get();
+        kitConfig.removeKit(kitName.name);
         kitConfig.save();
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.remove.success", kitName));
+        player.sendMessage(Util.getTextMessageWithFormat("command.kit.remove.success", kitName.name));
         return CommandResult.success();
     }
 }

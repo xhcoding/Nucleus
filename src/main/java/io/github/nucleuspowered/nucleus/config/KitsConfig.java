@@ -4,33 +4,31 @@
  */
 package io.github.nucleuspowered.nucleus.config;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.config.serialisers.Kit;
+import io.github.nucleuspowered.nucleus.api.data.Kit;
+import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
+import io.github.nucleuspowered.nucleus.config.serialisers.KitNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> {
+public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements NucleusKitService {
 
     @Inject private Logger logger;
 
-    private Map<String, Kit> kitNodes;
+    private Map<String, KitNode> kitNodes;
 
     public KitsConfig(Path file) throws IOException, ObjectMappingException {
         super(file);
@@ -48,7 +46,7 @@ public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
         node.getChildrenMap().forEach((k, v) -> {
             try {
-                kitNodes.put(String.valueOf(k), v.getValue(TypeToken.of(Kit.class), new Kit()));
+                kitNodes.put(String.valueOf(k), v.getValue(TypeToken.of(KitNode.class), new KitNode()));
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
@@ -60,7 +58,7 @@ public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         node = SimpleCommentedConfigurationNode.root();
         kitNodes.forEach((k, v) -> {
             try {
-                node.getNode(k).setValue(TypeToken.of(Kit.class), v);
+                node.getNode(k).setValue(TypeToken.of(KitNode.class), v);
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
@@ -78,30 +76,29 @@ public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         return SimpleConfigurationNode.root();
     }
 
-    public Set<String> getKits() {
+    @Override
+    public Set<String> getKitNames() {
         return kitNodes.keySet();
     }
 
-    public Kit getKit(String name) {
-        return kitNodes.get(name);
+    @Override
+    public Optional<Kit> getKit(String name) {
+        return Optional.ofNullable(kitNodes.get(name));
     }
 
+    @Override
     public void removeKit(String kitName) {
         kitNodes.remove(kitName);
     }
 
-    public void saveInventoryAsKit(Player player, String kitName) {
-        List<Inventory> slots = Lists.newArrayList(player.getInventory().slots());
-        final List<ItemStack> stacks = Lists.newArrayList();
-
-        // Add all the stacks into the kit list.
-        slots.forEach(s -> s.peek().ifPresent(stacks::add));
-
-        Kit kitInventory = new Kit(stacks);
-        kitNodes.put(kitName, kitInventory);
+    @Override
+    public void saveKit(String kitName, Kit kit) {
+        Preconditions.checkNotNull(kit);
+        kitNodes.put(kitName, (KitNode) kit);
     }
 
-    public void setInterval(String kitName, Duration interval) {
-        this.kitNodes.get(kitName).setInterval(interval);
+    @Override
+    public Kit createKit() {
+        return new KitNode();
     }
 }

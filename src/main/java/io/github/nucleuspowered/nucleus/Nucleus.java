@@ -150,7 +150,9 @@ public class Nucleus {
 
         if (modules.contains(PluginModule.KITS)) {
             try {
-                configMap.putConfig(ConfigMap.KITS_CONFIG, new KitsConfig(Paths.get(dataDir.toString(), "kits.json")));
+                KitsConfig config = new KitsConfig(Paths.get(dataDir.toString(), "kits.json"));
+                configMap.putConfig(ConfigMap.KITS_CONFIG, config);
+                game.getServiceManager().setProvider(this, NucleusKitService.class, config);
             } catch (IOException | ObjectMappingException ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.KITS);

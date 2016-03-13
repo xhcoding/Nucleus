@@ -41,8 +41,8 @@ public class KitAddCommand extends CommandBase<Player> {
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
         String kitName = args.<String>getOne(name).get();
 
-        if (!kitConfig.getKits().contains(kitName)) {
-            kitConfig.saveInventoryAsKit(player, kitName);
+        if (!kitConfig.getKitNames().contains(kitName)) {
+            kitConfig.saveKit(kitName, kitConfig.createKit().updateKitInventory(player));
             kitConfig.save();
             player.sendMessage(Util.getTextMessageWithFormat("command.kit.add.success", kitName));
             return CommandResult.success();

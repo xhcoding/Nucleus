@@ -47,7 +47,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         ArrayList<Text> kitText = Lists.newArrayList();
 
-        for (String kit : kitConfig.getKits()) {
+        for (String kit : kitConfig.getKitNames()) {
             Text item = Text.builder(kit).onClick(TextActions.runCommand("/kit " + kit))
                     .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.kit.list.text", kit))).color(TextColors.AQUA)
                     .style(TextStyles.UNDERLINE).build();

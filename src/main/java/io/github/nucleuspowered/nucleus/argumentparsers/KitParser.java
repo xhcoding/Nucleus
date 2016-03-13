@@ -4,11 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
-
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -19,10 +18,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 
 public class KitParser extends CommandElement {
 
@@ -41,8 +42,9 @@ public class KitParser extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String kitName = args.next();
+        Optional<Kit> kit = kitConfig.getKit(kitName);
 
-        if (!kitConfig.getKits().contains(kitName)) {
+        if (!kit.isPresent()) {
             throw args.createError(
                     Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.kit.noexist")).build());
         }
@@ -52,14 +54,14 @@ public class KitParser extends CommandElement {
                     Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.kit.noperms")).build());
         }
 
-        return kitName;
+        return new KitInfo(kit.get(), kitName);
     }
 
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         try {
             String name = args.peek().toLowerCase();
-            return kitConfig.getKits().stream().filter(s -> s.startsWith(name)).filter(s -> kitConfig.getKits().contains(s))
+            return kitConfig.getKitNames().stream().filter(s -> s.startsWith(name)).filter(s -> kitConfig.getKitNames().contains(s))
                     .filter(x -> checkPermission(src, name)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Lists.newArrayList();
@@ -73,5 +75,15 @@ public class KitParser extends CommandElement {
 
         // No permissions, no entry!
         return src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + name.toLowerCase());
+    }
+
+    public final class KitInfo {
+        public final Kit kit;
+        public final String name;
+
+        public KitInfo(Kit kit, String name) {
+            this.kit = kit;
+            this.name = name;
+        }
     }
 }
