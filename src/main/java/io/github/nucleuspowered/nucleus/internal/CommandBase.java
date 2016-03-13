@@ -527,7 +527,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
 
         // If they are still in there, then tell them they are still cooling
         // down.
-        if (!bypassCooldown && !permissions.testCooldownExempt(src)) {
+        if (!bypassCooldown && !permissions.testCooldownExempt(src) && cooldownStore.containsKey(src.getUniqueId())) {
             Instant l = cooldownStore.get(src.getUniqueId());
             src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cooldown.message"),
                     Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS)))).color(TextColors.YELLOW).build());
