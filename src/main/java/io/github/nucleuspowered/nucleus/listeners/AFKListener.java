@@ -24,9 +24,7 @@ import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.format.TextColors;
 
 import java.util.Arrays;
 
@@ -76,7 +74,7 @@ public class AFKListener extends ListenerBase {
 
     private void updateAFK(final Player player) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-            if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && getPermissionUtil().testSuffix(player, "exempt")) {
+            if (plugin.getAfkHandler().updateUserActivity(player.getUniqueId()) && !getPermissionUtil().testSuffix(player, "exempt")) {
                 MessageChannel.TO_ALL.send(Util.getTextMessageWithFormat("afk.fromafk", NameUtil.getSerialisedName(player)));
             }
         });
