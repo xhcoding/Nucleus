@@ -20,9 +20,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.services.AFKHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.format.TextColors;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -68,9 +66,8 @@ public class AFKTask extends TaskBase {
             if (!afking.isEmpty()) {
                 Sponge.getServer().getOnlinePlayers().stream()
                         .filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.toggle")) && afking.contains(x.getUniqueId()))
-                        .map(NameUtil::getName)
-                        .forEach(x -> MessageChannel.TO_ALL.send(Text.builder().append(Text.of(TextColors.GRAY, "* ", x, TextColors.GRAY, " "))
-                                .append(Util.getTextMessageWithFormat("afk.toafk")).build()));
+                        .map(NameUtil::getSerialisedName)
+                        .forEach(x -> MessageChannel.TO_ALL.send(Util.getTextMessageWithFormat("afk.toafk", x)));
             }
         }
 
@@ -83,8 +80,7 @@ public class AFKTask extends TaskBase {
                         .forEach(x -> {
                             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Util.getTextMessageWithFormat("afk.kickreason")));
                             MessageChannel.TO_ALL
-                                    .send(Text.builder().append(Text.of(TextColors.GRAY, "* ", NameUtil.getName(x), TextColors.GRAY, " "))
-                                            .append(Util.getTextMessageWithFormat("afk.kickedafk")).build());
+                                    .send(Util.getTextMessageWithFormat("afk.kickedafk", NameUtil.getSerialisedName(x)));
                         });
             }
         }
