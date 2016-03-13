@@ -51,7 +51,7 @@ public class SendMailCommand extends CommandBase<CommandSource> {
         Optional<CommandPermissionHandler> oservice = permissionRegistry.getService(MailCommand.class);
 
         // Only send mails to players that can read them.
-        if (oservice.isPresent() && oservice.get().testBase(pl)) {
+        if (oservice.isPresent() && !oservice.get().testBase(pl)) {
             src.sendMessage(Util.getTextMessageWithFormat("command.mail.send.error", pl.getName()));
             return CommandResult.empty();
         }
