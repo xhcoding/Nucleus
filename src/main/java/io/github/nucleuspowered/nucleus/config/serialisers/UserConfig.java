@@ -72,6 +72,9 @@ public class UserConfig {
     @Setting
     private List<UUID> ignoreList = Lists.newArrayList();
 
+    @Setting
+    private boolean isFrozen = false;
+
     public MuteData getMuteData() {
         return muteData;
     }
@@ -206,5 +209,13 @@ public class UserConfig {
 
     public void setIgnoreList(List<UUID> ignoreList) {
         this.ignoreList = ignoreList;
+    }
+
+    public boolean isFrozen() {
+        return isFrozen;
+    }
+
+    public void setFrozen(boolean isFrozen) {
+        this.isFrozen = isFrozen;
     }
 }

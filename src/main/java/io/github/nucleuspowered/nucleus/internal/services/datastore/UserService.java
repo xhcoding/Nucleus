@@ -497,4 +497,14 @@ public class UserService implements InternalNucleusUser {
     public boolean removeFromIgnoreList(UUID uuid) {
         return config.getIgnoreList().remove(uuid);
     }
+
+    @Override
+    public boolean isFrozen() {
+        return config.isFrozen();
+    }
+
+    @Override
+    public void setFrozen(boolean value) {
+       config.setFrozen(value);
+    }
 }
