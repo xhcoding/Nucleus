@@ -246,4 +246,18 @@ public interface NucleusUser {
      * @return <code>true</code> if successful.
      */
     boolean removeFromIgnoreList(UUID uuid);
+
+    /**
+     * Checks if a user is frozen
+     *
+     * @return <code>true</code> if player is frozen.
+     */
+    boolean isFrozen();
+
+    /**
+     * Set the frozen value of a user.
+     *
+     * @param frozen Sets whether or not the user is frozen.
+     */
+    void setFrozen(boolean frozen);
 }
