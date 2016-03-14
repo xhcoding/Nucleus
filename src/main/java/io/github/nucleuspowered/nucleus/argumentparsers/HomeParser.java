@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -48,12 +49,15 @@ public class HomeParser extends CommandElement {
             if (owl.isPresent()) {
                 return owl.get();
             }
-
-            throw args.createError(Util.getTextMessageWithFormat("args.home.nohome", home.toLowerCase()));
         } catch (Exception e) {
-            e.printStackTrace();
+            if (plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getDebugMode()) {
+                e.printStackTrace();
+            }
+
             throw args.createError(Text.of(TextColors.RED, "An unspecified error occured"));
         }
+
+        throw args.createError(Util.getTextMessageWithFormat("args.home.nohome", home.toLowerCase()));
     }
 
     @Override
