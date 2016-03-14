@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.commands.powertool;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;

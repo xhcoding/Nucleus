@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -53,7 +52,7 @@ public class TestModule extends AbstractModule {
             CommandsConfig cc = new CommandsConfig(file);
             Mockito.when(plugin.getConfig(ConfigMap.COMMANDS_CONFIG)).thenReturn(Optional.of(cc));
             return plugin;
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @ConfigSerializable
-public class UserConfig {
+public class UserDataNode {
     @Setting
     private MuteData muteData;
 

@@ -4,9 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -14,10 +13,8 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.serializer.TextSerializer;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,7 +44,7 @@ public class NameUtil {
         try {
             InternalNucleusUser iq = loader.getUser(player);
             return getName(player, iq);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
         }
 
         return getName(player);

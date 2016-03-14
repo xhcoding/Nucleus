@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
+import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 import io.github.nucleuspowered.nucleus.config.serialisers.LocationNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
@@ -24,11 +25,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class WarpsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements NucleusWarpService {
+public class WarpsConfig extends AbstractStandardNodeConfig<ConfigurationNode, GsonConfigurationLoader> implements NucleusWarpService {
 
     private Map<String, LocationNode> warpNodes;
 
-    public WarpsConfig(Path file) throws IOException, ObjectMappingException {
+    public WarpsConfig(Path file) throws Exception {
         super(file);
     }
 

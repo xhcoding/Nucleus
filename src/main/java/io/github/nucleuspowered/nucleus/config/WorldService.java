@@ -2,52 +2,36 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.internal.services.datastore;
+package io.github.nucleuspowered.nucleus.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
-import io.github.nucleuspowered.nucleus.config.serialisers.WorldConfig;
+import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
+import io.github.nucleuspowered.nucleus.config.serialisers.WorldDataNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.world.World;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
 
-public class WorldService implements NucleusWorld {
+public class WorldService extends AbstractSerialisableClassConfig<WorldDataNode, ConfigurationNode, GsonConfigurationLoader> implements NucleusWorld {
 
     private final Nucleus plugin;
 
     // TODO: Think about whether we need the world object, or just the UUID.
     private final World world;
-    private final GsonConfigurationLoader loader;
 
-    private WorldConfig config = null;
-
-    public WorldService(Nucleus plugin, Path worldPath, World world) throws IOException, ObjectMappingException {
+    public WorldService(Nucleus plugin, Path worldPath, World world) throws Exception {
+        super(worldPath, TypeToken.of(WorldDataNode.class), WorldDataNode::new);
         Preconditions.checkNotNull(world);
-        Preconditions.checkNotNull(worldPath);
         Preconditions.checkNotNull(plugin);
         this.plugin = plugin;
         this.world = world;
-        this.loader = GsonConfigurationLoader.builder().setPath(worldPath).build();
         load();
-    }
-
-    private void load() throws IOException, ObjectMappingException {
-        ConfigurationNode cn = loader.load();
-        config = cn.getValue(TypeToken.of(WorldConfig.class), new WorldConfig());
-    }
-
-    public void save() throws IOException, ObjectMappingException {
-        ConfigurationNode cn = SimpleConfigurationNode.root();
-        cn.setValue(TypeToken.of(WorldConfig.class), config);
-        loader.save(cn);
     }
 
     public World getWorld() {
@@ -60,11 +44,21 @@ public class WorldService implements NucleusWorld {
 
     @Override
     public boolean isLockWeather() {
-        return config.isLockWeather();
+        return data.isLockWeather();
     }
 
     @Override
     public void setLockWeather(boolean lockWeather) {
-        config.setLockWeather(lockWeather);
+        data.setLockWeather(lockWeather);
+    }
+
+    @Override
+    protected GsonConfigurationLoader getLoader(Path file) {
+        return GsonConfigurationLoader.builder().setPath(file).build();
+    }
+
+    @Override
+    protected ConfigurationNode getNode() {
+        return SimpleConfigurationNode.root();
     }
 }

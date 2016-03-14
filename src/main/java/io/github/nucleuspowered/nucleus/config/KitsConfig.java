@@ -10,7 +10,8 @@ import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
-import io.github.nucleuspowered.nucleus.config.serialisers.KitNode;
+import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
+import io.github.nucleuspowered.nucleus.config.serialisers.KitDataNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -24,13 +25,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurationLoader> implements NucleusKitService {
+public class KitsConfig extends AbstractStandardNodeConfig<ConfigurationNode, GsonConfigurationLoader> implements NucleusKitService {
 
     @Inject private Logger logger;
 
-    private Map<String, KitNode> kitNodes;
+    private Map<String, KitDataNode> kitNodes;
 
-    public KitsConfig(Path file) throws IOException, ObjectMappingException {
+    public KitsConfig(Path file) throws Exception {
         super(file);
     }
 
@@ -46,7 +47,7 @@ public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
 
         node.getChildrenMap().forEach((k, v) -> {
             try {
-                kitNodes.put(String.valueOf(k), v.getValue(TypeToken.of(KitNode.class), new KitNode()));
+                kitNodes.put(String.valueOf(k), v.getValue(TypeToken.of(KitDataNode.class), new KitDataNode()));
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
@@ -58,7 +59,7 @@ public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
         node = SimpleCommentedConfigurationNode.root();
         kitNodes.forEach((k, v) -> {
             try {
-                node.getNode(k).setValue(TypeToken.of(KitNode.class), v);
+                node.getNode(k).setValue(TypeToken.of(KitDataNode.class), v);
             } catch (Exception e) {
                 logger.error(e.getMessage());
             }
@@ -94,11 +95,11 @@ public class KitsConfig extends AbstractConfig<ConfigurationNode, GsonConfigurat
     @Override
     public void saveKit(String kitName, Kit kit) {
         Preconditions.checkNotNull(kit);
-        kitNodes.put(kitName, (KitNode) kit);
+        kitNodes.put(kitName, (KitDataNode) kit);
     }
 
     @Override
     public Kit createKit() {
-        return new KitNode();
+        return new KitDataNode();
     }
 }

@@ -2,13 +2,14 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.internal.services.datastore;
+package io.github.nucleuspowered.nucleus.config.loaders;
 
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
+import io.github.nucleuspowered.nucleus.config.UserService;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
@@ -27,21 +28,19 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class UserConfigLoader implements NucleusUserLoaderService {
+public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> implements NucleusUserLoaderService {
 
-    private final Nucleus plugin;
-    private final Map<UUID, UserService> loadedUsers = Maps.newHashMap();
     private final Map<UUID, SoftReference<UserService>> softLoadedUsers = Maps.newHashMap();
 
     public UserConfigLoader(Nucleus plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     public List<NucleusUser> getOnlineUsers() {
         return Sponge.getServer().getOnlinePlayers().stream().map(x -> {
             try {
                 return getUser(x);
-            } catch (IOException | ObjectMappingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -50,14 +49,14 @@ public class UserConfigLoader implements NucleusUserLoaderService {
     }
 
     @Override
-    public InternalNucleusUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException {
+    public InternalNucleusUser getUser(UUID playerUUID) throws Exception {
         return getUser(Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(playerUUID).orElseThrow(NoSuchPlayerException::new));
     }
 
     @Override
-    public InternalNucleusUser getUser(User user) throws IOException, ObjectMappingException {
-        if (loadedUsers.containsKey(user.getUniqueId())) {
-            return loadedUsers.get(user.getUniqueId());
+    public InternalNucleusUser getUser(User user) throws Exception {
+        if (loaded.containsKey(user.getUniqueId())) {
+            return loaded.get(user.getUniqueId());
         }
 
         // If we have a soft reference, move them into the strong reference queue before returning them.
@@ -67,36 +66,25 @@ public class UserConfigLoader implements NucleusUserLoaderService {
         if (softLoadedUsers.containsKey(user.getUniqueId())) {
             UserService uc = softLoadedUsers.get(user.getUniqueId()).get();
             softLoadedUsers.remove(user.getUniqueId());
-            loadedUsers.put(user.getUniqueId(), uc);
+            loaded.put(user.getUniqueId(), uc);
             return uc;
         }
 
         // Load the file in.
         UserService uc = new UserService(plugin, getUserPath(user.getUniqueId()), user);
-        loadedUsers.put(user.getUniqueId(), uc);
+        loaded.put(user.getUniqueId(), uc);
         return uc;
-    }
-
-    public void saveAll() {
-        loadedUsers.values().forEach(c -> {
-            try {
-                c.save();
-            } catch (IOException | ObjectMappingException e) {
-                plugin.getLogger().error("Could not save data for " + c.getUniqueID().toString());
-                e.printStackTrace();
-            }
-        });
     }
 
     public void purgeNotOnline() {
         Set<UUID> onlineUUIDs = Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toSet());
 
         // Collector to list should prevent CMEs.
-        loadedUsers.keySet().stream().filter(x -> !onlineUUIDs.contains(x)).collect(Collectors.toList()).forEach(x -> {
+        loaded.keySet().stream().filter(x -> !onlineUUIDs.contains(x)).collect(Collectors.toList()).forEach(x -> {
             try {
-                UserService uc = loadedUsers.get(x);
+                UserService uc = loaded.get(x);
                 uc.save();
-                loadedUsers.remove(x);
+                loaded.remove(x);
                 softLoadedUsers.put(x, new SoftReference<>(uc));
             } catch (IOException | ObjectMappingException e) {
                 plugin.getLogger().error("Could not save data for " + x.toString());
@@ -107,9 +95,9 @@ public class UserConfigLoader implements NucleusUserLoaderService {
 
     public void forceUnloadPlayerWithoutSaving(UUID uuid) {
         purgeNotOnline();
-        if (loadedUsers.containsKey(uuid)) {
+        if (loaded.containsKey(uuid)) {
             // Really is no need to save at this point.
-            loadedUsers.remove(uuid);
+            loaded.remove(uuid);
         }
 
         if (softLoadedUsers.containsKey(uuid)) {

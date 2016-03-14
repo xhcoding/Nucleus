@@ -4,10 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.listeners;
 
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -15,7 +14,6 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +26,7 @@ public class CoreListener extends ListenerBase {
             try {
                 InternalNucleusUser qsu = this.plugin.getUserLoader().getUser(event.getTargetUser());
                 qsu.setLastLogin(Instant.now());
-            } catch (IOException | ObjectMappingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -45,7 +43,7 @@ public class CoreListener extends ListenerBase {
                 event.getTargetEntity().setLocation(olw.get());
                 qsu.removeLocationOnLogin();
             }
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -60,7 +58,7 @@ public class CoreListener extends ListenerBase {
                 InternalNucleusUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
                 qsu.setOnLogout();
                 ucl.purgeNotOnline();
-            } catch (IOException | ObjectMappingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }, 200, TimeUnit.MILLISECONDS);

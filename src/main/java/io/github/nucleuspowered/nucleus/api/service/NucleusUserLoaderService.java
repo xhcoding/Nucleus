@@ -43,7 +43,7 @@ public interface NucleusUserLoaderService {
      * @throws IOException Thrown when the file could not be read.
      * @throws ObjectMappingException Thrown when the object mapper fails.
      */
-    NucleusUser getUser(UUID playerUUID) throws NoSuchPlayerException, IOException, ObjectMappingException;
+    NucleusUser getUser(UUID playerUUID) throws Exception;
 
     /**
      * Gets the user data file from the {@link User}.
@@ -63,5 +63,5 @@ public interface NucleusUserLoaderService {
      * @throws ObjectMappingException Thrown when the object mapper fails.
      *
      */
-    NucleusUser getUser(User user) throws IOException, ObjectMappingException;
+    NucleusUser getUser(User user) throws Exception;
 }

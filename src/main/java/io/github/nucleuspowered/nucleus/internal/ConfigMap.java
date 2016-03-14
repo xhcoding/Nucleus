@@ -5,27 +5,25 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.config.AbstractConfig;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.config.WarpsConfig;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
 public class ConfigMap {
 
-    private final Map<Key, AbstractConfig> configMap = Maps.newHashMap();
+    private final Map<Key, AbstractStandardNodeConfig> configMap = Maps.newHashMap();
 
     @SuppressWarnings("unchecked")
-    public <T extends AbstractConfig> Optional<T> getConfig(Key<T> key) {
+    public <T extends AbstractStandardNodeConfig> Optional<T> getConfig(Key<T> key) {
         return Optional.ofNullable((T)configMap.get(key));
     }
 
-    public <T extends AbstractConfig> void putConfig(Key key, T config) {
+    public <T extends AbstractStandardNodeConfig> void putConfig(Key key, T config) {
         configMap.put(key, config);
     }
 
@@ -33,13 +31,13 @@ public class ConfigMap {
         configMap.forEach((k, v) -> {
             try {
                 v.load();
-            } catch (IOException | ObjectMappingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
 
-    public static class Key<V extends AbstractConfig> { }
+    public static class Key<V extends AbstractStandardNodeConfig> { }
 
     public static final Key<MainConfig> MAIN_CONFIG = new Key<>();
     public static final Key<CommandsConfig> COMMANDS_CONFIG = new Key<>();

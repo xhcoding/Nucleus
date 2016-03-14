@@ -15,14 +15,12 @@ import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
 import io.github.nucleuspowered.nucleus.events.NucleusMailEvent;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -46,7 +44,7 @@ public class MailHandler implements NucleusMailService {
         InternalNucleusUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(player);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -95,7 +93,7 @@ public class MailHandler implements NucleusMailService {
         InternalNucleusUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(playerTo);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }
@@ -127,7 +125,7 @@ public class MailHandler implements NucleusMailService {
         InternalNucleusUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(player);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }

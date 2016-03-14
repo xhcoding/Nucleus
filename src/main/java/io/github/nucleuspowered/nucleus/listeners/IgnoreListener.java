@@ -11,12 +11,11 @@ import io.github.nucleuspowered.nucleus.api.events.MailEvent;
 import io.github.nucleuspowered.nucleus.api.events.MessageEvent;
 import io.github.nucleuspowered.nucleus.commands.ignore.IgnoreCommand;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -26,7 +25,6 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +48,7 @@ public class IgnoreListener extends ListenerBase {
         if (event.getRecipient() instanceof User) {
             try {
                 event.setCancelled(loader.getUser((User) event.getRecipient()).getIgnoreList().contains(player.getUniqueId()));
-            } catch (IOException | ObjectMappingException e) {
+            } catch (Exception e) {
                 if (config.getDebugMode()) {
                     e.printStackTrace();
                 }
@@ -62,7 +60,7 @@ public class IgnoreListener extends ListenerBase {
     public void onMail(MailEvent event, @First Player player) {
         try {
             event.setCancelled(loader.getUser(event.getRecipient()).getIgnoreList().contains(player.getUniqueId()));
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             if (config.getDebugMode()) {
                 e.printStackTrace();
             }
@@ -92,7 +90,7 @@ public class IgnoreListener extends ListenerBase {
         list.removeIf(x -> {
             try {
                 return x instanceof Player && !x.equals(player) && loader.getUser((Player) x).getIgnoreList().contains(player.getUniqueId());
-            } catch (IOException | ObjectMappingException e) {
+            } catch (Exception e) {
                 if (config.getDebugMode()) {
                     e.printStackTrace();
                 }

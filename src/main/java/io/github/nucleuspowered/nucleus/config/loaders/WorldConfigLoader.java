@@ -2,14 +2,13 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.internal.services.datastore;
+package io.github.nucleuspowered.nucleus.config.loaders;
 
-import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import io.github.nucleuspowered.nucleus.config.WorldService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
 
@@ -17,48 +16,34 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Loader that loads configuration files for worlds.
  */
-public class WorldConfigLoader implements NucleusWorldLoaderService {
-
-    private final Nucleus plugin;
-    private final Map<UUID, WorldService> loaded = Maps.newHashMap();
+public class WorldConfigLoader extends AbstractDataLoader<UUID, WorldService> implements NucleusWorldLoaderService {
 
     public WorldConfigLoader(Nucleus plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     @Override
-    public NucleusWorld getWorld(UUID uuid) throws NoSuchWorldException, IOException, ObjectMappingException {
+    public NucleusWorld getWorld(UUID uuid) throws Exception {
         return getWorld(Sponge.getServer().getWorld(uuid).orElseThrow(NoSuchWorldException::new));
     }
 
     @Override
-    public NucleusWorld getWorld(World world) throws IOException, ObjectMappingException {
-        if (loaded.containsKey(world.getUniqueId())) {
-            return loaded.get(world.getUniqueId());
+    public NucleusWorld getWorld(World world) throws Exception {
+        Optional<WorldService> ows = get(world.getUniqueId());
+        if (ows.isPresent()) {
+            return ows.get();
         }
 
         // Load the file in.
         WorldService uc = new WorldService(plugin, getWorldPath(world.getUniqueId()), world);
         loaded.put(world.getUniqueId(), uc);
         return uc;
-    }
-
-    @Override
-    public void saveAll() {
-        loaded.values().forEach(c -> {
-            try {
-                c.save();
-            } catch (IOException | ObjectMappingException e) {
-                plugin.getLogger().error("Could not save data for " + c.getUniqueID().toString());
-                e.printStackTrace();
-            }
-        });
     }
 
     public Path getWorldPath(UUID uuid) throws IOException {

@@ -11,16 +11,19 @@ import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.api.exceptions.ModulesLoadedException;
 import io.github.nucleuspowered.nucleus.api.exceptions.UnremovableModuleException;
 import io.github.nucleuspowered.nucleus.api.service.*;
-import io.github.nucleuspowered.nucleus.config.*;
+import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.config.KitsConfig;
+import io.github.nucleuspowered.nucleus.config.MainConfig;
+import io.github.nucleuspowered.nucleus.config.WarpsConfig;
+import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.PluginSystemsLoader;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.services.*;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.WorldConfigLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
@@ -85,7 +88,7 @@ public class Nucleus {
             worldConfigLoader = new WorldConfigLoader(this);
             moduleRegistration = new ModuleRegistration(this);
             warmupManager = new WarmupManager();
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             isErrored = true;
             e.printStackTrace();
             return;
@@ -113,7 +116,7 @@ public class Nucleus {
 
                 // Put the warp service into the service manager.
                 game.getServiceManager().setProvider(this, NucleusWarpService.class, configMap.getConfig(ConfigMap.WARPS_CONFIG).get());
-            } catch (IOException | ObjectMappingException ex) {
+            } catch (Exception ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.WARPS, this);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {
@@ -131,7 +134,7 @@ public class Nucleus {
 
                 jailHandler = new JailHandler(this);
                 game.getServiceManager().setProvider(this, NucleusJailService.class, jailHandler);
-            } catch (IOException | ObjectMappingException ex) {
+            } catch (Exception ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.JAILS, this);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {
@@ -153,7 +156,7 @@ public class Nucleus {
                 KitsConfig config = new KitsConfig(Paths.get(dataDir.toString(), "kits.json"));
                 configMap.putConfig(ConfigMap.KITS_CONFIG, config);
                 game.getServiceManager().setProvider(this, NucleusKitService.class, config);
-            } catch (IOException | ObjectMappingException ex) {
+            } catch (Exception ex) {
                 try {
                     moduleRegistration.removeModule(PluginModule.KITS, this);
                 } catch (ModulesLoadedException | UnremovableModuleException e) {
@@ -227,10 +230,10 @@ public class Nucleus {
      * Gets the configuration file
      *
      * @param key The {@link ConfigMap.Key} of the config to get (see T).
-     * @param <T> The type of {@link AbstractConfig} to get.
+     * @param <T> The type of {@link AbstractStandardNodeConfig} to get.
      * @return An {@link Optional} that might contain the config, if it exists.
      */
-    public <T extends AbstractConfig> Optional<T> getConfig(ConfigMap.Key<T> key) {
+    public <T extends AbstractStandardNodeConfig> Optional<T> getConfig(ConfigMap.Key<T> key) {
         return configMap.getConfig(key);
     }
 

@@ -13,14 +13,12 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.config.WarpsConfig;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +64,7 @@ public class JailHandler implements NucleusJailService {
     public Optional<JailData> getPlayerJailData(User user) {
         try {
             return plugin.getUserLoader().getUser(user).getJailData();
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
         }
@@ -77,7 +75,7 @@ public class JailHandler implements NucleusJailService {
         InternalNucleusUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(user);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -119,7 +117,7 @@ public class JailHandler implements NucleusJailService {
         InternalNucleusUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(user);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

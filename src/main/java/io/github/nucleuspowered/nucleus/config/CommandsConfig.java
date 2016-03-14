@@ -4,16 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.config;
 
+import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
-public class CommandsConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
-    public CommandsConfig(Path file) throws IOException, ObjectMappingException {
+public class CommandsConfig extends AbstractStandardNodeConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
+
+    public CommandsConfig(Path file) throws Exception {
         super(file);
     }
 

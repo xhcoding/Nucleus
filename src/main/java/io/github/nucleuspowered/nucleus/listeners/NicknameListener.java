@@ -6,11 +6,10 @@ package io.github.nucleuspowered.nucleus.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -18,7 +17,6 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Modules(PluginModule.NICKNAME)
@@ -31,7 +29,7 @@ public class NicknameListener extends ListenerBase {
         InternalNucleusUser iqsu;
         try {
             iqsu = ucl.getUser(player);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }

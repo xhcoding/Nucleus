@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -19,7 +18,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,7 +50,7 @@ public class HomeParser extends CommandElement {
             }
 
             throw args.createError(Util.getTextMessageWithFormat("args.home.nohome", home.toLowerCase()));
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw args.createError(Text.of(TextColors.RED, "An unspecified error occured"));
         }
@@ -68,7 +66,7 @@ public class HomeParser extends CommandElement {
         Set<String> s;
         try {
             s = plugin.getUserLoader().getUser(u).getHomes().keySet();
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             return null;
         }
 

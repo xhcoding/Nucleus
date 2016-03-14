@@ -8,21 +8,18 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
 import io.github.nucleuspowered.nucleus.commands.powertool.PowertoolCommand;
 import io.github.nucleuspowered.nucleus.config.MainConfig;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.ItemType;
-
-import java.io.IOException;
 
 @Modules(PluginModule.POWERTOOL)
 public class PowertoolListener extends ListenerBase {
@@ -54,7 +51,7 @@ public class PowertoolListener extends ListenerBase {
         InternalNucleusUser user;
         try {
             user = loader.getUser(player);
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             if (config.getDebugMode()) {
                 e.printStackTrace();
             }

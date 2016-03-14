@@ -11,7 +11,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
  * Contains the config entries for any World Config.
  */
 @ConfigSerializable
-public class WorldConfig {
+public class WorldDataNode {
     @Setting("lock-weather")
     private boolean lockWeather = false;
 

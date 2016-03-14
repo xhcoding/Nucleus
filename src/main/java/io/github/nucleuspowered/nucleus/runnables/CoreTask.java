@@ -6,9 +6,9 @@ package io.github.nucleuspowered.nucleus.runnables;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.WorldConfigLoader;
 import org.spongepowered.api.scheduler.Task;
 
 /**

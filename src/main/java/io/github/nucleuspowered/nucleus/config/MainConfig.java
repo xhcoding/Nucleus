@@ -10,20 +10,20 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
+import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 import io.github.nucleuspowered.nucleus.config.enumerations.ModuleOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainConfig extends AbstractConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
+public class MainConfig extends AbstractStandardNodeConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
 
     private Map<PluginModule, ModuleOptions> moduleOptions;
     private final String modulesSection = "modules";
@@ -41,12 +41,12 @@ public class MainConfig extends AbstractConfig<CommentedConfigurationNode, Hocon
     private boolean debugMode;
     private boolean listSeparateGroups;
 
-    public MainConfig(Path file) throws IOException, ObjectMappingException {
+    public MainConfig(Path file) throws Exception {
         super(file);
     }
 
     @Override
-    public void load() throws IOException, ObjectMappingException {
+    public void load() throws Exception {
         super.load();
 
         // Because we execute this command from the superclass constructor, if

@@ -15,7 +15,7 @@ import java.time.Duration;
 import java.util.List;
 
 @ConfigSerializable
-public class KitNode implements Kit {
+public class KitDataNode implements Kit {
 
     @Setting private List<ItemStackSnapshot> stacks;
 
@@ -26,25 +26,25 @@ public class KitNode implements Kit {
 
     @Setting private double cost;
 
-    public KitNode() {
+    public KitDataNode() {
         this.stacks = Lists.newArrayList();
         this.interval = 0;
         this.cost = 0;
     }
 
-    public KitNode(Player player) {
+    public KitDataNode(Player player) {
         updateKitInventory(player);
         this.interval = 0;
         this.cost = 0;
     }
 
-    public KitNode(List<ItemStackSnapshot> slots) {
+    public KitDataNode(List<ItemStackSnapshot> slots) {
         this.stacks = slots;
         this.interval = 0;
         this.cost = 0;
     }
 
-    public KitNode(List<ItemStackSnapshot> slots, Duration interval) {
+    public KitDataNode(List<ItemStackSnapshot> slots, Duration interval) {
         this.stacks = slots;
         this.interval = interval.getSeconds();
         this.cost = 0;

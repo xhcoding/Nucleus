@@ -7,16 +7,14 @@ package io.github.nucleuspowered.nucleus.runnables;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.PluginModule;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Modules;
-import io.github.nucleuspowered.nucleus.internal.services.datastore.UserConfigLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.Collection;
 
 @Modules(PluginModule.JAILS)
@@ -31,7 +29,7 @@ public class JailTask extends TaskBase {
         pl.stream().map(x -> {
             try {
                 return ucl.getUser(x);
-            } catch (IOException | ObjectMappingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }

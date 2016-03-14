@@ -25,8 +25,9 @@ public interface NucleusWorldLoaderService {
      * @throws NoSuchWorldException If the world does not exist.
      * @throws IOException If the data file could not be read
      * @throws ObjectMappingException If the data file is malformed.
+     * @throws Exception For any other reason
      */
-    NucleusWorld getWorld(UUID uuid) throws NoSuchWorldException, IOException, ObjectMappingException;
+    NucleusWorld getWorld(UUID uuid) throws Exception;
 
     /**
      * Gets the world associated with the provided UUID.
@@ -35,8 +36,9 @@ public interface NucleusWorldLoaderService {
      *
      * @throws IOException If the data file could not be read
      * @throws ObjectMappingException If the data file is malformed.
+     * @throws Exception For any other reason
      */
-    NucleusWorld getWorld(World world) throws IOException, ObjectMappingException;
+    NucleusWorld getWorld(World world) throws Exception;
 
     /**
      * Saves all world data.

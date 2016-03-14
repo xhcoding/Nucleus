@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.internal.services.datastore;
+package io.github.nucleuspowered.nucleus.config;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableList;
@@ -17,15 +17,15 @@ import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.commands.message.SocialSpyCommand;
+import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
 import io.github.nucleuspowered.nucleus.config.serialisers.LocationNode;
-import io.github.nucleuspowered.nucleus.config.serialisers.UserConfig;
+import io.github.nucleuspowered.nucleus.config.serialisers.UserDataNode;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.living.player.Player;
@@ -36,7 +36,6 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
@@ -46,33 +45,28 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UserService implements InternalNucleusUser {
+public class UserService extends AbstractSerialisableClassConfig<UserDataNode, ConfigurationNode, GsonConfigurationLoader> implements InternalNucleusUser {
 
     private final Nucleus plugin;
     private final User user;
-    private UserConfig config;
-    private final GsonConfigurationLoader loader;
 
     // Used as a cache.
     private Text nickname = null;
 
-    public UserService(Nucleus plugin, Path file, User user) throws IOException, ObjectMappingException {
+    public UserService(Nucleus plugin, Path file, User user) throws Exception {
+        super(file, TypeToken.of(UserDataNode.class), UserDataNode::new);
         this.plugin = plugin;
-        this.loader = GsonConfigurationLoader.builder().setPath(file).build();
         this.user = user;
-
-        load();
     }
 
-    private void load() throws IOException, ObjectMappingException {
-        ConfigurationNode cn = loader.load();
-        config = cn.getValue(TypeToken.of(UserConfig.class), new UserConfig());
+    @Override
+    protected GsonConfigurationLoader getLoader(Path file) {
+        return GsonConfigurationLoader.builder().setPath(file).build();
     }
 
-    public void save() throws IOException, ObjectMappingException {
-        ConfigurationNode cn = SimpleConfigurationNode.root();
-        cn.setValue(TypeToken.of(UserConfig.class), config);
-        loader.save(cn);
+    @Override
+    protected ConfigurationNode getNode() {
+        return SimpleConfigurationNode.root();
     }
 
     @Override
@@ -82,17 +76,17 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public Optional<MuteData> getMuteData() {
-        return Optional.ofNullable(config.getMuteData());
+        return Optional.ofNullable(data.getMuteData());
     }
 
     @Override
-    public void setMuteData(MuteData data) {
-        config.setMuteData(data);
+    public void setMuteData(MuteData mData) {
+        data.setMuteData(mData);
     }
 
     @Override
     public void removeMuteData() {
-        config.setMuteData(null);
+        data.setMuteData(null);
     }
 
     @Override
@@ -100,15 +94,15 @@ public class UserService implements InternalNucleusUser {
         // Only a spy if they have the permission!
         Optional<CommandPermissionHandler> ps = plugin.getPermissionRegistry().getService(SocialSpyCommand.class);
         if (ps.isPresent()) {
-            return config.isSocialspy() && ps.get().testBase(user);
+            return data.isSocialspy() && ps.get().testBase(user);
         }
 
-        return config.isSocialspy();
+        return data.isSocialspy();
     }
 
     @Override
     public boolean setSocialSpy(boolean socialSpy) {
-        config.setSocialspy(socialSpy);
+        data.setSocialspy(socialSpy);
 
         // Permission checks! Return true if it's what we wanted.
         return isSocialSpy() == socialSpy;
@@ -117,10 +111,10 @@ public class UserService implements InternalNucleusUser {
     @Override
     public boolean isInvulnerable() {
         if (user.isOnline()) {
-            config.setInvulnerable(user.getPlayer().get().get(Keys.INVULNERABILITY_TICKS).orElse(0) > 0);
+            data.setInvulnerable(user.getPlayer().get().get(Keys.INVULNERABILITY_TICKS).orElse(0) > 0);
         }
 
-        return config.isInvulnerable();
+        return data.isInvulnerable();
     }
 
     @Override
@@ -140,17 +134,17 @@ public class UserService implements InternalNucleusUser {
             }
         }
 
-        config.setInvulnerable(invuln);
+        data.setInvulnerable(invuln);
         return true;
     }
 
     @Override
     public boolean isFlying() {
         if (user.isOnline()) {
-            config.setFly(user.getPlayer().get().get(Keys.CAN_FLY).orElse(false));
+            data.setFly(user.getPlayer().get().get(Keys.CAN_FLY).orElse(false));
         }
 
-        return config.isFly();
+        return data.isFly();
     }
 
     @Override
@@ -166,37 +160,37 @@ public class UserService implements InternalNucleusUser {
             }
         }
 
-        config.setFly(fly);
+        data.setFly(fly);
         return true;
     }
 
     @Override
     public Optional<JailData> getJailData() {
-        return Optional.ofNullable(config.getJailData());
+        return Optional.ofNullable(data.getJailData());
     }
 
     @Override
     public Instant getLastLogin() {
-        return Instant.ofEpochMilli(config.getLogin());
+        return Instant.ofEpochMilli(data.getLogin());
     }
 
     @Override
     public void setLastLogin(Instant login) {
-        config.setLogin(login.toEpochMilli());
+        data.setLogin(login.toEpochMilli());
     }
 
     @Override
     public Instant getLastLogout() {
-        return Instant.ofEpochMilli(config.getLogout());
+        return Instant.ofEpochMilli(data.getLogout());
     }
 
     @Override
     public Optional<WarpLocation> getHome(String home) {
-        if (config.getHomeData() == null) {
+        if (data.getHomeData() == null) {
             return Optional.empty();
         }
 
-        LocationNode ln = config.getHomeData().get(home.toLowerCase());
+        LocationNode ln = data.getHomeData().get(home.toLowerCase());
         if (ln != null) {
             try {
                 return Optional.of(new WarpLocation(home.toLowerCase(), ln.getLocation(), ln.getRotation()));
@@ -210,11 +204,11 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public Map<String, WarpLocation> getHomes() {
-        if (config.getHomeData() == null) {
+        if (data.getHomeData() == null) {
             return Maps.newHashMap();
         }
 
-        return config.getHomeData().entrySet().stream().map(x -> {
+        return data.getHomeData().entrySet().stream().map(x -> {
             try {
                 return new WarpLocation(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
             } catch (NoSuchWorldException e) {
@@ -228,7 +222,7 @@ public class UserService implements InternalNucleusUser {
     public boolean setHome(String home, Location<World> location, Vector3d rotation) {
         final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
 
-        Map<String, LocationNode> homeData = config.getHomeData();
+        Map<String, LocationNode> homeData = data.getHomeData();
         if (homeData == null) {
             homeData = Maps.newHashMap();
         }
@@ -238,20 +232,20 @@ public class UserService implements InternalNucleusUser {
         }
 
         homeData.put(home.toLowerCase(), new LocationNode(location, rotation));
-        config.setHomeData(homeData);
+        data.setHomeData(homeData);
         return true;
     }
 
     @Override
     public boolean deleteHome(String home) {
-        Map<String, LocationNode> homeData = config.getHomeData();
+        Map<String, LocationNode> homeData = data.getHomeData();
         if (homeData == null) {
             return false;
         }
 
         if (homeData.containsKey(home.toLowerCase())) {
             homeData.remove(home.toLowerCase());
-            config.setHomeData(homeData);
+            data.setHomeData(homeData);
             return true;
         }
 
@@ -260,12 +254,12 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public boolean isTeleportToggled() {
-        return config.isTeleportToggled();
+        return data.isTeleportToggled();
     }
 
     @Override
     public void setTeleportToggled(boolean toggle) {
-        config.setTeleportToggled(toggle);
+        data.setTeleportToggled(toggle);
     }
 
     @Override
@@ -299,12 +293,12 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public Optional<String> getNicknameAsString() {
-        return Optional.ofNullable(config.getNickname());
+        return Optional.ofNullable(data.getNickname());
     }
 
     @Override
     public void setNickname(String nickname) {
-        config.setNickname(nickname);
+        data.setNickname(nickname);
         this.nickname = null;
         String p = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getNickPrefix();
         if (p != null && !p.isEmpty()) {
@@ -319,43 +313,43 @@ public class UserService implements InternalNucleusUser {
     public void removeNickname() {
         nickname = null;
         user.remove(Keys.DISPLAY_NAME);
-        config.setNickname(null);
+        data.setNickname(null);
     }
 
     @Override
     public List<MailData> getMail() {
-        return ImmutableList.copyOf(config.getMailDataList());
+        return ImmutableList.copyOf(data.getMailDataList());
     }
 
     @Override
     public void addMail(MailData mailData) {
-        List<MailData> mailDataList = config.getMailDataList();
+        List<MailData> mailDataList = data.getMailDataList();
         if (mailDataList == null) {
             mailDataList = Lists.newArrayList();
         }
 
         mailDataList.add(mailData);
-        config.setMailDataList(mailDataList);
+        data.setMailDataList(mailDataList);
     }
 
     @Override
     public void clearMail() {
-        config.setMailDataList(Lists.newArrayList());
+        data.setMailDataList(Lists.newArrayList());
     }
 
     @Override
     public boolean isFlyingSafe() {
-        return config.isFly();
+        return data.isFly();
     }
 
     @Override
     public boolean isInvulnerableSafe() {
-        return config.isInvulnerable();
+        return data.isInvulnerable();
     }
 
     @Override
-    public void setJailData(JailData data) {
-        config.setJailData(data);
+    public void setJailData(JailData jdata) {
+        data.setJailData(jdata);
     }
 
     @Override
@@ -374,7 +368,7 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public Optional<Location<World>> getLocationOnLogin() {
-        LocationNode ln = config.getLocationOnLogin();
+        LocationNode ln = data.getLocationOnLogin();
         if (ln == null) {
             return Optional.empty();
         }
@@ -388,17 +382,17 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public void sendToLocationOnLogin(Location<World> worldLocation) {
-        config.setLocationOnLogin(new LocationNode(worldLocation));
+        data.setLocationOnLogin(new LocationNode(worldLocation));
     }
 
     @Override
     public void removeLocationOnLogin() {
-        config.setLocationOnLogin(null);
+        data.setLocationOnLogin(null);
     }
 
     @Override
     public void setLastLogout(Instant logout) {
-        config.setLogout(logout.toEpochMilli());
+        data.setLogout(logout.toEpochMilli());
     }
 
     @Override
@@ -408,44 +402,44 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public boolean jailOnNextLogin() {
-        return config.isJailOffline();
+        return data.isJailOffline();
     }
 
     @Override
     public void setJailOnNextLogin(boolean set) {
-        config.setJailOffline(!user.isOnline() && set);
+        data.setJailOffline(!user.isOnline() && set);
     }
 
     @Override
     public Map<String, Instant> getKitLastUsedTime() {
         final Map<String, Instant> r = Maps.newHashMap();
-        config.getKitLastUsedTime().forEach((k, v) -> r.put(k, Instant.ofEpochSecond(v)));
+        data.getKitLastUsedTime().forEach((k, v) -> r.put(k, Instant.ofEpochSecond(v)));
         return r;
     }
 
     @Override
     public void addKitLastUsedTime(String kitName, Instant lastTime) {
-        Map<String, Long> kitLastUsedTime = config.getKitLastUsedTime();
+        Map<String, Long> kitLastUsedTime = data.getKitLastUsedTime();
         kitLastUsedTime.put(kitName, lastTime.getEpochSecond());
-        config.setKitLastUsedTime(kitLastUsedTime);
+        data.setKitLastUsedTime(kitLastUsedTime);
     }
 
     @Override
     public void removeKitLastUsedTime(String kitName) {
-        Map<String, Long> kitLastUsedTime = config.getKitLastUsedTime();
+        Map<String, Long> kitLastUsedTime = data.getKitLastUsedTime();
         kitLastUsedTime.remove(kitName);
-        config.setKitLastUsedTime(kitLastUsedTime);
+        data.setKitLastUsedTime(kitLastUsedTime);
     }
 
     // -- Powertools
     @Override
     public Map<String, List<String>> getPowertools() {
-        return ImmutableMap.copyOf(config.getPowertools());
+        return ImmutableMap.copyOf(data.getPowertools());
     }
 
     @Override
     public Optional<List<String>> getPowertoolForItem(ItemType item) {
-        List<String> tools = config.getPowertools().get(item.getId());
+        List<String> tools = data.getPowertools().get(item.getId());
         if (tools != null) {
             return Optional.of(ImmutableList.copyOf(tools));
         }
@@ -455,38 +449,38 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public void setPowertool(ItemType type, List<String> commands) {
-        config.getPowertools().put(type.getId(), commands);
+        data.getPowertools().put(type.getId(), commands);
     }
 
     @Override
     public void clearPowertool(ItemType type) {
-        config.getPowertools().remove(type.getId());
+        data.getPowertools().remove(type.getId());
     }
 
     @Override
     public void clearPowertool(String type) {
-        config.getPowertools().remove(type);
+        data.getPowertools().remove(type);
     }
 
     @Override
     public boolean isPowertoolToggled() {
-        return config.isPowertoolToggle();
+        return data.isPowertoolToggle();
     }
 
     @Override
     public void setPowertoolToggle(boolean set) {
-        config.setPowertoolToggle(set);
+        data.setPowertoolToggle(set);
     }
 
     @Override
     public List<UUID> getIgnoreList() {
-        return ImmutableList.copyOf(config.getIgnoreList());
+        return ImmutableList.copyOf(data.getIgnoreList());
     }
 
     @Override
     public boolean addToIgnoreList(UUID uuid) {
-        if (!config.getIgnoreList().contains(uuid)) {
-            config.getIgnoreList().add(uuid);
+        if (!data.getIgnoreList().contains(uuid)) {
+            data.getIgnoreList().add(uuid);
             return true;
         }
 
@@ -495,16 +489,16 @@ public class UserService implements InternalNucleusUser {
 
     @Override
     public boolean removeFromIgnoreList(UUID uuid) {
-        return config.getIgnoreList().remove(uuid);
+        return data.getIgnoreList().remove(uuid);
     }
 
     @Override
     public boolean isFrozen() {
-        return config.isFrozen();
+        return data.isFrozen();
     }
 
     @Override
     public void setFrozen(boolean value) {
-       config.setFrozen(value);
+        data.setFrozen(value);
     }
 }
