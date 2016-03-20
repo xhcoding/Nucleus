@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -27,10 +27,12 @@ import java.util.stream.Collectors;
 public class HomeParser extends CommandElement {
 
     private final Nucleus plugin;
+    private final CoreConfigAdapter cca;
 
-    public HomeParser(@Nullable Text key, Nucleus plugin) {
+    public HomeParser(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
         super(key);
         this.plugin = plugin;
+        this.cca = cca;
     }
 
     @Nullable
@@ -50,7 +52,7 @@ public class HomeParser extends CommandElement {
                 return owl.get();
             }
         } catch (Exception e) {
-            if (plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getDebugMode()) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
             }
 

@@ -5,12 +5,11 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -27,13 +26,13 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 
 public class KitParser extends CommandElement {
 
-    private final Nucleus plugin;
+    private final KitConfigAdapter config;
     private final KitsConfig kitConfig;
     private final boolean permissionCheck;
 
-    public KitParser(@Nullable Text key, Nucleus plugin, KitsConfig kitConfig, boolean permissionCheck) {
+    public KitParser(@Nullable Text key, KitConfigAdapter config, KitsConfig kitConfig, boolean permissionCheck) {
         super(key);
-        this.plugin = plugin;
+        this.config = config;
         this.kitConfig = kitConfig;
         this.permissionCheck = permissionCheck;
     }
@@ -69,7 +68,7 @@ public class KitParser extends CommandElement {
     }
 
     private boolean checkPermission(CommandSource src, String name) {
-        if (!permissionCheck || !plugin.getConfig(ConfigMap.MAIN_CONFIG).get().useSeparatePermissionsForKits()) {
+        if (!permissionCheck || !config.getNodeOrDefault().isSeparatePermissions()) {
             return true;
         }
 

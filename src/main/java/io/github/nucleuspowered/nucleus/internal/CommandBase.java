@@ -10,10 +10,10 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
-import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
@@ -41,6 +41,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 
@@ -62,7 +63,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private String commandConfigAlias = null;
 
     @Inject protected Nucleus plugin;
-    @Inject private MainConfig config;
+    @Inject private CoreConfigAdapter cca;
     @Inject private WarmupManager warmupService;
 
     @SuppressWarnings("unchecked")
@@ -307,7 +308,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             // If it doesn't, just tell the user something went wrong.
             src.sendMessage(Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("command.error")).build());
 
-            if (config.getDebugMode()) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
             }
 
@@ -346,7 +347,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             Text t = e.getText();
             src.sendMessage((t == null) ? Util.getTextMessageWithFormat("command.error") : t);
 
-            if (config.getDebugMode()) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
             }
 
@@ -355,7 +356,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             // If it doesn't, just tell the user something went wrong.
             src.sendMessage(Util.getTextMessageWithFormat("command.error"));
 
-            if (config.getDebugMode()) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
             }
 
@@ -426,7 +427,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
      * @return An {@link Optional} containing the {@link WorldProperties}, if appropriate.
      */
     protected final Optional<WorldProperties> getWorldProperties(CommandSource src, String argument, CommandContext args) {
-        Optional<WorldProperties> pr = args.<WorldProperties>getOne(argument);
+        Optional<WorldProperties> pr = args.getOne(argument);
         if (pr.isPresent()) {
             return pr;
         }
@@ -450,7 +451,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     }
 
     protected <U extends User> Optional<U> getUser(Class<U> clazz, CommandSource src, String argument, CommandContext args) {
-        Optional<U> opl = args.<U>getOne(argument);
+        Optional<U> opl = args.getOne(argument);
         U pl;
         if (opl.isPresent()) {
             pl = opl.get();
@@ -604,10 +605,15 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     protected final Map<List<String>, CommandCallable> createChildCommands() {
         Set<Class<? extends CommandBase>> scb;
         try {
-            scb = PluginSystemsLoader.getCommandClasses(getClass());
+            scb = Util.getClasses(CommandBase.class, this.getClass().getPackage().getName())
+            .stream().filter(x -> {
+                        RegisterCommand r = x.getAnnotation(RegisterCommand.class);
+                        // Only commands that are subcommands of this.
+                        return r != null && r.subcommandOf().equals(this.getClass());
+                    }).collect(Collectors.toSet());
         } catch (IOException e) {
 
-            if (config.getDebugMode()) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
             }
 
@@ -634,7 +640,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
             } catch (InstantiationException | IllegalAccessException e) {
                 plugin.getLogger().error(Util.getMessageWithFormat("command.child.notloaded", cb.getName()));
 
-                if (config.getDebugMode()) {
+                if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();
                 }
             }

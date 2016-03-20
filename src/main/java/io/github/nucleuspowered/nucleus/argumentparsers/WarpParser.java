@@ -5,12 +5,11 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -32,16 +31,16 @@ public class WarpParser extends CommandElement {
 
     private final boolean includeWarpData;
     private NucleusWarpService service;
-    private final Nucleus plugin;
+    private final WarpConfigAdapter configAdapter;
     private final boolean permissionCheck;
 
-    public WarpParser(@Nullable Text key, Nucleus plugin, boolean permissionCheck) {
-        this(key, plugin, permissionCheck, true);
+    public WarpParser(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck) {
+        this(key, configAdapter, permissionCheck, true);
     }
 
-    public WarpParser(@Nullable Text key, Nucleus plugin, boolean permissionCheck, boolean includeWarpData) {
+    public WarpParser(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean includeWarpData) {
         super(key);
-        this.plugin = plugin;
+        this.configAdapter = configAdapter;
         this.permissionCheck = permissionCheck;
         this.includeWarpData = includeWarpData;
     }
@@ -85,7 +84,7 @@ public class WarpParser extends CommandElement {
     }
 
     private boolean checkPermission(CommandSource src, String name) {
-        if (!permissionCheck || !plugin.getConfig(ConfigMap.MAIN_CONFIG).get().useSeparatePermissionsForWarp()) {
+        if (!permissionCheck || !configAdapter.getNodeOrDefault().isSeparatePermissions()) {
             return true;
         }
 

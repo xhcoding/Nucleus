@@ -7,10 +7,12 @@ package io.github.nucleuspowered.nucleus.tests.util;
 import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.config.ConfigDir;
@@ -39,7 +41,14 @@ public class TestModule extends AbstractModule {
         this.bind(Path.class).annotatedWith(ConfigDir.class).toInstance(test);
         this.bind(Game.class).toInstance(Mockito.mock(Game.class));
         this.bind(Logger.class).toInstance(Mockito.mock(Logger.class));
-        this.bind(MainConfig.class).toInstance(Mockito.mock(MainConfig.class));
+
+
+        CoreConfigAdapter mock = Mockito.mock(CoreConfigAdapter.class);
+        PowerMockito.replace(PowerMockito.method(CoreConfigAdapter.class, "getNode")).with((obj, method, arguments) -> {
+            return new CoreConfig();
+        });
+
+        this.bind(CoreConfigAdapter.class).toInstance(mock);
         this.bind(Nucleus.class).toInstance(getMockPlugin());
     }
 

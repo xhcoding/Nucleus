@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.internal;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
-import io.github.nucleuspowered.nucleus.config.MainConfig;
 import io.github.nucleuspowered.nucleus.config.WarpsConfig;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 
@@ -39,7 +38,6 @@ public class ConfigMap {
 
     public static class Key<V extends AbstractStandardNodeConfig> { }
 
-    public static final Key<MainConfig> MAIN_CONFIG = new Key<>();
     public static final Key<CommandsConfig> COMMANDS_CONFIG = new Key<>();
     public static final Key<WarpsConfig> WARPS_CONFIG = new Key<>();
     public static final Key<WarpsConfig> JAILS_CONFIG = new Key<>();

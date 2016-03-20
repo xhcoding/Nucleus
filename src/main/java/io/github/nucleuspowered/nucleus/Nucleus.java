@@ -7,60 +7,72 @@ package io.github.nucleuspowered.nucleus;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import io.github.nucleuspowered.nucleus.api.PluginModule;
-import io.github.nucleuspowered.nucleus.api.exceptions.ModulesLoadedException;
-import io.github.nucleuspowered.nucleus.api.exceptions.UnremovableModuleException;
-import io.github.nucleuspowered.nucleus.api.service.*;
+import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
-import io.github.nucleuspowered.nucleus.config.MainConfig;
-import io.github.nucleuspowered.nucleus.config.WarpsConfig;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
+import io.github.nucleuspowered.nucleus.config.configurate.NucleusObjectMapperFactory;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
+import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.PluginSystemsLoader;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
-import io.github.nucleuspowered.nucleus.internal.services.*;
+import io.github.nucleuspowered.nucleus.internal.guice.QuickStartModuleLoaderInjector;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.qsml.ModuleRegistrationProxyService;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusLoggerProxy;
+import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructor;
+import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.service.permission.PermissionDescription;
+import org.spongepowered.api.service.permission.PermissionService;
+import uk.co.drnaylor.quickstart.ModuleContainer;
+import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleDiscoveryException;
+import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 
 @Plugin(id = GROUP_ID, name = NAME, version = INFORMATIVE_VERSION, description = DESCRIPTION)
 public class Nucleus {
 
-    private ModuleRegistration moduleRegistration;
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
     private final ConfigMap configMap = new ConfigMap();
     private UserConfigLoader configLoader;
     private WorldConfigLoader worldConfigLoader;
     private Injector injector;
-    private MessageHandler messageHandler = new MessageHandler();
-    private MailHandler mailHandler;
-    private JailHandler jailHandler;
+
+    private InternalServiceManager serviceManager = new InternalServiceManager();
+
     private WarmupManager warmupManager;
-    private TeleportHandler tpHandler = new TeleportHandler(this);
     private EconHelper econHelper = new EconHelper(this);
     private PermissionRegistry permissionRegistry = new PermissionRegistry();
 
-    private AFKHandler afkHandler = new AFKHandler();
+    private ModuleContainer moduleContainer;
 
     @Inject private Game game;
     @Inject private Logger logger;
@@ -78,16 +90,16 @@ public class Nucleus {
         logger.info(Util.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
 
         dataDir = game.getSavesDirectory().resolve("nucleus");
+        ConfigurationLoader<CommentedConfigurationNode> cl;
         // Get the mandatory config files.
         try {
             Files.createDirectories(this.configDir);
             Files.createDirectories(dataDir);
-            configMap.putConfig(ConfigMap.MAIN_CONFIG, new MainConfig(Paths.get(configDir.toString(), "main.conf")));
             configMap.putConfig(ConfigMap.COMMANDS_CONFIG, new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
             configLoader = new UserConfigLoader(this);
             worldConfigLoader = new WorldConfigLoader(this);
-            moduleRegistration = new ModuleRegistration(this);
             warmupManager = new WarmupManager();
+            serviceManager.registerService(WarmupManager.class, warmupManager);
         } catch (Exception e) {
             isErrored = true;
             e.printStackTrace();
@@ -95,9 +107,25 @@ public class Nucleus {
         }
 
         // We register the ModuleService NOW so that others can hook into it.
-        game.getServiceManager().setProvider(this, NucleusModuleService.class, moduleRegistration);
+        game.getServiceManager().setProvider(this, NucleusModuleService.class, new ModuleRegistrationProxyService(this));
         game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
-        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
+        this.injector = Guice.createInjector(new QuickStartInjectorModule(this, configMap));
+        Injector qsmlInjector = Guice.createInjector(new QuickStartModuleLoaderInjector(this, configMap));
+
+        try {
+            moduleContainer = ModuleContainer.builder()
+                    .setConstructor(new QuickStartModuleConstructor(qsmlInjector))
+                    .setConfigurationLoader(HoconConfigurationLoader.builder()
+                            .setDefaultOptions(ConfigurationOptions.defaults().setObjectMapperFactory(NucleusObjectMapperFactory.getInstance()))
+                            .setPath(Paths.get(configDir.toString(), "main.conf"))
+                            .build())
+                    .setPackageToScan(getClass().getPackage().getName() + ".modules")
+                    .setLoggerProxy(new NucleusLoggerProxy(logger))
+                    .build();
+        } catch (QuickStartModuleDiscoveryException e) {
+            isErrored = true;
+            e.printStackTrace();
+        }
     }
 
     @Listener
@@ -107,79 +135,21 @@ public class Nucleus {
         }
 
         logger.info(Util.getMessageWithFormat("startup.postinit", PluginInfo.NAME));
-        Set<PluginModule> modules = moduleRegistration.getModulesToLoad();
-
-        // Load the following services only if necessary.
-        if (modules.contains(PluginModule.WARPS)) {
-            try {
-                configMap.putConfig(ConfigMap.WARPS_CONFIG, new WarpsConfig(Paths.get(dataDir.toString(), "warp.json")));
-
-                // Put the warp service into the service manager.
-                game.getServiceManager().setProvider(this, NucleusWarpService.class, configMap.getConfig(ConfigMap.WARPS_CONFIG).get());
-            } catch (Exception ex) {
-                try {
-                    moduleRegistration.removeModule(PluginModule.WARPS, this);
-                } catch (ModulesLoadedException | UnremovableModuleException e) {
-                    // Nope.
-                }
-
-                logger.warn("Could not load the warp module for the reason below.");
-                ex.printStackTrace();
-            }
-        }
-
-        if (modules.contains(PluginModule.JAILS)) {
-            try {
-                configMap.putConfig(ConfigMap.JAILS_CONFIG, new WarpsConfig(Paths.get(dataDir.toString(), "jails.json")));
-
-                jailHandler = new JailHandler(this);
-                game.getServiceManager().setProvider(this, NucleusJailService.class, jailHandler);
-            } catch (Exception ex) {
-                try {
-                    moduleRegistration.removeModule(PluginModule.JAILS, this);
-                } catch (ModulesLoadedException | UnremovableModuleException e) {
-                    // Nope.
-                }
-
-                logger.warn("Could not load the jail module for the reason below.");
-                ex.printStackTrace();
-            }
-        }
-
-        if (modules.contains(PluginModule.MAILS)) {
-            mailHandler = new MailHandler(game, this);
-            game.getServiceManager().setProvider(this, NucleusMailService.class, mailHandler);
-        }
-
-        if (modules.contains(PluginModule.KITS)) {
-            try {
-                KitsConfig config = new KitsConfig(Paths.get(dataDir.toString(), "kits.json"));
-                configMap.putConfig(ConfigMap.KITS_CONFIG, config);
-                game.getServiceManager().setProvider(this, NucleusKitService.class, config);
-            } catch (Exception ex) {
-                try {
-                    moduleRegistration.removeModule(PluginModule.KITS, this);
-                } catch (ModulesLoadedException | UnremovableModuleException e) {
-                    // Nope.
-                }
-
-                logger.warn("Could not load the kits module for the reason below.");
-                ex.printStackTrace();
-            }
-        }
-
-        modulesLoaded = true;
-
-        // Register commands, events and runnables.
         try {
-            new PluginSystemsLoader(this).load();
-        } catch (IOException e) {
-            e.printStackTrace();
+            logger.info(Util.getMessageWithFormat("startup.moduleloading", PluginInfo.NAME));
+            moduleContainer.loadModules(false);
+        } catch (QuickStartModuleLoaderException.Construction | QuickStartModuleLoaderException.Enabling construction) {
+            logger.info(Util.getMessageWithFormat("startup.modulenotloaded", PluginInfo.NAME));
+            construction.printStackTrace();
             isErrored = true;
             return;
         }
 
-        // Register services
+        logger.info(Util.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
+        registerPermissions();
+        modulesLoaded = true;
+
+        // Register final services
         game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, configLoader);
         game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldConfigLoader);
         logger.info(Util.getMessageWithFormat("startup.started", PluginInfo.NAME));
@@ -238,29 +208,17 @@ public class Nucleus {
     }
 
     public void reload() {
+        try {
+            moduleContainer.reloadSystemConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         configMap.reloadAll();
-    }
-
-    public MessageHandler getMessageHandler() {
-        return messageHandler;
-    }
-
-    public MailHandler getMailHandler() { return mailHandler; }
-
-    public AFKHandler getAfkHandler() {
-        return afkHandler;
-    }
-
-    public JailHandler getJailHandler() {
-        return jailHandler;
     }
 
     public WarmupManager getWarmupManager() {
         return warmupManager;
-    }
-
-    public TeleportHandler getTpHandler() {
-        return tpHandler;
     }
 
     public EconHelper getEconHelper() {
@@ -269,5 +227,26 @@ public class Nucleus {
 
     public PermissionRegistry getPermissionRegistry() {
         return permissionRegistry;
+    }
+
+    public ModuleContainer getModuleContainer() {
+        return moduleContainer;
+    }
+
+    public InternalServiceManager getInternalServiceManager() {
+        return serviceManager;
+    }
+
+    private void registerPermissions() {
+        Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
+        if (ops.isPresent()) {
+            Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(this);
+            if (opdb.isPresent()) {
+                Map<String, PermissionInformation> m = this.getPermissionRegistry().getPermissions();
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN).forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD).forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
+            }
+        }
     }
 }

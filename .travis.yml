@@ -17,4 +17,4 @@ env:
 before_install:
   - chmod +x gradlew
 install: true
-script: "./gradlew build"
+script: "./gradlew build --refresh-dependencies"

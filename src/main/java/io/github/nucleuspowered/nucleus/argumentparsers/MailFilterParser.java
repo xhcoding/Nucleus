@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailFilter;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
-import io.github.nucleuspowered.nucleus.internal.services.MailHandler;
+import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;

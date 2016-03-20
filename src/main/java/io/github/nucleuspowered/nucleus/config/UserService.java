@@ -16,13 +16,13 @@ import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
-import io.github.nucleuspowered.nucleus.commands.message.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
 import io.github.nucleuspowered.nucleus.config.serialisers.LocationNode;
 import io.github.nucleuspowered.nucleus.config.serialisers.UserDataNode;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
+import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -35,6 +35,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.nio.file.Path;
 import java.time.Instant;
@@ -265,7 +267,7 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     @Override
     public Optional<Text> getNicknameWithPrefix() {
         if (getNicknameAsText().isPresent()) {
-            String p = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getNickPrefix();
+            String p = getNickPrefix();
             if (p == null || p.isEmpty()) {
                 return getNicknameAsText();
             }
@@ -300,7 +302,7 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     public void setNickname(String nickname) {
         data.setNickname(nickname);
         this.nickname = null;
-        String p = plugin.getConfig(ConfigMap.MAIN_CONFIG).get().getNickPrefix();
+        String p = getNickPrefix();
         if (p != null && !p.isEmpty()) {
             nickname = p + nickname;
         }
@@ -500,5 +502,13 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     @Override
     public void setFrozen(boolean value) {
         data.setFrozen(value);
+    }
+
+    private String getNickPrefix() {
+        try {
+            return plugin.getModuleContainer().getConfigAdapterForModule("nickname", NicknameConfigAdapter.class).getNodeOrDefault().getPrefix();
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            return null;
+        }
     }
 }

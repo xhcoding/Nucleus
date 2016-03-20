@@ -4,44 +4,64 @@
  */
 package io.github.nucleuspowered.nucleus.internal.guice;
 
-import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.KitsConfig;
-import io.github.nucleuspowered.nucleus.config.MainConfig;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
-import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.services.*;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.Sponge;
+import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
+import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
+import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
+import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
+import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
+import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-public class QuickStartInjectorModule extends AbstractModule {
-    private final Nucleus plugin;
+import java.nio.file.Path;
 
-    public QuickStartInjectorModule(Nucleus plugin) {
-        this.plugin = plugin;
+public class QuickStartInjectorModule extends QuickStartModuleLoaderInjector {
+
+    public QuickStartInjectorModule(Nucleus plugin, ConfigMap configMap) {
+        super(plugin, configMap);
     }
 
     @Override
     protected void configure() {
-        bind(Nucleus.class).toProvider(() -> plugin);
-        bind(Logger.class).toProvider(plugin::getLogger);
-        bind(MainConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.MAIN_CONFIG).get());
-        bind(CommandsConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get());
+        super.configure();
         bind(KitsConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.KITS_CONFIG).get());
-        bind(UserConfigLoader.class).toProvider(plugin::getUserLoader);
-        bind(WorldConfigLoader.class).toProvider(plugin::getWorldLoader);
-        bind(Game.class).toProvider(Sponge::getGame);
-        bind(AFKHandler.class).toProvider(plugin::getAfkHandler);
-        bind(MailHandler.class).toProvider(plugin::getMailHandler);
-        bind(JailHandler.class).toProvider(plugin::getJailHandler);
+        bind(CoreConfigAdapter.class).toProvider(() -> getAdapter("core", CoreConfigAdapter.class));
+        bind(ChatConfigAdapter.class).toProvider(() -> getAdapter("chat", ChatConfigAdapter.class));
+        bind(AFKConfigAdapter.class).toProvider(() -> getAdapter("afk", AFKConfigAdapter.class));
+        bind(JailConfigAdapter.class).toProvider(() -> getAdapter("jail", JailConfigAdapter.class));
+        bind(WarpConfigAdapter.class).toProvider(() -> getAdapter("warp", WarpConfigAdapter.class));
+        bind(NicknameConfigAdapter.class).toProvider(() -> getAdapter("nickname", NicknameConfigAdapter.class));
+        bind(AdminConfigAdapter.class).toProvider(() -> getAdapter("admin", AdminConfigAdapter.class));
+
+        bind(AFKHandler.class).toProvider(() -> getService(AFKHandler.class));
+        bind(MessageHandler.class).toProvider(() -> getService(MessageHandler.class));
+        bind(MailHandler.class).toProvider(() -> getService(MailHandler.class));
+        bind(JailHandler.class).toProvider(() -> getService(JailHandler.class));
+        bind(TeleportHandler.class).toProvider(() -> getService(TeleportHandler.class));
         bind(WarmupManager.class).toProvider(plugin::getWarmupManager);
-        bind(TeleportHandler.class).toProvider(plugin::getTpHandler);
-        bind(PermissionRegistry.class).toProvider(plugin::getPermissionRegistry);
-        bind(EconHelper.class).toProvider(plugin::getEconHelper);
+    }
+
+    private <T extends AbstractConfigAdapter<?>> T getAdapter(String module, Class<T> clazz) {
+        try {
+            return plugin.getModuleContainer().getConfigAdapterForModule(module, clazz);
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private <T> T getService(Class<T> service) {
+        return plugin.getInternalServiceManager().getService(service).orElse(null);
     }
 }

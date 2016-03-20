@@ -4,19 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.google.common.reflect.ClassPath;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.asset.AssetManager;
+import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
 
-import javax.annotation.Nullable;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.*;
@@ -144,5 +141,11 @@ public class Util {
         if (sb.length() > 0) {
             sb.append(", ");
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Set<Class<? extends T>> getClasses(Class<T> base, String pack) throws IOException {
+        Set<ClassPath.ClassInfo> ci = ClassPath.from(StandardModule.class.getClassLoader()).getTopLevelClassesRecursive(pack);
+        return ci.stream().map(ClassPath.ClassInfo::load).filter(base::isAssignableFrom).map(x -> (Class<? extends T>)x).collect(Collectors.toSet());
     }
 }

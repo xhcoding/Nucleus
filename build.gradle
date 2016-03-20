@@ -15,6 +15,7 @@ plugins {
     id 'com.github.hierynomus.license' version '0.12.1'
     id 'net.ellune.blossom' version '1.0.1'
     id 'maven'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
 ext.spongeapi = '4.0.3'
@@ -38,10 +39,15 @@ repositories {
         name 'Sponge maven repo'
         url 'http://repo.spongepowered.org/maven'
     }
+    maven {
+        name 'drnaylor'
+        url 'http://repo.drnaylor.co.uk/artifactory/list/quickstart'
+    }
 }
 
 dependencies {
     compile "org.spongepowered:spongeapi:4.0.3"
+    compile "uk.co.drnaylor:quickstart-moduleloader:0.1.0"
 
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-all:1.10.19"
@@ -114,3 +120,9 @@ def private String getGitHash() {
     return process.exitValue() ? 'unknown' : process.text.trim();
 }
 
+shadowJar {
+    dependencies {
+        include(dependency('uk.co.drnaylor:quickstart-moduleloader:0.1.0'))
+    }
+}
+build.dependsOn(shadowJar)

@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -23,8 +24,8 @@ import java.util.Optional;
 
 public class HomeOtherParser extends HomeParser {
 
-    public HomeOtherParser(@Nullable Text key, Nucleus plugin) {
-        super(key, plugin);
+    public HomeOtherParser(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
+        super(key, plugin, cca);
     }
 
     @Nullable
