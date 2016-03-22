@@ -51,6 +51,14 @@ To build Nucleus, navigate to the source directory and run either:
 
 You will find the compiled JAR which will be named like `Nucleus-x.x.x.jar` in `builds/libs/`
 
+## Building against Nucleus
+
+Nucleus is available via a Maven repository.
+
+Repo: `http://repo.drnaylor.co.uk/artifactory/list/minecraft`
+Group ID: `io.github.nucleuspowered`
+Artifact Name: `Nucleus`
+
 [Source]: https://github.com/NucleusPowered/Nucleus
 [Issues]: https://github.com/NucleusPowered/Nucleus/issues
 [Wiki]: https://github.com/NucleusPowered/Nucleus/wiki
