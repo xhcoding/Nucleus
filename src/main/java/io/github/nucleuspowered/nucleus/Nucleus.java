@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 import io.github.nucleuspowered.nucleus.config.configurate.NucleusObjectMapperFactory;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
@@ -62,6 +63,7 @@ public class Nucleus {
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
     private final ConfigMap configMap = new ConfigMap();
+    private GeneralDataStore generalDataStore;
     private UserConfigLoader configLoader;
     private WorldConfigLoader worldConfigLoader;
     private Injector injector;
@@ -96,6 +98,7 @@ public class Nucleus {
             Files.createDirectories(this.configDir);
             Files.createDirectories(dataDir);
             configMap.putConfig(ConfigMap.COMMANDS_CONFIG, new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
+            generalDataStore = new GeneralDataStore(Paths.get(dataDir.toString(), "general.json"));
             configLoader = new UserConfigLoader(this);
             worldConfigLoader = new WorldConfigLoader(this);
             warmupManager = new WarmupManager();
@@ -235,6 +238,10 @@ public class Nucleus {
 
     public InternalServiceManager getInternalServiceManager() {
         return serviceManager;
+    }
+
+    public GeneralDataStore getGeneralDataStore() {
+        return generalDataStore;
     }
 
     private void registerPermissions() {

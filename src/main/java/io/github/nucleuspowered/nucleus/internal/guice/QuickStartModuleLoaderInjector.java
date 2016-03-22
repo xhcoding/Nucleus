@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.guice;
 import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ConfigMap;
@@ -41,5 +42,6 @@ public class QuickStartModuleLoaderInjector extends AbstractModule {
         bind(ModuleContainer.class).toProvider(plugin::getModuleContainer);
         bind(InternalServiceManager.class).toProvider(plugin::getInternalServiceManager);
         bind(ConfigMap.class).toProvider(() -> configMap);
+        bind(GeneralDataStore.class).toProvider(plugin::getGeneralDataStore);
     }
 }
