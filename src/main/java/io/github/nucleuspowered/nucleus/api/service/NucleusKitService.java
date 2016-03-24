@@ -32,8 +32,9 @@ public interface NucleusKitService {
      * Removes the requested kit.
      *
      * @param kitName The name of the kit to remove.
+     * @return <code>true</code> if a kit was removed.
      */
-    void removeKit(String kitName);
+    boolean removeKit(String kitName);
 
     /**
      * Saves a kit with the requested name.

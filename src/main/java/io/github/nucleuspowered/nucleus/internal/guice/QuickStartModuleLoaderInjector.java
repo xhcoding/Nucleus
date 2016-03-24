@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -22,18 +21,16 @@ import uk.co.drnaylor.quickstart.ModuleContainer;
 public class QuickStartModuleLoaderInjector extends AbstractModule {
 
     protected final Nucleus plugin;
-    private final ConfigMap configMap;
 
-    public QuickStartModuleLoaderInjector(Nucleus plugin, ConfigMap configMap) {
+    public QuickStartModuleLoaderInjector(Nucleus plugin) {
         this.plugin = plugin;
-        this.configMap = configMap;
     }
 
     @Override
     protected void configure() {
         bind(Nucleus.class).toProvider(() -> plugin);
         bind(Logger.class).toProvider(plugin::getLogger);
-        bind(CommandsConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get());
+        bind(CommandsConfig.class).toProvider(plugin::getCommandsConfig);
         bind(UserConfigLoader.class).toProvider(plugin::getUserLoader);
         bind(WorldConfigLoader.class).toProvider(plugin::getWorldLoader);
         bind(Game.class).toProvider(Sponge::getGame);
@@ -41,7 +38,6 @@ public class QuickStartModuleLoaderInjector extends AbstractModule {
         bind(EconHelper.class).toProvider(plugin::getEconHelper);
         bind(ModuleContainer.class).toProvider(plugin::getModuleContainer);
         bind(InternalServiceManager.class).toProvider(plugin::getInternalServiceManager);
-        bind(ConfigMap.class).toProvider(() -> configMap);
         bind(GeneralDataStore.class).toProvider(plugin::getGeneralDataStore);
     }
 }

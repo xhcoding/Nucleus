@@ -7,9 +7,9 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -27,10 +27,10 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 public class KitParser extends CommandElement {
 
     private final KitConfigAdapter config;
-    private final KitsConfig kitConfig;
+    private final KitHandler kitConfig;
     private final boolean permissionCheck;
 
-    public KitParser(@Nullable Text key, KitConfigAdapter config, KitsConfig kitConfig, boolean permissionCheck) {
+    public KitParser(@Nullable Text key, KitConfigAdapter config, KitHandler kitConfig, boolean permissionCheck) {
         super(key);
         this.config = config;
         this.kitConfig = kitConfig;

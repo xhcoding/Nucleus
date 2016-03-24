@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.config.serialisers;
 
 import com.flowpowered.math.vector.Vector3d;
+import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.Setting;
@@ -50,6 +51,10 @@ public class LocationNode {
         this.roty = locationNode.getNode("roty").getDouble();
         this.rotz = locationNode.getNode("rotz").getDouble();
         this.world = UUID.fromString(locationNode.getNode("world").getString());
+    }
+
+    public LocationNode(WarpLocation location) {
+        this(location.getLocation(), location.getRotation());
     }
 
     public LocationNode(Location<World> length) {

@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -82,7 +81,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
         if (aliases == null) {
             // Some people want /tp to be held by minecraft. This will allow us
             // to do so.
-            if (plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode("teleport").getNode("use-tp-command").getBoolean(true)) {
+            if (plugin.getCommandsConfig().getCommandNode("teleport").getNode("use-tp-command").getBoolean(true)) {
                 aliases = new String[] {"tp", "teleport"};
             } else {
                 aliases = new String[] {"teleport"};

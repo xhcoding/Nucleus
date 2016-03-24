@@ -7,11 +7,11 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -31,7 +31,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 public class KitSetCommand extends CommandBase<Player> {
 
-    @Inject private KitsConfig kitConfig;
+    @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
 
     private final String kit = "kit";
@@ -46,7 +46,6 @@ public class KitSetCommand extends CommandBase<Player> {
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
         KitParser.KitInfo kitName = args.<KitParser.KitInfo>getOne(kit).get();
         kitName.kit.updateKitInventory(player);
-        kitConfig.save();
         player.sendMessage(Util.getTextMessageWithFormat("command.kit.set.success", kitName.name));
         return CommandResult.success();
     }

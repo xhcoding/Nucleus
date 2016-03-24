@@ -8,11 +8,11 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -35,7 +35,7 @@ import java.time.Duration;
 @NoCost
 public class KitSetCooldownCommand extends CommandBase<CommandSource> {
 
-    @Inject private KitsConfig kitConfig;
+    @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
 
     private final String kit = "kit";
@@ -56,7 +56,6 @@ public class KitSetCooldownCommand extends CommandBase<CommandSource> {
 
         // This Kit is a reference back to the version in list, so we don't need to update it explicitly
         kitInfo.kit.setInterval(Duration.ofSeconds(seconds));
-        kitConfig.save();
         player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitInfo.name, Util.getTimeStringFromSeconds(seconds)));
         return CommandResult.success();
     }

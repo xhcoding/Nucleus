@@ -7,8 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.jail;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
-import io.github.nucleuspowered.nucleus.config.WarpsConfig;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
@@ -24,7 +22,6 @@ import java.util.Optional;
 public class JailModule extends StandardModule {
 
     @Inject private Nucleus nucleus;
-    @Inject private ConfigMap configMap;
     @Inject private Logger logger;
     @Inject private Game game;
     @Inject private InternalServiceManager serviceManager;
@@ -37,9 +34,8 @@ public class JailModule extends StandardModule {
     @Override
     protected void performPreTasks() throws Exception {
         try {
-            configMap.putConfig(ConfigMap.JAILS_CONFIG, new WarpsConfig(nucleus.getDataPath().resolve("jails.json")));
-
             JailHandler jh = new JailHandler(nucleus);
+            nucleus.getInjector().injectMembers(jh);
             game.getServiceManager().setProvider(nucleus, NucleusJailService.class, jh);
             serviceManager.registerService(JailHandler.class, jh);
         } catch (Exception ex) {

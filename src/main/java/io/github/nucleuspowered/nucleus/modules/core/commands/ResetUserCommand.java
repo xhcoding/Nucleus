@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = "resetuser", subcommandOf = NucleusCommand.class)
-public class ResetUser extends CommandBase<CommandSource> {
+public class ResetUserCommand extends CommandBase<CommandSource> {
 
     private final String userKey = "user";
 

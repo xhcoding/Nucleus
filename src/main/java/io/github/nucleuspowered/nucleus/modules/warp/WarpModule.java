@@ -6,10 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.warp;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.config.WarpsConfig;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
@@ -20,7 +19,6 @@ import java.util.Optional;
 @ModuleData(id = "warp", name = "Warp")
 public class WarpModule extends StandardModule {
 
-    @Inject private ConfigMap configMap;
     @Inject private Game game;
     @Inject private Logger logger;
 
@@ -29,10 +27,12 @@ public class WarpModule extends StandardModule {
         super.performPreTasks();
 
         try {
-            configMap.putConfig(ConfigMap.WARPS_CONFIG, new WarpsConfig(nucleus.getDataPath().resolve("warp.json")));
-
             // Put the warp service into the service manager.
-            game.getServiceManager().setProvider(nucleus, NucleusWarpService.class, configMap.getConfig(ConfigMap.WARPS_CONFIG).get());
+
+            WarpHandler wh = new WarpHandler();
+            nucleus.getInjector().injectMembers(wh);
+            serviceManager.registerService(WarpHandler.class, wh);
+            game.getServiceManager().setProvider(nucleus, NucleusWarpService.class, wh);
         } catch (Exception ex) {
             logger.warn("Could not load the warp module for the reason below.");
             ex.printStackTrace();

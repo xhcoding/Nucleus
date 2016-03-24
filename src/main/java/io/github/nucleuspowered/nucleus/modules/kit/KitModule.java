@@ -6,10 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.kit;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
@@ -20,8 +19,6 @@ import java.util.Optional;
 @ModuleData(id = "kit", name = "Kit")
 public class KitModule extends StandardModule {
 
-    @Inject
-    private ConfigMap configMap;
     @Inject private Game game;
     @Inject private Logger logger;
 
@@ -30,9 +27,10 @@ public class KitModule extends StandardModule {
         super.performPreTasks();
 
         try {
-            KitsConfig config = new KitsConfig(nucleus.getDataPath().resolve("kits.json"));
-            configMap.putConfig(ConfigMap.KITS_CONFIG, config);
-            game.getServiceManager().setProvider(nucleus, NucleusKitService.class, config);
+            KitHandler kitHandler = new KitHandler();
+            nucleus.getInjector().injectMembers(kitHandler);
+            serviceManager.registerService(KitHandler.class, kitHandler);
+            game.getServiceManager().setProvider(nucleus, NucleusKitService.class, kitHandler);
         } catch (Exception ex) {
             logger.warn("Could not load the kits module for the reason below.");
             ex.printStackTrace();

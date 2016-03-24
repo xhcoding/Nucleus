@@ -7,12 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -34,7 +34,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 public class KitCostCommand extends CommandBase<CommandSource> {
 
-    @Inject private KitsConfig kitConfig;
+    @Inject private KitHandler kitConfig;
     @Inject private UserConfigLoader userConfigLoader;
     @Inject private KitConfigAdapter kca;
 
@@ -59,7 +59,6 @@ public class KitCostCommand extends CommandBase<CommandSource> {
         }
 
         kitInfo.kit.setCost(cost);
-        kitConfig.save();
         src.sendMessage(Util.getTextMessageWithFormat("command.kit.cost.success", kitInfo.name, String.valueOf(cost)));
         return CommandResult.success();
     }

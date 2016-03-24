@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.tests.util;
 import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -21,7 +20,6 @@ import org.spongepowered.api.config.DefaultConfig;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class TestModule extends AbstractModule {
 
@@ -59,7 +57,7 @@ public class TestModule extends AbstractModule {
         try {
             Path file = Files.createTempFile("quickstartcmdtest", "conf");
             CommandsConfig cc = new CommandsConfig(file);
-            Mockito.when(plugin.getConfig(ConfigMap.COMMANDS_CONFIG)).thenReturn(Optional.of(cc));
+            Mockito.when(plugin.getCommandsConfig()).thenReturn(cc);
             return plugin;
         } catch (Exception e) {
             throw new RuntimeException(e);

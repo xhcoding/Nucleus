@@ -5,8 +5,6 @@
 package io.github.nucleuspowered.nucleus.internal.guice;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
@@ -16,27 +14,27 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import java.nio.file.Path;
-
 public class QuickStartInjectorModule extends QuickStartModuleLoaderInjector {
 
-    public QuickStartInjectorModule(Nucleus plugin, ConfigMap configMap) {
-        super(plugin, configMap);
+    public QuickStartInjectorModule(Nucleus plugin) {
+        super(plugin);
     }
 
     @Override
     protected void configure() {
         super.configure();
-        bind(KitsConfig.class).toProvider(() -> plugin.getConfig(ConfigMap.KITS_CONFIG).get());
+
         bind(CoreConfigAdapter.class).toProvider(() -> getAdapter("core", CoreConfigAdapter.class));
         bind(ChatConfigAdapter.class).toProvider(() -> getAdapter("chat", ChatConfigAdapter.class));
         bind(AFKConfigAdapter.class).toProvider(() -> getAdapter("afk", AFKConfigAdapter.class));
@@ -51,6 +49,8 @@ public class QuickStartInjectorModule extends QuickStartModuleLoaderInjector {
         bind(MailHandler.class).toProvider(() -> getService(MailHandler.class));
         bind(JailHandler.class).toProvider(() -> getService(JailHandler.class));
         bind(TeleportHandler.class).toProvider(() -> getService(TeleportHandler.class));
+        bind(WarpHandler.class).toProvider(() -> getService(WarpHandler.class));
+        bind(KitHandler.class).toProvider(() -> getService(KitHandler.class));
         bind(WarmupManager.class).toProvider(plugin::getWarmupManager);
     }
 

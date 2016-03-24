@@ -474,7 +474,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         // Get the warmup time.
-        return plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("warmup").getInt();
+        return plugin.getCommandsConfig().getCommandNode(configSection).getNode("warmup").getInt();
     }
 
     @SuppressWarnings("unchecked")
@@ -541,7 +541,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
     private void setCooldown(Player src) {
         if (!permissions.testCooldownExempt(src)) {
             // Get the cooldown time.
-            int cooldownTime = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("cooldown").getInt();
+            int cooldownTime = plugin.getCommandsConfig().getCommandNode(configSection).getNode("cooldown").getInt();
             if (cooldownTime > 0) {
                 // If there is a cooldown, add the cooldown to the list, with
                 // the end time as an Instant.
@@ -594,7 +594,7 @@ public abstract class CommandBase<T extends CommandSource> implements CommandExe
         }
 
         // Return the cost if positive, else, zero.
-        double cost = plugin.getConfig(ConfigMap.COMMANDS_CONFIG).get().getCommandNode(configSection).getNode("cost").getDouble(0.);
+        double cost = plugin.getCommandsConfig().getCommandNode(configSection).getNode("cost").getDouble(0.);
         if (cost <= 0.) {
             return 0.;
         }

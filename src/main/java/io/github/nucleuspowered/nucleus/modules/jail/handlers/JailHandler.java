@@ -5,13 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.jail.handlers;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
-import io.github.nucleuspowered.nucleus.config.WarpsConfig;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
+import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,12 +19,11 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class JailHandler implements NucleusJailService {
+
+    @Inject private GeneralDataStore store;
 
     private final Nucleus plugin;
 
@@ -33,26 +32,23 @@ public class JailHandler implements NucleusJailService {
     }
 
     @Override
-    public boolean setJail(String name, Location<World> location, Vector3d rotation) {
-        return plugin.getConfig(ConfigMap.JAILS_CONFIG).get().setWarp(name, location, rotation);
+    public Optional<WarpLocation> getJail(String warpName) {
+        return store.getJailLocation(warpName);
+    }
+
+    @Override
+    public boolean removeJail(String warpName) {
+        return store.removeJail(warpName);
+    }
+
+    @Override
+    public boolean setJail(String warpName, Location<World> location, Vector3d rotation) {
+        return store.addJail(warpName, location, rotation);
     }
 
     @Override
     public Map<String, WarpLocation> getJails() {
-        final WarpsConfig jc = plugin.getConfig(ConfigMap.JAILS_CONFIG).get();
-        Map<String, WarpLocation> l = new HashMap<>();
-        jc.getWarpNames().forEach(x -> jc.getWarp(x.toLowerCase()).ifPresent(y -> l.put(x.toLowerCase(), y)));
-        return l;
-    }
-
-    @Override
-    public Optional<WarpLocation> getJail(String name) {
-        return plugin.getConfig(ConfigMap.JAILS_CONFIG).get().getWarp(name.toLowerCase());
-    }
-
-    @Override
-    public boolean removeJail(String name) {
-        return plugin.getConfig(ConfigMap.JAILS_CONFIG).get().removeWarp(name);
+        return store.getJails();
     }
 
     @Override

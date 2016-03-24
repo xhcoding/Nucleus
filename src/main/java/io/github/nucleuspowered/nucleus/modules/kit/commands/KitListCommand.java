@@ -7,10 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.KitsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 @NoCost
 public class KitListCommand extends CommandBase<CommandSource> {
 
-    @Inject private KitsConfig kitConfig;
+    @Inject private KitHandler kitConfig;
 
     @Override
     public CommandSpec createSpec() {

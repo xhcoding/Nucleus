@@ -13,11 +13,9 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
-import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 import io.github.nucleuspowered.nucleus.config.configurate.NucleusObjectMapperFactory;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.ConfigMap;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -33,6 +31,7 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -62,7 +61,7 @@ public class Nucleus {
 
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
-    private final ConfigMap configMap = new ConfigMap();
+    private CommandsConfig commandsConfig;
     private GeneralDataStore generalDataStore;
     private UserConfigLoader configLoader;
     private WorldConfigLoader worldConfigLoader;
@@ -97,7 +96,7 @@ public class Nucleus {
         try {
             Files.createDirectories(this.configDir);
             Files.createDirectories(dataDir);
-            configMap.putConfig(ConfigMap.COMMANDS_CONFIG, new CommandsConfig(Paths.get(configDir.toString(), "commands.conf")));
+            commandsConfig = new CommandsConfig(Paths.get(configDir.toString(), "commands.conf"));
             generalDataStore = new GeneralDataStore(Paths.get(dataDir.toString(), "general.json"));
             configLoader = new UserConfigLoader(this);
             worldConfigLoader = new WorldConfigLoader(this);
@@ -112,8 +111,8 @@ public class Nucleus {
         // We register the ModuleService NOW so that others can hook into it.
         game.getServiceManager().setProvider(this, NucleusModuleService.class, new ModuleRegistrationProxyService(this));
         game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
-        this.injector = Guice.createInjector(new QuickStartInjectorModule(this, configMap));
-        Injector qsmlInjector = Guice.createInjector(new QuickStartModuleLoaderInjector(this, configMap));
+        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
+        Injector qsmlInjector = Guice.createInjector(new QuickStartModuleLoaderInjector(this));
 
         try {
             moduleContainer = ModuleContainer.builder()
@@ -162,7 +161,17 @@ public class Nucleus {
     public void onServerStop(GameStoppedServerEvent event) {
         if (!isErrored) {
             logger.info(Util.getMessageWithFormat("startup.stopped", PluginInfo.NAME));
-            configLoader.saveAll();
+            saveData();
+        }
+    }
+
+    public void saveData() {
+        configLoader.saveAll();
+        worldConfigLoader.saveAll();
+        try {
+            generalDataStore.save();
+        } catch (ObjectMappingException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -199,25 +208,13 @@ public class Nucleus {
         return worldConfigLoader;
     }
 
-    /**
-     * Gets the configuration file
-     *
-     * @param key The {@link ConfigMap.Key} of the config to get (see T).
-     * @param <T> The type of {@link AbstractStandardNodeConfig} to get.
-     * @return An {@link Optional} that might contain the config, if it exists.
-     */
-    public <T extends AbstractStandardNodeConfig> Optional<T> getConfig(ConfigMap.Key<T> key) {
-        return configMap.getConfig(key);
-    }
-
     public void reload() {
         try {
             moduleContainer.reloadSystemConfig();
-        } catch (IOException e) {
+            commandsConfig.load();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        configMap.reloadAll();
     }
 
     public WarmupManager getWarmupManager() {
@@ -242,6 +239,10 @@ public class Nucleus {
 
     public GeneralDataStore getGeneralDataStore() {
         return generalDataStore;
+    }
+
+    public CommandsConfig getCommandsConfig() {
+        return commandsConfig;
     }
 
     private void registerPermissions() {

@@ -36,17 +36,6 @@ public class CoreTask extends TaskBase {
     public void accept(Task task) {
         UserConfigLoader ucl = plugin.getUserLoader();
         ucl.purgeNotOnline();
-        ucl.saveAll();
-
-        WorldConfigLoader wcl = plugin.getWorldLoader();
-        wcl.saveAll();
-
-        try {
-            plugin.getGeneralDataStore().save();
-        } catch (ObjectMappingException | IOException e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
-            }
-        }
+        plugin.saveData();
     }
 }
