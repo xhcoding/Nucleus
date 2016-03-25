@@ -10,33 +10,17 @@ import org.spongepowered.api.world.World;
 
 import java.text.MessageFormat;
 
-public class WarpLocation {
-
-    private final Location<World> location;
-
-    private final Vector3d rotation;
+public class WarpLocation extends LocationWithRotation {
 
     private final String warpName;
 
     public WarpLocation(String name, Location<World> location, Vector3d rotation) {
+        super(location, rotation);
         this.warpName = name;
-        this.location = location;
-        this.rotation = rotation;
     }
 
     public String getName() {
         return warpName;
     }
 
-    public Vector3d getRotation() {
-        return rotation;
-    }
-
-    public Location<World> getLocation() {
-        return location;
-    }
-
-    public String toLocationString() {
-        return MessageFormat.format("world: {0}, x: {1}, y: {2}, z: {3}", location.getExtent().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
-    }
 }

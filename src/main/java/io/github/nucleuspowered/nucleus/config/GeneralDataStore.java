@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import io.github.nucleuspowered.nucleus.api.data.LocationWithRotation;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
@@ -119,6 +120,30 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     public boolean removeWarp(String name) {
         return data.getWarps().remove(name.toLowerCase()) != null;
     }
+
+    public Optional<LocationWithRotation> getFirstSpawn() {
+        Optional<LocationNode> ln = data.getFirstSpawnLocation();
+        if (ln.isPresent()) {
+            try {
+                LocationWithRotation lwr = new LocationWithRotation(ln.get().getLocation(), ln.get().getRotation());
+                return Optional.of(lwr);
+            } catch (NoSuchWorldException e) {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public void setFirstSpawn(Location<World> location, Vector3d rot) {
+        data.setFirstSpawnLocation(new LocationNode(location, rot));
+    }
+
+    public void removeFirstSpawn() {
+        data.setFirstSpawnLocation(null);
+    }
+
+    // Helper methods for warp based systems
 
     private Optional<WarpLocation> getLocation(String name, Map<String, LocationNode> m) {
         LocationNode ln = m.get(name.toLowerCase());

@@ -12,8 +12,10 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.ItemType;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @ConfigSerializable
 public class GeneralDataNode {
@@ -29,6 +31,10 @@ public class GeneralDataNode {
 
     @Setting
     private Map<String, KitDataNode> kits = Maps.newHashMap();
+
+    @Setting
+    @Nullable
+    private LocationNode firstspawn = null;
 
     public List<ItemType> getBlacklistedTypes() {
         return blacklistedTypes;
@@ -48,5 +54,13 @@ public class GeneralDataNode {
 
     public Map<String, KitDataNode> getKits() {
         return kits;
+    }
+
+    public Optional<LocationNode> getFirstSpawnLocation() {
+        return Optional.ofNullable(firstspawn);
+    }
+
+    public void setFirstSpawnLocation(@Nullable LocationNode node) {
+        firstspawn = node;
     }
 }
