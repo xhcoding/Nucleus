@@ -65,6 +65,7 @@ public class Nucleus {
     private GeneralDataStore generalDataStore;
     private UserConfigLoader configLoader;
     private WorldConfigLoader worldConfigLoader;
+    private ChatUtil chatUtil;
     private Injector injector;
 
     private InternalServiceManager serviceManager = new InternalServiceManager();
@@ -101,6 +102,7 @@ public class Nucleus {
             configLoader = new UserConfigLoader(this);
             worldConfigLoader = new WorldConfigLoader(this);
             warmupManager = new WarmupManager();
+            chatUtil = new ChatUtil(configLoader);
             serviceManager.registerService(WarmupManager.class, warmupManager);
         } catch (Exception e) {
             isErrored = true;
@@ -243,6 +245,10 @@ public class Nucleus {
 
     public CommandsConfig getCommandsConfig() {
         return commandsConfig;
+    }
+
+    public ChatUtil getChatUtil() {
+        return chatUtil;
     }
 
     private void registerPermissions() {

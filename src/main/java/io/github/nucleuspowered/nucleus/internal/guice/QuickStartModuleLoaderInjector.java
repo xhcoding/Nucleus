@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.guice;
 
 import com.google.inject.AbstractModule;
+import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
@@ -39,5 +40,6 @@ public class QuickStartModuleLoaderInjector extends AbstractModule {
         bind(ModuleContainer.class).toProvider(plugin::getModuleContainer);
         bind(InternalServiceManager.class).toProvider(plugin::getInternalServiceManager);
         bind(GeneralDataStore.class).toProvider(plugin::getGeneralDataStore);
+        bind(ChatUtil.class).toProvider(plugin::getChatUtil);
     }
 }

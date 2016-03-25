@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
@@ -33,27 +34,16 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class ChatListener extends ListenerBase {
-    private final Pattern p;
-    private final Pattern match;
 
     private final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
 
-    private final Map<String, Function<Player, Text>> tokens;
     private final Map<String[], Function<String, String>> replacements;
 
-    @Inject private UserConfigLoader loader;
     @Inject private ChatConfigAdapter cca;
+    @Inject private ChatUtil chatUtil;
 
     // Zero args for the injector
     public ChatListener() {
-        tokens = createTokens();
-        StringBuilder sb = new StringBuilder("(");
-        tokens.forEach((k, v) -> sb.append(k.replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}")).append("|"));
-
-        String m = sb.deleteCharAt(sb.length() - 1).append(")").toString();
-        match = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
-        p = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
-
         replacements = createReplacements();
     }
 
@@ -67,16 +57,6 @@ public class ChatListener extends ListenerBase {
         // TODO: URLs.
         // mp.put(prefix + "url", new PermissionInformation(Util.getMessageWithFormat("permission.chat.urls"), SuggestedLevel.ADMIN));
         return super.getPermissions();
-    }
-
-    private Map<String, Function<Player, Text>> createTokens() {
-        Map<String, Function<Player, Text>> t = new HashMap<>();
-
-        t.put("{{name}}", (p) -> Text.of(p.getName()));
-        t.put("{{prefix}}", (p) -> getTextFromOption(p, "prefix"));
-        t.put("{{suffix}}", (p) -> getTextFromOption(p, "suffix"));
-        t.put("{{displayname}}", (p) -> NameUtil.getNameWithHover(p, loader));
-        return t;
     }
 
     private Map<String[], Function<String, String>> createReplacements() {
@@ -112,49 +92,11 @@ public class ChatListener extends ListenerBase {
         }
 
         Text rawMessage = event.getRawMessage();
-        event.setMessage(getFromTemplate(config.getTemplate().getPrefix(), player, true), useMessage(player, rawMessage), getFromTemplate(config.getTemplate().getSuffix(), player, false));
+        event.setMessage(
+                chatUtil.getFromTemplate(config.getTemplate().getPrefix(), player, true),
+                useMessage(player, rawMessage),
+                chatUtil.getFromTemplate(config.getTemplate().getSuffix(), player, false));
     }
 
-    // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
-    // to do the replacements!
-    private Text getFromTemplate(String template, Player player, boolean trimTrailingSpace) {
 
-        Text.Builder tb = Text.builder();
-        for (String textElement : p.split(template)) {
-            if (match.matcher(textElement).matches()) {
-                // If we have a token, do the replacement as specified by the function
-                Text message = tokens.get(textElement.toLowerCase()).apply(player);
-                if (!message.isEmpty()) {
-                    trimTrailingSpace = false;
-                    tb.append(message);
-                }
-            } else {
-                if (trimTrailingSpace) {
-                    textElement = textElement.replaceAll("^\\s+", "");
-                }
-
-                if (!textElement.isEmpty()) {
-                    // Just convert the colour codes, but that's it.
-                    tb.append(TextSerializers.formattingCode('&').deserialize(textElement));
-                    trimTrailingSpace = false;
-                }
-            }
-        }
-
-        return tb.build();
-    }
-
-    private Text getTextFromOption(Player player, String option) {
-        Optional<OptionSubject> oos = getSubject(player);
-        if (!oos.isPresent()) {
-            return Text.EMPTY;
-        }
-
-        return TextSerializers.formattingCode('&').deserialize(oos.get().getOption(option).orElse(""));
-    }
-
-    private Optional<OptionSubject> getSubject(Player player) {
-        Subject subject = player.getContainingCollection().get(player.getIdentifier());
-        return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
-    }
 }
