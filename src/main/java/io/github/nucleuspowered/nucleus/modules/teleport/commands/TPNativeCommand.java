@@ -20,6 +20,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @NoWarmup
+@NoPermissions
 @RegisterCommand({ "teleportnative", "tpnative", "tpn" })
 public class TPNativeCommand extends CommandBase<CommandSource> {
     private final String a = "args";
