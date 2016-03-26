@@ -16,6 +16,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
+import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
@@ -52,8 +54,13 @@ public class FeedCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
 
-        // TODO: If max food level appears, use that instead.
-        if (pl.offer(Keys.FOOD_LEVEL, 20).isSuccessful()) {
+        // Get the food data and modify it.
+        FoodData foodData = pl.getFoodData();
+        Value<Integer> f = foodData.foodLevel().set(foodData.foodLevel().getDefault());
+        Value<Double> d = foodData.saturation().set(foodData.saturation().getDefault());
+        foodData.set(f, d);
+
+        if (pl.offer(foodData).isSuccessful()) {
             pl.sendMessages(Util.getTextMessageWithFormat("command.feed.success.self"));
             if (!pl.equals(src)) {
                 src.sendMessages(Util.getTextMessageWithFormat("command.feed.success.other", pl.getName()));
