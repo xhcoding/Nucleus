@@ -25,6 +25,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
+@Permissions
 public class ClearInventoryCommand extends CommandBase<CommandSource> {
 
     private final String player = "player";

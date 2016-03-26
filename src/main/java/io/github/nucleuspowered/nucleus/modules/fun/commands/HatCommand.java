@@ -27,6 +27,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
+@Permissions
 public class HatCommand extends CommandBase<Player> {
 
     private final String player = "player";
