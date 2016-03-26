@@ -6,23 +6,31 @@ package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.DataScanner;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.trait.BlockTrait;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.data.Property;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.pagination.PaginationService;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.World;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 @Permissions
 @RegisterCommand({ "blockinfo" })
@@ -31,7 +39,16 @@ public class BlockInfoCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return CommandSpec.builder().arguments(
+                GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("extended"), "e", "-extended").buildWith(GenericArguments.none())
+        ).executor(this).build();
+    }
+
+    @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("extended", new PermissionInformation(Util.getMessageWithFormat("permission.blockinfo.extended"), SuggestedLevel.ADMIN));
+        return m;
     }
 
     @Override
@@ -46,14 +63,36 @@ public class BlockInfoCommand extends CommandBase<Player> {
             // get the information.
             BlockState b = brh.getLocation().getBlock();
             BlockType it = b.getType();
-            player.sendMessage(Util.getTextMessageWithFormat("command.blockinfo.id", it.getId(), it.getName()));
 
-            Collection<BlockTrait<?>> cb = b.getTraits();
-            if (!cb.isEmpty()) {
-                cb.forEach(x -> b.getTraitValue(x).ifPresent(v ->
-                    player.sendMessage(Util.getTextMessageWithFormat("command.blockinfo.traits.item", x.getName(), v.toString()))
-                ));
+            List<Text> lt = new ArrayList<>();
+            lt.add(Util.getTextMessageWithFormat("command.blockinfo.id", it.getId(), it.getTranslation().get()));
+
+            if (args.hasAny("e") || args.hasAny("extended")) {
+                Collection<Property<?, ?>> cp = b.getApplicableProperties();
+                if (!cp.isEmpty()) {
+                    cp.forEach(x -> {
+                        if (x.getValue() != null) {
+                            DataScanner.getText(player, "command.blockinfo.property.item", x.getKey().toString(), x.getValue()).ifPresent(lt::add);
+                        }
+                    });
+                }
+
+                Collection<BlockTrait<?>> cb = b.getTraits();
+                if (!cb.isEmpty()) {
+                    cb.forEach(x -> b.getTraitValue(x).ifPresent(v ->
+                            DataScanner.getText(player, "command.blockinfo.traits.item", x.getName(), v).ifPresent(lt::add)
+                    ));
+                }
             }
+
+            Sponge.getServiceManager().provideUnchecked(PaginationService.class)
+                    .builder().contents(lt).padding(Text.of(TextColors.GREEN, "-"))
+                    .title(Util.getTextMessageWithFormat(
+                            "command.blockinfo.list.header",
+                            String.valueOf(brh.getBlockX()),
+                            String.valueOf(brh.getBlockY()),
+                            String.valueOf(brh.getBlockZ())))
+                    .sendTo(player);
 
             return CommandResult.success();
         }
