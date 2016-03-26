@@ -59,47 +59,35 @@ public class LightningCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
 
-        if (pl == src) {
-            BlockRay<World> playerBlockRay = BlockRay.from(pl).blockLimit(350).build();
-            BlockRayHit<World> finalHitRay = null;
-
-            while (playerBlockRay.hasNext()) {
-                BlockRayHit<World> currentHitRay = playerBlockRay.next();
-
-                if (!pl.getWorld().getBlockType(currentHitRay.getBlockPosition()).equals(BlockTypes.AIR)) {
-                    finalHitRay = currentHitRay;
-                    break;
-                }
-            }
-
-            Location<World> lightningLocation = null;
-
-            if (finalHitRay == null) {
-                lightningLocation = pl.getLocation();
+        // No argument, let's not smite the player.
+        if (!args.getOne(player).isPresent()) {
+            // 100 is a good limit here.
+            BlockRay<World> playerBlockRay = BlockRay.from(pl).blockLimit(100).filter(BlockRay.continueAfterFilter(BlockRay.onlyAirFilter(), 1)).build();
+            Optional<BlockRayHit<World>> obh = playerBlockRay.end();
+            Location<World> lightningLocation;
+            if (obh.isPresent()) {
+                lightningLocation = obh.get().getLocation();
             } else {
-                lightningLocation = finalHitRay.getLocation();
+                // Smite above, but not on.
+                lightningLocation = pl.getLocation().add(0, 3, 0);
             }
 
-            Text message = this.spawnLightning(lightningLocation, src) ? Util.getTextMessageWithFormat("command.lightning.success")
-                    : Util.getTextMessageWithFormat("command.lightning.error");
-            pl.sendMessage(message);
-        } else {
-            Text message = this.spawnLightning(pl.getLocation(), src) ? Util.getTextMessageWithFormat("command.lightning.success.other", pl.getName())
-                    : Util.getTextMessageWithFormat("command.lightning.error");
-            pl.sendMessage(message);
+            return this.spawnLightning(lightningLocation, src, "command.lightning.success.normal");
         }
 
-        return CommandResult.success();
+        return this.spawnLightning(pl.getLocation(), src, "command.lightning.success.other");
     }
 
-    private boolean spawnLightning(Location<World> location, CommandSource src) {
+    private CommandResult spawnLightning(Location<World> location, CommandSource src, String successKey) {
         World world = location.getExtent();
         Optional<Entity> bolt = world.createEntity(EntityTypes.LIGHTNING, location.getPosition());
 
-        if (bolt.isPresent()) {
-            return world.spawnEntity(bolt.get(), Cause.of(NamedCause.source(src)));
+        if (bolt.isPresent() && world.spawnEntity(bolt.get(), Cause.of(NamedCause.source(src)))) {
+            src.sendMessage(Util.getTextMessageWithFormat(successKey));
+            return CommandResult.success();
         }
 
-        return false;
+        src.sendMessage(Util.getTextMessageWithFormat("command.lightning.error"));
+        return CommandResult.empty();
     }
 }
