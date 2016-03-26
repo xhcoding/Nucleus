@@ -264,7 +264,16 @@ public class TeleportHandler {
 
             InternalNucleusUser toPlayer = plugin.getUserLoader().getUser(to);
             if (!bypassToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(source)) {
-                from.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
+                source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
+                return false;
+            }
+
+            if (plugin.getUserLoader().getUser(from).getJailData().isPresent()) {
+                // Don't teleport a jailed player.
+                if (!silentSource) {
+                    source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.jailed", from.getName()));
+                }
+
                 return false;
             }
 
