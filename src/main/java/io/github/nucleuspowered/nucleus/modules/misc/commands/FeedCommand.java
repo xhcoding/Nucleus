@@ -54,7 +54,7 @@ public class FeedCommand extends CommandBase<CommandSource> {
 
         // TODO: If max food level appears, use that instead.
         if (pl.offer(Keys.FOOD_LEVEL, 20).isSuccessful()) {
-            pl.sendMessages(Util.getTextMessageWithFormat("command.feed.success"));
+            pl.sendMessages(Util.getTextMessageWithFormat("command.feed.success.self"));
             if (!pl.equals(src)) {
                 src.sendMessages(Util.getTextMessageWithFormat("command.feed.success.other", pl.getName()));
             }

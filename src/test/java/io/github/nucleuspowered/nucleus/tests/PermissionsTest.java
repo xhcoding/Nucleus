@@ -28,7 +28,7 @@ import java.util.Arrays;
 /**
  * Tests permissions are assigned correctly.
  */
-public class PermissionsTest {
+public class PermissionsTest extends TestBase {
 
     /**
      * Tests that the specified permissions are in the permission list.

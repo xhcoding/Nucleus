@@ -18,4 +18,11 @@ public class CoreModule extends StandardModule {
     public Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
         return Optional.of(new CoreConfigAdapter());
     }
+
+    @Override
+    protected void performPreTasks() throws Exception {
+        super.performPreTasks();
+
+        nucleus.reloadMessages();
+    }
 }

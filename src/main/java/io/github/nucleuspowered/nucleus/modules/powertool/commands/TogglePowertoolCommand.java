@@ -46,7 +46,7 @@ public class TogglePowertoolCommand extends CommandBase<Player> {
         boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!user.isPowertoolToggled());
         user.setPowertoolToggle(toggle);
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.powertool.toggle", Util.getMessageWithFormat(toggle ? "enabled" : "disabled")));
+        src.sendMessage(Util.getTextMessageWithFormat("command.powertool.toggle", Util.getMessageWithFormat(toggle ? "standard.enabled" : "standard.disabled")));
         return CommandResult.success();
     }
 }

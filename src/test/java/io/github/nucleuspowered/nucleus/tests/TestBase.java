@@ -4,6 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.tests;
 
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import org.junit.Before;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.FormattingCodeTextSerializer;
@@ -12,6 +15,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.function.Supplier;
 
 public abstract class TestBase {
 
@@ -72,6 +76,15 @@ public abstract class TestBase {
 
     @Before
     public void testSetup() throws Exception {
+        try {
+            Field f = Util.class.getDeclaredField("messageProvider");
+            f.setAccessible(true);
+            Supplier<MessageProvider> s = ResourceMessageProvider::new;
+            f.set(null, s);
+        } catch (Exception e) {
+            // Don't care.
+        }
+
         setFinalStaticPlain(TextSerializers.class.getField("PLAIN"));
         setFinalStaticFormatters(TextSerializers.class.getField("FORMATTING_CODE"));
         setFinalStaticFormatters(TextSerializers.class.getField("LEGACY_FORMATTING_CODE"));

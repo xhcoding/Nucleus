@@ -13,7 +13,14 @@ public class CoreConfig {
     @Setting(value = "debug-mode", comment = "loc:config.debugmode")
     private boolean debugmode = false;
 
+    @Setting(value = "use-custom-message-file", comment = "loc:config.custommessages")
+    private boolean custommessages = false;
+
     public boolean isDebugmode() {
         return debugmode;
+    }
+
+    public boolean isCustommessages() {
+        return custommessages;
     }
 }

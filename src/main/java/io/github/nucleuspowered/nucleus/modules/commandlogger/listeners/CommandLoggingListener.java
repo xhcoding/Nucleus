@@ -16,6 +16,6 @@ public class CommandLoggingListener extends ListenerBase {
 
     @Listener(order = Order.LAST)
     public void onCommand(SendCommandEvent event, @First CommandSource source) {
-        plugin.getLogger().info(Util.getMessageWithFormat("commandlog", source.getName(), event.getCommand(), event.getArguments()));
+        plugin.getLogger().info(Util.getMessageWithFormat("commandlog.message", source.getName(), event.getCommand(), event.getArguments()));
     }
 }

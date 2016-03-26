@@ -49,7 +49,7 @@ public class TeleportToggleCommand extends CommandBase<Player> {
         boolean flip = args.<Boolean>getOne(key).orElseGet(() -> !iqsu.isTeleportToggled());
         iqsu.setTeleportToggled(flip);
         src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.tptoggle.success"))
-                .append(Util.getTextMessageWithFormat(flip ? "enabled" : "disabled")).build());
+                .append(Util.getTextMessageWithFormat(flip ? "standard.enabled" : "standard.disabled")).build());
         return CommandResult.success();
     }
 }

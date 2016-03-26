@@ -64,7 +64,7 @@ public class SendMailCommand extends CommandBase<CommandSource> {
             handler.sendMailFromConsole(pl, m);
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.mail.send", pl.getName()));
+        src.sendMessage(Util.getTextMessageWithFormat("command.mail.send.successful", pl.getName()));
         return CommandResult.success();
     }
 }

@@ -162,7 +162,7 @@ public class TeleportHandler {
                 }
             } else {
                 if (!silentSouce) {
-                    source.sendMessage(Util.getTextMessageWithFormat("teleport.fail"));
+                    source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.offline"));
                 }
 
                 onCancel();

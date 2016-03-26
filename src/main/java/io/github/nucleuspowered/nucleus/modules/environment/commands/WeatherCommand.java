@@ -92,7 +92,7 @@ public class WeatherCommand extends CommandBase<CommandSource> {
         } else {
             // No, probably because I've already gotten a job at the weather service...
             w.setWeather(we);
-            src.sendMessage(Util.getTextMessageWithFormat("command.weather", we.getName(), w.getName()));
+            src.sendMessage(Util.getTextMessageWithFormat("command.weather.set", we.getName(), w.getName()));
         }
 
         // The weather control device has been activated!

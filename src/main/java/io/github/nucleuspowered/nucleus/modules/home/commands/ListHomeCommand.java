@@ -73,7 +73,7 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
             }
 
             user = (User) src;
-            header = Util.getTextMessageWithFormat("home.title");
+            header = Util.getTextMessageWithFormat("home.title.normal");
         }
 
         Map<String, WarpLocation> msw = plugin.getUserLoader().getUser(user).getHomes();

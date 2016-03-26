@@ -108,10 +108,10 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
     private Text getTrueOrFalse(boolean is, ClickAction ifTrue) {
         if (is) {
-            return Text.builder().append(Util.getTextMessageWithFormat("true")).style(TextStyles.UNDERLINE)
+            return Text.builder().append(Util.getTextMessageWithFormat("standard.true")).style(TextStyles.UNDERLINE)
                     .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).onClick(ifTrue).build();
         }
 
-        return Text.of(Util.getTextMessageWithFormat("false"));
+        return Text.of(Util.getTextMessageWithFormat("standard.false"));
     }
 }

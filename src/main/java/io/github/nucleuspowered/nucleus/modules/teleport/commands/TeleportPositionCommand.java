@@ -62,7 +62,7 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
             pl.setLocation(loc);
-            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success"));
+            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
             }
@@ -71,7 +71,7 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         }
 
         if (pl.setLocationSafely(loc)) {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success"));
+            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
             }

@@ -4,10 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.google.common.base.Preconditions;
 import com.google.common.reflect.ClassPath;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Util {
@@ -24,13 +27,14 @@ public class Util {
     private Util() {
     }
 
+    private static Supplier<MessageProvider> messageProvider;
+
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    /**
-     * This bundle is being used as this is what existed in Nucleus before the Sponge API 4.0.1 update. This will eventually be updated
-     * to use the AssetManager and possibly move to a config file based solution - but right now, this is the easiest solution.
-     */
-    private static ResourceBundle messageBundle = ResourceBundle.getBundle("assets.io.github.nucleuspowered.nucleus.messages", Locale.getDefault());
+    static void setMessageProvider(Supplier<MessageProvider> messageProvider) {
+        Preconditions.checkState(Util.messageProvider == null);
+        Util.messageProvider = messageProvider;
+    }
 
     public static UUID getUUID(CommandSource src) {
         if (src instanceof Identifiable) {
@@ -41,11 +45,11 @@ public class Util {
     }
 
     public static String getMessageWithFormat(String key, String... substitutions) {
-        return MessageFormat.format(messageBundle.getString(key), (Object[]) substitutions);
+        return messageProvider.get().getMessageWithFormat(key, substitutions);
     }
 
     public static Text getTextMessageWithFormat(String key, String... substitutions) {
-        return TextSerializers.FORMATTING_CODE.deserialize(MessageFormat.format(messageBundle.getString(key), (Object[]) substitutions));
+        return messageProvider.get().getTextMessageWithFormat(key, substitutions);
     }
 
     public static String getTimeToNow(Instant time) {
@@ -129,11 +133,11 @@ public class Util {
 
         if (hours < 12) {
             long ahours = hours == 0 ? 12 : hours;
-            return MessageFormat.format(messageBundle.getString("time.am"), ahours, hours, mins);
+            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.am"), ahours, hours, mins);
         } else {
             hours -= 12;
             long ahours = hours == 0 ? 12 : hours;
-            return MessageFormat.format(messageBundle.getString("time.pm"), ahours, hours, mins);
+            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.pm"), ahours, hours, mins);
         }
     }
 

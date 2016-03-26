@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.config.configurate.NucleusObjectMapperFactory;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
@@ -21,12 +22,16 @@ import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartModuleLoaderInjector;
+import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.qsml.ModuleRegistrationProxyService;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusLoggerProxy;
 import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructor;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -44,6 +49,8 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import uk.co.drnaylor.quickstart.ModuleContainer;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleDiscoveryException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
 
@@ -69,6 +76,7 @@ public class Nucleus {
     private Injector injector;
 
     private InternalServiceManager serviceManager = new InternalServiceManager();
+    private MessageProvider messageProvider = new ResourceMessageProvider();
 
     private WarmupManager warmupManager;
     private EconHelper econHelper = new EconHelper(this);
@@ -85,11 +93,12 @@ public class Nucleus {
     @Inject
     public Nucleus(@ConfigDir(sharedRoot = true) Path configDir) {
         this.configDir = configDir.resolve(PluginInfo.ID);
+        Util.setMessageProvider(() -> messageProvider);
     }
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
-        logger.info(Util.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
+        logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
 
         dataDir = game.getSavesDirectory().resolve("nucleus");
         ConfigurationLoader<CommentedConfigurationNode> cl;
@@ -138,31 +147,31 @@ public class Nucleus {
             return;
         }
 
-        logger.info(Util.getMessageWithFormat("startup.postinit", PluginInfo.NAME));
+        logger.info(messageProvider.getMessageWithFormat("startup.postinit", PluginInfo.NAME));
         try {
-            logger.info(Util.getMessageWithFormat("startup.moduleloading", PluginInfo.NAME));
+            logger.info(messageProvider.getMessageWithFormat("startup.moduleloading", PluginInfo.NAME));
             moduleContainer.loadModules(false);
         } catch (QuickStartModuleLoaderException.Construction | QuickStartModuleLoaderException.Enabling construction) {
-            logger.info(Util.getMessageWithFormat("startup.modulenotloaded", PluginInfo.NAME));
+            logger.info(messageProvider.getMessageWithFormat("startup.modulenotloaded", PluginInfo.NAME));
             construction.printStackTrace();
             isErrored = true;
             return;
         }
 
-        logger.info(Util.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
+        logger.info(messageProvider.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
         registerPermissions();
         modulesLoaded = true;
 
         // Register final services
         game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, configLoader);
         game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldConfigLoader);
-        logger.info(Util.getMessageWithFormat("startup.started", PluginInfo.NAME));
+        logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
     }
 
     @Listener
     public void onServerStop(GameStoppedServerEvent event) {
         if (!isErrored) {
-            logger.info(Util.getMessageWithFormat("startup.stopped", PluginInfo.NAME));
+            logger.info(messageProvider.getMessageWithFormat("startup.stopped", PluginInfo.NAME));
             saveData();
         }
     }
@@ -213,9 +222,23 @@ public class Nucleus {
     public void reload() {
         try {
             moduleContainer.reloadSystemConfig();
+            reloadMessages();
             commandsConfig.load();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void reloadMessages() {
+        try {
+            if (moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isCustommessages()) {
+                this.messageProvider = new ConfigMessageProvider(new MessageConfig(configDir.resolve("messages.conf")));
+            } else {
+                this.messageProvider = new ResourceMessageProvider();
+            }
+        } catch (Exception e) {
+            // On error, fallback.
+            this.messageProvider = new ResourceMessageProvider();
         }
     }
 
@@ -249,6 +272,10 @@ public class Nucleus {
 
     public ChatUtil getChatUtil() {
         return chatUtil;
+    }
+
+    public MessageProvider getMessageProvider() {
+        return messageProvider;
     }
 
     private void registerPermissions() {

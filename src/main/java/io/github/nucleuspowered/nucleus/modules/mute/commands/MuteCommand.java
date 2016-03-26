@@ -138,7 +138,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
     }
 
     private MuteData permMute(CommandSource src, User user, String rs, UUID ua, MessageChannel mc) {
-        mc.send(Util.getTextMessageWithFormat("command.mute.success", user.getName(), src.getName()));
+        mc.send(Util.getTextMessageWithFormat("command.mute.success.norm", user.getName(), src.getName()));
         mc.send(Util.getTextMessageWithFormat("standard.reason", rs));
 
         if (user.isOnline()) {
