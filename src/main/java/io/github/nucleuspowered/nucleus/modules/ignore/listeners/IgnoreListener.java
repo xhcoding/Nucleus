@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.ignore.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.events.MailEvent;
-import io.github.nucleuspowered.nucleus.api.events.MessageEvent;
+import io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent;
+import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -41,7 +41,7 @@ public class IgnoreListener extends ListenerBase {
     }
 
     @Listener(order = Order.FIRST)
-    public void onMessage(MessageEvent event, @First Player player) {
+    public void onMessage(NucleusMessageEvent event, @First Player player) {
         if (event.getRecipient() instanceof User) {
             try {
                 event.setCancelled(loader.getUser((User) event.getRecipient()).getIgnoreList().contains(player.getUniqueId()));
@@ -54,7 +54,7 @@ public class IgnoreListener extends ListenerBase {
     }
 
     @Listener(order = Order.FIRST)
-    public void onMail(MailEvent event, @First Player player) {
+    public void onMail(NucleusMailEvent event, @First Player player) {
         try {
             event.setCancelled(loader.getUser(event.getRecipient()).getIgnoreList().contains(player.getUniqueId()));
         } catch (Exception e) {

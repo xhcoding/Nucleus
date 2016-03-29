@@ -17,8 +17,10 @@ import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
+import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -47,6 +49,7 @@ public class QuickStartInjectorModule extends QuickStartModuleLoaderInjector {
         bind(JumpConfigAdapter.class).toProvider(() -> getAdapter("jump", JumpConfigAdapter.class));
         bind(ConnectionMessagesConfigAdapter.class).toProvider(() -> getAdapter("connection-messages", ConnectionMessagesConfigAdapter.class));
         bind(MobConfigAdapter.class).toProvider(() -> getAdapter("mob", MobConfigAdapter.class));
+        bind(MessageConfigAdapter.class).toProvider(() -> getAdapter("message", MessageConfigAdapter.class));
 
         bind(AFKHandler.class).toProvider(() -> getService(AFKHandler.class));
         bind(MessageHandler.class).toProvider(() -> getService(MessageHandler.class));
@@ -55,6 +58,7 @@ public class QuickStartInjectorModule extends QuickStartModuleLoaderInjector {
         bind(TeleportHandler.class).toProvider(() -> getService(TeleportHandler.class));
         bind(WarpHandler.class).toProvider(() -> getService(WarpHandler.class));
         bind(KitHandler.class).toProvider(() -> getService(KitHandler.class));
+        bind(MuteHandler.class).toProvider(() -> getService(MuteHandler.class));
         bind(WarmupManager.class).toProvider(plugin::getWarmupManager);
     }
 

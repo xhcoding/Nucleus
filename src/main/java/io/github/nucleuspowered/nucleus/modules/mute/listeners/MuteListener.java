@@ -7,14 +7,17 @@ package io.github.nucleuspowered.nucleus.modules.mute.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
-import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHelpOpEvent;
+import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
@@ -27,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MuteListener extends ListenerBase {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private MuteHandler handler;
 
     /**
      * At the time the player joins, check to see if the player is muted.
@@ -39,20 +42,12 @@ public class MuteListener extends ListenerBase {
         // Kick off a scheduled task.
         Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS).execute(() -> {
             Player user = event.getTargetEntity();
-            NucleusUser qs;
-            try {
-                qs = loader.getUser(user);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-
-            Optional<MuteData> omd = qs.getMuteData();
+            Optional<MuteData> omd = handler.getPlayerMuteData(user);
             if (omd.isPresent()) {
                 MuteData md = omd.get();
                 md.nextLoginToTimestamp();
 
-                omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
+                omd = Util.testForEndTimestamp(handler.getPlayerMuteData(user), () -> handler.unmutePlayer(user));
                 if (omd.isPresent()) {
                     md = omd.get();
                     onMute(md, event.getTargetEntity());
@@ -63,19 +58,40 @@ public class MuteListener extends ListenerBase {
 
     @Listener(order = Order.FIRST)
     public void onPlayerChat(MessageChannelEvent.Chat event, @First Player player) {
-        NucleusUser qs;
-        try {
-            qs = loader.getUser(player);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
-        Optional<MuteData> omd = Util.testForEndTimestamp(qs.getMuteData(), qs::removeMuteData);
+        Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
         if (omd.isPresent()) {
             onMute(omd.get(), player);
             MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(Util.getTextMessageWithFormat("standard.muted"))
                     .append(Text.of("): ")).append(event.getRawMessage()).build());
+            event.setCancelled(true);
+        }
+    }
+
+    @Listener
+    public void onPlayerMessage(NucleusMessageEvent event) {
+        if (!(event.getSender() instanceof User)) {
+            return;
+        }
+
+        User user = (User)event.getSender();
+        Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(user), () -> handler.unmutePlayer(user));
+        if (omd.isPresent()) {
+            if (user.isOnline()) {
+                onMute(omd.get(), user.getPlayer().get());
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+    @Listener
+    public void onPlayerHelpOp(InternalNucleusHelpOpEvent event, @Root User user) {
+        Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(user), () -> handler.unmutePlayer(user));
+        if (omd.isPresent()) {
+            if (user.isOnline()) {
+                onMute(omd.get(), user.getPlayer().get());
+            }
+
             event.setCancelled(true);
         }
     }

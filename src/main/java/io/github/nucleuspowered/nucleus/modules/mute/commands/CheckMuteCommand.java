@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -43,6 +44,7 @@ import java.util.Optional;
 public class CheckMuteCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
+    @Inject private MuteHandler handler;
     private final String playerArgument = "player";
 
     @Override
@@ -55,15 +57,8 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // Get the user.
         User user = args.<User>getOne(playerArgument).get();
-        NucleusUser uc;
-        try {
-            uc = userConfigLoader.getUser(user);
-        } catch (IOException | ObjectMappingException e) {
-            e.printStackTrace();
-            throw new CommandException(Util.getTextMessageWithFormat("command.file.load"), e);
-        }
 
-        Optional<MuteData> omd = uc.getMuteData();
+        Optional<MuteData> omd = handler.getPlayerMuteData(user);
         if (!omd.isPresent()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.checkmute.none", user.getName()));
             return CommandResult.success();

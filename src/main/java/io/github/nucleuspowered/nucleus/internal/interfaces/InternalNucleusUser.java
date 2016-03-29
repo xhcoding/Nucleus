@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.interfaces;
 
 import io.github.nucleuspowered.nucleus.api.data.JailData;
+import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import org.spongepowered.api.item.ItemType;
@@ -74,4 +75,23 @@ public interface InternalNucleusUser extends NucleusUser {
     void clearPowertool(ItemType type);
 
     void clearPowertool(String type);
+
+    /**
+     * Gets the {@link MuteData} associated with this user, if any.
+     *
+     * @return An {@link Optional} that might contain the mute data.
+     */
+    Optional<MuteData> getMuteData();
+
+    /**
+     * Sets the {@link MuteData} associated with this user, if any.
+     *
+     * @param data The {@link MuteData}
+     */
+    void setMuteData(MuteData data);
+
+    /**
+     * Removes the {@link MuteData} associated with this user.
+     */
+    void removeMuteData();
 }

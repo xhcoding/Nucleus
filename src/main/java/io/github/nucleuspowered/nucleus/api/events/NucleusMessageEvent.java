@@ -4,27 +4,28 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
-import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 
 /**
- * An event that is posted when a player uses /mail in Nucleus
+ * An event that is posted when a player uses /m in Nucleus
  */
-public interface MailEvent extends Event, Cancellable {
-    /**
-     * The sender of the mail.
-     *
-     * @return The sender
-     */
-    User getSender();
+public interface NucleusMessageEvent extends Event, Cancellable {
 
     /**
-     * The recipient of the mail.
+     * The sender.
      *
-     * @return The recipient.
+     * @return The {@link CommandSource} that sent the message.
      */
-    User getRecipient();
+    CommandSource getSender();
+
+    /**
+     * The recipient.
+     *
+     * @return The {@link CommandSource} that receives the message.
+     */
+    CommandSource getRecipient();
 
     /**
      * The message that was sent.

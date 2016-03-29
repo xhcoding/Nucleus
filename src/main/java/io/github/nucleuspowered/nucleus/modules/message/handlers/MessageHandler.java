@@ -10,7 +10,7 @@ import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
-import io.github.nucleuspowered.nucleus.modules.message.events.NucleusMessageEvent;
+import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -73,24 +73,9 @@ public class MessageHandler {
 
         NucleusUserLoaderService qs = Sponge.getServiceManager().provideUnchecked(NucleusUserLoaderService.class);
 
-        // If a player, then mutes should be checked.
-        if (sender instanceof Player) {
-            Player pl = (Player) sender;
-            try {
-                NucleusUser q = qs.getUser(pl);
-                if (Util.testForEndTimestamp(q.getMuteData(), q::removeMuteData).isPresent()) {
-                    // Cancel.
-                    pl.sendMessage(Util.getTextMessageWithFormat("mute.playernotify"));
-                    return false;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         // Message is about to be sent. Send the event out. If canceled, then
         // that's that.
-        if (Sponge.getEventManager().post(new NucleusMessageEvent(sender, receiver, message))) {
+        if (Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message))) {
             sender.sendMessage(Util.getTextMessageWithFormat("message.cancel"));
             return false;
         }

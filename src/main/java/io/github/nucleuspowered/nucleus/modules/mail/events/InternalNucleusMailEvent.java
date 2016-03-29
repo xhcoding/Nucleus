@@ -9,14 +9,14 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
-public class NucleusMailEvent extends AbstractEvent implements io.github.nucleuspowered.nucleus.api.events.MailEvent {
+public class InternalNucleusMailEvent extends AbstractEvent implements io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent {
 
     private final User from;
     private final User to;
     private final String message;
     private boolean cancelled = false;
 
-    public NucleusMailEvent(User from, User to, String message) {
+    public InternalNucleusMailEvent(User from, User to, String message) {
         this.from = from;
         this.to = to;
         this.message = message;

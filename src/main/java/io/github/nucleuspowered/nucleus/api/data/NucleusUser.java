@@ -39,25 +39,6 @@ public interface NucleusUser {
     @NonnullByDefault UUID getUniqueID();
 
     /**
-     * Gets the {@link MuteData} associated with this user, if any.
-     *
-     * @return An {@link Optional} that might contain the mute data.
-     */
-    Optional<MuteData> getMuteData();
-
-    /**
-     * Sets the {@link MuteData} associated with this user, if any.
-     *
-     * @param data The {@link MuteData}
-     */
-    void setMuteData(MuteData data);
-
-    /**
-     * Removes the {@link MuteData} associated with this user.
-     */
-    void removeMuteData();
-
-    /**
      * Gets whether the player is a Social Spy.
      *
      * @return <code>true</code> if the player is a social spy, <code>false</code> otherwise.

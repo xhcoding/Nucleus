@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -52,6 +53,7 @@ import java.util.UUID;
 public class MuteCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
+    @Inject private MuteHandler handler;
 
     private final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "mute.notify";
 
@@ -89,13 +91,13 @@ public class MuteCommand extends CommandBase<CommandSource> {
         }
 
         Optional<Long> time = args.getOne(timespanArgument);
-        Optional<MuteData> omd = uc.getMuteData();
+        Optional<MuteData> omd = handler.getPlayerMuteData(user);
         Optional<String> reas = args.getOne(reason);
 
         // No time, no reason, but is muted, unmute
         if (omd.isPresent() && !time.isPresent() && !reas.isPresent()) {
             // Unmute.
-            uc.removeMuteData();
+            handler.unmutePlayer(user);
             src.sendMessage(Util.getTextMessageWithFormat("command.unmute.success", user.getName(), src.getName()));
             return CommandResult.success();
         }
@@ -107,45 +109,49 @@ public class MuteCommand extends CommandBase<CommandSource> {
             ua = ((Player) src).getUniqueId();
         }
 
-        MutableMessageChannel mc = MessageChannel.permission(notifyPermission).asMutable();
-        mc.addMember(src);
-        MuteData md;
+        MuteData data;
         if (time.isPresent()) {
-            md = user.isOnline() ? onlineTimedMute(src, user, time.get(), rs, ua, mc) : offlineTimedMute(src, user, time.get(), rs, ua, mc);
+            data = new MuteData(ua, rs, Duration.ofSeconds(time.get()));
         } else {
-            md = permMute(src, user, rs, ua, mc);
+            data = new MuteData(ua, rs);
         }
 
-        uc.setMuteData(md);
-        return CommandResult.success();
+        if (handler.mutePlayer(user, data)) {
+            // Success.
+            MutableMessageChannel mc = MessageChannel.permission(notifyPermission).asMutable();
+            mc.addMember(src);
+
+            if (time.isPresent()) {
+                timedMute(src, user, data, time.get(), mc);
+            } else {
+                permMute(src, user, data, mc);
+            }
+
+            return CommandResult.success();
+        }
+
+        src.sendMessage(Util.getTextMessageWithFormat("command.mute.fail", user.getName()));
+        return CommandResult.empty();
     }
 
-    private MuteData onlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {
+    private void timedMute(CommandSource src, User user, MuteData data, long time, MessageChannel mc) {
         String ts = Util.getTimeStringFromSeconds(time);
         mc.send(Util.getTextMessageWithFormat("command.mute.success.time", user.getName(), src.getName(), ts));
-        mc.send(Util.getTextMessageWithFormat("standard.reason", rs));
+        mc.send(Util.getTextMessageWithFormat("standard.reason", data.getReason()));
 
-        user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("mute.playernotify.time", ts));
-        user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.reason", rs));
-        return new MuteData(ua, rs, Instant.now().plus(time, ChronoUnit.SECONDS));
+        if (user.isOnline()) {
+            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("mute.playernotify.time", ts));
+            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.reason", data.getReason()));
+        }
     }
 
-    private MuteData offlineTimedMute(CommandSource src, User user, long time, String rs, UUID ua, MessageChannel mc) {
-        String ts = Util.getTimeStringFromSeconds(time);
-        mc.send(Util.getTextMessageWithFormat("command.mute.success.time", user.getName(), src.getName(), ts));
-        mc.send(Util.getTextMessageWithFormat("standard.reason", rs));
-        return new MuteData(ua, rs, Duration.of(time, ChronoUnit.SECONDS));
-    }
-
-    private MuteData permMute(CommandSource src, User user, String rs, UUID ua, MessageChannel mc) {
+    private void permMute(CommandSource src, User user, MuteData data, MessageChannel mc) {
         mc.send(Util.getTextMessageWithFormat("command.mute.success.norm", user.getName(), src.getName()));
-        mc.send(Util.getTextMessageWithFormat("standard.reason", rs));
+        mc.send(Util.getTextMessageWithFormat("standard.reason", data.getReason()));
 
         if (user.isOnline()) {
             user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("mute.playernotify"));
-            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.reason", rs));
+            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.reason", data.getReason()));
         }
-
-        return new MuteData(ua, rs);
     }
 }
