@@ -43,17 +43,34 @@ As Nucleus is a big plugin, there are some fancy tricks involved to make the sys
 heavy use of annotations and auto-generation of permissions. Though it can seem intimidating at first, it's actually an easy
 system if you don't have to touch the internals!
 
+If you are creating a new module, the following should be kept in mind:
+
+* Create a new package with the name of the module. The name should be singular.
+
+* Create a class that extends `StandardModule`, annotate it with `@ModuleData` and give it a name and id. The id should be the same as the package name. Tests enforce the use of this annotation.
+
+* If the module has some config involved:
+    * Create a new Config class that mirrors your config structure using `@ConfigSerializable` and `@Setting` annotations from Configurate.
+    * Create a class that extends the `NucleusConfigAdapter` to manage this config class.
+    * Add the configuration to the Guice Injection file (though we are looking at registering this automatically in the near future)
+    * If you have any services that need to be registered, they can be done in the `performPreTasks` method on `StandardModule`, [see the AFK module for a good example](https://github.com/NucleusPowered/Nucleus/blob/master/src/main/java/io/github/nucleuspowered/nucleus/modules/afk/AFKModule.java).
+ 
+* Put commands, listeners and runnables in sub packages - they will be registered automatically if they are of the correct base classes - see below.
+
+For an example of adding a module with config, see [this commit for adding /spawnmob](https://github.com/NucleusPowered/Nucleus/commit/3c071f5b743c1cb1e965214107a99b594444b3e6)
+
+If you think there is a bug with the module loader itself (package, `uk.co.drnaylor.quickstart`, please file a bug on the [QuickStart Module Loader](https://github.com/NucleusPowered/QuickStartModuleLoader) pages instead.
+
 If you are developing a command, please keep the following in mind:
 
 * ALWAYS use the `CommandBase<>` class. It contains a lot of scaffolding that the plugin loader requires.
 
-* The `@Permissions`, `@Modules` and `@RegisterCommand` annotations are mandatory on this class.
+* The `@Permissions` (unless the command should not have any permission checks at all, in which case, use `@NoPermissions`, but please be ready to justify this!) and `@RegisterCommand` annotations are mandatory on this class - tests enforce this.
 
 * If you require one of the Nucleus handlers/services - check to see if it can be injected. using the `@Inject`
 annotation. The plugin object is always injected and does not need to be done again.
 
-Listeners and Runnable Tasks extend the `ListenerBase` and `TaskBase` classes, respectively. These should also have a
-`@Module` annotation at the top.
+Listeners and Runnable Tasks extend the `ListenerBase` and `TaskBase` classes, respectively. They will have the Nucleus plugin instance injected automatically, but you are able to use other injections on these classes too.
 
 The key rule here is - if you are unsure as to how something works, **please** ask us! We are more than willing to help you
 as much as possible!
