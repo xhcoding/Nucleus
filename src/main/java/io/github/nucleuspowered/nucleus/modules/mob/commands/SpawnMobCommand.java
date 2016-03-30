@@ -8,9 +8,9 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedEntityParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
@@ -35,7 +35,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"spawnmob", "spawnentity"})
-public class SpawnMobCommand extends CommandBase<CommandSource> {
+public class SpawnMobCommand extends OldCommandBase<CommandSource> {
 
     private final String playerKey = "player";
     private final String amountKey = "amount";
@@ -45,7 +45,7 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.optionalWeak(GenericArguments.requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others"))),
                 new ImprovedEntityParser(Text.of(mobTypeKey)),
                 GenericArguments.optional(new PositiveIntegerArgument(Text.of(amountKey)), 1)

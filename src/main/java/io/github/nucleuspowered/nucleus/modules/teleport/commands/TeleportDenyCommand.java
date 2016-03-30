@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -23,13 +23,13 @@ import org.spongepowered.api.entity.living.player.Player;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tpdeny", "teleportdeny"})
-public class TeleportDenyCommand extends CommandBase<Player> {
+public class TeleportDenyCommand extends OldCommandBase<Player> {
 
     @Inject private TeleportHandler teleportHandler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     @Override

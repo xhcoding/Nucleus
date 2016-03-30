@@ -10,9 +10,9 @@ import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
@@ -31,8 +31,6 @@ import org.spongepowered.api.text.channel.MutableMessageChannel;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +48,7 @@ import java.util.UUID;
 @NoCooldown
 @NoCost
 @RegisterCommand({"mute", "unmute"})
-public class MuteCommand extends CommandBase<CommandSource> {
+public class MuteCommand extends OldCommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
     @Inject private MuteHandler handler;
@@ -70,7 +68,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Mutes or unmutes a player")).executor(this)
+        return getSpecBuilderBase().description(Text.of("Mutes or unmutes a player"))
                 .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerArgument))),
                         GenericArguments.onlyOne(GenericArguments.optionalWeak(new TimespanParser(Text.of(timespanArgument)))),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))))

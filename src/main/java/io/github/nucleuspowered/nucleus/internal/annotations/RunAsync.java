@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.internal.annotations;
 
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
-
 import java.lang.annotation.*;
 
 /**
- * Any {@link CommandBase} that is decorated with this annotation will be
+ * Any {@link io.github.nucleuspowered.nucleus.internal.command.CommandBase} that is decorated with this annotation will be
  * run on an async thread. This should only be used for thread-safe operations.
  */
 @Target(ElementType.TYPE)

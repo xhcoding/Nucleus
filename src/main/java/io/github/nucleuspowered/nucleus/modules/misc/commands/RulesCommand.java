@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -18,7 +18,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class RulesCommand extends CommandBase<CommandSource> {
+public class RulesCommand extends OldCommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;

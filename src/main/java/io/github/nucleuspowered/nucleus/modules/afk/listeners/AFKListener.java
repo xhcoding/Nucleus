@@ -36,7 +36,7 @@ public class AFKListener extends ListenerBase {
 
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = permissionRegistry.getService(AFKCommand.class).orElseGet(() -> new CommandPermissionHandler(new AFKCommand()));
+            s = permissionRegistry.getService(AFKCommand.class).orElseGet(() -> new CommandPermissionHandler(new AFKCommand(), plugin));
         }
 
         return s;

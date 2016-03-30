@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -21,13 +21,13 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @NoWarmup
 @RegisterCommand({"vanish", "v"})
-public class VanishCommand extends CommandBase<Player> {
+public class VanishCommand extends OldCommandBase<Player> {
 
     private final String b = "toggle";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))).executor(this)
+        return getSpecBuilderBase().arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b)))))
                 .build();
     }
 

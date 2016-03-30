@@ -63,17 +63,17 @@ If you think there is a bug with the module loader itself (package, `uk.co.drnay
 
 If you are developing a command, please keep the following in mind:
 
-* ALWAYS use the `CommandBase<>` class. It contains a lot of scaffolding that the plugin loader requires.
-
-* The `@Permissions` (unless the command should not have any permission checks at all, in which case, use `@NoPermissions`, but please be ready to justify this!) and `@RegisterCommand` annotations are mandatory on this class - tests enforce this.
-
-* If you require one of the Nucleus handlers/services - check to see if it can be injected. using the `@Inject`
-annotation. The plugin object is always injected and does not need to be done again.
+* ALWAYS use the `CommandBase<>` class. It contains a lot of scaffolding that the plugin loader requires. Do not use the `AbstractCommand<>` class.
+* If your command requires arguments, override the `CommandElement[] getArguemnts()` method, and return an array of arguments.
+* Please add a description for your command - add it to the `messages.properties` file with the key
+`description.[parentcommand alias].[primary command alias].desc`.
+    * The parent command alias is only required if the command is a subcommand - it is a period separated path to the sub command.
+* If you require one of the Nucleus handlers/services - check to see if it can be injected. using the `@Inject` annotation.
+The plugin object is always injected into a protected variable and does not need to be done again.
 
 Listeners and Runnable Tasks extend the `ListenerBase` and `TaskBase` classes, respectively. They will have the Nucleus plugin instance injected automatically, but you are able to use other injections on these classes too.
 
-The key rule here is - if you are unsure as to how something works, **please** ask us! We are more than willing to help you
-as much as possible!
+The key rule here is - if you are unsure as to how something works, **please** ask us! We are more than willing to help you as much as possible!
 
 ### Code Style
 

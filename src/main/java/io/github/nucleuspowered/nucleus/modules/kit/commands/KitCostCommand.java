@@ -8,8 +8,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -32,7 +32,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitCostCommand extends CommandBase<CommandSource> {
+public class KitCostCommand extends OldCommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private UserConfigLoader userConfigLoader;
@@ -43,10 +43,10 @@ public class KitCostCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.onlyOne(new KitParser(Text.of(kitKey), kca, kitConfig, false)),
                 GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of(costKey)))
-        ).executor(this).build();
+        ).build();
     }
 
     @Override

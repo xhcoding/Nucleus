@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"ignite", "burn"})
-public class IgniteCommand extends CommandBase<Player> {
+public class IgniteCommand extends OldCommandBase<Player> {
 
     private final String player = "player";
     private final String ticks = "ticks";
@@ -38,7 +38,7 @@ public class IgniteCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.seq(
                         GenericArguments.optionalWeak(GenericArguments.requiringPermission(
                                 GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others"))),

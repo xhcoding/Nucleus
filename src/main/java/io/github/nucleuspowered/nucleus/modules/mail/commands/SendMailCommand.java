@@ -6,28 +6,25 @@ package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-/**
- * Permission - "quickstart.mail.send.use"
- */
 @Permissions(root = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"send", "s"}, subcommandOf = MailCommand.class)
@@ -40,9 +37,11 @@ public class SendMailCommand extends CommandBase<CommandSource> {
     private final String message = "message";
 
     @Override
-    public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(player))),
-                GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+            GenericArguments.onlyOne(GenericArguments.user(Text.of(player))),
+            GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
+        };
     }
 
     @Override

@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +27,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitAddCommand extends CommandBase<Player> {
+public class KitAddCommand extends OldCommandBase<Player> {
 
     @Inject private KitHandler kitConfig;
 
@@ -35,7 +35,7 @@ public class KitAddCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).description(Text.of("Adds kit."))
+        return getSpecBuilderBase().description(Text.of("Adds kit."))
                 .arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of(name)))).build();
     }
 

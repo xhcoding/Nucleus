@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -23,13 +23,13 @@ import javax.inject.Inject;
 @NoCost
 @NoCooldown
 @RegisterCommand({"tpall", "tpallhere"})
-public class TeleportAllHereCommand extends CommandBase<Player> {
+public class TeleportAllHereCommand extends OldCommandBase<Player> {
 
     @Inject private TeleportHandler handler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none())).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none())).build();
     }
 
     @Override

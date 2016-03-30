@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -39,14 +39,14 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCost
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = PowertoolCommand.class)
-public class ListPowertoolCommand extends CommandBase<Player> {
+public class ListPowertoolCommand extends OldCommandBase<Player> {
 
     @Inject private UserConfigLoader loader;
     private PaginationService paginationService = null;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     @Override

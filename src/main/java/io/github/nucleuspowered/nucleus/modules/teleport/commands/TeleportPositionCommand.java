@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -24,7 +24,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tppos"})
-public class TeleportPositionCommand extends CommandBase<CommandSource> {
+public class TeleportPositionCommand extends OldCommandBase<CommandSource> {
 
     private final String key = "player";
     private final String location = "world";
@@ -34,14 +34,14 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder()
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
                         GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
                         GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
                         GenericArguments.onlyOne(GenericArguments.integer(Text.of(x))),
                         GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
                         GenericArguments.onlyOne(GenericArguments.integer(Text.of(z))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

@@ -5,10 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.DataScanner;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -31,13 +31,13 @@ import java.util.Map;
 
 @Permissions
 @RegisterCommand({"iteminfo", "itemdb"})
-public class ItemInfoCommand extends CommandBase<Player> {
+public class ItemInfoCommand extends OldCommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("extended"), "e", "-extended").buildWith(GenericArguments.none())
-        ).executor(this).build();
+        ).build();
     }
 
     @Override

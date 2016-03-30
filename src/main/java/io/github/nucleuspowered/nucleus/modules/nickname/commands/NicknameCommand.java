@@ -7,9 +7,9 @@ package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 @RegisterCommand({"nick", "nickname"})
 @Permissions
-public class NicknameCommand extends CommandBase<CommandSource> {
+public class NicknameCommand extends OldCommandBase<CommandSource> {
 
     @Inject private UserConfigLoader loader;
     @Inject private NicknameConfigAdapter nicknameConfigAdapter;
@@ -55,11 +55,11 @@ public class NicknameCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder()
+        return getSpecBuilderBase()
                 .arguments(
                         GenericArguments.optionalWeak(GenericArguments.requiringPermission(
                                 GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
-                GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))).executor(this).build();
+                GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))).build();
     }
 
     @Override

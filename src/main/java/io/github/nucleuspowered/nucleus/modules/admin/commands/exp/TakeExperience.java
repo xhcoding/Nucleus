@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands.exp;
 
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.admin.commands.ExperienceCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -24,14 +24,14 @@ import java.util.Optional;
 @NoCost
 @Permissions(root = "exp")
 @RegisterCommand(value = "take", subcommandOf = ExperienceCommand.class)
-public class TakeExperience extends CommandBase<CommandSource> {
+public class TakeExperience extends OldCommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.player(Text.of(ExperienceCommand.playerKey)))),
                 GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
-        ).executor(this).build();
+        ).build();
     }
 
     @Override

@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -30,18 +30,18 @@ import java.util.Optional;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setdifficulty"}, subcommandOf = WorldCommand.class)
-public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
+public class SetDifficultyWorldCommand extends OldCommandBase<CommandSource> {
 
     private final String difficulty = "difficulty";
     private final String world = "world";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Set Difficulty World Command"))
+        return getSpecBuilderBase().description(Text.of("Set Difficulty World Command"))
                 .arguments(GenericArguments.seq(
                         GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(difficulty), CatalogTypes.DIFFICULTY)),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(world))))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

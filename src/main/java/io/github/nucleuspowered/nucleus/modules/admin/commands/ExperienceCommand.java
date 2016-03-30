@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -22,15 +22,15 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoWarmup
 @NoCost
-public class ExperienceCommand extends CommandBase<CommandSource> {
+public class ExperienceCommand extends OldCommandBase<CommandSource> {
 
     public static final String playerKey = "player";
     public static final String experienceKey = "experience";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().children(this.createChildCommands())
-                .arguments(GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey)))).executor(this).build();
+        return getSpecBuilderBase().children(this.createChildCommands())
+                .arguments(GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(playerKey)))).build();
     }
 
     @Override

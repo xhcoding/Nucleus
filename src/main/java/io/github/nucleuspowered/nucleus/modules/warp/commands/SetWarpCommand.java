@@ -6,9 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -27,13 +27,13 @@ import java.util.regex.Pattern;
  */
 @Permissions(root = "warp")
 @RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class)
-public class SetWarpCommand extends CommandBase<Player> {
+public class SetWarpCommand extends OldCommandBase<Player> {
 
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of(WarpCommand.warpNameArg))))
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of(WarpCommand.warpNameArg))))
                 .description(Text.of("Sets a warp at the player's location.")).build();
     }
 

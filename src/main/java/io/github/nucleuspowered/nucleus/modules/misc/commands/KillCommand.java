@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -21,13 +21,13 @@ import org.spongepowered.api.text.Text;
 
 @Permissions
 @RegisterCommand("kill")
-public class KillCommand extends CommandBase<CommandSource> {
+public class KillCommand extends OldCommandBase<CommandSource> {
 
     private final String key = "player";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.player(Text.of(key))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.player(Text.of(key))).build();
     }
 
     @Override

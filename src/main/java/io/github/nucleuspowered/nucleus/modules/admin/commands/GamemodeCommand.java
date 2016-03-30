@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +31,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand({"gamemode", "gm"})
-public class GamemodeCommand extends CommandBase<CommandSource> {
+public class GamemodeCommand extends OldCommandBase<CommandSource> {
 
     private final String userKey = "user";
     private final String gamemodeKey = "gamemode";
@@ -45,10 +45,10 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.optionalWeak(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.user(Text.of(userKey))), permissions.getPermissionWithSuffix("others"))),
                 GenericArguments.optional(GenericArguments.onlyOne(new ImprovedGameModeParser(Text.of(gamemodeKey))))
-        ).executor(this).build();
+        ).build();
     }
 
     @Override

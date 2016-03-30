@@ -7,13 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.entity.living.player.Player;
 
 /**
  * nucleus.firstspawn.remove.base
@@ -24,13 +23,13 @@ import org.spongepowered.api.entity.living.player.Player;
 @NoCooldown
 @NoCost
 @RunAsync
-public class RemoveFirstSpawnCommand extends CommandBase<CommandSource> {
+public class RemoveFirstSpawnCommand extends OldCommandBase<CommandSource> {
 
     @Inject private GeneralDataStore data;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     @Override

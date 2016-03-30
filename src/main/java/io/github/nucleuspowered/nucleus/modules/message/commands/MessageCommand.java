@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +27,7 @@ import org.spongepowered.api.text.Text;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand({ "message", "m", "msg", "whisper", "w", "tell", "t" })
-public class MessageCommand extends CommandBase<CommandSource> {
+public class MessageCommand extends OldCommandBase<CommandSource> {
     private final String to = "to";
     private final String message = "message";
 
@@ -35,7 +35,7 @@ public class MessageCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
             .arguments(
                 new PlayerConsoleArgument(Text.of(to)),
                 GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))

@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
@@ -34,7 +34,7 @@ import java.util.Optional;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"load"}, subcommandOf = WorldCommand.class)
-public class LoadWorldCommand extends CommandBase<CommandSource> {
+public class LoadWorldCommand extends OldCommandBase<CommandSource> {
 
     private final String name = "name";
     private final String dimension = "dimension";
@@ -44,7 +44,7 @@ public class LoadWorldCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Load World Command"))
+        return getSpecBuilderBase().description(Text.of("Load World Command"))
                 .arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of(name))),
                         GenericArguments.optional(
                                 GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(dimension), CatalogTypes.DIMENSION_TYPE))),
@@ -52,7 +52,7 @@ public class LoadWorldCommand extends CommandBase<CommandSource> {
                         .optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(generator), CatalogTypes.GENERATOR_TYPE))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(gamemode), CatalogTypes.GAME_MODE))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(difficulty), CatalogTypes.DIFFICULTY)))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

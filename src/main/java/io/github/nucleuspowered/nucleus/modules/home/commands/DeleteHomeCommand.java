@@ -8,8 +8,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -25,7 +25,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @NoWarmup
 @RegisterCommand({"deletehome", "delhome"})
-public class DeleteHomeCommand extends CommandBase<Player> {
+public class DeleteHomeCommand extends OldCommandBase<Player> {
 
     private final String homeKey = "home";
 
@@ -33,7 +33,7 @@ public class DeleteHomeCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new HomeParser(Text.of(homeKey), plugin, cca))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(new HomeParser(Text.of(homeKey), plugin, cca))).build();
     }
 
     @Override

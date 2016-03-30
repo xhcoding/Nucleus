@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("heal")
-public class HealCommand extends CommandBase<CommandSource> {
+public class HealCommand extends OldCommandBase<CommandSource> {
 
     private static final String player = "player";
 
@@ -38,7 +38,7 @@ public class HealCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.optional(GenericArguments.requiringPermission(
+        return getSpecBuilderBase().arguments(GenericArguments.optional(GenericArguments.requiringPermission(
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))).build();
     }
 

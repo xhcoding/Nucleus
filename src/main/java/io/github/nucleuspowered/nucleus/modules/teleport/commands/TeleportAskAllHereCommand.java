@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -25,13 +25,13 @@ import java.time.temporal.ChronoUnit;
 @NoCooldown
 @RegisterCommand({"tpaall", "tpaskall"})
 @RunAsync
-public class TeleportAskAllHereCommand extends CommandBase<Player> {
+public class TeleportAskAllHereCommand extends OldCommandBase<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none())).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none())).build();
     }
 
     @Override

@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import org.spongepowered.api.Sponge;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -33,7 +31,7 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 @NoCooldown
 @NoCost
 @RegisterCommand({ "nucleus" })
-public class NucleusCommand extends CommandBase<CommandSource> {
+public class NucleusCommand extends OldCommandBase<CommandSource> {
 
     @Inject private ModuleContainer container;
 
@@ -42,7 +40,7 @@ public class NucleusCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().children(this.createChildCommands()).executor(this).build();
+        return getSpecBuilderBase().children(this.createChildCommands()).build();
     }
 
     @Override

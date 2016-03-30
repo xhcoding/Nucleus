@@ -8,8 +8,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -24,14 +24,14 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = {"delete", "del", "remove"}, subcommandOf = JailsCommand.class)
-public class DeleteJailCommand extends CommandBase<CommandSource> {
+public class DeleteJailCommand extends OldCommandBase<CommandSource> {
 
     @Inject private JailHandler handler;
     private final String jailKey = "jail";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).build();
     }
 
     @Override

@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.kick.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -31,14 +31,14 @@ import java.util.Map;
 @NoCooldown
 @NoCost
 @RegisterCommand("kick")
-public class KickCommand extends CommandBase<CommandSource> {
+public class KickCommand extends OldCommandBase<CommandSource> {
 
     private final String player = "player";
     private final String reason = "reason";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Kicks a player.")).executor(this)
+        return getSpecBuilderBase().description(Text.of("Kicks a player."))
                 .arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of(player))),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason)))))
                 .build();

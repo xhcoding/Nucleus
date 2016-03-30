@@ -5,10 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(root = "nucleus")
 @RegisterCommand(value = "printperms", subcommandOf = NucleusCommand.class)
-public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
+public class SuggestedPermissionsCommand extends OldCommandBase<CommandSource> {
 
     private final String file = "nucleus-perms.txt";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     @Override

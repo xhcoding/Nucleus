@@ -7,9 +7,9 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -21,7 +21,7 @@ import org.spongepowered.api.text.Text;
 
 @Permissions(root = "home", alias = "other", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand("homeother")
-public class HomeOtherCommand extends CommandBase<Player> {
+public class HomeOtherCommand extends OldCommandBase<Player> {
 
     private final String home = "home";
 
@@ -29,7 +29,7 @@ public class HomeOtherCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(home), plugin, cca))).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(home), plugin, cca))).build();
     }
 
     @Override

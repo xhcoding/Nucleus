@@ -6,12 +6,15 @@ package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.service.permission.Subject;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 public class CommandPermissionHandler {
@@ -25,9 +28,8 @@ public class CommandPermissionHandler {
 
     private final boolean justReturnTrue;
 
-    public CommandPermissionHandler(CommandBase cb) {
-        Permissions c = cb.getClass().getAnnotation(Permissions.class);
-        justReturnTrue = c == null;
+    public CommandPermissionHandler(AbstractCommand<?> cb, Nucleus plugin) {
+        justReturnTrue = cb.getClass().isAnnotationPresent(NoPermissions.class);
 
         // If there are no permissions to assign, we just return true.
         if (justReturnTrue) {
@@ -37,6 +39,41 @@ public class CommandPermissionHandler {
             cooldown = "";
             cost = "";
             return;
+        }
+
+        Permissions c = cb.getClass().getAnnotation(Permissions.class);
+        if (c == null) {
+            c = new Permissions() {
+                @Override
+                public String[] value() {
+                    return new String[0];
+                }
+
+                @Override
+                public String alias() {
+                    return "";
+                }
+
+                @Override
+                public String root() {
+                    return "";
+                }
+
+                @Override
+                public String sub() {
+                    return "";
+                }
+
+                @Override
+                public SuggestedLevel suggestedLevel() {
+                    return SuggestedLevel.ADMIN;
+                }
+
+                @Override
+                public Class<? extends Annotation> annotationType() {
+                    return Permissions.class;
+                }
+            };
         }
 
         StringBuilder sb = new StringBuilder(PermissionRegistry.PERMISSIONS_PREFIX);
@@ -62,7 +99,7 @@ public class CommandPermissionHandler {
         // Get command name.
         String command = cb.getAliases()[0];
         RegisterCommand co = cb.getClass().getAnnotation(RegisterCommand.class);
-        if (co.subcommandOf() != CommandBase.class) {
+        if (co.subcommandOf() != AbstractCommand.class) {
             command = String.format("%s %s", co.subcommandOf().getAnnotation(RegisterCommand.class).value()[0], command);
         }
 
@@ -84,7 +121,15 @@ public class CommandPermissionHandler {
             mssl.put(cost, new PermissionInformation(Util.getMessageWithFormat("permission.exempt.cost", command), SuggestedLevel.ADMIN));
         }
 
-        cb.plugin.getPermissionRegistry().addHandler(cb.getClass(), this);
+        plugin.getPermissionRegistry().addHandler(cb.getClass(), this);
+    }
+
+    public boolean isPassthrough() {
+        return justReturnTrue;
+    }
+
+    public String getBase() {
+        return base;
     }
 
     public boolean testBase(Subject src) {

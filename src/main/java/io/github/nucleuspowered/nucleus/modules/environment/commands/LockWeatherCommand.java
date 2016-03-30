@@ -8,8 +8,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -31,7 +31,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class LockWeatherCommand extends CommandBase<CommandSource> {
+public class LockWeatherCommand extends OldCommandBase<CommandSource> {
 
     @Inject private WorldConfigLoader loader;
 
@@ -40,10 +40,10 @@ public class LockWeatherCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.world(Text.of(worldKey)))),
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.bool(Text.of(toggleKey))))
-        ).executor(this).build();
+        ).build();
     }
 
     @Override

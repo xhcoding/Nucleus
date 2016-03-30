@@ -5,12 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,13 +23,13 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 @NoWarmup
 @Permissions
 @RegisterCommand({ "broadcast", "bcast", "bc" })
-public class BroadcastCommand extends CommandBase<CommandSource> {
+public class BroadcastCommand extends OldCommandBase<CommandSource> {
     private final String message = "message";
     @Inject private AdminConfigAdapter adminConfigAdapter;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))).build();
     }
 
     @Override

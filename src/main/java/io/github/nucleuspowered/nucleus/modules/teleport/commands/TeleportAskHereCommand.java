@@ -5,8 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
@@ -27,7 +30,7 @@ import java.util.Map;
 @RunAsync
 @NoWarmup(generateConfigEntry = true)
 @RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})
-public class TeleportAskHereCommand extends CommandBase<Player> {
+public class TeleportAskHereCommand extends OldCommandBase<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
@@ -42,10 +45,10 @@ public class TeleportAskHereCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder()
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
                         permissions.getPermissionWithSuffix("force")), GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

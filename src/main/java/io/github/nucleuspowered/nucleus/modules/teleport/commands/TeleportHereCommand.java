@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -25,7 +25,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand({ "tphere", "tph" })
-public class TeleportHereCommand extends CommandBase<Player> {
+public class TeleportHereCommand extends OldCommandBase<Player> {
 
     private final String playerKey = "player";
 
@@ -33,7 +33,7 @@ public class TeleportHereCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
+        return getSpecBuilderBase().arguments(
             GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))
         ).build();
     }

@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -39,7 +39,7 @@ import java.util.Map;
 @Permissions
 @RunAsync
 @RegisterCommand({"seen", "seenplayer"})
-public class SeenCommand extends CommandBase<CommandSource> {
+public class SeenCommand extends OldCommandBase<CommandSource> {
 
     private final String playerKey = "player";
 
@@ -52,7 +52,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))).build();
     }
 
     @Override

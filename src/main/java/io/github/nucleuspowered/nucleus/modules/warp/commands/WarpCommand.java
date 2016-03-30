@@ -7,10 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -35,7 +35,7 @@ import java.util.Map;
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("warp")
-public class WarpCommand extends CommandBase<Player> {
+public class WarpCommand extends OldCommandBase<Player> {
     static final String warpNameArg = Util.getMessageWithFormat("args.name.warpname");
 
     @Inject private WarpConfigAdapter adapter;
@@ -49,7 +49,7 @@ public class WarpCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
                 .children(this.createChildCommands()).arguments(
                         GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.flags().flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
                         GenericArguments.onlyOne(new WarpParser(Text.of(warpNameArg), adapter, true))

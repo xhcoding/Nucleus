@@ -10,9 +10,9 @@ import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
@@ -39,7 +39,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand({"jail", "unjail", "togglejail"})
-public class JailCommand extends CommandBase<CommandSource> {
+public class JailCommand extends OldCommandBase<CommandSource> {
 
     public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "jail.notify";
 
@@ -58,7 +58,7 @@ public class JailCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))),
                         GenericArguments.optional(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))),
                         GenericArguments.optionalWeak(GenericArguments.onlyOne(new TimespanParser(Text.of(durationKey)))),

@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -30,18 +30,18 @@ import java.util.Optional;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setgamemode", "setgm"}, subcommandOf = WorldCommand.class)
-public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
+public class SetGamemodeWorldCommand extends OldCommandBase<CommandSource> {
 
     private final String gamemode = "gamemode";
     private final String world = "world";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Set Gamemode World Command"))
+        return getSpecBuilderBase().description(Text.of("Set Gamemode World Command"))
                 .arguments(
                         GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(gamemode), CatalogTypes.GAME_MODE))),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

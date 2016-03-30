@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +31,7 @@ import java.time.temporal.ChronoUnit;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class TempBanCommand extends CommandBase<CommandSource> {
+public class TempBanCommand extends OldCommandBase<CommandSource> {
 
     private final String user = "user";
     private final String reason = "reason";
@@ -39,10 +39,10 @@ public class TempBanCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder()
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(user))), GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
                         GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

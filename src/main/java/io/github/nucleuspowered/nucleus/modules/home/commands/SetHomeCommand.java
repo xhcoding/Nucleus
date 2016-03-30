@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -28,15 +28,15 @@ import java.util.regex.Pattern;
 @Permissions(root = "home", alias = "set", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand({"homeset", "sethome"})
-public class SetHomeCommand extends CommandBase<Player> {
+public class SetHomeCommand extends OldCommandBase<Player> {
 
     private final String homeKey = "home";
     private final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.string(Text.of(homeKey)))))
-                .executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.string(Text.of(homeKey)))))
+                .build();
     }
 
     @Override

@@ -7,10 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -30,7 +30,7 @@ import java.util.Map;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"helpop"})
-public class HelpOpCommand extends CommandBase<Player> {
+public class HelpOpCommand extends OldCommandBase<Player> {
 
     private final String messageKey = "message";
 
@@ -39,7 +39,7 @@ public class HelpOpCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.remainingJoinedStrings(Text.of(messageKey))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.remainingJoinedStrings(Text.of(messageKey))).build();
     }
 
     @Override

@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -39,13 +39,13 @@ import java.util.function.Consumer;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = "resetuser", subcommandOf = NucleusCommand.class)
-public class ResetUserCommand extends CommandBase<CommandSource> {
+public class ResetUserCommand extends OldCommandBase<CommandSource> {
 
     private final String userKey = "user";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.user(Text.of(userKey))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.user(Text.of(userKey))).build();
     }
 
     @Override

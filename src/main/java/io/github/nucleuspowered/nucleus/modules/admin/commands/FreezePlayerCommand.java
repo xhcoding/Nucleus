@@ -8,9 +8,9 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandException;
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"freezeplayer", "freeze"})
-public class FreezePlayerCommand extends CommandBase<CommandSource> {
+public class FreezePlayerCommand extends OldCommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
 
@@ -43,10 +43,10 @@ public class FreezePlayerCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder()
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.optional(GenericArguments.requiringPermission(
                         GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others"))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

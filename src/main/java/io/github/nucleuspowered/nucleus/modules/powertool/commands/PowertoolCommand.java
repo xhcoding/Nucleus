@@ -8,8 +8,8 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -37,17 +37,17 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand({"powertool", "pt"})
-public class PowertoolCommand extends CommandBase<Player> {
+public class PowertoolCommand extends OldCommandBase<Player> {
     @Inject private UserConfigLoader loader;
     private final String commandKey = "command";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().children(this.createChildCommands()).arguments(
+        return getSpecBuilderBase().children(this.createChildCommands()).arguments(
                 GenericArguments.optional(
                         GenericArguments.remainingJoinedStrings(Text.of(commandKey))
                 )
-        ).executor(this).build();
+        ).build();
     }
 
     @Override

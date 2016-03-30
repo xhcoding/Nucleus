@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class)
-public class ListWorldCommand extends CommandBase<CommandSource> {
+public class ListWorldCommand extends OldCommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).description(Text.of("Lists worlds.")).build();
+        return getSpecBuilderBase().description(Text.of("Lists worlds.")).build();
     }
 
     @Override

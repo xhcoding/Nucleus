@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.afk.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -23,13 +23,13 @@ import org.spongepowered.api.text.channel.MessageChannel;
 @NoWarmup
 @NoCost
 @RunAsync
-public class AFKCommand extends CommandBase<Player> {
+public class AFKCommand extends OldCommandBase<Player> {
 
     @Inject private AFKHandler afkHandler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     @Override

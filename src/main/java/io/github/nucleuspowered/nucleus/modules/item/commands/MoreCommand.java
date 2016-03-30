@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.item.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandSpec;
@@ -16,11 +16,11 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 @Permissions
 @RegisterCommand({"more", "stack"})
-public class MoreCommand extends CommandBase<Player> {
+public class MoreCommand extends OldCommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     @Override

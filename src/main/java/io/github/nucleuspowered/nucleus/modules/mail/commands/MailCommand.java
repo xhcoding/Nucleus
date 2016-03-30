@@ -10,15 +10,15 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailFilter;
 import io.github.nucleuspowered.nucleus.argumentparsers.MailFilterParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -41,13 +41,12 @@ import java.util.stream.Collectors;
 public class MailCommand extends CommandBase<Player> {
 
     @Inject private MailHandler handler;
-    private final String filters = "filters";
     @Inject private Game game;
+    private final String filters = "filters";
 
     @Override
-    public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).children(this.createChildCommands(ClearMailCommand.class, SendMailCommand.class))
-                .arguments(GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(filters), handler)))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] { GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(filters), handler))) };
     }
 
     @Override

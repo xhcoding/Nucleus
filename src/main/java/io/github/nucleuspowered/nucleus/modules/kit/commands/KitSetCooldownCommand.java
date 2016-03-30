@@ -8,8 +8,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -33,7 +33,7 @@ import java.time.Duration;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitSetCooldownCommand extends CommandBase<CommandSource> {
+public class KitSetCooldownCommand extends OldCommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
@@ -43,7 +43,7 @@ public class KitSetCooldownCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).description(Text.of("Sets kit cooldown."))
+        return getSpecBuilderBase().description(Text.of("Sets kit cooldown."))
                 .arguments(GenericArguments.seq(GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true)),
                         GenericArguments.onlyOne(new TimespanParser(Text.of(duration)))))
                 .build();

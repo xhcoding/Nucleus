@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.tests;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,11 +52,11 @@ public class PermissionsTest extends TestBase {
         public String permission;
 
         @Parameterized.Parameter(1)
-        public Class<? extends CommandBase> clazz;
+        public Class<? extends OldCommandBase> clazz;
 
         @Test
         public void testPermissionIsValid() throws IllegalAccessException, InstantiationException {
-            CommandBase c = clazz.newInstance();
+            OldCommandBase c = clazz.newInstance();
             getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);
@@ -90,11 +90,11 @@ public class PermissionsTest extends TestBase {
         public String permission;
 
         @Parameterized.Parameter(1)
-        public Class<? extends CommandBase> clazz;
+        public Class<? extends OldCommandBase> clazz;
 
         @Test
         public void testPermissionIsNotValid() throws IllegalAccessException, InstantiationException {
-            CommandBase c = clazz.newInstance();
+            OldCommandBase c = clazz.newInstance();
             getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);
@@ -107,7 +107,7 @@ public class PermissionsTest extends TestBase {
 
     @Permissions
     @RegisterCommand({"test", "test2"})
-    public static class PermissionOne extends CommandBase {
+    public static class PermissionOne extends OldCommandBase {
 
         @Override
         public CommandSpec createSpec() {

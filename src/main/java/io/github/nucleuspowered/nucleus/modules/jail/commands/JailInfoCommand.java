@@ -8,8 +8,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailParser;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -26,14 +26,14 @@ import org.spongepowered.api.text.format.TextColors;
 @Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @RegisterCommand(value = "jails", subcommandOf = JailsCommand.class)
-public class JailInfoCommand extends CommandBase<CommandSource> {
+public class JailInfoCommand extends OldCommandBase<CommandSource> {
 
     private final String jailKey = "jail";
     @Inject private JailHandler handler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(new JailParser(Text.of(jailKey), handler))).build();
     }
 
     @Override

@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -28,14 +28,14 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCost
 @RegisterCommand(value = {"toggle"}, subcommandOf = PowertoolCommand.class)
-public class TogglePowertoolCommand extends CommandBase<Player> {
+public class TogglePowertoolCommand extends OldCommandBase<Player> {
 
     private final String toggleKey = "toggle";
     @Inject private UserConfigLoader loader;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggleKey))))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggleKey))))).build();
     }
 
     @Override

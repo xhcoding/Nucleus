@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 @RunAsync
 @RegisterCommand("jails")
 @Permissions(root = "jail", alias = "list", suggestedLevel = SuggestedLevel.MOD)
-public class JailsCommand extends CommandBase<CommandSource> {
+public class JailsCommand extends OldCommandBase<CommandSource> {
 
     @Inject private JailHandler handler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).children(this.createChildCommands()).build();
+        return getSpecBuilderBase().children(this.createChildCommands()).build();
     }
 
     @Override

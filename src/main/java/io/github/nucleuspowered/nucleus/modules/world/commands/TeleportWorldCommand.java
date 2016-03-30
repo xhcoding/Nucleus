@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -30,17 +30,17 @@ import java.util.Optional;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
-public class TeleportWorldCommand extends CommandBase<CommandSource> {
+public class TeleportWorldCommand extends OldCommandBase<CommandSource> {
 
     private final String world = "world";
     private final String player = "player";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Teleport World Command"))
+        return getSpecBuilderBase().description(Text.of("Teleport World Command"))
                 .arguments(GenericArguments.seq(GenericArguments.world(Text.of(world)),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of(player))))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

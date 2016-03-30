@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -23,11 +23,11 @@ import org.spongepowered.api.command.spec.CommandSpec;
 @NoWarmup
 @Permissions(root = "nucleus")
 @RegisterCommand(value = "save", subcommandOf = NucleusCommand.class)
-public class SaveCommand extends CommandBase<CommandSource> {
+public class SaveCommand extends OldCommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     @Override

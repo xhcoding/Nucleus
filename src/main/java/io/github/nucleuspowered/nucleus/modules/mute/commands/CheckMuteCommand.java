@@ -7,15 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.mute.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
-import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -25,7 +22,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -41,7 +37,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand("checkmute")
-public class CheckMuteCommand extends CommandBase<CommandSource> {
+public class CheckMuteCommand extends OldCommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
     @Inject private MuteHandler handler;
@@ -49,7 +45,7 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Checks the mute status of that player")).executor(this)
+        return getSpecBuilderBase().description(Text.of("Checks the mute status of that player"))
                 .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerArgument)))).build();
     }
 

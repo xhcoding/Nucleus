@@ -5,8 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -25,14 +28,14 @@ import org.spongepowered.api.text.Text;
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)
 @RegisterCommand({"reply", "r"})
-public class ReplyCommand extends CommandBase<CommandSource> {
+public class ReplyCommand extends OldCommandBase<CommandSource> {
     private final String message = "message";
 
     @Inject private MessageHandler handler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
             .arguments(
                     GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
             ).description(Text.of("Send a message to the player you just sent a message to.")).build();

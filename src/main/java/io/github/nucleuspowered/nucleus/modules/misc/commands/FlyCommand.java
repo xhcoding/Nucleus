@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("fly")
-public class FlyCommand extends CommandBase<CommandSource> {
+public class FlyCommand extends OldCommandBase<CommandSource> {
 
     private static final String player = "player";
     private static final String toggle = "toggle";
@@ -39,7 +39,7 @@ public class FlyCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
                 .arguments(
                         GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
                                 .requiringPermission(GenericArguments.player(Text.of(player)), permissions.getPermissionWithSuffix("others")))),

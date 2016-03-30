@@ -9,10 +9,10 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @Permissions(root = "teleport", alias = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand({})
 @ConfigCommandAlias("teleport")
-public class TeleportCommand extends CommandBase<CommandSource> {
+public class TeleportCommand extends OldCommandBase<CommandSource> {
 
     private String playerFromKey = "playerFrom";
     private String playerKey = "player";
@@ -48,7 +48,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
 
                         // Either we get two arguments, or we get one.

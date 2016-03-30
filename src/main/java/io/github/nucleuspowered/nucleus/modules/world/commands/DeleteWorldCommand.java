@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -26,13 +26,13 @@ import org.spongepowered.api.world.storage.WorldProperties;
  */
 @Permissions(root = "world")
 @RegisterCommand(value = {"delete", "del"}, subcommandOf = WorldCommand.class)
-public class DeleteWorldCommand extends CommandBase<CommandSource> {
+public class DeleteWorldCommand extends OldCommandBase<CommandSource> {
 
     private final String world = "world";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(GenericArguments.onlyOne(GenericArguments.world(Text.of(world))))
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.world(Text.of(world))))
                 .description(Text.of("Deletes a world.")).build();
     }
 

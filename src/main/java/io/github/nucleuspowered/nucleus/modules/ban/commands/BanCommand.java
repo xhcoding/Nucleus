@@ -6,9 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -32,7 +32,7 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class BanCommand extends CommandBase<CommandSource> {
+public class BanCommand extends OldCommandBase<CommandSource> {
 
     public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "ban.notify";
     private final String user = "user";
@@ -47,8 +47,8 @@ public class BanCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(user))),
-                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(user))),
+                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))).build();
     }
 
     @Override

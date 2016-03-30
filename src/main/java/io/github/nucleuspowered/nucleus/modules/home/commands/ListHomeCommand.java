@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCost
 @RegisterCommand({"listhomes", "homes"})
-public class ListHomeCommand extends CommandBase<CommandSource> {
+public class ListHomeCommand extends OldCommandBase<CommandSource> {
 
     private final String player = "player";
 
@@ -51,10 +51,10 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder()
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(
                         GenericArguments.requiringPermission(GenericArguments.user(Text.of(player)), permissions.getPermissionWithSuffix("others")))))
-                .executor(this).build();
+                .build();
     }
 
     @Override

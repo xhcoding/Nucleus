@@ -8,8 +8,8 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -29,7 +29,7 @@ import java.util.Map;
 @NoWarmup
 @RegisterCommand("ignore")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-public class IgnoreCommand extends CommandBase<Player> {
+public class IgnoreCommand extends OldCommandBase<Player> {
 
     @Inject private UserConfigLoader loader;
 
@@ -45,10 +45,10 @@ public class IgnoreCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.onlyOne(GenericArguments.user(Text.of(userKey))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggleKey))))
-        ).executor(this).build();
+        ).build();
     }
 
     @Override

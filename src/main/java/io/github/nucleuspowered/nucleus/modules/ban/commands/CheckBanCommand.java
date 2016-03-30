@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -27,13 +27,13 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RunAsync
-public class CheckBanCommand extends CommandBase<CommandSource> {
+public class CheckBanCommand extends OldCommandBase<CommandSource> {
 
     private final String key = "player";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(key)))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(key)))).build();
     }
 
     @Override

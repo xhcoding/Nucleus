@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @RegisterCommand("speed")
 @Permissions
-public class SpeedCommand extends CommandBase<CommandSource> {
+public class SpeedCommand extends OldCommandBase<CommandSource> {
 
     private final String speedKey = "speed";
     private final String typeKey = "type";
@@ -50,12 +50,12 @@ public class SpeedCommand extends CommandBase<CommandSource> {
         keysMap.put("walk", SpeedType.WALKING);
         keysMap.put("w", SpeedType.WALKING);
 
-        return CommandSpec.builder()
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.optional(GenericArguments.seq(
                         GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
                                 .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
-                GenericArguments.integer(Text.of(speedKey))))).executor(this).build();
+                GenericArguments.integer(Text.of(speedKey))))).build();
     }
 
     @Override

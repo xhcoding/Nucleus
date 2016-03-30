@@ -4,16 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.internal;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.TypeLiteral;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
-import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.ModuleCommandSet;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -56,13 +56,22 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadCommands() throws IOException {
-        Set<Class<? extends CommandBase>> commandBases;
-        commandBases = Util.getClasses(CommandBase.class, this.getClass().getPackage().getName()).stream().filter(x -> {
-                RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
-                return (rc != null && rc.subcommandOf().equals(CommandBase.class));
-            }).collect(Collectors.toSet());
+        Set<Class<? extends AbstractCommand>> cmds = Util.getClasses(AbstractCommand.class, this.getClass().getPackage().getName()).stream()
+                .filter(x -> x.isAnnotationPresent(RegisterCommand.class)).collect(Collectors.toSet());
 
-        Injector injector = nucleus.getInjector();
+        // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
+        Injector injector = nucleus.getInjector().createChildInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(new TypeLiteral<Set<Class<? extends AbstractCommand>>>(){}).annotatedWith(ModuleCommandSet.class).toInstance(cmds);
+            }
+        });
+
+        Set<Class<? extends AbstractCommand>> commandBases =  cmds.stream().filter(x -> {
+            RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
+            return (rc != null && rc.subcommandOf().equals(AbstractCommand.class));
+        }).collect(Collectors.toSet());
+
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandBases.stream().map(x -> {
             try {

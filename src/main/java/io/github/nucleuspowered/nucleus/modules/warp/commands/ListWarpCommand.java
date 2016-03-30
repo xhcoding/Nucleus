@@ -7,11 +7,11 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -37,14 +37,14 @@ import java.util.stream.Collectors;
 @Permissions(root = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class)
-public class ListWarpCommand extends CommandBase<CommandSource> {
+public class ListWarpCommand extends OldCommandBase<CommandSource> {
 
     private final NucleusWarpService service = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
     @Inject private WarpConfigAdapter adapter;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).description(Text.of("Lists the warps available to you.")).build();
+        return getSpecBuilderBase().description(Text.of("Lists the warps available to you.")).build();
     }
 
     @Override

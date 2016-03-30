@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,12 +22,12 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoPermissions
 @RegisterCommand({ "teleportnative", "tpnative", "tpn" })
-public class TPNativeCommand extends CommandBase<CommandSource> {
+public class TPNativeCommand extends OldCommandBase<CommandSource> {
     private final String a = "args";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.remainingJoinedStrings(Text.of(a))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.remainingJoinedStrings(Text.of(a))).build();
     }
 
     @Override

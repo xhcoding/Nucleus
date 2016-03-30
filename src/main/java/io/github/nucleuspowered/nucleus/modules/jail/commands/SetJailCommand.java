@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -22,14 +22,14 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = "set", subcommandOf = JailsCommand.class)
-public class SetJailCommand extends CommandBase<Player> {
+public class SetJailCommand extends OldCommandBase<Player> {
 
     private final String jailName = "jail";
     @Inject private JailHandler handler;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of(jailName)))).executor(this).build();
+        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of(jailName)))).build();
     }
 
     @Override

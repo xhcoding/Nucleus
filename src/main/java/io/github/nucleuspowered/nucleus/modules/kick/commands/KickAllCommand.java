@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.kick.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -33,13 +33,13 @@ import java.util.Map;
 @NoCooldown
 @NoCost
 @RegisterCommand("kickall")
-public class KickAllCommand extends CommandBase<CommandSource> {
+public class KickAllCommand extends OldCommandBase<CommandSource> {
 
     private final String reason = "reason";
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Kicks all players.")).executor(this)
+        return getSpecBuilderBase().description(Text.of("Kicks all players."))
                 .arguments(
                         GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
                                 permissions.getPermissionWithSuffix("whitelist")),

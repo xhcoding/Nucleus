@@ -4,10 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -17,7 +17,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @RegisterCommand("info")
-public class InfoCommand extends CommandBase<CommandSource> {
+public class InfoCommand extends OldCommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
         return null;

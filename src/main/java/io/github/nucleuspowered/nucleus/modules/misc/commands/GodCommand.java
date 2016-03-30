@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -27,7 +27,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand({"god", "invuln", "invulnerability"})
-public class GodCommand extends CommandBase<CommandSource> {
+public class GodCommand extends OldCommandBase<CommandSource> {
 
     private final String playerKey = "player";
     private final String invulnKey = "invuln";
@@ -41,7 +41,7 @@ public class GodCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
                 .arguments(
                         GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
                                 .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),

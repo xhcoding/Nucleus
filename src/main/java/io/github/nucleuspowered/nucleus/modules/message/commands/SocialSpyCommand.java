@@ -8,8 +8,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -24,15 +24,15 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand("socialspy")
-public class SocialSpyCommand extends CommandBase<Player> {
+public class SocialSpyCommand extends OldCommandBase<Player> {
 
     private final String arg = "Social Spy";
     @Inject private UserConfigLoader userConfigLoader;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().description(Text.of("Sets whether the player can spy on messages."))
-                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(arg))))).executor(this).build();
+        return getSpecBuilderBase().description(Text.of("Sets whether the player can spy on messages."))
+                .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(arg))))).build();
     }
 
     @Override

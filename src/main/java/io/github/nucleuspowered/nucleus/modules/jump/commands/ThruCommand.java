@@ -6,9 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.jump.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -21,13 +21,13 @@ import org.spongepowered.api.world.World;
 
 @Permissions
 @RegisterCommand({"thru", "through"})
-public class ThruCommand extends CommandBase<Player> {
+public class ThruCommand extends OldCommandBase<Player> {
 
     @Inject private JumpConfigAdapter jca;
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).build();
+        return getSpecBuilderBase().build();
     }
 
     // Original code taken from EssentialCmds. With thanks to 12AwsomeMan34 for the initial contribution.

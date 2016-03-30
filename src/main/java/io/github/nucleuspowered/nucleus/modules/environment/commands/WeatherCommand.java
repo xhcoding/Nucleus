@@ -10,9 +10,9 @@ import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.WeatherParser;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -29,7 +29,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("weather")
-public class WeatherCommand extends CommandBase<CommandSource> {
+public class WeatherCommand extends OldCommandBase<CommandSource> {
     private final String world = "world";
     private final String weather = "weather";
     private final String duration = "duration";
@@ -39,7 +39,7 @@ public class WeatherCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this).arguments(
+        return getSpecBuilderBase().arguments(
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
                 GenericArguments.onlyOne(new WeatherParser(Text.of(weather))), // More flexible with the arguments we can use.
                 GenericArguments.firstParsing(

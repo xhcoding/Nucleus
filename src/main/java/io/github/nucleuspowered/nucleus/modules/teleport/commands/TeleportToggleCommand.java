@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -26,7 +26,7 @@ import java.util.Map;
 @NoCost
 @RegisterCommand({"tptoggle"})
 @RunAsync
-public class TeleportToggleCommand extends CommandBase<Player> {
+public class TeleportToggleCommand extends OldCommandBase<Player> {
 
     private final String key = "toggle";
 
@@ -39,7 +39,7 @@ public class TeleportToggleCommand extends CommandBase<Player> {
 
     @Override
     public CommandSpec createSpec() {
-        return CommandSpec.builder().executor(this)
+        return getSpecBuilderBase()
                 .arguments(GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(key))))).build();
     }
 
