@@ -8,27 +8,27 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.WorldTimeParser;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 @Permissions(root = "time")
 @RegisterCommand(value = "set", subcommandOf = TimeCommand.class)
-public class SetTimeCommand extends OldCommandBase<CommandSource> {
+public class SetTimeCommand extends CommandBase<CommandSource> {
     private final String time = "time";
     private final String world = "world";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Sets the time")).arguments(
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
-                GenericArguments.onlyOne(new WorldTimeParser(Text.of(time)))
-        ).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+            GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
+            GenericArguments.onlyOne(new WorldTimeParser(Text.of(time)))
+        };
     }
 
     @Override
