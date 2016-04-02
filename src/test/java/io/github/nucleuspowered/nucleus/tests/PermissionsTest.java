@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -35,6 +36,11 @@ public class PermissionsTest extends TestBase {
      */
     @RunWith(Parameterized.class)
     public static class ValidTest {
+
+        @BeforeClass
+        public static void setup() throws Exception {
+            TestBase.testSetup();
+        }
 
         @Parameterized.Parameters(name = "{index}: Permission {0} on {1}")
         public static Iterable<Object[]> data() {
@@ -73,6 +79,11 @@ public class PermissionsTest extends TestBase {
      */
     @RunWith(Parameterized.class)
     public static class InvalidTest {
+
+        @BeforeClass
+        public static void setup() throws Exception {
+            TestBase.testSetup();
+        }
 
         @Parameterized.Parameters
         public static Iterable<Object[]> data() {

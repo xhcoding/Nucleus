@@ -7,18 +7,19 @@ package io.github.nucleuspowered.nucleus;
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.ClassPath;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
-import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class Util {
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    static void setMessageProvider(Supplier<MessageProvider> messageProvider) {
+    public static void setMessageProvider(Supplier<MessageProvider> messageProvider) {
         Preconditions.checkState(Util.messageProvider == null);
         Util.messageProvider = messageProvider;
     }
