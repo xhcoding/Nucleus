@@ -9,7 +9,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.annotations.ModuleCommandSet;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -56,8 +55,11 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadCommands() throws IOException {
-        Set<Class<? extends AbstractCommand>> cmds = Util.getClasses(AbstractCommand.class, this.getClass().getPackage().getName()).stream()
-                .filter(x -> x.isAnnotationPresent(RegisterCommand.class)).collect(Collectors.toSet());
+        Set<Class<? extends AbstractCommand>> cmds = nucleus.getModuleContainer().getLoadedClasses().stream().filter(AbstractCommand.class::isAssignableFrom)
+                .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))
+                .filter(x -> x.isAnnotationPresent(RegisterCommand.class))
+                .map(x -> (Class<? extends AbstractCommand>)x)
+                .collect(Collectors.toSet());
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
         Injector injector = nucleus.getInjector().createChildInjector(new AbstractModule() {
@@ -113,8 +115,14 @@ public abstract class StandardModule implements Module {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void loadEvents() throws IOException {
-        Set<Class<? extends ListenerBase>> commandsToLoad = Util.getClasses(ListenerBase.class, this.getClass().getPackage().getName());
+        Set<Class<? extends ListenerBase>> commandsToLoad = nucleus.getModuleContainer().getLoadedClasses().stream()
+                .filter(ListenerBase.class::isAssignableFrom)
+                .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))
+                .map(x -> (Class<? extends ListenerBase>)x)
+                .collect(Collectors.toSet());
+
         Injector injector = nucleus.getInjector();
         commandsToLoad.stream().map(x -> {
             try {
@@ -133,7 +141,12 @@ public abstract class StandardModule implements Module {
     }
 
     private void loadRunnables() throws IOException {
-        Set<Class<? extends TaskBase>> commandsToLoad = Util.getClasses(TaskBase.class, this.getClass().getPackage().getName());
+        Set<Class<? extends TaskBase>> commandsToLoad = nucleus.getModuleContainer().getLoadedClasses().stream()
+                .filter(TaskBase.class::isAssignableFrom)
+                .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))
+                .map(x -> (Class<? extends TaskBase>)x)
+                .collect(Collectors.toSet());
+
         Injector injector = nucleus.getInjector();
         commandsToLoad.stream().map(x -> {
             try {
