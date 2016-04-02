@@ -42,8 +42,15 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
     @Inject private PlayerInfoConfigAdapter config;
     @Inject private UserConfigLoader loader;
 
-    private Text afk = Util.getTextMessageWithFormat("command.list.afk");
-    private Text hidden = Util.getTextMessageWithFormat("command.list.hidden");
+    private Text afk = null;
+    private Text hidden = null;
+
+    private void init() {
+        if (afk == null) {
+            afk = plugin.getMessageProvider().getTextMessageWithFormat("command.list.afk");
+            hidden = plugin.getMessageProvider().getTextMessageWithFormat("command.list.hidden");
+        }
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -59,6 +66,7 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        init();
         boolean showVanished = permissions.testSuffix(src, "seevanished");
 
         Collection<Player> players = Sponge.getServer().getOnlinePlayers();

@@ -22,6 +22,7 @@ import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.playerinfo.config.PlayerInfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
@@ -50,6 +51,7 @@ public class QuickStartInjectorModule extends QuickStartModuleLoaderInjector {
         bind(ConnectionMessagesConfigAdapter.class).toProvider(() -> getAdapter("connection-messages", ConnectionMessagesConfigAdapter.class));
         bind(MobConfigAdapter.class).toProvider(() -> getAdapter("mob", MobConfigAdapter.class));
         bind(MessageConfigAdapter.class).toProvider(() -> getAdapter("message", MessageConfigAdapter.class));
+        bind(PlayerInfoConfigAdapter.class).toProvider(() -> getAdapter("playerinfo", PlayerInfoConfigAdapter.class));
 
         bind(AFKHandler.class).toProvider(() -> getService(AFKHandler.class));
         bind(MessageHandler.class).toProvider(() -> getService(MessageHandler.class));

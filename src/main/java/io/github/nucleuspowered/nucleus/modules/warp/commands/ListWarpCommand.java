@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class)
 public class ListWarpCommand extends OldCommandBase<CommandSource> {
 
-    private final NucleusWarpService service = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
+    private NucleusWarpService service;
     @Inject private WarpConfigAdapter adapter;
 
     @Override
@@ -54,6 +54,10 @@ public class ListWarpCommand extends OldCommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
+        if (service == null) {
+            service = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
+        }
+
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
 
         // Get the warp list.

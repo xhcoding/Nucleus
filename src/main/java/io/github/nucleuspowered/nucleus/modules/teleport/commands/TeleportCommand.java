@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Permissions(root = "teleport", alias = "teleport", suggestedLevel = SuggestedLevel.MOD)
-@RegisterCommand({})
+@RegisterCommand({"teleport", "tp"})
 @ConfigCommandAlias("teleport")
 public class TeleportCommand extends OldCommandBase<CommandSource> {
 
