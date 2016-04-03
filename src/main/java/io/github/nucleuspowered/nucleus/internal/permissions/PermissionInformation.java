@@ -9,15 +9,12 @@ import org.spongepowered.api.text.Text;
 public class PermissionInformation {
 
     public final Text description;
+    public final String plainDescription;
     public final SuggestedLevel level;
 
     public PermissionInformation(String description, SuggestedLevel level) {
         this.description = Text.of(description);
-        this.level = level;
-    }
-
-    public PermissionInformation(Text description, SuggestedLevel level) {
-        this.description = description;
+        this.plainDescription = description;
         this.level = level;
     }
 }
