@@ -11,11 +11,14 @@ import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
@@ -24,7 +27,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"ignite", "burn"})
-public class IgniteCommand extends OldCommandBase<Player> {
+public class IgniteCommand extends OldCommandBase<CommandSource> {
 
     private final String player = "player";
     private final String ticks = "ticks";
@@ -46,14 +49,21 @@ public class IgniteCommand extends OldCommandBase<Player> {
     }
 
     @Override
-    public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {
+    public CommandResult executeCommand(CommandSource pl, CommandContext args) throws Exception {
         int ticksInput = args.<Integer>getOne(ticks).get();
         Optional<Player> opl = this.getUser(Player.class, pl, player, args);
         if (!opl.isPresent()) {
             return CommandResult.empty();
         }
 
-        if (opl.get().offer(Keys.FIRE_TICKS, ticksInput).isSuccessful()) {
+        Player target = opl.get();
+        GameMode gm = target.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL);
+        if (gm == GameModes.CREATIVE || gm == GameModes.SPECTATOR) {
+            pl.sendMessage(Util.getTextMessageWithFormat("command.ignite.gamemode", target.getName()));
+            return CommandResult.empty();
+        }
+
+        if (target.offer(Keys.FIRE_TICKS, ticksInput).isSuccessful()) {
             pl.sendMessage(Util.getTextMessageWithFormat("command.ignite.success", opl.get().getName(), String.valueOf(ticksInput)));
             return CommandResult.success();
         } else {

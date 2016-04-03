@@ -21,7 +21,7 @@ public class WarpHandler implements NucleusWarpService {
 
     @Override
     public Optional<WarpLocation> getWarp(String warpName) {
-        return store.getWarpLocation(warpName);
+        return store.getWarpLocation(warpName.toLowerCase());
     }
 
     @Override

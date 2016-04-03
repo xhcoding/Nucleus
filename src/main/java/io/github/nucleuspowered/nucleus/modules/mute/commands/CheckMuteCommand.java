@@ -74,10 +74,10 @@ public class CheckMuteCommand extends OldCommandBase<CommandSource> {
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
             time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
-            forString = Util.getMessageWithFormat("standard.for") + " ";
+            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
             time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = Util.getMessageWithFormat("standard.for") + " ";
+            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
         }
 
         src.sendMessage(Util.getTextMessageWithFormat("command.checkmute.mute", user.getName(), name, forString, time));

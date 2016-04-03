@@ -49,6 +49,10 @@ public class SetExperience extends OldCommandBase<CommandSource> {
         }
 
         Player pl = opl.get();
+        if (!ExperienceCommand.checkGameMode(pl, src)) {
+            return CommandResult.empty();
+        }
+
         Optional<Integer> l = args.getOne(levelKey);
         DataTransactionResult dtr;
         if (l.isPresent()) {

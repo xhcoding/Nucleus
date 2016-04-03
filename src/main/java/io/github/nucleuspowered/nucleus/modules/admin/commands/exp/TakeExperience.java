@@ -42,6 +42,9 @@ public class TakeExperience extends OldCommandBase<CommandSource> {
         }
 
         Player pl = opl.get();
+        if (!ExperienceCommand.checkGameMode(pl, src)) {
+            return CommandResult.empty();
+        }
 
         int exp = pl.get(Keys.TOTAL_EXPERIENCE).get();
         exp -= args.<Integer>getOne(ExperienceCommand.experienceKey).get();

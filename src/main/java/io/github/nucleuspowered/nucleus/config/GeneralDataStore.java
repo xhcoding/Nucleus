@@ -21,18 +21,14 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
 
 public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDataNode, ConfigurationNode, ConfigurationLoader<ConfigurationNode>> {
 
@@ -106,7 +102,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     }
 
     public Optional<WarpLocation> getWarpLocation(String name) {
-        return getLocation(name, data.getWarps());
+        return getLocation(name.toLowerCase(), data.getWarps());
     }
 
     public Map<String, WarpLocation> getWarps() {
@@ -146,11 +142,12 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     // Helper methods for warp based systems
 
     private Optional<WarpLocation> getLocation(String name, Map<String, LocationNode> m) {
-        LocationNode ln = m.get(name.toLowerCase());
-        if (ln == null) {
+        Optional<Map.Entry<String, LocationNode>> o = m.entrySet().stream().filter(k -> k.getKey().equalsIgnoreCase(name)).findFirst();
+        if (!o.isPresent()) {
             return Optional.empty();
         }
 
+        LocationNode ln = o.get().getValue();
         try {
             return Optional.of(new WarpLocation(name.toLowerCase(), ln.getLocation(), ln.getRotation()));
         } catch (NoSuchWorldException e) {
@@ -162,7 +159,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
         Map<String, WarpLocation> l = Maps.newHashMap();
         m.forEach((k, v) -> {
             try {
-                l.put(k.toLowerCase(), new WarpLocation(k.toLowerCase(), v.getLocation(), v.getRotation()));
+                l.put(k, new WarpLocation(k, v.getLocation(), v.getRotation()));
             } catch (NoSuchWorldException e) {
             }
         });
@@ -178,7 +175,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
             return false;
         }
 
-        m.put(name.toLowerCase(), new LocationNode(loc, rot));
+        m.put(name, new LocationNode(loc, rot));
         return true;
     }
 }

@@ -25,7 +25,7 @@ import org.spongepowered.api.text.format.TextColors;
 @NoWarmup
 @Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
-@RegisterCommand(value = "jails", subcommandOf = JailsCommand.class)
+@RegisterCommand(value = "info", subcommandOf = JailsCommand.class)
 public class JailInfoCommand extends OldCommandBase<CommandSource> {
 
     private final String jailKey = "jail";

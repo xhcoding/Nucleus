@@ -11,7 +11,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class ChatTemplateConfig {
 
     @Setting(comment = "loc:config.chat.template.prefix")
-    private String prefix = "{{prefix}} {{name}}&f: ";
+    private String prefix = "{{prefix}} {{displayname}}&f: ";
 
     @Setting(comment = "loc:config.chat.template.suffix")
     private String suffix = " {{suffix}}";

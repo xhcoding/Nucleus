@@ -53,7 +53,12 @@ public class HomeCommand extends OldCommandBase<Player> {
 
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.getLocation(), wl.getRotation())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.home.success", wl.getName()));
+            if (!wl.getName().equalsIgnoreCase("home")) {
+                src.sendMessage(Util.getTextMessageWithFormat("command.home.success", wl.getName()));
+            } else {
+                src.sendMessage(Util.getTextMessageWithFormat("command.home.successdefault"));
+            }
+
             return CommandResult.success();
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.fail", wl.getName()));

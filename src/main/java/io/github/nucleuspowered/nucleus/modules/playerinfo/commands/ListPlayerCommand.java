@@ -30,6 +30,7 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 @RegisterCommand({"list", "listplayers"})
 public class ListPlayerCommand extends OldCommandBase<CommandSource> {
 
-    @Inject private AFKHandler handler;
+    @Inject @Nullable private AFKHandler handler;
     @Inject private PlayerInfoConfigAdapter config;
     @Inject private UserConfigLoader loader;
 

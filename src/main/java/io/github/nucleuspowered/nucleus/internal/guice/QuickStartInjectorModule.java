@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -52,6 +53,7 @@ public class QuickStartInjectorModule extends QuickStartModuleLoaderInjector {
         bind(MobConfigAdapter.class).toProvider(() -> getAdapter("mob", MobConfigAdapter.class));
         bind(MessageConfigAdapter.class).toProvider(() -> getAdapter("message", MessageConfigAdapter.class));
         bind(PlayerInfoConfigAdapter.class).toProvider(() -> getAdapter("playerinfo", PlayerInfoConfigAdapter.class));
+        bind(KitConfigAdapter.class).toProvider(() -> getAdapter("kit", KitConfigAdapter.class));
 
         bind(AFKHandler.class).toProvider(() -> getService(AFKHandler.class));
         bind(MessageHandler.class).toProvider(() -> getService(MessageHandler.class));

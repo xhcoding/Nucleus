@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
+import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -74,15 +75,15 @@ public class LightningCommand extends OldCommandBase<CommandSource> {
             return this.spawnLightning(lightningLocation, src, "command.lightning.success.normal");
         }
 
-        return this.spawnLightning(pl.getLocation(), src, "command.lightning.success.other");
+        return this.spawnLightning(pl.getLocation(), src, "command.lightning.success.other", NameUtil.getSerialisedName(pl));
     }
 
-    private CommandResult spawnLightning(Location<World> location, CommandSource src, String successKey) {
+    private CommandResult spawnLightning(Location<World> location, CommandSource src, String successKey, String... replacements) {
         World world = location.getExtent();
         Optional<Entity> bolt = world.createEntity(EntityTypes.LIGHTNING, location.getPosition());
 
         if (bolt.isPresent() && world.spawnEntity(bolt.get(), Cause.of(NamedCause.source(src)))) {
-            src.sendMessage(Util.getTextMessageWithFormat(successKey));
+            src.sendMessage(Util.getTextMessageWithFormat(successKey, replacements));
             return CommandResult.success();
         }
 

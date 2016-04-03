@@ -5,11 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeParser;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -39,7 +39,7 @@ public class SetGamemodeWorldCommand extends OldCommandBase<CommandSource> {
     public CommandSpec createSpec() {
         return getSpecBuilderBase().description(Text.of("Set Gamemode World Command"))
                 .arguments(
-                        GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(gamemode), CatalogTypes.GAME_MODE))),
+                        GenericArguments.onlyOne(new ImprovedGameModeParser(Text.of(gamemode))),
                         GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))))
                 .build();
     }

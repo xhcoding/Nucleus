@@ -75,7 +75,7 @@ public class MailCommand extends CommandBase<Player> {
     }
 
     private Text createMessage(final MailData md) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM dd").withZone(ZoneId.systemDefault());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM dd, yyyy").withZone(ZoneId.systemDefault());
         return Text.builder()
                 .append(Text.builder(NameUtil.getNameFromUUID(md.getUuid())).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
                         .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.mail.hover")))

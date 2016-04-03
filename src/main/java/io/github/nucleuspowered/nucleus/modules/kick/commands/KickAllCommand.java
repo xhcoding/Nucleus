@@ -18,7 +18,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class KickAllCommand extends OldCommandBase<CommandSource> {
         }
 
         Sponge.getServer().getOnlinePlayers().stream().filter(x -> !(src instanceof Player) || ((Player) src).getUniqueId().equals(x.getUniqueId()))
-                .forEach(x -> x.kick(Text.of(TextColors.RED, r)));
+                .forEach(x -> x.kick(TextSerializers.FORMATTING_CODE.deserialize(r)));
 
         MessageChannel mc = MessageChannel.fixed(Sponge.getServer().getConsole(), src);
         mc.send(Util.getTextMessageWithFormat("command.kickall.message"));

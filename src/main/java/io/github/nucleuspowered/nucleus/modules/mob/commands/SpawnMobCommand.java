@@ -87,6 +87,10 @@ public class SpawnMobCommand extends OldCommandBase<CommandSource> {
             }
         } while (i < Math.min(amount, mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()));
 
+        if (amount > mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.spawnmob.limit", String.valueOf(mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn())));
+        }
+
         if (i == 0) {
             src.sendMessage(Util.getTextMessageWithFormat("command.spawnmob.fail", et.getTranslation().get()));
             return CommandResult.empty();
@@ -97,6 +101,7 @@ public class SpawnMobCommand extends OldCommandBase<CommandSource> {
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.spawnmob.success.plural", String.valueOf(i), et.getTranslation().get()));
         }
+
         return CommandResult.success();
     }
 }

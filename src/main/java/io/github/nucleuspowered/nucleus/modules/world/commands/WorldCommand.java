@@ -24,8 +24,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 public class WorldCommand extends OldCommandBase<CommandSource> {
     @Override
     public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-
+        return CommandSpec.builder()
                 .children(this.createChildCommands())
                 .build();
     }

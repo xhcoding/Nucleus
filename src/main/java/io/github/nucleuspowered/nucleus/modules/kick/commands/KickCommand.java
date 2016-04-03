@@ -17,6 +17,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,11 +56,11 @@ public class KickCommand extends OldCommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(player).get();
         String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("command.kick.defaultreason"));
-        pl.kick(Text.of(r));
+        pl.kick(TextSerializers.FORMATTING_CODE.deserialize(r));
 
         MessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify"));
         mc.send(Util.getTextMessageWithFormat("command.kick.message", pl.getName(), src.getName()));
-        mc.send(Util.getTextMessageWithFormat("command.reason", reason));
+        mc.send(Util.getTextMessageWithFormat("command.reason", r));
         return CommandResult.success();
     }
 }

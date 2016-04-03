@@ -48,8 +48,7 @@ public class TeleportToggleCommand extends OldCommandBase<Player> {
         final InternalNucleusUser iqsu = plugin.getUserLoader().getUser(src);
         boolean flip = args.<Boolean>getOne(key).orElseGet(() -> !iqsu.isTeleportToggled());
         iqsu.setTeleportToggled(flip);
-        src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.tptoggle.success"))
-                .append(Util.getTextMessageWithFormat(flip ? "standard.enabled" : "standard.disabled")).build());
+        src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.tptoggle.success", Util.getMessageWithFormat(flip ? "standard.enabled" : "standard.disabled"))).build());
         return CommandResult.success();
     }
 }

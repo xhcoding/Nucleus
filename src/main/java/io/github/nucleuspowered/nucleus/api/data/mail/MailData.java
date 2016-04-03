@@ -36,7 +36,7 @@ public class MailData {
     }
 
     public Instant getDate() {
-        return Instant.ofEpochSecond(date);
+        return Instant.ofEpochMilli(date);
     }
 
     public UUID getUuid() {

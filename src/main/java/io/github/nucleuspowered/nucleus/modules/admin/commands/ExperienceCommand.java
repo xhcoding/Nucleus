@@ -15,6 +15,8 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.ExperienceHolderData;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
 
 @RegisterCommand({"exp", "experience", "xp"})
@@ -62,4 +64,13 @@ public class ExperienceCommand extends OldCommandBase<CommandSource> {
         return CommandResult.success();
     }
 
+    public static boolean checkGameMode(Player pl, CommandSource src) {
+        GameMode gm = pl.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL);
+        if (gm == GameModes.CREATIVE || gm == GameModes.SPECTATOR) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.exp.gamemode", pl.getName()));
+            return false;
+        }
+
+        return false;
+    }
 }

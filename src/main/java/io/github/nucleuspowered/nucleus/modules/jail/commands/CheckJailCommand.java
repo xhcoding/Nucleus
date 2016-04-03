@@ -35,7 +35,7 @@ import java.util.Optional;
 @RegisterCommand({"checkjail"})
 public class CheckJailCommand extends OldCommandBase<CommandSource> {
 
-    private final String playerKey = "playerKey";
+    private final String playerKey = "player";
     @Inject private JailHandler handler;
 
     @Override
