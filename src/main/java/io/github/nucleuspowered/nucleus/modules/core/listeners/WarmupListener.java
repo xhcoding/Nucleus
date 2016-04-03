@@ -39,7 +39,7 @@ public class WarmupListener extends ListenerBase {
 
     private void cancelWarmup(Player player) {
         if (service == null) {
-            plugin.getWarmupManager();
+            service = plugin.getWarmupManager();
         }
 
         service.cleanup();
