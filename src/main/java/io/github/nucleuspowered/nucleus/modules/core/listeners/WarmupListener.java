@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.core.listeners;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -18,7 +17,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 public class WarmupListener extends ListenerBase {
 
-    private NucleusWarmupManagerService service = Sponge.getGame().getServiceManager().provideUnchecked(NucleusWarmupManagerService.class);
+    private NucleusWarmupManagerService service;
 
     @Listener(order = Order.LAST)
     public void onPlayerMovement(DisplaceEntityEvent.Move event, @First Player player) {
@@ -39,6 +38,10 @@ public class WarmupListener extends ListenerBase {
     }
 
     private void cancelWarmup(Player player) {
+        if (service == null) {
+            plugin.getWarmupManager();
+        }
+
         service.cleanup();
         if (service.removeWarmup(player.getUniqueId()) && player.isOnline()) {
             player.sendMessage(Util.getTextMessageWithFormat("warmup.cancel"));
