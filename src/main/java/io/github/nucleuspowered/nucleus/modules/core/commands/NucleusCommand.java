@@ -6,10 +6,12 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -31,17 +33,12 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 @NoCooldown
 @NoCost
 @RegisterCommand({ "nucleus" })
-public class NucleusCommand extends OldCommandBase<CommandSource> {
+public class NucleusCommand extends CommandBase<CommandSource> {
 
     @Inject private ModuleContainer container;
 
     private final Text version = Text.of(MESSAGE_PREFIX, TextColors.GREEN, NAME + " version " + VERSION);
     private Text modules = null;
-
-    @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().children(this.createChildCommands()).build();
-    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

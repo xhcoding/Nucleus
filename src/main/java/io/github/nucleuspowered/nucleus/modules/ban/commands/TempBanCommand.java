@@ -7,12 +7,14 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
@@ -31,18 +33,18 @@ import java.time.temporal.ChronoUnit;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class TempBanCommand extends OldCommandBase<CommandSource> {
+public class TempBanCommand extends CommandBase<CommandSource> {
 
     private final String user = "user";
     private final String reason = "reason";
     private final String duration = "duration";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-                .arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(user))), GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
-                        GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason))))
-                .build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+                GenericArguments.onlyOne(GenericArguments.user(Text.of(user))), GenericArguments.onlyOne(new TimespanParser(Text.of(duration))),
+                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))
+        };
     }
 
     @Override

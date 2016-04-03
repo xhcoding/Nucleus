@@ -8,11 +8,13 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
@@ -39,13 +41,15 @@ import java.util.function.Consumer;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = "resetuser", subcommandOf = NucleusCommand.class)
-public class ResetUserCommand extends OldCommandBase<CommandSource> {
+public class ResetUserCommand extends CommandBase<CommandSource> {
 
     private final String userKey = "user";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.user(Text.of(userKey))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+                GenericArguments.user(Text.of(userKey))
+        };
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -15,6 +16,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
@@ -33,9 +35,9 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class BanCommand extends OldCommandBase<CommandSource> {
+public class BanCommand extends CommandBase<CommandSource> {
 
-    public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "ban.notify";
+    static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "ban.notify";
     private final String user = "user";
     private final String reason = "reason";
 
@@ -47,9 +49,11 @@ public class BanCommand extends OldCommandBase<CommandSource> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(user))),
-                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+                GenericArguments.onlyOne(GenericArguments.user(Text.of(user))),
+                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))
+        };
     }
 
     @Override

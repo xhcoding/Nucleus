@@ -9,12 +9,12 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -31,7 +31,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class LockWeatherCommand extends OldCommandBase<CommandSource> {
+public class LockWeatherCommand extends CommandBase<CommandSource> {
 
     @Inject private WorldConfigLoader loader;
 
@@ -39,11 +39,11 @@ public class LockWeatherCommand extends OldCommandBase<CommandSource> {
     private final String toggleKey = "toggle";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
                 GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.world(Text.of(worldKey)))),
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.bool(Text.of(toggleKey))))
-        ).build();
+        };
     }
 
     @Override

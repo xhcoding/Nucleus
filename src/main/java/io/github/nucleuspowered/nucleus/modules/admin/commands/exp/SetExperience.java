@@ -7,11 +7,13 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands.exp;
 import io.github.nucleuspowered.nucleus.argumentparsers.ExperienceLevelArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.admin.commands.ExperienceCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.DataTransactionResult;
@@ -26,19 +28,19 @@ import java.util.Optional;
 @NoCost
 @Permissions(root = "exp")
 @RegisterCommand(value = "set", subcommandOf = ExperienceCommand.class)
-public class SetExperience extends OldCommandBase<CommandSource> {
+public class SetExperience extends CommandBase<CommandSource> {
 
     private final String levelKey = "level";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.player(Text.of(ExperienceCommand.playerKey)))),
                 GenericArguments.firstParsing(
-                    GenericArguments.onlyOne(new ExperienceLevelArgument(Text.of(levelKey))),
-                    GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
+                        GenericArguments.onlyOne(new ExperienceLevelArgument(Text.of(levelKey))),
+                        GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
                 )
-        ).build();
+        };
     }
 
     @Override

@@ -8,14 +8,14 @@ import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"lightning", "smite", "thor"})
-public class LightningCommand extends OldCommandBase<CommandSource> {
+public class LightningCommand extends CommandBase<CommandSource> {
 
     private final String player = "player";
 
@@ -45,9 +45,11 @@ public class LightningCommand extends OldCommandBase<CommandSource> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.optional(GenericArguments.requiringPermission(
-                GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[]{
+                GenericArguments.optional(GenericArguments.requiringPermission(
+                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))
+        };
     }
 
     @Override

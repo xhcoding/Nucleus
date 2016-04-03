@@ -12,14 +12,14 @@ import io.github.nucleuspowered.nucleus.argumentparsers.WeatherParser;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.LocatedSource;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -29,7 +29,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("weather")
-public class WeatherCommand extends OldCommandBase<CommandSource> {
+public class WeatherCommand extends CommandBase<CommandSource> {
     private final String world = "world";
     private final String weather = "weather";
     private final String duration = "duration";
@@ -38,15 +38,15 @@ public class WeatherCommand extends OldCommandBase<CommandSource> {
     @Inject private WorldConfigLoader loader;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(
+    public CommandElement[] getArguments() {
+        return new CommandElement[]{
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
                 GenericArguments.onlyOne(new WeatherParser(Text.of(weather))), // More flexible with the arguments we can use.
                 GenericArguments.firstParsing(
-                    GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration)))),
-                    GenericArguments.onlyOne(GenericArguments.optional(new TimespanParser(Text.of(timespan))))
+                        GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration)))),
+                        GenericArguments.onlyOne(GenericArguments.optional(new TimespanParser(Text.of(timespan))))
                 )
-        ).description(Text.of("Sets the weather")).build();
+        };
     }
 
     @Override

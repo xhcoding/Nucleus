@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -14,6 +15,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -26,15 +28,17 @@ import java.util.Map;
 
 @Permissions
 @RegisterCommand("sudo")
-public class SudoCommand extends OldCommandBase<CommandSource> {
+public class SudoCommand extends CommandBase<CommandSource> {
 
     private final String playerKey = "player";
     private final String commandKey = "command";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
-                GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(commandKey)))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[]{
+                GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
+                GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(commandKey)))
+        };
     }
 
     @Override

@@ -6,11 +6,13 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
@@ -23,13 +25,13 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 @NoWarmup
 @Permissions
 @RegisterCommand({ "broadcast", "bcast", "bc" })
-public class BroadcastCommand extends OldCommandBase<CommandSource> {
+public class BroadcastCommand extends CommandBase<CommandSource> {
     private final String message = "message";
     @Inject private AdminConfigAdapter adminConfigAdapter;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] { GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message))) };
     }
 
     @Override

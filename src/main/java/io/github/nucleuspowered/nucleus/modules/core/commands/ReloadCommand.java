@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -18,12 +19,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 @NoWarmup
 @RunAsync
 @RegisterCommand(value = "reload", subcommandOf = NucleusCommand.class)
-public class ReloadCommand extends OldCommandBase<CommandSource> {
-
-    @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().build();
-    }
+public class ReloadCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

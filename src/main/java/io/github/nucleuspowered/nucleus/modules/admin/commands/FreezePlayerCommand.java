@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -17,6 +18,7 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -28,7 +30,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"freezeplayer", "freeze"})
-public class FreezePlayerCommand extends OldCommandBase<CommandSource> {
+public class FreezePlayerCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader userConfigLoader;
 
@@ -42,11 +44,11 @@ public class FreezePlayerCommand extends OldCommandBase<CommandSource> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-                .arguments(GenericArguments.optional(GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others"))))
-                .build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+                GenericArguments.optional(GenericArguments.requiringPermission(
+                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))
+        };
     }
 
     @Override
