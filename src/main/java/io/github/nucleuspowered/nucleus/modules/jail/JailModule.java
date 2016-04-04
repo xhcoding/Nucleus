@@ -27,7 +27,7 @@ public class JailModule extends StandardModule {
     @Inject private InternalServiceManager serviceManager;
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
+    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new JailConfigAdapter());
     }
 

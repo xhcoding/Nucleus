@@ -16,7 +16,7 @@ import java.util.Optional;
 public class AFKModule extends StandardModule {
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
+    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new AFKConfigAdapter());
     }
 

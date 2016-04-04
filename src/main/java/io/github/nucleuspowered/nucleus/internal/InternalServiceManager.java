@@ -5,13 +5,20 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.Maps;
+import com.google.inject.AbstractModule;
+import io.github.nucleuspowered.nucleus.Nucleus;
 
 import java.util.Map;
 import java.util.Optional;
 
 public final class InternalServiceManager {
 
+    private final Nucleus plugin;
     private Map<Class<?>, Object> serviceMap = Maps.newConcurrentMap();
+
+    public InternalServiceManager(Nucleus plugin) {
+        this.plugin = plugin;
+    }
 
     public <I, C extends I> boolean registerService(Class<I> key, C service) {
         if (serviceMap.containsKey(key)) {
@@ -19,6 +26,13 @@ public final class InternalServiceManager {
         }
 
         serviceMap.put(key, service);
+        plugin.updateInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(key).toInstance(service);
+            }
+        });
+
         return true;
     }
 

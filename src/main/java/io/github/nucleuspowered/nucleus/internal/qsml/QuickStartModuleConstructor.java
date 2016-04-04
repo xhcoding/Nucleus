@@ -23,11 +23,20 @@ public class QuickStartModuleConstructor implements ModuleConstructor {
     }
 
     @Override
+    public void preEnableModule(Module module) throws QuickStartModuleLoaderException.Enabling {
+        try {
+            module.preEnable();
+        } catch (RuntimeException e) {
+            throw new QuickStartModuleLoaderException.Enabling(module.getClass(), "An error occurred.", e);
+        }
+    }
+
+    @Override
     public void enableModule(Module module) throws QuickStartModuleLoaderException.Enabling {
         try {
             module.onEnable();
         } catch (RuntimeException e) {
-            throw new QuickStartModuleLoaderException.Enabling(module.getClass(), "An error occured.", e);
+            throw new QuickStartModuleLoaderException.Enabling(module.getClass(), "An error occurred.", e);
         }
     }
 }

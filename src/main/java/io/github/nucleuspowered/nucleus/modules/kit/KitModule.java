@@ -39,7 +39,7 @@ public class KitModule extends StandardModule {
     }
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
+    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new KitConfigAdapter());
     }
 }

@@ -15,7 +15,7 @@ import java.util.Optional;
 public class ConnectionMessagesModule extends StandardModule {
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
+    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new ConnectionMessagesConfigAdapter());
     }
 }

@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -21,7 +22,6 @@ import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
-import io.github.nucleuspowered.nucleus.internal.guice.QuickStartModuleLoaderInjector;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
@@ -49,8 +49,6 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import uk.co.drnaylor.quickstart.ModuleContainer;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleDiscoveryException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
 
@@ -75,7 +73,7 @@ public class Nucleus {
     private ChatUtil chatUtil;
     private Injector injector;
 
-    private InternalServiceManager serviceManager = new InternalServiceManager();
+    private InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider();
 
     private WarmupManager warmupManager;
@@ -112,7 +110,6 @@ public class Nucleus {
             worldConfigLoader = new WorldConfigLoader(this);
             warmupManager = new WarmupManager();
             chatUtil = new ChatUtil(configLoader);
-            serviceManager.registerService(WarmupManager.class, warmupManager);
         } catch (Exception e) {
             isErrored = true;
             e.printStackTrace();
@@ -123,11 +120,11 @@ public class Nucleus {
         game.getServiceManager().setProvider(this, NucleusModuleService.class, new ModuleRegistrationProxyService(this));
         game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
-        Injector qsmlInjector = Guice.createInjector(new QuickStartModuleLoaderInjector(this));
+        serviceManager.registerService(WarmupManager.class, warmupManager);
 
         try {
             moduleContainer = ModuleContainer.builder()
-                    .setConstructor(new QuickStartModuleConstructor(qsmlInjector))
+                    .setConstructor(new QuickStartModuleConstructor(injector))
                     .setConfigurationLoader(HoconConfigurationLoader.builder()
                             .setDefaultOptions(ConfigurationOptions.defaults().setObjectMapperFactory(NucleusObjectMapperFactory.getInstance()))
                             .setPath(Paths.get(configDir.toString(), "main.conf"))
@@ -276,6 +273,11 @@ public class Nucleus {
 
     public MessageProvider getMessageProvider() {
         return messageProvider;
+    }
+
+    public Injector updateInjector(AbstractModule module) {
+        injector = injector.createChildInjector(module);
+        return injector;
     }
 
     private void registerPermissions() {

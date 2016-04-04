@@ -52,7 +52,6 @@ If you are creating a new module, the following should be kept in mind:
 * If the module has some config involved:
     * Create a new Config class that mirrors your config structure using `@ConfigSerializable` and `@Setting` annotations from Configurate.
     * Create a class that extends the `NucleusConfigAdapter` to manage this config class.
-    * Add the configuration to the Guice Injection file (though we are looking at registering this automatically in the near future)
     * If you have any services that need to be registered, they can be done in the `performPreTasks` method on `StandardModule`, [see the AFK module for a good example](https://github.com/NucleusPowered/Nucleus/blob/master/src/main/java/io/github/nucleuspowered/nucleus/modules/afk/AFKModule.java).
  
 * Put commands, listeners and runnables in sub packages - they will be registered automatically if they are of the correct base classes - see below.

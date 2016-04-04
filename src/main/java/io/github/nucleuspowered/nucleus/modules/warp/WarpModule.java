@@ -41,7 +41,7 @@ public class WarpModule extends StandardModule {
     }
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
+    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new WarpConfigAdapter());
     }
 }

@@ -15,7 +15,7 @@ import java.util.Optional;
 public class PlayerInfoModule extends StandardModule {
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
+    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new PlayerInfoConfigAdapter());
     }
 }

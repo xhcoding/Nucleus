@@ -20,13 +20,17 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.scheduler.Task;
 import uk.co.drnaylor.quickstart.Module;
+import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public abstract class StandardModule implements Module {
+
+    private Optional<AbstractConfigAdapter<?>> adapter = null;
 
     @Inject protected Nucleus nucleus;
     @Inject protected InternalServiceManager serviceManager;
@@ -35,14 +39,31 @@ public abstract class StandardModule implements Module {
     private CommandsConfig commandsConfig;
 
     @Override
-    public void onEnable() {
+    public final Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
+        if (adapter == null) {
+            adapter = createConfigAdapter();
+            adapter.ifPresent(x -> nucleus.getInjector().injectMembers(x));
+        }
+
+        return adapter;
+    }
+
+    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
+        return Optional.empty();
+    }
+
+    @Override
+    public final void preEnable() {
         try {
             performPreTasks();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Cannot enable module!", e);
         }
+    }
 
+    @Override
+    public void onEnable() {
         // Construct commands
         try {
             loadCommands();
