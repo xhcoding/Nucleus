@@ -22,6 +22,7 @@ import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
 
@@ -64,14 +65,18 @@ public class BanCommand extends OldCommandBase<CommandSource> {
         }
 
         // Create the ban.
-        Ban bp = Ban.builder().profile(u.getProfile()).source(src).reason(Text.of(r)).type(BanTypes.PROFILE).build();
+        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u.getProfile()).source(src).reason(Text.of(r)).build();
         service.addBan(bp);
 
         // Get the permission, "quickstart.ban.notify"
         MutableMessageChannel send = MessageChannel.permission(notifyPermission).asMutable();
         send.addMember(src);
         send.send(Util.getTextMessageWithFormat("command.ban.applied", u.getName(), src.getName()));
-        send.send(Util.getTextMessageWithFormat("standard.reason", reason));
+        send.send(Util.getTextMessageWithFormat("standard.reason", r));
+
+        if (Sponge.getServer().getPlayer(u.getUniqueId()).isPresent()) {
+            Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(r));
+        }
 
         return CommandResult.success();
     }
