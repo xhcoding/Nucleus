@@ -12,7 +12,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
@@ -20,8 +20,8 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
@@ -32,7 +32,7 @@ import java.util.Optional;
 @Permissions(root = "teleport", alias = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand({"teleport", "tp"})
 @ConfigCommandAlias("teleport")
-public class TeleportCommand extends OldCommandBase<CommandSource> {
+public class TeleportCommand extends CommandBase<CommandSource> {
 
     private String playerFromKey = "playerFrom";
     private String playerKey = "player";
@@ -45,11 +45,9 @@ public class TeleportCommand extends OldCommandBase<CommandSource> {
         m.put("others", new PermissionInformation("permission.teleport.others", SuggestedLevel.ADMIN));
         return m;
     }
-
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-                .arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+    public CommandElement[] getArguments() {
+       return new CommandElement[]{GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
 
                         // Either we get two arguments, or we get one.
                         GenericArguments.firstParsing(
@@ -58,8 +56,7 @@ public class TeleportCommand extends OldCommandBase<CommandSource> {
                                         permissions.getPermissionWithSuffix("others")))),
 
                         // <player>
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))))
-                .build();
+                        GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))};
     }
 
     @Override

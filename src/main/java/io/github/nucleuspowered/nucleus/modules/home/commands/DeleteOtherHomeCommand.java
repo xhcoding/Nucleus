@@ -7,14 +7,19 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherParser;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
 @Permissions(root = "home", alias = "deleteother")
@@ -23,15 +28,15 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @NoWarmup
 @RegisterCommand({"deletehomeother", "delhomeother"})
-public class DeleteOtherHomeCommand extends OldCommandBase<CommandSource> {
+public class DeleteOtherHomeCommand extends CommandBase<CommandSource> {
 
     private final String homeKey = "home";
 
     @Inject private CoreConfigAdapter cca;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(new HomeOtherParser(Text.of(homeKey), plugin, cca))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.onlyOne(new HomeOtherParser(Text.of(homeKey), plugin, cca))};
     }
 
     @Override

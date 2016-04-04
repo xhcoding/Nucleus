@@ -5,14 +5,18 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
@@ -24,7 +28,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tppos"})
-public class TeleportPositionCommand extends OldCommandBase<CommandSource> {
+public class TeleportPositionCommand extends CommandBase<CommandSource> {
 
     private final String key = "player";
     private final String location = "world";
@@ -33,15 +37,12 @@ public class TeleportPositionCommand extends OldCommandBase<CommandSource> {
     private final String z = "z";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-                .arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
-                        GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
-                        GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
-                        GenericArguments.onlyOne(GenericArguments.integer(Text.of(x))),
-                        GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
-                        GenericArguments.onlyOne(GenericArguments.integer(Text.of(z))))
-                .build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+                GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
+                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
+                GenericArguments.onlyOne(GenericArguments.integer(Text.of(x))), GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
+                GenericArguments.onlyOne(GenericArguments.integer(Text.of(z)))};
     }
 
     @Override

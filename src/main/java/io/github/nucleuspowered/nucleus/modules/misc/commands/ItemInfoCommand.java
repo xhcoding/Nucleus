@@ -8,14 +8,14 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.DataScanner;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.value.BaseValue;
 import org.spongepowered.api.entity.living.player.Player;
@@ -31,13 +31,12 @@ import java.util.Map;
 
 @Permissions
 @RegisterCommand({"iteminfo", "itemdb"})
-public class ItemInfoCommand extends OldCommandBase<Player> {
+public class ItemInfoCommand extends CommandBase<Player> {
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(
-                GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("extended"), "e", "-extended").buildWith(GenericArguments.none())
-        ).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("extended"), "e", "-extended")
+                .buildWith(GenericArguments.none())};
     }
 
     @Override
@@ -56,7 +55,8 @@ public class ItemInfoCommand extends OldCommandBase<Player> {
             lt.add(Util.getTextMessageWithFormat("command.iteminfo.id", it.getItem().getId(), it.getTranslation().get()));
 
             if (args.hasAny("e") || args.hasAny("extended")) {
-                // For each key, see if the item supports it. If so, get and print the value.
+                // For each key, see if the item supports it. If so, get and
+                // print the value.
                 DataScanner.getInstance().getKeysForHolder(it).entrySet().stream().filter(x -> x.getValue() != null).filter(x -> {
                     // Work around a Sponge bug.
                     try {
@@ -72,9 +72,8 @@ public class ItemInfoCommand extends OldCommandBase<Player> {
                 });
             }
 
-            Sponge.getServiceManager().provideUnchecked(PaginationService.class)
-                .builder().contents(lt).padding(Text.of(TextColors.GREEN, "-")).title(Util.getTextMessageWithFormat("command.iteminfo.list.header"))
-                .sendTo(player);
+            Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(lt).padding(Text.of(TextColors.GREEN, "-"))
+                    .title(Util.getTextMessageWithFormat("command.iteminfo.list.header")).sendTo(player);
             return CommandResult.success();
         }
 

@@ -5,19 +5,25 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 
-import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+
+import javax.inject.Inject;
 
 @Permissions(root = "teleport")
 @NoWarmup
@@ -25,13 +31,13 @@ import java.time.temporal.ChronoUnit;
 @NoCooldown
 @RegisterCommand({"tpaall", "tpaskall"})
 @RunAsync
-public class TeleportAskAllHereCommand extends OldCommandBase<Player> {
+public class TeleportAskAllHereCommand extends CommandBase<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.flags().flag("f").buildWith(GenericArguments.none())).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.flags().flag("f").buildWith(GenericArguments.none())};
     }
 
     @Override

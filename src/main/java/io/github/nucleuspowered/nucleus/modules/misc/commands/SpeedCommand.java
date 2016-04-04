@@ -7,12 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.misc.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @RegisterCommand("speed")
 @Permissions
-public class SpeedCommand extends OldCommandBase<CommandSource> {
+public class SpeedCommand extends CommandBase<CommandSource> {
 
     private final String speedKey = "speed";
     private final String typeKey = "type";
@@ -41,7 +41,7 @@ public class SpeedCommand extends OldCommandBase<CommandSource> {
     public static final int multiplier = 20;
 
     @Override
-    public CommandSpec createSpec() {
+    public CommandElement[] getArguments() {
         Map<String, SpeedType> keysMap = new HashMap<>();
         keysMap.put("fly", SpeedType.FLYING);
         keysMap.put("flying", SpeedType.FLYING);
@@ -50,12 +50,11 @@ public class SpeedCommand extends OldCommandBase<CommandSource> {
         keysMap.put("walk", SpeedType.WALKING);
         keysMap.put("w", SpeedType.WALKING);
 
-        return getSpecBuilderBase()
-                .arguments(GenericArguments.optional(GenericArguments.seq(
-                        GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
-                                .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
+        return new CommandElement[] {GenericArguments.optional(GenericArguments.seq(
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
+                        .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
-                GenericArguments.integer(Text.of(speedKey))))).build();
+                GenericArguments.integer(Text.of(speedKey))))};
     }
 
     @Override
@@ -106,7 +105,8 @@ public class SpeedCommand extends OldCommandBase<CommandSource> {
     }
 
     private enum SpeedType {
-        WALKING(Keys.WALKING_SPEED, Util.getMessageWithFormat("standard.walking")), FLYING(Keys.FLYING_SPEED, Util.getMessageWithFormat("standard.flying"));
+        WALKING(Keys.WALKING_SPEED, Util.getMessageWithFormat("standard.walking")),
+        FLYING(Keys.FLYING_SPEED, Util.getMessageWithFormat("standard.flying"));
 
         final Key<Value<Double>> speedKey;
         final String name;

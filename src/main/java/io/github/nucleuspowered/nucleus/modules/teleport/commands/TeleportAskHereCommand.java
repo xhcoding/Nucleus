@@ -9,28 +9,29 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 @Permissions(root = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @NoWarmup(generateConfigEntry = true)
 @RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})
-public class TeleportAskHereCommand extends OldCommandBase<Player> {
+public class TeleportAskHereCommand extends CommandBase<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
@@ -44,11 +45,9 @@ public class TeleportAskHereCommand extends OldCommandBase<Player> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-                .arguments(GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
-                        permissions.getPermissionWithSuffix("force")), GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))
-                .build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+                permissions.getPermissionWithSuffix("force")), GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))};
     }
 
     @Override

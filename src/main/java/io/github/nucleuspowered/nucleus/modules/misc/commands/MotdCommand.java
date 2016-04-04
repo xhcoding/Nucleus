@@ -7,20 +7,21 @@ package io.github.nucleuspowered.nucleus.modules.misc.commands;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand("motd")
-public class MotdCommand extends OldCommandBase<CommandSource> {
+public class MotdCommand extends CommandBase<CommandSource> {
+
     @Override
-    public CommandSpec createSpec() {
-        return null;
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
     @Override

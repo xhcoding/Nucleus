@@ -10,7 +10,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -21,8 +21,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -43,7 +43,7 @@ import java.util.Map;
 @Permissions
 @RunAsync
 @RegisterCommand({"seen", "seenplayer"})
-public class SeenCommand extends OldCommandBase<CommandSource> {
+public class SeenCommand extends CommandBase<CommandSource> {
 
     @Inject(optional = true) @Nullable private MuteHandler muteService;
     @Inject(optional = true) @Nullable private JailHandler jailService;
@@ -58,8 +58,8 @@ public class SeenCommand extends OldCommandBase<CommandSource> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))};
     }
 
     @Override
@@ -114,7 +114,8 @@ public class SeenCommand extends OldCommandBase<CommandSource> {
         }
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        ps.builder().contents(messages).padding(Text.of(TextColors.GREEN, "-")).title(Util.getTextMessageWithFormat("command.seen.title", user.getName())).sendTo(src);
+        ps.builder().contents(messages).padding(Text.of(TextColors.GREEN, "-"))
+                .title(Util.getTextMessageWithFormat("command.seen.title", user.getName())).sendTo(src);
         return CommandResult.success();
     }
 

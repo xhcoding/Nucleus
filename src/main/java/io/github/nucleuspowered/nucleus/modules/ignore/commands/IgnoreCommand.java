@@ -8,15 +8,20 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
@@ -29,7 +34,7 @@ import java.util.Map;
 @NoWarmup
 @RegisterCommand("ignore")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-public class IgnoreCommand extends OldCommandBase<Player> {
+public class IgnoreCommand extends CommandBase<Player> {
 
     @Inject private UserConfigLoader loader;
 
@@ -44,11 +49,9 @@ public class IgnoreCommand extends OldCommandBase<Player> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(
-                GenericArguments.onlyOne(GenericArguments.user(Text.of(userKey))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggleKey))))
-        ).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.user(Text.of(userKey))),
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggleKey))))};
     }
 
     @Override

@@ -9,7 +9,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -17,8 +17,8 @@ import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAd
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 
 @RegisterCommand({"nick", "nickname"})
 @Permissions
-public class NicknameCommand extends OldCommandBase<CommandSource> {
+public class NicknameCommand extends CommandBase<CommandSource> {
 
     @Inject private UserConfigLoader loader;
     @Inject private NicknameConfigAdapter nicknameConfigAdapter;
@@ -54,12 +54,11 @@ public class NicknameCommand extends OldCommandBase<CommandSource> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-                .arguments(
-                        GenericArguments.optionalWeak(GenericArguments.requiringPermission(
-                                GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
-                GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+                GenericArguments.optionalWeak(GenericArguments.requiringPermission(
+                        GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))), permissions.getPermissionWithSuffix("others"))),
+                GenericArguments.onlyOne(GenericArguments.string(Text.of(nickName)))};
     }
 
     @Override

@@ -7,13 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -33,12 +32,7 @@ import java.util.stream.Collectors;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class)
-public class ListWorldCommand extends OldCommandBase<CommandSource> {
-
-    @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Lists worlds.")).build();
-    }
+public class ListWorldCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
@@ -56,8 +50,8 @@ public class ListWorldCommand extends OldCommandBase<CommandSource> {
             worldText.add(item);
         }
 
-        PaginationList.Builder paginationBuilder =
-                paginationService.builder().contents(worldText).title(Text.of(TextColors.GREEN, "Showing Worlds")).padding(Text.of(TextColors.GREEN, "-"));
+        PaginationList.Builder paginationBuilder = paginationService.builder().contents(worldText).title(Text.of(TextColors.GREEN, "Showing Worlds"))
+                .padding(Text.of(TextColors.GREEN, "-"));
         paginationBuilder.sendTo(src);
 
         return CommandResult.success();

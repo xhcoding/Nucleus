@@ -8,12 +8,12 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.data.property.block.PassableProperty;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.Direction;
@@ -24,16 +24,17 @@ import org.spongepowered.api.world.World;
 
 @Permissions
 @RegisterCommand({"jump", "j", "jmp"})
-public class JumpCommand extends OldCommandBase<Player> {
+public class JumpCommand extends CommandBase<Player> {
 
     @Inject private JumpConfigAdapter jca;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().build();
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
-    // Original code taken from EssentialCmds. With thanks to 12AwsomeMan34 for the initial contribution.
+    // Original code taken from EssentialCmds. With thanks to 12AwsomeMan34 for
+    // the initial contribution.
     @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
         BlockRay<World> playerBlockRay = BlockRay.from(player).blockLimit(jca.getNode().getMaxJump()).build();

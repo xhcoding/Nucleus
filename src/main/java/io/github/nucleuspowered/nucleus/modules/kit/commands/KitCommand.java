@@ -15,7 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -23,8 +23,8 @@ import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
@@ -42,7 +42,7 @@ import java.util.Map;
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand("kit")
 @NoCost // This is determined by the kit itself.
-public class KitCommand extends OldCommandBase<Player> {
+public class KitCommand extends CommandBase<Player> {
 
     private final String kit = "kit";
 
@@ -52,15 +52,15 @@ public class KitCommand extends OldCommandBase<Player> {
     @Inject private EconHelper econHelper;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().children(this.createChildCommands())
-                .arguments(GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true))};
     }
 
     @Override
     protected Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> pi = Maps.newHashMap();
-        pi.put(PermissionRegistry.PERMISSIONS_PREFIX + "kits", new PermissionInformation(Util.getMessageWithFormat("permission.kits"), SuggestedLevel.ADMIN));
+        pi.put(PermissionRegistry.PERMISSIONS_PREFIX + "kits",
+                new PermissionInformation(Util.getMessageWithFormat("permission.kits"), SuggestedLevel.ADMIN));
         return pi;
     }
 
@@ -91,7 +91,8 @@ public class KitCommand extends OldCommandBase<Player> {
             return CommandResult.empty();
         }
 
-        // If we have a cooldown for the kit, and we don't have permission to bypass it...
+        // If we have a cooldown for the kit, and we don't have permission to
+        // bypass it...
         if (!player.hasPermission(permissions.getPermissionWithSuffix("exempt.cooldown")) && kit.getInterval().getSeconds() > 0) {
 
             // If the kit was used before...
@@ -133,7 +134,8 @@ public class KitCommand extends OldCommandBase<Player> {
                 econHelper.withdrawFromPlayer(player, cost);
             }
 
-            // Register the last used time. Do it for everyone, in case permissions or cooldowns change later
+            // Register the last used time. Do it for everyone, in case
+            // permissions or cooldowns change later
             user.addKitLastUsedTime(kitName, now);
             player.sendMessage(Util.getTextMessageWithFormat("command.kit.spawned", kitName));
             return CommandResult.success();

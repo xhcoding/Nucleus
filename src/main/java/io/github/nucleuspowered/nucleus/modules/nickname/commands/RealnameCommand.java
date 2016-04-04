@@ -7,19 +7,20 @@ package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 
 @RegisterCommand({"realname"})
 @Permissions
 @RunAsync
-public class RealnameCommand extends OldCommandBase<CommandSource> {
+public class RealnameCommand extends CommandBase<CommandSource> {
+
     @Override
-    public CommandSpec createSpec() {
-        return null;
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
     @Override

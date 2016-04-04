@@ -7,15 +7,20 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -36,13 +41,13 @@ import java.util.ArrayList;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitListCommand extends OldCommandBase<CommandSource> {
+public class KitListCommand extends CommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Lists kits.")).build();
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
     @Override
@@ -57,8 +62,8 @@ public class KitListCommand extends OldCommandBase<CommandSource> {
             kitText.add(item);
         }
 
-        PaginationList.Builder paginationBuilder =
-                paginationService.builder().contents(kitText).title(Util.getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
+        PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
+                .title(Util.getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
         paginationBuilder.sendTo(src);
 
         return CommandResult.success();

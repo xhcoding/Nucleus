@@ -10,7 +10,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -18,8 +18,8 @@ import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHe
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -30,7 +30,7 @@ import java.util.Map;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"helpop"})
-public class HelpOpCommand extends OldCommandBase<Player> {
+public class HelpOpCommand extends CommandBase<Player> {
 
     private final String messageKey = "message";
 
@@ -38,8 +38,8 @@ public class HelpOpCommand extends OldCommandBase<Player> {
     @Inject private ChatUtil chatUtil;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(GenericArguments.remainingJoinedStrings(Text.of(messageKey))).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.remainingJoinedStrings(Text.of(messageKey))};
     }
 
     @Override
@@ -53,7 +53,8 @@ public class HelpOpCommand extends OldCommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         String message = args.<String>getOne(messageKey).get();
 
-        // Message is about to be sent. Send the event out. If canceled, then that's that.
+        // Message is about to be sent. Send the event out. If canceled, then
+        // that's that.
         if (Sponge.getEventManager().post(new InternalNucleusHelpOpEvent(src, message))) {
             src.sendMessage(Util.getTextMessageWithFormat("message.cancel"));
             return CommandResult.empty();

@@ -7,14 +7,14 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
@@ -30,17 +30,15 @@ import java.util.Optional;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
-public class TeleportWorldCommand extends OldCommandBase<CommandSource> {
+public class TeleportWorldCommand extends CommandBase<CommandSource> {
 
     private final String world = "world";
     private final String player = "player";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Teleport World Command"))
-                .arguments(GenericArguments.seq(GenericArguments.world(Text.of(world)),
-                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of(player))))))
-                .build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.seq(GenericArguments.world(Text.of(world)),
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of(player)))))};
     }
 
     @Override

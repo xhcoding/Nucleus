@@ -8,16 +8,21 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
 import java.time.Duration;
@@ -33,7 +38,7 @@ import java.time.Duration;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitSetCooldownCommand extends OldCommandBase<CommandSource> {
+public class KitSetCooldownCommand extends CommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
@@ -42,11 +47,9 @@ public class KitSetCooldownCommand extends OldCommandBase<CommandSource> {
     private final String duration = "duration";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Sets kit cooldown."))
-                .arguments(GenericArguments.seq(GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true)),
-                        GenericArguments.onlyOne(new TimespanParser(Text.of(duration)))))
-                .build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.seq(GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true)),
+                GenericArguments.onlyOne(new TimespanParser(Text.of(duration))))};
     }
 
     @Override
@@ -54,7 +57,8 @@ public class KitSetCooldownCommand extends OldCommandBase<CommandSource> {
         KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
         long seconds = args.<Long>getOne(duration).get();
 
-        // This Kit is a reference back to the version in list, so we don't need to update it explicitly
+        // This Kit is a reference back to the version in list, so we don't need
+        // to update it explicitly
         kitInfo.kit.setInterval(Duration.ofSeconds(seconds));
         player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitInfo.name, Util.getTimeStringFromSeconds(seconds)));
         return CommandResult.success();

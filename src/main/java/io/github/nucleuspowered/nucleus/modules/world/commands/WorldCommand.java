@@ -6,12 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
 
 /**
  * Allows a user to warp to the specified warp.
@@ -21,13 +20,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
  */
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand("world")
-public class WorldCommand extends OldCommandBase<CommandSource> {
-    @Override
-    public CommandSpec createSpec() {
-        return CommandSpec.builder()
-                .children(this.createChildCommands())
-                .build();
-    }
+public class WorldCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

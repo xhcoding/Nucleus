@@ -9,7 +9,7 @@ import io.github.nucleuspowered.nucleus.internal.DataScanner;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -19,8 +19,8 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.trait.BlockTrait;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.data.Property;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -30,18 +30,22 @@ import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Permissions
-@RegisterCommand({ "blockinfo" })
+@RegisterCommand({"blockinfo"})
 @RunAsync
-public class BlockInfoCommand extends OldCommandBase<Player> {
+public class BlockInfoCommand extends CommandBase<Player> {
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(
-                GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("extended"), "e", "-extended").buildWith(GenericArguments.none())
-        ).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("extended"), "e", "-extended")
+                .buildWith(GenericArguments.none())};
     }
 
     @Override
@@ -79,19 +83,14 @@ public class BlockInfoCommand extends OldCommandBase<Player> {
 
                 Collection<BlockTrait<?>> cb = b.getTraits();
                 if (!cb.isEmpty()) {
-                    cb.forEach(x -> b.getTraitValue(x).ifPresent(v ->
-                            DataScanner.getText(player, "command.blockinfo.traits.item", x.getName(), v).ifPresent(lt::add)
-                    ));
+                    cb.forEach(x -> b.getTraitValue(x)
+                            .ifPresent(v -> DataScanner.getText(player, "command.blockinfo.traits.item", x.getName(), v).ifPresent(lt::add)));
                 }
             }
 
-            Sponge.getServiceManager().provideUnchecked(PaginationService.class)
-                    .builder().contents(lt).padding(Text.of(TextColors.GREEN, "-"))
-                    .title(Util.getTextMessageWithFormat(
-                            "command.blockinfo.list.header",
-                            String.valueOf(brh.getBlockX()),
-                            String.valueOf(brh.getBlockY()),
-                            String.valueOf(brh.getBlockZ())))
+            Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(lt).padding(Text.of(TextColors.GREEN, "-"))
+                    .title(Util.getTextMessageWithFormat("command.blockinfo.list.header", String.valueOf(brh.getBlockX()),
+                            String.valueOf(brh.getBlockY()), String.valueOf(brh.getBlockZ())))
                     .sendTo(player);
 
             return CommandResult.success();

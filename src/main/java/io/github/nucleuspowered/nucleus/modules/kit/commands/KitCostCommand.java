@@ -8,23 +8,27 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
 /**
  * Sets kit cost.
  *
- * Command Usage: /kit cost [kit] [cost]
- * Permission: nucleus.kit.cost.base
+ * Command Usage: /kit cost [kit] [cost] Permission: nucleus.kit.cost.base
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"cost", "setcost"}, subcommandOf = KitCommand.class)
@@ -32,7 +36,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitCostCommand extends OldCommandBase<CommandSource> {
+public class KitCostCommand extends CommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private UserConfigLoader userConfigLoader;
@@ -42,11 +46,9 @@ public class KitCostCommand extends OldCommandBase<CommandSource> {
     private final String kitKey = "kit";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().arguments(
-                GenericArguments.onlyOne(new KitParser(Text.of(kitKey), kca, kitConfig, false)),
-                GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of(costKey)))
-        ).build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.onlyOne(new KitParser(Text.of(kitKey), kca, kitConfig, false)),
+                GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of(costKey)))};
     }
 
     @Override

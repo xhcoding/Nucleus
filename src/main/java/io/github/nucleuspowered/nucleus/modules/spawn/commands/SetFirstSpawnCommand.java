@@ -7,11 +7,16 @@ package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 
 /**
@@ -23,13 +28,13 @@ import org.spongepowered.api.entity.living.player.Player;
 @NoCooldown
 @NoCost
 @RunAsync
-public class SetFirstSpawnCommand extends OldCommandBase<Player> {
+public class SetFirstSpawnCommand extends CommandBase<Player> {
 
     @Inject private GeneralDataStore data;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().children(this.createChildCommands()).build();
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
     @Override

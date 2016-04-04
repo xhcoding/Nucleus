@@ -7,14 +7,14 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.difficulty.Difficulty;
@@ -30,18 +30,16 @@ import java.util.Optional;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setdifficulty"}, subcommandOf = WorldCommand.class)
-public class SetDifficultyWorldCommand extends OldCommandBase<CommandSource> {
+public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
 
     private final String difficulty = "difficulty";
     private final String world = "world";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Set Difficulty World Command"))
-                .arguments(GenericArguments.seq(
-                        GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(difficulty), CatalogTypes.DIFFICULTY)),
-                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(world))))))
-                .build();
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+                GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(difficulty), CatalogTypes.DIFFICULTY)),
+                        GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))))};
     }
 
     @Override

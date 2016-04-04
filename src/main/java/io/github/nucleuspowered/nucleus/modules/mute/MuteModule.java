@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.mute;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;

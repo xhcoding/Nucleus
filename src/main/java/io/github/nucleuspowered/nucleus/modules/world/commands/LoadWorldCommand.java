@@ -7,19 +7,24 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.*;
+import org.spongepowered.api.world.DimensionType;
+import org.spongepowered.api.world.DimensionTypes;
+import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.GeneratorTypes;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.WorldCreationSettings;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -34,7 +39,7 @@ import java.util.Optional;
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"load"}, subcommandOf = WorldCommand.class)
-public class LoadWorldCommand extends OldCommandBase<CommandSource> {
+public class LoadWorldCommand extends CommandBase<CommandSource> {
 
     private final String name = "name";
     private final String dimension = "dimension";
@@ -43,16 +48,15 @@ public class LoadWorldCommand extends OldCommandBase<CommandSource> {
     private final String difficulty = "difficulty";
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Load World Command"))
-                .arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of(name))),
-                        GenericArguments.optional(
-                                GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(dimension), CatalogTypes.DIMENSION_TYPE))),
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of(name))),
+                GenericArguments
+                        .optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(dimension), CatalogTypes.DIMENSION_TYPE))),
                 GenericArguments
                         .optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(generator), CatalogTypes.GENERATOR_TYPE))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(gamemode), CatalogTypes.GAME_MODE))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(difficulty), CatalogTypes.DIFFICULTY)))))
-                .build();
+                GenericArguments
+                        .optional(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(difficulty), CatalogTypes.DIFFICULTY))))};
     }
 
     @Override

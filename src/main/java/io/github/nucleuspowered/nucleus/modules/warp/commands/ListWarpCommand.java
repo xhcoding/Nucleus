@@ -11,14 +11,14 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -37,14 +37,14 @@ import java.util.stream.Collectors;
 @Permissions(root = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class)
-public class ListWarpCommand extends OldCommandBase<CommandSource> {
+public class ListWarpCommand extends CommandBase<CommandSource> {
 
     private NucleusWarpService service;
     @Inject private WarpConfigAdapter adapter;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().description(Text.of("Lists the warps available to you.")).build();
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
     @Override
@@ -72,7 +72,8 @@ public class ListWarpCommand extends OldCommandBase<CommandSource> {
             }
         }).collect(Collectors.toList());
 
-        ps.builder().title(Util.getTextMessageWithFormat("command.warps.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt).sendTo(src);
+        ps.builder().title(Util.getTextMessageWithFormat("command.warps.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt)
+                .sendTo(src);
         return CommandResult.success();
     }
 

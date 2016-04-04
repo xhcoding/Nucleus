@@ -7,13 +7,18 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -39,14 +44,14 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCost
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = PowertoolCommand.class)
-public class ListPowertoolCommand extends OldCommandBase<Player> {
+public class ListPowertoolCommand extends CommandBase<Player> {
 
     @Inject private UserConfigLoader loader;
     private PaginationService paginationService = null;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().build();
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
     @Override
@@ -82,9 +87,8 @@ public class ListPowertoolCommand extends OldCommandBase<Player> {
         // Create the click actions.
         ClickAction viewAction = TextActions.executeCallback(pl -> {
             paginationService.builder().title(Util.getTextMessageWithFormat("command.powertool.ind.header", powertool))
-                .padding(Text.of(TextColors.GREEN, "-")).contents(
-                    (List<Text>)commands.stream().map(x -> Text.of(TextColors.YELLOW, x)).collect(Collectors.toList())
-                ).sendTo(src);
+                    .padding(Text.of(TextColors.GREEN, "-"))
+                    .contents((List<Text>) commands.stream().map(x -> Text.of(TextColors.YELLOW, x)).collect(Collectors.toList())).sendTo(src);
         });
 
         ClickAction deleteAction = TextActions.executeCallback(pl -> {
@@ -95,10 +99,9 @@ public class ListPowertoolCommand extends OldCommandBase<Player> {
         TextColor tc = oit.isPresent() ? TextColors.YELLOW : TextColors.GRAY;
 
         // id - [View] - [Delete]
-        return Text.builder().append(Text.of(tc, powertool)).append(Text.of(" - ")).append(
-                Text.builder(Util.getMessageWithFormat("standard.view")).color(TextColors.YELLOW).onClick(viewAction).build()
-        ).append(Text.of(" - ")).append(
-                Text.builder(Util.getMessageWithFormat("standard.delete")).color(TextColors.DARK_RED).onClick(deleteAction).build()
-        ).build();
+        return Text.builder().append(Text.of(tc, powertool)).append(Text.of(" - "))
+                .append(Text.builder(Util.getMessageWithFormat("standard.view")).color(TextColors.YELLOW).onClick(viewAction).build())
+                .append(Text.of(" - "))
+                .append(Text.builder(Util.getMessageWithFormat("standard.delete")).color(TextColors.DARK_RED).onClick(deleteAction).build()).build();
     }
 }

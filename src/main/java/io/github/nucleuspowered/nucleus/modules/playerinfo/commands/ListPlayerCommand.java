@@ -13,7 +13,7 @@ import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
@@ -22,7 +22,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -30,14 +30,20 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"list", "listplayers"})
-public class ListPlayerCommand extends OldCommandBase<CommandSource> {
+public class ListPlayerCommand extends CommandBase<CommandSource> {
 
     @Inject(optional = true) @Nullable private AFKHandler handler;
     @Inject private PlayerInfoConfigAdapter config;
@@ -61,8 +67,8 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
     }
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase().build();
+    public CommandElement[] getArguments() {
+        return super.getArguments();
     }
 
     @Override
@@ -100,8 +106,9 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
         // Get the groups
         List<Subject> groups = Lists.newArrayList(service.getGroupSubjects().getAllSubjects());
 
-        // Sort them in reverse order - that way we get the most inherited groups first and display them first.
-        groups.sort((x, y) -> y.getParents().size()- x.getParents().size());
+        // Sort them in reverse order - that way we get the most inherited
+        // groups first and display them first.
+        groups.sort((x, y) -> y.getParents().size() - x.getParents().size());
 
         // Keep a copy of the players that we will remove from.
         final List<Player> playersToList = new ArrayList<>(players);
@@ -115,8 +122,10 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
             playersToList.removeAll(cp);
 
             if (!cp.isEmpty()) {
-                // Get and put the player list into the map, if there is a player to show. There might not be, they might be vanished!
-                getPlayerList(cp, showVanished).ifPresent(y -> messages.put(x.getIdentifier(), Text.builder().append(Text.of(TextColors.YELLOW, x.getIdentifier() + ": ")).append(y).build()));
+                // Get and put the player list into the map, if there is a
+                // player to show. There might not be, they might be vanished!
+                getPlayerList(cp, showVanished).ifPresent(y -> messages.put(x.getIdentifier(),
+                        Text.builder().append(Text.of(TextColors.YELLOW, x.getIdentifier() + ": ")).append(y).build()));
             }
         });
 
@@ -125,8 +134,8 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
 
         if (!playersToList.isEmpty()) {
             // Show any unknown groups last.
-            getPlayerList(playersToList, showVanished)
-                    .ifPresent(y -> src.sendMessage(Text.builder().append(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("standard.unknown") + ": ")).append(y).build()));
+            getPlayerList(playersToList, showVanished).ifPresent(y -> src.sendMessage(
+                    Text.builder().append(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("standard.unknown") + ": ")).append(y).build()));
         }
     }
 
@@ -138,8 +147,10 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
      * Gets {@link Text} that represents the provided player list.
      *
      * @param playersToList The {@link Player}s to list.
-     * @param showVanished <code>true</code> if those who are vanished are to be shown.
-     * @return An {@link Optional} of {@link Text} objects, returning <code>empty</code> if the player list is of zero length.
+     * @param showVanished <code>true</code> if those who are vanished are to be
+     *        shown.
+     * @return An {@link Optional} of {@link Text} objects, returning
+     *         <code>empty</code> if the player list is of zero length.
      */
     private Optional<Text> getPlayerList(Collection<Player> playersToList, boolean showVanished) {
         List<Text> playerList = playersToList.stream().filter(x -> showVanished || !x.get(Keys.INVISIBLE).orElse(false))
@@ -162,7 +173,6 @@ public class ListPlayerCommand extends OldCommandBase<CommandSource> {
 
                     return tb.append(NameUtil.getName(x, loader)).build();
                 }).collect(Collectors.toList());
-
 
         if (!playerList.isEmpty()) {
             boolean isFirst = true;
