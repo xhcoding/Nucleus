@@ -27,7 +27,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
@@ -112,32 +111,12 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
 
     @Override
     public boolean isInvulnerable() {
-        if (user.isOnline()) {
-            data.setInvulnerable(user.getPlayer().get().get(Keys.INVULNERABILITY_TICKS).orElse(0) > 0);
-        }
-
         return data.isInvulnerable();
     }
 
     @Override
-    public boolean setInvulnerable(boolean invuln) {
-        if (user.isOnline()) {
-            Player pl = user.getPlayer().get();
-            Optional<InvulnerabilityData> oid = pl.get(InvulnerabilityData.class);
-
-            if (!oid.isPresent()) {
-                return false;
-            }
-
-            InvulnerabilityData id = oid.get();
-            id.invulnerableTicks().set(invuln ? Integer.MAX_VALUE : 0);
-            if (!pl.offer(id).isSuccessful()) {
-                return false;
-            }
-        }
-
+    public void setInvulnerable(boolean invuln) {
         data.setInvulnerable(invuln);
-        return true;
     }
 
     @Override
@@ -342,11 +321,6 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     @Override
     public boolean isFlyingSafe() {
         return data.isFly();
-    }
-
-    @Override
-    public boolean isInvulnerableSafe() {
-        return data.isInvulnerable();
     }
 
     @Override

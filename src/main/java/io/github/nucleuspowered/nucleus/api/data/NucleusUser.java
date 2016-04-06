@@ -66,9 +66,8 @@ public interface NucleusUser {
      * the /god command.
      *
      * @param invuln <code>true</code> if so, <code>false</code> otherwise.
-     * @return <code>true</code> if successful.
      */
-    boolean setInvulnerable(boolean invuln);
+    void setInvulnerable(boolean invuln);
 
     /**
      * Gets whether Nucleus thinks the player should be flying. Note, this means the player has been subject to

@@ -39,14 +39,6 @@ public interface InternalNucleusUser extends NucleusUser {
      */
     boolean isFlyingSafe();
 
-    /**
-     * Determines whether Nucleus thinks the player should be invulnerable, but does not look at the current status of the
-     * player. In other words, what did the data file say?
-     *
-     * @return <code>true</code> if so.
-     */
-    boolean isInvulnerableSafe();
-
     void setJailData(JailData data);
 
     void removeJailData();

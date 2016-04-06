@@ -60,11 +60,7 @@ public class GodCommand extends OldCommandBase<CommandSource> {
         InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
         boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
 
-        if (!uc.setInvulnerable(god)) {
-            src.sendMessages(Util.getTextMessageWithFormat("command.god.error"));
-            return CommandResult.empty();
-        }
-
+        uc.setInvulnerable(god);
         if (!pl.equals(src)) {
             src.sendMessages(Util.getTextMessageWithFormat(god ? "command.god.player.on" : "command.god.player.off", pl.getName()));
         }
