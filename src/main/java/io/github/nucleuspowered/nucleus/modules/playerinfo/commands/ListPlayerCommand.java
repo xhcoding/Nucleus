@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @RegisterCommand({"list", "listplayers"})
 public class ListPlayerCommand extends OldCommandBase<CommandSource> {
 
-    @Inject @Nullable private AFKHandler handler;
+    @Inject(optional = true) @Nullable private AFKHandler handler;
     @Inject private PlayerInfoConfigAdapter config;
     @Inject private UserConfigLoader loader;
 

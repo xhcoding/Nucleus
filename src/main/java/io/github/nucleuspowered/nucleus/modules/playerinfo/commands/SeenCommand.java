@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -13,7 +14,9 @@ import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.SpeedCommand;
+import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -31,6 +34,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +44,9 @@ import java.util.Map;
 @RunAsync
 @RegisterCommand({"seen", "seenplayer"})
 public class SeenCommand extends OldCommandBase<CommandSource> {
+
+    @Inject(optional = true) @Nullable private MuteHandler muteService;
+    @Inject(optional = true) @Nullable private JailHandler jailService;
 
     private final String playerKey = "player";
 
@@ -90,10 +97,15 @@ public class SeenCommand extends OldCommandBase<CommandSource> {
                         .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))).build());
             }
 
-            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.isjailed")).append(Text.of(" ")).color(TextColors.AQUA)
-                    .append(getTrueOrFalse(iqsu.getJailData().isPresent(), TextActions.runCommand("/checkjail " + user.getName()))).build());
-            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.ismuted")).append(Text.of(" ")).color(TextColors.AQUA)
-                    .append(getTrueOrFalse(iqsu.getMuteData().isPresent(), TextActions.runCommand("/checkmute " + user.getName()))).build());
+            if (jailService != null) {
+                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.isjailed")).append(Text.of(" ")).color(TextColors.AQUA)
+                        .append(getTrueOrFalse(jailService.isPlayerJailed(user), TextActions.runCommand("/checkjail " + user.getName()))).build());
+            }
+
+            if (muteService != null) {
+                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.ismuted")).append(Text.of(" ")).color(TextColors.AQUA)
+                        .append(getTrueOrFalse(muteService.isMuted(user), TextActions.runCommand("/checkmute " + user.getName()))).build());
+            }
 
             BanService bs = Sponge.getServiceManager().provideUnchecked(BanService.class);
             messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.isbanned")).append(Text.of(" ")).color(TextColors.AQUA)
