@@ -4,9 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.message;
 
+import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
+import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
@@ -14,6 +17,8 @@ import java.util.Optional;
 
 @ModuleData(id = "message", name = "message")
 public class MessageModule extends StandardModule {
+
+    @Inject private Game game;
 
     @Override
     public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
@@ -24,6 +29,8 @@ public class MessageModule extends StandardModule {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        serviceManager.registerService(MessageHandler.class, new MessageHandler());
+        MessageHandler m = new MessageHandler();
+        serviceManager.registerService(MessageHandler.class, m);
+        game.getServiceManager().setProvider(nucleus, NucleusPrivateMessagingService.class, m);
     }
 }

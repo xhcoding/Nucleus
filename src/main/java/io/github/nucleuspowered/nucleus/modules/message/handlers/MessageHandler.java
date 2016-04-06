@@ -6,14 +6,18 @@ package io.github.nucleuspowered.nucleus.modules.message.handlers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -26,35 +30,38 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class MessageHandler {
+public class MessageHandler implements NucleusPrivateMessagingService {
+
+    @Inject private UserConfigLoader ucl;
+    @Inject private CoreConfigAdapter cca;
 
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
     private final Text me = Util.getTextMessageWithFormat("message.me");
 
-    public void update(UUID from, UUID to) {
-        Preconditions.checkNotNull(from);
-        Preconditions.checkNotNull(to);
-        messagesReceived.put(to, from);
+    @Override
+    public boolean isSocialSpy(User user) {
+        try {
+            return ucl.getUser(user).isSocialSpy();
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
     }
 
-    public Optional<CommandSource> getPlayerToReplyTo(UUID from) {
-        Preconditions.checkNotNull(from);
-        UUID to = messagesReceived.get(from);
-        if (to == null) {
-            return Optional.empty();
+    @Override
+    public boolean setSocialSpy(User user, boolean isSocialSpy) {
+        try {
+            return ucl.getUser(user).setSocialSpy(isSocialSpy);
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
+            }
+
+            return false;
         }
-
-        if (to.equals(Util.consoleFakeUUID)) {
-            return Optional.of(Sponge.getServer().getConsole());
-        }
-
-        return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getUniqueId().equals(to)).map(y -> (CommandSource) y).findFirst();
-    }
-
-    public void clearUUID(UUID uuid) {
-        Preconditions.checkNotNull(uuid);
-        messagesReceived.remove(uuid);
-        messagesReceived.entrySet().removeIf(f -> f.getValue().equals(uuid));
     }
 
     public boolean replyMessage(CommandSource sender, String message) {
@@ -71,8 +78,6 @@ public class MessageHandler {
         Text nameOfSender = getName(sender);
         Text nameOfReceiver = getName(receiver);
 
-        NucleusUserLoaderService qs = Sponge.getServiceManager().provideUnchecked(NucleusUserLoaderService.class);
-
         // Message is about to be sent. Send the event out. If canceled, then
         // that's that.
         if (Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message))) {
@@ -82,8 +87,8 @@ public class MessageHandler {
 
         // Social Spies.
         List<MessageReceiver> lm =
-                qs.getOnlineUsers().stream().filter(x -> !getUUID(sender).equals(x.getUniqueID()) && !getUUID(receiver).equals(x.getUniqueID()))
-                        .filter(NucleusUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
+                ucl.getOnlineUsersInternal().stream().filter(x -> !getUUID(sender).equals(x.getUniqueID()) && !getUUID(receiver).equals(x.getUniqueID()))
+                        .filter(InternalNucleusUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
 
         if (getUUID(sender) != Util.consoleFakeUUID && getUUID(receiver) != Util.consoleFakeUUID) {
             lm.add(Sponge.getServer().getConsole());
@@ -95,6 +100,27 @@ public class MessageHandler {
         mc.send(constructSSMessage(nameOfSender, nameOfReceiver, message));
         update(getUUID(sender), getUUID(receiver));
         return true;
+    }
+
+
+    private void update(UUID from, UUID to) {
+        Preconditions.checkNotNull(from);
+        Preconditions.checkNotNull(to);
+        messagesReceived.put(to, from);
+    }
+
+    private Optional<CommandSource> getPlayerToReplyTo(UUID from) {
+        Preconditions.checkNotNull(from);
+        UUID to = messagesReceived.get(from);
+        if (to == null) {
+            return Optional.empty();
+        }
+
+        if (to.equals(Util.consoleFakeUUID)) {
+            return Optional.of(Sponge.getServer().getConsole());
+        }
+
+        return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getUniqueId().equals(to)).map(y -> (CommandSource) y).findFirst();
     }
 
     private UUID getUUID(CommandSource sender) {

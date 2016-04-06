@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -37,7 +37,7 @@ public class SocialSpyCommand extends OldCommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        NucleusUser qs = userConfigLoader.getUser(src);
+        InternalNucleusUser qs = userConfigLoader.getUser(src);
         boolean spy = args.<Boolean>getOne(arg).orElse(!qs.isSocialSpy());
         if (qs.setSocialSpy(spy)) {
             Text message = Util.getTextMessageWithFormat(spy ? "command.socialspy.on" : "command.socialspy.off");

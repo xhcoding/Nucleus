@@ -86,4 +86,19 @@ public interface InternalNucleusUser extends NucleusUser {
      * Removes the {@link MuteData} associated with this user.
      */
     void removeMuteData();
+
+    /**
+     * Gets whether the player is a Social Spy.
+     *
+     * @return <code>true</code> if the player is a social spy, <code>false</code> otherwise.
+     */
+    boolean isSocialSpy();
+
+    /**
+     * Sets whether the player is a Social Spy. Note that they must also have the command permission (quickstart.socialspy.base).
+     *
+     * @param socialSpy <code>true</code> if they should be a spy.
+     * @return <code>true</code> if the change was made.
+     */
+    boolean setSocialSpy(boolean socialSpy);
 }

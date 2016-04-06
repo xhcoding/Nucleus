@@ -21,6 +21,10 @@ import java.util.UUID;
 
 /**
  * Represents data held about a user in {@link Nucleus}.
+ *
+ * <p>
+ *     Please note that this is likely to disappear, in favour of separate module services.
+ * </p>
  */
 public interface NucleusUser {
 
@@ -37,21 +41,6 @@ public interface NucleusUser {
      * @return The {@link UUID}
      */
     @NonnullByDefault UUID getUniqueID();
-
-    /**
-     * Gets whether the player is a Social Spy.
-     *
-     * @return <code>true</code> if the player is a social spy, <code>false</code> otherwise.
-     */
-    boolean isSocialSpy();
-
-    /**
-     * Sets whether the player is a Social Spy. Note that they must also have the command permission (quickstart.socialspy.base).
-     *
-     * @param socialSpy <code>true</code> if they should be a spy.
-     * @return <code>true</code> if the change was made.
-     */
-    boolean setSocialSpy(boolean socialSpy);
 
     /**
      * Gets whether Nucleus thinks the player should be invulnerable. Note, this means the player has been subject to

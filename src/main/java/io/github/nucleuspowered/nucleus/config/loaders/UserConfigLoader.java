@@ -36,7 +36,12 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
         super(plugin);
     }
 
+    @Override
     public List<NucleusUser> getOnlineUsers() {
+        return getOnlineUsersInternal().stream().map(x -> (NucleusUser)x).collect(Collectors.toList());
+    }
+
+    public List<InternalNucleusUser> getOnlineUsersInternal() {
         return Sponge.getServer().getOnlinePlayers().stream().map(x -> {
             try {
                 return getUser(x);
