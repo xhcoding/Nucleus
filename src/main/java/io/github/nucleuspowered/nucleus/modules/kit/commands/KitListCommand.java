@@ -7,12 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -60,6 +55,11 @@ public class KitListCommand extends CommandBase<CommandSource> {
                     .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.kit.list.text", kit))).color(TextColors.AQUA)
                     .style(TextStyles.UNDERLINE).build();
             kitText.add(item);
+        }
+
+        if (kitText.isEmpty()) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.kit.list.empty"));
+            return CommandResult.empty();
         }
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)

@@ -7,12 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
@@ -51,6 +46,11 @@ public class JailsCommand extends CommandBase<CommandSource> {
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
 
         Map<String, WarpLocation> mjs = handler.getJails();
+        if (mjs.isEmpty()) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.jails.nojails"));
+            return CommandResult.empty();
+        }
+
         List<Text> lt = mjs.entrySet().stream()
                 .map(x -> Text.builder(x.getKey().toLowerCase()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
                         .onClick(TextActions.runCommand("/jails info " + x.getKey().toLowerCase()))
