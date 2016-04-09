@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.command;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandSource;
@@ -51,7 +52,12 @@ public abstract class CommandBase<T extends CommandSource> extends AbstractComma
     @Override
     public final CommandSpec createSpec() {
         Preconditions.checkState(permissions != null);
-        CommandSpec.Builder cb = CommandSpec.builder().executor(this).arguments(getArguments());
+        RegisterCommand rc = getClass().getAnnotation(RegisterCommand.class);
+
+        CommandSpec.Builder cb = CommandSpec.builder();
+        if (rc == null || rc.hasExecutor()) {
+            cb.executor(this).arguments(getArguments());
+        }
 
         if (!permissions.isPassthrough()) {
             cb.permission(permissions.getBase());

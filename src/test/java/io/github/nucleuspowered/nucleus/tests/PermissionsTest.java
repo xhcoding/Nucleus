@@ -9,7 +9,8 @@ import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -21,7 +22,6 @@ import org.mockito.Mockito;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.service.permission.Subject;
 
 import java.util.Arrays;
@@ -58,11 +58,11 @@ public class PermissionsTest extends TestBase {
         public String permission;
 
         @Parameterized.Parameter(1)
-        public Class<? extends OldCommandBase> clazz;
+        public Class<? extends AbstractCommand> clazz;
 
         @Test
         public void testPermissionIsValid() throws IllegalAccessException, InstantiationException {
-            OldCommandBase c = clazz.newInstance();
+            AbstractCommand c = clazz.newInstance();
             getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);
@@ -101,11 +101,11 @@ public class PermissionsTest extends TestBase {
         public String permission;
 
         @Parameterized.Parameter(1)
-        public Class<? extends OldCommandBase> clazz;
+        public Class<? extends AbstractCommand> clazz;
 
         @Test
         public void testPermissionIsNotValid() throws IllegalAccessException, InstantiationException {
-            OldCommandBase c = clazz.newInstance();
+            AbstractCommand c = clazz.newInstance();
             getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);
@@ -118,12 +118,7 @@ public class PermissionsTest extends TestBase {
 
     @Permissions
     @RegisterCommand({"test", "test2"})
-    public static class PermissionOne extends OldCommandBase {
-
-        @Override
-        public CommandSpec createSpec() {
-            return CommandSpec.builder().executor(this).build();
-        }
+    public static class PermissionOne extends CommandBase<CommandSource> {
 
         @Override
         public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

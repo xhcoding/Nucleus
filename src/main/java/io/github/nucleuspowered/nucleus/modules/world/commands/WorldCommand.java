@@ -19,7 +19,7 @@ import org.spongepowered.api.command.args.CommandContext;
  *
  */
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand("world")
+@RegisterCommand(value = "world", hasExecutor = false)
 public class WorldCommand extends CommandBase<CommandSource> {
 
     @Override

@@ -8,7 +8,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +18,6 @@ import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 
 public class CommandBaseTests extends TestBase {
@@ -107,12 +106,7 @@ public class CommandBaseTests extends TestBase {
 
     @Permissions
     @RegisterCommand("test")
-    private class PlayerCommand extends OldCommandBase<Player> {
-
-        @Override
-        public CommandSpec createSpec() {
-            return CommandSpec.builder().executor(this).build();
-        }
+    private class PlayerCommand extends CommandBase<Player> {
 
         @Override
         public String[] getAliases() {
@@ -127,12 +121,7 @@ public class CommandBaseTests extends TestBase {
 
     @Permissions
     @RegisterCommand("test")
-    private class BasicCommand extends OldCommandBase {
-
-        @Override
-        public CommandSpec createSpec() {
-            return CommandSpec.builder().executor(this).build();
-        }
+    private class BasicCommand extends CommandBase<CommandSource> {
 
         @Override
         public String[] getAliases() {

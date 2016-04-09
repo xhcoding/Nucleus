@@ -29,4 +29,11 @@ public @interface RegisterCommand {
      * @return Aliases for this command.
      */
     String[] value();
+
+    /**
+     * Sets whether the command should register it's executor. This can be false if there are only child commands.
+     *
+     * @return <code>true</code> if the executor should be registered.
+     */
+    boolean hasExecutor() default true;
 }

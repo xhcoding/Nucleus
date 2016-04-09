@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 
 /**
- * DO NOT IMPLEMENT THIS DIRECTLY. This will be removed once the {@link OldCommandBase} has been removed.
+ * DO NOT IMPLEMENT THIS DIRECTLY.
  */
 public abstract class AbstractCommand<T extends CommandSource> implements CommandExecutor {
 
@@ -81,7 +81,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     @Inject private WarmupManager warmupService;
 
     @SuppressWarnings("unchecked")
-    protected AbstractCommand() {
+    AbstractCommand() {
         // I hate type erasure - it leads to a hack like this. Admittedly, I
         // could've just created a subclass that does
         // the same thing, but I like to beat the system! :)
@@ -309,8 +309,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      * @throws Exception Thrown if there is a problem that means the command
      *         cannot continue.
      */
-    protected OldCommandBase.ContinueMode preProcessChecks(T source, CommandContext args) throws Exception {
-        return OldCommandBase.ContinueMode.CONTINUE;
+    protected ContinueMode preProcessChecks(T source, CommandContext args) throws Exception {
+        return ContinueMode.CONTINUE;
     }
 
     @Override
@@ -333,7 +333,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         T src = (T) source;
 
         try {
-            OldCommandBase.ContinueMode mode = preProcessChecks(src, args);
+            ContinueMode mode = preProcessChecks(src, args);
             if (!mode.cont) {
                 return mode.returnType;
             }
@@ -349,7 +349,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
 
         if (src instanceof Player) {
-            OldCommandBase.ContinueMode cm = runChecks((Player) src, args);
+            ContinueMode cm = runChecks((Player) src, args);
 
             if (!cm.cont) {
                 return cm.returnType;
@@ -436,9 +436,9 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // -------------------------------------
     // Player Checks
     // -------------------------------------
-    private OldCommandBase.ContinueMode runChecks(Player src, CommandContext args) {
+    private ContinueMode runChecks(Player src, CommandContext args) {
         // Cooldown, cost, warmup.
-        OldCommandBase.ContinueMode m = checkCooldown(src);
+        ContinueMode m = checkCooldown(src);
         if (!m.cont) {
             return m;
         }
@@ -511,15 +511,15 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     }
 
     @SuppressWarnings("unchecked")
-    private OldCommandBase.ContinueMode setupWarmup(final Player src, CommandContext args) {
+    private ContinueMode setupWarmup(final Player src, CommandContext args) {
         if (bypassWarmup) {
-            return OldCommandBase.ContinueMode.CONTINUE;
+            return ContinueMode.CONTINUE;
         }
 
         // Get the warmup time.
         int warmupTime = getWarmup(src);
         if (warmupTime <= 0) {
-            return OldCommandBase.ContinueMode.CONTINUE;
+            return ContinueMode.CONTINUE;
         }
 
         // We create a task that executes the command at a later time. Because
@@ -549,13 +549,13 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                 .color(TextColors.YELLOW).build());
 
         // Sponge should think the command was run successfully.
-        return OldCommandBase.ContinueMode.STOP_SUCCESS;
+        return ContinueMode.STOP_SUCCESS;
     }
 
     // -------------------------------------
     // Cooldowns
     // -------------------------------------
-    private OldCommandBase.ContinueMode checkCooldown(Player src) {
+    private ContinueMode checkCooldown(Player src) {
         // Remove any expired cooldowns.
         cleanCooldowns();
 
@@ -565,10 +565,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             Instant l = cooldownStore.get(src.getUniqueId());
             src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cooldown.message"),
                     Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS)))).color(TextColors.YELLOW).build());
-            return OldCommandBase.ContinueMode.STOP;
+            return ContinueMode.STOP;
         }
 
-        return OldCommandBase.ContinueMode.CONTINUE;
+        return ContinueMode.CONTINUE;
     }
 
     private void setCooldown(Player src) {
@@ -597,17 +597,17 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      * @param args The {@link CommandContext}
      * @return Whether to continue with the command.
      */
-    protected OldCommandBase.ContinueMode applyCost(Player src, CommandContext args) {
+    protected ContinueMode applyCost(Player src, CommandContext args) {
         double cost = getCost(src, args);
         if (cost == 0.) {
-            return OldCommandBase.ContinueMode.CONTINUE;
+            return ContinueMode.CONTINUE;
         }
 
         if (!plugin.getEconHelper().withdrawFromPlayer(src, cost)) {
-            return OldCommandBase.ContinueMode.STOP;
+            return ContinueMode.STOP;
         }
 
-        return OldCommandBase.ContinueMode.CONTINUE;
+        return ContinueMode.CONTINUE;
     }
 
     /**
