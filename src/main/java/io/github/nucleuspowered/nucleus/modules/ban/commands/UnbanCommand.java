@@ -5,11 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -19,6 +16,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -35,23 +33,32 @@ import java.util.Optional;
 public class UnbanCommand extends CommandBase<CommandSource> {
 
     private final String key = "player";
+    private final String key2 = "user";
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(GenericArguments.user(Text.of(key)))
+            GenericArguments.firstParsing(
+                // GenericArguments.onlyOne(GenericArguments.user(Text.of(key))),
+                GenericArguments.onlyOne(new GameProfileArgument(Text.of(key2)))
+            )
         };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        User u = args.<User>getOne(key).get();
+        GameProfile gp;
+        if (args.<User>getOne(key).isPresent()) {
+            gp = args.<User>getOne(key).get().getProfile();
+        } else {
+            gp = args.<GameProfile>getOne(key2).get();
+        }
 
         BanService service = Sponge.getServiceManager().provideUnchecked(BanService.class);
 
-        Optional<Ban.Profile> obp = service.getBanFor(u.getProfile());
+        Optional<Ban.Profile> obp = service.getBanFor(gp);
         if (!obp.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkban.notset", u.getName()));
+            src.sendMessage(Util.getTextMessageWithFormat("command.checkban.notset", gp.getName().orElse(Util.getMessageWithFormat("standard.unknown"))));
             return CommandResult.empty();
         }
 
