@@ -5,11 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -38,11 +35,14 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+        return new CommandElement[] {
                 GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
-                GenericArguments.onlyOne(GenericArguments.integer(Text.of(x))), GenericArguments.onlyOne(GenericArguments.integer(Text.of(y))),
-                GenericArguments.onlyOne(GenericArguments.integer(Text.of(z)))};
+                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
+                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),
+                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(z), Integer.MIN_VALUE, Integer.MAX_VALUE)),
+                GenericArguments.flags().flag("f").buildWith(GenericArguments.none())
+        };
     }
 
     @Override
