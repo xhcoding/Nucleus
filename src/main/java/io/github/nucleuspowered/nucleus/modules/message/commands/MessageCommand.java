@@ -9,14 +9,14 @@ import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.OldCommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
 /**
@@ -27,19 +27,18 @@ import org.spongepowered.api.text.Text;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand({ "message", "m", "msg", "whisper", "w", "tell", "t" })
-public class MessageCommand extends OldCommandBase<CommandSource> {
+public class MessageCommand extends CommandBase<CommandSource> {
     private final String to = "to";
     private final String message = "message";
 
     @Inject private MessageHandler handler;
 
     @Override
-    public CommandSpec createSpec() {
-        return getSpecBuilderBase()
-            .arguments(
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
                 new PlayerConsoleArgument(Text.of(to)),
                 GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
-            ).description(Text.of("Send a message to a player")).build();
+        };
     }
 
     @Override
