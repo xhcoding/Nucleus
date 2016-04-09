@@ -24,10 +24,15 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
 
     public final R getNodeOrDefault() {
         try {
-            return getNode();
+            R node = getNode();
+            if (node != null) {
+                return node;
+            }
         } catch (ObjectMappingException e) {
-            return getDefaultObject();
+            //
         }
+
+        return getDefaultObject();
     }
 
     protected abstract R getDefaultObject();
