@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
+import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -18,7 +19,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.permission.option.OptionSubject;
+import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.service.permission.option.OptionSubjectData;
 import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
@@ -80,13 +82,24 @@ public class SetHomeCommand extends CommandBase<Player> {
             return Integer.MAX_VALUE;
         }
 
-        // If we have too many, then
-        String homesAllowed = ((OptionSubject) src).getOption("home-count").orElse("1");
-        int i = Integer.getInteger(homesAllowed, 1);
-        if (i < 1) {
-            i = 1;
+        int homesAllowed = Math.max(getHomeCountFromSubjectData(src, src.getSubjectData()), getHomeCountFromSubjectData(src, src.getTransientSubjectData()));
+        return Math.max(homesAllowed, 1);
+    }
+
+    private int getHomeCountFromSubjectData(Player src, SubjectData sd) {
+        if (sd instanceof OptionSubjectData) {
+            String count = ((OptionSubjectData) sd).getOptions(src.getActiveContexts()).get("home-count");
+            if (count == null) {
+                count = ((OptionSubjectData) sd).getOptions(Sets.newHashSet()).getOrDefault("home-count", "1");
+            }
+
+            try {
+                return Integer.parseUnsignedInt(count);
+            } catch (NumberFormatException e) {
+                // Nope.
+            }
         }
 
-        return i;
+        return 1;
     }
 }
