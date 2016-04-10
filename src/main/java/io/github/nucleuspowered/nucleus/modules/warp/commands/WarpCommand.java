@@ -68,14 +68,7 @@ public class WarpCommand extends CommandBase<Player> {
         // Warp them.
         if (args.getOne("f").isPresent()) { // Force the position.
             pl.setLocationAndRotation(wd.loc.getLocation(), wd.loc.getRotation());
-        } else if (!pl.setLocationAndRotationSafely(wd.loc.getLocation(), wd.loc.getRotation())) { // No
-                                                                                                   // force,
-                                                                                                   // try
-                                                                                                   // teleport,
-                                                                                                   // if
-                                                                                                   // failed,
-                                                                                                   // tell
-                                                                                                   // them.
+        } else if (!pl.setLocationAndRotationSafely(wd.loc.getLocation(), wd.loc.getRotation())) {
             pl.sendMessage(Util.getTextMessageWithFormat("command.warps.nosafe"));
 
             // Don't add the cooldown if enabled.
