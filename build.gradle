@@ -14,7 +14,7 @@ description = 'Nucleus is a Sponge plugin that allows you to quickly start your 
 ext.url = 'http://nucleuspowered.github.io'
 
 group 'io.github.nucleuspowered'
-version '0.1.1'
+version '0.1.2-SNAPSHOT'
 
 apply plugin: 'net.ellune.blossom'
 
