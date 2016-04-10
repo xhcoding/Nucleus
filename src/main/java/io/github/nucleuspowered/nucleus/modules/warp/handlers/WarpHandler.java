@@ -21,7 +21,7 @@ public class WarpHandler implements NucleusWarpService {
 
     @Override
     public Optional<WarpLocation> getWarp(String warpName) {
-        return store.getWarpLocation(warpName.toLowerCase());
+        return store.getWarpLocation(warpName);
     }
 
     @Override
@@ -41,6 +41,6 @@ public class WarpHandler implements NucleusWarpService {
 
     @Override
     public boolean warpExists(String name) {
-        return getWarpNames().contains(name.toLowerCase());
+        return getWarpNames().stream().filter(x -> x.equalsIgnoreCase(name)).findFirst().isPresent();
     }
 }

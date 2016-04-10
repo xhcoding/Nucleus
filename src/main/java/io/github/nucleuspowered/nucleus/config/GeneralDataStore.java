@@ -98,11 +98,11 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     }
 
     public boolean removeJail(String name) {
-        return data.getJails().remove(name.toLowerCase()) != null;
+        return removeLocation(name, data.getJails());
     }
 
     public Optional<WarpLocation> getWarpLocation(String name) {
-        return getLocation(name.toLowerCase(), data.getWarps());
+        return getLocation(name, data.getWarps());
     }
 
     public Map<String, WarpLocation> getWarps() {
@@ -114,7 +114,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     }
 
     public boolean removeWarp(String name) {
-        return data.getWarps().remove(name.toLowerCase()) != null;
+        return removeLocation(name, data.getWarps());
     }
 
     public Optional<LocationWithRotation> getFirstSpawn() {
@@ -149,7 +149,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
 
         LocationNode ln = o.get().getValue();
         try {
-            return Optional.of(new WarpLocation(name.toLowerCase(), ln.getLocation(), ln.getRotation()));
+            return Optional.of(new WarpLocation(name, ln.getLocation(), ln.getRotation()));
         } catch (NoSuchWorldException e) {
             return Optional.empty();
         }
@@ -177,5 +177,14 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
 
         m.put(name, new LocationNode(loc, rot));
         return true;
+    }
+
+    private boolean removeLocation(String name, Map<String, LocationNode> m) {
+        Optional<Map.Entry<String, LocationNode>> o = m.entrySet().stream().filter(k -> k.getKey().equalsIgnoreCase(name)).findFirst();
+        if (o.isPresent()) {
+            return m.remove(o.get().getKey()) != null;
+        }
+
+        return false;
     }
 }
