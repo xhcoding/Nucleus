@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -41,5 +42,6 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(InternalServiceManager.class).toProvider(plugin::getInternalServiceManager);
         bind(GeneralDataStore.class).toProvider(plugin::getGeneralDataStore);
         bind(ChatUtil.class).toProvider(plugin::getChatUtil);
+        bind(MessageProvider.class).toProvider(plugin::getMessageProvider);
     }
 }
