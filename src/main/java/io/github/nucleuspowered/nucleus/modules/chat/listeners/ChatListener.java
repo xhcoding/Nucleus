@@ -49,7 +49,7 @@ public class ChatListener extends ListenerBase {
         mp.put(prefix + "magic", new PermissionInformation(Util.getMessageWithFormat("permission.chat.magic"), SuggestedLevel.ADMIN));
         // TODO: URLs.
         // mp.put(prefix + "url", new PermissionInformation(Util.getMessageWithFormat("permission.chat.urls"), SuggestedLevel.ADMIN));
-        return super.getPermissions();
+        return mp;
     }
 
     private Map<String[], Function<String, String>> createReplacements() {
