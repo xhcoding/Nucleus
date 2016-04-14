@@ -8,20 +8,18 @@ import com.google.common.collect.ImmutableMap;
 import io.github.nucleuspowered.nucleus.Util;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.DataHolder;
-import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.value.BaseValue;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
-import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -114,6 +112,10 @@ public final class DataScanner {
         if (!v.equals(String.format("%s@%s", c.getName(), Integer.toHexString(x.hashCode())))) {
             if (x instanceof Double || x instanceof Float || x instanceof BigDecimal) {
                 return Optional.of(Util.getTextMessageWithFormat(translationKey, key, nf.format(x)));
+            }
+
+            if (x instanceof Text) {
+                return Optional.of(Util.getTextMessageWithFormat(translationKey, key, TextSerializers.FORMATTING_CODE.serialize((Text)x)));
             }
 
             return Optional.of(Util.getTextMessageWithFormat(translationKey, key, v));
