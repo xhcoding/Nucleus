@@ -27,6 +27,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
@@ -51,6 +52,10 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
 
     private final Nucleus plugin;
     private final User user;
+
+    // Use for /back.
+    private Transform<World> lastLocation = null;
+    private boolean logLastLocation = true;
 
     // Used as a cache.
     private Text nickname = null;
@@ -482,6 +487,26 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     @Override
     public void setFrozen(boolean value) {
         data.setFrozen(value);
+    }
+
+    @Override
+    public Optional<Transform<World>> getLastLocation() {
+        return Optional.ofNullable(this.lastLocation);
+    }
+
+    @Override
+    public void setLastLocation(Transform<World> location) {
+        this.lastLocation = location;
+    }
+
+    @Override
+    public boolean isLogLastLocation() {
+        return logLastLocation;
+    }
+
+    @Override
+    public void setLogLastLocation(boolean logLastLocation) {
+        this.logLastLocation = logLastLocation;
     }
 
     private String getNickPrefix() {

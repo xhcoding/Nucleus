@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -101,4 +102,12 @@ public interface InternalNucleusUser extends NucleusUser {
      * @return <code>true</code> if the change was made.
      */
     boolean setSocialSpy(boolean socialSpy);
+
+    Optional<Transform<World>> getLastLocation();
+
+    void setLastLocation(Transform<World> location);
+
+    boolean isLogLastLocation();
+
+    void setLogLastLocation(boolean logLastLocation);
 }

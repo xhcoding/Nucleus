@@ -19,7 +19,9 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 public class JailHandler implements NucleusJailService {
 
@@ -110,7 +112,7 @@ public class JailHandler implements NucleusJailService {
 
     @Override
     public boolean unjailPlayer(User user) {
-        InternalNucleusUser iqsu;
+        final InternalNucleusUser iqsu;
         try {
             iqsu = plugin.getUserLoader().getUser(user);
         } catch (Exception e) {
@@ -124,17 +126,20 @@ public class JailHandler implements NucleusJailService {
         }
 
         Optional<Location<World>> ow = ojd.get().getPreviousLocation();
-        iqsu.removeJailData();
         if (user.isOnline()) {
             Player player = user.getPlayer().get();
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 player.setLocation(ow.isPresent() ? ow.get() : player.getWorld().getSpawnLocation());
                 player.sendMessage(Util.getTextMessageWithFormat("jail.elapsed"));
+
+                // Remove after the teleport for the back data.
+                iqsu.removeJailData();
             });
         } else {
             iqsu.sendToLocationOnLogin(ow.isPresent() ? ow.get()
                     : new Location<>(Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorld().get().getUniqueId()).get(),
                             Sponge.getServer().getDefaultWorld().get().getSpawnPosition()));
+            iqsu.removeJailData();
         }
 
         return true;

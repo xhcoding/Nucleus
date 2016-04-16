@@ -4,11 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -21,12 +23,15 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 @RegisterCommand("suicide")
 public class SuicideCommand extends CommandBase<Player> {
 
+    @Inject(optional = true) private BackHandler backHandler;
+
     @Override
     public CommandElement[] getArguments() {
         return super.getArguments();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         GameMode gm = src.gameMode().getDirect().orElse(src.gameMode().getDefault());
         if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
@@ -35,6 +40,10 @@ public class SuicideCommand extends CommandBase<Player> {
         }
 
         src.offer(Keys.HEALTH, 0d);
+        if (backHandler != null) {
+            backHandler.setLastLocationOnDeathInternal(src, src.getTransform());
+        }
+
         return CommandResult.success();
     }
 }

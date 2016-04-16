@@ -4,17 +4,20 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
@@ -28,6 +31,8 @@ import java.util.Optional;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("spawn")
 public class SpawnCommand extends CommandBase<Player> {
+
+    @Inject(optional = true) private BackHandler backHandler;
 
     private final String key = "world";
 
@@ -50,12 +55,17 @@ public class SpawnCommand extends CommandBase<Player> {
         WorldProperties wp = args.<WorldProperties>getOne(key).orElse(src.getWorld().getProperties());
         Optional<World> ow = Sponge.getServer().getWorld(wp.getUniqueId());
 
+        Transform<World> currentLocation = src.getTransform();
         if (!ow.isPresent()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.spawn.noworld"));
             return CommandResult.empty();
         }
 
         if (src.setLocationSafely(new Location<>(ow.get(), wp.getSpawnPosition()))) {
+            if (backHandler != null) {
+                backHandler.setLastLocationInternal(src, currentLocation);
+            }
+
             src.sendMessage(Util.getTextMessageWithFormat("command.spawn.success"));
             return CommandResult.success();
         }

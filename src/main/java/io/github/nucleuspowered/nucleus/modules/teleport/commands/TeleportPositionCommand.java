@@ -4,16 +4,19 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
@@ -26,6 +29,8 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @NoCost
 @RegisterCommand({"tppos"})
 public class TeleportPositionCommand extends CommandBase<CommandSource> {
+
+    @Inject(optional = true) private BackHandler backHandler;
 
     private final String key = "player";
     private final String location = "world";
@@ -60,9 +65,13 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         // Create the location
         Location<World> loc = new Location<>(world, args.<Integer>getOne(x).get(), yy, args.<Integer>getOne(z).get());
 
+        // Current location
+        Transform<World> currentLocation = pl.getTransform();
+
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
             pl.setLocation(loc);
+            setLastLocation(pl, currentLocation);
             pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -72,6 +81,7 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         }
 
         if (pl.setLocationSafely(loc)) {
+            setLastLocation(pl, currentLocation);
             pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -81,6 +91,13 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.tppos.nosafe"));
             return CommandResult.empty();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void setLastLocation(Player player, Transform<World> location) {
+        if (backHandler != null) {
+            backHandler.setLastLocationInternal(player, location);
         }
     }
 }

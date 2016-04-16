@@ -12,13 +12,16 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
@@ -48,10 +51,12 @@ public class HomeCommand extends CommandBase<Player> {
             }
         }
 
+        Transform<World> currentLocation = src.getTransform();
         WarpLocation wl = owl.get();
 
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.getLocation(), wl.getRotation())) {
+            setLastLocation(src, currentLocation);
             if (!wl.getName().equalsIgnoreCase("home")) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.home.success", wl.getName()));
             } else {
@@ -62,6 +67,14 @@ public class HomeCommand extends CommandBase<Player> {
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.fail", wl.getName()));
             return CommandResult.empty();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void setLastLocation(Player player, Transform<World> location) {
+        Optional<BackHandler> backHandler = plugin.getInternalServiceManager().getService(BackHandler.class);
+        if (backHandler.isPresent()) {
+            backHandler.get().setLastLocationInternal(player, location);
         }
     }
 }

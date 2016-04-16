@@ -10,14 +10,18 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
 import java.time.Instant;
@@ -139,6 +143,7 @@ public class TeleportHandler {
         }
 
         private void run() {
+            Location<World> current = from.getLocation();
             if (to.isOnline()) {
                 if (safe && !from.setLocationAndRotationSafely(to.getLocation(), to.getRotation())) {
                     if (!silentSouce) {
@@ -148,6 +153,8 @@ public class TeleportHandler {
                     onCancel();
                     return;
                 } else {
+                    // Temporary
+                    setLastLocation(from, from.getTransform());
                     from.setLocationAndRotation(to.getLocation(), to.getRotation());
                 }
 
@@ -182,6 +189,14 @@ public class TeleportHandler {
 
             if (charged != null && cost > 0) {
                 plugin.getEconHelper().depositInPlayer(charged, cost);
+            }
+        }
+
+        @SuppressWarnings("deprecation")
+        private void setLastLocation(Player player, Transform<World> location) {
+            Optional<BackHandler> backHandler = plugin.getInternalServiceManager().getService(BackHandler.class);
+            if (backHandler.isPresent()) {
+                backHandler.get().setLastLocationInternal(player, location);
             }
         }
     }
