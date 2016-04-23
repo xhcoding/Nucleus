@@ -5,11 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeParser;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,7 +28,9 @@ public class BlacklistAddCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(item), ItemType.class))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(new ImprovedCatalogTypeParser(Text.of(item), CatalogTypes.ITEM_TYPE))
+        };
     }
 
     @Override

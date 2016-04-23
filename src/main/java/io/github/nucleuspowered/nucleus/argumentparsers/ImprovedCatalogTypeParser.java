@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import org.spongepowered.api.CatalogTypes;
+import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.*;
 import org.spongepowered.api.text.Text;
@@ -12,13 +12,13 @@ import org.spongepowered.api.text.Text;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ImprovedEntityParser extends CommandElement {
+public class ImprovedCatalogTypeParser extends CommandElement {
 
     private final CommandElement wrapped;
 
-    public ImprovedEntityParser(@Nullable Text key) {
+    public ImprovedCatalogTypeParser(@Nullable Text key, Class<? extends CatalogType> type) {
         super(key);
-        wrapped = GenericArguments.catalogedElement(key, CatalogTypes.ENTITY_TYPE);
+        wrapped = GenericArguments.catalogedElement(key, type);
     }
 
     @Nullable

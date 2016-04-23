@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mob.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedEntityParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
+import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -48,7 +49,9 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
         return new CommandElement[] {
                 GenericArguments.optionalWeak(GenericArguments.requiringPermission(GenericArguments.player(Text.of(playerKey)),
                         permissions.getPermissionWithSuffix("others"))),
-                new ImprovedEntityParser(Text.of(mobTypeKey)), GenericArguments.optional(new PositiveIntegerArgument(Text.of(amountKey)), 1)};
+                new ImprovedCatalogTypeParser(Text.of(mobTypeKey), CatalogTypes.ENTITY_TYPE),
+                GenericArguments.optional(new PositiveIntegerArgument(Text.of(amountKey)), 1)
+        };
     }
 
     @Override
