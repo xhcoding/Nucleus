@@ -20,12 +20,11 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
+import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 @Permissions(root = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
@@ -46,8 +45,10 @@ public class TeleportAskHereCommand extends CommandBase<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
-                permissions.getPermissionWithSuffix("force")), GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
+            GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("force"), "f").buildWith(GenericArguments.none())
+        };
     }
 
     @Override
@@ -74,7 +75,7 @@ public class TeleportAskHereCommand extends CommandBase<Player> {
         target.sendMessage(Util.getTextMessageWithFormat("command.tpahere.question", src.getName()));
         target.sendMessage(tpHandler.getAcceptDenyMessage());
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.tpask.sent"));
+        src.sendMessage(Util.getTextMessageWithFormat("command.tpask.sent", target.getName()));
         return CommandResult.success();
     }
 }
