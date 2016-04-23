@@ -46,16 +46,22 @@ public class MiscListener extends ListenerBase {
     public void onPlayerStruck(DamageEntityEvent event) {
         if (event.getTargetEntity() instanceof Player) {
             Player pl = (Player)event.getTargetEntity();
-            try {
-                if (ucl.getUser(pl).isInvulnerable()) {
-                    event.setBaseDamage(0);
-                    event.setCancelled(true);
-                }
-            } catch (Exception e) {
-                if (cca.getNodeOrDefault().isDebugmode()) {
-                    e.printStackTrace();
-                }
+            if (isInvulnerable(pl)) {
+                event.setBaseDamage(0);
+                event.setCancelled(true);
             }
+        }
+    }
+
+    private boolean isInvulnerable(Player pl) {
+        try {
+            return ucl.getUser(pl).isInvulnerable();
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
+            }
+
+            return false;
         }
     }
 }
