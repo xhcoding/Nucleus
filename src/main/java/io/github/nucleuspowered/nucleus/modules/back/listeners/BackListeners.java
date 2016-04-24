@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.back.commands.BackCommand;
@@ -32,14 +31,13 @@ public class BackListeners extends ListenerBase {
 
     @Inject private BackHandler handler;
     @Inject private BackConfigAdapter bca;
-    @Inject private PermissionRegistry permissionRegistry;
     @Inject(optional = true) private NucleusJailService njs;
 
     private CommandPermissionHandler s = null;
 
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = permissionRegistry.getService(BackCommand.class).orElseGet(() -> new CommandPermissionHandler(new BackCommand(), plugin));
+            s = plugin.getPermissionRegistry().getService(BackCommand.class).orElseGet(() -> new CommandPermissionHandler(new BackCommand(), plugin));
         }
 
         return s;
