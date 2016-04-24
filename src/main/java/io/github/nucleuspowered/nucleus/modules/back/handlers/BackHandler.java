@@ -72,25 +72,6 @@ public class BackHandler implements NucleusBackService {
             setLastLocation(user, location);
         }
     }
-
-    /**
-     * <strong>DO NOT USE THIS METHOD EXTERNALLY.</strong>
-     *
-     * <p>
-     * This method is really a clone of {@link NucleusBackService#setLastLocation(User, Transform)}, with an added permission check. This method is intended as a replacement
-     * method to call when the teleport event is supposed to be fired.
-     * </p>
-     *
-     * @deprecated Waiting for the death event to be fully implemented - this will be removed when this is so.
-     * @param user The {@link User}
-     * @param location The {@link Transform}
-     */
-    @Deprecated
-    public void setLastLocationOnDeathInternal(User user, Transform<World> location) {
-        if (bca.getNodeOrDefault().isOnDeath() && getLogBackInternal(user) && getPermissionUtil().testSuffix(user, BackListeners.onDeath)) {
-            setLastLocation(user, location);
-        }
-    }
     // End Temporary
 
     @Override
