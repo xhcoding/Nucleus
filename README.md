@@ -24,7 +24,7 @@ system loading technology of dualspiral's QuickStart, making Nucleus an essentia
 
 Some of commands will have the ability for warmups and cooldowns to take place, as well as charging users (if an Economy plugin is installed).
 
-Nucleus requires Sponge API 4.0.1 or higher to run.
+Nucleus requires Sponge API 4.1 or higher to run.
 
 ## Contributions
 
