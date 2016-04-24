@@ -226,12 +226,8 @@ public class Nucleus {
         return worldConfigLoader;
     }
 
-    public void saveSystemConfig() {
-        try {
-            moduleContainer.saveSystemConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void saveSystemConfig() throws IOException {
+        moduleContainer.saveSystemConfig();
     }
 
     public void reload() {
