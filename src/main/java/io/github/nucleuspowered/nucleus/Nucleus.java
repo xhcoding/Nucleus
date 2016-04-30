@@ -145,6 +145,16 @@ public class Nucleus {
         }
 
         logger.info(messageProvider.getMessageWithFormat("startup.postinit", PluginInfo.NAME));
+
+        // Load up the general data file now, mods should have registered items by now.
+        try {
+            generalDataStore.load();
+        } catch (Exception e) {
+            isErrored = true;
+            e.printStackTrace();
+            return;
+        }
+
         try {
             logger.info(messageProvider.getMessageWithFormat("startup.moduleloading", PluginInfo.NAME));
             moduleContainer.loadModules(false);

@@ -33,7 +33,7 @@ import java.util.Optional;
 public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDataNode, ConfigurationNode, ConfigurationLoader<ConfigurationNode>> {
 
     public GeneralDataStore(Path file) throws Exception {
-        super(file, TypeToken.of(GeneralDataNode.class), GeneralDataNode::new);
+        super(file, TypeToken.of(GeneralDataNode.class), GeneralDataNode::new, false);
     }
 
     @Override
