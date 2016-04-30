@@ -23,19 +23,26 @@ import java.util.function.Supplier;
  */
 public abstract class AbstractSerialisableClassConfig<D, T extends ConfigurationNode, L extends ConfigurationLoader<T>> extends AbstractConfig<T, L> {
 
-    protected final TypeToken<D> dataType;
+    private final TypeToken<D> dataType;
     protected final L loader;
-    protected final Supplier<D> defaultData;
+    private final Supplier<D> defaultData;
     protected D data;
 
     public AbstractSerialisableClassConfig(Path file, TypeToken<D> dataType, Supplier<D> defaultData) throws Exception {
+        this(file, dataType, defaultData, true);
+    }
+
+    public AbstractSerialisableClassConfig(Path file, TypeToken<D> dataType, Supplier<D> defaultData, boolean load) throws Exception {
         Preconditions.checkNotNull(file);
         Preconditions.checkNotNull(dataType);
         Preconditions.checkNotNull(defaultData);
         this.loader = getLoader(file);
         this.dataType = dataType;
         this.defaultData = defaultData;
-        this.load();
+
+        if (load) {
+            this.load();
+        }
     }
 
     public void load() throws Exception {
