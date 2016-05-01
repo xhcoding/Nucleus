@@ -49,9 +49,9 @@ public class WorldTimeParser extends CommandElement {
 
     // Thanks to http://minecraft.gamepedia.com/Day-night_cycle
     static {
-        tickAliases.put("morning", 0);
         tickAliases.put("dawn", 0);
         tickAliases.put("sunrise", 0);
+        tickAliases.put("morning", 1000);
         tickAliases.put("day", 1000);
         tickAliases.put("daytime", 1000);
         tickAliases.put("noon", 6000);
