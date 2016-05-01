@@ -62,6 +62,11 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
 
         // Get the warp list.
         Set<String> ws = service.getWarpNames();
+        if (ws.isEmpty()) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.warps.list.nowarps"));
+            return CommandResult.empty();
+        }
+
         List<Text> lt = ws.stream().filter(s -> canView(src, s.toLowerCase())).map(s -> {
             if (service.getWarp(s).isPresent()) {
                 return Text.builder(s).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
