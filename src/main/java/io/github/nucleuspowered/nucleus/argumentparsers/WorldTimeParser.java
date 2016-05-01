@@ -14,7 +14,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
 import javax.annotation.Nullable;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
  * It could also be one of the pre-defined keywords:
  *
  * <ul>
- *     <li>morning, dawn, sunrise: 0 ticks (6 am)</li>
+ *     <li>dawn, sunrise: 0 ticks (6 am)</li>
  *     <li>day, daytime, morning: 1000 ticks (7 am)</li>
  *     <li>noon, afternoon: 6000 ticks (12 pm)</li>
  *     <li>dusk, evening, sunset: 12000 ticks (6 pm)</li>
@@ -55,7 +54,6 @@ public class WorldTimeParser extends CommandElement {
         tickAliases.put("sunrise", 0);
         tickAliases.put("day", 1000);
         tickAliases.put("daytime", 1000);
-        tickAliases.put("morning", 1000);
         tickAliases.put("noon", 6000);
         tickAliases.put("afternoon", 6000);
         tickAliases.put("dusk", 12000);
