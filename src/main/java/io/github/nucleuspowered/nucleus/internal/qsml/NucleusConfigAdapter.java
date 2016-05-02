@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.internal.qsml;
 
 import com.google.common.reflect.TypeToken;
-import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -19,7 +18,7 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
 
     @Override
     public void onAttach(String module, AbstractAdaptableConfig<?, ?> adapter) {
-        plugin.updateInjector(new ConfigModule(this));
+        plugin.preInjectorUpdate((Class)this.getClass(), this);
     }
 
     public final R getNodeOrDefault() {
@@ -45,21 +44,6 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
         } catch (ObjectMappingException e) {
             e.printStackTrace();
             return node;
-        }
-    }
-
-    private class ConfigModule extends AbstractModule {
-
-        private final NucleusConfigAdapter<R> adapter;
-
-        private ConfigModule(NucleusConfigAdapter<R> adapter) {
-            this.adapter = adapter;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        protected void configure() {
-            bind((Class)adapter.getClass()).toInstance(adapter.getClass().cast(adapter));
         }
     }
 }

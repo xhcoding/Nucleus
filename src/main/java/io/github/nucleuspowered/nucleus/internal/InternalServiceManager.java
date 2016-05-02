@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.Maps;
-import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.Nucleus;
 
 import java.util.Map;
@@ -26,13 +25,7 @@ public final class InternalServiceManager {
         }
 
         serviceMap.put(key, service);
-        plugin.updateInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(key).toInstance(service);
-            }
-        });
-
+        plugin.preInjectorUpdate(key, service);
         return true;
     }
 

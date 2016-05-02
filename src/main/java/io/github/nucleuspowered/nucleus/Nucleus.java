@@ -4,10 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
@@ -22,6 +22,7 @@ import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
+import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
@@ -72,6 +73,7 @@ public class Nucleus {
     private WorldConfigLoader worldConfigLoader;
     private ChatUtil chatUtil;
     private Injector injector;
+    private SubInjectorModule subInjectorModule = new SubInjectorModule();
 
     private InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider();
@@ -131,6 +133,8 @@ public class Nucleus {
                             .build())
                     .setPackageToScan(getClass().getPackage().getName() + ".modules")
                     .setLoggerProxy(new NucleusLoggerProxy(logger))
+                    .setOnPreEnable(this::runInjectorUpdate)
+                    .setOnEnable(this::runInjectorUpdate)
                     .build();
         } catch (QuickStartModuleDiscoveryException e) {
             isErrored = true;
@@ -289,8 +293,21 @@ public class Nucleus {
         return messageProvider;
     }
 
-    public Injector updateInjector(AbstractModule module) {
-        injector = injector.createChildInjector(module);
+    public <T> void preInjectorUpdate(Class<T> clazz, T instance) {
+        if (injector.getExistingBinding(Key.get(clazz)) == null) {
+            subInjectorModule.addInjection(clazz, instance);
+        } else {
+            logger.warn(Util.getMessageWithFormat("nucleus.injector.duplicate", clazz.getName()));
+        }
+    }
+
+    private Injector runInjectorUpdate() {
+        if (subInjectorModule.isEmpty()) {
+            return injector;
+        }
+
+        injector = injector.createChildInjector(subInjectorModule);
+        subInjectorModule = new SubInjectorModule();
         return injector;
     }
 
