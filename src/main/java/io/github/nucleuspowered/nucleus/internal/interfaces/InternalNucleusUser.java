@@ -30,6 +30,8 @@ public interface InternalNucleusUser extends NucleusUser {
 
     void addMail(MailData mailData);
 
+    boolean removeMail(MailData data);
+
     boolean clearMail();
 
     /**

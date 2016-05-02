@@ -8,40 +8,43 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.MailFilterParser;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-@Permissions(suggestedLevel = SuggestedLevel.USER)
+@Permissions(root = "mail")
 @RunAsync
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand("mail")
-public class MailCommand extends CommandBase<Player> {
+@RegisterCommand(value = {"other", "o"}, subcommandOf = MailCommand.class)
+public class MailOtherCommand extends CommandBase<CommandSource> {
 
     private final MailReadBase base;
     private final MailHandler handler;
+    private final String userKey = "user";
 
     @Inject
-    public MailCommand(MailHandler handler, Game game) {
+    public MailOtherCommand(MailHandler handler, Game game) {
         base = new MailReadBase(game, handler);
         this.handler = handler;
     }
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] { GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(MailReadBase.filters), handler))) };
+        return new CommandElement[] {
+            GenericArguments.user(Text.of(userKey)),
+            GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(MailReadBase.filters), handler)))};
     }
 
     @Override
-    public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        return base.executeCommand(src, src, args.getAll(MailReadBase.filters));
+    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        return base.executeCommand(src, args.<User>getOne(userKey).get(), args.getAll(MailReadBase.filters));
     }
 }

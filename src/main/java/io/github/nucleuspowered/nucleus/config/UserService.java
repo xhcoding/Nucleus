@@ -320,6 +320,18 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     }
 
     @Override
+    public boolean removeMail(MailData mailData) {
+         List<MailData> lmd = data.getMailDataList();
+         if (lmd.removeIf(x -> x.getDate().equals(mailData.getDate()) &&
+                x.getMessage().equals(mailData.getMessage()) && x.getUuid().equals(mailData.getUuid()))) {
+             data.setMailDataList(lmd);
+             return true;
+         }
+
+         return false;
+    }
+
+    @Override
     public boolean clearMail() {
         if (!data.getMailDataList().isEmpty()) {
             data.setMailDataList(Lists.newArrayList());

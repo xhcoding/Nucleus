@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mail.events;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -34,6 +35,10 @@ public class InternalNucleusMailEvent extends AbstractEvent implements io.github
 
     @Override
     public Cause getCause() {
+        if (from == null) {
+            return Cause.of(NamedCause.source(Sponge.getServer().getConsole()));
+        }
+
         return Cause.of(NamedCause.source(from));
     }
 

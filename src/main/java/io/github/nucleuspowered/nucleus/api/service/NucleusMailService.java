@@ -29,6 +29,15 @@ public interface NucleusMailService {
     List<MailData> getMail(User player, MailFilter... filters);
 
     /**
+     * Removes a specific mail for a specific player.
+     *
+     * @param player The {@link User} to remove the mail from.
+     * @param mailData The {@link MailData} to remove from the player.
+     * @return <code>true</code> if the mail was removed, <code>false</code> if the player didn't have the mail.
+     */
+    boolean removeMail(User player, MailData mailData);
+
+    /**
      * Sends mail to a player, addressed from another player.
      *
      * @param playerFrom The {@link User} of the player to send the message from.

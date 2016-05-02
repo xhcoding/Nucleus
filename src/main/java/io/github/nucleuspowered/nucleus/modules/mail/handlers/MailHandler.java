@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mail.handlers;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -51,7 +52,7 @@ public class MailHandler implements NucleusMailService {
 
         List<MailData> lmd = iqsu.getMail();
         if (filters.length == 0 || lmd.isEmpty()) {
-            return lmd;
+            return Lists.newArrayList(lmd);
         }
 
         List<MailFilter> lmf = Arrays.asList(filters);
@@ -86,6 +87,16 @@ public class MailHandler implements NucleusMailService {
         }
 
         return lmd;
+    }
+
+    @Override
+    public boolean removeMail(User player, MailData mailData) {
+        try {
+            return plugin.getUserLoader().getUser(player).removeMail(mailData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -649,23 +650,23 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return createChildCommands(scb);
     }
 
-    private final Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends AbstractCommand>> bases) {
+    private Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends AbstractCommand>> bases) {
         Map<List<String>, CommandCallable> map = Maps.newHashMap();
+        final Set<Class<? extends AbstractCommand>> s = this.moduleCommands;
+        Injector i = plugin.getInjector().createChildInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(new TypeLiteral<Set<Class<? extends AbstractCommand>>>(){}).annotatedWith(ModuleCommandSet.class).toInstance(s);
+            }
+        });
+
         bases.forEach(cb -> {
             AbstractCommand c = null;
             try {
-                c = cb.newInstance();
-                final Set<Class<? extends AbstractCommand>> s = this.moduleCommands;
-                plugin.getInjector().createChildInjector(new AbstractModule() {
-                    @Override
-                    protected void configure() {
-                        bind(new TypeLiteral<Set<Class<? extends AbstractCommand>>>(){}).annotatedWith(ModuleCommandSet.class).toInstance(s);
-                    }
-                }).injectMembers(c);
-
+                c = i.getInstance(cb);
                 c.postInit();
                 map.put(Arrays.asList(c.getAliases()), c.createSpec());
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (Exception e) {
                 plugin.getLogger().error(Util.getMessageWithFormat("command.child.notloaded", cb.getName()));
 
                 if (cca.getNodeOrDefault().isDebugmode()) {
