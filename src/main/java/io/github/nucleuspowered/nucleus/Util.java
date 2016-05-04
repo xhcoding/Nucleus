@@ -11,6 +11,9 @@ import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Identifiable;
 
@@ -153,4 +156,70 @@ public class Util {
         Set<ClassPath.ClassInfo> ci = ClassPath.from(StandardModule.class.getClassLoader()).getTopLevelClassesRecursive(pack);
         return ci.stream().map(ClassPath.ClassInfo::load).filter(base::isAssignableFrom).map(x -> (Class<? extends T>)x).collect(Collectors.toSet());
     }
+
+    public static Optional<OptionSubject> getSubject(Player player) {
+        Subject subject = player.getContainingCollection().get(player.getIdentifier());
+        return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
+    }
+
+    /*
+    public static <T> Optional<T> getOptionFromPlayer(Player src, String option, BiFunction<String, T, T> optionTranslator) {
+        // We start with attempting to get the data via the cast to "OptionSubject".
+        T result = null;
+        if (src instanceof OptionSubject) {
+            Optional<String> r = ((OptionSubject) src).getOption(src.getActiveContexts(), option);
+            if (r.isPresent()) {
+                result = optionTranslator.apply(r.get(), null);
+            }
+
+            return Optional.ofNullable(result);
+        }
+
+        // Let's try the poorman's way.
+        result = getOptionResult(src, src.getTransientSubjectData(), option, optionTranslator, null);
+
+        if (result == null) {
+            result = getOptionResult(src, src.getSubjectData(), option, optionTranslator, null);
+        }
+
+        return Optional.ofNullable(result);
+    }
+
+    private static <T> T getOptionResult(Player src, SubjectData sd, String option, BiFunction<String, T, T> optionTranslator, T currentResult) {
+        if (sd instanceof OptionSubjectData) {
+            OptionSubjectData osd = ((OptionSubjectData) sd);
+
+            // Check user.
+            String res = osd.getOptions(src.getActiveContexts()).get(option);
+            if (res == null) {
+                res = osd.getOptions(Sets.newHashSet()).get(option);
+            }
+
+            if (res != null) {
+                return optionTranslator.apply(res, currentResult);
+            }
+
+            // Check groups.
+            for (Subject s : osd.getParents(src.getActiveContexts())) {
+                currentResult = getOptionResult(src, s.getTransientSubjectData(), option, optionTranslator, currentResult);
+
+                if (currentResult == null) {
+                    currentResult = getOptionResult(src, s.getSubjectData(), option, optionTranslator, null);
+                }
+            }
+
+            if (currentResult == null) {
+                for (Subject s : osd.getParents(Sets.newHashSet())) {
+                    currentResult = getOptionResult(src, s.getTransientSubjectData(), option, optionTranslator, null);
+
+                    if (currentResult == null) {
+                        currentResult = getOptionResult(src, s.getSubjectData(), option, optionTranslator, null);
+                    }
+                }
+            }
+        }
+
+        return currentResult;
+    }
+    */
 }
