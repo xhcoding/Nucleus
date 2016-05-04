@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus;
 
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -76,16 +75,11 @@ public class ChatUtil {
     }
 
     private Text getTextFromOption(Player player, String option) {
-        Optional<OptionSubject> oos = getSubject(player);
+        Optional<OptionSubject> oos = Util.getSubject(player);
         if (!oos.isPresent()) {
             return Text.EMPTY;
         }
 
         return TextSerializers.formattingCode('&').deserialize(oos.get().getOption(option).orElse(""));
-    }
-
-    private Optional<OptionSubject> getSubject(Player player) {
-        Subject subject = player.getContainingCollection().get(player.getIdentifier());
-        return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
     }
 }

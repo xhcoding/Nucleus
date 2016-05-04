@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
-import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -19,12 +18,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.permission.SubjectData;
-import org.spongepowered.api.service.permission.option.OptionSubjectData;
+import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Permissions(root = "home", alias = "set", suggestedLevel = SuggestedLevel.USER)
@@ -61,14 +60,20 @@ public class SetHomeCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
+        // Does the home exist? You have to explicitly delete the home first.
+        if (msw.entrySet().stream().anyMatch(k -> k.getKey().equalsIgnoreCase(home))) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.seterror", home));
+            return CommandResult.empty();
+        }
+
         int c = getCount(src);
         if (msw.size() >= c) {
             src.sendMessage(Util.getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
             return CommandResult.empty();
         }
 
-        // Does the home exist?
-        if (msw.containsKey(home) || !iqsu.setHome(home, src.getLocation(), src.getRotation())) {
+        // Just in case.
+        if (!iqsu.setHome(home, src.getLocation(), src.getRotation())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.sethome.seterror", home));
             return CommandResult.empty();
         }
@@ -82,24 +87,27 @@ public class SetHomeCommand extends CommandBase<Player> {
             return Integer.MAX_VALUE;
         }
 
-        int homesAllowed = Math.max(getHomeCountFromSubjectData(src, src.getSubjectData()), getHomeCountFromSubjectData(src, src.getTransientSubjectData()));
-        return Math.max(homesAllowed, 1);
-    }
+        Optional<OptionSubject> os = Util.getSubject(src);
+        if (!os.isPresent()) {
+            return 1;
+        }
 
-    private int getHomeCountFromSubjectData(Player src, SubjectData sd) {
-        if (sd instanceof OptionSubjectData) {
-            String count = ((OptionSubjectData) sd).getOptions(src.getActiveContexts()).get("home-count");
-            if (count == null) {
-                count = ((OptionSubjectData) sd).getOptions(Sets.newHashSet()).getOrDefault("home-count", "1");
-            }
+        // Active contexts take first stab.
+        Optional<String> count = os.get().getOption(src.getActiveContexts(), "home-count");
+        if (!count.isPresent()) {
+            // OK, let's go general.
+            count = os.get().getOption("home-count");
+        }
 
+        int result = 1;
+        if (count.isPresent()) {
             try {
-                return Integer.parseUnsignedInt(count);
+                result = Integer.parseInt(count.get());
             } catch (NumberFormatException e) {
-                // Nope.
+                //
             }
         }
 
-        return 1;
+        return Math.max(result, 1);
     }
 }
