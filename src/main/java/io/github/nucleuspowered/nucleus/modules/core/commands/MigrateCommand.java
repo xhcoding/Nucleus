@@ -30,6 +30,21 @@ public class MigrateCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         if (Sponge.getPluginManager().getPlugin("io.github.hsyyid.essentialcmds").isPresent()) {
             try {
+                // I imagine that there may be a few questions that you may be asking here.
+                //
+                // 1) Why is there an injector here?
+                // 2) Why not just bung the logic in this class?
+                //
+                // Using an injector allows us to put all our handlers into the class easily, much like with a command.
+                // The code in the migrator existed in this command originally anyway, so using an injector made it easy
+                // to move the code.
+                //
+                // Of course, that brings us to why the logic is not in this class anyway - again, due to the injector!
+                // We use Guice to inject members into all our command classes, it's part of the magic that allows us
+                // to have a module system. EssentialCmds uses a static class to access configuration, and the injector
+                // will try to load the class. Normally, this is fine... until the class does not exist - such as when
+                // EssentialCmds is NOT installed! We then get an error on the console, and confuse the user. So, moving
+                // that logic into a class that loads on demand means that the nasty error no longer occurs.
                 plugin.getInjector().getInstance(EssCmdsMigrator.class).migrate(src);
                 return CommandResult.success();
             } catch (Exception e) {
