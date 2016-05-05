@@ -46,8 +46,6 @@ public class CoreListener extends ListenerBase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Listener

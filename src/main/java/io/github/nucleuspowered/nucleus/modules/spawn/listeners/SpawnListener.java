@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationWithRotation;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -27,7 +28,7 @@ public class SpawnListener extends ListenerBase {
 
         Player pl = joinEvent.getTargetEntity();
 
-        if (pl.getJoinData().lastPlayed().get().equals(pl.getJoinData().firstPlayed().get())) {
+        if (Util.isFirstPlay(pl)) {
             // first spawn.
             Optional<LocationWithRotation> ofs = store.getFirstSpawn();
 
