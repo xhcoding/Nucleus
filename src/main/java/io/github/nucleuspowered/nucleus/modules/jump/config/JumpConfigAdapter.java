@@ -5,20 +5,17 @@
 package io.github.nucleuspowered.nucleus.modules.jump.config;
 
 import com.google.common.reflect.TypeToken;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
-public class JumpConfigAdapter extends AbstractConfigAdapter<JumpConfig> {
+public class JumpConfigAdapter extends NucleusConfigAdapter<JumpConfig> {
 
     @Override
-    protected ConfigurationNode generateDefaults(ConfigurationNode node) {
-        try {
-            return node.setValue(TypeToken.of(JumpConfig.class), new JumpConfig());
-        } catch (ObjectMappingException e) {
-            return node;
-        }
+    protected JumpConfig getDefaultObject() {
+        return new JumpConfig();
     }
 
     @Override

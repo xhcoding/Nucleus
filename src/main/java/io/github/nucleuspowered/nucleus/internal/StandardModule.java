@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.annotations.ModuleCommandSet;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -30,7 +31,9 @@ import java.util.stream.Collectors;
 
 public abstract class StandardModule implements Module {
 
-    private Optional<AbstractConfigAdapter<?>> adapter = null;
+    // We use an optional here to signify we've looked - so we don't perform another lookup. So, null -> do lookup,
+    // Optional.empty() -> did not exist, don't look again.
+    private Optional<NucleusConfigAdapter<?>> adapter = null;
 
     @Inject protected Nucleus nucleus;
     @Inject protected InternalServiceManager serviceManager;
@@ -45,10 +48,11 @@ public abstract class StandardModule implements Module {
             adapter.ifPresent(x -> nucleus.getInjector().injectMembers(x));
         }
 
-        return adapter;
+        // We need to use the right type...
+        return adapter.isPresent() ? Optional.of(adapter.get()) : Optional.empty();
     }
 
-    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
+    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
         return Optional.empty();
     }
 

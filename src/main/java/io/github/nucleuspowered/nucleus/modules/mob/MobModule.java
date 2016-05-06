@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.mob;
 
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class MobModule extends StandardModule {
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
+    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new MobConfigAdapter());
     }
 }

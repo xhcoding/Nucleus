@@ -9,12 +9,12 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.util.Optional;
 
@@ -27,7 +27,7 @@ public class JailModule extends StandardModule {
     @Inject private InternalServiceManager serviceManager;
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
+    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new JailConfigAdapter());
     }
 

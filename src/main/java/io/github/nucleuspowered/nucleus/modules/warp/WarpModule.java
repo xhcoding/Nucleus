@@ -7,12 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.warp;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.util.Optional;
 
@@ -41,7 +41,7 @@ public class WarpModule extends StandardModule {
     }
 
     @Override
-    public Optional<AbstractConfigAdapter<?>> createConfigAdapter() {
+    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
         return Optional.of(new WarpConfigAdapter());
     }
 }
