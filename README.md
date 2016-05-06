@@ -1,28 +1,24 @@
 Nucleus
 ====
 
-[![GitHub license](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square)](/LICENSE.txt) |
-[![](https://jitpack.io/v/NucleusPowered/Nucleus.svg?style=flat-square)](https://jitpack.io/#NucleusPowered/Nucleus) |
-[![Master branch](https://img.shields.io/travis/NucleusPowered/Nucleus/master.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
-
 * [Source]
-* [Issues] | [![GitHub issues](https://img.shields.io/github/issues/NucleusPowered/Nucleus.svg?style=flat-square)](http://www.github.com/NucleusPowered/Nucleus/issues/)
-* [Wiki]
-* [Downloads] | [![Github Releases](https://img.shields.io/github/downloads/NucleusPowered/Nucleus/total.svg?style=flat-square)](http://www.github.com/NucleusPowered/Nucleus/releases)
+* [Issues]
+* [Website]
+* [Downloads]
+* [Documentation]
 * [TeamCity]
 * [IRC] | EsperNet - #nucleus
+
+Master branch build status:  [![Master branch](https://img.shields.io/travis/NucleusPowered/Nucleus/master.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
+
+Licence: [MIT](LICENSE.md)
 
 Nucleus is a Sponge plugin that forms a solid base for your server, providing essential commands, events, and other
 tidbits that you might need. Extremely configurable, only loading up the commands and modules you want (and providing a way for
 plugins to disable modules that they replace the functionality of), and providing a simple and rich API, Nucleus is an
-elite plugin for providing simple server tasks.
+elite plugin for providing simple server tasks, and an essential addition to your server!
  
-Nucleus is the unbeatable combination of HassanS6000's EssentialCmds and experience of writing an essentials plugin, with the
-system loading technology of dualspiral's QuickStart, making Nucleus an essential addition to your server.
- 
-...or so we hope, soon! With a website full of documentation and everything!
-
-Some of commands will have the ability for warmups and cooldowns to take place, as well as charging users (if an Economy plugin is installed).
+We're in beta right now, but we'd love the feedback!
 
 Nucleus requires Sponge API 4.1 or higher to run.
 
@@ -49,7 +45,8 @@ To build Nucleus, navigate to the source directory and run either:
 * `./gradlew build` on UNIX and UNIX like systems (including OS X and Linux)
 * `gradlew build` on Windows systems
 
-You will find the compiled JAR which will be named like `Nucleus-x.x.x.jar` in `builds/libs/`
+You will find the compiled JAR which will be named like `Nucleus-x.x.x-all.jar` in `builds/libs/`. Make sure you use the
+one ending in `-all`, as this contains shadowed dependencies.
 
 ## Building against Nucleus
 
@@ -59,10 +56,13 @@ Nucleus is available via a Maven repository.
 * Group ID: `io.github.nucleuspowered`
 * Artifact Name: `Nucleus`
 
+You can also use [JitPack](https://jitpack.io/#NucleusPowered/Nucleus) as a repository, if you prefer.
+
 [Source]: https://github.com/NucleusPowered/Nucleus
 [Issues]: https://github.com/NucleusPowered/Nucleus/issues
-[Wiki]: https://github.com/NucleusPowered/Nucleus/wiki
 [Downloads]: https://github.com/NucleusPowered/Nucleus/releases
+[Website]: http://nucleuspowered.org/
+[Documentation]: http://nucleuspowered.org/docs
 [guidelines]: Contributing.md
 [TeamCity]: https://teamcity.drnaylor.co.uk/project.html?projectId=QuickStart&tab=projectOverview
 [IRC]: http://esper.net/publicirc.php
