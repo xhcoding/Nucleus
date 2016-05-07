@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.api.data.LocationWithRotation;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
@@ -22,6 +21,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.world.Location;
@@ -132,11 +132,11 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
         return removeLocation(name, data.getWarps());
     }
 
-    public Optional<LocationWithRotation> getFirstSpawn() {
+    public Optional<Transform<World>> getFirstSpawn() {
         Optional<LocationNode> ln = data.getFirstSpawnLocation();
         if (ln.isPresent()) {
             try {
-                LocationWithRotation lwr = new LocationWithRotation(ln.get().getLocation(), ln.get().getRotation());
+                Transform<World> lwr = new Transform<>(ln.get().getLocation().getExtent(), ln.get().getLocation().getPosition(), ln.get().getRotation());
                 return Optional.of(lwr);
             } catch (NoSuchWorldException e) {
                 return Optional.empty();
