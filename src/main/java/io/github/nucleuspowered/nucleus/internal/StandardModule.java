@@ -149,16 +149,7 @@ public abstract class StandardModule implements Module {
                 .collect(Collectors.toSet());
 
         Injector injector = nucleus.getInjector();
-        commandsToLoad.stream().map(x -> {
-            try {
-                ListenerBase lb = x.newInstance();
-                injector.injectMembers(lb);
-                return lb;
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).filter(lb -> lb != null).forEach(c -> {
+        commandsToLoad.stream().map(injector::getInstance).filter(lb -> lb != null).forEach(c -> {
             // Register suggested permissions
             c.getPermissions().forEach((k, v) -> nucleus.getPermissionRegistry().registerOtherPermission(k, v));
             Sponge.getEventManager().registerListeners(nucleus, c);
@@ -173,16 +164,7 @@ public abstract class StandardModule implements Module {
                 .collect(Collectors.toSet());
 
         Injector injector = nucleus.getInjector();
-        commandsToLoad.stream().map(x -> {
-            try {
-                TaskBase lb = x.newInstance();
-                injector.injectMembers(lb);
-                return lb;
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).filter(lb -> lb != null).forEach(c -> {
+        commandsToLoad.stream().map(injector::getInstance).filter(lb -> lb != null).forEach(c -> {
             c.getPermissions().forEach((k, v) -> nucleus.getPermissionRegistry().registerOtherPermission(k, v));
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.secondsPerRun(), TimeUnit.SECONDS);
             if (c.isAsync()) {

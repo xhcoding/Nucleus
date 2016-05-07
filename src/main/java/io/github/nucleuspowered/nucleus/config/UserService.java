@@ -57,6 +57,9 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     private Transform<World> lastLocation = null;
     private boolean logLastLocation = true;
 
+    // Use for /staffchat
+    private boolean inStaffChat = false;
+
     // Used as a cache.
     private Text nickname = null;
 
@@ -519,6 +522,16 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     @Override
     public void setLogLastLocation(boolean logLastLocation) {
         this.logLastLocation = logLastLocation;
+    }
+
+    @Override
+    public boolean isInStaffChat() {
+        return inStaffChat;
+    }
+
+    @Override
+    public void setInStaffChat(boolean inStaffChat) {
+        this.inStaffChat = inStaffChat;
     }
 
     private String getNickPrefix() {

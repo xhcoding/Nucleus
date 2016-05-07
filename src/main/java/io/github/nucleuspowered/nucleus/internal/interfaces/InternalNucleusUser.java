@@ -112,4 +112,8 @@ public interface InternalNucleusUser extends NucleusUser {
     boolean isLogLastLocation();
 
     void setLogLastLocation(boolean logLastLocation);
+
+    boolean isInStaffChat();
+
+    void setInStaffChat(boolean inStaffChat);
 }

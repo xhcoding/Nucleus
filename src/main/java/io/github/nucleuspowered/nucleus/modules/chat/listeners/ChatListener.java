@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -32,11 +33,13 @@ public class ChatListener extends ListenerBase {
 
     private final Map<String[], Function<String, String>> replacements;
 
-    @Inject private ChatConfigAdapter cca;
-    @Inject private ChatUtil chatUtil;
+    private final ChatConfigAdapter cca;
+    private final ChatUtil chatUtil;
 
-    // Zero args for the injector
-    public ChatListener() {
+    @Inject
+    public ChatListener(ChatUtil chatUtil, ChatConfigAdapter cca) {
+        this.chatUtil = chatUtil;
+        this.cca = cca;
         replacements = createReplacements();
     }
 
@@ -79,6 +82,11 @@ public class ChatListener extends ListenerBase {
     // We do this first so that other plugins can alter it later if needs be.
     @Listener(order = Order.EARLY)
     public void onPlayerChat(MessageChannelEvent.Chat event, @First Player player) {
+        if (event.getChannel().isPresent() && event.getChannel().get() instanceof StaffChatMessageChannel) {
+            // Staff chat. Not interested in applying these transforms.
+            return;
+        }
+
         ChatConfig config = cca.getNodeOrDefault();
         if (!config.isModifychat()) {
             return;
@@ -90,6 +98,4 @@ public class ChatListener extends ListenerBase {
                 useMessage(player, rawMessage),
                 chatUtil.getFromTemplate(config.getTemplate().getSuffix(), player, false));
     }
-
-
 }
