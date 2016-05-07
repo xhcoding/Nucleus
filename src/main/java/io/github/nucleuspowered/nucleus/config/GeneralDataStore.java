@@ -8,6 +8,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.api.data.LocationWithRotation;
@@ -22,9 +23,11 @@ import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +86,18 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
 
     public boolean removeKit(String name) {
         return data.getKits().remove(name.toLowerCase()) != null;
+    }
+
+    public List<ItemStackSnapshot> getFirstKit() {
+        return data.getFirstKit();
+    }
+
+    public void setFirstKit(@Nullable List<ItemStackSnapshot> stack) {
+        if (stack == null) {
+            stack = Lists.newArrayList();
+        }
+
+        data.setFirstKit(stack);
     }
 
     public Optional<WarpLocation> getJailLocation(String name) {

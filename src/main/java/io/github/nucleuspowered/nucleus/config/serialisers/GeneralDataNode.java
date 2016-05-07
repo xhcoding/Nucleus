@@ -6,11 +6,10 @@ package io.github.nucleuspowered.nucleus.config.serialisers;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.Kit;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -35,6 +34,9 @@ public class GeneralDataNode {
     @Setting
     @Nullable
     private LocationNode firstspawn = null;
+
+    @Setting
+    private List<ItemStackSnapshot> firstKit = Lists.newArrayList();
 
     public List<ItemType> getBlacklistedTypes() {
         return blacklistedTypes;
@@ -62,5 +64,17 @@ public class GeneralDataNode {
 
     public void setFirstSpawnLocation(@Nullable LocationNode node) {
         firstspawn = node;
+    }
+
+    public List<ItemStackSnapshot> getFirstKit() {
+        return firstKit;
+    }
+
+    public void setFirstKit(List<ItemStackSnapshot> firstKit) {
+        if (firstKit == null) {
+            firstKit = Lists.newArrayList();
+        }
+
+        this.firstKit = firstKit;
     }
 }
