@@ -58,7 +58,7 @@ public class Util {
     }
 
     public static String getTimeToNow(Instant time) {
-        return getTimeStringFromSeconds(Instant.now().getEpochSecond() - time.getEpochSecond());
+        return getTimeStringFromSeconds(Math.abs(Instant.now().getEpochSecond() - time.getEpochSecond()));
     }
 
     public static String getTimeStringFromSeconds(long time) {
