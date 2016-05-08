@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
-import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -20,42 +19,43 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 
-import java.time.Duration;
-
 /**
- * Sets kit cooldown.
+ * Sets kit as a one time use.
  *
- * Command Usage: /kit set Permission: nucleus.kit.set.base
+ * Command Usage: /kit set Permission: nucleus.kit.onetime.base
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"setcooldown", "setinterval"}, subcommandOf = KitCommand.class)
+@RegisterCommand(value = {"onetime"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitSetCooldownCommand extends CommandBase<CommandSource> {
+public class KitOneTimeCommand extends CommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
 
     private final String kit = "kit";
-    private final String duration = "duration";
+    private final String toggle = "oneTimeToggle";
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.seq(GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true)),
-                GenericArguments.onlyOne(new TimespanParser(Text.of(duration))))};
+        return new CommandElement[] {
+            GenericArguments.seq(GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true)),
+            GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
+        };
     }
 
     @Override
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
         KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
-        long seconds = args.<Long>getOne(duration).get();
+        boolean b = args.<Boolean>getOne(toggle).get();
 
         // This Kit is a reference back to the version in list, so we don't need
         // to update it explicitly
-        kitInfo.kit.setInterval(Duration.ofSeconds(seconds));
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitInfo.name, Util.getTimeStringFromSeconds(seconds)));
+        kitInfo.kit.setOneTime(b);
+        player.sendMessage(Util.getTextMessageWithFormat(b ? "command.kit.onetime.on" : "command.kit.onetime.off", kitInfo.name));
+
         return CommandResult.success();
     }
 }

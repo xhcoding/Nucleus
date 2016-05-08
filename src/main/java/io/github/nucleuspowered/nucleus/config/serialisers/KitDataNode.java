@@ -22,9 +22,11 @@ public class KitDataNode implements Kit {
     /**
      * This is in seconds to be consistent with the rest of the plugin.
      */
-    @Setting private long interval;
+    @Setting private long interval = 0;
 
-    @Setting private double cost;
+    @Setting private double cost = 0;
+
+    @Setting private boolean oneTime = false;
 
     public KitDataNode() {
         this.stacks = Lists.newArrayList();
@@ -50,30 +52,47 @@ public class KitDataNode implements Kit {
         this.cost = 0;
     }
 
-    @Override public List<ItemStackSnapshot> getStacks() {
+    @Override
+    public List<ItemStackSnapshot> getStacks() {
         return stacks;
     }
 
-    @Override public Kit setStacks(List<ItemStackSnapshot> stacks) {
+    @Override
+    public Kit setStacks(List<ItemStackSnapshot> stacks) {
         this.stacks = stacks;
         return this;
     }
 
-    @Override public Duration getInterval() {
+    @Override
+    public Duration getInterval() {
         return Duration.ofSeconds(interval);
     }
 
-    @Override public Kit setInterval(Duration interval) {
+    @Override
+    public Kit setInterval(Duration interval) {
         this.interval = interval.getSeconds();
         return this;
     }
 
-    @Override public double getCost() {
+    @Override
+    public double getCost() {
         return this.cost;
     }
 
-    @Override public Kit setCost(double cost) {
+    @Override
+    public Kit setCost(double cost) {
         this.cost = cost;
+        return this;
+    }
+
+    @Override
+    public boolean isOneTime() {
+        return this.oneTime;
+    }
+
+    @Override
+    public Kit setOneTime(boolean oneTime) {
+        this.oneTime = oneTime;
         return this;
     }
 }

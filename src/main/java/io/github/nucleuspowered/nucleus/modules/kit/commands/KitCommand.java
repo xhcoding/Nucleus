@@ -67,7 +67,8 @@ public class KitCommand extends CommandBase<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> pi = Maps.newHashMap();
-        pi.put("exempt.cooldown", new PermissionInformation(Util.getMessageWithFormat("permission.kit.exempt"), SuggestedLevel.ADMIN));
+        pi.put("exempt.cooldown", new PermissionInformation(Util.getMessageWithFormat("permission.kit.exempt.cooldown"), SuggestedLevel.ADMIN));
+        pi.put("exempt.onetime", new PermissionInformation(Util.getMessageWithFormat("permission.kit.exempt.onetime"), SuggestedLevel.ADMIN));
         return pi;
     }
 
@@ -91,12 +92,19 @@ public class KitCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        // If we have a cooldown for the kit, and we don't have permission to
-        // bypass it...
-        if (!player.hasPermission(permissions.getPermissionWithSuffix("exempt.cooldown")) && kit.getInterval().getSeconds() > 0) {
+        // If the kit was used before...
+        if (user.getKitLastUsedTime().containsKey(kitName)) {
 
-            // If the kit was used before...
-            if (user.getKitLastUsedTime().containsKey(kitName)) {
+            // if it's one time only and the user does not have an exemption...
+            if (kit.isOneTime() && !player.hasPermission(permissions.getPermissionWithSuffix("exempt.onetime"))) {
+                // tell the user.
+                player.sendMessage(Util.getTextMessageWithFormat("command.kit.onetime", kitName));
+                return CommandResult.empty();
+            }
+
+            // If we have a cooldown for the kit, and we don't have permission to
+            // bypass it...
+            if (!permissions.testCooldownExempt(player) && kit.getInterval().getSeconds() > 0) {
 
                 // ...and we haven't reached the cooldown point yet...
                 Instant timeForNextUse = user.getKitLastUsedTime().get(kitName).plus(kit.getInterval());
@@ -106,8 +114,6 @@ public class KitCommand extends CommandBase<Player> {
                     // tell the user.
                     player.sendMessage(Util.getTextMessageWithFormat("command.kit.cooldown", Util.getTimeStringFromSeconds(d.getSeconds()), kitName));
                     return CommandResult.empty();
-                } else {
-                    user.removeKitLastUsedTime(kitName);
                 }
             }
         }

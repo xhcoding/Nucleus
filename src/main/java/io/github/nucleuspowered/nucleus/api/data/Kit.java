@@ -63,6 +63,21 @@ public interface Kit {
     Kit setCost(double cost);
 
     /**
+     * Gets whether the kit is only allowed to be used one time, ever.
+     *
+     * @return <code>true</code> if so
+     */
+    boolean isOneTime();
+
+    /**
+     * Sets whether the kit is only allowed to be used one time, ever.
+     *
+     * @param oneTime Set <code>true</code> if the kit should only be used once, <code>false</code> otherwise.
+     * @return this {@link Kit}, for chaining.
+     */
+    Kit setOneTime(boolean oneTime);
+
+    /**
      * Convenience method for updating the kit with the contents of the player's inventory.
      *
      * @param player The player to get the kit from.
