@@ -10,11 +10,13 @@ import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
 
 import java.io.IOException;
@@ -170,5 +172,26 @@ public class Util {
         // lastPlayed is always ticking - give three seconds.
         // TODO: Better way of doing this.
         return firstPlayed.isAfter(lastPlayed.minus(3, ChronoUnit.SECONDS));
+    }
+
+    /**
+     * As some {@link Translatable#getTranslation()} methods have not been implemented yet, this allows us to try to use
+     * the method in a safer manner for {@link CatalogType}s.
+     *
+     * @param translatable The {@link Translatable} to get the translation from, if appropriate.
+     * @param <T> The {@link CatalogType} that is also a {@link Translatable}
+     * @return A {@link String} that represents the item.
+     */
+    public static <T extends Translatable & CatalogType> String getTranslatableIfPresent(T translatable) {
+        try {
+            String result = translatable.getTranslation().get();
+            if (!result.isEmpty()) {
+                return result;
+            }
+        } catch (AbstractMethodError e) {
+            //
+        }
+
+        return translatable.getName();
     }
 }
