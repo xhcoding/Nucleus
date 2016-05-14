@@ -5,12 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -31,6 +27,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 public class BroadcastCommand extends CommandBase<CommandSource> {
     private final String message = "message";
     @Inject private AdminConfigAdapter adminConfigAdapter;
+    @Inject private ChatUtil chatUtil;
 
     @Override
     public CommandElement[] getArguments() {
@@ -52,6 +49,6 @@ public class BroadcastCommand extends CommandBase<CommandSource> {
 
         String tag = adminConfigAdapter.getNodeOrDefault().getTag();
         return Text.builder().append(TextSerializers.formattingCode('&').deserialize(tag))
-                .append(TextSerializers.formattingCode('&').deserialize(" &" + colour + message)).build();
+                .append(chatUtil.addUrlsToAmpersandFormattedString(" &" + colour + message)).build();
     }
 }

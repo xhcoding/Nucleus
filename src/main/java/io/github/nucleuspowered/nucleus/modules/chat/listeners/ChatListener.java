@@ -50,8 +50,7 @@ public class ChatListener extends ListenerBase {
         mp.put(prefix + "colour", new PermissionInformation(Util.getMessageWithFormat("permission.chat.colour"), SuggestedLevel.ADMIN));
         mp.put(prefix + "style", new PermissionInformation(Util.getMessageWithFormat("permission.chat.style"), SuggestedLevel.ADMIN));
         mp.put(prefix + "magic", new PermissionInformation(Util.getMessageWithFormat("permission.chat.magic"), SuggestedLevel.ADMIN));
-        // TODO: URLs.
-        // mp.put(prefix + "url", new PermissionInformation(Util.getMessageWithFormat("permission.chat.urls"), SuggestedLevel.ADMIN));
+        mp.put(prefix + "url", new PermissionInformation(Util.getMessageWithFormat("permission.chat.urls"), SuggestedLevel.ADMIN));
         return mp;
     }
 
@@ -74,6 +73,10 @@ public class ChatListener extends ListenerBase {
                 // ...strip the codes.
                 m = r.getValue().apply(m);
             }
+        }
+
+        if (player.hasPermission(prefix + "url")) {
+            return chatUtil.addUrlsToAmpersandFormattedString(m);
         }
 
         return TextSerializers.formattingCode('&').deserialize(m);
