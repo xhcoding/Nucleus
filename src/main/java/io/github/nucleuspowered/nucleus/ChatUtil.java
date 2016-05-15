@@ -67,7 +67,7 @@ public class ChatUtil {
     }
 
     public List<Text> getFromStrings(List<String> strings, CommandSource cs) {
-        return strings.stream().map(x -> this.getServerMessageFormTemplate(x, cs, true))
+        return strings.stream().map(x -> this.getServerMessageFromTemplate(x, cs, true))
                 .map(x -> addUrlsToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(x)))
                 .collect(Collectors.toList());
     }
@@ -78,7 +78,7 @@ public class ChatUtil {
         return getMessageFromTemplate(template, cs, trimTrailingSpace, playerTokenSplitter, playerTokenMatcher, tokens);
     }
 
-    public Text getServerMessageFormTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
+    public Text getServerMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
         return getMessageFromTemplate(template, cs, trimTrailingSpace, serverTokenSplitter, serverTokenMatcher, serverTokens);
     }
 
@@ -157,7 +157,7 @@ public class ChatUtil {
             String url = m.group("url");
             try {
                 URL urlObj;
-                if (!url.startsWith("http://") || !url.startsWith("https://")) {
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
                     urlObj = new URL("http://" + url);
                 } else {
                     urlObj = new URL(url);

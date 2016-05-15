@@ -51,6 +51,7 @@ public final class TextFileController {
         }
 
         // Load the file into the list.
+        fileContents.clear();
         fileContents.addAll(Files.readAllLines(fileLocation));
     }
 
