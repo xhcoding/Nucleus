@@ -21,6 +21,7 @@ import org.spongepowered.api.util.Identifiable;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -138,13 +139,16 @@ public class Util {
         int mins = (int) ((ticks % 1000) / (100. / 6.));
         long hours = (ticks / 1000 + 6) % 24;
 
+        NumberFormat m = NumberFormat.getIntegerInstance();
+        m.setMinimumIntegerDigits(2);
+
         if (hours < 12) {
             long ahours = hours == 0 ? 12 : hours;
-            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.am"), ahours, hours, mins);
+            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.am"), ahours, hours, m.format(mins));
         } else {
             hours -= 12;
             long ahours = hours == 0 ? 12 : hours;
-            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.pm"), ahours, hours, mins);
+            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.pm"), ahours, hours, m.format(mins));
         }
     }
 
