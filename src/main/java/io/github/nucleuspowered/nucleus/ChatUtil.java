@@ -67,7 +67,9 @@ public class ChatUtil {
     }
 
     public List<Text> getFromStrings(List<String> strings, CommandSource cs) {
-        return strings.stream().map(x -> this.getServerMessageFormTemplate(x, cs, true)).collect(Collectors.toList());
+        return strings.stream().map(x -> this.getServerMessageFormTemplate(x, cs, true))
+                .map(x -> addUrlsToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(x)))
+                .collect(Collectors.toList());
     }
 
     // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
