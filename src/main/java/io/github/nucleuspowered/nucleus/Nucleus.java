@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -21,6 +22,7 @@ import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
@@ -41,6 +43,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
@@ -83,6 +86,8 @@ public class Nucleus {
     private PermissionRegistry permissionRegistry = new PermissionRegistry();
 
     private ModuleContainer moduleContainer;
+
+    private final Map<String, TextFileController> textFileControllers = Maps.newHashMap();
 
     @Inject private Game game;
     @Inject private Logger logger;
@@ -239,6 +244,10 @@ public class Nucleus {
             moduleContainer.reloadSystemConfig();
             reloadMessages();
             commandsConfig.load();
+
+            for (TextFileController tfc : textFileControllers.values()) {
+                tfc.load();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -298,6 +307,22 @@ public class Nucleus {
             subInjectorModule.addInjection(clazz, instance);
         } else {
             logger.warn(Util.getMessageWithFormat("nucleus.injector.duplicate", clazz.getName()));
+        }
+    }
+
+    /**
+     * Gets the {@link TextFileController}
+     *
+     * @param getController The ID of the {@link TextFileController}.
+     * @return An {@link Optional} that might contain a {@link TextFileController}.
+     */
+    public Optional<TextFileController> getTextFileController(String getController) {
+        return Optional.ofNullable(textFileControllers.get(getController));
+    }
+
+    public void addTextFileController(String id, Asset asset, Path file) throws IOException {
+        if (!textFileControllers.containsKey(id)) {
+            textFileControllers.put(id, new TextFileController(asset, file));
         }
     }
 

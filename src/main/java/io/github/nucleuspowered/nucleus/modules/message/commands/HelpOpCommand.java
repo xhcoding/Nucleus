@@ -60,7 +60,7 @@ public class HelpOpCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        Text prefix = chatUtil.getFromTemplate(mca.getNodeOrDefault().getHelpOpPrefix(), src, false);
+        Text prefix = chatUtil.getPlayerMessageFromTemplate(mca.getNodeOrDefault().getHelpOpPrefix(), src, false);
 
         MessageChannel.permission(permissions.getPermissionWithSuffix("receive")).send(src, prefix.concat(Text.of(message)));
         src.sendMessage(Util.getTextMessageWithFormat("command.helpop.success"));

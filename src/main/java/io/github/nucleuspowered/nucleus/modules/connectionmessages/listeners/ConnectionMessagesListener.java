@@ -28,7 +28,7 @@ public class ConnectionMessagesListener extends ListenerBase {
         if (Util.isFirstPlay(pl)) {
             // First time player.
             if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
-                Sponge.getServer().getBroadcastChannel().send(plugin, chatUtil.getFromTemplate(cma.getNodeOrDefault().getFirstTimeMessage(), pl, true));
+                Sponge.getServer().getBroadcastChannel().send(plugin, chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getFirstTimeMessage(), pl, true));
             }
         }
 
@@ -36,7 +36,7 @@ public class ConnectionMessagesListener extends ListenerBase {
             if (cmc.getLoginMessage().isEmpty()) {
                 joinEvent.setMessageCancelled(true);
             } else {
-                joinEvent.setMessage(chatUtil.getFromTemplate(cma.getNodeOrDefault().getLoginMessage(), pl, true));
+                joinEvent.setMessage(chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getLoginMessage(), pl, true));
             }
         }
     }
@@ -50,7 +50,7 @@ public class ConnectionMessagesListener extends ListenerBase {
             if (cmc.getLogoutMessage().isEmpty()) {
                 leaveEvent.setMessageCancelled(true);
             } else {
-                leaveEvent.setMessage(chatUtil.getFromTemplate(cma.getNodeOrDefault().getLogoutMessage(), pl, true));
+                leaveEvent.setMessage(chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getLogoutMessage(), pl, true));
             }
         }
     }

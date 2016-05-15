@@ -97,8 +97,8 @@ public class ChatListener extends ListenerBase {
 
         Text rawMessage = event.getRawMessage();
         event.setMessage(
-                chatUtil.getFromTemplate(config.getTemplate().getPrefix(), player, true),
+                chatUtil.getPlayerMessageFromTemplate(config.getTemplate().getPrefix(), player, true),
                 useMessage(player, rawMessage),
-                chatUtil.getFromTemplate(config.getTemplate().getSuffix(), player, false));
+                chatUtil.getPlayerMessageFromTemplate(config.getTemplate().getSuffix(), player, false));
     }
 }

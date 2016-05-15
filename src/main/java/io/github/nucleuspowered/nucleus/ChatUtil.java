@@ -7,7 +7,9 @@ package io.github.nucleuspowered.nucleus;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.LocatedSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
@@ -17,47 +19,77 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.world.World;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ChatUtil {
 
     private final Map<String, Function<CommandSource, Text>> tokens;
-    private final Pattern match;
-    private final Pattern p;
+    private final Map<String, Function<CommandSource, Text>> serverTokens;
+
+    private final Pattern playerTokenMatcher;
+    private final Pattern playerTokenSplitter;
+
+    private final Pattern serverTokenMatcher;
+    private final Pattern serverTokenSplitter;
+
     private final UserConfigLoader loader;
     private final Pattern urlParser =
             Pattern.compile("(^|(?!\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)", Pattern.CASE_INSENSITIVE);
 
     public ChatUtil(UserConfigLoader loader) {
         tokens = createTokens();
-        StringBuilder sb = new StringBuilder("(");
-        tokens.forEach((k, v) -> sb.append(k.replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}")).append("|"));
+        serverTokens = createServerTokens();
 
-        String m = sb.deleteCharAt(sb.length() - 1).append(")").toString();
-        match = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
-        p = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
+        String m = getRegex(tokens.keySet());
+        playerTokenMatcher = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
+        playerTokenSplitter = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
+
+        m = getRegex(serverTokens.keySet());
+        serverTokenMatcher = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
+        serverTokenSplitter = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
+
         this.loader = loader;
+    }
+
+    private String getRegex(Set<String> keys) {
+        StringBuilder sb = new StringBuilder("(");
+        keys.forEach(k -> sb.append(k.replaceAll("\\{", "\\\\{").replaceAll("\\}", "\\\\}")).append("|"));
+        return sb.deleteCharAt(sb.length() - 1).append(")").toString();
+    }
+
+    public List<Text> getFromStrings(List<String> strings, CommandSource cs) {
+        return strings.stream().map(x -> this.getServerMessageFormTemplate(x, cs, true)).collect(Collectors.toList());
     }
 
     // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
     // to do the replacements!
-    public Text getFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
+    public Text getPlayerMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
+        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerTokenSplitter, playerTokenMatcher, tokens);
+    }
+
+    public Text getServerMessageFormTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
+        return getMessageFromTemplate(template, cs, trimTrailingSpace, serverTokenSplitter, serverTokenMatcher, serverTokens);
+    }
+
+    private Text getMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace,
+                                        Pattern splitter, Pattern matcher, Map<String, Function<CommandSource, Text>> tokens) {
+        StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
 
         Text.Builder tb = Text.builder();
-        for (String textElement : p.split(template)) {
-            if (match.matcher(textElement).matches()) {
+        for (String textElement : splitter.split(template)) {
+            if (matcher.matcher(textElement).matches()) {
                 // If we have a token, do the replacement as specified by the function
-                Text message = tokens.get(textElement.toLowerCase()).apply(cs);
+                Text message = Text.builder().color(st.colour).style(st.style)
+                        .append(tokens.get(textElement.toLowerCase()).apply(cs)).build();
                 if (!message.isEmpty()) {
                     trimTrailingSpace = false;
                     tb.append(message);
@@ -69,7 +101,9 @@ public class ChatUtil {
 
                 if (!textElement.isEmpty()) {
                     // Just convert the colour codes, but that's it.
-                    tb.append(TextSerializers.formattingCode('&').deserialize(textElement));
+                    Text r = TextSerializers.FORMATTING_CODE.deserialize(textElement);
+                    tb.append(Text.of(st.colour, st.style, r));
+                    st = getLastColourAndStyle(r, st);
                     trimTrailingSpace = false;
                 }
             }
@@ -91,13 +125,12 @@ public class ChatUtil {
 
         List<Text> texts = Lists.newArrayList();
         String remaining = message;
-        TextColor lastColour = TextColors.WHITE;
-        TextStyle lastStyles = TextStyles.NONE;
+        StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
         do {
 
             // We found a URL. We split on the URL that we have.
             String[] textArray = remaining.split(urlParser.pattern(), 2);
-            Text first = Text.builder().color(lastColour).style(lastStyles)
+            Text first = Text.builder().color(st.colour).style(st.style)
                     .append(TextSerializers.FORMATTING_CODE.deserialize(textArray[0])).build();
 
             // Add this text to the list regardless.
@@ -114,20 +147,9 @@ public class ChatUtil {
             String colourMatch = m.group("colour");
             if (colourMatch != null && !colourMatch.isEmpty()) {
                 first = TextSerializers.FORMATTING_CODE.deserialize(m.group("colour") + " ");
-                while (!first.getChildren().isEmpty()) {
-                    first = first.getChildren().get(0);
-                }
-
-                lastColour = first.getColor();
-                lastStyles = first.getStyle();
-            } else {
-                while (!first.getChildren().isEmpty()) {
-                    first = first.getChildren().reverse().get(0);
-                }
-
-                lastColour = first.getColor();
-                lastStyles = first.getStyle();
             }
+
+            st = getLastColourAndStyle(first, st);
 
             // Build the URL
             String url = m.group("url");
@@ -139,7 +161,7 @@ public class ChatUtil {
                     urlObj = new URL(url);
                 }
 
-                texts.add(Text.builder(url).color(lastColour).style(lastStyles)
+                texts.add(Text.builder(url).color(st.colour).style(st.style)
                         .onHover(TextActions.showText(Util.getTextMessageWithFormat("chat.url", url)))
                         .onClick(TextActions.openUrl(urlObj))
                         .build());
@@ -150,12 +172,33 @@ public class ChatUtil {
 
         // Add the last bit.
         if (remaining != null) {
-            texts.add(Text.builder().color(lastColour).style(lastStyles)
+            texts.add(Text.builder().color(st.colour).style(st.style)
                     .append(TextSerializers.FORMATTING_CODE.deserialize(remaining)).build());
         }
 
         // Join it all together.
         return Text.join(texts);
+    }
+
+    private StyleTuple getLastColourAndStyle(Text text, StyleTuple current) {
+        List<Text> texts = flatten(text);
+        Optional<TextColor> otc = texts.stream().sorted(Comparator.reverseOrder()).filter(x -> x.getColor() != TextColors.NONE).map(Text::getColor).findFirst();
+        Optional<TextStyle> ots = texts.stream().sorted(Comparator.reverseOrder()).filter(x -> x.getStyle() != TextStyles.NONE).map(Text::getStyle).findFirst();
+
+        if (current == null) {
+            return new StyleTuple(otc.orElse(TextColors.NONE), ots.orElse(TextStyles.NONE));
+        }
+
+        return new StyleTuple(otc.orElse(current.colour), ots.orElse(current.style));
+    }
+
+    private List<Text> flatten(Text text) {
+        List<Text> texts = Lists.newArrayList(text);
+        if (!text.getChildren().isEmpty()) {
+            text.getChildren().forEach(x -> texts.addAll(flatten(x)));
+        }
+
+        return texts;
     }
 
     private Map<String, Function<CommandSource, Text>> createTokens() {
@@ -165,7 +208,30 @@ public class ChatUtil {
         t.put("{{prefix}}", (p) -> getTextFromOption(p, "prefix"));
         t.put("{{suffix}}", (p) -> getTextFromOption(p, "suffix"));
         t.put("{{displayname}}", this::getName);
+
         return t;
+    }
+
+    private Map<String, Function<CommandSource, Text>> createServerTokens() {
+        Map<String, Function<CommandSource, Text>> t = new HashMap<>();
+
+        t.put("{{maxplayers}}", p -> Text.of(Sponge.getServer().getMaxPlayers()));
+        t.put("{{onlineplayers}}", p -> Text.of(Sponge.getServer().getOnlinePlayers().size()));
+        t.put("{{currentworld}}", p -> Text.of(getWorld(p).getName()));
+        t.put("{{time}}", p -> Text.of(String.valueOf(Util.getTimeFromTicks(getWorld(p).getProperties().getWorldTime()))));
+
+        return t;
+    }
+
+    private World getWorld(CommandSource p) {
+        World world;
+        if (p instanceof LocatedSource) {
+            world = ((LocatedSource) p).getWorld();
+        } else {
+            world = Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorldName()).get();
+        }
+
+        return world;
     }
 
     private Text getTextFromOption(CommandSource cs, String option) {
@@ -185,5 +251,15 @@ public class ChatUtil {
         }
 
         return Text.of(cs.getName());
+    }
+
+    private static final class StyleTuple {
+        private final TextColor colour;
+        private final TextStyle style;
+
+        private StyleTuple(TextColor colour, TextStyle style) {
+            this.colour = colour;
+            this.style = style;
+        }
     }
 }

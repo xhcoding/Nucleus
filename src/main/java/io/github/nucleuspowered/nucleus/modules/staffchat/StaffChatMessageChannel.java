@@ -69,7 +69,7 @@ public class StaffChatMessageChannel implements MessageChannel {
         }
 
         StaffChatConfig c = getConfig();
-        Text prefix = chatUtil.getFromTemplate(c.getMessageTemplate(), (CommandSource)sender, false);
+        Text prefix = chatUtil.getPlayerMessageFromTemplate(c.getMessageTemplate(), (CommandSource)sender, false);
         return Optional.of(Text.of(prefix, TextSerializers.FORMATTING_CODE.deserialize(String.format("&%s%s", c.getMessageColour(), original.toPlain()))));
     }
 
