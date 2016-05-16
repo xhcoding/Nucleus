@@ -21,6 +21,8 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
@@ -84,7 +86,10 @@ public class LightningCommand extends CommandBase<CommandSource> {
         World world = location.getExtent();
         Optional<Entity> bolt = world.createEntity(EntityTypes.LIGHTNING, location.getPosition());
 
-        if (bolt.isPresent() && world.spawnEntity(bolt.get(), Cause.of(NamedCause.source(src)))) {
+        Cause cause = Cause.of(
+                NamedCause.owner(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()),
+                NamedCause.source(src));
+        if (bolt.isPresent() && world.spawnEntity(bolt.get(), cause)) {
             src.sendMessage(Util.getTextMessageWithFormat(successKey, replacements));
             return CommandResult.success();
         }
