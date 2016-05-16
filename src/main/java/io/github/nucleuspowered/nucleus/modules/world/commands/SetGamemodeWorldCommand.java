@@ -29,7 +29,7 @@ import java.util.Optional;
  * nucleus.world.setgamemode.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"setgamemode", "setgm"}, subcommandOf = WorldCommand.class)
+@RegisterCommand(value = {"setgamemode", "setgm", "gamemode", "gm"}, subcommandOf = WorldCommand.class)
 public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
 
     private final String gamemode = "gamemode";

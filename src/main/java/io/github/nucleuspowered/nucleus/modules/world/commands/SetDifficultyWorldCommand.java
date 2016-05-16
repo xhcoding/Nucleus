@@ -29,7 +29,7 @@ import java.util.Optional;
  * nucleus.world.setdifficulty.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"setdifficulty"}, subcommandOf = WorldCommand.class)
+@RegisterCommand(value = {"setdifficulty", "difficulty"}, subcommandOf = WorldCommand.class)
 public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
 
     private final String difficulty = "difficulty";
