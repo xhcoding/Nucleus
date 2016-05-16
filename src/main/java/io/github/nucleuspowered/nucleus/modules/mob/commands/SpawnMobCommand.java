@@ -26,6 +26,8 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -82,9 +84,15 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
 
         // Count the number of entities spawned.
         int i = 0;
+
+        // Sponge requires the root cause to be a SpawnCause. So we don't lose sight of the player causing this,
+        // we make use of Sponge's awesome Cause system, and just make them the second argument.
+        Cause cause = Cause.of(
+                NamedCause.owner(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()),
+                NamedCause.source(opl.get()));
         do {
             Optional<Entity> e = w.createEntity(et, loc.getPosition());
-            if (e.isPresent() && w.spawnEntity(e.get(), Cause.of(NamedCause.source(opl.get())))) {
+            if (e.isPresent() && w.spawnEntity(e.get(), cause)) {
                 i++;
             }
         } while (i < Math.min(amount, mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()));
