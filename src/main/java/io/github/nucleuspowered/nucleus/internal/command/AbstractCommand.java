@@ -33,7 +33,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -41,7 +40,6 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -546,8 +544,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         warmupService.addWarmup(src.getUniqueId(), tb.submit(plugin));
 
         // Tell the user we're warming up.
-        src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("warmup.start"), Util.getTimeStringFromSeconds(warmupTime)))
-                .color(TextColors.YELLOW).build());
+        src.sendMessage(Util.getTextMessageWithFormat("warmup.start", Util.getTimeStringFromSeconds(warmupTime)));
 
         // Sponge should think the command was run successfully.
         return ContinueMode.STOP_SUCCESS;
@@ -564,8 +561,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         // down.
         if (!bypassCooldown && !permissions.testCooldownExempt(src) && cooldownStore.containsKey(src.getUniqueId())) {
             Instant l = cooldownStore.get(src.getUniqueId());
-            src.sendMessage(Text.builder(MessageFormat.format(Util.getMessageWithFormat("cooldown.message"),
-                    Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS)))).color(TextColors.YELLOW).build());
+            src.sendMessage(Util.getTextMessageWithFormat("cooldown.message",
+                    Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))));
             return ContinueMode.STOP;
         }
 
