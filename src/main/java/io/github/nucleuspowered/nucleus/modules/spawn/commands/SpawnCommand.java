@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -33,6 +34,7 @@ import java.util.Optional;
 public class SpawnCommand extends CommandBase<Player> {
 
     @Inject(optional = true) private BackHandler backHandler;
+    @Inject private WorldConfigLoader wcl;
 
     private final String key = "world";
 
@@ -61,7 +63,8 @@ public class SpawnCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        if (src.setLocationSafely(new Location<>(ow.get(), wp.getSpawnPosition()))) {
+        // If we don't have a rotation, then use the current rotation
+        if (src.setLocationAndRotationSafely(new Location<>(ow.get(), wp.getSpawnPosition()), wcl.getWorld(wp.getUniqueId()).getSpawnRotation().orElse(src.getRotation()))) {
             if (backHandler != null) {
                 backHandler.setLastLocationInternal(src, currentLocation);
             }

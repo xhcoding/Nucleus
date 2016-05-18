@@ -21,6 +21,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -45,7 +46,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     }
 
     @Override
-    protected ConfigurationLoader<ConfigurationNode> getLoader(Path file) {
+    protected ConfigurationLoader<ConfigurationNode> getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
         return GsonConfigurationLoader.builder().setPath(file).build();
     }
 

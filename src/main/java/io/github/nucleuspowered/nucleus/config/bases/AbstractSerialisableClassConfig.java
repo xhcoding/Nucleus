@@ -5,13 +5,16 @@
 package io.github.nucleuspowered.nucleus.config.bases;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -33,10 +36,15 @@ public abstract class AbstractSerialisableClassConfig<D, T extends Configuration
     }
 
     public AbstractSerialisableClassConfig(Path file, TypeToken<D> dataType, Supplier<D> defaultData, boolean load) throws Exception {
+        this(file, dataType, defaultData, load, Maps.newHashMap());
+    }
+
+    public AbstractSerialisableClassConfig(Path file, TypeToken<D> dataType, Supplier<D> defaultData, boolean load, Map<TypeToken<?>, TypeSerializer<?>> lts) throws Exception {
         Preconditions.checkNotNull(file);
         Preconditions.checkNotNull(dataType);
         Preconditions.checkNotNull(defaultData);
-        this.loader = getLoader(file);
+
+        this.loader = getLoader(file, lts);
         this.dataType = dataType;
         this.defaultData = defaultData;
 

@@ -5,14 +5,17 @@
 package io.github.nucleuspowered.nucleus.config;
 
 import com.google.common.base.Preconditions;
+import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 
 import javax.annotation.Nonnull;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
 
 public class MessageConfig extends AbstractStandardNodeConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
@@ -31,7 +34,7 @@ public class MessageConfig extends AbstractStandardNodeConfig<CommentedConfigura
     }
 
     @Override
-    protected HoconConfigurationLoader getLoader(Path file) {
+    protected HoconConfigurationLoader getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
         return HoconConfigurationLoader.builder().setPath(file).build();
     }
 

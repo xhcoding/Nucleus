@@ -4,7 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.api.data;
 
+import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.Nucleus;
+
+import java.util.Optional;
 
 /**
  * Represents data held about a world in {@link Nucleus}.
@@ -24,4 +27,10 @@ public interface NucleusWorld {
      * @param lockWeather <code>true</code> if the weather should be locked, <code>false</code> otherwise.
      */
     void setLockWeather(boolean lockWeather);
+
+    Optional<Vector3d> getSpawnRotation();
+
+    void setSpawnRotation(Vector3d rotation);
+
+    void clearSpawnRotation();
 }

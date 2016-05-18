@@ -26,6 +26,7 @@ import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAd
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -70,7 +71,7 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     }
 
     @Override
-    protected GsonConfigurationLoader getLoader(Path file) {
+    protected GsonConfigurationLoader getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
         return GsonConfigurationLoader.builder().setPath(file).build();
     }
 
