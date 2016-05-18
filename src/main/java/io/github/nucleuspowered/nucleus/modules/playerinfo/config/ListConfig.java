@@ -13,7 +13,18 @@ public class ListConfig {
     @Setting(value = "group-by-permission-groups", comment = "loc:config.playerinfo.list.groups")
     private boolean groupByPermissionGroup = false;
 
+    @Setting(value = "default-group-name", comment = "loc:config.playerinfo.list.defaultname")
+    private String defaultGroupName = "Default";
+
     public boolean isGroupByPermissionGroup() {
         return groupByPermissionGroup;
+    }
+
+    public String getDefaultGroupName() {
+        if (defaultGroupName.isEmpty()) {
+            return "Default";
+        }
+
+        return defaultGroupName;
     }
 }

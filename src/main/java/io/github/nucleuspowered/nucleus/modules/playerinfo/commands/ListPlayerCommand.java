@@ -30,15 +30,9 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
@@ -135,7 +129,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
         if (!playersToList.isEmpty()) {
             // Show any unknown groups last.
             getPlayerList(playersToList, showVanished).ifPresent(y -> src.sendMessage(
-                    Text.builder().append(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("standard.unknown") + ": ")).append(y).build()));
+                    Text.builder().append(Text.of(TextColors.YELLOW, config.getNodeOrDefault().getList().getDefaultGroupName() + ": ")).append(y).build()));
         }
     }
 
