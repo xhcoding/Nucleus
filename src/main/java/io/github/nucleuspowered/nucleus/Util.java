@@ -65,10 +65,15 @@ public class Util {
     }
 
     public static String getTimeStringFromSeconds(long time) {
+        time = Math.abs(time);
         long sec = time % 60;
         long min = (time / 60) % 60;
         long hour = (time / 3600) % 24;
         long day = time / 86400;
+
+        if (time == 0) {
+            return Util.getMessageWithFormat("standard.inamoment");
+        }
 
         StringBuilder sb = new StringBuilder();
         if (day > 0) {

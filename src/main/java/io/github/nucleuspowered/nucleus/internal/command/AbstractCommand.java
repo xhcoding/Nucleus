@@ -582,7 +582,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     }
 
     private void cleanCooldowns() {
-        cooldownStore.entrySet().stream().filter(k -> k.getValue().isAfter(Instant.now())).map(Map.Entry::getKey).forEach(cooldownStore::remove);
+        // If the cooldown end is in the past, remove it.
+        cooldownStore.entrySet().removeIf(k -> k.getValue().isBefore(Instant.now()));
     }
 
     // -------------------------------------
