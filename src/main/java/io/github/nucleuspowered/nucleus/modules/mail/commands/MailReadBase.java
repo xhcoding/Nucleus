@@ -62,7 +62,7 @@ public class MailReadBase {
         PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);
         PaginationList.Builder b = ps.builder().padding(Text.of(TextColors.GREEN, "-")).title(getHeader(src, target, !lmf.isEmpty())).contents(mails);
         if (!(src instanceof Player)) {
-            b.linesPerPage(Integer.MAX_VALUE);
+            b.linesPerPage(-1);
         } else {
             b.header(Util.getTextMessageWithFormat("mail.header"));
         }

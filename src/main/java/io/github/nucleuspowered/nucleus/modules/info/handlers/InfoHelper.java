@@ -28,7 +28,7 @@ public class InfoHelper {
                 .title(Util.getTextMessageWithFormat("motd.title"));
 
         if (src instanceof ConsoleSource) {
-            pb.linesPerPage(Integer.MAX_VALUE);
+            pb.linesPerPage(-1);
         }
 
         pb.sendTo(src);

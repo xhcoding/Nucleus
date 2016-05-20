@@ -19,6 +19,8 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -77,8 +79,12 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
             }
         }).collect(Collectors.toList());
 
-        ps.builder().title(Util.getTextMessageWithFormat("command.warps.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt)
-                .sendTo(src);
+        PaginationList.Builder pb = ps.builder().title(Util.getTextMessageWithFormat("command.warps.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt);
+        if (!(src instanceof Player)) {
+            pb.linesPerPage(-1);
+        }
+
+        pb.sendTo(src);
         return CommandResult.success();
     }
 

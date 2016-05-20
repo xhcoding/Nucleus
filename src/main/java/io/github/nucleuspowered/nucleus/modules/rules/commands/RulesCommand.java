@@ -14,6 +14,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -49,9 +51,14 @@ public class RulesCommand extends CommandBase<CommandSource> {
 
         List<Text> rules = r.stream()
                 .map(TextSerializers.FORMATTING_CODE::deserialize).collect(Collectors.toList());
-        Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(rules).padding(Text.of(TextColors.GREEN, "-"))
-                .title(Util.getTextMessageWithFormat("command.rules.list.header"))
-                .sendTo(src);
+        PaginationList.Builder pb = Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(rules).padding(Text.of(TextColors.GREEN, "-"))
+                .title(Util.getTextMessageWithFormat("command.rules.list.header"));
+
+        if (!(src instanceof Player)) {
+            pb.linesPerPage(-1);
+        }
+
+        pb.sendTo(src);
 
         return CommandResult.success();
     }
