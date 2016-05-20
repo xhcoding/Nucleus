@@ -44,7 +44,7 @@ public class InfoListener extends ListenerBase {
         // Send message one second later on the Async thread.
         Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
                 if (player.hasPermission(getMotdPermission())) {
-                    plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> InfoHelper.sendMotd(x, player, chatUtil));
+                    plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> InfoHelper.sendMotd(x, player, chatUtil, ica.getNodeOrDefault().getMotdTitle()));
                 }
             }, 500, TimeUnit.MILLISECONDS);
     }

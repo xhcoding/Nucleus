@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
+import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -28,6 +29,7 @@ import java.util.Optional;
 public class MotdCommand extends CommandBase<CommandSource> {
 
     @Inject private ChatUtil chatUtil;
+    @Inject private InfoConfigAdapter infoConfigAdapter;
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
@@ -37,7 +39,7 @@ public class MotdCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        InfoHelper.sendMotd(otfc.get(), src, chatUtil);
+        InfoHelper.sendMotd(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
         return CommandResult.success();
     }
 }
