@@ -6,11 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -46,7 +42,7 @@ public class KitAddCommand extends CommandBase<Player> {
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
         String kitName = args.<String>getOne(name).get();
 
-        if (!kitConfig.getKitNames().contains(kitName)) {
+        if (!kitConfig.getKitNames().stream().anyMatch(kitName::equalsIgnoreCase)) {
             kitConfig.saveKit(kitName, kitConfig.createKit().updateKitInventory(player));
             player.sendMessage(Util.getTextMessageWithFormat("command.kit.add.success", kitName));
             return CommandResult.success();

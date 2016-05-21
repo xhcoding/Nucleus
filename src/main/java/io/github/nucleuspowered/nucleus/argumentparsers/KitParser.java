@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
-
 public class KitParser extends CommandElement {
 
     private final KitConfigAdapter config;
@@ -44,13 +42,11 @@ public class KitParser extends CommandElement {
         Optional<Kit> kit = kitConfig.getKit(kitName);
 
         if (!kit.isPresent()) {
-            throw args.createError(
-                    Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.kit.noexist")).build());
+            throw args.createError(Util.getTextMessageWithFormat("args.kit.noexist"));
         }
 
         if (!checkPermission(source, kitName)) {
-            throw args.createError(
-                    Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.kit.noperms")).build());
+            throw args.createError(Util.getTextMessageWithFormat("args.kit.noperms"));
         }
 
         return new KitInfo(kit.get(), kitName);
@@ -60,7 +56,7 @@ public class KitParser extends CommandElement {
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         try {
             String name = args.peek().toLowerCase();
-            return kitConfig.getKitNames().stream().filter(s -> s.startsWith(name)).filter(s -> kitConfig.getKitNames().contains(s))
+            return kitConfig.getKitNames().stream().filter(s -> s.toLowerCase().startsWith(name))
                     .filter(x -> checkPermission(src, name)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Lists.newArrayList();

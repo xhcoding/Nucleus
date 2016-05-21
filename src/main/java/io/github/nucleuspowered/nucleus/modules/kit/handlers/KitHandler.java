@@ -30,14 +30,14 @@ public class KitHandler implements NucleusKitService {
 
     @Override
     public boolean removeKit(String kitName) {
-        return store.removeKit(kitName.toLowerCase());
+        return store.removeKit(kitName);
     }
 
     @Override
     public void saveKit(String kitName, Kit kit) {
         Preconditions.checkArgument(kit instanceof KitDataNode);
-        store.removeKit(kitName.toLowerCase());
-        store.addKit(kitName.toLowerCase(), (KitDataNode)kit);
+        store.removeKit(kitName);
+        store.addKit(kitName, (KitDataNode)kit);
     }
 
     @Override

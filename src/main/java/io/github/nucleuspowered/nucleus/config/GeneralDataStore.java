@@ -69,7 +69,13 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     }
 
     public Optional<KitDataNode> getKit(String name) {
-        return Optional.ofNullable(data.getKits().get(name.toLowerCase()));
+        Map<String, KitDataNode> msk = data.getKits();
+        Optional<String> key = msk.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
+        if (key.isPresent()) {
+            return Optional.of(msk.get(key.get()));
+        }
+
+        return Optional.empty();
     }
 
     public Map<String, KitDataNode> getKits() {
@@ -77,16 +83,18 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
     }
 
     public boolean addKit(String name, KitDataNode kit) {
-        if (data.getKits().containsKey(name.toLowerCase())) {
+        if (data.getKits().keySet().stream().anyMatch(name::equalsIgnoreCase)) {
             return false;
         }
 
-        data.getKits().put(name.toLowerCase(), kit);
+        data.getKits().put(name, kit);
         return true;
     }
 
     public boolean removeKit(String name) {
-        return data.getKits().remove(name.toLowerCase()) != null;
+        Map<String, KitDataNode> msk = data.getKits();
+        Optional<String> key = msk.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
+        return key.isPresent() && data.getKits().remove(key.get()) != null;
     }
 
     public List<ItemStackSnapshot> getFirstKit() {

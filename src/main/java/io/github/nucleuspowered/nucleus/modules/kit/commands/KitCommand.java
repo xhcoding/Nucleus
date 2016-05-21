@@ -77,7 +77,7 @@ public class KitCommand extends CommandBase<Player> {
         KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
         InternalNucleusUser user = userConfigLoader.getUser(player.getUniqueId());
         Kit kit = kitInfo.kit;
-        String kitName = kitInfo.name.toLowerCase();
+        String kitName = kitInfo.name;
         Instant now = Instant.now();
 
         double cost = kitInfo.kit.getCost();
