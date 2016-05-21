@@ -19,9 +19,13 @@ import java.util.List;
 
 public class InfoHelper {
 
-    public static void sendMotd(TextFileController tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
+    public static void sendInfo(TextFileController tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
+        sendInfo(tfc.getFileContents(), src, chatUtil, motdTitle);
+    }
+
+    public static void sendInfo(List<String> tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
         // Get the text.
-        List<Text> textList = chatUtil.getFromStrings(tfc.getFileContents(), src);
+        List<Text> textList = chatUtil.getFromStrings(tfc, src);
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         PaginationList.Builder pb = ps.builder().contents(textList).padding(Text.of(TextColors.GOLD, "-"));

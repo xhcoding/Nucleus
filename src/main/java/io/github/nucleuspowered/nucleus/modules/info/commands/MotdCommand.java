@@ -39,7 +39,7 @@ public class MotdCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        InfoHelper.sendMotd(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
+        InfoHelper.sendInfo(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
         return CommandResult.success();
     }
 }

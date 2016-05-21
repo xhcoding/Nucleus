@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.info;
 import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
@@ -30,5 +31,10 @@ public class InfoModule extends StandardModule {
                 MOTD_KEY,
                 Sponge.getAssetManager().getAsset(nucleus, "motd.txt").get(),
                 nucleus.getConfigDirPath().resolve("motd.txt"));
+
+        InfoHandler ih = new InfoHandler(nucleus);
+        serviceManager.registerService(InfoHandler.class, ih);
+        nucleus.registerReloadable(ih);
+        ih.onReload();
     }
 }

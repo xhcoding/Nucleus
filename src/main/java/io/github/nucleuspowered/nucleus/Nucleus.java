@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -25,6 +26,7 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
@@ -60,6 +62,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -77,6 +80,7 @@ public class Nucleus {
     private ChatUtil chatUtil;
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
+    private List<Reloadable> reloadableList = Lists.newArrayList();
 
     private InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider();
@@ -248,6 +252,10 @@ public class Nucleus {
             for (TextFileController tfc : textFileControllers.values()) {
                 tfc.load();
             }
+
+            for (Reloadable r : reloadableList) {
+                r.onReload();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -324,6 +332,10 @@ public class Nucleus {
         if (!textFileControllers.containsKey(id)) {
             textFileControllers.put(id, new TextFileController(asset, file));
         }
+    }
+
+    public void registerReloadable(Reloadable reloadable) {
+        reloadableList.add(reloadable);
     }
 
     private Injector runInjectorUpdate() {

@@ -33,6 +33,10 @@ public final class TextFileController {
      */
     private final List<String> fileContents = Lists.newArrayList();
 
+    public TextFileController(Path fileLocation) throws IOException {
+        this(null, fileLocation);
+    }
+
     public TextFileController(Asset asset, Path fileLocation) throws IOException {
         this.asset = asset;
         this.fileLocation = fileLocation;
@@ -42,10 +46,10 @@ public final class TextFileController {
     /**
      * Loads the file and refreshes the contents of the file in memory.
      *
-     * @throws IOException Thown if there is an issue getting the file.
+     * @throws IOException Thrown if there is an issue getting the file.
      */
     public void load() throws IOException {
-        if (!Files.exists(fileLocation)) {
+        if (asset != null && !Files.exists(fileLocation)) {
             // Create the file
             asset.copyToFile(fileLocation);
         }
