@@ -184,14 +184,23 @@ public class ChatUtil {
 
     private StyleTuple getLastColourAndStyle(Text text, StyleTuple current) {
         List<Text> texts = flatten(text);
-        Optional<TextColor> otc = texts.stream().sorted(Comparator.reverseOrder()).filter(x -> x.getColor() != TextColors.NONE).map(Text::getColor).findFirst();
-        Optional<TextStyle> ots = texts.stream().sorted(Comparator.reverseOrder()).filter(x -> x.getStyle() != TextStyles.NONE).map(Text::getStyle).findFirst();
+        TextColor tc = TextColors.NONE;
+        TextStyle ts = TextStyles.NONE;
+        for (int i = texts.size() - 1; i > -1 || (tc != TextColors.NONE && ts != TextStyles.NONE); i--) {
+            if (tc == TextColors.NONE) {
+                tc = texts.get(i).getColor();
+            }
 
-        if (current == null) {
-            return new StyleTuple(otc.orElse(TextColors.NONE), ots.orElse(TextStyles.NONE));
+            if (ts == TextStyles.NONE) {
+                ts = texts.get(i).getStyle();
+            }
         }
 
-        return new StyleTuple(otc.orElse(current.colour), ots.orElse(current.style));
+        if (current == null) {
+            return new StyleTuple(tc, ts);
+        }
+
+        return new StyleTuple(tc != TextColors.NONE ? tc : current.colour, ts != TextStyles.NONE ? ts : current.style);
     }
 
     private List<Text> flatten(Text text) {
