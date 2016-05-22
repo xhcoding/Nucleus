@@ -4,11 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandlogger.listeners;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfig;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
@@ -17,6 +20,10 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.First;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CommandLoggingListener extends ListenerBase {
 
@@ -37,9 +44,18 @@ public class CommandLoggingListener extends ListenerBase {
         }
 
         String command = event.getCommand().toLowerCase();
+        Optional<? extends CommandMapping> oc = Sponge.getCommandManager().get(command, source);
+        Set<String> commands;
+
+        // If the command exists, then get all aliases.
+        if (oc.isPresent()) {
+            commands = oc.get().getAllAliases().stream().map(String::toLowerCase).collect(Collectors.toSet());
+        } else {
+            commands = Sets.newHashSet(command);
+        }
 
         // If whitelist, and we have the command, or if not blacklist, and we do not have the command.
-        if (c.isWhitelist() == c.getCommandsToFilter().stream().anyMatch(command::equalsIgnoreCase)) {
+        if (c.isWhitelist() == c.getCommandsToFilter().stream().map(String::toLowerCase).anyMatch(commands::contains)) {
             plugin.getLogger().info(Util.getMessageWithFormat("commandlog.message", source.getName(), event.getCommand(), event.getArguments()));
         }
     }
