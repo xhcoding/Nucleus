@@ -42,8 +42,8 @@ public class HatCommand extends CommandBase<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others"))
+                GenericArguments.optional(GenericArguments.requiringPermission(
+                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))
         };
     }
 
