@@ -11,7 +11,7 @@ plugins {
 
 ext.spongeapi = '4.1.0-SNAPSHOT'
 description = 'The Ultimate Essentials Plugin.'
-ext.url = 'http://nucleuspowered.github.io'
+ext.url = 'http://nucleuspowered.org'
 
 group 'io.github.nucleuspowered'
 version '0.5.0-SNAPSHOT'
