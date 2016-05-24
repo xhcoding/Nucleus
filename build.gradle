@@ -10,7 +10,7 @@ plugins {
 }
 
 ext.spongeapi = '4.1.0-SNAPSHOT'
-description = 'Nucleus is a Sponge plugin that allows you to quickly start your server with essential commands, events, and other tidbits that you might need. '
+description = 'The Ultimate Essentials Plugin.'
 ext.url = 'http://nucleuspowered.github.io'
 
 group 'io.github.nucleuspowered'
