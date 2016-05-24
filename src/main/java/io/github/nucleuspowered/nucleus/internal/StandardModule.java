@@ -9,9 +9,11 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.annotations.ModuleCommandSet;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -100,13 +102,7 @@ public abstract class StandardModule implements Module {
         }).collect(Collectors.toSet());
 
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
-        commandBases.stream().map(x -> {
-            try {
-                return injector.getInstance(x);
-            } catch (Exception e) {
-                return null;
-            }
-        }).filter(x -> x != null).forEach(c -> {
+        commandBases.stream().map(x -> this.getInstance(injector, x)).filter(x -> x != null).forEach(c -> {
             try {
                 c.postInit();
             } catch (Exception e) {
@@ -149,7 +145,7 @@ public abstract class StandardModule implements Module {
                 .collect(Collectors.toSet());
 
         Injector injector = nucleus.getInjector();
-        commandsToLoad.stream().map(injector::getInstance).filter(lb -> lb != null).forEach(c -> {
+        commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
             // Register suggested permissions
             c.getPermissions().forEach((k, v) -> nucleus.getPermissionRegistry().registerOtherPermission(k, v));
             Sponge.getEventManager().registerListeners(nucleus, c);
@@ -164,7 +160,7 @@ public abstract class StandardModule implements Module {
                 .collect(Collectors.toSet());
 
         Injector injector = nucleus.getInjector();
-        commandsToLoad.stream().map(injector::getInstance).filter(lb -> lb != null).forEach(c -> {
+        commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
             c.getPermissions().forEach((k, v) -> nucleus.getPermissionRegistry().registerOtherPermission(k, v));
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.secondsPerRun(), TimeUnit.SECONDS);
             if (c.isAsync()) {
@@ -176,4 +172,19 @@ public abstract class StandardModule implements Module {
     }
 
     protected void performPreTasks() throws Exception { }
+
+    private <T> T getInstance(Injector injector, Class<T> clazz) {
+        try {
+            return injector.getInstance(clazz);
+
+        // I can't believe I have to do this...
+        } catch (RuntimeException | NoClassDefFoundError e) {
+            if (clazz.isAnnotationPresent(SkipOnError.class)) {
+                nucleus.getLogger().warn(Util.getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
+                return null;
+            }
+
+            throw e;
+        }
+    }
 }
