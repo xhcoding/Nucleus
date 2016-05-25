@@ -186,7 +186,11 @@ public class ChatUtil {
         List<Text> texts = flatten(text);
         TextColor tc = TextColors.NONE;
         TextStyle ts = TextStyles.NONE;
-        for (int i = texts.size() - 1; i > -1 || (tc != TextColors.NONE && ts != TextStyles.NONE); i--) {
+        for (int i = texts.size() - 1; i > -1; i--) {
+            if (tc != TextColors.NONE && ts != TextStyles.NONE) {
+                break;
+            }
+            
             if (tc == TextColors.NONE) {
                 tc = texts.get(i).getColor();
             }
