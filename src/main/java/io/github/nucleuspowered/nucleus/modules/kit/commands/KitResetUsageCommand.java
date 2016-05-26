@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -46,13 +46,13 @@ public class KitResetUsageCommand extends CommandBase<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.onlyOne(GenericArguments.user(Text.of(user))),
-            GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, false))
+            GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, false))
         };
     }
 
     @Override
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
-        KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
+        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
         User u = args.<User>getOne(user).get();
         InternalNucleusUser inu = userConfigLoader.getUser(u);
 

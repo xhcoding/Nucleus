@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mob.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -51,7 +51,7 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
         return new CommandElement[] {
                 GenericArguments.optionalWeak(GenericArguments.requiringPermission(GenericArguments.player(Text.of(playerKey)),
                         permissions.getPermissionWithSuffix("others"))),
-                new ImprovedCatalogTypeParser(Text.of(mobTypeKey), CatalogTypes.ENTITY_TYPE),
+                new ImprovedCatalogTypeArgument(Text.of(mobTypeKey), CatalogTypes.ENTITY_TYPE),
                 GenericArguments.optional(new PositiveIntegerArgument(Text.of(amountKey)), 1)
         };
     }

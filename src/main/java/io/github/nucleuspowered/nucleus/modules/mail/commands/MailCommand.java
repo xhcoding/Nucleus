@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.argumentparsers.MailFilterParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.MailFilterArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -37,7 +37,7 @@ public class MailCommand extends CommandBase<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] { GenericArguments.optional(GenericArguments.allOf(new MailFilterParser(Text.of(MailReadBase.filters), handler))) };
+        return new CommandElement[] { GenericArguments.optional(GenericArguments.allOf(new MailFilterArgument(Text.of(MailReadBase.filters), handler))) };
     }
 
     @Override

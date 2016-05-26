@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -34,13 +34,13 @@ public class HomeOtherCommand extends CommandBase<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new HomeOtherParser(Text.of(home), plugin, cca))};
+        return new CommandElement[] {GenericArguments.onlyOne(new HomeOtherArgument(Text.of(home), plugin, cca))};
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         // Get the home.
-        HomeOtherParser.HomeData wl = args.<HomeOtherParser.HomeData>getOne(home).get();
+        HomeOtherArgument.HomeData wl = args.<HomeOtherArgument.HomeData>getOne(home).get();
 
         Transform<World> currentLocation = src.getTransform();
 

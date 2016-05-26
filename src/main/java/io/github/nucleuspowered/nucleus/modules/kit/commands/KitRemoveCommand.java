@@ -6,13 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
@@ -44,12 +39,12 @@ public class KitRemoveCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, false))};
+        return new CommandElement[] {GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, false))};
     }
 
     @Override
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
-        KitParser.KitInfo kitName = args.<KitParser.KitInfo>getOne(kit).get();
+        KitArgument.KitInfo kitName = args.<KitArgument.KitInfo>getOne(kit).get();
         kitConfig.removeKit(kitName.name);
         player.sendMessage(Util.getTextMessageWithFormat("command.kit.remove.success", kitName.name));
         return CommandResult.success();

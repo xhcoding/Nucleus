@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
-import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -43,13 +43,13 @@ public class KitSetCooldownCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.seq(GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, false)),
-                GenericArguments.onlyOne(new TimespanParser(Text.of(duration))))};
+        return new CommandElement[] {GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, false)),
+                GenericArguments.onlyOne(new TimespanArgument(Text.of(duration))))};
     }
 
     @Override
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
-        KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
+        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
         long seconds = args.<Long>getOne(duration).get();
 
         // This Kit is a reference back to the version in list, so we don't need

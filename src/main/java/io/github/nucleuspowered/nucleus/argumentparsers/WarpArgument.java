@@ -27,18 +27,18 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 /**
  * Returns a {@link WarpData}
  */
-public class WarpParser extends CommandElement {
+public class WarpArgument extends CommandElement {
 
     private final boolean includeWarpData;
     private NucleusWarpService service;
     private final WarpConfigAdapter configAdapter;
     private final boolean permissionCheck;
 
-    public WarpParser(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck) {
+    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck) {
         this(key, configAdapter, permissionCheck, true);
     }
 
-    public WarpParser(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean includeWarpData) {
+    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean includeWarpData) {
         super(key);
         this.configAdapter = configAdapter;
         this.permissionCheck = permissionCheck;

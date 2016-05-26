@@ -24,12 +24,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HomeParser extends CommandElement {
+public class HomeArgument extends CommandElement {
 
     private final Nucleus plugin;
     private final CoreConfigAdapter cca;
 
-    public HomeParser(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
+    public HomeArgument(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
         super(key);
         this.plugin = plugin;
         this.cca = cca;

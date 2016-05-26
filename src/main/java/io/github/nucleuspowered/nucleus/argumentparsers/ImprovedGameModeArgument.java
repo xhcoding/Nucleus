@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ImprovedGameModeParser extends CommandElement {
+public class ImprovedGameModeArgument extends CommandElement {
 
     private final static Map<String, GameMode> gameModeMap = Maps.newHashMap();
 
@@ -41,7 +41,7 @@ public class ImprovedGameModeParser extends CommandElement {
         gameModeMap.put("3", GameModes.SPECTATOR);
     }
 
-    public ImprovedGameModeParser(@Nullable Text key) {
+    public ImprovedGameModeArgument(@Nullable Text key) {
         super(key);
     }
 

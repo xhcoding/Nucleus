@@ -17,12 +17,11 @@ import org.spongepowered.api.world.weather.Weather;
 import org.spongepowered.api.world.weather.Weathers;
 
 import javax.annotation.Nullable;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class WeatherParser extends CommandElement {
+public class WeatherArgument extends CommandElement {
 
     private static final Map<String, Weather> weather = Maps.newHashMap();
 
@@ -37,7 +36,7 @@ public class WeatherParser extends CommandElement {
         weather.put("t", Weathers.THUNDER_STORM);
     }
 
-    public WeatherParser(@Nullable Text key) {
+    public WeatherArgument(@Nullable Text key) {
         super(key);
     }
 

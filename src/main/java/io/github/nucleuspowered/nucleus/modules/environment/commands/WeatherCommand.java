@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.environment.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
-import io.github.nucleuspowered.nucleus.argumentparsers.TimespanParser;
-import io.github.nucleuspowered.nucleus.argumentparsers.WeatherParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.WeatherArgument;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -41,10 +41,10 @@ public class WeatherCommand extends CommandBase<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[]{
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
-                GenericArguments.onlyOne(new WeatherParser(Text.of(weather))), // More flexible with the arguments we can use.
+                GenericArguments.onlyOne(new WeatherArgument(Text.of(weather))), // More flexible with the arguments we can use.
                 GenericArguments.firstParsing(
                         GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration)))),
-                        GenericArguments.onlyOne(GenericArguments.optional(new TimespanParser(Text.of(timespan))))
+                        GenericArguments.onlyOne(GenericArguments.optional(new TimespanArgument(Text.of(timespan))))
                 )
         };
     }

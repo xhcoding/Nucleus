@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class JailParser extends CommandElement {
+public class JailArgument extends CommandElement {
 
     private JailHandler handler;
 
-    public JailParser(@Nullable Text key, JailHandler handler) {
+    public JailArgument(@Nullable Text key, JailHandler handler) {
         super(key);
         this.handler = handler;
     }

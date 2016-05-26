@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.WarpParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -58,13 +58,13 @@ public class WarpCommand extends CommandBase<Player> {
         return new CommandElement[] {
                 GenericArguments.onlyOne(GenericArguments
                         .optionalWeak(GenericArguments.flags().flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
-                GenericArguments.onlyOne(new WarpParser(Text.of(warpNameArg), adapter, true))};
+                GenericArguments.onlyOne(new WarpArgument(Text.of(warpNameArg), adapter, true))};
     }
 
     @Override
     public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {
         // Permission checks are done by the parser.
-        WarpParser.WarpData wd = args.<WarpParser.WarpData>getOne(warpNameArg).get();
+        WarpArgument.WarpData wd = args.<WarpArgument.WarpData>getOne(warpNameArg).get();
 
         // We have a warp data, warp them.
         pl.sendMessage(Util.getTextMessageWithFormat("command.warps.start", wd.warp));

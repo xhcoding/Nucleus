@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -29,7 +29,7 @@ public class BlacklistRemoveCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new ImprovedCatalogTypeParser(Text.of(item), CatalogTypes.ITEM_TYPE))
+            GenericArguments.onlyOne(new ImprovedCatalogTypeArgument(Text.of(item), CatalogTypes.ITEM_TYPE))
         };
     }
 

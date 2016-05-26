@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MailFilterParser extends CommandElement {
+public class MailFilterArgument extends CommandElement {
 
     private static final Pattern before = Pattern.compile("b:(\\d+)]");
     private static final Pattern after = Pattern.compile("a:(\\d+)]");
@@ -36,7 +36,7 @@ public class MailFilterParser extends CommandElement {
     private static final Pattern player = Pattern.compile("p:([a-zA-Z0-9_]{1,16})");
     private final MailHandler handler;
 
-    public MailFilterParser(@Nullable Text key, MailHandler handler) {
+    public MailFilterArgument(@Nullable Text key, MailHandler handler) {
         super(key);
         this.handler = handler;
     }

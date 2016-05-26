@@ -12,11 +12,11 @@ import org.spongepowered.api.text.Text;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ImprovedCatalogTypeParser extends CommandElement {
+public class ImprovedCatalogTypeArgument extends CommandElement {
 
     private final CommandElement wrapped;
 
-    public ImprovedCatalogTypeParser(@Nullable Text key, Class<? extends CatalogType> type) {
+    public ImprovedCatalogTypeArgument(@Nullable Text key, Class<? extends CatalogType> type) {
         super(key);
         wrapped = GenericArguments.catalogedElement(key, type);
     }

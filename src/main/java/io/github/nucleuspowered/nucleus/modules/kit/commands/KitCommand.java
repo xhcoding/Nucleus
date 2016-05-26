@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
-import io.github.nucleuspowered.nucleus.argumentparsers.KitParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -53,7 +53,7 @@ public class KitCommand extends CommandBase<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new KitParser(Text.of(kit), kca, kitConfig, true))};
+        return new CommandElement[] {GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, true))};
     }
 
     @Override
@@ -74,7 +74,7 @@ public class KitCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
-        KitParser.KitInfo kitInfo = args.<KitParser.KitInfo>getOne(kit).get();
+        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
         InternalNucleusUser user = userConfigLoader.getUser(player.getUniqueId());
         Kit kit = kitInfo.kit;
         String kitName = kitInfo.name;

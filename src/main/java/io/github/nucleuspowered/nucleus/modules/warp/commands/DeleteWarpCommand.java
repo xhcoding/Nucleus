@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.argumentparsers.WarpParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -35,12 +35,12 @@ public class DeleteWarpCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new WarpParser(Text.of(WarpCommand.warpNameArg), adapter, false, false))};
+        return new CommandElement[] {GenericArguments.onlyOne(new WarpArgument(Text.of(WarpCommand.warpNameArg), adapter, false, false))};
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        WarpParser.WarpData warp = args.<WarpParser.WarpData>getOne(WarpCommand.warpNameArg).get();
+        WarpArgument.WarpData warp = args.<WarpArgument.WarpData>getOne(WarpCommand.warpNameArg).get();
         NucleusWarpService qs = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
 
         if (qs.removeWarp(warp.warp)) {

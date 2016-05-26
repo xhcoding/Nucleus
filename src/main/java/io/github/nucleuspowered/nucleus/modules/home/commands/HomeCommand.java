@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.argumentparsers.HomeParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -35,7 +35,7 @@ public class HomeCommand extends CommandBase<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.optional(new HomeParser(Text.of(home), plugin, cca)))};
+        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.optional(new HomeArgument(Text.of(home), plugin, cca)))};
     }
 
     @Override

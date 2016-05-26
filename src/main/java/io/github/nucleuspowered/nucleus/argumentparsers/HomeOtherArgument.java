@@ -22,9 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class HomeOtherParser extends HomeParser {
+public class HomeOtherArgument extends HomeArgument {
 
-    public HomeOtherParser(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
+    public HomeOtherArgument(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
         super(key, plugin, cca);
     }
 

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  *     <li>midnight: 18000 ticks (12 am)</li>
  * </ul>
  */
-public class WorldTimeParser extends CommandElement {
+public class WorldTimeArgument extends CommandElement {
 
     private static final HashMap<String, Integer> tickAliases = Maps.newHashMap();
     private static final Pattern tfh = Pattern.compile("^(\\d{1,2})[hH]$");
@@ -63,7 +63,7 @@ public class WorldTimeParser extends CommandElement {
         tickAliases.put("midnight", 18000);
     }
 
-    public WorldTimeParser(@Nullable Text key) {
+    public WorldTimeArgument(@Nullable Text key) {
         super(key);
     }
 

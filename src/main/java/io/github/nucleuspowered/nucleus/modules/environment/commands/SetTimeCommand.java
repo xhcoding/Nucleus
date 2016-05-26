@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.environment.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.WorldTimeParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.WorldTimeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -27,7 +27,7 @@ public class SetTimeCommand extends CommandBase<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
-            GenericArguments.onlyOne(new WorldTimeParser(Text.of(time)))
+            GenericArguments.onlyOne(new WorldTimeArgument(Text.of(time)))
         };
     }
 

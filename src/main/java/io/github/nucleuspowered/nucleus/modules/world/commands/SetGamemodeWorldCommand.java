@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeParser;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -37,7 +37,7 @@ public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new ImprovedGameModeParser(Text.of(gamemode))),
+        return new CommandElement[] {GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemode))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(world))))};
     }
 

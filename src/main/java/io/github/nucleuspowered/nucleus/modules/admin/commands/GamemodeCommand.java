@@ -6,12 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeParser;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -51,7 +47,7 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[]{
                 GenericArguments.optionalWeak(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.user(Text.of(userKey))), permissions.getPermissionWithSuffix("others"))),
-                GenericArguments.optional(GenericArguments.onlyOne(new ImprovedGameModeParser(Text.of(gamemodeKey))))
+                GenericArguments.optional(GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemodeKey))))
         };
     }
 

@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class KitParser extends CommandElement {
+public class KitArgument extends CommandElement {
 
     private final KitConfigAdapter config;
     private final KitHandler kitConfig;
     private final boolean permissionCheck;
 
-    public KitParser(@Nullable Text key, KitConfigAdapter config, KitHandler kitConfig, boolean permissionCheck) {
+    public KitArgument(@Nullable Text key, KitConfigAdapter config, KitHandler kitConfig, boolean permissionCheck) {
         super(key);
         this.config = config;
         this.kitConfig = kitConfig;

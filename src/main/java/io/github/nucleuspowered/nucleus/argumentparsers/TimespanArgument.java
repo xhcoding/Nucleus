@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * This parser was taken from
  * https://github.com/dualspiral/Hammer/blob/master/HammerCore/src/main/java/uk/co/drnaylor/minecraft/hammer/core/commands/parsers/TimespanParser.java
  */
-public class TimespanParser extends CommandElement {
+public class TimespanArgument extends CommandElement {
     private final Pattern timeString = Pattern.compile("^((\\d+)w)?((\\d+)d)?((\\d+)h)?((\\d+)m)?((\\d+)s)?$");
 
     private final int secondsInMinute = 60;
@@ -32,7 +32,7 @@ public class TimespanParser extends CommandElement {
     private final int secondsInDay = 24 * secondsInHour;
     private final int secondsInWeek = 7 * secondsInDay;
 
-    public TimespanParser(@Nullable Text key) {
+    public TimespanArgument(@Nullable Text key) {
         super(key);
     }
 
