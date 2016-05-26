@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
+import io.github.nucleuspowered.nucleus.Util;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -41,7 +42,7 @@ public class DifficultyArgument extends CommandElement {
             return d.get();
         }
 
-        throw args.createError(Text.of("args.difficulty.notfound", arg));
+        throw args.createError(Util.getTextMessageWithFormat("args.difficulty.notfound", arg));
     }
 
     @Override
