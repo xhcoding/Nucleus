@@ -66,11 +66,8 @@ public class TeleportHandler {
 
     public boolean getAndExecute(UUID uuid) throws Exception {
         Optional<TeleportPrep> otp = get(uuid);
-        if (otp.isPresent()) {
-            return otp.get().tpbuilder.startTeleport();
-        }
+        return otp.isPresent() && otp.get().tpbuilder.startTeleport();
 
-        return false;
     }
 
     public Optional<TeleportPrep> get(UUID uuid) {
@@ -117,36 +114,38 @@ public class TeleportHandler {
 
     public static class TeleportTask implements CancellableTask {
 
-        private final Player from;
-        private final Player to;
+        private final Player playerToTeleport;
+        private final Player playerToTeleportTo;
         private final Player charged;
         private final double cost;
         private final boolean safe;
         private final CommandSource source;
         private final Nucleus plugin;
-        private final boolean silentSouce;
+        private final boolean silentSource;
+        private final boolean silentTarget;
 
-        private TeleportTask(Nucleus plugin, CommandSource source, Player from, Player to, boolean safe, boolean silentSouce) {
-            this(plugin, source, from, to, null, 0, safe, silentSouce);
+        private TeleportTask(Nucleus plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, boolean safe, boolean silentSource, boolean silentTarget) {
+            this(plugin, source, playerToTeleport, playerToTeleportTo, null, 0, safe, silentSource, silentTarget);
         }
 
-        private TeleportTask(Nucleus plugin, CommandSource source, Player from, Player to, Player charged, double cost, boolean safe,
-                             boolean silentSouce) {
+        private TeleportTask(Nucleus plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, Player charged, double cost, boolean safe,
+                             boolean silentSource, boolean silentTarget) {
             this.plugin = plugin;
             this.source = source;
-            this.from = from;
-            this.to = to;
+            this.playerToTeleport = playerToTeleport;
+            this.playerToTeleportTo = playerToTeleportTo;
             this.cost = cost;
             this.charged = charged;
             this.safe = safe;
-            this.silentSouce = silentSouce;
+            this.silentSource = silentSource;
+            this.silentTarget = silentTarget;
         }
 
         private void run() {
-            Location<World> current = from.getLocation();
-            if (to.isOnline()) {
-                if (safe && !from.setLocationAndRotationSafely(to.getLocation(), to.getRotation())) {
-                    if (!silentSouce) {
+            Location<World> current = playerToTeleport.getLocation();
+            if (playerToTeleportTo.isOnline()) {
+                if (safe && !playerToTeleport.setLocationAndRotationSafely(playerToTeleportTo.getLocation(), playerToTeleportTo.getRotation())) {
+                    if (!silentSource) {
                         source.sendMessage(Util.getTextMessageWithFormat("teleport.nosafe"));
                     }
 
@@ -154,21 +153,23 @@ public class TeleportHandler {
                     return;
                 } else {
                     // Temporary
-                    setLastLocation(from, from.getTransform());
-                    from.setLocationAndRotation(to.getLocation(), to.getRotation());
+                    setLastLocation(playerToTeleport, playerToTeleport.getTransform());
+                    playerToTeleport.setLocationAndRotation(playerToTeleportTo.getLocation(), playerToTeleportTo.getRotation());
                 }
 
-                if (!source.equals(from) && !silentSouce) {
-                    source.sendMessage(Util.getTextMessageWithFormat("teleport.success.source", from.getName(), to.getName()));
+                if (!source.equals(playerToTeleport) && !silentSource) {
+                    source.sendMessage(Util.getTextMessageWithFormat("teleport.success.source", playerToTeleport.getName(), playerToTeleportTo.getName()));
                 }
 
-                from.sendMessage(Util.getTextMessageWithFormat("teleport.success", to.getName()));
+                if (!silentTarget) {
+                    playerToTeleport.sendMessage(Util.getTextMessageWithFormat("teleport.success", playerToTeleportTo.getName()));
+                }
 
-                if (!silentSouce) {
-                    to.sendMessage(Util.getTextMessageWithFormat("teleport.from.success", from.getName()));
+                if (!silentSource) {
+                    playerToTeleportTo.sendMessage(Util.getTextMessageWithFormat("teleport.from.success", playerToTeleport.getName()));
                 }
             } else {
-                if (!silentSouce) {
+                if (!silentSource) {
                     source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.offline"));
                 }
 
@@ -183,7 +184,7 @@ public class TeleportHandler {
 
         @Override
         public void onCancel() {
-            if (!silentSouce) {
+            if (!silentSource) {
                 source.sendMessage(Util.getTextMessageWithFormat("teleport.cancelled"));
             }
 
@@ -212,6 +213,7 @@ public class TeleportHandler {
         private boolean bypassToggle = false;
         private boolean safe = true;
         private boolean silentSource = false;
+        private boolean silentTarget = false;
 
         private final Nucleus plugin;
 
@@ -264,6 +266,11 @@ public class TeleportHandler {
             return this;
         }
 
+        public TeleportBuilder setSilentTarget(boolean silentTarget) {
+            this.silentTarget = silentTarget;
+            return this;
+        }
+
         public boolean startTeleport() throws Exception {
             Preconditions.checkNotNull(from);
             Preconditions.checkNotNull(to);
@@ -294,9 +301,9 @@ public class TeleportHandler {
 
             TeleportTask tt;
             if (cost > 0 && charge != null) {
-                tt = new TeleportTask(plugin, source, from, to, charge, cost, safe, silentSource);
+                tt = new TeleportTask(plugin, source, from, to, charge, cost, safe, silentSource, silentTarget);
             } else {
-                tt = new TeleportTask(plugin, source, from, to, safe, silentSource);
+                tt = new TeleportTask(plugin, source, from, to, safe, silentSource, silentTarget);
             }
 
             if (warmupTime > 0) {

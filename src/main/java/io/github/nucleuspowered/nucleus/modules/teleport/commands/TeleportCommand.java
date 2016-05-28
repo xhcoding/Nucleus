@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.command.CommandResult;
@@ -34,29 +35,36 @@ import java.util.Optional;
 @ConfigCommandAlias("teleport")
 public class TeleportCommand extends CommandBase<CommandSource> {
 
-    private String playerFromKey = "playerFrom";
-    private String playerKey = "player";
+    private final String playerFromKey = "playerFrom";
+    private final String playerKey = "player";
+    private final String quietKey = "quiet";
 
     @Inject private TeleportHandler handler;
+    @Inject private TeleportConfigAdapter tca;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("others", new PermissionInformation("permission.teleport.others", SuggestedLevel.ADMIN));
+        m.put("quiet", new PermissionInformation("permission.teleport.quiet", SuggestedLevel.ADMIN));
         return m;
     }
+
     @Override
     public CommandElement[] getArguments() {
-       return new CommandElement[]{GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+       return new CommandElement[]{
+                GenericArguments.flags().flag("f")
+                        .valueFlag(GenericArguments.requiringPermission(GenericArguments.bool(Text.of(quietKey)), permissions.getPermissionWithSuffix("quiet")), "q")
+                        .buildWith(GenericArguments.none()),
 
-                        // Either we get two arguments, or we get one.
-                        GenericArguments.firstParsing(
-                                // <player> <player>
-                                new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey),
-                                        permissions.getPermissionWithSuffix("others")))),
+                // Either we get two arguments, or we get one.
+                GenericArguments.firstParsing(
+                        // <player> <player>
+                        new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey),
+                                permissions.getPermissionWithSuffix("others")))),
 
-                        // <player>
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))};
+                // <player>
+                GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))};
     }
 
     @Override
@@ -90,6 +98,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        boolean beQuiet = args.<Boolean>getOne(quietKey).orElse(tca.getNodeOrDefault().isDefaultQuiet());
         Optional<Player> ofrom = args.getOne(playerFromKey);
         Player from;
         if (ofrom.isPresent()) {
@@ -107,7 +116,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
 
         Player pl = args.<Player>getOne(playerKey).get();
         if (handler.getBuilder().setSource(src).setFrom(from).setTo(pl).setSafe(!args.<Boolean>getOne("f").orElse(false))
-                .startTeleport()) {
+                .setSilentTarget(beQuiet).startTeleport()) {
             return CommandResult.success();
         }
 

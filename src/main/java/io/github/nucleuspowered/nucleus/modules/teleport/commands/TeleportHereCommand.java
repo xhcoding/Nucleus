@@ -5,13 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -33,8 +30,10 @@ import org.spongepowered.api.text.Text;
 public class TeleportHereCommand extends CommandBase<Player> {
 
     private final String playerKey = "player";
+    private final String quietKey = "quiet";
 
     @Inject private TeleportHandler handler;
+    @Inject private TeleportConfigAdapter tca;
 
     @Override
     public CommandElement[] getArguments() {
@@ -43,8 +42,9 @@ public class TeleportHereCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+        boolean beQuiet = args.<Boolean>getOne(quietKey).orElse(tca.getNodeOrDefault().isDefaultQuiet());
         Player target = args.<Player>getOne(playerKey).get();
-        handler.getBuilder().setFrom(target).setTo(src).startTeleport();
+        handler.getBuilder().setFrom(target).setTo(src).setSilentSource(beQuiet).startTeleport();
         return CommandResult.success();
     }
 }
