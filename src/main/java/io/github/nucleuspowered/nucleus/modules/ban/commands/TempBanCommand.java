@@ -62,7 +62,7 @@ public class TempBanCommand extends CommandBase<CommandSource> {
         Instant date = Instant.now().plus(time, ChronoUnit.SECONDS);
 
         // Create the ban.
-        Ban bp = Ban.builder().profile(u.getProfile()).source(src).expirationDate(date).reason(Text.of(r)).type(BanTypes.PROFILE).build();
+        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u.getProfile()).source(src).expirationDate(date).reason(Text.of(r)).build();
         service.addBan(bp);
 
         MutableMessageChannel send = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
