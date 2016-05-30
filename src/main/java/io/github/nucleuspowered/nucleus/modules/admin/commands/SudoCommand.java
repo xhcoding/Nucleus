@@ -50,7 +50,7 @@ public class SudoCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(playerKey).get();
         String cmd = args.<String>getOne(commandKey).get();
-        if (pl.equals(src) || permissions.testSuffix(src, "exempt.target")) {
+        if (pl.equals(src) || permissions.testSuffix(pl, "exempt.target")) {
             src.sendMessage(Util.getTextMessageWithFormat("command.sudo.noperms"));
             return CommandResult.empty();
         }
