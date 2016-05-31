@@ -81,6 +81,10 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
         return uc;
     }
 
+    public void clearSoftReferenceCache() {
+        softLoadedUsers.clear();
+    }
+
     public void purgeNotOnline() {
         Set<UUID> onlineUUIDs = Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toSet());
 
