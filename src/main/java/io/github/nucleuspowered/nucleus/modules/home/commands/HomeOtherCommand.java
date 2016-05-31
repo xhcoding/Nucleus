@@ -44,6 +44,12 @@ public class HomeOtherCommand extends CommandBase<Player> {
 
         Transform<World> currentLocation = src.getTransform();
 
+        if (wl.location.getLocation() == null) {
+            // Fail
+            src.sendMessage(Util.getTextMessageWithFormat("command.homeother.invalid", wl.user.getName(), wl.location.getName()));
+            return CommandResult.empty();
+        }
+
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.location.getLocation(), wl.location.getRotation())) {
             setLastLocation(src, currentLocation);

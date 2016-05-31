@@ -44,7 +44,7 @@ public class HomeOtherArgument extends HomeArgument {
         }
 
         User user = ouser.get();
-        WarpLocation location = this.getHome(user, ohome.get().toLowerCase(), args);
+        WarpLocation location = this.getHome(user, ohome.get(), args);
         return new HomeData(user, location);
     }
 

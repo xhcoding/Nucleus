@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
@@ -181,12 +182,12 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
             return Optional.empty();
         }
 
-        LocationNode ln = data.getHomeData().get(home.toLowerCase());
+        LocationNode ln = Util.getValueIgnoreCase(data.getHomeData(), home).orElse(null);
         if (ln != null) {
             try {
-                return Optional.of(new WarpLocation(home.toLowerCase(), ln.getLocation(), ln.getRotation()));
+                return Optional.of(new WarpLocation(home, ln.getLocation(), ln.getRotation()));
             } catch (NoSuchWorldException e) {
-                return Optional.empty();
+                return Optional.of(new WarpLocation(home, null, null));
             }
         }
 
@@ -199,14 +200,14 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
             return Maps.newHashMap();
         }
 
-        return data.getHomeData().entrySet().stream().map(x -> {
-            try {
-                return new WarpLocation(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
-            } catch (NoSuchWorldException e) {
-                return null;
-            }
-        }).filter(x -> x != null)
-                .collect(Collectors.toMap(WarpLocation::getName, y -> new WarpLocation(y.getName(), y.getLocation(), y.getRotation())));
+        return data.getHomeData().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, x -> {
+                    try {
+                        return new WarpLocation(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
+                    } catch (NoSuchWorldException e) {
+                        return null;
+                    }
+                }));
     }
 
     @Override
@@ -218,11 +219,12 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
             homeData = Maps.newHashMap();
         }
 
-        if (homeData.containsKey(home.toLowerCase()) || !warpName.matcher(home).matches()) {
+        Optional<String> os = Util.getKeyIgnoreCase(data.getHomeData(), home);
+        if (os.isPresent() || !warpName.matcher(home).matches()) {
             return false;
         }
 
-        homeData.put(home.toLowerCase(), new LocationNode(location, rotation));
+        homeData.put(home, new LocationNode(location, rotation));
         data.setHomeData(homeData);
         return true;
     }
@@ -234,8 +236,9 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
             return false;
         }
 
-        if (homeData.containsKey(home.toLowerCase())) {
-            homeData.remove(home.toLowerCase());
+        Optional<String> os = Util.getKeyIgnoreCase(data.getHomeData(), home);
+        if (os.isPresent()) {
+            homeData.remove(os.get());
             data.setHomeData(homeData);
             return true;
         }

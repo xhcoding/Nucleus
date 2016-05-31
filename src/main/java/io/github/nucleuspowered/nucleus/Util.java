@@ -24,6 +24,7 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -202,5 +203,30 @@ public class Util {
         }
 
         return translatable.getName();
+    }
+
+    /**
+     * Gets a key from a map based on a case insensitive key.
+     *
+     * @param map The {@link Map} to check.
+     * @param key The {@link String} key.
+     * @return An {@link Optional}, which contains the key if it exists.
+     */
+    public static Optional<String> getKeyIgnoreCase(Map<String, ?> map, String key) {
+        return map.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(key))
+                .map(Map.Entry::getKey).findFirst();
+    }
+
+    /**
+     * Gets a value from a map based on a case insensitive key.
+     *
+     * @param map The {@link Map} to check.
+     * @param key The {@link String} key.
+     * @param <T> The type of values in the map.
+     * @return An {@link Optional}, which contains a value if the key exists in some case form.
+     */
+    public static <T> Optional<T> getValueIgnoreCase(Map<String, T> map, String key) {
+        return map.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(key))
+                .map(Map.Entry::getValue).findFirst();
     }
 }
