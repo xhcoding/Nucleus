@@ -82,16 +82,24 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
 
         List<Text> lt = msw.entrySet().stream().sorted((x, y) -> x.getKey().compareTo(y.getKey())).map(x -> {
             Location<World> lw = x.getValue().getLocation();
-            return Text
-                    .builder().append(
-                            Text.builder(x.getKey()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                                    .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphover", x.getKey())))
-                                    .onClick(TextActions.runCommand(other ? "/homeother " + user.getName() + " " + x.getValue().getName()
-                                            : "/home " + x.getValue().getName()))
-                                    .build())
-                    .append(Util.getTextMessageWithFormat("home.location", lw.getExtent().getName(), String.valueOf(lw.getBlockX()),
-                            String.valueOf(lw.getBlockY()), String.valueOf(lw.getBlockZ())))
-                    .build();
+            Text inner;
+            if (lw == null) {
+                return Text.builder().append(
+                                Text.builder(x.getKey()).color(TextColors.RED)
+                                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphoverinvalid", x.getKey())))
+                                        .build())
+                        .build();
+            } else {
+                return Text.builder().append(
+                                Text.builder(x.getKey()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphover", x.getKey())))
+                                        .onClick(TextActions.runCommand(other ? "/homeother " + user.getName() + " " + x.getValue().getName()
+                                                : "/home " + x.getValue().getName()))
+                                        .build())
+                        .append(Util.getTextMessageWithFormat("home.location", lw.getExtent().getName(), String.valueOf(lw.getBlockX()),
+                                String.valueOf(lw.getBlockY()), String.valueOf(lw.getBlockZ())))
+                        .build();
+            }
         }).collect(Collectors.toList());
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);

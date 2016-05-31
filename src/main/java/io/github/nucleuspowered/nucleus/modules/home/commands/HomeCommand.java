@@ -54,6 +54,12 @@ public class HomeCommand extends CommandBase<Player> {
         Transform<World> currentLocation = src.getTransform();
         WarpLocation wl = owl.get();
 
+        if (wl.getLocation() == null) {
+            // Fail
+            src.sendMessage(Util.getTextMessageWithFormat("command.home.invalid", wl.getName()));
+            return CommandResult.empty();
+        }
+
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.getLocation(), wl.getRotation())) {
             setLastLocation(src, currentLocation);
