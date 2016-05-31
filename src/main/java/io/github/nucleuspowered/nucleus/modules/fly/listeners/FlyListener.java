@@ -17,8 +17,10 @@ import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.entity.DismountEntityEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.World;
 
@@ -85,6 +87,19 @@ public class FlyListener extends ListenerBase {
                     target.offer(Keys.IS_FLYING, true);
                 }
             }).submit(plugin);
+        }
+    }
+
+    @Listener
+    public void onPlayerDismount(DismountEntityEvent event, @Root Player player) {
+        // If I'm right, this will work around Pixelmon when dismounting pokemon.
+        try {
+            InternalNucleusUser uc = plugin.getUserLoader().getUser(player);
+            player.offer(Keys.CAN_FLY, uc.isFlyingSafe());
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
+            }
         }
     }
 }
