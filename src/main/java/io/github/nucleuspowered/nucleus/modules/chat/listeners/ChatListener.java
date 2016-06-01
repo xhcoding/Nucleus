@@ -17,7 +17,7 @@ import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChanne
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -84,7 +84,7 @@ public class ChatListener extends ListenerBase {
 
     // We do this first so that other plugins can alter it later if needs be.
     @Listener(order = Order.EARLY)
-    public void onPlayerChat(MessageChannelEvent.Chat event, @First Player player) {
+    public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
         if (event.getChannel().isPresent() && event.getChannel().get() instanceof StaffChatMessageChannel) {
             // Staff chat. Not interested in applying these transforms.
             return;
