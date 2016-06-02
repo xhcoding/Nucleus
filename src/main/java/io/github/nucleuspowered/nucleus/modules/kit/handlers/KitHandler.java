@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.handlers;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
@@ -25,7 +26,8 @@ public class KitHandler implements NucleusKitService {
 
     @Override
     public Optional<Kit> getKit(String name) {
-        return Optional.ofNullable(store.getKit(name).orElse(null));
+        Optional<KitDataNode> kdn = Util.getValueIgnoreCase(store.getKits(), name);
+        return Optional.of(kdn.orElse(null));
     }
 
     @Override
@@ -36,7 +38,7 @@ public class KitHandler implements NucleusKitService {
     @Override
     public void saveKit(String kitName, Kit kit) {
         Preconditions.checkArgument(kit instanceof KitDataNode);
-        store.removeKit(kitName);
+        Util.getKeyIgnoreCase(store.getKits(), kitName).ifPresent(store::removeKit);
         store.addKit(kitName, (KitDataNode)kit);
     }
 
