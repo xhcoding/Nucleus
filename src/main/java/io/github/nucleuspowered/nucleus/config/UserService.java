@@ -437,6 +437,11 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         data.setKitLastUsedTime(kitLastUsedTime);
     }
 
+    @Override
+    public void setKitLastUsedTime(Map<String, Instant> msi) {
+        data.setKitLastUsedTime(msi.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().getEpochSecond())));
+    }
+
     // -- Powertools
     @Override
     public Map<String, List<String>> getPowertools() {

@@ -62,6 +62,8 @@ public interface InternalNucleusUser extends NucleusUser {
 
     void removeKitLastUsedTime(String kitName);
 
+    void setKitLastUsedTime(Map<String, Instant> msi);
+
     // -- Powertools
     Map<String, List<String>> getPowertools();
 
