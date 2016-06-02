@@ -33,6 +33,7 @@ import org.spongepowered.api.text.Text;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Allows a user to redeem a kit.
@@ -93,7 +94,8 @@ public class KitCommand extends CommandBase<Player> {
         }
 
         // If the kit was used before...
-        if (user.getKitLastUsedTime().containsKey(kitName)) {
+        Optional<Instant> oi = Util.getValueIgnoreCase(user.getKitLastUsedTime(), kitName);
+        if (oi.isPresent()) {
 
             // if it's one time only and the user does not have an exemption...
             if (kit.isOneTime() && !player.hasPermission(permissions.getPermissionWithSuffix("exempt.onetime"))) {
@@ -107,7 +109,7 @@ public class KitCommand extends CommandBase<Player> {
             if (!permissions.testCooldownExempt(player) && kit.getInterval().getSeconds() > 0) {
 
                 // ...and we haven't reached the cooldown point yet...
-                Instant timeForNextUse = user.getKitLastUsedTime().get(kitName).plus(kit.getInterval());
+                Instant timeForNextUse = oi.get().plus(kit.getInterval());
                 if (timeForNextUse.isAfter(now)) {
                     Duration d = Duration.between(now, timeForNextUse);
 
