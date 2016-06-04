@@ -63,7 +63,7 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
         if (!ogm.isPresent()) {
             String mode = user.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL).getName();
             if (src.equals(user)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get", mode));
+                src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get.base", mode));
             } else {
                 src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get.other", user.getName(), mode));
             }
@@ -78,7 +78,7 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
                 src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set.other", user.getName(), gm.getName()));
             }
 
-            user.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set", gm.getName()));
+            user.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set.base", gm.getName()));
             return CommandResult.success();
         }
 

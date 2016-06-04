@@ -79,7 +79,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
             header = Util.getTextMessageWithFormat("command.list.playercount.hidden", String.valueOf(playerCount),
                     String.valueOf(Sponge.getServer().getMaxPlayers()), String.valueOf(hiddenCount));
         } else {
-            header = Util.getTextMessageWithFormat("command.list.playercount", String.valueOf(playerCount - hiddenCount),
+            header = Util.getTextMessageWithFormat("command.list.playercount.base", String.valueOf(playerCount - hiddenCount),
                     String.valueOf(Sponge.getServer().getMaxPlayers()));
         }
 
