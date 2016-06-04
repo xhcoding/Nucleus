@@ -162,7 +162,7 @@ public class TeleportHandler {
                     source.sendMessage(Util.getTextMessageWithFormat("teleport.success.source", from.getName(), to.getName()));
                 }
 
-                from.sendMessage(Util.getTextMessageWithFormat("teleport.success", to.getName()));
+                from.sendMessage(Util.getTextMessageWithFormat("teleport.to.success", to.getName()));
 
                 if (!silentSouce) {
                     to.sendMessage(Util.getTextMessageWithFormat("teleport.from.success", from.getName()));
