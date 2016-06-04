@@ -91,7 +91,7 @@ public class SpeedCommand extends CommandBase<CommandSource> {
         DataTransactionResult dtr = pl.offer(key.speedKey, (double) speed / (double) multiplier);
 
         if (dtr.isSuccessful()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.speed.success", key.name, String.valueOf(speed)));
+            src.sendMessage(Util.getTextMessageWithFormat("command.speed.success.base", key.name, String.valueOf(speed)));
 
             if (!pl.equals(src)) {
                 src.sendMessages(Util.getTextMessageWithFormat("command.speed.success.other", pl.getName(), key.name, String.valueOf(speed)));

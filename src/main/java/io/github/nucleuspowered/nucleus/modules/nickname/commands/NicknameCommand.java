@@ -106,7 +106,7 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         }
 
         if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.nick.success"))
+            pl.getPlayer().get().sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.nick.success.base"))
                     .append(Text.of(" - ", TextColors.RESET, set)).build());
         }
 

@@ -7,11 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeParser;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -67,7 +63,7 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
         if (!ogm.isPresent()) {
             String mode = user.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL).getName();
             if (src.equals(user)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get", mode));
+                src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get.base", mode));
             } else {
                 src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get.other", user.getName(), mode));
             }
@@ -82,7 +78,7 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
                 src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set.other", user.getName(), gm.getName()));
             }
 
-            user.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set", gm.getName()));
+            user.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set.base", gm.getName()));
             return CommandResult.success();
         }
 

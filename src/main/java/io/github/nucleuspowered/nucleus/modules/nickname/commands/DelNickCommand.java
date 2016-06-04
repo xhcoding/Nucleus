@@ -52,7 +52,7 @@ public class DelNickCommand extends CommandBase<CommandSource> {
         }
 
         if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.delnick.success"));
+            pl.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.delnick.success.base"));
         }
 
         return CommandResult.success();
