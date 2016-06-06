@@ -5,11 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -42,6 +38,7 @@ public class VanishCommand extends CommandBase<Player> {
         DataTransactionResult dtr = src.offer(Keys.INVISIBLE, toVanish);
         src.offer(Keys.INVISIBILITY_IGNORES_COLLISION, toVanish);
         src.offer(Keys.INVISIBILITY_PREVENTS_TARGETING, toVanish);
+        src.offer(Keys.IS_SILENT, toVanish);
         if (dtr.isSuccessful()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.vanish.success",
                     toVanish ? Util.getMessageWithFormat("command.vanish.vanished") : Util.getMessageWithFormat("command.vanish.visible")));

@@ -35,7 +35,7 @@ public class TeleportHandler {
     private final Nucleus plugin;
     private final Map<UUID, TeleportPrep> ask = new HashMap<>();
 
-    public static final String tptoggleBypassPermission = PermissionRegistry.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
+    private static final String tptoggleBypassPermission = PermissionRegistry.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
     private Text acceptDeny;
 
     public TeleportHandler(Nucleus plugin) {
@@ -110,7 +110,7 @@ public class TeleportHandler {
         }
     }
 
-    public static class TeleportTask implements CancellableTask {
+    private static class TeleportTask implements CancellableTask {
 
         private final Player playerToTeleport;
         private final Player playerToTeleportTo;
