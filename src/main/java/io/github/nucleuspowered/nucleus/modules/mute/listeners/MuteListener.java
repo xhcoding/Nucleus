@@ -145,7 +145,7 @@ public class MuteListener extends ListenerBase {
             user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify.time",
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
         } else {
-            user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify"));
+            user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify.standard"));
         }
     }
 }

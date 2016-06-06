@@ -100,7 +100,7 @@ public class KitCommand extends CommandBase<Player> {
             // if it's one time only and the user does not have an exemption...
             if (kit.isOneTime() && !player.hasPermission(permissions.getPermissionWithSuffix("exempt.onetime"))) {
                 // tell the user.
-                player.sendMessage(Util.getTextMessageWithFormat("command.kit.onetime", kitName));
+                player.sendMessage(Util.getTextMessageWithFormat("command.kit.onetime.alreadyredeemed", kitName));
                 return CommandResult.empty();
             }
 

@@ -53,7 +53,7 @@ public class ModuleRegistrationProxyService implements NucleusModuleService {
 
         try {
             container.disableModule(module);
-            nucleus.getLogger().info(Util.getMessageWithFormat("nucleus.module.disabled", pluginAnnotation.name(), pluginAnnotation.id(), module));
+            nucleus.getLogger().info(Util.getMessageWithFormat("nucleus.module.disabled.modulerequest", pluginAnnotation.name(), pluginAnnotation.id(), module));
         } catch (IllegalStateException e) {
             throw new ModulesLoadedException();
         } catch (UndisableableModuleException e) {

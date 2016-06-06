@@ -13,8 +13,7 @@ import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SanityTests {
@@ -46,6 +45,45 @@ public class SanityTests {
             StringBuilder sb = new StringBuilder("Some config adapters are not of the NucleusConfigAdapter type: ");
             moduleList.forEach(x -> sb.append(x.getName()).append(System.lineSeparator()));
             Assert.fail(sb.toString());
+        }
+    }
+
+    @Test
+    public void testThatNoResourceKeyIsAParentOfAnother() throws Exception {
+        // Get the resource
+        ResourceBundle rb = ResourceBundle.getBundle("assets.io.github.nucleuspowered.nucleus.messages", Locale.getDefault());
+        Enumeration<String> keys = rb.getKeys();
+        Set<String> s = new HashSet<>();
+
+        while (keys.hasMoreElements()) {
+            s.add(keys.nextElement());
+        }
+
+        Map<String, List<String>> filter = s.parallelStream()
+                .map(x -> new DoubleTuple<>(x.toLowerCase(),
+                        s.stream().filter(y -> x.toLowerCase().startsWith(y.toLowerCase() + ".") && !x.equalsIgnoreCase(y)).collect(Collectors.toList())))
+                .filter(x -> !x.value.isEmpty())
+                .sorted()
+                .collect(Collectors.toMap(k -> k.key, v -> v.value));
+        if (!filter.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Some keys are parents of others!").append(System.lineSeparator());
+            filter.forEach((x, y) -> sb.append(x).append("->").append(y).append(System.lineSeparator()));
+            Assert.fail(sb.toString());
+        }
+    }
+
+    private class DoubleTuple<A extends Comparable<A>, B> implements Comparable<DoubleTuple<A, B>> {
+        A key;
+        B value;
+
+        private DoubleTuple(A a, B b) {
+            this.key = a;
+            this.value = b;
+        }
+
+        @Override
+        public int compareTo(DoubleTuple<A, B> o) {
+            return key.compareTo(o.key);
         }
     }
 }

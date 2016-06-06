@@ -74,8 +74,6 @@ spongestart{
 blossom {
     def location = 'src/main/java/io/github/nucleuspowered/nucleus/PluginInfo.java'
 
-    // replaceToken '@id@', project.name.toLowerCase(), location
-    replaceToken '@group@', project.group, location
     replaceToken '@name@', project.name, location
     replaceToken '@version@', project.version, location
     replaceToken '@gitHash@', getGitHash(), location

@@ -163,7 +163,7 @@ public class JailListener extends ListenerBase {
             user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify.time",
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
         } else {
-            user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify"));
+            user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify.standard"));
         }
 
         user.sendMessage(Util.getTextMessageWithFormat("standard.reason", md.getReason()));

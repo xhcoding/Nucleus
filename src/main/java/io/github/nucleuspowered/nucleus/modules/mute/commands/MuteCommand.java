@@ -146,7 +146,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
         mc.send(Util.getTextMessageWithFormat("standard.reason", data.getReason()));
 
         if (user.isOnline()) {
-            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("mute.playernotify"));
+            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("mute.playernotify.standard"));
             user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.reason", data.getReason()));
         }
     }

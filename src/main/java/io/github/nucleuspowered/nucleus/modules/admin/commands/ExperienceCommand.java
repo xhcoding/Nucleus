@@ -5,11 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -63,7 +59,7 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
             src.sendMessage(Util.getTextMessageWithFormat("command.exp.set.new.other", pl.getName(), String.valueOf(exp), String.valueOf(newLvl)));
         }
 
-        pl.sendMessage(Util.getTextMessageWithFormat("command.exp.set.new", String.valueOf(exp), String.valueOf(newLvl)));
+        pl.sendMessage(Util.getTextMessageWithFormat("command.exp.set.new.self", String.valueOf(exp), String.valueOf(newLvl)));
         return CommandResult.success();
     }
 

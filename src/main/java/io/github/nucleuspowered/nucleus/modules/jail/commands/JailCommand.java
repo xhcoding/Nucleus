@@ -77,7 +77,7 @@ public class JailCommand extends CommandBase<CommandSource> {
 
     private CommandResult onUnjail(CommandSource src, CommandContext args, User user) throws Exception {
         if (handler.unjailPlayer(user)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jail.unjail", user.getName()));
+            src.sendMessage(Util.getTextMessageWithFormat("command.jail.unjail.success", user.getName()));
             return CommandResult.success();
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.jail.unjail.fail", user.getName()));
