@@ -4,9 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "spawn", name = "Spawn")
-public class SpawnModule extends StandardModule {
+public class SpawnModule extends ConfigurableModule<SpawnConfigAdapter> {
+
+    @Override
+    public SpawnConfigAdapter getAdapter() {
+        return new SpawnConfigAdapter();
+    }
 }

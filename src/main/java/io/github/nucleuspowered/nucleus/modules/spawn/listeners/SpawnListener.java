@@ -5,11 +5,17 @@
 package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -20,6 +26,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class SpawnListener extends ListenerBase {
@@ -27,11 +34,19 @@ public class SpawnListener extends ListenerBase {
     @Inject private GeneralDataStore store;
     @Inject private WorldConfigLoader wcl;
     @Inject private CoreConfigAdapter cca;
+    @Inject private SpawnConfigAdapter sca;
 
-    // No point in having a filter here - only players are going to appear!
+    private final String spawnExempt = PermissionRegistry.PERMISSIONS_PREFIX + "spawn.exempt.login";
+
+    @Override
+    public Map<String, PermissionInformation> getPermissions() {
+        Map<String, PermissionInformation> mpi = Maps.newHashMap();
+        mpi.put(spawnExempt, new PermissionInformation(Util.getMessageWithFormat("permission.spawn.exempt.login"), SuggestedLevel.ADMIN));
+        return mpi;
+    }
+
     @Listener
     public void onJoin(ClientConnectionEvent.Join joinEvent) {
-
         Player pl = joinEvent.getTargetEntity();
 
         if (!pl.hasPlayedBefore()) {
@@ -43,7 +58,26 @@ public class SpawnListener extends ListenerBase {
             if (!ofs.isPresent() || !pl.setLocationAndRotationSafely(ofs.get().getLocation(), ofs.get().getRotation())) {
                 WorldProperties w = Sponge.getServer().getDefaultWorld().get();
                 pl.setLocation(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble()));
+
+                // We don't want to boot them elsewhere.
+                return;
             }
+        }
+
+        // Throw them to the default world spawn if the config suggests so.
+        if (sca.getNodeOrDefault().isSpawnOnLogin() && !pl.hasPermission(spawnExempt)) {
+            WorldProperties w = Sponge.getServer().getDefaultWorld().get();
+            Location<World> lw = new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble());
+            try {
+                Optional<Vector3d> ov = wcl.getWorld(w.getUniqueId()).getSpawnRotation();
+                if (ov.isPresent()) {
+                    pl.setLocationAndRotation(lw, ov.get());
+                }
+            } catch (Exception e) {
+                //
+            }
+
+            pl.setLocation(lw);
         }
     }
 
