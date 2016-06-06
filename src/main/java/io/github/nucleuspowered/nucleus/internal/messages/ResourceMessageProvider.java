@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class ResourceMessageProvider extends MessageProvider {
 
-    protected final ResourceBundle rb = ResourceBundle.getBundle("assets.io.github.nucleuspowered.nucleus.messages", Locale.getDefault());
+    protected final ResourceBundle rb = ResourceBundle.getBundle("assets.nucleus.messages", Locale.getDefault());
 
     @Override
     public Optional<String> getMessageFromKey(String key) {

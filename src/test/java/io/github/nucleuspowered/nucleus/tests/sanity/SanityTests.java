@@ -51,7 +51,7 @@ public class SanityTests {
     @Test
     public void testThatNoResourceKeyIsAParentOfAnother() throws Exception {
         // Get the resource
-        ResourceBundle rb = ResourceBundle.getBundle("assets.io.github.nucleuspowered.nucleus.messages", Locale.getDefault());
+        ResourceBundle rb = ResourceBundle.getBundle("assets.nucleus.messages", Locale.getDefault());
         Enumeration<String> keys = rb.getKeys();
         Set<String> s = new HashSet<>();
 
