@@ -33,11 +33,8 @@ public class BackCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        Transform<World> currentLocation = src.getTransform();
-
         Transform<World> loc = ol.get();
         if (src.setLocationAndRotationSafely(loc.getLocation(), loc.getRotation())) {
-            handler.setLastLocationInternal(src, currentLocation);
             src.sendMessage(Util.getTextMessageWithFormat("command.back.success"));
             return CommandResult.success();
         } else {
