@@ -16,6 +16,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
@@ -42,7 +43,8 @@ public class FlyCommand extends CommandBase<CommandSource> {
         return new CommandElement[] {
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(GenericArguments.player(Text.of(player)),
                         permissions.getPermissionWithSuffix("others")))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))};
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
+        };
     }
 
     @Override
@@ -55,7 +57,7 @@ public class FlyCommand extends CommandBase<CommandSource> {
         Player pl = opl.get();
 
         InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
-        boolean fly = args.<Boolean>getOne(toggle).orElse(!uc.isFlying());
+        boolean fly = args.<Boolean>getOne(toggle).orElse(!pl.get(Keys.CAN_FLY).orElse(false));
 
         if (!uc.setFlying(fly)) {
             src.sendMessages(Util.getTextMessageWithFormat("command.fly.error"));
