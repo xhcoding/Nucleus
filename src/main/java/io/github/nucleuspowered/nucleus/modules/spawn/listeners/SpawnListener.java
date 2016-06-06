@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -35,7 +34,7 @@ public class SpawnListener extends ListenerBase {
 
         Player pl = joinEvent.getTargetEntity();
 
-        if (Util.isFirstPlay(pl)) {
+        if (!pl.hasPlayedBefore()) {
             // first spawn.
             Optional<Transform<World>> ofs = store.getFirstSpawn();
 

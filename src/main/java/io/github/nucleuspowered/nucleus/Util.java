@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -173,15 +172,6 @@ public class Util {
     public static Optional<OptionSubject> getSubject(Player player) {
         Subject subject = player.getContainingCollection().get(player.getIdentifier());
         return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
-    }
-
-    public static boolean isFirstPlay(Player player) {
-        Instant firstPlayed = player.getJoinData().firstPlayed().get();
-        Instant lastPlayed = player.getJoinData().lastPlayed().get();
-
-        // lastPlayed is always ticking - give three seconds.
-        // TODO: Better way of doing this.
-        return firstPlayed.isAfter(lastPlayed.minus(3, ChronoUnit.SECONDS));
     }
 
     /**

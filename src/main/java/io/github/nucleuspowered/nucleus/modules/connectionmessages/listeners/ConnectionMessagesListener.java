@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.connectionmessages.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfigAdapter;
@@ -25,7 +24,7 @@ public class ConnectionMessagesListener extends ListenerBase {
         Player pl = joinEvent.getTargetEntity();
         ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
 
-        if (Util.isFirstPlay(pl)) {
+        if (!pl.hasPlayedBefore()) {
             // First time player.
             if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
                 Sponge.getServer().getBroadcastChannel().send(plugin, chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getFirstTimeMessage(), pl, true));
