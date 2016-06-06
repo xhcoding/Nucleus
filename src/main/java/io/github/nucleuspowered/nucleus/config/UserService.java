@@ -264,7 +264,7 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
                 return getNicknameAsText();
             }
 
-            return Optional.of(Text.join(TextSerializers.formattingCode('&').deserialize(p), getNicknameAsText().get()));
+            return Optional.of(Text.join(TextSerializers.FORMATTING_CODE.deserialize(p), getNicknameAsText().get()));
         }
 
         return Optional.empty();
@@ -281,7 +281,7 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
             return Optional.empty();
         }
 
-        nickname = TextSerializers.formattingCode('&').deserialize(os.get());
+        nickname = TextSerializers.FORMATTING_CODE.deserialize(os.get());
         return Optional.of(nickname);
     }
 
@@ -299,7 +299,7 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
             nickname = p + nickname;
         }
 
-        Text nick = TextSerializers.formattingCode('&').deserialize(nickname);
+        Text nick = TextSerializers.FORMATTING_CODE.deserialize(nickname);
         user.offer(Keys.DISPLAY_NAME, nick);
     }
 

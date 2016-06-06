@@ -263,7 +263,7 @@ public class ChatUtil {
 
     private Text getName(CommandSource cs) {
         if (cs instanceof Player) {
-            return NameUtil.getNameWithHover((Player)cs, loader);
+            return NameUtil.getName((Player)cs, loader);
         }
 
         return Text.of(cs.getName());

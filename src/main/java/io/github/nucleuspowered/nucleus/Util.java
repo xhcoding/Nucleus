@@ -12,7 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
@@ -169,9 +169,42 @@ public class Util {
         return ci.stream().map(ClassPath.ClassInfo::load).filter(base::isAssignableFrom).map(x -> (Class<? extends T>)x).collect(Collectors.toSet());
     }
 
-    public static Optional<OptionSubject> getSubject(Player player) {
+    public static Optional<OptionSubject> getSubject(User player) {
         Subject subject = player.getContainingCollection().get(player.getIdentifier());
         return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
+    }
+
+    /**
+     * Utility method for getting the first available option from an {@link OptionSubject}
+     *
+     * @param player The {@link User} to get the subject from.
+     * @param options The option keys to check.
+     * @return An {@link Optional} that might contain a value.
+     */
+    public static Optional<String> getOptionFromSubject(User player, String... options) {
+        Optional<OptionSubject> optionSubjectOptional = getSubject(player);
+        if (!optionSubjectOptional.isPresent()) {
+            return Optional.empty();
+        }
+
+        OptionSubject optionSubject = optionSubjectOptional.get();
+        for (String option : options) {
+            String o = option.toLowerCase();
+
+            // Option for context.
+            Optional<String> os = optionSubject.getOption(player.getActiveContexts(), o);
+            if (os.isPresent()) {
+                return os;
+            }
+
+            // General option
+            os = optionSubject.getOption(o);
+            if (os.isPresent()) {
+                return os;
+            }
+        }
+
+        return Optional.empty();
     }
 
     /**
