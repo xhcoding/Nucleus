@@ -4,13 +4,18 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -60,5 +65,13 @@ public class CoreListener extends ListenerBase {
                 e.printStackTrace();
             }
         }, 200, TimeUnit.MILLISECONDS);
+    }
+
+    @Listener
+    public void onGameReload(final GameReloadEvent event) {
+        plugin.reload();
+        CommandSource requester = event.getCause().first(CommandSource.class).orElse(Sponge.getServer().getConsole());
+        requester.sendMessage(Text.of(TextColors.YELLOW, "[Nucleus] ", Util.getTextMessageWithFormat("command.reload.one")));
+        requester.sendMessage(Text.of(TextColors.YELLOW, "[Nucleus] ", Util.getTextMessageWithFormat("command.reload.two")));
     }
 }

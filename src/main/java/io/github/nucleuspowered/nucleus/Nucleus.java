@@ -68,7 +68,7 @@ import java.util.Optional;
 
 import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 
-@Plugin(id = GROUP_ID, name = NAME, version = INFORMATIVE_VERSION, description = DESCRIPTION)
+@Plugin(id = GROUP_ID, name = NAME, version = VERSION, description = DESCRIPTION)
 public class Nucleus {
 
     private boolean modulesLoaded = false;

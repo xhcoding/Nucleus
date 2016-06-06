@@ -22,8 +22,8 @@ public final class PluginInfo {
     public static final String GROUP_ID = "@group@.nucleus";
 
     public static final String NAME = "@name@";
-    public static final String INFORMATIVE_VERSION = "@informativeVersion@";
     public static final String VERSION = "@version@";
+    public static final String GIT_HASH = "@gitHash@";
 
     // Preparing for 4.0.0 SpongeAPI
     public static final String DESCRIPTION = "@description@";

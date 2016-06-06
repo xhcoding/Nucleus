@@ -4,17 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
-import static io.github.nucleuspowered.nucleus.PluginInfo.MESSAGE_PREFIX;
-import static io.github.nucleuspowered.nucleus.PluginInfo.NAME;
-import static io.github.nucleuspowered.nucleus.PluginInfo.VERSION;
-
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -24,6 +15,8 @@ import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.quickstart.ModuleContainer;
 
 import java.util.Set;
+
+import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 
 /**
  * Gives information about Nucleus.
@@ -41,7 +34,7 @@ public class NucleusCommand extends CommandBase<CommandSource> {
 
     @Inject private ModuleContainer container;
 
-    private final Text version = Text.of(MESSAGE_PREFIX, TextColors.GREEN, NAME + " version " + VERSION);
+    private final Text version = Text.of(MESSAGE_PREFIX, TextColors.GREEN, NAME + " version " + VERSION + "(built from commit " + GIT_HASH + ")");
     private Text modules = null;
 
     @Override
