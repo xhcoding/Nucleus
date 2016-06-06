@@ -50,7 +50,7 @@ public class InfoListener extends ListenerBase {
     }
 
     @Override
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> msp = Maps.newHashMap();
         msp.put(getMotdPermission(), new PermissionInformation(Util.getMessageWithFormat("permission.motd.join"), SuggestedLevel.USER));
         return msp;

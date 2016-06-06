@@ -4,19 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "core", name = "Core", isRequired = true)
-public class CoreModule extends StandardModule {
+public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new CoreConfigAdapter());
+    public CoreConfigAdapter getAdapter() {
+        return new CoreConfigAdapter();
     }
 
     @Override

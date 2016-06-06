@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kick;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "kick", name = "Kick")

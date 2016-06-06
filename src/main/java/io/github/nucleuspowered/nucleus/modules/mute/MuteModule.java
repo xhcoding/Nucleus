@@ -6,25 +6,22 @@ package io.github.nucleuspowered.nucleus.modules.mute;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "mute", name = "Mute")
-public class MuteModule extends StandardModule {
+public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
 
     @Inject private Game game;
     @Inject private Logger logger;
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new MuteConfigAdapter());
+    public MuteConfigAdapter getAdapter() {
+        return new MuteConfigAdapter();
     }
 
     @Override

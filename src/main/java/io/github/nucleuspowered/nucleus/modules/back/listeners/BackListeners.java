@@ -44,7 +44,7 @@ public class BackListeners extends ListenerBase {
     }
 
     @Override
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> m = Maps.newHashMap();
         m.put(getPermissionUtil().getPermissionWithSuffix(onDeath), new PermissionInformation(Util.getMessageWithFormat("permission.back.ondeath"), SuggestedLevel.USER));
         m.put(getPermissionUtil().getPermissionWithSuffix(onTeleport), new PermissionInformation(Util.getMessageWithFormat("permission.back.onteleport"), SuggestedLevel.USER));

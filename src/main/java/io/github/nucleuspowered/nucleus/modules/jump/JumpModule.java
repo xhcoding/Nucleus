@@ -4,18 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jump;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "jump", name = "Jump")
-public class JumpModule extends StandardModule {
+public class JumpModule extends ConfigurableModule<JumpConfigAdapter> {
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new JumpConfigAdapter());
+    public JumpConfigAdapter getAdapter() {
+        return new JumpConfigAdapter();
     }
 }

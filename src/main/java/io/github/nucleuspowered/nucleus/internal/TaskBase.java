@@ -17,7 +17,7 @@ public abstract class TaskBase implements Consumer<Task> {
 
     public abstract int secondsPerRun();
 
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         return new HashMap<>();
     }
 }

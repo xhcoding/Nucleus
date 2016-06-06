@@ -6,23 +6,20 @@ package io.github.nucleuspowered.nucleus.modules.message;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "message", name = "message")
-public class MessageModule extends StandardModule {
+public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
 
     @Inject private Game game;
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new MessageConfigAdapter());
+    public MessageConfigAdapter getAdapter() {
+        return new MessageConfigAdapter();
     }
 
     @Override

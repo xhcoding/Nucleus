@@ -151,7 +151,7 @@ public class BlacklistListener extends ListenerBase {
     }
 
     @Override
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
         mp.put(bypass, new PermissionInformation(Util.getMessageWithFormat("permission.blacklist.bypass"), SuggestedLevel.ADMIN));
         return mp;

@@ -6,23 +6,20 @@ package io.github.nucleuspowered.nucleus.modules.back;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.back.config.BackConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "back", name = "Back")
-public class BackModule extends StandardModule {
+public class BackModule extends ConfigurableModule<BackConfigAdapter> {
 
     @Inject private Game game;
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new BackConfigAdapter());
+    public BackConfigAdapter getAdapter() {
+        return new BackConfigAdapter();
     }
 
     @Override

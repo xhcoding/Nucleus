@@ -44,7 +44,7 @@ public class ChatListener extends ListenerBase {
     }
 
     @Override
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = new HashMap<>();
         mp.put(prefix + "color", new PermissionInformation(Util.getMessageWithFormat("permission.chat.color"), SuggestedLevel.ADMIN));
         mp.put(prefix + "colour", new PermissionInformation(Util.getMessageWithFormat("permission.chat.colour"), SuggestedLevel.ADMIN));

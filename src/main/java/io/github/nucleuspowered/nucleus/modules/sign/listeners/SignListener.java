@@ -35,7 +35,7 @@ public class SignListener extends ListenerBase {
     }
 
     @Override
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
         mp.put(permission, new PermissionInformation(Util.getMessageWithFormat("permission.sign.formatting"), SuggestedLevel.ADMIN));
         return mp;

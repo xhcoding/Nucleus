@@ -8,18 +8,15 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "jail", name = "Jail")
-public class JailModule extends StandardModule {
+public class JailModule extends ConfigurableModule<JailConfigAdapter> {
 
     @Inject private Nucleus nucleus;
     @Inject private Logger logger;
@@ -27,8 +24,8 @@ public class JailModule extends StandardModule {
     @Inject private InternalServiceManager serviceManager;
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new JailConfigAdapter());
+    public JailConfigAdapter getAdapter() {
+        return new JailConfigAdapter();
     }
 
     @Override

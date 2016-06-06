@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.vanish;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "vanish", name = "Vanish")

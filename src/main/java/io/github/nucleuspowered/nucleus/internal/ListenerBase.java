@@ -15,7 +15,7 @@ public abstract class ListenerBase {
     @Inject
     protected Nucleus plugin;
 
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         return Maps.newHashMap();
     }
 }

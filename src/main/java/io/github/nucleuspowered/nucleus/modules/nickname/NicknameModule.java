@@ -4,18 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "nickname", name = "Nickname")
-public class NicknameModule extends StandardModule {
+public class NicknameModule extends ConfigurableModule<NicknameConfigAdapter> {
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new NicknameConfigAdapter());
+    public NicknameConfigAdapter getAdapter() {
+        return new NicknameConfigAdapter();
     }
 }

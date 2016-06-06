@@ -4,21 +4,18 @@
  */
 package io.github.nucleuspowered.nucleus.modules.staffchat;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = StaffChatModule.moduleID, name = "Staff Chat")
-public class StaffChatModule extends StandardModule {
+public class StaffChatModule extends ConfigurableModule<StaffChatConfigAdapter> {
 
     static final String moduleID = "staff-chat";
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new StaffChatConfigAdapter());
+    public StaffChatConfigAdapter getAdapter() {
+        return new StaffChatConfigAdapter();
     }
 
     @Override

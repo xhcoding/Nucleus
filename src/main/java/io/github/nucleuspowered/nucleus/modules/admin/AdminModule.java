@@ -4,18 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "admin", name = "Admin")
-public class AdminModule extends StandardModule {
+public class AdminModule extends ConfigurableModule<AdminConfigAdapter> {
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new AdminConfigAdapter());
+    public AdminConfigAdapter getAdapter() {
+        return new AdminConfigAdapter();
     }
 }

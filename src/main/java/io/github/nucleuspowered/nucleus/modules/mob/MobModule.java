@@ -4,18 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mob;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "mob", name = "Mob")
-public class MobModule extends StandardModule {
+public class MobModule extends ConfigurableModule<MobConfigAdapter> {
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new MobConfigAdapter());
+    public MobConfigAdapter getAdapter() {
+        return new MobConfigAdapter();
     }
 }

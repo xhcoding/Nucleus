@@ -4,23 +4,20 @@
  */
 package io.github.nucleuspowered.nucleus.modules.info;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "info", name = "Info")
-public class InfoModule extends StandardModule {
+public class InfoModule extends ConfigurableModule<InfoConfigAdapter> {
 
     public static final String MOTD_KEY = "motd";
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new InfoConfigAdapter());
+    public InfoConfigAdapter getAdapter() {
+        return new InfoConfigAdapter();
     }
 
     @Override

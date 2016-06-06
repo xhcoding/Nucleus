@@ -4,20 +4,17 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "teleport", name = "Teleport")
-public class TeleportModule extends StandardModule {
+public class TeleportModule extends ConfigurableModule<TeleportConfigAdapter> {
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new TeleportConfigAdapter());
+    public TeleportConfigAdapter getAdapter() {
+        return new TeleportConfigAdapter();
     }
 
     @Override

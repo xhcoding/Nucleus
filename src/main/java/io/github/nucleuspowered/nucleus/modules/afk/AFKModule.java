@@ -4,20 +4,17 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk;
 
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
-import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import java.util.Optional;
-
 @ModuleData(id = "afk", name = "AFK")
-public class AFKModule extends StandardModule {
+public class AFKModule extends ConfigurableModule<AFKConfigAdapter> {
 
     @Override
-    public Optional<NucleusConfigAdapter<?>> createConfigAdapter() {
-        return Optional.of(new AFKConfigAdapter());
+    public AFKConfigAdapter getAdapter() {
+        return new AFKConfigAdapter();
     }
 
     @Override

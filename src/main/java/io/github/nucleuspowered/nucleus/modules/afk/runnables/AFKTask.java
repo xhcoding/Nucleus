@@ -32,7 +32,7 @@ public class AFKTask extends TaskBase {
     private CommandPermissionHandler afkService = null;
 
     @Override
-    protected Map<String, PermissionInformation> getPermissions() {
+    public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put(PermissionRegistry.PERMISSIONS_PREFIX + "afk.exempt.toggle",
                 new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));

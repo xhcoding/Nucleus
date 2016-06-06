@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mail;
 
 import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;

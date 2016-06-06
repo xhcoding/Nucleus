@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.tests.sanity;
 
 import com.google.common.reflect.ClassPath;
-import io.github.nucleuspowered.nucleus.internal.StandardModule;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
