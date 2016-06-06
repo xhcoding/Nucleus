@@ -11,18 +11,13 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.World;
-
-import java.util.Optional;
 
 @Permissions(root = "home", alias = "other", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand("homeother")
@@ -42,8 +37,6 @@ public class HomeOtherCommand extends CommandBase<Player> {
         // Get the home.
         HomeOtherArgument.HomeData wl = args.<HomeOtherArgument.HomeData>getOne(home).get();
 
-        Transform<World> currentLocation = src.getTransform();
-
         if (wl.location.getLocation() == null) {
             // Fail
             src.sendMessage(Util.getTextMessageWithFormat("command.homeother.invalid", wl.user.getName(), wl.location.getName()));
@@ -52,20 +45,11 @@ public class HomeOtherCommand extends CommandBase<Player> {
 
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.location.getLocation(), wl.location.getRotation())) {
-            setLastLocation(src, currentLocation);
             src.sendMessage(Util.getTextMessageWithFormat("command.homeother.success", wl.user.getName(), wl.location.getName()));
             return CommandResult.success();
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.homeother.fail", wl.user.getName(), wl.location.getName()));
             return CommandResult.empty();
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    private void setLastLocation(Player player, Transform<World> location) {
-        Optional<BackHandler> backHandler = plugin.getInternalServiceManager().getService(BackHandler.class);
-        if (backHandler.isPresent()) {
-            backHandler.get().setLastLocationInternal(player, location);
         }
     }
 }

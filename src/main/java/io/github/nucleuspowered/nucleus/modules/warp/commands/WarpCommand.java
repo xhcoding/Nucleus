@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,7 +25,6 @@ import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Allows a user to warp to the specified warp.
@@ -80,15 +78,6 @@ public class WarpCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        setLastLocation(pl, currentLocation);
         return CommandResult.success();
-    }
-
-    @SuppressWarnings("deprecation")
-    private void setLastLocation(Player player, Transform<World> location) {
-        Optional<BackHandler> backHandler = plugin.getInternalServiceManager().getService(BackHandler.class);
-        if (backHandler.isPresent()) {
-            backHandler.get().setLastLocationInternal(player, location);
-        }
     }
 }

@@ -10,10 +10,8 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
-import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
@@ -152,8 +150,6 @@ public class TeleportHandler {
                     onCancel();
                     return;
                 } else {
-                    // Temporary
-                    setLastLocation(playerToTeleport, playerToTeleport.getTransform());
                     playerToTeleport.setLocationAndRotation(playerToTeleportTo.getLocation(), playerToTeleportTo.getRotation());
                 }
 
@@ -187,14 +183,6 @@ public class TeleportHandler {
 
             if (charged != null && cost > 0) {
                 plugin.getEconHelper().depositInPlayer(charged, cost);
-            }
-        }
-
-        @SuppressWarnings("deprecation")
-        private void setLastLocation(Player player, Transform<World> location) {
-            Optional<BackHandler> backHandler = plugin.getInternalServiceManager().getService(BackHandler.class);
-            if (backHandler.isPresent()) {
-                backHandler.get().setLastLocationInternal(player, location);
             }
         }
     }

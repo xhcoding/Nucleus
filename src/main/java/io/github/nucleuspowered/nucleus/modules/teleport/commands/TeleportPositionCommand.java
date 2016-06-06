@@ -71,7 +71,6 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
             pl.setLocation(loc);
-            setLastLocation(pl, currentLocation);
             pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -81,7 +80,6 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         }
 
         if (pl.setLocationSafely(loc)) {
-            setLastLocation(pl, currentLocation);
             pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -91,13 +89,6 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.tppos.nosafe"));
             return CommandResult.empty();
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    private void setLastLocation(Player player, Transform<World> location) {
-        if (backHandler != null) {
-            backHandler.setLastLocationInternal(player, location);
         }
     }
 }

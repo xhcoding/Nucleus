@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -33,7 +32,6 @@ import java.util.Optional;
 @RegisterCommand("spawn")
 public class SpawnCommand extends CommandBase<Player> {
 
-    @Inject(optional = true) private BackHandler backHandler;
     @Inject private WorldConfigLoader wcl;
 
     private final String key = "world";
@@ -65,10 +63,6 @@ public class SpawnCommand extends CommandBase<Player> {
 
         // If we don't have a rotation, then use the current rotation
         if (src.setLocationAndRotationSafely(new Location<>(ow.get(), wp.getSpawnPosition()), wcl.getWorld(wp.getUniqueId()).getSpawnRotation().orElse(src.getRotation()))) {
-            if (backHandler != null) {
-                backHandler.setLastLocationInternal(src, currentLocation);
-            }
-
             src.sendMessage(Util.getTextMessageWithFormat("command.spawn.success"));
             return CommandResult.success();
         }
