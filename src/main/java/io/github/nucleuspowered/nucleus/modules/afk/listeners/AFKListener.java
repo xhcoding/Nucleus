@@ -5,8 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.afk.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.NameUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -23,7 +21,6 @@ import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.channel.MessageChannel;
 
 import java.util.Arrays;
 
@@ -73,9 +70,7 @@ public class AFKListener extends ListenerBase {
 
     private void updateAFK(final Player player) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-            if (handler.updateUserActivity(player.getUniqueId()) && !getPermissionUtil().testSuffix(player, "exempt.toggle")) {
-                MessageChannel.TO_ALL.send(Util.getTextMessageWithFormat("afk.fromafk", NameUtil.getSerialisedName(player)));
-            }
+            handler.updateUserActivity(player.getUniqueId());
         });
     }
 }

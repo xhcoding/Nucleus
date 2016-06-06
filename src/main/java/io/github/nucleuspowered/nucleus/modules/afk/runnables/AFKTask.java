@@ -60,13 +60,7 @@ public class AFKTask extends TaskBase {
 
         // AFK time
         if (config.getAfkTime() > 0) {
-            List<UUID> afking = handler.checkForAfk(config.getAfkTime());
-            if (!afking.isEmpty()) {
-                Sponge.getServer().getOnlinePlayers().stream()
-                        .filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.toggle")) && afking.contains(x.getUniqueId()))
-                        .map(NameUtil::getSerialisedName)
-                        .forEach(x -> MessageChannel.TO_ALL.send(Util.getTextMessageWithFormat("afk.toafk", x)));
-            }
+            handler.checkForAfk(config.getAfkTime());
         }
 
         // Kick after AFK time

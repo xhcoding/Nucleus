@@ -16,11 +16,18 @@ public class AFKConfig {
     @Setting(value = "afktimetokick", comment = "loc:config.afk.timetokick")
     private long afkTimeToKick = 0;
 
+    @Setting(value = "afk-when-vanished", comment = "loc:config.afk.whenvanished")
+    private boolean afkOnVanish = false;
+
     public long getAfkTime() {
         return afkTime;
     }
 
     public long getAfkTimeToKick() {
         return afkTimeToKick;
+    }
+
+    public boolean isAfkOnVanish() {
+        return afkOnVanish;
     }
 }

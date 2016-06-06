@@ -21,6 +21,8 @@ public class AFKModule extends ConfigurableModule<AFKConfigAdapter> {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        serviceManager.registerService(AFKHandler.class, new AFKHandler());
+        AFKHandler handler = new AFKHandler();
+        nucleus.getInjector().injectMembers(handler);
+        serviceManager.registerService(AFKHandler.class, handler);
     }
 }
