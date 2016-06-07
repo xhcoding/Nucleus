@@ -49,7 +49,7 @@ public class SpawnListener extends ListenerBase {
     public void onJoin(ClientConnectionEvent.Join joinEvent) {
         Player pl = joinEvent.getTargetEntity();
 
-        if (!pl.hasPlayedBefore()) {
+        if (Util.isFirstPlay(pl)) {
             // first spawn.
             Optional<Transform<World>> ofs = store.getFirstSpawn();
 

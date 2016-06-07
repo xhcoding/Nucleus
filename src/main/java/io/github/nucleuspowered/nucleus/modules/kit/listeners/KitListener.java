@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.listeners;
 
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import org.spongepowered.api.entity.living.player.Player;
@@ -21,7 +22,7 @@ public class KitListener extends ListenerBase {
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
         Player player = event.getTargetEntity();
-        if (!player.hasPlayedBefore()) {
+        if (Util.isFirstPlay(player)) {
             List<ItemStackSnapshot> l = gds.getFirstKit();
             if (l != null && !l.isEmpty()) {
                 l.forEach(x -> player.getInventory().offer(x.createStack()));
