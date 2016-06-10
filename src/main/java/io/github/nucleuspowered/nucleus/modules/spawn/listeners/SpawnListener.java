@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -32,6 +33,7 @@ import java.util.Optional;
 public class SpawnListener extends ListenerBase {
 
     @Inject private GeneralDataStore store;
+    @Inject private UserConfigLoader loader;
     @Inject private WorldConfigLoader wcl;
     @Inject private CoreConfigAdapter cca;
     @Inject private SpawnConfigAdapter sca;
@@ -49,18 +51,24 @@ public class SpawnListener extends ListenerBase {
     public void onJoin(ClientConnectionEvent.Join joinEvent) {
         Player pl = joinEvent.getTargetEntity();
 
-        if (Util.isFirstPlay(pl)) {
-            // first spawn.
-            Optional<Transform<World>> ofs = store.getFirstSpawn();
+        try {
+            if (loader.getUser(pl).isFirstPlay()) {
+                // first spawn.
+                Optional<Transform<World>> ofs = store.getFirstSpawn();
 
-            // Bit of an odd line, but what what is going on here is checking for first spawn, and if it exists, then
-            // setting the location the player safely. If this cannot be done in either case, send them to world spawn.
-            if (!ofs.isPresent() || !pl.setLocationAndRotationSafely(ofs.get().getLocation(), ofs.get().getRotation())) {
-                WorldProperties w = Sponge.getServer().getDefaultWorld().get();
-                pl.setLocation(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble()));
+                // Bit of an odd line, but what what is going on here is checking for first spawn, and if it exists, then
+                // setting the location the player safely. If this cannot be done in either case, send them to world spawn.
+                if (!ofs.isPresent() || !pl.setLocationAndRotationSafely(ofs.get().getLocation(), ofs.get().getRotation())) {
+                    WorldProperties w = Sponge.getServer().getDefaultWorld().get();
+                    pl.setLocation(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble()));
 
-                // We don't want to boot them elsewhere.
-                return;
+                    // We don't want to boot them elsewhere.
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
             }
         }
 

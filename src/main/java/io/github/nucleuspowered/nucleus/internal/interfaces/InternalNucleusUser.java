@@ -116,4 +116,6 @@ public interface InternalNucleusUser extends NucleusUser {
     boolean isInStaffChat();
 
     void setInStaffChat(boolean inStaffChat);
+
+    void setFirstPlay(boolean firstPlay);
 }

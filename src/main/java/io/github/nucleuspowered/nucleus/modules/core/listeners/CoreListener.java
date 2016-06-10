@@ -4,12 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.GameReloadEvent;
@@ -25,11 +28,14 @@ import java.util.concurrent.TimeUnit;
 
 public class CoreListener extends ListenerBase {
 
+    @Inject private UserConfigLoader loader;
+
     @Listener(order = Order.FIRST)
     public void onPlayerLogin(final ClientConnectionEvent.Login event) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
             try {
-                InternalNucleusUser qsu = this.plugin.getUserLoader().getUser(event.getTargetUser());
+                User player = event.getTargetUser();
+                InternalNucleusUser qsu = loader.getUser(player);
                 qsu.setLastLogin(Instant.now());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -37,10 +43,15 @@ public class CoreListener extends ListenerBase {
         });
     }
 
-    @Listener(order = Order.DEFAULT)
-    public void onPlayerJoin(final ClientConnectionEvent.Join event) {
+    /* (non-Javadoc)
+     * We do this first to try to get the first play status as quick as possible.
+     */
+    @Listener(order = Order.FIRST)
+    public void onPlayerJoinFirst(final ClientConnectionEvent.Join event) {
         try {
-            InternalNucleusUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
+            Player player = event.getTargetEntity();
+            InternalNucleusUser qsu = loader.getUser(player);
+            qsu.setFirstPlay(Util.isFirstPlay(player));
 
             // If we have a location to send them to in the config, send them there now!
             Optional<Location<World>> olw = qsu.getLocationOnLogin();

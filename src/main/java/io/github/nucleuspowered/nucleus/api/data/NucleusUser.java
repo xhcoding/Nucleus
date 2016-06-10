@@ -229,4 +229,11 @@ public interface NucleusUser {
      * @param frozen Sets whether or not the user is frozen.
      */
     void setFrozen(boolean frozen);
+
+    /**
+     * Gets whether this is the first time that the player has been seen on the server.
+     *
+     * @return <code>true</code> if this is the first time on the server for this player.
+     */
+    boolean isFirstPlay();
 }

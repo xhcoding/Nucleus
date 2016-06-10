@@ -55,6 +55,9 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     private final Nucleus plugin;
     private final User user;
 
+    // Use to keep hold of whether this is the first time on the server for a player.
+    private boolean firstPlay = false;
+
     // Use for /back.
     private Transform<World> lastLocation = null;
     private boolean logLastLocation = true;
@@ -143,6 +146,8 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     public boolean setFlying(boolean fly) {
         if (user.isOnline()) {
             Player pl = user.getPlayer().get();
+
+            // Only if we don't want to fly, offer IS_FLYING as false.
             if (!fly && !pl.offer(Keys.IS_FLYING, false).isSuccessful()) {
                 return false;
             }
@@ -536,6 +541,16 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     @Override
     public void setInStaffChat(boolean inStaffChat) {
         this.inStaffChat = inStaffChat;
+    }
+
+    @Override
+    public boolean isFirstPlay() {
+        return firstPlay;
+    }
+
+    @Override
+    public void setFirstPlay(boolean firstPlay) {
+        this.firstPlay = firstPlay;
     }
 
     private String getNickPrefix() {

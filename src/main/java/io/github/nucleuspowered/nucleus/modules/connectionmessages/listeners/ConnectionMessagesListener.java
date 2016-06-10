@@ -6,10 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.connectionmessages.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -18,17 +19,25 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 public class ConnectionMessagesListener extends ListenerBase {
 
     @Inject private ChatUtil chatUtil;
+    @Inject private CoreConfigAdapter cca;
     @Inject private ConnectionMessagesConfigAdapter cma;
+    @Inject private UserConfigLoader loader;
 
     @Listener
     public void onPlayerLogin(ClientConnectionEvent.Join joinEvent) {
         Player pl = joinEvent.getTargetEntity();
         ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
 
-        if (Util.isFirstPlay(pl)) {
-            // First time player.
-            if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
-                Sponge.getServer().getBroadcastChannel().send(plugin, chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getFirstTimeMessage(), pl, true));
+        try {
+            if (loader.getUser(pl).isFirstPlay()) {
+                // First time player.
+                if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
+                    Sponge.getServer().getBroadcastChannel().send(plugin, chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getFirstTimeMessage(), pl, true));
+                }
+            }
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
             }
         }
 

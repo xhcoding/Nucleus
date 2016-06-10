@@ -114,6 +114,14 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
         }
     }
 
+    public InternalNucleusUser getUserUnchecked(User user) {
+        try {
+            return getUser(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void clearNullSoftReferences() {
         softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() == null).map(Map.Entry::getKey).forEach(softLoadedUsers::remove);
     }
