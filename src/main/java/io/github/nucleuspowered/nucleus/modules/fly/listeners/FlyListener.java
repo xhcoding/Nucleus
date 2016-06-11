@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.fly.config.FlyConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
@@ -28,6 +29,7 @@ public class FlyListener extends ListenerBase {
 
     @Inject private UserConfigLoader ucl;
     @Inject private CoreConfigAdapter cca;
+    @Inject private FlyConfigAdapter fca;
 
     // Do it first, so other plugins can have a say.
     @Listener(order = Order.FIRST)
@@ -37,12 +39,30 @@ public class FlyListener extends ListenerBase {
             InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
 
             // Let's just reset these...
-            uc.setFlying(uc.isFlyingSafe());
+            if (uc.isFlyingSafe()) {
+                pl.offer(Keys.CAN_FLY, true);
 
-            // If in the air, flying!
-            if (uc.isFlyingSafe() && pl.getLocation().add(0, -1, 0).getBlockType().getId().equals(BlockTypes.AIR.getId())) {
-                pl.offer(Keys.IS_FLYING, true);
+                // If in the air, flying!
+                if (pl.getLocation().add(0, -1, 0).getBlockType().getId().equals(BlockTypes.AIR.getId())) {
+                    pl.offer(Keys.IS_FLYING, true);
+                }
             }
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Listener
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event) {
+        if (!fca.getNodeOrDefault().isSaveOnQuit()) {
+            return;
+        }
+
+        Player pl = event.getTargetEntity();
+        try {
+            plugin.getUserLoader().getUser(pl).setFlying(pl.get(Keys.CAN_FLY).orElse(false));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

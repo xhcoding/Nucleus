@@ -59,16 +59,22 @@ public class FlyCommand extends CommandBase<CommandSource> {
         InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
         boolean fly = args.<Boolean>getOne(toggle).orElse(!pl.get(Keys.CAN_FLY).orElse(false));
 
-        if (!uc.setFlying(fly)) {
+        if (!setFlying(pl, fly)) {
             src.sendMessages(Util.getTextMessageWithFormat("command.fly.error"));
             return CommandResult.empty();
         }
 
+        uc.setFlying(fly);
         if (pl != src) {
             src.sendMessages(Util.getTextMessageWithFormat(fly ? "command.fly.player.on" : "command.fly.player.off", pl.getName()));
         }
 
         pl.sendMessage(Util.getTextMessageWithFormat(fly ? "command.fly.on" : "command.fly.off"));
         return CommandResult.success();
+    }
+
+    private boolean setFlying(Player pl, boolean fly) {
+        // Only if we don't want to fly, offer IS_FLYING as false.
+        return !(!fly && !pl.offer(Keys.IS_FLYING, false).isSuccessful()) && pl.offer(Keys.CAN_FLY, fly).isSuccessful();
     }
 }

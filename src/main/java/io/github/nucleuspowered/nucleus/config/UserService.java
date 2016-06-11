@@ -30,7 +30,6 @@ import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Transform;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
@@ -143,22 +142,8 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     }
 
     @Override
-    public boolean setFlying(boolean fly) {
-        if (user.isOnline()) {
-            Player pl = user.getPlayer().get();
-
-            // Only if we don't want to fly, offer IS_FLYING as false.
-            if (!fly && !pl.offer(Keys.IS_FLYING, false).isSuccessful()) {
-                return false;
-            }
-
-            if (!pl.offer(Keys.CAN_FLY, fly).isSuccessful()) {
-                return false;
-            }
-        }
-
+    public void setFlying(boolean fly) {
         data.setFly(fly);
-        return true;
     }
 
     @Override

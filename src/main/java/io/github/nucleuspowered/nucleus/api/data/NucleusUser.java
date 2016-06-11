@@ -60,7 +60,7 @@ public interface NucleusUser {
 
     /**
      * Gets whether Nucleus thinks the player should be flying. Note, this means the player has been subject to
-     * the /god command.
+     * the /fly command.
      *
      * @return <code>true</code> if so.
      */
@@ -68,12 +68,11 @@ public interface NucleusUser {
 
     /**
      * Sets whether Nucleus thinks the player should be flying. This does not necessarily mean that the player is
-     * actually flying.
+     * actually flying, this is more for across restarts/reconnects/world transfer.
      *
      * @param fly <code>true</code> if so, <code>false</code> otherwise.
-     * @return <code>true</code> if successful.
      */
-    boolean setFlying(boolean fly);
+    void setFlying(boolean fly);
 
     /**
      * If the player is jailed, gets the {@link JailData}

@@ -4,9 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fly;
 
-import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.modules.fly.config.FlyConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "fly", name = "Fly")
-public class FlyModule extends StandardModule {
+public class FlyModule extends ConfigurableModule<FlyConfigAdapter> {
+    @Override
+    public FlyConfigAdapter getAdapter() {
+        return new FlyConfigAdapter();
+    }
 }
