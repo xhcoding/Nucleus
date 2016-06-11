@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.Util;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -12,6 +11,7 @@ import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
@@ -28,13 +28,18 @@ public class PlayerConsoleArgument extends CommandElement {
     @Nullable
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
-        String name = args.next();
+        String name = args.next().toLowerCase();
         if (name.equals("-")) {
             return Sponge.getServer().getConsole();
         }
 
-        return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().equalsIgnoreCase(name)).findFirst().orElseThrow(() ->
-            args.createError(Text.builder().append(Text.of(PluginInfo.ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.playerconsole.noexist")).build()));
+        List<Player> players = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
+                .sorted((x, y) -> x.getName().compareTo(y.getName())).collect(Collectors.toList());
+        if (players.isEmpty()) {
+            throw args.createError(Util.getTextMessageWithFormat("args.playerconsole.noexist"));
+        }
+
+        return players.get(0);
     }
 
     @Override

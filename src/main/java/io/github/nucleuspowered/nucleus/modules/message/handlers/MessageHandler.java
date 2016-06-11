@@ -86,11 +86,15 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         }
 
         // Social Spies.
+        final UUID uuidSender = getUUID(sender);
+        final UUID uuidReceiver = getUUID(receiver);
         List<MessageReceiver> lm =
-                ucl.getOnlineUsersInternal().stream().filter(x -> !getUUID(sender).equals(x.getUniqueID()) && !getUUID(receiver).equals(x.getUniqueID()))
-                        .filter(InternalNucleusUser::isSocialSpy).map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
+                ucl.getOnlineUsersInternal().stream().filter(x -> !uuidSender.equals(x.getUniqueID()) && !uuidReceiver.equals(x.getUniqueID()))
+                        .filter(InternalNucleusUser::isSocialSpy).map(x -> x.getUser().getPlayer().orElse(null))
+                        .filter(x -> x != null && x.isOnline()).collect(Collectors.toList());
 
-        if (getUUID(sender) != Util.consoleFakeUUID && getUUID(receiver) != Util.consoleFakeUUID) {
+        // If the console is not involved, make them involved.
+        if (!uuidSender.equals(Util.consoleFakeUUID) && !uuidReceiver.equals(Util.consoleFakeUUID)) {
             lm.add(Sponge.getServer().getConsole());
         }
 
@@ -98,15 +102,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         sender.sendMessage(constructMessage(me, nameOfReceiver, message));
         receiver.sendMessage(constructMessage(nameOfSender, me, message));
         mc.send(constructSSMessage(nameOfSender, nameOfReceiver, message));
-        update(getUUID(sender), getUUID(receiver));
+
+        // Add the UUIDs to the reply list - the receiver will now reply to the sender.
+        messagesReceived.put(uuidReceiver, uuidSender);
         return true;
-    }
-
-
-    private void update(UUID from, UUID to) {
-        Preconditions.checkNotNull(from);
-        Preconditions.checkNotNull(to);
-        messagesReceived.put(to, from);
     }
 
     private Optional<CommandSource> getPlayerToReplyTo(UUID from) {
