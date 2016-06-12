@@ -16,11 +16,18 @@ public class BackConfig {
     @Setting(comment = "loc:config.back.onteleport")
     private boolean onTeleport = true;
 
+    @Setting(comment = "loc:config.back.onportal")
+    private boolean onPortal = false;
+
     public boolean isOnDeath() {
         return onDeath;
     }
 
     public boolean isOnTeleport() {
         return onTeleport;
+    }
+
+    public boolean isOnPortal() {
+        return onPortal;
     }
 }

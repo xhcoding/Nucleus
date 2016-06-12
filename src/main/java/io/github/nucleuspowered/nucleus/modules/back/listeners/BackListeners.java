@@ -20,14 +20,16 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.type.Exclude;
 
 import java.util.Map;
 
 public class BackListeners extends ListenerBase {
 
-    // Temporarily used in the BackHandler.
-    public static final String onTeleport = "targets.teleport";
-    public static final String onDeath = "targets.death";
+    static final String onTeleport = "targets.teleport";
+    static final String onDeath = "targets.death";
+    static final String onPortal = "targets.portal";
 
     @Inject private BackHandler handler;
     @Inject private BackConfigAdapter bca;
@@ -48,14 +50,22 @@ public class BackListeners extends ListenerBase {
         Map<String, PermissionInformation> m = Maps.newHashMap();
         m.put(getPermissionUtil().getPermissionWithSuffix(onDeath), new PermissionInformation(Util.getMessageWithFormat("permission.back.ondeath"), SuggestedLevel.USER));
         m.put(getPermissionUtil().getPermissionWithSuffix(onTeleport), new PermissionInformation(Util.getMessageWithFormat("permission.back.onteleport"), SuggestedLevel.USER));
+        m.put(getPermissionUtil().getPermissionWithSuffix(onPortal), new PermissionInformation(Util.getMessageWithFormat("permission.back.onportal"), SuggestedLevel.USER));
         return m;
     }
 
     @Listener
-    public void onTeleportPlayer(DisplaceEntityEvent.TargetPlayer.Teleport event) {
-        Player pl = (Player)event.getTargetEntity();
+    @Exclude(DisplaceEntityEvent.Teleport.Portal.class) // Don't set /back on a portal.
+    public void onTeleportPlayer(DisplaceEntityEvent.Teleport event, @Getter("getTargetEntity") Player pl) {
         if (bca.getNodeOrDefault().isOnTeleport() && getLogBack(pl) && getPermissionUtil().testSuffix(pl, onTeleport)) {
-            handler.setLastLocation(pl, event.getTargetEntity().getTransform());
+            handler.setLastLocation(pl, event.getFromTransform());
+        }
+    }
+
+    @Listener
+    public void onPortalPlayer(DisplaceEntityEvent.Teleport.Portal event, @Getter("getTargetEntity") Player pl) {
+        if (bca.getNodeOrDefault().isOnPortal() && getLogBack(pl) && getPermissionUtil().testSuffix(pl, onPortal)) {
+            handler.setLastLocation(pl, event.getFromTransform());
         }
     }
 
