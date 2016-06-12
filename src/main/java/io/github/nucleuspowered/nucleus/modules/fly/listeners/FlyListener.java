@@ -16,6 +16,8 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.DismountEntityEvent;
@@ -34,8 +36,12 @@ public class FlyListener extends ListenerBase {
     // Do it first, so other plugins can have a say.
     @Listener(order = Order.FIRST)
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
+        Player pl = event.getTargetEntity();
+        if (shouldIgnoreFromGameMode(pl)) {
+            return;
+        }
+
         try {
-            Player pl = event.getTargetEntity();
             InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
 
             // Let's just reset these...
@@ -61,6 +67,10 @@ public class FlyListener extends ListenerBase {
         }
 
         Player pl = event.getTargetEntity();
+        if (shouldIgnoreFromGameMode(pl)) {
+            return;
+        }
+
         try {
             plugin.getUserLoader().getUser(pl).setFlying(pl.get(Keys.CAN_FLY).orElse(false));
         } catch (Exception e) {
@@ -72,7 +82,7 @@ public class FlyListener extends ListenerBase {
 
     // Only fire if there is no cancellation at the end.
     @Listener(order = Order.LAST)
-    public void onPlayerTransferWorld(DisplaceEntityEvent event,
+    public void onPlayerTransferWorld(DisplaceEntityEvent.Teleport event,
                                       @Getter("getTargetEntity") Entity target,
                                       @Getter("getFromTransform") Transform<World> twfrom,
                                       @Getter("getToTransform") Transform<World> twto) {
@@ -81,9 +91,14 @@ public class FlyListener extends ListenerBase {
             return;
         }
 
+        Player pl = (Player)target;
+        if (shouldIgnoreFromGameMode(pl)) {
+            return;
+        }
+
         InternalNucleusUser uc;
         try {
-            uc = plugin.getUserLoader().getUser((Player)target);
+            uc = plugin.getUserLoader().getUser(pl);
             if (!uc.isFlying()) {
                 return;
             }
@@ -113,6 +128,10 @@ public class FlyListener extends ListenerBase {
     @Listener
     public void onPlayerDismount(DismountEntityEvent event, @Root Player player) {
         // If I'm right, this will work around Pixelmon when dismounting pokemon.
+        if (shouldIgnoreFromGameMode(player)) {
+            return;
+        }
+
         try {
             InternalNucleusUser uc = plugin.getUserLoader().getUser(player);
             player.offer(Keys.CAN_FLY, uc.isFlyingSafe());
@@ -121,5 +140,10 @@ public class FlyListener extends ListenerBase {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean shouldIgnoreFromGameMode(Player player) {
+        GameMode gm = player.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET);
+        return (gm.equals(GameModes.CREATIVE) || gm.equals(GameModes.SPECTATOR));
     }
 }
