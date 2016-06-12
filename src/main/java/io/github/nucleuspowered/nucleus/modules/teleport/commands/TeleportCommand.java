@@ -60,8 +60,8 @@ public class TeleportCommand extends CommandBase<CommandSource> {
                 // Either we get two arguments, or we get one.
                 GenericArguments.firstParsing(
                         // <player> <player>
-                        new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey),
-                                permissions.getPermissionWithSuffix("others")))),
+                        GenericArguments.requiringPermission(new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey)))),
+                                permissions.getPermissionWithSuffix("others")),
 
                 // <player>
                 GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))};

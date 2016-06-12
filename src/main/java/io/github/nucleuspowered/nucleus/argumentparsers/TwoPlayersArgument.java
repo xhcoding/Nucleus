@@ -12,6 +12,7 @@ import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
@@ -20,22 +21,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.spongepowered.api.util.SpongeApiTranslationHelper.t;
-
 public class TwoPlayersArgument extends CommandElement {
 
     private final Text key;
     private final Text key2;
-    private final String permission;
 
-    // Workaround for https://github.com/SpongePowered/SpongeAPI/issues/1123
-    public TwoPlayersArgument(@Nullable Text key, Text key2, @Nullable String requiredPermission) {
+    public TwoPlayersArgument(@Nullable Text key, Text key2) {
         super(key);
         Preconditions.checkNotNull(key);
         Preconditions.checkNotNull(key2);
         this.key = key;
         this.key2 = key2;
-        this.permission = requiredPermission;
     }
 
     @Nullable
@@ -46,12 +42,6 @@ public class TwoPlayersArgument extends CommandElement {
 
     @Override
     public void parse(CommandSource source, CommandArgs args, CommandContext context) throws ArgumentParseException {
-        if (permission != null && !source.hasPermission(permission)) {
-            // Temporary until we can use the
-            // GenericArguments.requiringPermission method again.
-            throw args.createError(t("You do not have permission to use the %s argument", getKey()));
-        }
-
         String sp1 = args.next();
         Optional<String> osp2 = args.nextIfPresent();
 
@@ -62,9 +52,9 @@ public class TwoPlayersArgument extends CommandElement {
         String sp2 = osp2.get();
 
         context.putArg(key.toPlain(),
-                Sponge.getServer().getPlayer(sp1).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.twoplayer.noexist", sp1))));
+                getPlayerFromPartialName(sp1).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.twoplayer.noexist", sp1))));
         context.putArg(key2.toPlain(),
-                Sponge.getServer().getPlayer(sp2).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.twoplayer.noexist", sp2))));
+                getPlayerFromPartialName(sp2).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.twoplayer.noexist", sp2))));
     }
 
     @Override
@@ -81,5 +71,10 @@ public class TwoPlayersArgument extends CommandElement {
     @Override
     public Text getUsage(CommandSource src) {
         return Text.of("(<player to teleport> <target>)");
+    }
+
+    private Optional<Player> getPlayerFromPartialName(String name) {
+        return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().startsWith(name.toLowerCase()))
+                .sorted().findFirst();
     }
 }
