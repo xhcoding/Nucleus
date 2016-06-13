@@ -123,7 +123,8 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
     }
 
     private void clearNullSoftReferences() {
-        softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() == null).map(Map.Entry::getKey).forEach(softLoadedUsers::remove);
+        // Remove any offline users that have ended up being GCd.
+        softLoadedUsers.entrySet().removeIf(k -> k.getValue().get() == null);
     }
 
     public Path getUserPath(UUID uuid) throws IOException {
