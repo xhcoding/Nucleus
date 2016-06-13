@@ -6,10 +6,8 @@ package io.github.nucleuspowered.nucleus.internal.command;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.google.inject.AbstractModule;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
@@ -58,9 +56,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // A period separated list of parent commands, starting with the root. Period terminateed.
     final String commandPath;
 
-    @Inject
-    @ModuleCommandSet
-    private Set<Class<? extends AbstractCommand>> moduleCommands;
+    private Set<Class<? extends AbstractCommand>> moduleCommands = Sets.newHashSet();
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     protected CommandPermissionHandler permissions;
@@ -133,6 +129,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
 
         sb.append(rc.value()[0]).append(".");
+    }
+
+    public final void setModuleCommands(Set<Class<? extends AbstractCommand>> moduleCommands) {
+        Preconditions.checkState(this.moduleCommands != null);
+        this.moduleCommands = moduleCommands;
     }
 
     public final void postInit() {
@@ -635,6 +636,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     }
 
     protected final Map<List<String>, CommandCallable> createChildCommands() {
+        if (this.moduleCommands == null) {
+            return Maps.newHashMap();
+        }
+
         Set<Class<? extends AbstractCommand>> scb = moduleCommands.stream().filter(x -> {
                         RegisterCommand r = x.getAnnotation(RegisterCommand.class);
                         // Only commands that are subcommands of this.
@@ -649,19 +654,18 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     }
 
     private Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends AbstractCommand>> bases) {
+        if (this.moduleCommands == null) {
+            return Maps.newHashMap();
+        }
+
         Map<List<String>, CommandCallable> map = Maps.newHashMap();
         final Set<Class<? extends AbstractCommand>> s = this.moduleCommands;
-        Injector i = plugin.getInjector().createChildInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(new TypeLiteral<Set<Class<? extends AbstractCommand>>>(){}).annotatedWith(ModuleCommandSet.class).toInstance(s);
-            }
-        });
 
         bases.forEach(cb -> {
             AbstractCommand c = null;
             try {
-                c = i.getInstance(cb);
+                c = plugin.getInjector().getInstance(cb);
+                c.setModuleCommands(s);
                 c.postInit();
                 map.put(Arrays.asList(c.getAliases()), c.createSpec());
             } catch (Exception e) {

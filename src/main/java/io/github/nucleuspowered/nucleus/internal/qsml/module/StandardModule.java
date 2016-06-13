@@ -4,17 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.TypeLiteral;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ModuleCommandSet;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -82,12 +79,7 @@ public abstract class StandardModule implements Module {
                 .collect(Collectors.toSet());
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
-        Injector injector = nucleus.getInjector().createChildInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(new TypeLiteral<Set<Class<? extends AbstractCommand>>>(){}).annotatedWith(ModuleCommandSet.class).toInstance(cmds);
-            }
-        });
+        Injector injector = nucleus.getInjector();
 
         Set<Class<? extends AbstractCommand>> commandBases =  cmds.stream().filter(x -> {
             RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
@@ -97,6 +89,7 @@ public abstract class StandardModule implements Module {
         CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
         commandBases.stream().map(x -> this.getInstance(injector, x)).filter(x -> x != null).forEach(c -> {
             try {
+                c.setModuleCommands(cmds);
                 c.postInit();
             } catch (Exception e) {
                 e.printStackTrace();

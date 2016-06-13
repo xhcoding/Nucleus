@@ -5,12 +5,9 @@
 package io.github.nucleuspowered.nucleus.tests.util;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.TypeLiteral;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.ModuleCommandSet;
-import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.mockito.Mockito;
@@ -23,8 +20,6 @@ import org.spongepowered.api.config.DefaultConfig;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
 
 public class TestModule extends AbstractModule {
 
@@ -40,13 +35,10 @@ public class TestModule extends AbstractModule {
             throw new RuntimeException(e);
         }
 
-        Set<Class<? extends AbstractCommand>> sa = new HashSet<>();
-
         this.bind(Path.class).annotatedWith(DefaultConfig.class).toInstance(test2);
         this.bind(Path.class).annotatedWith(ConfigDir.class).toInstance(test);
         this.bind(Game.class).toInstance(Mockito.mock(Game.class));
         this.bind(Logger.class).toInstance(Mockito.mock(Logger.class));
-        this.bind(new TypeLiteral<Set<Class<? extends AbstractCommand>>>(){}).annotatedWith(ModuleCommandSet.class).toInstance(sa);
 
         CoreConfigAdapter mock = Mockito.mock(CoreConfigAdapter.class);
         PowerMockito.replace(PowerMockito.method(CoreConfigAdapter.class, "getNode")).with((obj, method, arguments) -> {
