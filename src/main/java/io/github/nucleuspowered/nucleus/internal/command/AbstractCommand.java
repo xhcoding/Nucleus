@@ -56,7 +56,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // A period separated list of parent commands, starting with the root. Period terminateed.
     final String commandPath;
 
-    private Set<Class<? extends AbstractCommand>> moduleCommands = Sets.newHashSet();
+    // Null until set, then should be considered immutable.
+    private Set<Class<? extends AbstractCommand>> moduleCommands = null;
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     protected CommandPermissionHandler permissions;
@@ -132,7 +133,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     }
 
     public final void setModuleCommands(Set<Class<? extends AbstractCommand>> moduleCommands) {
-        Preconditions.checkState(this.moduleCommands != null);
+        Preconditions.checkState(this.moduleCommands == null);
         this.moduleCommands = moduleCommands;
     }
 
