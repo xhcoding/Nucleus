@@ -120,7 +120,7 @@ public class Nucleus {
             configLoader = new UserConfigLoader(this);
             worldConfigLoader = new WorldConfigLoader(this);
             warmupManager = new WarmupManager();
-            chatUtil = new ChatUtil(configLoader);
+            chatUtil = new ChatUtil(this);
         } catch (Exception e) {
             isErrored = true;
             e.printStackTrace();

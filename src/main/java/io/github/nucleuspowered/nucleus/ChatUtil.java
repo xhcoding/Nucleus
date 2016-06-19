@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.LocatedSource;
@@ -41,11 +41,13 @@ public class ChatUtil {
     private final Pattern serverTokenMatcher;
     private final Pattern serverTokenSplitter;
 
-    private final UserConfigLoader loader;
+    private final Nucleus plugin;
     private final Pattern urlParser =
             Pattern.compile("(^|(?!\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)", Pattern.CASE_INSENSITIVE);
 
-    public ChatUtil(UserConfigLoader loader) {
+    private CoreConfigAdapter cca = null;
+
+    public ChatUtil(Nucleus plugin) {
         tokens = createTokens();
         serverTokens = createServerTokens();
 
@@ -57,7 +59,7 @@ public class ChatUtil {
         serverTokenMatcher = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
         serverTokenSplitter = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
 
-        this.loader = loader;
+        this.plugin = plugin;
     }
 
     private String getRegex(Set<String> keys) {
@@ -164,11 +166,21 @@ public class ChatUtil {
                 }
 
                 texts.add(Text.builder(url).color(st.colour).style(st.style)
-                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("chat.url", url)))
+                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("chat.url.click", url)))
                         .onClick(TextActions.openUrl(urlObj))
                         .build());
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                // URL parsing failed, just put the original text in here.
+                if (this.cca == null) {
+                    this.cca = plugin.getInjector().getInstance(CoreConfigAdapter.class);
+                }
+
+                plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("chat.url.malformed", url));
+                texts.add(Text.builder(url).color(st.colour).style(st.style).build());
+
+                if (this.cca.getNodeOrDefault().isDebugmode()) {
+                    e.printStackTrace();
+                }
             }
         } while (remaining != null && m.find());
 
@@ -263,7 +275,7 @@ public class ChatUtil {
 
     private Text getName(CommandSource cs) {
         if (cs instanceof Player) {
-            return NameUtil.getName((Player)cs, loader);
+            return NameUtil.getName((Player)cs, plugin.getUserLoader());
         }
 
         return Text.of(cs.getName());
