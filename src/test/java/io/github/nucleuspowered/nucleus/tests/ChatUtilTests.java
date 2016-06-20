@@ -7,14 +7,12 @@ package io.github.nucleuspowered.nucleus.tests;
 import com.google.inject.Guice;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -38,7 +36,6 @@ public class ChatUtilTests extends TestBase {
         public static void setup() throws Exception {
             TestBase.testSetup();
 
-            UserConfigLoader mock = Mockito.mock(UserConfigLoader.class);
             Nucleus plugin = Guice.createInjector(new TestModule()).getInstance(Nucleus.class);
 
             Field parserToTest = ChatUtil.class.getDeclaredField("urlParser");
@@ -59,6 +56,7 @@ public class ChatUtilTests extends TestBase {
                     {"blag &cblag", false, null, null},
                     {"hello, please visit &k&cnucleuspowered.org/docs &otoday", true, "nucleuspowered.org/docs", "&k&c"},
                     {"hello, please visit https://google.com", true, "https://google.com", null},
+                    {"test:nucleuspowered.org", false, null, null}
             });
         }
 

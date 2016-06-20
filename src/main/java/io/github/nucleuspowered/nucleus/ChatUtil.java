@@ -43,7 +43,7 @@ public class ChatUtil {
 
     private final Nucleus plugin;
     private final Pattern urlParser =
-            Pattern.compile("(^|(?!\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("(^|\\s)(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)", Pattern.CASE_INSENSITIVE);
 
     private CoreConfigAdapter cca = null;
 
