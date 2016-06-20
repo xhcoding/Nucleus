@@ -4,8 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.tests;
 
+import com.google.inject.Guice;
 import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,10 +39,11 @@ public class ChatUtilTests extends TestBase {
             TestBase.testSetup();
 
             UserConfigLoader mock = Mockito.mock(UserConfigLoader.class);
+            Nucleus plugin = Guice.createInjector(new TestModule()).getInstance(Nucleus.class);
 
             Field parserToTest = ChatUtil.class.getDeclaredField("urlParser");
             parserToTest.setAccessible(true);
-            patternToTest = (Pattern)parserToTest.get(new ChatUtil(mock));
+            patternToTest = (Pattern)parserToTest.get(new ChatUtil(plugin));
         }
 
         @Parameterized.Parameters(name = "{index}: Message {0}, expecting {1}")

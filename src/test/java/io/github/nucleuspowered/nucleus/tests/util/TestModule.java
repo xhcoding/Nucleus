@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.tests.util;
 import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -46,13 +47,17 @@ public class TestModule extends AbstractModule {
         });
 
         this.bind(CoreConfigAdapter.class).toInstance(mock);
-        this.bind(Nucleus.class).toInstance(getMockPlugin());
+
+        Nucleus plugin = getMockPlugin();
+        this.bind(Nucleus.class).toInstance(plugin);
+        this.bind(UserConfigLoader.class).toInstance(plugin.getUserLoader());
     }
 
     private Nucleus getMockPlugin() {
         Nucleus plugin = Mockito.mock(Nucleus.class);
         PermissionRegistry pr = new PermissionRegistry();
         Mockito.when(plugin.getPermissionRegistry()).thenReturn(pr);
+        Mockito.when(plugin.getUserLoader()).thenReturn(Mockito.mock(UserConfigLoader.class));
         try {
             Path file = Files.createTempFile("quickstartcmdtest", "conf");
             CommandsConfig cc = new CommandsConfig(file);
