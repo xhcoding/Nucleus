@@ -14,7 +14,6 @@ import io.github.hsyyid.essentialcmds.managers.config.HomeConfig;
 import io.github.hsyyid.essentialcmds.managers.config.JailConfig;
 import io.github.hsyyid.essentialcmds.utils.Mail;
 import io.github.hsyyid.essentialcmds.utils.Utils;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
@@ -32,7 +31,6 @@ import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Transform;
@@ -48,17 +46,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class EssCmdsMigrator {
+@DataMigrator.PluginDependency("io.github.hsyyid.essentialcmds")
+public class EssCmdsMigrator extends DataMigrator {
 
-    @Inject private Nucleus plugin;
     @Inject private UserConfigLoader userConfigLoader;
     @Inject private WorldConfigLoader worldConfigLoader;
-    @Inject private Logger logger;
     @Inject(optional = true) private JailHandler jailHandler;
     @Inject(optional = true) private MuteHandler muteHandler;
     @Inject(optional = true) private MailHandler mailHandler;
     @Inject(optional = true) private RulesConfigAdapter rca;
 
+    @Override
     public void migrate(CommandSource src) throws Exception {
         src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.begin"));
 
