@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.config;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -69,12 +70,15 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
 
     public UserService(Nucleus plugin, Path file, User user) throws Exception {
         super(file, TypeToken.of(UserDataNode.class), UserDataNode::new);
+        Preconditions.checkNotNull("user", user);
+        Preconditions.checkNotNull("plugin", plugin);
         this.plugin = plugin;
         this.user = user;
     }
 
     @Override
     protected GsonConfigurationLoader getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
+        Preconditions.checkNotNull("file", file);
         return GsonConfigurationLoader.builder().setPath(file).build();
     }
 

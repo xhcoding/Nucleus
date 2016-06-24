@@ -32,6 +32,7 @@ import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Transform;
@@ -52,6 +53,7 @@ public class EssCmdsMigrator {
     @Inject private Nucleus plugin;
     @Inject private UserConfigLoader userConfigLoader;
     @Inject private WorldConfigLoader worldConfigLoader;
+    @Inject private Logger logger;
     @Inject(optional = true) private JailHandler jailHandler;
     @Inject(optional = true) private MuteHandler muteHandler;
     @Inject(optional = true) private MailHandler mailHandler;
@@ -99,8 +101,13 @@ public class EssCmdsMigrator {
             for (Object home : Utils.getHomes(uniqueId)) {
                 String homeName = String.valueOf(home);
                 Transform<World> homeLocation = Utils.getHome(uniqueId, homeName);
-                InternalNucleusUser iqsu = plugin.getUserLoader().getUser(uniqueId);
-                iqsu.setHome(homeName, homeLocation.getLocation(), homeLocation.getRotation());
+
+                if (homeLocation == null) {
+                    logger.warn(Util.getMessageWithFormat("command.nucleus.migrate.homefailiure", homeName, uuid.toString()));
+                } else {
+                    InternalNucleusUser iqsu = plugin.getUserLoader().getUser(uniqueId);
+                    iqsu.setHome(homeName, homeLocation.getLocation(), homeLocation.getRotation());
+                }
             }
         }
 
