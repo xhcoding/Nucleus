@@ -90,9 +90,17 @@ public class NicknameCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
+        int strippedNameLength = name.replaceAll("&[0-9a-fomlnk]", "").length();
+
         // Do a regex remove to check minimum length requirements.
-        if (name.replaceAll("&[0-9a-fomlnk]", "").length() < Math.max(nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength(), 1)) {
+        if (strippedNameLength < Math.max(nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength(), 1)) {
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.tooshort"));
+            return CommandResult.empty();
+        }
+
+        // Do a regex remove to check maximum length requirements. Will be at least the minimum length
+        if (strippedNameLength > Math.max(nicknameConfigAdapter.getNodeOrDefault().getMaxNicknameLength(), nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength())) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.nick.toolong"));
             return CommandResult.empty();
         }
 
