@@ -54,6 +54,11 @@ public class ThruCommand extends CommandBase<Player> {
         do {
             BlockRayHit<World> b = playerBlockRay.next();
             if (player.getWorld().getBlockType(b.getBlockPosition()).equals(BlockTypes.AIR)) {
+                if (!Util.isLocationInWorldBorder(b.getLocation())) {
+                    player.sendMessage(Util.getTextMessageWithFormat("command.jump.outsideborder"));
+                    return CommandResult.empty();
+                }
+
                 // If we can go, do so.
                 if (player.setLocationSafely(b.getLocation())) {
                     player.sendMessage(Util.getTextMessageWithFormat("command.thru.success"));

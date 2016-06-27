@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.ClassPath;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
@@ -19,6 +20,8 @@ import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -262,5 +265,26 @@ public class Util {
     public static <T> Optional<T> getValueIgnoreCase(Map<String, T> map, String key) {
         return map.entrySet().stream().filter(x -> x.getKey().equalsIgnoreCase(key))
                 .map(Map.Entry::getValue).findFirst();
+    }
+
+    /**
+     * Tests to see if the supplied {@link Location} is within the world's {@link org.spongepowered.api.world.WorldBorder}
+     *
+     * @param location The {@link Location} to test.
+     * @return <code>true</code> if the location is within the border.
+     */
+    public static boolean isLocationInWorldBorder(Location<World> location) {
+        World world = location.getExtent();
+
+        // Diameter, not radius - we'll want the radius later. We use long, we want the floor!
+        long radius = (long)Math.floor(world.getWorldBorder().getDiameter() / 2.0);
+
+        // We get the current position and subtract the border centre. This gives us an effective distance from the
+        // centre in all three dimensions. We just care about the magnitude in the x and z directions, so we get the
+        // positive amount.
+        Vector3d displacement = location.getPosition().sub(world.getWorldBorder().getCenter()).abs();
+
+        // Check that we're not too far out.
+        return !(displacement.getX() > radius || displacement.getZ() > radius);
     }
 }

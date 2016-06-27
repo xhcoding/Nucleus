@@ -63,6 +63,11 @@ public class JumpCommand extends CommandBase<Player> {
             finalLocation = finalLocation.sub(0, 1, 0);
         }
 
+        if (!Util.isLocationInWorldBorder(finalLocation)) {
+            player.sendMessage(Util.getTextMessageWithFormat("command.jump.outsideborder"));
+            return CommandResult.empty();
+        }
+
         if (player.setLocationSafely(finalLocation)) {
             player.sendMessage(Util.getTextMessageWithFormat("command.jump.success"));
             return CommandResult.success();
