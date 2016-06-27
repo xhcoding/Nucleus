@@ -38,7 +38,9 @@ public class KitSetCommand extends CommandBase<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, true))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, true))
+        };
     }
 
     @Override
