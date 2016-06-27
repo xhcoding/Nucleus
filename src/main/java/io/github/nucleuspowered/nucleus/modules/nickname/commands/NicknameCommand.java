@@ -78,13 +78,13 @@ public class NicknameCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        // Giving player must have the colour permissions and whatnot.
+        // Giving player must have the magic permissions and whatnot.
         if (magicPattern.matcher(name).find() && !permissions.testSuffix(src, "magic")) {
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.magic.noperms"));
             return CommandResult.empty();
         }
 
-        // Giving player must have the colour permissions and whatnot.
+        // Giving player must have the style permissions and whatnot.
         if (stylePattern.matcher(name).find() && !permissions.testSuffix(src, "style")) {
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.style.noperms"));
             return CommandResult.empty();

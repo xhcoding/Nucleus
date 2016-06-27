@@ -34,7 +34,7 @@ repositories {
         url 'http://repo.drnaylor.co.uk/artifactory/list/quickstart'
     }
     maven {
-    	url 'https://jitpack.io'
+        url 'https://jitpack.io'
     }
 }
 
