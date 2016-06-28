@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> implements NucleusUserLoaderService {
 
-    private final Map<UUID, SoftReference<UserService>> softLoadedUsers = Maps.newHashMap();
+    private Map<UUID, SoftReference<UserService>> softLoadedUsers = Maps.newHashMap();
 
     public UserConfigLoader(Nucleus plugin) {
         super(plugin);
@@ -122,9 +122,11 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
         }
     }
 
-    private void clearNullSoftReferences() {
+    private synchronized void clearNullSoftReferences() {
         // Remove any offline users that have ended up being GCd.
-        softLoadedUsers.entrySet().removeIf(k -> k.getValue().get() == null);
+        if (!softLoadedUsers.isEmpty() && softLoadedUsers.entrySet().stream().anyMatch(x -> x.getValue().get() == null)) {
+            softLoadedUsers = softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
     }
 
     public Path getUserPath(UUID uuid) throws IOException {
