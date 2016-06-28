@@ -14,7 +14,7 @@ description = 'The Ultimate Essentials Plugin.'
 ext.url = 'http://nucleuspowered.org'
 
 group 'io.github.nucleuspowered'
-version '0.5.0'
+version '0.5.1-SNAPSHOT'
 
 apply plugin: 'net.ellune.blossom'
 
