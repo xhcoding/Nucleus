@@ -123,7 +123,7 @@ public class BanCommand extends CommandBase<CommandSource> {
         }
 
         // Create the ban.
-        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u).source(src).reason(Text.of(r)).build();
+        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u).source(src).reason(TextSerializers.FORMATTING_CODE.deserialize(r)).build();
         service.addBan(bp);
 
         // Get the permission, "quickstart.ban.notify"

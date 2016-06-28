@@ -20,6 +20,7 @@ import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
 
@@ -62,7 +63,7 @@ public class TempBanCommand extends CommandBase<CommandSource> {
         Instant date = Instant.now().plus(time, ChronoUnit.SECONDS);
 
         // Create the ban.
-        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u.getProfile()).source(src).expirationDate(date).reason(Text.of(r)).build();
+        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u.getProfile()).source(src).expirationDate(date).reason(TextSerializers.FORMATTING_CODE.deserialize(r)).build();
         service.addBan(bp);
 
         MutableMessageChannel send = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
