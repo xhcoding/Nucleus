@@ -26,8 +26,7 @@ public class KitHandler implements NucleusKitService {
 
     @Override
     public Optional<Kit> getKit(String name) {
-        Optional<KitDataNode> kdn = Util.getValueIgnoreCase(store.getKits(), name);
-        return Optional.of(kdn.orElse(null));
+        return Optional.ofNullable(store.getKit(name).orElse(null));
     }
 
     @Override
