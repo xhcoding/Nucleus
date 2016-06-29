@@ -95,15 +95,19 @@ public class NameUtil {
         return Util.getMessageWithFormat("standard.unknown");
     }
 
+    public static TextColor getColourFromString(String s) {
+        if (s.length() == 1) {
+            return colourMap.getOrDefault(s.charAt(0), TextColors.NONE);
+        } else {
+            return Sponge.getRegistry().getType(TextColor.class, s.toUpperCase()).orElse(TextColors.NONE);
+        }
+    }
+
     private static TextColor getNameColour(User player) {
         Optional<String> os = Util.getOptionFromSubject(player, "namecolor", "namecolour");
         if (os.isPresent()) {
             String s = os.get();
-            if (s.length() == 1) {
-                return colourMap.getOrDefault(s.charAt(0), TextColors.NONE);
-            } else {
-                return Sponge.getRegistry().getType(TextColor.class, s.toUpperCase()).orElse(TextColors.NONE);
-            }
+            return getColourFromString(s);
         }
 
         return TextColors.NONE;
