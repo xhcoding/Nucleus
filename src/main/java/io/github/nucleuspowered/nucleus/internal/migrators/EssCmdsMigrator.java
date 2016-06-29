@@ -17,20 +17,14 @@ import io.github.hsyyid.essentialcmds.utils.Utils;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
-import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Transform;
@@ -41,7 +35,6 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,8 +42,6 @@ import java.util.UUID;
 @DataMigrator.PluginDependency("io.github.hsyyid.essentialcmds")
 public class EssCmdsMigrator extends DataMigrator {
 
-    @Inject private UserConfigLoader userConfigLoader;
-    @Inject private WorldConfigLoader worldConfigLoader;
     @Inject(optional = true) private JailHandler jailHandler;
     @Inject(optional = true) private MuteHandler muteHandler;
     @Inject(optional = true) private MailHandler mailHandler;
@@ -103,8 +94,7 @@ public class EssCmdsMigrator extends DataMigrator {
                 if (homeLocation == null) {
                     logger.warn(Util.getMessageWithFormat("command.nucleus.migrate.homefailiure", homeName, uuid.toString()));
                 } else {
-                    InternalNucleusUser iqsu = plugin.getUserLoader().getUser(uniqueId);
-                    iqsu.setHome(homeName, homeLocation.getLocation(), homeLocation.getRotation());
+                    getUser(uniqueId).ifPresent(x -> x.setHome(homeName, homeLocation.getLocation(), homeLocation.getRotation()));
                 }
             }
         }
@@ -120,7 +110,7 @@ public class EssCmdsMigrator extends DataMigrator {
                 double x = Configs.getConfig(jailsConfig).getNode("jails", String.valueOf(i), "X").getDouble();
                 double y = Configs.getConfig(jailsConfig).getNode("jails", String.valueOf(i), "Y").getDouble();
                 double z = Configs.getConfig(jailsConfig).getNode("jails", String.valueOf(i), "Z").getDouble();
-                jailHandler.setJail("EssCmds" + i, new Location<World>(Sponge.getServer().getWorld(worldUuid).get(), x, y, z),
+                jailHandler.setJail("EssCmds" + i, new Location<>(Sponge.getServer().getWorld(worldUuid).get(), x, y, z),
                         new Vector3d(0, 0, 0));
             }
 
@@ -164,12 +154,7 @@ public class EssCmdsMigrator extends DataMigrator {
             String uniqueId = String.valueOf(uuid);
             String nick = node.getNode(uniqueId).getString();
 
-            try {
-                NucleusUser uc = userConfigLoader.getUser(UUID.fromString(uniqueId));
-                uc.setNickname(nick);
-            } catch (IOException | ObjectMappingException e) {
-                e.printStackTrace();
-            }
+            getUser(UUID.fromString(uniqueId)).ifPresent(x -> x.setNickname(nick));
         }
 
         src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.nicks"));
@@ -191,8 +176,7 @@ public class EssCmdsMigrator extends DataMigrator {
         // Locked Weather Worlds
         for (String world : Utils.getLockedWeatherWorlds()) {
             UUID uniqueId = UUID.fromString(world);
-            NucleusWorld nw = worldConfigLoader.getWorld(uniqueId);
-            nw.setLockWeather(true);
+            getWorld(uniqueId).ifPresent(x -> x.setLockWeather(true));
         }
 
         src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.weather"));
