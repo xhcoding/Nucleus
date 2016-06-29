@@ -16,6 +16,8 @@ import java.util.Optional;
 
 public abstract class AbstractDataLoader<K, D extends AbstractConfig<?, ?>> {
 
+    private boolean isSaving = false;
+
     protected final Nucleus plugin;
     protected final Map<K, D> loaded = Maps.newHashMap();
 
@@ -28,6 +30,11 @@ public abstract class AbstractDataLoader<K, D extends AbstractConfig<?, ?>> {
     }
 
     public void saveAll() {
+        if (isSaving) {
+            return;
+        }
+
+        isSaving = true;
         // Copy list so that we can save the items now, and avoid CMEs on this list.
         Lists.newArrayList(loaded.values()).forEach(c -> {
             try {
@@ -37,5 +44,7 @@ public abstract class AbstractDataLoader<K, D extends AbstractConfig<?, ?>> {
                 e.printStackTrace();
             }
         });
+
+        isSaving = false;
     }
 }

@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 
 public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> implements NucleusUserLoaderService {
 
-    private Map<UUID, SoftReference<UserService>> softLoadedUsers = Maps.newHashMap();
+    private final Map<UUID, SoftReference<UserService>> softLoadedUsers = Maps.newHashMap();
+    private final Object softLoadLock = new Object();
 
     public UserConfigLoader(Nucleus plugin) {
         super(plugin);
@@ -60,19 +61,22 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
 
     @Override
     public InternalNucleusUser getUser(User user) throws Exception {
-        if (loaded.containsKey(user.getUniqueId())) {
-            return loaded.get(user.getUniqueId());
+        InternalNucleusUser inu = loaded.get(user.getUniqueId());
+        if (inu != null) {
+            return inu;
         }
 
         // If we have a soft reference, move them into the strong reference queue before returning them.
         // The act of moving back into the soft loaded queue is a save. Soft loaded references are really
         // just acting as a cache.
-        clearNullSoftReferences();
-        if (softLoadedUsers.containsKey(user.getUniqueId())) {
-            UserService uc = softLoadedUsers.get(user.getUniqueId()).get();
-            softLoadedUsers.remove(user.getUniqueId());
-            loaded.put(user.getUniqueId(), uc);
-            return uc;
+        synchronized (this.softLoadLock) {
+            softLoadedUsers.entrySet().removeIf(k -> k.getValue().get() == null);
+            if (softLoadedUsers.containsKey(user.getUniqueId())) {
+                UserService uc = softLoadedUsers.get(user.getUniqueId()).get();
+                softLoadedUsers.remove(user.getUniqueId());
+                loaded.put(user.getUniqueId(), uc);
+                return uc;
+            }
         }
 
         // Load the file in.
@@ -82,7 +86,9 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
     }
 
     public void clearSoftReferenceCache() {
-        softLoadedUsers.clear();
+        synchronized (this.softLoadLock) {
+            softLoadedUsers.clear();
+        }
     }
 
     public void purgeNotOnline() {
@@ -93,8 +99,10 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
             try {
                 UserService uc = loaded.get(x);
                 uc.save();
-                loaded.remove(x);
-                softLoadedUsers.put(x, new SoftReference<>(uc));
+                synchronized (this.softLoadLock) {
+                    loaded.remove(x);
+                    softLoadedUsers.put(x, new SoftReference<>(uc));
+                }
             } catch (IOException | ObjectMappingException e) {
                 plugin.getLogger().error("Could not save data for " + x.toString());
                 e.printStackTrace();
@@ -104,13 +112,15 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
 
     public void forceUnloadPlayerWithoutSaving(UUID uuid) {
         purgeNotOnline();
-        if (loaded.containsKey(uuid)) {
-            // Really is no need to save at this point.
-            loaded.remove(uuid);
-        }
+        synchronized (this.softLoadLock) {
+            if (loaded.containsKey(uuid)) {
+                // Really is no need to save at this point.
+                loaded.remove(uuid);
+            }
 
-        if (softLoadedUsers.containsKey(uuid)) {
-            softLoadedUsers.remove(uuid);
+            if (softLoadedUsers.containsKey(uuid)) {
+                softLoadedUsers.remove(uuid);
+            }
         }
     }
 
@@ -133,12 +143,5 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
 
         // Configurate will create it for us.
         return file;
-    }
-
-    private synchronized void clearNullSoftReferences() {
-        // Remove any offline users that have ended up being GCd.
-        if (!softLoadedUsers.isEmpty() && softLoadedUsers.entrySet().stream().anyMatch(x -> x.getValue().get() == null)) {
-            softLoadedUsers = softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        }
     }
 }
