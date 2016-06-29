@@ -11,6 +11,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
@@ -70,7 +72,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
 
     public Optional<KitDataNode> getKit(String name) {
         Map<String, KitDataNode> msk = data.getKits();
-        Optional<String> key = msk.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
+        Optional<String> key = Util.getKeyIgnoreCase(data.getKits(), name);
         if (key.isPresent()) {
             return Optional.of(msk.get(key.get()));
         }
@@ -78,7 +80,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
         return Optional.empty();
     }
 
-    public Map<String, KitDataNode> getKits() {
+    public Map<String, Kit> getKits() {
         return ImmutableMap.copyOf(data.getKits());
     }
 
