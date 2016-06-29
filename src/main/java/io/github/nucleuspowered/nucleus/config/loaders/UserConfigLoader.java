@@ -122,13 +122,6 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
         }
     }
 
-    private synchronized void clearNullSoftReferences() {
-        // Remove any offline users that have ended up being GCd.
-        if (!softLoadedUsers.isEmpty() && softLoadedUsers.entrySet().stream().anyMatch(x -> x.getValue().get() == null)) {
-            softLoadedUsers = softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        }
-    }
-
     public Path getUserPath(UUID uuid) throws IOException {
         String u = uuid.toString();
         String f = u.substring(0, 2);
@@ -140,5 +133,12 @@ public class UserConfigLoader extends AbstractDataLoader<UUID, UserService> impl
 
         // Configurate will create it for us.
         return file;
+    }
+
+    private synchronized void clearNullSoftReferences() {
+        // Remove any offline users that have ended up being GCd.
+        if (!softLoadedUsers.isEmpty() && softLoadedUsers.entrySet().stream().anyMatch(x -> x.getValue().get() == null)) {
+            softLoadedUsers = softLoadedUsers.entrySet().stream().filter(k -> k.getValue().get() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        }
     }
 }

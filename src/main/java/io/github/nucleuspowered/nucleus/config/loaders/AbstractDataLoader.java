@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.config.loaders;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractConfig;
@@ -27,7 +28,8 @@ public abstract class AbstractDataLoader<K, D extends AbstractConfig<?, ?>> {
     }
 
     public void saveAll() {
-        loaded.values().forEach(c -> {
+        // Copy list so that we can save the items now, and avoid CMEs on this list.
+        Lists.newArrayList(loaded.values()).forEach(c -> {
             try {
                 c.save();
             } catch (IOException | ObjectMappingException e) {
