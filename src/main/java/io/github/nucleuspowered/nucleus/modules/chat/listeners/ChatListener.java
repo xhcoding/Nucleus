@@ -57,9 +57,9 @@ public class ChatListener extends ListenerBase {
     private Map<String[], Function<String, String>> createReplacements() {
         Map<String[], Function<String, String>> t = new HashMap<>();
 
-        t.put(new String[] { prefix + "colour", prefix + "color" }, s -> s.replaceAll("&[0-9a-f]", ""));
-        t.put(new String[] { prefix + "style" }, s -> s.replaceAll("&[lmno]", ""));
-        t.put(new String[] { prefix + "magic" }, s -> s.replaceAll("&k", ""));
+        t.put(new String[] { prefix + "colour", prefix + "color" }, s -> s.replaceAll("&[0-9a-fA-F]", ""));
+        t.put(new String[] { prefix + "style" }, s -> s.replaceAll("&[l-oL-O]", ""));
+        t.put(new String[] { prefix + "magic" }, s -> s.replaceAll("&[kK]", ""));
 
         return t;
     }
