@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.staffchat.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import org.spongepowered.api.command.CommandResult;
@@ -33,7 +33,7 @@ public class StaffChatCommand extends CommandBase<CommandSource> {
 
     private final String message = "message";
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     @Override
     public CommandElement[] getArguments() {
@@ -57,7 +57,7 @@ public class StaffChatCommand extends CommandBase<CommandSource> {
         }
 
         boolean result;
-        InternalNucleusUser user = loader.getUser((Player)src);
+        UserService user = loader.get((Player)src).get();
         result = !user.isInStaffChat();
         user.setInStaffChat(result);
 

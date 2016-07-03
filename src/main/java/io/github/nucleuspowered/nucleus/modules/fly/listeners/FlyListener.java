@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.fly.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.fly.config.FlyConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -29,7 +29,7 @@ import org.spongepowered.api.world.World;
 
 public class FlyListener extends ListenerBase {
 
-    @Inject private UserConfigLoader ucl;
+    @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
     @Inject private FlyConfigAdapter fca;
 
@@ -42,17 +42,18 @@ public class FlyListener extends ListenerBase {
         }
 
         try {
-            InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
+            ucl.get(pl).ifPresent(uc -> {
 
-            // Let's just reset these...
-            if (uc.isFlyingSafe()) {
-                pl.offer(Keys.CAN_FLY, true);
+                // Let's just reset these...
+                if (uc.isFlyingSafe()) {
+                    pl.offer(Keys.CAN_FLY, true);
 
-                // If in the air, flying!
-                if (pl.getLocation().add(0, -1, 0).getBlockType().getId().equals(BlockTypes.AIR.getId())) {
-                    pl.offer(Keys.IS_FLYING, true);
+                    // If in the air, flying!
+                    if (pl.getLocation().add(0, -1, 0).getBlockType().getId().equals(BlockTypes.AIR.getId())) {
+                        pl.offer(Keys.IS_FLYING, true);
+                    }
                 }
-            }
+            });
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -72,7 +73,7 @@ public class FlyListener extends ListenerBase {
         }
 
         try {
-            plugin.getUserLoader().getUser(pl).setFlying(pl.get(Keys.CAN_FLY).orElse(false));
+            ucl.getUser(pl).get().setFlying(pl.get(Keys.CAN_FLY).orElse(false));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -96,9 +97,9 @@ public class FlyListener extends ListenerBase {
             return;
         }
 
-        InternalNucleusUser uc;
+        UserService uc;
         try {
-            uc = plugin.getUserLoader().getUser(pl);
+            uc = ucl.get(pl).get();
             if (!uc.isFlying()) {
                 return;
             }
@@ -133,8 +134,7 @@ public class FlyListener extends ListenerBase {
         }
 
         try {
-            InternalNucleusUser uc = plugin.getUserLoader().getUser(player);
-            player.offer(Keys.CAN_FLY, uc.isFlyingSafe());
+            ucl.get(player).ifPresent(x -> player.offer(Keys.CAN_FLY, x.isFlyingSafe()));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

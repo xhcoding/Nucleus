@@ -7,10 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -37,7 +37,7 @@ public class KitResetUsageCommand extends CommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
-    @Inject private UserConfigLoader userConfigLoader;
+    @Inject private UserDataManager userConfigLoader;
 
     private final String kit = "kit";
     private final String user = "player";
@@ -54,7 +54,7 @@ public class KitResetUsageCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
         KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
         User u = args.<User>getOne(user).get();
-        InternalNucleusUser inu = userConfigLoader.getUser(u);
+        UserService inu = userConfigLoader.get(u).get();
 
         if (inu.getKitLastUsedTime().containsKey(kitInfo.name.toLowerCase())) {
             // Remove the key.

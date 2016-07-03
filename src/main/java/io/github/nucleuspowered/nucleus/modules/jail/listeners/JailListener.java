@@ -9,10 +9,10 @@ import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.modules.jail.commands.JailCommand;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 public class JailListener extends ListenerBase {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
     @Inject private InternalServiceManager ism;
     @Inject private JailConfigAdapter jailConfigAdapter;
     @Inject private JailHandler handler;
@@ -51,14 +51,12 @@ public class JailListener extends ListenerBase {
     @Listener(order = Order.LATE)
     public void onPlayerLogin(final ClientConnectionEvent.Join event) {
         final Player user = event.getTargetEntity();
-        InternalNucleusUser qs;
-        try {
-            qs = loader.getUser(user);
-        } catch (Exception e) {
-            e.printStackTrace();
+        Optional<UserService> oqs = loader.get(user);
+        if (!oqs.isPresent()) {
             return;
         }
 
+        UserService qs = oqs.get();
         JailHandler handler = ism.getService(JailHandler.class).get();
 
         // Jailing the player if we need to.
@@ -137,13 +135,12 @@ public class JailListener extends ListenerBase {
     }
 
     private boolean checkJail(final Player player, boolean sendMessage) {
-        InternalNucleusUser qs;
-        try {
-            qs = loader.getUser(player);
-        } catch (Exception e) {
-            e.printStackTrace();
+        Optional<UserService> oqs = loader.get(player);
+        if (!oqs.isPresent()) {
             return false;
         }
+
+        UserService qs = oqs.get();
 
         Optional<JailData> omd = Util.testForEndTimestamp(qs.getJailData(), () -> handler.unjailPlayer(player));
         if (omd.isPresent()) {

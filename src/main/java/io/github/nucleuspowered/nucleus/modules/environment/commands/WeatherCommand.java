@@ -9,7 +9,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WeatherArgument;
-import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -35,7 +35,7 @@ public class WeatherCommand extends CommandBase<CommandSource> {
     private final String duration = "duration";
     private final String timespan = "timespan";
 
-    @Inject private WorldConfigLoader loader;
+    @Inject private WorldDataManager loader;
 
     @Override
     public CommandElement[] getArguments() {
@@ -68,7 +68,7 @@ public class WeatherCommand extends CommandBase<CommandSource> {
         }
 
         // Get whether we locked the weather.
-        NucleusWorld ew = loader.getWorld(w);
+        NucleusWorld ew = loader.getWorld(w).get();
         if (ew.isLockWeather()) {
             // Tell the user to unlock first.
             src.sendMessage(Util.getTextMessageWithFormat("command.weather.locked", w.getName()));

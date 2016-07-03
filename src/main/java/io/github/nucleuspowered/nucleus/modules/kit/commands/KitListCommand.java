@@ -8,12 +8,12 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -49,7 +49,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
-    @Inject private UserConfigLoader userConfigLoader;
+    @Inject private UserDataManager userConfigLoader;
 
     private CommandPermissionHandler kitPermissionHandler = null;
 
@@ -69,7 +69,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         ArrayList<Text> kitText = Lists.newArrayList();
 
-        final InternalNucleusUser user = src instanceof Player ? userConfigLoader.getUser(((Player)src).getUniqueId()) : null;
+        final UserService user = src instanceof Player ? userConfigLoader.get(((Player)src).getUniqueId()).orElse(null) : null;
 
         // Only show kits that the user has permission for, if needed. This is the permission "nucleus.kits.<kit>".
         kitConfig.getKitNames().stream()
@@ -83,7 +83,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createKit(CommandSource source, InternalNucleusUser user, String kitName, Kit kitObj) {
+    private Text createKit(CommandSource source, UserService user, String kitName, Kit kitObj) {
         Text.Builder tb = Text.builder(kitName);
 
         if (user != null && user.getKitLastUsedTime().containsKey(kitName.toLowerCase())) {

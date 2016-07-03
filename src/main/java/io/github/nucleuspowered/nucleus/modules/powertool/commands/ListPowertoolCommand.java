@@ -6,15 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -46,7 +41,7 @@ import java.util.stream.Collectors;
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = PowertoolCommand.class)
 public class ListPowertoolCommand extends CommandBase<Player> {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
     private PaginationService paginationService = null;
 
     @Override
@@ -60,7 +55,7 @@ public class ListPowertoolCommand extends CommandBase<Player> {
             paginationService = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         }
 
-        InternalNucleusUser inu = loader.getUser(src);
+        UserService inu = loader.get(src).get();
 
         boolean toggle = inu.isPowertoolToggled();
         Map<String, List<String>> powertools = inu.getPowertools();
@@ -81,7 +76,7 @@ public class ListPowertoolCommand extends CommandBase<Player> {
         return CommandResult.success();
     }
 
-    private Text from(final InternalNucleusUser inu, Player src, String powertool, List<String> commands) {
+    private Text from(final UserService inu, Player src, String powertool, List<String> commands) {
         Optional<ItemType> oit = Sponge.getRegistry().getType(ItemType.class, powertool);
 
         // Create the click actions.

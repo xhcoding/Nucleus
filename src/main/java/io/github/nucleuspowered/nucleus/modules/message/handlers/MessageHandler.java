@@ -10,8 +10,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
 import org.spongepowered.api.Sponge;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class MessageHandler implements NucleusPrivateMessagingService {
 
-    @Inject private UserConfigLoader ucl;
+    @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
 
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
@@ -41,7 +41,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     @Override
     public boolean isSocialSpy(User user) {
         try {
-            return ucl.getUser(user).isSocialSpy();
+            return ucl.get(user).get().isSocialSpy();
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -54,7 +54,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     @Override
     public boolean setSocialSpy(User user, boolean isSocialSpy) {
         try {
-            return ucl.getUser(user).setSocialSpy(isSocialSpy);
+            return ucl.get(user).get().setSocialSpy(isSocialSpy);
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -90,7 +90,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         final UUID uuidReceiver = getUUID(receiver);
         List<MessageReceiver> lm =
                 ucl.getOnlineUsersInternal().stream().filter(x -> !uuidSender.equals(x.getUniqueID()) && !uuidReceiver.equals(x.getUniqueID()))
-                        .filter(InternalNucleusUser::isSocialSpy).map(x -> x.getUser().getPlayer().orElse(null))
+                        .filter(UserService::isSocialSpy).map(x -> x.getUser().getPlayer().orElse(null))
                         .filter(x -> x != null && x.isOnline()).collect(Collectors.toList());
 
         // If the console is not involved, make them involved.

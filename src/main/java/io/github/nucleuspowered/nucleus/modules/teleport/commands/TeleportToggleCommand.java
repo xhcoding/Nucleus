@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -34,6 +31,7 @@ import java.util.Map;
 public class TeleportToggleCommand extends CommandBase<Player> {
 
     private final String key = "toggle";
+    @Inject private UserDataManager udm;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -49,7 +47,7 @@ public class TeleportToggleCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        final InternalNucleusUser iqsu = plugin.getUserLoader().getUser(src);
+        final UserService iqsu = udm.get(src).get();
         boolean flip = args.<Boolean>getOne(key).orElseGet(() -> !iqsu.isTeleportToggled());
         iqsu.setTeleportToggled(flip);
         src.sendMessage(Text.builder().append(

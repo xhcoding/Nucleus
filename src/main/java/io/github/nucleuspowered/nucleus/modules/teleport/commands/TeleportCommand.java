@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -41,6 +42,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
 
     @Inject private TeleportHandler handler;
     @Inject private TeleportConfigAdapter tca;
+    @Inject private UserDataManager userDataManager;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -72,7 +74,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
         // Do the /tptoggle check now, no need to go through a warmup then...
         if (source instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
             Player to = args.<Player>getOne(playerKey).get();
-            if (!plugin.getUserLoader().getUser(to).isTeleportToggled()) {
+            if (!userDataManager.get(to).get().isTeleportToggled()) {
                 source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return ContinueMode.STOP;
             }

@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.environment.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
-import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
@@ -33,7 +33,7 @@ import java.util.Optional;
 @NoCost
 public class LockWeatherCommand extends CommandBase<CommandSource> {
 
-    @Inject private WorldConfigLoader loader;
+    @Inject private WorldDataManager loader;
 
     private final String worldKey = "world";
     private final String toggleKey = "toggle";
@@ -55,10 +55,15 @@ public class LockWeatherCommand extends CommandBase<CommandSource> {
         }
 
         WorldProperties wp = world.get();
-        NucleusWorld ws = loader.getWorld(wp.getUniqueId());
-        boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!ws.isLockWeather());
+        Optional<NucleusWorld> ws = loader.getWorld(wp.getUniqueId());
+        if (!ws.isPresent()) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.noworld", wp.getWorldName()));
+            return CommandResult.empty();
+        }
 
-        ws.setLockWeather(toggle);
+        boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!ws.get().isLockWeather());
+
+        ws.get().setLockWeather(toggle);
         if (toggle) {
             src.sendMessage(Util.getTextMessageWithFormat("command.lockweather.locked", wp.getWorldName()));
         } else {

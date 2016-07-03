@@ -8,9 +8,9 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -33,8 +33,8 @@ import java.util.Optional;
 public class SpawnListener extends ListenerBase {
 
     @Inject private GeneralDataStore store;
-    @Inject private UserConfigLoader loader;
-    @Inject private WorldConfigLoader wcl;
+    @Inject private UserDataManager loader;
+    @Inject private WorldDataManager wcl;
     @Inject private CoreConfigAdapter cca;
     @Inject private SpawnConfigAdapter sca;
 
@@ -52,7 +52,7 @@ public class SpawnListener extends ListenerBase {
         Player pl = joinEvent.getTargetEntity();
 
         try {
-            if (loader.getUser(pl).isFirstPlay()) {
+            if (loader.getUser(pl).get().isFirstPlay()) {
                 // first spawn.
                 Optional<Transform<World>> ofs = store.getFirstSpawn();
 
@@ -77,7 +77,7 @@ public class SpawnListener extends ListenerBase {
             WorldProperties w = Sponge.getServer().getDefaultWorld().get();
             Location<World> lw = new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble());
             try {
-                Optional<Vector3d> ov = wcl.getWorld(w.getUniqueId()).getSpawnRotation();
+                Optional<Vector3d> ov = wcl.getWorld(w.getUniqueId()).get().getSpawnRotation();
                 if (ov.isPresent()) {
                     pl.setLocationAndRotation(lw, ov.get());
                 }
@@ -99,7 +99,7 @@ public class SpawnListener extends ListenerBase {
         // If we have a spawn to the world in the standard spawn location, add our rotation.
         try {
             // ...of course, that depends on our rotation.
-            Optional<Vector3d> ov = wcl.getWorld(event.getToTransform().getExtent()).getSpawnRotation();
+            Optional<Vector3d> ov = wcl.getWorld(event.getToTransform().getExtent()).get().getSpawnRotation();
             if (ov.isPresent()) {
                 // Compare current transform to spawn.
                 Transform<World> to = event.getToTransform();

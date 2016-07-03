@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;

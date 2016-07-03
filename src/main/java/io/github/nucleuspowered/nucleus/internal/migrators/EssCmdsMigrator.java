@@ -18,7 +18,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;

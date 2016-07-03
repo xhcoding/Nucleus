@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @RegisterCommand("spawn")
 public class SpawnCommand extends CommandBase<Player> {
 
-    @Inject private WorldConfigLoader wcl;
+    @Inject private WorldDataManager wcl;
 
     private final String key = "world";
 
@@ -62,7 +62,7 @@ public class SpawnCommand extends CommandBase<Player> {
         }
 
         // If we don't have a rotation, then use the current rotation
-        if (src.setLocationAndRotationSafely(new Location<>(ow.get(), wp.getSpawnPosition()), wcl.getWorld(wp.getUniqueId()).getSpawnRotation().orElse(src.getRotation()))) {
+        if (src.setLocationAndRotationSafely(new Location<>(ow.get(), wp.getSpawnPosition()), wcl.getWorld(wp.getUniqueId()).get().getSpawnRotation().orElse(src.getRotation()))) {
             src.sendMessage(Util.getTextMessageWithFormat("command.spawn.success"));
             return CommandResult.success();
         }

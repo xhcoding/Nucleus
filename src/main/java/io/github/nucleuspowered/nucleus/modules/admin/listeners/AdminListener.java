@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.admin.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,7 +19,7 @@ import org.spongepowered.api.event.filter.cause.First;
 
 public class AdminListener extends ListenerBase {
 
-    @Inject private UserConfigLoader ucl;
+    @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
 
     @Listener
@@ -40,7 +40,7 @@ public class AdminListener extends ListenerBase {
     private boolean checkForFrozen(Player player, String message) {
         NucleusUser nu;
         try {
-            nu = ucl.getUser(player);
+            nu = ucl.getUser(player).get();
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

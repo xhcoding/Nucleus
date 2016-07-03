@@ -15,11 +15,12 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.config.MessageConfig;
-import io.github.nucleuspowered.nucleus.config.configurate.NucleusObjectMapperFactory;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.config.loaders.WorldConfigLoader;
+import io.github.nucleuspowered.nucleus.configurate.objectmapper.NucleusObjectMapperFactory;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -75,8 +76,8 @@ public class Nucleus {
     private boolean isErrored = false;
     private CommandsConfig commandsConfig;
     private GeneralDataStore generalDataStore;
-    private UserConfigLoader configLoader;
-    private WorldConfigLoader worldConfigLoader;
+    private UserDataManager userDataManager;
+    private WorldDataManager worldDataManager;
     private ChatUtil chatUtil;
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
@@ -117,8 +118,10 @@ public class Nucleus {
             Files.createDirectories(dataDir);
             commandsConfig = new CommandsConfig(Paths.get(configDir.toString(), "commands.conf"));
             generalDataStore = new GeneralDataStore(Paths.get(dataDir.toString(), "general.json"));
-            configLoader = new UserConfigLoader(this);
-            worldConfigLoader = new WorldConfigLoader(this);
+
+            DataProviders d = new DataProviders(this);
+            userDataManager = new UserDataManager(this, d::getUserFileDataProviders);
+            worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider);
             warmupManager = new WarmupManager();
             chatUtil = new ChatUtil(this);
         } catch (Exception e) {
@@ -183,8 +186,8 @@ public class Nucleus {
         modulesLoaded = true;
 
         // Register final services
-        game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, configLoader);
-        game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldConfigLoader);
+        game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, userDataManager);
+        game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldDataManager);
         logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
     }
 
@@ -197,8 +200,8 @@ public class Nucleus {
     }
 
     public void saveData() {
-        configLoader.saveAll();
-        worldConfigLoader.saveAll();
+        userDataManager.saveAll();
+        worldDataManager.saveAll();
         try {
             generalDataStore.save();
         } catch (ObjectMappingException | IOException e) {
@@ -231,12 +234,12 @@ public class Nucleus {
         return this.modulesLoaded;
     }
 
-    public UserConfigLoader getUserLoader() {
-        return configLoader;
+    public UserDataManager getUserDataManager() {
+        return userDataManager;
     }
 
-    public WorldConfigLoader getWorldLoader() {
-        return worldConfigLoader;
+    public WorldDataManager getWorldDataManager() {
+        return worldDataManager;
     }
 
     public void saveSystemConfig() throws IOException {

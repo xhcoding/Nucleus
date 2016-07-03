@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -53,17 +53,16 @@ public class NameUtil {
         return getName((User)src);
     }
 
-    public static Text getName(User player, UserConfigLoader loader) {
-        try {
-            InternalNucleusUser iq = loader.getUser(player);
-            return getName(player, iq);
-        } catch (Exception e) {
+    public static Text getName(User player, UserDataManager loader) {
+        Optional<UserService> userService = loader.get(player);
+        if (userService.isPresent()) {
+            return getName(player, userService.get());
         }
 
         return getName(player);
     }
 
-    public static Text getName(User player, InternalNucleusUser service) {
+    public static Text getName(User player, UserService service) {
         Optional<Text> n = service.getNicknameWithPrefix();
         if (n.isPresent()) {
             return Text.of(getNameColour(player), n.get().toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build());

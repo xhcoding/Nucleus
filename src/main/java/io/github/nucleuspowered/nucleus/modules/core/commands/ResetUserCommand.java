@@ -6,13 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -28,9 +23,6 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -99,17 +91,14 @@ public class ResetUserCommand extends CommandBase<CommandSource> {
 
             // Unload the player in a second, just to let events fire.
             Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
-                UserConfigLoader ucl = plugin.getUserLoader();
-
-                // Remove them from the cache immediately.
-                ucl.forceUnloadPlayerWithoutSaving(user.getUniqueId());
+                UserDataManager ucl = plugin.getUserDataManager();
 
                 // Get the file to delete.
                 try {
-                    Path file = ucl.getUserPath(user.getUniqueId());
-                    Files.delete(file);
+                    // Remove them from the cache immediately.
+                    ucl.forceUnloadAndDelete(user.getUniqueId());
                     source.sendMessage(Util.getTextMessageWithFormat("command.nucleus.reset.complete", user.getName()));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     source.sendMessage(Util.getTextMessageWithFormat("command.nucleus.reset.failed", user.getName()));
                 } finally {
                     if (!isBanned) {

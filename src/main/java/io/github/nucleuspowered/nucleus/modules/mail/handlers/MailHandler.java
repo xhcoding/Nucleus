@@ -14,7 +14,7 @@ import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailFilter;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.modules.mail.events.InternalNucleusMailEvent;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -42,9 +42,9 @@ public class MailHandler implements NucleusMailService {
 
     @Override
     public List<MailData> getMail(User player, MailFilter... filters) {
-        InternalNucleusUser iqsu;
+        UserService iqsu;
         try {
-            iqsu = plugin.getUserLoader().getUser(player);
+            iqsu = plugin.getUserDataManager().get(player).get();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -92,7 +92,7 @@ public class MailHandler implements NucleusMailService {
     @Override
     public boolean removeMail(User player, MailData mailData) {
         try {
-            return plugin.getUserLoader().getUser(player).removeMail(mailData);
+            return plugin.getUserDataManager().get(player).get().removeMail(mailData);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -101,9 +101,9 @@ public class MailHandler implements NucleusMailService {
 
     @Override
     public void sendMail(User playerFrom, User playerTo, String message) {
-        InternalNucleusUser iqsu;
+        UserService iqsu;
         try {
-            iqsu = plugin.getUserLoader().getUser(playerTo);
+            iqsu = plugin.getUserDataManager().get(playerTo).get();
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -133,9 +133,9 @@ public class MailHandler implements NucleusMailService {
 
     @Override
     public boolean clearUserMail(User player) {
-        InternalNucleusUser iqsu;
+        UserService iqsu;
         try {
-            iqsu = plugin.getUserLoader().getUser(player);
+            iqsu = plugin.getUserDataManager().get(player).get();
         } catch (Exception e) {
             e.printStackTrace();
             return false;

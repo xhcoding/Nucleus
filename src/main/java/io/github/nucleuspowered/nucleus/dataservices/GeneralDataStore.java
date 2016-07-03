@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.config;
+package io.github.nucleuspowered.nucleus.dataservices;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
@@ -16,9 +16,9 @@ import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
-import io.github.nucleuspowered.nucleus.config.serialisers.GeneralDataNode;
-import io.github.nucleuspowered.nucleus.config.serialisers.KitDataNode;
-import io.github.nucleuspowered.nucleus.config.serialisers.LocationNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;

@@ -4,11 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fly.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -30,6 +32,7 @@ public class FlyCommand extends CommandBase<CommandSource> {
 
     private static final String player = "player";
     private static final String toggle = "toggle";
+    @Inject private UserDataManager udm;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -56,7 +59,7 @@ public class FlyCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
 
-        InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
+        UserService uc = udm.get(pl).get();
         boolean fly = args.<Boolean>getOne(toggle).orElse(!pl.get(Keys.CAN_FLY).orElse(false));
 
         if (!setFlying(pl, fly)) {

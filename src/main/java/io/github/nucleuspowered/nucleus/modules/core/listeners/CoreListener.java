@@ -6,9 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -28,14 +28,14 @@ import java.util.concurrent.TimeUnit;
 
 public class CoreListener extends ListenerBase {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     @Listener(order = Order.FIRST)
     public void onPlayerLogin(final ClientConnectionEvent.Login event) {
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
             try {
                 User player = event.getTargetUser();
-                InternalNucleusUser qsu = loader.getUser(player);
+                UserService qsu = loader.get(player).get();
                 qsu.setLastLogin(Instant.now());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -50,7 +50,7 @@ public class CoreListener extends ListenerBase {
     public void onPlayerJoinFirst(final ClientConnectionEvent.Join event) {
         try {
             Player player = event.getTargetEntity();
-            InternalNucleusUser qsu = loader.getUser(player);
+            UserService qsu = loader.get(player).get();
             qsu.setFirstPlay(Util.isFirstPlay(player));
 
             // If we have a location to send them to in the config, send them there now!
@@ -67,11 +67,8 @@ public class CoreListener extends ListenerBase {
     @Listener
     public void onPlayerQuit(final ClientConnectionEvent.Disconnect event) {
         Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
-            UserConfigLoader ucl = this.plugin.getUserLoader();
             try {
-                InternalNucleusUser qsu = this.plugin.getUserLoader().getUser(event.getTargetEntity());
-                qsu.setOnLogout();
-                ucl.purgeNotOnline();
+                this.plugin.getUserDataManager().get(event.getTargetEntity()).ifPresent(UserService::setOnLogout);
             } catch (Exception e) {
                 e.printStackTrace();
             }

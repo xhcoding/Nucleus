@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -30,7 +30,7 @@ import java.util.Optional;
 @RegisterCommand({"freezeplayer", "freeze"})
 public class FreezePlayerCommand extends CommandBase<CommandSource> {
 
-    @Inject private UserConfigLoader userConfigLoader;
+    @Inject private UserDataManager userConfigLoader;
 
     private final String player = "player";
 
@@ -59,7 +59,7 @@ public class FreezePlayerCommand extends CommandBase<CommandSource> {
         NucleusUser nu;
 
         try {
-            nu = userConfigLoader.getUser(opl.get());
+            nu = userConfigLoader.getUser(opl.get()).get();
         } catch (Exception e) {
             e.printStackTrace();
             throw new CommandException(Util.getTextMessageWithFormat("command.file.load"), e);

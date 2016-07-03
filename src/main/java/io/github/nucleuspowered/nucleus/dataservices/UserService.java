@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.config;
+package io.github.nucleuspowered.nucleus.dataservices;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
@@ -10,25 +10,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
+import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
-import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
-import io.github.nucleuspowered.nucleus.config.serialisers.LocationNode;
-import io.github.nucleuspowered.nucleus.config.serialisers.UserDataNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
+import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.SimpleConfigurationNode;
-import ninja.leaping.configurate.gson.GsonConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.User;
@@ -40,7 +36,6 @@ import org.spongepowered.api.world.World;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +44,12 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UserService extends AbstractSerialisableClassConfig<UserDataNode, ConfigurationNode, GsonConfigurationLoader>
-        implements InternalNucleusUser {
+public class UserService extends Service<UserDataNode>
+        implements NucleusUser {
 
     private final Nucleus plugin;
     private final User user;
+    private final Instant serviceLoadTime = Instant.now();
 
     // Use to keep hold of whether this is the first time on the server for a player.
     private boolean firstPlay = false;
@@ -68,8 +64,9 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     // Used as a cache.
     private Text nickname = null;
 
-    public UserService(Nucleus plugin, Path file, User user) throws Exception {
-        super(file, TypeToken.of(UserDataNode.class), UserDataNode::new);
+    public UserService(Nucleus plugin, DataProvider<UserDataNode> provider, User user) throws Exception {
+        super(provider);
+        data = provider.load();
         Preconditions.checkNotNull("user", user);
         Preconditions.checkNotNull("plugin", plugin);
         this.plugin = plugin;
@@ -77,37 +74,22 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     }
 
     @Override
-    protected GsonConfigurationLoader getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
-        Preconditions.checkNotNull("file", file);
-        return GsonConfigurationLoader.builder().setPath(file).build();
-    }
-
-    @Override
-    protected ConfigurationNode getNode() {
-        return SimpleConfigurationNode.root();
-    }
-
-    @Override
     public User getUser() {
         return user;
     }
 
-    @Override
     public Optional<MuteData> getMuteData() {
         return Optional.ofNullable(data.getMuteData());
     }
 
-    @Override
     public void setMuteData(MuteData mData) {
         data.setMuteData(mData);
     }
 
-    @Override
     public void removeMuteData() {
         data.setMuteData(null);
     }
 
-    @Override
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
         Optional<CommandPermissionHandler> ps = plugin.getPermissionRegistry().getService(SocialSpyCommand.class);
@@ -118,7 +100,6 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         return data.isSocialspy();
     }
 
-    @Override
     public boolean setSocialSpy(boolean socialSpy) {
         data.setSocialspy(socialSpy);
 
@@ -160,7 +141,6 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         return Instant.ofEpochMilli(data.getLogin());
     }
 
-    @Override
     public void setLastLogin(Instant login) {
         data.setLogin(login.toEpochMilli());
     }
@@ -304,12 +284,10 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         data.setNickname(null);
     }
 
-    @Override
     public List<MailData> getMail() {
         return ImmutableList.copyOf(data.getMailDataList());
     }
 
-    @Override
     public void addMail(MailData mailData) {
         List<MailData> mailDataList = data.getMailDataList();
         if (mailDataList == null) {
@@ -320,7 +298,6 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         data.setMailDataList(mailDataList);
     }
 
-    @Override
     public boolean removeMail(MailData mailData) {
          List<MailData> lmd = data.getMailDataList();
          if (lmd.removeIf(x -> x.getDate().equals(mailData.getDate()) &&
@@ -332,7 +309,6 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
          return false;
     }
 
-    @Override
     public boolean clearMail() {
         if (!data.getMailDataList().isEmpty()) {
             data.setMailDataList(Lists.newArrayList());
@@ -342,22 +318,18 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         }
     }
 
-    @Override
     public boolean isFlyingSafe() {
         return data.isFly();
     }
 
-    @Override
     public void setJailData(JailData jdata) {
         data.setJailData(jdata);
     }
 
-    @Override
     public void removeJailData() {
         setJailData(null);
     }
 
-    @Override
     public void setOnLogout() {
         setLastLogout(Instant.now());
 
@@ -366,7 +338,6 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         isInvulnerable();
     }
 
-    @Override
     public Optional<Location<World>> getLocationOnLogin() {
         LocationNode ln = data.getLocationOnLogin();
         if (ln == null) {
@@ -380,17 +351,14 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         }
     }
 
-    @Override
     public void sendToLocationOnLogin(Location<World> worldLocation) {
         data.setLocationOnLogin(new LocationNode(worldLocation));
     }
 
-    @Override
     public void removeLocationOnLogin() {
         data.setLocationOnLogin(null);
     }
 
-    @Override
     public void setLastLogout(Instant logout) {
         data.setLogout(logout.toEpochMilli());
     }
@@ -400,31 +368,26 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         return user.getUniqueId();
     }
 
-    @Override
     public boolean jailOnNextLogin() {
         return data.isJailOffline();
     }
 
-    @Override
     public void setJailOnNextLogin(boolean set) {
         data.setJailOffline(!user.isOnline() && set);
     }
 
-    @Override
     public Map<String, Instant> getKitLastUsedTime() {
         final Map<String, Instant> r = Maps.newHashMap();
         data.getKitLastUsedTime().forEach((k, v) -> r.put(k, Instant.ofEpochSecond(v)));
         return r;
     }
 
-    @Override
     public void addKitLastUsedTime(String kitName, Instant lastTime) {
         Map<String, Long> kitLastUsedTime = data.getKitLastUsedTime();
         kitLastUsedTime.put(kitName, lastTime.getEpochSecond());
         data.setKitLastUsedTime(kitLastUsedTime);
     }
 
-    @Override
     public void removeKitLastUsedTime(String kitName) {
         Map<String, Long> kitLastUsedTime = data.getKitLastUsedTime();
         kitLastUsedTime.remove(kitName);
@@ -432,7 +395,6 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
     }
 
     // -- Powertools
-    @Override
     public Map<String, List<String>> getPowertools() {
         return ImmutableMap.copyOf(data.getPowertools());
     }
@@ -447,17 +409,14 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         return Optional.empty();
     }
 
-    @Override
     public void setPowertool(ItemType type, List<String> commands) {
         data.getPowertools().put(type.getId(), commands);
     }
 
-    @Override
     public void clearPowertool(ItemType type) {
         data.getPowertools().remove(type.getId());
     }
 
-    @Override
     public void clearPowertool(String type) {
         data.getPowertools().remove(type);
     }
@@ -502,32 +461,26 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         data.setFrozen(value);
     }
 
-    @Override
     public Optional<Transform<World>> getLastLocation() {
         return Optional.ofNullable(this.lastLocation);
     }
 
-    @Override
     public void setLastLocation(Transform<World> location) {
         this.lastLocation = location;
     }
 
-    @Override
     public boolean isLogLastLocation() {
         return logLastLocation;
     }
 
-    @Override
     public void setLogLastLocation(boolean logLastLocation) {
         this.logLastLocation = logLastLocation;
     }
 
-    @Override
     public boolean isInStaffChat() {
         return inStaffChat;
     }
 
-    @Override
     public void setInStaffChat(boolean inStaffChat) {
         this.inStaffChat = inStaffChat;
     }
@@ -537,9 +490,17 @@ public class UserService extends AbstractSerialisableClassConfig<UserDataNode, C
         return firstPlay;
     }
 
-    @Override
     public void setFirstPlay(boolean firstPlay) {
         this.firstPlay = firstPlay;
+    }
+
+    /**
+     * Primarily used internally to determine if the {@link UserDataManager#removeOfflinePlayers()} method should really remove this.
+     *
+     * @return The {@link Instant} the {@link UserService} was loaded.
+     */
+    public final Instant serviceLoadTime() {
+        return serviceLoadTime;
     }
 
     private String getNickPrefix() {

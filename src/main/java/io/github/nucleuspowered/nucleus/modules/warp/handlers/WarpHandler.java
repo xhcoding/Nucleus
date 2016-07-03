@@ -8,7 +8,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 

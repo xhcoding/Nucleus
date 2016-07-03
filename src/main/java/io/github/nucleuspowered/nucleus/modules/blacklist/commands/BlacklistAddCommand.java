@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;

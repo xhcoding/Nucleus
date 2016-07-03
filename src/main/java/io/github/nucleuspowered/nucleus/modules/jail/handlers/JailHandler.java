@@ -11,8 +11,8 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -61,7 +61,7 @@ public class JailHandler implements NucleusJailService {
     @Override
     public Optional<JailData> getPlayerJailData(User user) {
         try {
-            return plugin.getUserLoader().getUser(user).getJailData();
+            return plugin.getUserDataManager().get(user).get().getJailData();
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
@@ -70,9 +70,9 @@ public class JailHandler implements NucleusJailService {
 
     @Override
     public boolean jailPlayer(User user, JailData data) {
-        InternalNucleusUser iqsu;
+        UserService iqsu;
         try {
-            iqsu = plugin.getUserLoader().getUser(user);
+            iqsu = plugin.getUserDataManager().get(user).get();
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -112,9 +112,9 @@ public class JailHandler implements NucleusJailService {
 
     @Override
     public boolean unjailPlayer(User user) {
-        final InternalNucleusUser iqsu;
+        final UserService iqsu;
         try {
-            iqsu = plugin.getUserLoader().getUser(user);
+            iqsu = plugin.getUserDataManager().get(user).get();
         } catch (Exception e) {
             e.printStackTrace();
             return false;

@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherArgument;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -28,6 +29,7 @@ public class DeleteOtherHomeCommand extends CommandBase<CommandSource> {
     private final String homeKey = "home";
 
     @Inject private CoreConfigAdapter cca;
+    @Inject private UserDataManager udm;
 
     @Override
     public CommandElement[] getArguments() {
@@ -37,7 +39,7 @@ public class DeleteOtherHomeCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         HomeOtherArgument.HomeData wl = args.<HomeOtherArgument.HomeData>getOne(homeKey).get();
-        if (plugin.getUserLoader().getUser(wl.user).deleteHome(wl.location.getName())) {
+        if (udm.get(wl.user).get().deleteHome(wl.location.getName())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.delete.other.success", wl.user.getName(), wl.location.getName()));
             return CommandResult.success();
         }

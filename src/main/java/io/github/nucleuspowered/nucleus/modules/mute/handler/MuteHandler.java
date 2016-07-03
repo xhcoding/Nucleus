@@ -9,8 +9,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import org.spongepowered.api.entity.living.player.User;
 
 import java.time.Instant;
@@ -19,7 +19,7 @@ import java.util.Optional;
 public class MuteHandler implements NucleusMuteService {
 
     private final Nucleus nucleus;
-    @Inject private UserConfigLoader ucl;
+    @Inject private UserDataManager ucl;
 
     public MuteHandler(Nucleus nucleus) {
         this.nucleus = nucleus;
@@ -32,7 +32,7 @@ public class MuteHandler implements NucleusMuteService {
 
     @Override
     public Optional<MuteData> getPlayerMuteData(User user) {
-        Optional<InternalNucleusUser> nu = getNucleusUser(user);
+        Optional<UserService> nu = ucl.get(user);
         if (nu.isPresent()) {
             return nu.get().getMuteData();
         }
@@ -45,12 +45,12 @@ public class MuteHandler implements NucleusMuteService {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(data);
 
-        Optional<InternalNucleusUser> nu = getNucleusUser(user);
+        Optional<UserService> nu = ucl.get(user);
         if (!nu.isPresent()) {
             return false;
         }
 
-        InternalNucleusUser u = nu.get();
+        UserService u = nu.get();
         if (user.isOnline() && data.getTimeFromNextLogin().isPresent() && !data.getEndTimestamp().isPresent()) {
             data = new MuteData(data.getMuter(), data.getReason(), Instant.now().plus(data.getTimeFromNextLogin().get()));
         }
@@ -62,7 +62,7 @@ public class MuteHandler implements NucleusMuteService {
     @Override
     public boolean unmutePlayer(User user) {
         if (isMuted(user)) {
-            Optional<InternalNucleusUser> o = getNucleusUser(user);
+            Optional<UserService> o = ucl.get(user);
             if (o.isPresent()) {
                 o.get().removeMuteData();
                 return true;
@@ -70,15 +70,6 @@ public class MuteHandler implements NucleusMuteService {
         }
 
         return false;
-    }
-
-    private Optional<InternalNucleusUser> getNucleusUser(User user) {
-        try {
-            return Optional.of(ucl.getUser(user));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
     }
 
 }

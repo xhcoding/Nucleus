@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -34,7 +33,6 @@ import org.spongepowered.api.text.Text;
 public class KitCostCommand extends CommandBase<CommandSource> {
 
     @Inject private KitHandler kitConfig;
-    @Inject private UserConfigLoader userConfigLoader;
     @Inject private KitConfigAdapter kca;
 
     private final String costKey = "cost";

@@ -6,11 +6,12 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -21,6 +22,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +35,9 @@ public class SetHomeCommand extends CommandBase<Player> {
 
     private final String homeKey = "home";
     private final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
+
+    @Inject
+    private UserDataManager udm;
 
     @Override
     public CommandElement[] getArguments() {
@@ -52,7 +57,7 @@ public class SetHomeCommand extends CommandBase<Player> {
         String home = args.<String>getOne(homeKey).orElse("home").toLowerCase();
 
         // Get the homes.
-        InternalNucleusUser iqsu = plugin.getUserLoader().getUser(src);
+        UserService iqsu = udm.get(src).get();
         Map<String, WarpLocation> msw = iqsu.getHomes();
 
         if (!warpName.matcher(home).matches()) {

@@ -9,8 +9,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
-import io.github.nucleuspowered.nucleus.config.GeneralDataStore;
-import io.github.nucleuspowered.nucleus.config.serialisers.KitDataNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
 
 import java.util.Optional;
 import java.util.Set;

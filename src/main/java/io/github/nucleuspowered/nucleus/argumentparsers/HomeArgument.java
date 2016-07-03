@@ -47,7 +47,7 @@ public class HomeArgument extends CommandElement {
 
     protected WarpLocation getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
         try {
-            Optional<WarpLocation> owl = plugin.getUserLoader().getUser(user).getHome(home);
+            Optional<WarpLocation> owl = plugin.getUserDataManager().get(user).get().getHome(home);
             if (owl.isPresent()) {
                 return owl.get();
             }
@@ -56,7 +56,7 @@ public class HomeArgument extends CommandElement {
                 e.printStackTrace();
             }
 
-            throw args.createError(Text.of(TextColors.RED, "An unspecified error occured"));
+            throw args.createError(Text.of(TextColors.RED, "An unspecified error occurred"));
         }
 
         throw args.createError(Util.getTextMessageWithFormat("args.home.nohome", home));
@@ -71,7 +71,7 @@ public class HomeArgument extends CommandElement {
         User u = (User) src;
         Set<String> s;
         try {
-            s = plugin.getUserLoader().getUser(u).getHomes().keySet();
+            s = plugin.getUserDataManager().get(u).get().getHomes().keySet();
         } catch (Exception e) {
             return null;
         }

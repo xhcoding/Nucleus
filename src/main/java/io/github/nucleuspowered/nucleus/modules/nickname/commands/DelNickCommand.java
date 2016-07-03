@@ -6,11 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -25,7 +25,7 @@ import java.util.Optional;
 @Permissions(alias = "nick")
 public class DelNickCommand extends CommandBase<CommandSource> {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     private final String playerKey = "player";
 
@@ -44,8 +44,8 @@ public class DelNickCommand extends CommandBase<CommandSource> {
         }
 
         User pl = opl.get();
-        InternalNucleusUser internalQuickStartUser = loader.getUser(pl);
-        internalQuickStartUser.removeNickname();
+        UserService userService = loader.get(pl).get();
+        userService.removeNickname();
 
         if (!src.equals(pl)) {
             src.sendMessage(Util.getTextMessageWithFormat("command.delnick.success.other", pl.getName()));

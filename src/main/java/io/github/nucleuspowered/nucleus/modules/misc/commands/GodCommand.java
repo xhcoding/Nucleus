@@ -5,13 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -60,7 +56,7 @@ public class GodCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
 
-        InternalNucleusUser uc = plugin.getUserLoader().getUser(pl);
+        UserService uc = plugin.getUserDataManager().get(pl).get();
         boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
 
         uc.setInvulnerable(god);

@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -30,7 +30,7 @@ import java.util.Optional;
 public class IgnoreListener extends ListenerBase {
 
     @Inject private PermissionRegistry permissionRegistry;
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
     @Inject private CoreConfigAdapter cca;
     private CommandPermissionHandler ignoreHandler;
 
@@ -44,7 +44,7 @@ public class IgnoreListener extends ListenerBase {
     public void onMessage(NucleusMessageEvent event, @First Player player) {
         if (event.getRecipient() instanceof User) {
             try {
-                event.setCancelled(loader.getUser((User) event.getRecipient()).getIgnoreList().contains(player.getUniqueId()));
+                event.setCancelled(loader.get((User) event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
             } catch (Exception e) {
                 if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();
@@ -56,7 +56,7 @@ public class IgnoreListener extends ListenerBase {
     @Listener(order = Order.FIRST)
     public void onMail(NucleusMailEvent event, @First Player player) {
         try {
-            event.setCancelled(loader.getUser(event.getRecipient()).getIgnoreList().contains(player.getUniqueId()));
+            event.setCancelled(loader.get(event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -86,7 +86,7 @@ public class IgnoreListener extends ListenerBase {
         List<MessageReceiver> list = Lists.newArrayList(collection);
         list.removeIf(x -> {
             try {
-                return x instanceof Player && !x.equals(player) && loader.getUser((Player) x).getIgnoreList().contains(player.getUniqueId());
+                return x instanceof Player && !x.equals(player) && loader.get((Player) x).get().getIgnoreList().contains(player.getUniqueId());
             } catch (Exception e) {
                 if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();

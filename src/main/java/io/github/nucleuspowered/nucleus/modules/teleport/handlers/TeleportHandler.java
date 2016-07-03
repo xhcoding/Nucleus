@@ -7,9 +7,9 @@ package io.github.nucleuspowered.nucleus.modules.teleport.handlers;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -269,13 +269,13 @@ public class TeleportHandler {
                 return false;
             }
 
-            InternalNucleusUser toPlayer = plugin.getUserLoader().getUser(to);
+            UserService toPlayer = plugin.getUserDataManager().get(to).get();
             if (!bypassToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(source)) {
                 source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return false;
             }
 
-            if (plugin.getUserLoader().getUser(from).getJailData().isPresent()) {
+            if (plugin.getUserDataManager().get(from).get().getJailData().isPresent()) {
                 // Don't teleport a jailed player.
                 if (!silentSource) {
                     source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.jailed", from.getName()));

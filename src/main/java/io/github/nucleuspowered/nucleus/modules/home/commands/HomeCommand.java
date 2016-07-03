@@ -40,7 +40,7 @@ public class HomeCommand extends CommandBase<Player> {
         // Get the home.
         Optional<WarpLocation> owl = args.getOne(home);
         if (!owl.isPresent()) {
-            owl = plugin.getUserLoader().getUser(src).getHome("home");
+            owl = plugin.getUserDataManager().get(src).get().getHome("home");
 
             if (!owl.isPresent()) {
                 src.sendMessage(Util.getTextMessageWithFormat("args.home.nohome", "home"));

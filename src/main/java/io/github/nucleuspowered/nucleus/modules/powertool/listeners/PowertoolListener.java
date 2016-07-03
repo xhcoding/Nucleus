@@ -5,11 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.powertool.commands.PowertoolCommand;
 import org.spongepowered.api.Sponge;
@@ -21,7 +21,7 @@ import org.spongepowered.api.item.ItemType;
 
 public class PowertoolListener extends ListenerBase {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
     @Inject private CoreConfigAdapter config;
 
     @Inject private PermissionRegistry permissionRegistry;
@@ -45,9 +45,9 @@ public class PowertoolListener extends ListenerBase {
 
         // Get the item and the user.
         ItemType item = player.getItemInHand().get().getItem();
-        InternalNucleusUser user;
+        UserService user;
         try {
-            user = loader.getUser(player);
+            user = loader.get(player).get();
         } catch (Exception e) {
             if (config.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

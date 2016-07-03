@@ -6,9 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.core.runnables;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.scheduler.Task;
 
 /**
@@ -16,7 +15,7 @@ import org.spongepowered.api.scheduler.Task;
  */
 public class CoreTask extends TaskBase {
     @Inject private Nucleus plugin;
-    @Inject private CoreConfigAdapter cca;
+    @Inject private UserDataManager uda;
 
     @Override
     public boolean isAsync() {
@@ -25,13 +24,12 @@ public class CoreTask extends TaskBase {
 
     @Override
     public int secondsPerRun() {
-        return 30;
+        return 300;
     }
 
     @Override
     public void accept(Task task) {
-        UserConfigLoader ucl = plugin.getUserLoader();
-        ucl.purgeNotOnline();
         plugin.saveData();
+        uda.removeOfflinePlayers();
     }
 }

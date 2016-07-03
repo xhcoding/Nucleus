@@ -10,6 +10,7 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.world.World;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -27,7 +28,7 @@ public interface NucleusWorldLoaderService {
      * @throws ObjectMappingException If the data file is malformed.
      * @throws Exception For any other reason
      */
-    NucleusWorld getWorld(UUID uuid) throws Exception;
+    Optional<NucleusWorld> getWorld(UUID uuid) throws Exception;
 
     /**
      * Gets the world associated with the provided UUID.
@@ -38,7 +39,7 @@ public interface NucleusWorldLoaderService {
      * @throws ObjectMappingException If the data file is malformed.
      * @throws Exception For any other reason
      */
-    NucleusWorld getWorld(World world) throws Exception;
+    Optional<NucleusWorld> getWorld(World world) throws Exception;
 
     /**
      * Saves all world data.

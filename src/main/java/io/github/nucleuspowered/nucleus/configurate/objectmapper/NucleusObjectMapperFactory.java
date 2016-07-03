@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.config.configurate;
+package io.github.nucleuspowered.nucleus.configurate.objectmapper;
 
 import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;

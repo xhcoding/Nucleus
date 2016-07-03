@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.internal.migrators;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.WorldService;
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandSource;
 
@@ -34,18 +34,18 @@ public abstract class DataMigrator {
      */
     public abstract void migrate(CommandSource src) throws Exception;
 
-    protected final Optional<InternalNucleusUser> getUser(UUID uuid) {
+    protected final Optional<UserService> getUser(UUID uuid) {
         try {
-            return Optional.of(plugin.getUserLoader().getUser(uuid));
+            return plugin.getUserDataManager().get(uuid);
         } catch (Exception e) {
             plugin.getLogger().warn("command.migrate.user.noexist", uuid.toString());
             return Optional.empty();
         }
     }
 
-    protected final Optional<NucleusWorld> getWorld(UUID uuid) {
+    protected final Optional<WorldService> getWorld(UUID uuid) {
         try {
-            return Optional.of(plugin.getWorldLoader().getWorld(uuid));
+            return plugin.getWorldDataManager().get(uuid);
         } catch (Exception e) {
             plugin.getLogger().warn("command.migrate.world.noexist", uuid.toString());
             return Optional.empty();

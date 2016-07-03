@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.runnables;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
@@ -19,19 +19,12 @@ import java.util.Collection;
 public class JailTask extends TaskBase {
     @Inject private Nucleus plugin;
     @Inject private JailHandler jailHandler;
+    @Inject private UserDataManager userDataManager;
 
     @Override
     public void accept(Task task) {
         Collection<Player> pl = Sponge.getServer().getOnlinePlayers();
-        UserConfigLoader ucl = plugin.getUserLoader();
-        pl.stream().map(x -> {
-            try {
-                return ucl.getUser(x);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }).filter(x -> x == null || x.getJailData().isPresent()).forEach(x -> Util.testForEndTimestamp(x.getJailData(), () -> jailHandler.unjailPlayer(x.getUser())));
+        pl.stream().map(x -> userDataManager.getUser(x).orElse(null)).filter(x -> x == null || x.getJailData().isPresent()).forEach(x -> Util.testForEndTimestamp(x.getJailData(), () -> jailHandler.unjailPlayer(x.getUser())));
     }
 
     @Override

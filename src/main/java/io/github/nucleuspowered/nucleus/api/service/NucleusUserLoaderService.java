@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.api.service;
 
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.User;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -37,13 +35,9 @@ public interface NucleusUserLoaderService {
      * </p>
      *
      * @param playerUUID The {@link UUID} of the player in question.
-     * @return The {@link NucleusUser}
-     *
-     * @throws NoSuchPlayerException Thrown when the player has never player on the server.
-     * @throws IOException Thrown when the file could not be read.
-     * @throws ObjectMappingException Thrown when the object mapper fails.
+     * @return The {@link NucleusUser}, wrapped in an {@link Optional}
      */
-    NucleusUser getUser(UUID playerUUID) throws Exception;
+    Optional<NucleusUser> getUser(UUID playerUUID);
 
     /**
      * Gets the user data file from the {@link User}.
@@ -58,10 +52,6 @@ public interface NucleusUserLoaderService {
      *
      * @param user The {@link User} of the player in question.
      * @return The {@link NucleusUser}
-     *
-     * @throws IOException Thrown when the file could not be read.
-     * @throws ObjectMappingException Thrown when the object mapper fails.
-     *
      */
-    NucleusUser getUser(User user) throws Exception;
+    Optional<NucleusUser> getUser(User user);
 }

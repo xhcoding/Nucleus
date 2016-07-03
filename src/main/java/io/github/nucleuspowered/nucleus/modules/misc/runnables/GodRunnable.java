@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.misc.runnables;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class GodRunnable extends TaskBase {
 
     @Inject private Nucleus plugin;
-    @Inject private UserConfigLoader ucl;
+    @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
 
     @Override
@@ -48,7 +48,7 @@ public class GodRunnable extends TaskBase {
 
     private boolean isInvulnerable(Player pl) {
         try {
-            return ucl.getUser(pl).isInvulnerable();
+            return ucl.getUser(pl).get().isInvulnerable();
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

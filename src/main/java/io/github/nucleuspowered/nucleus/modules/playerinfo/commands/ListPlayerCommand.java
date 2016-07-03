@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -41,7 +41,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
 
     @Inject(optional = true) @Nullable private AFKHandler handler;
     @Inject private PlayerInfoConfigAdapter config;
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     private Text afk = null;
     private Text hidden = null;

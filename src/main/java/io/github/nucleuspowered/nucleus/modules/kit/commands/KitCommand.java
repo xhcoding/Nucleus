@@ -9,14 +9,14 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
@@ -49,7 +49,7 @@ public class KitCommand extends CommandBase<Player> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
-    @Inject private UserConfigLoader userConfigLoader;
+    @Inject private UserDataManager userConfigLoader;
     @Inject private EconHelper econHelper;
 
     @Override
@@ -76,7 +76,7 @@ public class KitCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
         KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
-        InternalNucleusUser user = userConfigLoader.getUser(player.getUniqueId());
+        UserService user = userConfigLoader.get(player.getUniqueId()).get();
         Kit kit = kitInfo.kit;
         String kitName = kitInfo.name;
         Instant now = Instant.now();

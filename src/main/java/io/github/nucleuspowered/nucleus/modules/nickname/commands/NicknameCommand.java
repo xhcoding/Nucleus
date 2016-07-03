@@ -6,11 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 @Permissions
 public class NicknameCommand extends CommandBase<CommandSource> {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
     @Inject private NicknameConfigAdapter nicknameConfigAdapter;
 
     private final String playerKey = "player";
@@ -104,9 +104,9 @@ public class NicknameCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        InternalNucleusUser internalQuickStartUser = loader.getUser(pl);
-        internalQuickStartUser.setNickname(name);
-        Text set = internalQuickStartUser.getNicknameAsText().get();
+        UserService nucleusUser = loader.get(pl).get();
+        nucleusUser.setNickname(name);
+        Text set = nucleusUser.getNicknameAsText().get();
 
         if (!src.equals(pl)) {
             src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.nick.success.other", pl.getName()))

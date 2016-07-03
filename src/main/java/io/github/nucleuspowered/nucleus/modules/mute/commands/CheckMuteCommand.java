@@ -7,13 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.mute.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
@@ -44,7 +38,6 @@ import java.util.Optional;
 @RegisterCommand("checkmute")
 public class CheckMuteCommand extends CommandBase<CommandSource> {
 
-    @Inject private UserConfigLoader userConfigLoader;
     @Inject private MuteHandler handler;
     private final String playerArgument = "player";
 

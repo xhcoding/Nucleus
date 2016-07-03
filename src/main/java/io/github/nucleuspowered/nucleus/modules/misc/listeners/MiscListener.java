@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.misc.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.entity.living.player.Player;
@@ -14,7 +14,7 @@ import org.spongepowered.api.event.entity.DamageEntityEvent;
 
 public class MiscListener extends ListenerBase {
 
-    @Inject private UserConfigLoader ucl;
+    @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
 
     // For /god
@@ -31,7 +31,7 @@ public class MiscListener extends ListenerBase {
 
     private boolean isInvulnerable(Player pl) {
         try {
-            return ucl.getUser(pl).isInvulnerable();
+            return ucl.getUser(pl).get().isInvulnerable();
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

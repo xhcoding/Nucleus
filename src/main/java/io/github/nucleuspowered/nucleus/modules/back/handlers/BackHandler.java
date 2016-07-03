@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.back.handlers;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.User;
@@ -18,12 +18,12 @@ import java.util.Optional;
 @SuppressWarnings("deprecation")
 public class BackHandler implements NucleusBackService {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
     @Inject private CoreConfigAdapter cca;
 
     @Override
     public Optional<Transform<World>> getLastLocation(User user) {
-        Optional<InternalNucleusUser> oi = getUser(user);
+        Optional<UserService> oi = getUser(user);
         if (oi.isPresent()) {
             return oi.get().getLastLocation();
         }
@@ -43,7 +43,7 @@ public class BackHandler implements NucleusBackService {
 
     @Override
     public boolean getLogBack(User user) {
-        Optional<InternalNucleusUser> oi = getUser(user);
+        Optional<UserService> oi = getUser(user);
         return oi.isPresent() && oi.get().isLogLastLocation();
     }
 
@@ -52,9 +52,9 @@ public class BackHandler implements NucleusBackService {
         getUser(user).ifPresent(x -> x.setLogLastLocation(log));
     }
 
-    private Optional<InternalNucleusUser> getUser(User user) {
+    private Optional<UserService> getUser(User user) {
         try {
-            return Optional.of(loader.getUser(user));
+            return Optional.ofNullable(loader.get(user.getUniqueId()).orElse(null));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

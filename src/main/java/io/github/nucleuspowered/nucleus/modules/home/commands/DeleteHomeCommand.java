@@ -39,7 +39,7 @@ public class DeleteHomeCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         WarpLocation wl = args.<WarpLocation>getOne(homeKey).get();
-        if (plugin.getUserLoader().getUser(src).deleteHome(wl.getName())) {
+        if (plugin.getUserDataManager().get(src).get().deleteHome(wl.getName())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.delete.success", wl.getName()));
             return CommandResult.success();
         }

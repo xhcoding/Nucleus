@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.connectionmessages.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfigAdapter;
@@ -21,7 +21,7 @@ public class ConnectionMessagesListener extends ListenerBase {
     @Inject private ChatUtil chatUtil;
     @Inject private CoreConfigAdapter cca;
     @Inject private ConnectionMessagesConfigAdapter cma;
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     @Listener
     public void onPlayerLogin(ClientConnectionEvent.Join joinEvent) {
@@ -29,7 +29,7 @@ public class ConnectionMessagesListener extends ListenerBase {
         ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
 
         try {
-            if (loader.getUser(pl).isFirstPlay()) {
+            if (loader.getUser(pl).get().isFirstPlay()) {
                 // First time player.
                 if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
                     Sponge.getServer().getBroadcastChannel().send(plugin, chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getFirstTimeMessage(), pl, true));

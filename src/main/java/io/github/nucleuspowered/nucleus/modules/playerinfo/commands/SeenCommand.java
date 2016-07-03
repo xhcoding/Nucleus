@@ -7,11 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
@@ -47,6 +48,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
     @Inject(optional = true) @Nullable private MuteHandler muteService;
     @Inject(optional = true) @Nullable private JailHandler jailService;
+    @Inject private UserDataManager udm;
 
     private final String playerKey = "player";
 
@@ -65,7 +67,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
-        InternalNucleusUser iqsu = plugin.getUserLoader().getUser(user);
+        UserService iqsu = udm.get(user).get();
 
         List<Text> messages = new ArrayList<>();
 

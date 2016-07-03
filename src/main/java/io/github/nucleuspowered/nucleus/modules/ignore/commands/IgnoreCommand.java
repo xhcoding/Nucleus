@@ -7,15 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.ignore.commands;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -36,7 +31,7 @@ import java.util.Map;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 public class IgnoreCommand extends CommandBase<Player> {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     private final String userKey = "user";
     private final String toggleKey = "toggle";
@@ -64,7 +59,7 @@ public class IgnoreCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        InternalNucleusUser inu = loader.getUser(src);
+        UserService inu = loader.get(src).get();
 
         if (permissions.testSuffix(target, "exempt.chat")) {
             // Make sure they are removed.

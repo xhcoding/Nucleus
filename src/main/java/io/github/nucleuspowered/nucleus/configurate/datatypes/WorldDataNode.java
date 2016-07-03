@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.config.serialisers;
+package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.flowpowered.math.vector.Vector3d;
 import ninja.leaping.configurate.objectmapping.Setting;

@@ -68,7 +68,7 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
 
         boolean other = !src.equals(user);
 
-        Map<String, WarpLocation> msw = plugin.getUserLoader().getUser(user).getHomes();
+        Map<String, WarpLocation> msw = plugin.getUserDataManager().get(user).get().getHomes();
         if (msw.isEmpty()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.nohomes"));
             return CommandResult.empty();

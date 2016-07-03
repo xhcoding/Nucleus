@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.config.typeserialisers;
+package io.github.nucleuspowered.nucleus.configurate.typeserialisers;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.reflect.TypeToken;

@@ -9,15 +9,13 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -29,7 +27,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +47,7 @@ import java.util.UUID;
 @RegisterCommand({"mute", "unmute"})
 public class MuteCommand extends CommandBase<CommandSource> {
 
-    @Inject private UserConfigLoader userConfigLoader;
+    @Inject private UserDataManager userConfigLoader;
     @Inject private MuteHandler handler;
 
     private final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "mute.notify";
@@ -78,13 +75,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
 
         // Get the user.
         User user = args.<User>getOne(playerArgument).get();
-        NucleusUser uc;
-        try {
-            uc = userConfigLoader.getUser(user);
-        } catch (IOException | ObjectMappingException e) {
-            e.printStackTrace();
-            throw new CommandException(Util.getTextMessageWithFormat("command.file.load"), e);
-        }
+        NucleusUser uc = userConfigLoader.get(user).get();
 
         Optional<Long> time = args.getOne(timespanArgument);
         Optional<MuteData> omd = handler.getPlayerMuteData(user);

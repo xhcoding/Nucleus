@@ -6,15 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
-import io.github.nucleuspowered.nucleus.internal.interfaces.InternalNucleusUser;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -36,7 +31,7 @@ import org.spongepowered.api.text.Text;
 public class TogglePowertoolCommand extends CommandBase<Player> {
 
     private final String toggleKey = "toggle";
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     @Override
     public CommandElement[] getArguments() {
@@ -45,7 +40,7 @@ public class TogglePowertoolCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        InternalNucleusUser user = loader.getUser(src);
+        UserService user = loader.get(src).get();
 
         // If specified - get the key. Else, the inverse of what we have now.
         boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!user.isPowertoolToggled());

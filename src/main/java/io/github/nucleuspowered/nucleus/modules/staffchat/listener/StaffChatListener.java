@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.staffchat.listener;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.config.loaders.UserConfigLoader;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import org.spongepowered.api.entity.living.player.Player;
@@ -16,7 +16,7 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 
 public class StaffChatListener extends ListenerBase {
 
-    @Inject private UserConfigLoader loader;
+    @Inject private UserDataManager loader;
 
     @Listener(order = Order.FIRST)
     public void onMessage(MessageChannelEvent.Chat event, @First Player player) {
@@ -28,7 +28,7 @@ public class StaffChatListener extends ListenerBase {
 
     private boolean inAdminChat(Player player) {
         try {
-            return loader.getUser(player).isInStaffChat();
+            return loader.get(player).get().isInStaffChat();
         } catch (Exception e) {
             return false;
         }
