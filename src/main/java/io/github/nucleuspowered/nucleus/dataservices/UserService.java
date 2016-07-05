@@ -274,7 +274,7 @@ public class UserService extends Service<UserDataNode>
         }
 
         Text nick = TextSerializers.FORMATTING_CODE.deserialize(nickname);
-        user.offer(Keys.DISPLAY_NAME, nick);
+        user.getPlayer().ifPresent(x -> x.offer(Keys.DISPLAY_NAME, nick));
     }
 
     @Override

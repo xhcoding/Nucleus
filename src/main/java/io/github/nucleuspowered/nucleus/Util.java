@@ -18,6 +18,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.world.Location;
@@ -28,10 +29,7 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -63,6 +61,11 @@ public class Util {
 
     public static Text getTextMessageWithFormat(String key, String... substitutions) {
         return messageProvider.get().getTextMessageWithFormat(key, substitutions);
+    }
+
+    public static Text getTextMessageWithTextFormat(String key, Text... substitutions) {
+        String[] text = Arrays.asList(substitutions).stream().map(TextSerializers.FORMATTING_CODE::serialize).toArray(String[]::new);
+        return messageProvider.get().getTextMessageWithFormat(key, text);
     }
 
     public static String getTimeToNow(Instant time) {
