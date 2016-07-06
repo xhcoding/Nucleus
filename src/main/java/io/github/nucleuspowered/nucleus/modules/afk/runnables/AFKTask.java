@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.runnables;
 
-import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
@@ -19,6 +18,7 @@ import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -67,12 +67,21 @@ public class AFKTask extends TaskBase {
         if (config.getAfkTimeToKick() > 0) {
             List<UUID> afking = handler.checkForAfkKick(config.getAfkTimeToKick());
             if (!afking.isEmpty()) {
+                String message = afkconfiga.getNodeOrDefault().getMessages().getKickMessage().trim();
+                if (message.isEmpty()) {
+                    message = Util.getMessageWithFormat("afk.kickreason");
+                }
+
+                final String messageToServer = afkconfiga.getNodeOrDefault().getMessages().getOnKick().trim();
+                final String messageToGetAroundJavaRestrictions = message;
                 Sponge.getServer().getOnlinePlayers().stream()
                     .filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.kick")) && afking.contains(x.getUniqueId()))
                     .forEach(x -> {
-                        Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(Util.getTextMessageWithFormat("afk.kickreason")));
-                        MessageChannel.TO_ALL
-                                .send(Util.getTextMessageWithFormat("afk.kickedafk", NameUtil.getSerialisedName(x)));
+                        Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(TextSerializers.FORMATTING_CODE.deserialize(messageToGetAroundJavaRestrictions)));
+
+                        if (!messageToServer.isEmpty()) {
+                            MessageChannel.TO_ALL.send(plugin.getChatUtil().getPlayerMessageFromTemplate(messageToServer, x, true));
+                        }
                     });
             }
         }

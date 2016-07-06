@@ -5,9 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.afk.handlers;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
@@ -122,8 +120,10 @@ public class AFKHandler {
         Sponge.getServer().getPlayer(uuid).ifPresent(x -> {
             // If we have the config set to true, or the player is NOT invisible, send an AFK message
             if (aca.getNodeOrDefault().isAfkOnVanish() || !x.get(Keys.INVISIBLE).orElse(false)) {
-                MessageChannel.TO_ALL
-                        .send(Util.getTextMessageWithFormat(afk ? "afk.toafk" : "afk.fromafk", NameUtil.getSerialisedName(x)));
+                String template = afk ? aca.getNodeOrDefault().getMessages().getAfkMessage().trim() : aca.getNodeOrDefault().getMessages().getReturnAfkMessage().trim();
+                if (!template.isEmpty()) {
+                    MessageChannel.TO_ALL.send(plugin.getChatUtil().getPlayerMessageFromTemplate(template, x, true));
+                }
             }
         });
     }

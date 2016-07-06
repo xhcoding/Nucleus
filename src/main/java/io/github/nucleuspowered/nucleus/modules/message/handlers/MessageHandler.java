@@ -108,7 +108,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         return true;
     }
 
-    private Optional<CommandSource> getPlayerToReplyTo(UUID from) {
+    public Optional<CommandSource> getPlayerToReplyTo(UUID from) {
         Preconditions.checkNotNull(from);
         UUID to = messagesReceived.get(from);
         if (to == null) {

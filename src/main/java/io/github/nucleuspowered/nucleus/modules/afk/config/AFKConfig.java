@@ -19,6 +19,12 @@ public class AFKConfig {
     @Setting(value = "afk-when-vanished", comment = "loc:config.afk.whenvanished")
     private boolean afkOnVanish = false;
 
+    @Setting(value = "alert-on-command-send", comment = "loc:config.afk.oncommandsend")
+    private boolean alertSenderOnAfk = true;
+
+    @Setting(value = "messages", comment = "loc:config.afk.messages.base")
+    private MessagesConfig messages = new MessagesConfig();
+
     public long getAfkTime() {
         return afkTime;
     }
@@ -29,5 +35,13 @@ public class AFKConfig {
 
     public boolean isAfkOnVanish() {
         return afkOnVanish;
+    }
+
+    public boolean isAlertSenderOnAfk() {
+        return alertSenderOnAfk;
+    }
+
+    public MessagesConfig getMessages() {
+        return messages;
     }
 }

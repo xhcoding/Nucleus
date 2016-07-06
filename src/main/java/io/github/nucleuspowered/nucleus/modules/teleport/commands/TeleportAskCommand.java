@@ -5,10 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -33,11 +30,12 @@ import java.util.Map;
 @NoWarmup(generateConfigEntry = true)
 @RegisterCommand({"tpa", "teleportask"})
 @RunAsync
+@NotifyIfAFK(TeleportAskCommand.playerKey)
 public class TeleportAskCommand extends CommandBase<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
-    private final String playerKey = "player";
+    static final String playerKey = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

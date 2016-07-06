@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -21,14 +22,13 @@ import org.spongepowered.api.text.Text;
 
 /**
  * Messages a player.
- *
- * Permission: quickstart.message.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand({ "message", "m", "msg", "whisper", "w", "tell", "t" })
+@NotifyIfAFK(MessageCommand.to)
 public class MessageCommand extends CommandBase<CommandSource> {
-    private final String to = "to";
+    static final String to = "to";
     private final String message = "message";
 
     @Inject private MessageHandler handler;

@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.internal.command;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -16,6 +16,8 @@ import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -34,6 +36,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
@@ -43,8 +47,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 
 /**
  * DO NOT IMPLEMENT THIS DIRECTLY.
@@ -70,11 +72,17 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private String configSection;
     private boolean generateDefaults;
     private CommandSpec cs = null;
+    private final List<String> afkArgs = Lists.newArrayList();
 
-    @Inject
-    protected Nucleus plugin;
+    @Inject protected Nucleus plugin;
     @Inject private CoreConfigAdapter cca;
     @Inject private WarmupManager warmupService;
+
+    @SuppressWarnings("all")
+    private Optional<AFKHandler> afkHandler = null;
+
+    @SuppressWarnings("all")
+    private Optional<AFKConfigAdapter> aca = null;
 
     @SuppressWarnings("unchecked")
     AbstractCommand() {
@@ -177,6 +185,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         configSection = cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase();
         generateDefaults = cca == null || cca.generate();
+
+        NotifyIfAFK n = this.getClass().getAnnotation(NotifyIfAFK.class);
+        if (n != null) {
+            this.afkArgs.addAll(Arrays.asList(n.value()));
+        }
 
         permissionsToRegister().forEach((k, v) -> permissions.registerPermssion(k, v));
         permissionSuffixesToRegister().forEach((k, v) -> permissions.registerPermssionSuffix(k, v));
@@ -340,7 +353,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             }
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("command.error")).build());
+            src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.error")).build());
 
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -374,6 +387,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private CommandResult startExecute(T src, CommandContext args) {
         CommandResult cr;
         try {
+            checkAfk(src, args);
+
             // Execute the command in the specific executor.
             cr = executeCommand(src, args);
         } catch (TextMessageException e) {
@@ -598,7 +613,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      * @param args The {@link CommandContext}
      * @return Whether to continue with the command.
      */
-    protected ContinueMode applyCost(Player src, CommandContext args) {
+    private ContinueMode applyCost(Player src, CommandContext args) {
         double cost = getCost(src, args);
         if (cost == 0.) {
             return ContinueMode.CONTINUE;
@@ -636,7 +651,66 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return cost;
     }
 
-    protected final Map<List<String>, CommandCallable> createChildCommands() {
+    // -------------------------------------
+    // AFK
+    // -------------------------------------
+    protected boolean isAfk(Player player) {
+        if (afkHandler == null) {
+            afkHandler = plugin.getInternalServiceManager().getService(AFKHandler.class);
+        }
+
+        return afkHandler.isPresent() && afkHandler.get().getAFKData(player).isAFK();
+    }
+
+    protected boolean alertOnAfk() {
+        try {
+            getAfkConfigAdapter();
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            return false;
+        }
+
+        return aca.isPresent() && aca.get().getNodeOrDefault().isAlertSenderOnAfk();
+    }
+
+    private void checkAfk(T src, CommandContext args) {
+        try {
+            // AFK checks can be done async and at the time.
+            if (!afkArgs.isEmpty() && alertOnAfk()) {
+                afkArgs.forEach(s ->
+                        args.getAll(s).stream()
+                                .filter(x -> Player.class.isAssignableFrom(x.getClass())).map(x -> (Player) x).filter(this::isAfk)
+                                .forEach(p -> sendAfkMessage(src, p)));
+            }
+        } catch (Exception e) {
+            // Swallow!
+        }
+    }
+
+    private void getAfkConfigAdapter() throws NoModuleException, IncorrectAdapterTypeException {
+        if (aca == null) {
+            aca = Optional.of(plugin.getModuleContainer().getConfigAdapterForModule("afk", AFKConfigAdapter.class));
+        }
+    }
+
+    protected void sendAfkMessage(CommandSource src, Player player) {
+        try {
+            getAfkConfigAdapter();
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            return;
+        }
+
+        aca.ifPresent(a -> {
+            String onCommand = a.getNodeOrDefault().getMessages().getOnCommand();
+            if (!onCommand.trim().isEmpty()) {
+                src.sendMessage(plugin.getChatUtil().getPlayerMessageFromTemplate(onCommand, player, true));
+            }
+        });
+    }
+
+    // -------------------------------------
+    // Child Commands
+    // -------------------------------------
+    final Map<List<String>, CommandCallable> createChildCommands() {
         if (this.moduleCommands == null) {
             return Maps.newHashMap();
         }

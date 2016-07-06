@@ -5,10 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -26,15 +23,18 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.nucleuspowered.nucleus.modules.teleport.commands.TeleportAskHereCommand.playerKey;
+
 @Permissions(root = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @NoWarmup(generateConfigEntry = true)
 @RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})
+@NotifyIfAFK(playerKey)
 public class TeleportAskHereCommand extends CommandBase<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
-    private final String playerKey = "player";
+    static final String playerKey = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -17,12 +18,11 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 /**
  * Replies to the last player who sent a message.
- *
- * Permission: quickstart.message.base
  */
 @Permissions(alias = "message", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
@@ -41,6 +41,14 @@ public class ReplyCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        if (alertOnAfk()) {
+            handler.getPlayerToReplyTo(Util.getUUID(src)).ifPresent(x -> {
+                if (x instanceof Player && isAfk((Player)x)) {
+                    sendAfkMessage(src, (Player)x);
+                }
+            });
+        }
+
         boolean b = handler.replyMessage(src, args.<String>getOne(message).get());
         return b ? CommandResult.success() : CommandResult.empty();
     }
