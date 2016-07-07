@@ -18,16 +18,23 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AFKListener extends ListenerBase {
 
     @Inject private PermissionRegistry permissionRegistry;
     @Inject private AFKHandler handler;
+    private final List<String> commands;
+
+    private AFKListener() {
+        commands = Arrays.asList(AFKCommand.class.getAnnotation(RegisterCommand.class).value()).stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
 
     private CommandPermissionHandler s = null;
 
@@ -45,32 +52,30 @@ public class AFKListener extends ListenerBase {
     }
 
     @Listener(order = Order.LAST)
-    public void onPlayerInteract(final InteractEvent event, @First Player player) {
+    public void onPlayerInteract(final InteractEvent event, @Root Player player) {
         updateAFK(player);
     }
 
     @Listener(order = Order.LAST)
-    public void onPlayerMove(final DisplaceEntityEvent event, @First Player player) {
+    public void onPlayerMove(final DisplaceEntityEvent event, @Root Player player) {
         updateAFK(player);
     }
 
     @Listener
-    public void onPlayerChat(final MessageChannelEvent.Chat event, @First Player player) {
+    public void onPlayerChat(final MessageChannelEvent.Chat event, @Root Player player) {
         updateAFK(player);
     }
 
     @Listener
-    public void onPlayerCommand(final SendCommandEvent event, @First Player player) {
+    public void onPlayerCommand(final SendCommandEvent event, @Root Player player) {
         // Did the player run /afk? Then don't do anything, we'll toggle it
         // anyway.
-        if (!Arrays.asList(AFKCommand.class.getAnnotation(RegisterCommand.class).value()).contains(event.getCommand().toLowerCase())) {
+        if (!commands.contains(event.getCommand().toLowerCase())) {
             updateAFK(player);
         }
     }
 
     private void updateAFK(final Player player) {
-        Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-            handler.updateUserActivity(player.getUniqueId());
-        });
+        Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> handler.updateUserActivity(player.getUniqueId()));
     }
 }

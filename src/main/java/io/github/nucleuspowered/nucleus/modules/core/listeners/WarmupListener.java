@@ -12,7 +12,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 public class WarmupListener extends ListenerBase {
@@ -20,7 +20,7 @@ public class WarmupListener extends ListenerBase {
     private NucleusWarmupManagerService service;
 
     @Listener(order = Order.LAST)
-    public void onPlayerMovement(DisplaceEntityEvent.Move event, @First Player player) {
+    public void onPlayerMovement(DisplaceEntityEvent.Move event, @Root Player player) {
         // Rotating is OK!
         if (event.getFromTransform().getLocation().equals(event.getToTransform().getLocation())) {
             cancelWarmup(player);
@@ -28,7 +28,7 @@ public class WarmupListener extends ListenerBase {
     }
 
     @Listener(order = Order.LAST)
-    public void onPlayerCommand(SendCommandEvent event, @First Player player) {
+    public void onPlayerCommand(SendCommandEvent event, @Root Player player) {
         cancelWarmup(player);
     }
 

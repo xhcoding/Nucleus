@@ -20,7 +20,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
-import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -71,7 +70,7 @@ public class MuteListener extends ListenerBase {
      * @param player The {@link Player} who executed the command.
      */
     @Listener(order = Order.FIRST)
-    public void onPlayerSendCommand(SendCommandEvent event, @First Player player) {
+    public void onPlayerSendCommand(SendCommandEvent event, @Root Player player) {
         List<String> commands = mca.getNodeOrDefault().getBlockedCommands();
         if (commands.isEmpty()) {
             return;
@@ -101,7 +100,7 @@ public class MuteListener extends ListenerBase {
     }
 
     @Listener(order = Order.FIRST)
-    public void onPlayerChat(MessageChannelEvent.Chat event, @First Player player) {
+    public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
         if (omd.isPresent()) {
             onMute(omd.get(), player);

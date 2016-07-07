@@ -18,7 +18,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
@@ -35,13 +35,13 @@ public class IgnoreListener extends ListenerBase {
     private CommandPermissionHandler ignoreHandler;
 
     @Listener(order = Order.FIRST)
-    public void onChat(MessageChannelEvent.Chat event, @First Player player) {
+    public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
         // Reset the channel - but only if we have to.
         checkCancels(event.getChannel().orElse(event.getOriginalChannel()).getMembers(), player).ifPresent(x -> event.setChannel(MessageChannel.fixed(x)));
     }
 
     @Listener(order = Order.FIRST)
-    public void onMessage(NucleusMessageEvent event, @First Player player) {
+    public void onMessage(NucleusMessageEvent event, @Root Player player) {
         if (event.getRecipient() instanceof User) {
             try {
                 event.setCancelled(loader.get((User) event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
@@ -54,7 +54,7 @@ public class IgnoreListener extends ListenerBase {
     }
 
     @Listener(order = Order.FIRST)
-    public void onMail(NucleusMailEvent event, @First Player player) {
+    public void onMail(NucleusMailEvent event, @Root Player player) {
         try {
             event.setCancelled(loader.get(event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
         } catch (Exception e) {

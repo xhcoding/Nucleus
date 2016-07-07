@@ -14,7 +14,7 @@ import org.spongepowered.api.data.manipulator.mutable.tileentity.SignData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.tileentity.ChangeSignEvent;
-import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Map;
@@ -24,7 +24,7 @@ public class SignListener extends ListenerBase {
     private final String permission = PermissionRegistry.PERMISSIONS_PREFIX + "sign.formatting";
 
     @Listener
-    public void onPlayerChangeSign(ChangeSignEvent event, @First Player player) {
+    public void onPlayerChangeSign(ChangeSignEvent event, @Root Player player) {
         SignData signData = event.getText();
 
         if (player.hasPermission(permission)) {
