@@ -4,23 +4,18 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.config;
 
+import io.github.nucleuspowered.nucleus.configurate.annotations.RemoveSettings;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
+@RemoveSettings({"tag", "colorCode"})
 public class AdminConfig {
 
-    @Setting(comment = "loc:config.broadcast.tag")
-    private String tag = "[Broadcast]";
+    @Setting(value = "broadcast-message-template", comment = "loc:config.broadcast.template")
+    private BroadcastConfig broadcastMessage = new BroadcastConfig();
 
-    @Setting(comment = "loc:config.broadcast.msg")
-    private String colorCode = "a";
-
-    public String getTag() {
-        return tag;
-    }
-
-    public String getColorCode() {
-        return colorCode;
+    public BroadcastConfig getBroadcastMessage() {
+        return broadcastMessage;
     }
 }
