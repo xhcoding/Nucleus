@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.config;
 
-import io.github.nucleuspowered.nucleus.configurate.annotations.RemoveSettings;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
-@RemoveSettings({"tag", "colorCode"})
 public class AdminConfig {
 
     @Setting(value = "broadcast-message-template", comment = "loc:config.broadcast.template")
