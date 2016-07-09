@@ -14,14 +14,20 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.nickname.events.ChangeNicknameEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +77,16 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         User pl = opl.get();
         String name = args.<String>getOne(nickName).get();
 
+        // Does the user exist?
+        Optional<User> match = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(TextSerializers.FORMATTING_CODE.stripCodes(name));
+
+        // The only person who can use such a name is oneself.
+        if (match.isPresent() && match.get().getUniqueId().equals(pl.getUniqueId())) {
+            // Fail - cannot use another's name.
+            src.sendMessage(Util.getTextMessageWithFormat("command.nick.nameinuse", name));
+            return CommandResult.empty();
+        }
+
         // Giving player must have the colour permissions and whatnot. Also,
         // colour and color are the two spellings we support. (RULE BRITANNIA!)
         if (colourPattern.matcher(name).find() && !(permissions.testSuffix(src, "colour") || permissions.testSuffix(src, "color"))) {
@@ -101,6 +117,13 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         // Do a regex remove to check maximum length requirements. Will be at least the minimum length
         if (strippedNameLength > Math.max(nicknameConfigAdapter.getNodeOrDefault().getMaxNicknameLength(), nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.toolong"));
+            return CommandResult.empty();
+        }
+
+        // Send an event
+        ChangeNicknameEvent cne = new ChangeNicknameEvent(Cause.of(NamedCause.source(src)), TextSerializers.FORMATTING_CODE.deserialize(name), pl);
+        if (Sponge.getEventManager().post(cne)) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.nick.eventcancel", pl.getName()));
             return CommandResult.empty();
         }
 
