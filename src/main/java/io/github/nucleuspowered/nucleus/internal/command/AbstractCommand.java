@@ -598,6 +598,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
     }
 
+    protected void removeCooldown(UUID uuid) {
+        cooldownStore.remove(uuid);
+    }
+
     private void cleanCooldowns() {
         // If the cooldown end is in the past, remove it.
         cooldownStore.entrySet().removeIf(k -> k.getValue().isBefore(Instant.now()));

@@ -11,9 +11,9 @@ import org.spongepowered.api.entity.living.player.Player;
 
 public abstract class CostCancellableTask implements CancellableTask {
 
-    private final double cost;
-    private final Nucleus plugin;
-    private final Player player;
+    protected final double cost;
+    protected final Nucleus plugin;
+    protected final Player player;
 
     public CostCancellableTask(Nucleus plugin, Player src, double cost) {
         this.plugin = plugin;
