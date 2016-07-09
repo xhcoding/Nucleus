@@ -7,12 +7,14 @@ package io.github.nucleuspowered.nucleus.modules.message.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -28,15 +30,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MessageHandler implements NucleusPrivateMessagingService {
 
     @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
+    @Inject private MessageConfigAdapter mca;
+    @Inject private ChatUtil chatUtil;
 
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
-    private final Text me = Util.getTextMessageWithFormat("message.me");
 
     @Override
     public boolean isSocialSpy(User user) {
@@ -98,10 +102,17 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             lm.add(Sponge.getServer().getConsole());
         }
 
+        // Create the tokens.
+        Map<String, Function<CommandSource, Text>> tokens = Maps.newHashMap();
+        tokens.put("{{from}}", cs -> Text.of(sender.getName()));
+        tokens.put("{{to}}", cs -> Text.of(receiver.getName()));
+        tokens.put("{{fromdisplay}}", cs -> NameUtil.getNameFromCommandSource(sender, ucl));
+        tokens.put("{{todisplay}}", cs -> NameUtil.getNameFromCommandSource(receiver, ucl));
+
         MessageChannel mc = MessageChannel.fixed(lm);
-        sender.sendMessage(constructMessage(me, nameOfReceiver, message));
-        receiver.sendMessage(constructMessage(nameOfSender, me, message));
-        mc.send(constructSSMessage(nameOfSender, nameOfReceiver, message));
+        sender.sendMessage(constructMessage(sender, message, mca.getNodeOrDefault().getMessageSenderPrefix(), tokens));
+        receiver.sendMessage(constructMessage(sender, message, mca.getNodeOrDefault().getMessageReceiverPrefix(), tokens));
+        mc.send(constructMessage(sender, message, mca.getNodeOrDefault().getMessageSocialSpyPrefix(), tokens));
 
         // Add the UUIDs to the reply list - the receiver will now reply to the sender.
         messagesReceived.put(uuidReceiver, uuidSender);
@@ -134,14 +145,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         return NameUtil.getNameFromCommandSource(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
     }
 
-    private Text constructSSMessage(Text from, Text to, String message) {
-        return Text.builder().append(Text.of(TextColors.GRAY, "[")).append(Util.getTextMessageWithFormat("message.socialspy"))
-                .append(Text.of(TextColors.GRAY, "] ")).append(from).append(Text.of(TextColors.GRAY, " -> ")).append(to)
-                .append(Text.of(TextColors.GRAY, ": ")).append(Text.of(TextColors.GRAY, message)).build();
-    }
-
-    private Text constructMessage(Text from, Text to, String message) {
-        return Text.of(from).toBuilder().append(Text.of(TextColors.GRAY, " -> ")).append(to).append(Text.of(TextColors.GRAY, ": "))
-                .append(Text.of(TextColors.GRAY, message)).build();
+    @SuppressWarnings("unchecked")
+    private Text constructMessage(CommandSource sender, String message, String template, Map<String, Function<CommandSource, Text>> tokens) {
+        return Text.of(chatUtil.getMessageFromTokens(template, sender, false, false, false, tokens), message);
     }
 }

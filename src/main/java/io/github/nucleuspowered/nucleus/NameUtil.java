@@ -53,6 +53,14 @@ public class NameUtil {
         return getName((User)src);
     }
 
+    public static Text getNameFromCommandSource(CommandSource src, UserDataManager loader) {
+        if (!(src instanceof User)) {
+            return Text.of(src.getName());
+        }
+
+        return getName((User)src, loader);
+    }
+
     public static Text getName(User player, UserDataManager loader) {
         Optional<UserService> userService = loader.get(player);
         if (userService.isPresent()) {

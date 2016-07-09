@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -52,7 +53,9 @@ public class ChatUtil {
         tokens = createTokens();
         serverTokens = createServerTokens();
 
-        String m = getRegex(tokens.keySet());
+        Set<String> t = Sets.newHashSet(tokens.keySet());
+        t.addAll(serverTokens.keySet());
+        String m = getRegex(t);
         playerTokenMatcher = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
         playerTokenSplitter = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
 
@@ -91,7 +94,10 @@ public class ChatUtil {
             map.putAll(customToken);
         }
 
-        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerTokenSplitter, playerTokenMatcher, map);
+        String m = getRegex(map.keySet());
+        return getMessageFromTemplate(template, cs, trimTrailingSpace,
+                Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE),
+                Pattern.compile(m, Pattern.CASE_INSENSITIVE), map);
     }
 
     // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
