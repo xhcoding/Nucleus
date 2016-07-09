@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -74,19 +75,44 @@ public class ChatUtil {
                 .collect(Collectors.toList());
     }
 
+    public Text getMessageFromTokens(String template, CommandSource cs, boolean trimTrailingSpace,
+                                     boolean includePlayer, boolean includeServer, Map<String, Function<CommandSource, Text>>... customTokens) {
+
+        Map<String, Function<CommandSource, Text>> map = Maps.newHashMap();
+        if (includePlayer) {
+            map.putAll(tokens);
+        }
+
+        if (includeServer) {
+            map.putAll(serverTokens);
+        }
+
+        for (Map<String, Function<CommandSource, Text>> customToken : customTokens) {
+            map.putAll(customToken);
+        }
+
+        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerTokenSplitter, playerTokenMatcher, map);
+    }
+
     // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
     // to do the replacements!
     public Text getPlayerMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
-        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerTokenSplitter, playerTokenMatcher, tokens);
+        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerTokenSplitter, playerTokenMatcher, tokens, serverTokens);
     }
 
     public Text getServerMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
         return getMessageFromTemplate(template, cs, trimTrailingSpace, serverTokenSplitter, serverTokenMatcher, serverTokens);
     }
 
-    private Text getMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace,
-                                        Pattern splitter, Pattern matcher, Map<String, Function<CommandSource, Text>> tokens) {
+    @SafeVarargs
+    private final Text getMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace,
+                                              Pattern splitter, Pattern matcher, Map<String, Function<CommandSource, Text>>... tokensArray) {
         StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
+
+        Map<String, Function<CommandSource, Text>> tokens = Maps.newHashMap();
+        for (Map<String, Function<CommandSource, Text>> stringFunctionMap : tokensArray) {
+            tokens.putAll(stringFunctionMap);
+        }
 
         Text.Builder tb = Text.builder();
         for (String textElement : splitter.split(template)) {
