@@ -189,6 +189,7 @@ public class ChatUtil {
 
             // Build the URL
             String url = m.group("url");
+            String toParse = TextSerializers.FORMATTING_CODE.stripCodes(url);
             String whiteSpace = m.group("first");
             if (!whiteSpace.isEmpty()) {
                 url = String.join("", whiteSpace, url);
@@ -196,10 +197,10 @@ public class ChatUtil {
 
             try {
                 URL urlObj;
-                if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                    urlObj = new URL("http://" + url);
+                if (!toParse.startsWith("http://") && !toParse.startsWith("https://")) {
+                    urlObj = new URL("http://" + toParse);
                 } else {
-                    urlObj = new URL(url);
+                    urlObj = new URL(toParse);
                 }
 
                 texts.add(Text.builder(url).color(st.colour).style(st.style)
