@@ -69,7 +69,7 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        List<Text> lt = ws.stream().filter(s -> canView(src, s.toLowerCase())).map(s -> {
+        List<Text> lt = ws.stream().filter(s -> canView(src, s.toLowerCase())).sorted(String::compareTo).map(s -> {
             if (service.getWarp(s).isPresent()) {
                 return Text.builder(s).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
                         .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.warps.warpprompt", s))).build();
