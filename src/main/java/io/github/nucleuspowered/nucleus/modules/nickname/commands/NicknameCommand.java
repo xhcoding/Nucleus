@@ -81,7 +81,7 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         Optional<User> match = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(TextSerializers.FORMATTING_CODE.stripCodes(name));
 
         // The only person who can use such a name is oneself.
-        if (match.isPresent() && match.get().getUniqueId().equals(pl.getUniqueId())) {
+        if (match.isPresent() && !match.get().getUniqueId().equals(pl.getUniqueId())) {
             // Fail - cannot use another's name.
             src.sendMessage(Util.getTextMessageWithFormat("command.nick.nameinuse", name));
             return CommandResult.empty();
