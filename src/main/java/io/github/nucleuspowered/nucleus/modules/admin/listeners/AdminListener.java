@@ -14,7 +14,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 
 public class AdminListener extends ListenerBase {
@@ -23,7 +23,7 @@ public class AdminListener extends ListenerBase {
     @Inject private CoreConfigAdapter cca;
 
     @Listener
-    public void onPlayerMovement(DisplaceEntityEvent.Move event, @Root Player player) {
+    public void onPlayerMovement(MoveEntityEvent event, @Root Player player) {
         event.setCancelled(checkForFrozen(player, "freeze.cancelmove"));
     }
 

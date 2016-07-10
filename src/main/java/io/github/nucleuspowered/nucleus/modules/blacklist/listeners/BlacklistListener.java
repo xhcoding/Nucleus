@@ -18,6 +18,8 @@ import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -29,6 +31,7 @@ import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.DropItemEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.time.Instant;
@@ -54,11 +57,9 @@ public class BlacklistListener extends ListenerBase {
     @Listener
     public void onPlayerChangeItem(ChangeInventoryEvent event, @Root Player player) {
         if (bca.getNodeOrDefault().isInventory()) {
-            List<ItemType> blacklistedTypes = store.getBlacklistedTypes();
             if (onTransaction(ItemStackSnapshot.class, player, event.getTransactions(), itemId, confiscateRoot)) {
-                if (player.getItemInHand().isPresent() && blacklistedTypes.contains(player.getItemInHand().get().getItem())) {
-                    player.setItemInHand(null);
-                }
+                player.getItemInHand(HandTypes.MAIN_HAND).ifPresent(x -> checkHand(HandTypes.MAIN_HAND, player, x));
+                player.getItemInHand(HandTypes.OFF_HAND).ifPresent(x -> checkHand(HandTypes.OFF_HAND, player, x));
             }
         }
     }
@@ -155,5 +156,11 @@ public class BlacklistListener extends ListenerBase {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
         mp.put(bypass, new PermissionInformation(Util.getMessageWithFormat("permission.blacklist.bypass"), SuggestedLevel.ADMIN));
         return mp;
+    }
+
+    private void checkHand(HandType type, Player player, ItemStack item) {
+        if (store.getBlacklistedTypes().contains(item.getItem())) {
+            player.setItemInHand(type, null);
+        }
     }
 }

@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -42,7 +43,7 @@ public class DeletePowertoolCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        Optional<ItemStack> itemStack = src.getItemInHand();
+        Optional<ItemStack> itemStack = src.getItemInHand(HandTypes.MAIN_HAND);
         if (!itemStack.isPresent()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.powertool.noitem"));
             return CommandResult.empty();

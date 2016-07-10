@@ -16,7 +16,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.Subject;
-import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.text.translation.Translatable;
@@ -177,9 +176,9 @@ public class Util {
         return ci.stream().map(ClassPath.ClassInfo::load).filter(base::isAssignableFrom).map(x -> (Class<? extends T>)x).collect(Collectors.toSet());
     }
 
-    public static Optional<OptionSubject> getSubject(User player) {
+    public static Optional<Subject> getSubject(User player) {
         Subject subject = player.getContainingCollection().get(player.getIdentifier());
-        return subject instanceof OptionSubject ? Optional.of((OptionSubject) subject) : Optional.empty();
+        return subject instanceof Subject ? Optional.of((Subject) subject) : Optional.empty();
     }
 
     public static boolean isFirstPlay(Player player) {
@@ -192,19 +191,19 @@ public class Util {
     }
 
     /**
-     * Utility method for getting the first available option from an {@link OptionSubject}
+     * Utility method for getting the first available option from an {@link Subject}
      *
      * @param player The {@link User} to get the subject from.
      * @param options The option keys to check.
      * @return An {@link Optional} that might contain a value.
      */
     public static Optional<String> getOptionFromSubject(User player, String... options) {
-        Optional<OptionSubject> optionSubjectOptional = getSubject(player);
+        Optional<Subject> optionSubjectOptional = getSubject(player);
         if (!optionSubjectOptional.isPresent()) {
             return Optional.empty();
         }
 
-        OptionSubject optionSubject = optionSubjectOptional.get();
+        Subject optionSubject = optionSubjectOptional.get();
         for (String option : options) {
             String o = option.toLowerCase();
 

@@ -18,6 +18,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.DurabilityData;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
@@ -53,14 +54,14 @@ public class RepairCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
-        if (opl.get().getItemInHand().isPresent()) {
-            ItemStack stack = opl.get().getItemInHand().get();
+        if (opl.get().getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+            ItemStack stack = opl.get().getItemInHand(HandTypes.MAIN_HAND).get();
 
             if (stack.get(DurabilityData.class).isPresent()) {
                 DurabilityData durabilityData = stack.get(DurabilityData.class).get();
                 DataTransactionResult transactionResult = stack.offer(Keys.ITEM_DURABILITY, durabilityData.durability().getMaxValue());
                 if (transactionResult.isSuccessful()) {
-                    opl.get().setItemInHand(stack);
+                    opl.get().setItemInHand(HandTypes.MAIN_HAND, stack);
                     src.sendMessage(Util.getTextMessageWithFormat("command.repair.success", opl.get().getName()));
                     return CommandResult.success();
                 } else {

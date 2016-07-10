@@ -26,7 +26,6 @@ import org.spongepowered.api.command.*;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.command.source.LocatedSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,6 +34,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
@@ -482,8 +482,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
 
         // Actually, we just care about where we are.
-        if (src instanceof LocatedSource) {
-            return Optional.of(((LocatedSource) src).getWorld().getProperties());
+        if (src instanceof Locatable) {
+            return Optional.of(((Locatable) src).getWorld().getProperties());
         }
 
         return Optional.empty();

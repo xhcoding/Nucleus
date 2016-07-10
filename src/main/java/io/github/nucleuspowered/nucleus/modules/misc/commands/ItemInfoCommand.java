@@ -17,6 +17,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Key;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.data.value.BaseValue;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -48,8 +49,8 @@ public class ItemInfoCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
-        if (player.getItemInHand().isPresent()) {
-            ItemStack it = player.getItemInHand().get();
+        if (player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+            ItemStack it = player.getItemInHand(HandTypes.MAIN_HAND).get();
 
             List<Text> lt = new ArrayList<>();
             lt.add(Util.getTextMessageWithFormat("command.iteminfo.id", it.getItem().getId(), it.getTranslation().get()));

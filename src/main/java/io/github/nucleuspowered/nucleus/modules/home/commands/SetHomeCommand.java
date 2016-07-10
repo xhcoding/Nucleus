@@ -19,7 +19,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.permission.option.OptionSubject;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
@@ -92,7 +92,7 @@ public class SetHomeCommand extends CommandBase<Player> {
             return Integer.MAX_VALUE;
         }
 
-        Optional<OptionSubject> os = Util.getSubject(src);
+        Optional<Subject> os = Util.getSubject(src);
         if (!os.isPresent()) {
             return 1;
         }

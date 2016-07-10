@@ -21,7 +21,7 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.DismountEntityEvent;
-import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -83,7 +83,7 @@ public class FlyListener extends ListenerBase {
 
     // Only fire if there is no cancellation at the end.
     @Listener(order = Order.LAST)
-    public void onPlayerTransferWorld(DisplaceEntityEvent.Teleport event,
+    public void onPlayerTransferWorld(MoveEntityEvent.Teleport event,
                                       @Getter("getTargetEntity") Entity target,
                                       @Getter("getFromTransform") Transform<World> twfrom,
                                       @Getter("getToTransform") Transform<World> twto) {

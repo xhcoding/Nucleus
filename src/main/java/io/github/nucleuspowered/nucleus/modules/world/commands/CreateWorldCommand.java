@@ -22,7 +22,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.WorldCreationSettings;
+import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -63,20 +63,15 @@ public class CreateWorldCommand extends CommandBase<CommandSource> {
 
         src.sendMessage(Util.getTextMessageWithFormat("command.world.create.begin", nameInput));
 
-        WorldCreationSettings worldSettings = Sponge.getRegistry().createBuilder(WorldCreationSettings.Builder.class).name(nameInput).enabled(true)
-                .loadsOnStartup(true).keepsSpawnLoaded(true).dimension(dimensionInput).generator(generatorInput).gameMode(gamemodeInput).build();
+        WorldArchetype worldSettings = Sponge.getRegistry().createBuilder(WorldArchetype.Builder.class).enabled(true)
+                .loadsOnStartup(true).keepsSpawnLoaded(true).dimension(dimensionInput).generator(generatorInput).gameMode(gamemodeInput).build(nameInput.toLowerCase(), nameInput);
 
-        Optional<WorldProperties> worldProperties = Sponge.getGame().getServer().createWorldProperties(worldSettings);
+        WorldProperties worldProperties = Sponge.getGame().getServer().createWorldProperties(nameInput.toLowerCase(), worldSettings);
+        Optional<World> world = Sponge.getGame().getServer().loadWorld(worldProperties);
 
-        if (worldProperties.isPresent()) {
-            Optional<World> world = Sponge.getGame().getServer().loadWorld(worldProperties.get());
-
-            if (world.isPresent()) {
-                world.get().getProperties().setDifficulty(difficultyInput);
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.create.success", nameInput));
-            } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.create.fail", nameInput));
-            }
+        if (world.isPresent()) {
+            world.get().getProperties().setDifficulty(difficultyInput);
+            src.sendMessage(Util.getTextMessageWithFormat("command.world.create.success", nameInput));
         } else {
             src.sendMessage(Util.getTextMessageWithFormat("command.world.create.fail", nameInput));
         }

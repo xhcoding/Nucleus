@@ -9,12 +9,12 @@ plugins {
     id "com.qixalite.spongestart" version "1.4.3"
 }
 
-ext.spongeapi = '4.1.0'
+ext.spongeapi = '5.0.0'
 description = 'The Ultimate Essentials Plugin.'
 ext.url = 'http://nucleuspowered.org'
 
 group 'io.github.nucleuspowered'
-version '0.6.0-SNAPSHOT'
+version '0.6.0-5.0-SNAPSHOT'
 
 defaultTasks 'licenseFormat'
 
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.spongepowered:spongeapi:4.1.0"
+    compile "org.spongepowered:spongeapi:5.0.0-SNAPSHOT"
     compile "uk.co.drnaylor:quickstart-moduleloader:0.1.5"
     compile "com.github.hsyyid:EssentialCmds:v8.1.7"
 

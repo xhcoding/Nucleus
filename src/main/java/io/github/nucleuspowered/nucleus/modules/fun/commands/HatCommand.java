@@ -14,6 +14,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -54,20 +55,20 @@ public class HatCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        if (pl.getItemInHand().isPresent()) {
-            ItemStack stack = pl.getItemInHand().get();
+        if (pl.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+            ItemStack stack = pl.getItemInHand(HandTypes.MAIN_HAND).get();
             stack.setQuantity(1);
             opl.get().setHelmet(stack);
             String itemName = stack.get(Keys.DISPLAY_NAME).orElse(Text.of(stack.getItem().getName())).toPlain();
 
             if (pl.get(Keys.GAME_MODE).get() == GameModes.SURVIVAL) {
-                stack = pl.getItemInHand().get();
+                stack = pl.getItemInHand(HandTypes.MAIN_HAND).get();
 
                 if (stack.getQuantity() > 1) {
                     stack.setQuantity(stack.getQuantity() - 1);
-                    pl.setItemInHand(stack);
+                    pl.setItemInHand(HandTypes.MAIN_HAND, stack);
                 } else {
-                    pl.setItemInHand(null);
+                    pl.setItemInHand(HandTypes.MAIN_HAND, null);
                 }
             }
 
