@@ -47,13 +47,14 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.firstParsing(
+
+                    // <mode>
+                    GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemodeKey))),
+
                     // <player> <mode>
                     GenericArguments.seq(
                         GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.player(Text.of(userKey))), permissions.getPermissionWithSuffix("others")),
-                        GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemodeKey)))),
-
-                    // <mode>
-                    GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemodeKey)))
+                        GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemodeKey))))
                 )
         };
     }
