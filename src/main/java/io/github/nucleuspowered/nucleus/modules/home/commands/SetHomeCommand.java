@@ -19,7 +19,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 
 import javax.inject.Inject;
@@ -92,18 +91,7 @@ public class SetHomeCommand extends CommandBase<Player> {
             return Integer.MAX_VALUE;
         }
 
-        Optional<Subject> os = Util.getSubject(src);
-        if (!os.isPresent()) {
-            return 1;
-        }
-
-        // Active contexts take first stab.
-        Optional<String> count = os.get().getOption(src.getActiveContexts(), "home-count");
-        if (!count.isPresent()) {
-            // OK, let's go general.
-            count = os.get().getOption("home-count");
-        }
-
+        Optional<String> count = Util.getOptionFromSubject(src, "home-count", "homes");
         int result = 1;
         if (count.isPresent()) {
             try {

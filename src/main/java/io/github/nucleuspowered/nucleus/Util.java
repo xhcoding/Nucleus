@@ -6,11 +6,9 @@ package io.github.nucleuspowered.nucleus;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
-import com.google.common.reflect.ClassPath;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
-import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,14 +21,15 @@ import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class Util {
 
@@ -170,17 +169,6 @@ public class Util {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Set<Class<? extends T>> getClasses(Class<T> base, String pack) throws IOException {
-        Set<ClassPath.ClassInfo> ci = ClassPath.from(StandardModule.class.getClassLoader()).getTopLevelClassesRecursive(pack);
-        return ci.stream().map(ClassPath.ClassInfo::load).filter(base::isAssignableFrom).map(x -> (Class<? extends T>)x).collect(Collectors.toSet());
-    }
-
-    public static Optional<Subject> getSubject(User player) {
-        Subject subject = player.getContainingCollection().get(player.getIdentifier());
-        return subject instanceof Subject ? Optional.of((Subject) subject) : Optional.empty();
-    }
-
     public static boolean isFirstPlay(Player player) {
         Instant firstPlayed = player.getJoinData().firstPlayed().get();
         Instant lastPlayed = player.getJoinData().lastPlayed().get();
@@ -198,23 +186,17 @@ public class Util {
      * @return An {@link Optional} that might contain a value.
      */
     public static Optional<String> getOptionFromSubject(User player, String... options) {
-        Optional<Subject> optionSubjectOptional = getSubject(player);
-        if (!optionSubjectOptional.isPresent()) {
-            return Optional.empty();
-        }
-
-        Subject optionSubject = optionSubjectOptional.get();
         for (String option : options) {
             String o = option.toLowerCase();
 
             // Option for context.
-            Optional<String> os = optionSubject.getOption(player.getActiveContexts(), o);
+            Optional<String> os = player.getOption(player.getActiveContexts(), o);
             if (os.isPresent()) {
                 return os;
             }
 
             // General option
-            os = optionSubject.getOption(o);
+            os = player.getOption(o);
             if (os.isPresent()) {
                 return os;
             }
