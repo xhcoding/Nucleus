@@ -14,8 +14,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.source.LocatedSource;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -65,13 +65,13 @@ public class SetBorderCommand extends CommandBase<CommandSource> {
         int dia = args.<Integer>getOne(diameter).get();
         int delay = args.<Integer>getOne(delayKey).orElse(0);
 
-        if (!(src instanceof LocatedSource) && !owp.isPresent()) {
+        if (!(src instanceof Locatable) && !owp.isPresent()) {
             // Tell the user that a world is required.
             src.sendMessage(Util.getTextMessageWithFormat("command.world.setborder.noworld"));
             return CommandResult.empty();
-        } else if (src instanceof LocatedSource) {
-            wp = owp.orElse(((LocatedSource) src).getWorld().getProperties());
-            Location<World> lw = ((LocatedSource) src).getLocation();
+        } else if (src instanceof Locatable) {
+            wp = owp.orElse(((Locatable) src).getWorld().getProperties());
+            Location<World> lw = ((Locatable) src).getLocation();
             if (args.hasAny(zKey)) {
                 x = args.<Integer>getOne(xKey).get();
                 z = args.<Integer>getOne(zKey).get();

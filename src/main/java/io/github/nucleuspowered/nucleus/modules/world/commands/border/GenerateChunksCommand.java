@@ -15,8 +15,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.source.LocatedSource;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -46,8 +46,8 @@ public class GenerateChunksCommand extends CommandBase<CommandSource> {
         if (owp.isPresent()) {
             wp = owp.get();
         } else {
-            if (src instanceof LocatedSource) {
-                wp = ((LocatedSource) src).getWorld().getProperties();
+            if (src instanceof Locatable) {
+                wp = ((Locatable) src).getWorld().getProperties();
             } else {
                 src.sendMessage(Util.getTextMessageWithFormat("command.world.setborder.noworld"));
                 return CommandResult.empty();
