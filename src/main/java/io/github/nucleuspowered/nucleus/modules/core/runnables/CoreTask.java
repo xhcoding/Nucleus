@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.core.runnables;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import org.spongepowered.api.scheduler.Task;
@@ -29,7 +30,9 @@ public class CoreTask extends TaskBase {
 
     @Override
     public void accept(Task task) {
+        plugin.getLogger().info(Util.getMessageWithFormat("core.savetask.starting"));
         plugin.saveData();
         uda.removeOfflinePlayers();
+        plugin.getLogger().info(Util.getMessageWithFormat("core.savetask.complete"));
     }
 }
