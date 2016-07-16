@@ -54,6 +54,7 @@ public class KitCostCommand extends CommandBase<CommandSource> {
         }
 
         kitInfo.kit.setCost(cost);
+        kitConfig.saveKit(kitInfo.name, kitInfo.kit);
         src.sendMessage(Util.getTextMessageWithFormat("command.kit.cost.success", kitInfo.name, String.valueOf(cost)));
         return CommandResult.success();
     }

@@ -71,7 +71,8 @@ public class BlacklistListener extends ListenerBase {
                     .map(x -> new Transaction<>(x, x)).collect(Collectors.toList());
 
             // Check for valid drops.
-            if (onTransaction(Entity.class, player, entities, x -> x.get(Keys.REPRESENTED_ITEM).orElse(ItemStackSnapshot.NONE).getType(), confiscateRoot)) {
+            if (onTransaction(Entity.class, player, entities, x -> x.get(Keys.REPRESENTED_ITEM).orElse(ItemStackSnapshot.NONE).getType(),
+                    confiscateRoot)) {
                 // Filter out only the valid entities.
                 List<Entity> isValid = entities.stream().filter(Transaction::isValid).map(Transaction::getFinal).collect(Collectors.toList());
                 event.filterEntities(isValid::contains);
@@ -82,7 +83,8 @@ public class BlacklistListener extends ListenerBase {
     @Listener
     public void onPlayerInteractBlock(InteractBlockEvent event, @Root Player player) {
         if (bca.getNodeOrDefault().isEnvironment()) {
-            event.setCancelled(onTransaction(BlockSnapshot.class, player, new Transaction<>(event.getTargetBlock(), event.getTargetBlock()), blockId, environmentRoot));
+            event.setCancelled(onTransaction(BlockSnapshot.class, player, new Transaction<>(event.getTargetBlock(), event.getTargetBlock()), blockId,
+                    environmentRoot));
         }
     }
 
@@ -90,11 +92,17 @@ public class BlacklistListener extends ListenerBase {
     @Include({ChangeBlockEvent.Break.class, ChangeBlockEvent.Place.class})
     public void onPlayerChangeBlock(ChangeBlockEvent event, @Root Player player) {
         if (bca.getNodeOrDefault().isEnvironment()) {
-            onTransaction(BlockSnapshot.class, player, event.getTransactions(), blockId, environmentRoot);
+            // TODO: Temporary work-around for place event - setting the
+            // transaction to invalid does nothing currently.
+            if (onTransaction(BlockSnapshot.class, player, event.getTransactions(), blockId, environmentRoot)
+                    && event instanceof ChangeBlockEvent.Place) {
+                event.setCancelled(true);
+            }
         }
     }
 
-    private <T extends DataSerializable> boolean onTransaction(Class<T> type, Player target, Transaction<T> transaction, Function<T, ItemType> toIdFunction, String descRoot) {
+    private <T extends DataSerializable> boolean onTransaction(Class<T> type, Player target, Transaction<T> transaction,
+            Function<T, ItemType> toIdFunction, String descRoot) {
         return onTransaction(type, target, Collections.singleton(transaction), toIdFunction, descRoot);
     }
 
@@ -104,12 +112,16 @@ public class BlacklistListener extends ListenerBase {
      * @param type The {@link Class} of type {@link T}
      * @param target The {@link Player} to check
      * @param transactions The {@link Collection} of {@link T} objects to check.
-     * @param toIdFunction A function that gets the {@link ItemType} that {@link T} represents.
+     * @param toIdFunction A function that gets the {@link ItemType} that
+     *        {@link T} represents.
      * @param descRoot The root for the translation key to use.
-     * @param <T> The type of {@link DataSerializable} that needs to be checked for this run.
+     * @param <T> The type of {@link DataSerializable} that needs to be checked
+     *        for this run.
      * @return <code>true</code> if at least one block was rejected.
      */
-    private <T extends DataSerializable> boolean onTransaction(Class<T> type, Player target, Collection<? extends Transaction<T>> transactions, Function<T, ItemType> toIdFunction, String descRoot) {
+    @SuppressWarnings("unchecked")
+    private <T extends DataSerializable> boolean onTransaction(Class<T> type, Player target, Collection<? extends Transaction<T>> transactions,
+            Function<T, ItemType> toIdFunction, String descRoot) {
         if (target.hasPermission(bypass)) {
             return false;
         }
@@ -127,7 +139,9 @@ public class BlacklistListener extends ListenerBase {
         String item = toIdFunction.apply(remove.get(0).getFinal()).getTranslation().get();
         remove.forEach(x -> {
             if (ItemStackSnapshot.class.isAssignableFrom(type)) {
-                x.setCustom((T)ItemStackSnapshot.NONE);
+                x.setCustom(bca.getNodeOrDefault().shouldUseReplacement()
+                        ? (T) ItemStack.builder().itemType(bca.getNodeOrDefault().getReplacement()).build().createSnapshot()
+                        : (T) ItemStackSnapshot.NONE);
             } else {
                 x.setValid(false);
             }

@@ -52,9 +52,8 @@ public class KitSetCooldownCommand extends CommandBase<CommandSource> {
         KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
         long seconds = args.<Long>getOne(duration).get();
 
-        // This Kit is a reference back to the version in list, so we don't need
-        // to update it explicitly
         kitInfo.kit.setInterval(Duration.ofSeconds(seconds));
+        kitConfig.saveKit(kitInfo.name, kitInfo.kit);
         player.sendMessage(Util.getTextMessageWithFormat("command.kit.setcooldown.success", kitInfo.name, Util.getTimeStringFromSeconds(seconds)));
         return CommandResult.success();
     }

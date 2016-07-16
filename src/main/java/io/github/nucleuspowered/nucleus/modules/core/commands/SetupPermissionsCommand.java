@@ -25,11 +25,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Permissions(suggestedLevel = SuggestedLevel.NONE)
+@Permissions(root = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @NoWarmup
 @NoCooldown
 @NoCost
-@RegisterCommand(value = "setupperms", subcommandOf = NucleusCommand.class)
+@RegisterCommand(value = {"setupperms", "setperms"}, subcommandOf = NucleusCommand.class)
 public class SetupPermissionsCommand extends CommandBase<CommandSource> {
 
     @Inject private CoreConfigAdapter cca;

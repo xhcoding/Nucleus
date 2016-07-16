@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.time.Duration;
@@ -17,7 +16,7 @@ import java.util.List;
 @ConfigSerializable
 public class KitDataNode implements Kit {
 
-    @Setting private List<ItemStackSnapshot> stacks;
+    @Setting private List<ItemStackSnapshot> stacks = Lists.newArrayList();
 
     /**
      * This is in seconds to be consistent with the rest of the plugin.
@@ -27,30 +26,6 @@ public class KitDataNode implements Kit {
     @Setting private double cost = 0;
 
     @Setting private boolean oneTime = false;
-
-    public KitDataNode() {
-        this.stacks = Lists.newArrayList();
-        this.interval = 0;
-        this.cost = 0;
-    }
-
-    public KitDataNode(Player player) {
-        updateKitInventory(player);
-        this.interval = 0;
-        this.cost = 0;
-    }
-
-    public KitDataNode(List<ItemStackSnapshot> slots) {
-        this.stacks = slots;
-        this.interval = 0;
-        this.cost = 0;
-    }
-
-    public KitDataNode(List<ItemStackSnapshot> slots, Duration interval) {
-        this.stacks = slots;
-        this.interval = interval.getSeconds();
-        this.cost = 0;
-    }
 
     @Override
     public List<ItemStackSnapshot> getStacks() {
