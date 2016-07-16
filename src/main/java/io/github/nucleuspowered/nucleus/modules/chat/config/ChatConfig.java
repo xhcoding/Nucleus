@@ -21,12 +21,13 @@ public class ChatConfig {
     @Setting(value = "modifychat", comment = "loc:config.chat.modify")
     private boolean modifychat = true;
 
-    @Setting("templates")
+    @Setting(value = "template", comment = "loc:config.chat.default-template")
     private ChatTemplateConfig template = new ChatTemplateConfig();
 
     @Setting(value = "group-templates", comment = "loc:config.chat.group-templates")
     private Map<String, ChatTemplateConfig> groupTemplates = new HashMap<String, ChatTemplateConfig>() {{
-        put("Default", new ChatTemplateConfig());
+        // We don't want this affecting the default group, but we need an example.
+        put("DefaultTemplate", new ChatTemplateConfig());
     }};
 
     public boolean isModifychat() {
@@ -37,6 +38,14 @@ public class ChatConfig {
         List<Subject> groups = player.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         groups.sort((x, y) -> y.getParents().size() - x.getParents().size());
 
-        return groupTemplates.containsKey(groups.get(0).getIdentifier()) ? groupTemplates.get(groups.get(0).getIdentifier()) : template;
+        // Iterate through all groups the player is in.
+        for (Subject group : groups) {
+            if (groupTemplates.containsKey(group.getIdentifier())) {
+                return groupTemplates.get(group.getIdentifier());
+            }
+        }
+
+        // Return the default.
+        return template;
     }
 }
