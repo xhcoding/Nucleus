@@ -86,7 +86,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
     private Text createKit(CommandSource source, UserService user, String kitName, Kit kitObj) {
         Text.Builder tb = Text.builder(kitName);
 
-        if (user != null && user.getKitLastUsedTime().containsKey(kitName.toLowerCase())) {
+        if (user != null && Util.getKeyIgnoreCase(user.getKitLastUsedTime(), kitName).isPresent()) {
             Player p = (Player)source;
 
             // If one time used...
@@ -101,7 +101,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
             if (!interval.isZero() && !kitPermissionHandler.testCooldownExempt(p)) {
 
                 // Get the next time the kit can be used.
-                Instant next = user.getKitLastUsedTime().get(kitName.toLowerCase()).plus(interval);
+                Instant next = Util.getValueIgnoreCase(user.getKitLastUsedTime(), kitName).get().plus(interval);
                 if (next.isAfter(Instant.now())) {
                     // Get the time to next usage.
                     String time = Util.getTimeToNow(next);
