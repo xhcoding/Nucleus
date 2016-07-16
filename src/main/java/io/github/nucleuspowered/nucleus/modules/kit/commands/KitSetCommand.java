@@ -45,9 +45,10 @@ public class KitSetCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
-        KitArgument.KitInfo kitName = args.<KitArgument.KitInfo>getOne(kit).get();
-        kitName.kit.updateKitInventory(player);
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.set.success", kitName.name));
+        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
+        kitInfo.kit.updateKitInventory(player);
+        kitConfig.saveKit(kitInfo.name, kitInfo.kit);
+        player.sendMessage(Util.getTextMessageWithFormat("command.kit.set.success", kitInfo.name));
         return CommandResult.success();
     }
 }

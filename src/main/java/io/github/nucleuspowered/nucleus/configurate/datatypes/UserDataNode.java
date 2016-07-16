@@ -180,6 +180,8 @@ public class UserDataNode {
     }
 
     public Map<String, Long> getKitLastUsedTime() {
+        // Remove any problematic data
+        kitLastUsedTime.entrySet().removeIf(x -> x.getKey().matches(".*[A-Z].*"));
         return kitLastUsedTime;
     }
 

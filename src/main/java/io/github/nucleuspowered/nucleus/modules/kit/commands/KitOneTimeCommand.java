@@ -54,6 +54,7 @@ public class KitOneTimeCommand extends CommandBase<CommandSource> {
         // This Kit is a reference back to the version in list, so we don't need
         // to update it explicitly
         kitInfo.kit.setOneTime(b);
+        kitConfig.saveKit(kitInfo.name, kitInfo.kit);
         player.sendMessage(Util.getTextMessageWithFormat(b ? "command.kit.onetime.on" : "command.kit.onetime.off", kitInfo.name));
 
         return CommandResult.success();
