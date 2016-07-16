@@ -22,7 +22,10 @@ public class ChatConfig {
     private boolean modifychat = true;
 
     @Setting("templates")
-    private Map<String, ChatTemplateConfig> template = new HashMap<String, ChatTemplateConfig>() {{
+    private ChatTemplateConfig template = new ChatTemplateConfig();
+
+    @Setting(value = "group-templates", comment = "loc:config.chat.group-templates")
+    private Map<String, ChatTemplateConfig> groupTemplates = new HashMap<String, ChatTemplateConfig>() {{
         put("Default", new ChatTemplateConfig());
     }};
 
@@ -34,6 +37,6 @@ public class ChatConfig {
         List<Subject> groups = player.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         groups.sort((x, y) -> y.getParents().size() - x.getParents().size());
 
-        return template.containsKey(groups.get(0).getIdentifier()) ? template.get(groups.get(0).getIdentifier()) : template.get("Default");
+        return groupTemplates.containsKey(groups.get(0).getIdentifier()) ? groupTemplates.get(groups.get(0).getIdentifier()) : template;
     }
 }
