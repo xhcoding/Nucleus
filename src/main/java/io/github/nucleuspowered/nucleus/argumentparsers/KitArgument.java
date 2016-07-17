@@ -39,7 +39,7 @@ public class KitArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String kitName = args.next();
-        if (kitName == null || kitName.isEmpty()) {
+        if (kitName.isEmpty()) {
             throw args.createError(Util.getTextMessageWithFormat("args.kit.noname"));
         }
 

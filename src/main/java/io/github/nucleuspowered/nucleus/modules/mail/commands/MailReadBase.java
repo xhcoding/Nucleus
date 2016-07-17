@@ -38,7 +38,7 @@ public class MailReadBase {
         this.handler = handler;
     }
 
-    public CommandResult executeCommand(CommandSource src, final User target, Collection<MailFilter> lmf) throws Exception {
+    public CommandResult executeCommand(CommandSource src, final User target, Collection<MailFilter> lmf) {
         List<MailData> lmd;
         if (!lmf.isEmpty()) {
             lmd = handler.getMail(target, lmf.toArray(new MailFilter[lmf.size()]));

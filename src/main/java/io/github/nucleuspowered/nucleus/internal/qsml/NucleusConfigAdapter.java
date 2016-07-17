@@ -17,6 +17,7 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
     @Inject private Nucleus plugin;
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onAttach(String module, AbstractAdaptableConfig<?, ?> adapter) {
         plugin.preInjectorUpdate((Class)this.getClass(), this);
     }
@@ -37,6 +38,7 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
     protected abstract R getDefaultObject();
 
     @Override
+    @SuppressWarnings("unchecked")
     protected ConfigurationNode generateDefaults(ConfigurationNode node) {
         R o = getDefaultObject();
         try {

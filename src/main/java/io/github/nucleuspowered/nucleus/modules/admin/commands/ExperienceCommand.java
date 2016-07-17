@@ -70,6 +70,6 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
             return false;
         }
 
-        return false;
+        return true;
     }
 }

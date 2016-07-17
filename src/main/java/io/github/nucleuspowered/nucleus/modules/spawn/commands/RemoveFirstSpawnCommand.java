@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 
 /**
  * nucleus.firstspawn.remove.base
@@ -26,11 +25,6 @@ import org.spongepowered.api.command.args.CommandElement;
 public class RemoveFirstSpawnCommand extends CommandBase<CommandSource> {
 
     @Inject private GeneralDataStore data;
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

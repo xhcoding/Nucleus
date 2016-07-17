@@ -42,9 +42,7 @@ public class TestModule extends AbstractModule {
         this.bind(Logger.class).toInstance(Mockito.mock(Logger.class));
 
         CoreConfigAdapter mock = Mockito.mock(CoreConfigAdapter.class);
-        PowerMockito.replace(PowerMockito.method(CoreConfigAdapter.class, "getNode")).with((obj, method, arguments) -> {
-            return new CoreConfig();
-        });
+        PowerMockito.replace(PowerMockito.method(CoreConfigAdapter.class, "getNode")).with((obj, method, arguments) -> new CoreConfig());
 
         this.bind(CoreConfigAdapter.class).toInstance(mock);
 

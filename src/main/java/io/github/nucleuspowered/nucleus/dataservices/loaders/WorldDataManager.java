@@ -48,7 +48,7 @@ public class WorldDataManager extends DataManager<UUID, WorldDataNode, WorldServ
     }
 
     @Override
-    public Optional<NucleusWorld> getWorld(UUID uuid) throws Exception {
+    public Optional<NucleusWorld> getWorld(UUID uuid) {
         Preconditions.checkNotNull(uuid);
         return Optional.ofNullable(get(uuid).orElse(null));
     }

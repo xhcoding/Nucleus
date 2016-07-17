@@ -15,7 +15,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -35,11 +34,6 @@ import java.util.stream.Collectors;
 public class JailsCommand extends CommandBase<CommandSource> {
 
     @Inject private JailHandler handler;
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

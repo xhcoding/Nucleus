@@ -39,9 +39,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructo
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -111,7 +109,6 @@ public class Nucleus {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
 
         dataDir = game.getSavesDirectory().resolve("nucleus");
-        ConfigurationLoader<CommentedConfigurationNode> cl;
         // Get the mandatory config files.
         try {
             Files.createDirectories(this.configDir);

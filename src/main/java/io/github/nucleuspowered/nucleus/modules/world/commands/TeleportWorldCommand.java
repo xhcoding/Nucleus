@@ -33,25 +33,25 @@ import java.util.Optional;
 public class TeleportWorldCommand extends CommandBase<CommandSource> {
 
     private final String world = "world";
-    private final String player = "player";
+    private final String playerKey = "player";
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {GenericArguments.seq(GenericArguments.world(Text.of(world)),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of(player)))))};
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))))};
     }
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> optPlayer = args.getOne(player);
+        Optional<Player> optPlayer = args.getOne(playerKey);
         WorldProperties worldProperties = args.<WorldProperties>getOne(world).get();
-        Player player = null;
 
         if (!worldProperties.isEnabled()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.world.notenabled", worldProperties.getWorldName()));
             return CommandResult.success();
         }
 
+        Player player;
         if (!optPlayer.isPresent()) {
             if (src instanceof Player) {
                 player = (Player) src;

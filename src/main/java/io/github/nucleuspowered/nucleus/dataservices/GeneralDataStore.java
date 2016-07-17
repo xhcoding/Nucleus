@@ -186,7 +186,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
         m.forEach((k, v) -> {
             try {
                 l.put(k, new WarpLocation(k, v.getLocation(), v.getRotation()));
-            } catch (NoSuchWorldException e) {
+            } catch (NoSuchWorldException ignored) {
             }
         });
 
@@ -207,10 +207,6 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
 
     private boolean removeLocation(String name, Map<String, LocationNode> m) {
         Optional<Map.Entry<String, LocationNode>> o = m.entrySet().stream().filter(k -> k.getKey().equalsIgnoreCase(name)).findFirst();
-        if (o.isPresent()) {
-            return m.remove(o.get().getKey()) != null;
-        }
-
-        return false;
+        return o.isPresent() && m.remove(o.get().getKey()) != null;
     }
 }

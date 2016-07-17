@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 
 import javax.inject.Inject;
@@ -24,11 +23,6 @@ public class SetSpawnCommand extends CommandBase<Player> {
 
     @Inject
     private WorldDataManager wcl;
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

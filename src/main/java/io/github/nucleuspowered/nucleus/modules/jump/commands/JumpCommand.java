@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.data.property.block.PassableProperty;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.Direction;
@@ -22,16 +21,13 @@ import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Optional;
+
 @Permissions
 @RegisterCommand({"jump", "j", "jmp"})
 public class JumpCommand extends CommandBase<Player> {
 
     @Inject private JumpConfigAdapter jca;
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
 
     // Original code taken from EssentialCmds. With thanks to 12AwsomeMan34 for
     // the initial contribution.
@@ -57,10 +53,14 @@ public class JumpCommand extends CommandBase<Player> {
 
         // If the block not passable, then it is a solid block
         Location<World> finalLocation = finalHitRay.getLocation();
-        if (!finalHitRay.getLocation().getProperty(PassableProperty.class).get().getValue()) {
+        Optional<PassableProperty> pp = finalHitRay.getLocation().getProperty(PassableProperty.class);
+        if (pp.isPresent() && !getFromBoxed(pp.get().getValue())) {
             finalLocation = finalLocation.add(0, 1, 0);
-        } else if (finalHitRay.getLocation().getRelative(Direction.DOWN).getProperty(PassableProperty.class).get().getValue()) {
-            finalLocation = finalLocation.sub(0, 1, 0);
+        } else {
+            Optional<PassableProperty> ppbelow = finalHitRay.getLocation().getRelative(Direction.DOWN).getProperty(PassableProperty.class);
+            if (ppbelow.isPresent() && !getFromBoxed(ppbelow.get().getValue())) {
+                finalLocation = finalLocation.sub(0, 1, 0);
+            }
         }
 
         if (!Util.isLocationInWorldBorder(finalLocation)) {
@@ -75,5 +75,9 @@ public class JumpCommand extends CommandBase<Player> {
 
         player.sendMessage(Util.getTextMessageWithFormat("command.jump.notsafe"));
         return CommandResult.empty();
+    }
+
+    private boolean getFromBoxed(Boolean bool) {
+        return bool != null ? bool : false;
     }
 }

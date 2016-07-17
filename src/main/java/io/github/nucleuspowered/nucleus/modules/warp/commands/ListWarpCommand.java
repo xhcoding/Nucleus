@@ -18,7 +18,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -43,11 +42,6 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
 
     private NucleusWarpService service;
     @Inject private WarpConfigAdapter adapter;
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
 
     @Override
     public String[] getAliases() {

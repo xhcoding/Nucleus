@@ -61,7 +61,7 @@ public class PowertoolCommand extends CommandBase<Player> {
                 : viewPowertool(src, inu, itemStack.get().getItem());
     }
 
-    private CommandResult viewPowertool(Player src, UserService user, ItemType item) throws Exception {
+    private CommandResult viewPowertool(Player src, UserService user, ItemType item) {
         Optional<List<String>> cmds = user.getPowertoolForItem(item);
         if (cmds.isPresent() && !cmds.get().isEmpty()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.powertool.viewcmds", item.getId()));
@@ -73,7 +73,7 @@ public class PowertoolCommand extends CommandBase<Player> {
         return CommandResult.success();
     }
 
-    private CommandResult setPowertool(Player src, UserService user, ItemType item, String command) throws Exception {
+    private CommandResult setPowertool(Player src, UserService user, ItemType item, String command) {
         // For consistency, if a command starts with "/", remove it, but just
         // once. WorldEdit commands can be input using "//"
         if (command.startsWith("/")) {

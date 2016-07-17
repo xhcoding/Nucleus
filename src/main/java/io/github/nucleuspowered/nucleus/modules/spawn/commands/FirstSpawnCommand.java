@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
@@ -27,11 +26,6 @@ public class FirstSpawnCommand extends CommandBase<Player> {
     @Inject private GeneralDataStore data;
 
     @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
-
-    @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
 
         Optional<Transform<World>> olwr = data.getFirstSpawn();
@@ -40,7 +34,6 @@ public class FirstSpawnCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        Transform<World> currentLocation = src.getTransform();
         if (src.setLocationAndRotationSafely(olwr.get().getLocation(), olwr.get().getRotation())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.firstspawn.success"));
             return CommandResult.success();

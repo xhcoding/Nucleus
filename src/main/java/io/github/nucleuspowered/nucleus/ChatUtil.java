@@ -78,8 +78,9 @@ public class ChatUtil {
                 .collect(Collectors.toList());
     }
 
-    public Text getMessageFromTokens(String template, CommandSource cs, boolean trimTrailingSpace,
-                                     boolean includePlayer, boolean includeServer, Map<String, Function<CommandSource, Text>>... customTokens) {
+    @SafeVarargs
+    public final Text getMessageFromTokens(String template, CommandSource cs, boolean trimTrailingSpace,
+                                           boolean includePlayer, boolean includeServer, Map<String, Function<CommandSource, Text>>... customTokens) {
 
         Map<String, Function<CommandSource, Text>> map = Maps.newHashMap();
         if (includePlayer) {

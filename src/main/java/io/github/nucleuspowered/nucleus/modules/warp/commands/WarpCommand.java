@@ -18,10 +18,8 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +64,6 @@ public class WarpCommand extends CommandBase<Player> {
 
         // We have a warp data, warp them.
         pl.sendMessage(Util.getTextMessageWithFormat("command.warps.start", wd.warp));
-        Transform<World> currentLocation = pl.getTransform();
 
         // Warp them.
         if (args.getOne("f").isPresent()) { // Force the position.

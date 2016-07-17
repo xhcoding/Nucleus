@@ -61,17 +61,13 @@ public abstract class StandardModule implements Module {
     @Override
     public void onEnable() {
         // Construct commands
-        try {
-            loadCommands();
-            loadEvents();
-            loadRunnables();
-        } catch (IOException e) {
-            throw new RuntimeException("Error", e);
-        }
+        loadCommands();
+        loadEvents();
+        loadRunnables();
     }
 
     @SuppressWarnings("unchecked")
-    private void loadCommands() throws IOException {
+    private void loadCommands() {
         Set<Class<? extends AbstractCommand>> cmds = nucleus.getModuleContainer().getLoadedClasses().stream().filter(AbstractCommand.class::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))
                 .filter(x -> x.isAnnotationPresent(RegisterCommand.class))
@@ -123,7 +119,7 @@ public abstract class StandardModule implements Module {
     }
 
     @SuppressWarnings("unchecked")
-    private void loadEvents() throws IOException {
+    private void loadEvents() {
         Set<Class<? extends ListenerBase>> commandsToLoad = nucleus.getModuleContainer().getLoadedClasses().stream()
                 .filter(ListenerBase.class::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))
@@ -138,7 +134,8 @@ public abstract class StandardModule implements Module {
         });
     }
 
-    private void loadRunnables() throws IOException {
+    @SuppressWarnings("unchecked")
+    private void loadRunnables() {
         Set<Class<? extends TaskBase>> commandsToLoad = nucleus.getModuleContainer().getLoadedClasses().stream()
                 .filter(TaskBase.class::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))

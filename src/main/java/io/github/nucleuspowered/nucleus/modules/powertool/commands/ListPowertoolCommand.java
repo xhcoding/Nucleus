@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -43,11 +42,6 @@ public class ListPowertoolCommand extends CommandBase<Player> {
 
     @Inject private UserDataManager loader;
     private PaginationService paginationService = null;
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
@@ -80,11 +74,9 @@ public class ListPowertoolCommand extends CommandBase<Player> {
         Optional<ItemType> oit = Sponge.getRegistry().getType(ItemType.class, powertool);
 
         // Create the click actions.
-        ClickAction viewAction = TextActions.executeCallback(pl -> {
-            paginationService.builder().title(Util.getTextMessageWithFormat("command.powertool.ind.header", powertool))
-                    .padding(Text.of(TextColors.GREEN, "-"))
-                    .contents((List<Text>) commands.stream().map(x -> Text.of(TextColors.YELLOW, x)).collect(Collectors.toList())).sendTo(src);
-        });
+        ClickAction viewAction = TextActions.executeCallback(pl -> paginationService.builder().title(Util.getTextMessageWithFormat("command.powertool.ind.header", powertool))
+                .padding(Text.of(TextColors.GREEN, "-"))
+                .contents(commands.stream().map(x -> Text.of(TextColors.YELLOW, x)).collect(Collectors.toList())).sendTo(src));
 
         ClickAction deleteAction = TextActions.executeCallback(pl -> {
             inu.clearPowertool(powertool);

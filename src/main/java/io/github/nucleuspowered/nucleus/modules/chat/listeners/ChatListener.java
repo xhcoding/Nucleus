@@ -72,7 +72,7 @@ public class ChatListener extends ListenerBase {
 
         for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
             // If we don't have the required permission...
-            if (Arrays.asList(r.getKey()).stream().noneMatch(player::hasPermission)) {
+            if (Arrays.stream(r.getKey()).noneMatch(player::hasPermission)) {
                 // ...strip the codes.
                 m = r.getValue().apply(m);
             }

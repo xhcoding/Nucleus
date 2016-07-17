@@ -75,7 +75,7 @@ public class JailCommand extends CommandBase<CommandSource> {
         }
     }
 
-    private CommandResult onUnjail(CommandSource src, CommandContext args, User user) throws Exception {
+    private CommandResult onUnjail(CommandSource src, CommandContext args, User user) {
         if (handler.unjailPlayer(user)) {
             src.sendMessage(Util.getTextMessageWithFormat("command.jail.unjail.success", user.getName()));
             return CommandResult.success();
@@ -85,7 +85,7 @@ public class JailCommand extends CommandBase<CommandSource> {
         }
     }
 
-    private CommandResult onJail(CommandSource src, CommandContext args, User user) throws Exception {
+    private CommandResult onJail(CommandSource src, CommandContext args, User user) {
         Optional<WarpLocation> owl = args.getOne(jailKey);
         if (!owl.isPresent()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.jail.jail.nojail"));
