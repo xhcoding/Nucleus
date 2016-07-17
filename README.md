@@ -20,7 +20,7 @@ elite plugin for providing simple server tasks, and an essential addition to you
  
 We're in beta right now, but we'd love the feedback!
 
-Nucleus requires Sponge API 4.1 or higher to run.
+Nucleus requires Sponge API 5.x (MC 1.10.x) to run.
 
 ## Contributions
 
