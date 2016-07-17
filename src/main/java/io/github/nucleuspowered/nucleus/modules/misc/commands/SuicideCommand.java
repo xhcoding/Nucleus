@@ -11,7 +11,6 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
@@ -20,11 +19,6 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("suicide")
 public class SuicideCommand extends CommandBase<Player> {
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
-    }
 
     @Override
     @SuppressWarnings("deprecation")

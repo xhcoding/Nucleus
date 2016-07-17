@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.chat.config;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.Subject;
 
 import java.util.Collection;
@@ -34,8 +33,8 @@ public class ChatConfig {
         return modifychat;
     }
 
-    public ChatTemplateConfig getTemplate(Player player) {
-        List<Subject> groups = player.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+    public ChatTemplateConfig getTemplate(Subject subject) {
+        List<Subject> groups = subject.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         groups.sort((x, y) -> y.getParents().size() - x.getParents().size());
 
         // Iterate through all groups the player is in.

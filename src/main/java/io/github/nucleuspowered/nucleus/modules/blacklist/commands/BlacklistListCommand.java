@@ -39,13 +39,11 @@ public class BlacklistListCommand extends CommandBase<CommandSource> {
         Text header = Util.getTextMessageWithFormat("blacklist.title");
 
         List<Text> lt =
-                dataStore.getBlacklistedTypes().stream().sorted((x, y) -> x.getTranslation().get().compareTo(y.getTranslation().get())).map(x -> {
-                    return Text.builder()
-                            .append(Text.builder(x.getTranslation().get()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                                    .onHover(TextActions.showText(Util.getTextMessageWithFormat("blacklist.hover", x.getTranslation().get())))
-                                    .build())
-                            .build();
-                }).collect(Collectors.toList());
+                dataStore.getBlacklistedTypes().stream().sorted((x, y) -> x.getTranslation().get().compareTo(y.getTranslation().get())).map(x -> Text.builder()
+                        .append(Text.builder(x.getTranslation().get()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("blacklist.hover", x.getTranslation().get())))
+                                .build())
+                        .build()).collect(Collectors.toList());
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         ps.builder().title(Text.of(TextColors.YELLOW, header)).padding(Text.of(TextColors.GREEN, "-")).contents(lt).sendTo(src);

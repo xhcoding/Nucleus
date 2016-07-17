@@ -44,7 +44,7 @@ public abstract class MigratorCommand<M extends DataMigrator> extends CommandBas
         DataMigrator.PluginDependency pd = migratorClass.getAnnotation(DataMigrator.PluginDependency.class);
         boolean deps = true;
         if (pd != null && pd.value().length > 0) {
-            deps = Arrays.asList(pd.value()).stream().allMatch(x -> Sponge.getPluginManager().getPlugin(x).isPresent());
+            deps = Arrays.stream(pd.value()).allMatch(x -> Sponge.getPluginManager().getPlugin(x).isPresent());
         }
 
         if (deps) {

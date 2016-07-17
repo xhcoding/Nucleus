@@ -107,7 +107,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         // The provided stream filters out the standard executeCommand method,
         // and checks to see if there is a second that makes
         // use of the generic parameter.
-        Optional<Method> me = Arrays.asList(getClass().getMethods()).stream()
+        Optional<Method> me = Arrays.stream(getClass().getMethods())
                 .filter(x -> x.getName().equals("executeCommand") && x.getParameterTypes().length == 2
                         && x.getParameterTypes()[1].isAssignableFrom(CommandContext.class) && !x.getParameterTypes()[0].equals(CommandSource.class))
                 .findFirst();
@@ -319,11 +319,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      * @param source The source of the command.
      * @param args The arguments.
      * @return Whether to continue or not.
-     *
-     * @throws Exception Thrown if there is a problem that means the command
-     *         cannot continue.
      */
-    protected ContinueMode preProcessChecks(T source, CommandContext args) throws Exception {
+    protected ContinueMode preProcessChecks(T source, CommandContext args) {
         return ContinueMode.CONTINUE;
     }
 

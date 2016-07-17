@@ -34,7 +34,7 @@ public class AFKListener extends ListenerBase {
 
     @Inject
     private AFKListener() {
-        commands = Arrays.asList(AFKCommand.class.getAnnotation(RegisterCommand.class).value()).stream().map(String::toLowerCase).collect(Collectors.toList());
+        commands = Arrays.stream(AFKCommand.class.getAnnotation(RegisterCommand.class).value()).map(String::toLowerCase).collect(Collectors.toList());
     }
 
     private CommandPermissionHandler s = null;

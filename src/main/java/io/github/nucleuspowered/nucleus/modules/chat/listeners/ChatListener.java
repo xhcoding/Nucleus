@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -71,7 +72,7 @@ public class ChatListener extends ListenerBase {
 
         for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
             // If we don't have the required permission...
-            if (Arrays.asList(r.getKey()).stream().noneMatch(player::hasPermission)) {
+            if (Arrays.stream(r.getKey()).noneMatch(player::hasPermission)) {
                 // ...strip the codes.
                 m = r.getValue().apply(m);
             }
@@ -106,9 +107,10 @@ public class ChatListener extends ListenerBase {
         }
 
         Text rawMessage = event.getRawMessage();
+        ChatTemplateConfig ctc = config.getTemplate(player);
         event.setMessage(
-                chatUtil.getPlayerMessageFromTemplate(config.getTemplate(player).getPrefix(), player, true),
+                chatUtil.getPlayerMessageFromTemplate(ctc.getPrefix(), player, true),
                 useMessage(player, rawMessage),
-                chatUtil.getPlayerMessageFromTemplate(config.getTemplate(player).getSuffix(), player, false));
+                chatUtil.getPlayerMessageFromTemplate(ctc.getSuffix(), player, false));
     }
 }

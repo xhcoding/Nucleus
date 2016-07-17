@@ -17,7 +17,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
@@ -55,7 +54,6 @@ public class SpawnCommand extends CommandBase<Player> {
         WorldProperties wp = args.<WorldProperties>getOne(key).orElse(src.getWorld().getProperties());
         Optional<World> ow = Sponge.getServer().getWorld(wp.getUniqueId());
 
-        Transform<World> currentLocation = src.getTransform();
         if (!ow.isPresent()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.spawn.noworld"));
             return CommandResult.empty();

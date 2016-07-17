@@ -174,7 +174,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
         for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
             // If we don't have the required permission...
-            if (Arrays.asList(r.getKey()).stream().noneMatch(x -> cph.get().testSuffix(player, x))) {
+            if (Arrays.stream(r.getKey()).noneMatch(x -> cph.get().testSuffix(player, x))) {
                 // ...strip the codes.
                 m = r.getValue().apply(m);
             }

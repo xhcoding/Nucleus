@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.mute.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
-import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -75,7 +74,6 @@ public class MuteCommand extends CommandBase<CommandSource> {
 
         // Get the user.
         User user = args.<User>getOne(playerArgument).get();
-        NucleusUser uc = userConfigLoader.get(user).get();
 
         Optional<Long> time = args.getOne(timespanArgument);
         Optional<MuteData> omd = handler.getPlayerMuteData(user);

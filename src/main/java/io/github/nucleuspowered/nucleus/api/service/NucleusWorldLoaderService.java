@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.api.service;
 
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
-import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.world.World;
 
@@ -22,13 +21,8 @@ public interface NucleusWorldLoaderService {
      * Gets the world associated with the provided UUID.
      * @param uuid The {@link UUID} of the world to load.
      * @return The {@link NucleusWorld} that contains the Essenence data for the world.
-     *
-     * @throws NoSuchWorldException If the world does not exist.
-     * @throws IOException If the data file could not be read
-     * @throws ObjectMappingException If the data file is malformed.
-     * @throws Exception For any other reason
      */
-    Optional<NucleusWorld> getWorld(UUID uuid) throws Exception;
+    Optional<NucleusWorld> getWorld(UUID uuid);
 
     /**
      * Gets the world associated with the provided UUID.

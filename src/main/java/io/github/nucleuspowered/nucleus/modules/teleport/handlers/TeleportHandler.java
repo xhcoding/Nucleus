@@ -18,8 +18,6 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
 import java.time.Instant;
@@ -140,7 +138,6 @@ public class TeleportHandler {
         }
 
         private void run() {
-            Location<World> current = playerToTeleport.getLocation();
             if (playerToTeleportTo.isOnline()) {
                 if (safe && !playerToTeleport.setLocationAndRotationSafely(playerToTeleportTo.getLocation(), playerToTeleportTo.getRotation())) {
                     if (!silentSource) {
@@ -256,7 +253,7 @@ public class TeleportHandler {
             return this;
         }
 
-        public boolean startTeleport() throws Exception {
+        public boolean startTeleport() {
             Preconditions.checkNotNull(from);
             Preconditions.checkNotNull(to);
 

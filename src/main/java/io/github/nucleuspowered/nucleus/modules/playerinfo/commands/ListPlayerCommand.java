@@ -22,7 +22,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -58,11 +57,6 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("seevanished", new PermissionInformation(Util.getMessageWithFormat("permission.list.seevanished"), SuggestedLevel.ADMIN));
         return m;
-    }
-
-    @Override
-    public CommandElement[] getArguments() {
-        return super.getArguments();
     }
 
     @Override

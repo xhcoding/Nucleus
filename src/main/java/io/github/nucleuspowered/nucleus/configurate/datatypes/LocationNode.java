@@ -108,7 +108,7 @@ public class LocationNode {
         Optional<World> ow = Sponge.getServer().getWorld(world);
 
         if (ow.isPresent()) {
-            return new Location<World>(ow.get(), x, y, z);
+            return new Location<>(ow.get(), x, y, z);
         }
 
         throw new NoSuchWorldException();

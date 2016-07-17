@@ -114,7 +114,7 @@ public class BanCommand extends CommandBase<CommandSource> {
         return CommandResult.empty();
     }
 
-    private CommandResult executeBan(CommandSource src, GameProfile u, String r) throws Exception {
+    private CommandResult executeBan(CommandSource src, GameProfile u, String r) {
         BanService service = Sponge.getServiceManager().provideUnchecked(BanService.class);
 
         if (service.isBanned(u)) {

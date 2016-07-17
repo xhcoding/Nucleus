@@ -62,7 +62,7 @@ public class Util {
     }
 
     public static Text getTextMessageWithTextFormat(String key, Text... substitutions) {
-        String[] text = Arrays.asList(substitutions).stream().map(TextSerializers.FORMATTING_CODE::serialize).toArray(String[]::new);
+        String[] text = Arrays.stream(substitutions).map(TextSerializers.FORMATTING_CODE::serialize).toArray(String[]::new);
         return messageProvider.get().getTextMessageWithFormat(key, text);
     }
 
