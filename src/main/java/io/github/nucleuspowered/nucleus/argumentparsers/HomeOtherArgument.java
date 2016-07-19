@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -44,7 +44,7 @@ public class HomeOtherArgument extends HomeArgument {
         }
 
         User user = ouser.get();
-        WarpLocation location = this.getHome(user, ohome.get(), args);
+        LocationData location = this.getHome(user, ohome.get(), args);
         return new HomeData(user, location);
     }
 
@@ -60,9 +60,9 @@ public class HomeOtherArgument extends HomeArgument {
 
     public static class HomeData {
         public final User user;
-        public final WarpLocation location;
+        public final LocationData location;
 
-        public HomeData(User user, WarpLocation location) {
+        public HomeData(User user, LocationData location) {
             this.user = user;
             this.location = location;
         }

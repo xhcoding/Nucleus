@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -86,7 +86,7 @@ public class JailCommand extends CommandBase<CommandSource> {
     }
 
     private CommandResult onJail(CommandSource src, CommandContext args, User user) {
-        Optional<WarpLocation> owl = args.getOne(jailKey);
+        Optional<LocationData> owl = args.getOne(jailKey);
         if (!owl.isPresent()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.jail.jail.nojail"));
             return CommandResult.empty();

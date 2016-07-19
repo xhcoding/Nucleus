@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -38,7 +38,7 @@ public class DeleteHomeCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        WarpLocation wl = args.<WarpLocation>getOne(homeKey).get();
+        LocationData wl = args.<LocationData>getOne(homeKey).get();
         if (plugin.getUserDataManager().get(src).get().deleteHome(wl.getName())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.delete.success", wl.getName()));
             return CommandResult.success();

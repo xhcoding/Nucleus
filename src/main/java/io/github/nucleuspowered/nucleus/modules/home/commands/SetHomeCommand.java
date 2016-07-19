@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -57,7 +57,7 @@ public class SetHomeCommand extends CommandBase<Player> {
 
         // Get the homes.
         UserService iqsu = udm.get(src).get();
-        Map<String, WarpLocation> msw = iqsu.getHomes();
+        Map<String, LocationData> msw = iqsu.getHomes();
 
         if (!warpName.matcher(home).matches()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.sethome.name"));

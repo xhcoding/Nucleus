@@ -28,7 +28,7 @@ public class GeneralDataNode {
     private Map<String, LocationNode> jails = Maps.newHashMap();
 
     @Setting
-    private Map<String, LocationNode> warps = Maps.newHashMap();
+    private Map<String, WarpNode> warps = Maps.newHashMap();
 
     @Setting
     private Map<String, KitDataNode> kits = Maps.newHashMap();
@@ -55,7 +55,7 @@ public class GeneralDataNode {
         return jails;
     }
 
-    public Map<String, LocationNode> getWarps() {
+    public Map<String, WarpNode> getWarps() {
         return warps;
     }
 

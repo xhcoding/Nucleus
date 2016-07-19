@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -68,7 +68,7 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
 
         boolean other = !src.equals(user);
 
-        Map<String, WarpLocation> msw = plugin.getUserDataManager().get(user).get().getHomes();
+        Map<String, LocationData> msw = plugin.getUserDataManager().get(user).get().getHomes();
         if (msw.isEmpty()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.nohomes"));
             return CommandResult.empty();

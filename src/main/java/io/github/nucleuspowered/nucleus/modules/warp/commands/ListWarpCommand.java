@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -27,6 +28,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,11 +46,6 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
     @Inject private WarpConfigAdapter adapter;
 
     @Override
-    public String[] getAliases() {
-        return new String[] {"list"};
-    }
-
-    @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         if (service == null) {
             service = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
@@ -63,10 +60,23 @@ public class ListWarpCommand extends CommandBase<CommandSource> {
             return CommandResult.empty();
         }
 
+        final boolean econExists = plugin.getEconHelper().economyServiceExists();
+        final int defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
         List<Text> lt = ws.stream().filter(s -> canView(src, s.toLowerCase())).sorted(String::compareTo).map(s -> {
-            if (service.getWarp(s).isPresent()) {
-                return Text.builder(s).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
-                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.warps.warpprompt", s))).build();
+            Optional<WarpData> wd = service.getWarp(s);
+            if (wd.isPresent()) {
+                Text.Builder tb =
+                        Text.builder().append(Text.builder(s).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + s))
+                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.warps.warpprompt", s))).build());
+
+                if (econExists) {
+                    int cost = wd.get().getCost().orElse(defaultCost);
+                    if (cost > 0) {
+                        tb.append(Util.getTextMessageWithFormat("command.warps.list.cost", plugin.getEconHelper().getCurrencySymbol(cost)));
+                    }
+                }
+
+                return tb.build();
             } else {
                 return Text.builder(s).color(TextColors.RED).onHover(TextActions.showText(Util.getTextMessageWithFormat("command.warps.unavailable")))
                         .build();

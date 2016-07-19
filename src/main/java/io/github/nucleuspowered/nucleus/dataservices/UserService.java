@@ -13,9 +13,9 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
@@ -151,7 +151,7 @@ public class UserService extends Service<UserDataNode>
     }
 
     @Override
-    public Optional<WarpLocation> getHome(String home) {
+    public Optional<LocationData> getHome(String home) {
         if (data.getHomeData() == null) {
             return Optional.empty();
         }
@@ -159,9 +159,9 @@ public class UserService extends Service<UserDataNode>
         LocationNode ln = Util.getValueIgnoreCase(data.getHomeData(), home).orElse(null);
         if (ln != null) {
             try {
-                return Optional.of(new WarpLocation(home, ln.getLocation(), ln.getRotation()));
+                return Optional.of(new LocationData(home, ln.getLocation(), ln.getRotation()));
             } catch (NoSuchWorldException e) {
-                return Optional.of(new WarpLocation(home, null, null));
+                return Optional.of(new LocationData(home, null, null));
             }
         }
 
@@ -169,7 +169,7 @@ public class UserService extends Service<UserDataNode>
     }
 
     @Override
-    public Map<String, WarpLocation> getHomes() {
+    public Map<String, LocationData> getHomes() {
         if (data.getHomeData() == null) {
             return Maps.newHashMap();
         }
@@ -177,7 +177,7 @@ public class UserService extends Service<UserDataNode>
         return data.getHomeData().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, x -> {
                     try {
-                        return new WarpLocation(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
+                        return new LocationData(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
                     } catch (NoSuchWorldException e) {
                         return null;
                     }

@@ -9,16 +9,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.WarpNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -35,8 +36,26 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDataNode, ConfigurationNode, ConfigurationLoader<ConfigurationNode>> {
+
+    private final BiFunction<String, LocationNode, LocationData> getLocationData = (s, l) -> {
+        try {
+            return new LocationData(s, l.getLocation(), l.getRotation());
+        } catch (NoSuchWorldException e) {
+            return null;
+        }
+    };
+
+    private final BiFunction<String, WarpNode, WarpData> getWarpLocation = (s, l) -> {
+        try {
+            return new WarpData(s, l.getLocation(), l.getRotation(), l.getCost());
+        } catch (NoSuchWorldException e) {
+            return null;
+        }
+    };
 
     public GeneralDataStore(Path file) throws Exception {
         super(file, TypeToken.of(GeneralDataNode.class), GeneralDataNode::new, false);
@@ -111,11 +130,11 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
         data.setFirstKit(stack);
     }
 
-    public Optional<WarpLocation> getJailLocation(String name) {
+    public Optional<LocationData> getJailLocation(String name) {
         return getLocation(name, data.getJails());
     }
 
-    public Map<String, WarpLocation> getJails() {
+    public Map<String, LocationData> getJails() {
         return getLocations(data.getJails());
     }
 
@@ -127,20 +146,46 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
         return removeLocation(name, data.getJails());
     }
 
-    public Optional<WarpLocation> getWarpLocation(String name) {
-        return getLocation(name, data.getWarps());
+    public Optional<WarpData> getWarpLocation(String name) {
+        return getLocation(name, data.getWarps(), getWarpLocation);
     }
 
-    public Map<String, WarpLocation> getWarps() {
-        return getLocations(data.getWarps());
+    public Map<String, WarpData> getWarps() {
+        return getLocations(data.getWarps(), getWarpLocation);
     }
 
     public boolean addWarp(String name, Location<World> loc, Vector3d rot) {
-        return addLocation(name, loc, rot, data.getWarps());
+        Map<String, WarpNode> m = data.getWarps();
+        if (Util.getKeyIgnoreCase(m, name).isPresent()) {
+            return false;
+        }
+
+        m.put(name, new WarpNode(loc, rot));
+        return true;
+    }
+
+    public boolean setWarpCost(String name, int cost) {
+        Preconditions.checkArgument(cost >= -1);
+        Map<String, WarpNode> m = data.getWarps();
+        Optional<WarpNode> os = Util.getValueIgnoreCase(m, name);
+        if (os.isPresent()) {
+            // No need to put it back - it's saved automatically.
+            os.get().setCost(cost);
+            return true;
+        }
+
+        return false;
     }
 
     public boolean removeWarp(String name) {
-        return removeLocation(name, data.getWarps());
+        Map<String, WarpNode> m = data.getWarps();
+        Optional<String> os = Util.getKeyIgnoreCase(m, name);
+        if (os.isPresent()) {
+            m.remove(os.get());
+            return true;
+        }
+
+        return false;
     }
 
     public Optional<Transform<World>> getFirstSpawn() {
@@ -167,37 +212,32 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
 
     // Helper methods for warp based systems
 
-    private Optional<WarpLocation> getLocation(String name, Map<String, LocationNode> m) {
-        Optional<Map.Entry<String, LocationNode>> o = m.entrySet().stream().filter(k -> k.getKey().equalsIgnoreCase(name)).findFirst();
+    private Optional<LocationData> getLocation(String name, Map<String, LocationNode> m) {
+        return getLocation(name, m, getLocationData);
+    }
+
+    private <T extends LocationData, S extends LocationNode> Optional<T> getLocation(String name, Map<String, S> m, BiFunction<String, S, T> converter) {
+        Optional<S> o = Util.getValueIgnoreCase(m, name);
         if (!o.isPresent()) {
             return Optional.empty();
         }
 
-        LocationNode ln = o.get().getValue();
-        try {
-            return Optional.of(new WarpLocation(name, ln.getLocation(), ln.getRotation()));
-        } catch (NoSuchWorldException e) {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(converter.apply(name, o.get()));
     }
 
-    private Map<String, WarpLocation> getLocations(Map<String, LocationNode> m) {
-        Map<String, WarpLocation> l = Maps.newHashMap();
-        m.forEach((k, v) -> {
-            try {
-                l.put(k, new WarpLocation(k, v.getLocation(), v.getRotation()));
-            } catch (NoSuchWorldException ignored) {
-            }
-        });
+    private Map<String, LocationData> getLocations(Map<String, LocationNode> msl) {
+        return getLocations(msl, getLocationData);
+    }
 
-        return l;
+    private <T extends LocationData, S extends LocationNode> Map<String, T> getLocations(Map<String, S> m, BiFunction<String, S, T> converter) {
+        return m.entrySet().stream().map(x -> converter.apply(x.getKey(), x.getValue())).filter(x -> x != null).collect(Collectors.toMap(T::getName, x -> x));
     }
 
     private boolean addLocation(String name, Location<World> loc, Vector3d rot, Map<String, LocationNode> m) {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(loc);
         Preconditions.checkNotNull(rot);
-        if (m.containsKey(name.toLowerCase())) {
+        if (Util.getKeyIgnoreCase(m, name).isPresent()) {
             return false;
         }
 

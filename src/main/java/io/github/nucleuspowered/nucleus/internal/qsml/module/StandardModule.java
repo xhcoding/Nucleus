@@ -71,7 +71,7 @@ public abstract class StandardModule implements Module {
         Set<Class<? extends AbstractCommand>> cmds = nucleus.getModuleContainer().getLoadedClasses().stream().filter(AbstractCommand.class::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))
                 .filter(x -> x.isAnnotationPresent(RegisterCommand.class))
-                .map(x -> (Class<? extends AbstractCommand>)x)
+                .map(x -> (Class<AbstractCommand>)x)
                 .collect(Collectors.toSet());
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.

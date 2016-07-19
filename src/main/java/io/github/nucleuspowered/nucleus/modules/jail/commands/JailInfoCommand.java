@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -38,7 +38,7 @@ public class JailInfoCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        WarpLocation wl = args.<WarpLocation>getOne(jailKey).get();
+        LocationData wl = args.<LocationData>getOne(jailKey).get();
         src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.jail.info.name"))
                 .append(Text.of(": ", TextColors.GREEN, wl.getName())).build());
         src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.jail.info.location"))

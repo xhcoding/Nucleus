@@ -53,6 +53,10 @@ public class EconHelper {
     }
 
     public boolean withdrawFromPlayer(Player src, double cost) {
+        return withdrawFromPlayer(src, cost, true);
+    }
+
+    public boolean withdrawFromPlayer(Player src, double cost, boolean message) {
         Optional<EconomyService> oes = Sponge.getServiceManager().provide(EconomyService.class);
         if (oes.isPresent()) {
             // Check balance.
@@ -65,20 +69,29 @@ public class EconHelper {
 
             TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
             if (tr.getResult() == ResultType.ACCOUNT_NO_FUNDS) {
-                src.sendMessage(Util.getTextMessageWithFormat("cost.nofunds", getCurrencySymbol(cost)));
+                if (message) {
+                    src.sendMessage(Util.getTextMessageWithFormat("cost.nofunds", getCurrencySymbol(cost)));
+                }
+
                 return false;
             } else if (tr.getResult() != ResultType.SUCCESS) {
                 src.sendMessage(Util.getTextMessageWithFormat("cost.error"));
                 return false;
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("cost.complete", getCurrencySymbol(cost)));
+            if (message) {
+                src.sendMessage(Util.getTextMessageWithFormat("cost.complete", getCurrencySymbol(cost)));
+            }
         }
 
         return true;
     }
 
     public boolean depositInPlayer(User src, double cost) {
+        return depositInPlayer(src, cost, true);
+    }
+
+    public boolean depositInPlayer(User src, double cost, boolean message) {
         Optional<EconomyService> oes = Sponge.getServiceManager().provide(EconomyService.class);
         if (oes.isPresent()) {
             // Check balance.
@@ -95,7 +108,7 @@ public class EconHelper {
                 return false;
             }
 
-            if (src.isOnline()) {
+            if (message && src.isOnline()) {
                 src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.refund", getCurrencySymbol(cost)));
             }
         }

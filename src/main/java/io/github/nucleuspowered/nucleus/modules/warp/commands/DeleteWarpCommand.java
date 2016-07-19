@@ -40,7 +40,7 @@ public class DeleteWarpCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        WarpArgument.WarpData warp = args.<WarpArgument.WarpData>getOne(WarpCommand.warpNameArg).get();
+        WarpArgument.Result warp = args.<WarpArgument.Result>getOne(WarpCommand.warpNameArg).get();
         NucleusWarpService qs = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
 
         if (qs.removeWarp(warp.warp)) {

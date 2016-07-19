@@ -5,9 +5,7 @@
 package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
-import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;
@@ -17,45 +15,34 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * We use this class in order to not just accidentally delete data when a world isn't available.
+ */
 @ConfigSerializable
 public class LocationNode {
 
     @Setting
-    private double x;
+    double x;
 
     @Setting
-    private double y;
+    double y;
 
     @Setting
-    private double z;
+    double z;
 
     @Setting
-    private double rotx;
+    double rotx;
 
     @Setting
-    private double roty;
+    double roty;
 
     @Setting
-    private double rotz;
+    double rotz;
 
     @Setting
-    private UUID world;
+    UUID world;
 
     public LocationNode() { }
-
-    public LocationNode(ConfigurationNode locationNode) {
-        this.x = locationNode.getNode("x").getDouble();
-        this.y = locationNode.getNode("y").getDouble();
-        this.z = locationNode.getNode("z").getDouble();
-        this.rotx = locationNode.getNode("rotx").getDouble();
-        this.roty = locationNode.getNode("roty").getDouble();
-        this.rotz = locationNode.getNode("rotz").getDouble();
-        this.world = UUID.fromString(locationNode.getNode("world").getString());
-    }
-
-    public LocationNode(WarpLocation location) {
-        this(location.getLocation(), location.getRotation());
-    }
 
     public LocationNode(Location<World> length) {
         this(length, new Vector3d());
@@ -69,33 +56,6 @@ public class LocationNode {
         this.roty = rotation.getY();
         this.rotz = rotation.getZ();
         this.world = length.getExtent().getUniqueId();
-    }
-
-    public LocationNode(double x, double y, double z, double rotx, double roty, double rotz, UUID world) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.rotx = rotx;
-        this.roty = roty;
-        this.rotz = rotz;
-        this.world = world;
-    }
-
-    /**
-     * Populates the selected node with the values.
-     *
-     * @param cn The node.
-     */
-    public void populateNode(ConfigurationNode cn) {
-        cn.getNode("x").setValue(x);
-        cn.getNode("y").setValue(y);
-        cn.getNode("z").setValue(z);
-
-        cn.getNode("rotx").setValue(rotx);
-        cn.getNode("roty").setValue(roty);
-        cn.getNode("rotz").setValue(rotz);
-
-        cn.getNode("world").setValue(world.toString());
     }
 
     /**

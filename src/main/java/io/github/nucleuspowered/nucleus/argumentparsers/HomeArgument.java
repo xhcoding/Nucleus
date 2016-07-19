@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -45,9 +45,9 @@ public class HomeArgument extends CommandElement {
         return getHome((User) source, args.next(), args);
     }
 
-    protected WarpLocation getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
+    protected LocationData getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
         try {
-            Optional<WarpLocation> owl = plugin.getUserDataManager().get(user).get().getHome(home);
+            Optional<LocationData> owl = plugin.getUserDataManager().get(user).get().getHome(home);
             if (owl.isPresent()) {
                 return owl.get();
             }
