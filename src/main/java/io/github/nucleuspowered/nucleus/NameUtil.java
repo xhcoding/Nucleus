@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -45,14 +46,13 @@ public class NameUtil {
         colourMap.put('f', TextColors.WHITE);
     }
 
-    public static Text getNameFromCommandSource(CommandSource src) {
-        if (!(src instanceof User)) {
-            return Text.of(src.getName());
-        }
-
-        return getName((User)src);
-    }
-
+    /**
+     * Gets the name from a command source, getting the display name if the source is a {@link User}.
+     *
+     * @param src The {@link CommandSource}
+     * @param loader The {@link UserDataManager} that can get the nicknames
+     * @return The {@link Text} representing the name.
+     */
     public static Text getNameFromCommandSource(CommandSource src, UserDataManager loader) {
         if (!(src instanceof User)) {
             return Text.of(src.getName());
@@ -61,6 +61,12 @@ public class NameUtil {
         return getName((User)src, loader);
     }
 
+    /**
+     * Gets the display name from a {@link User} using the supplied {@link UserDataManager}
+     * @param player The {@link User}
+     * @param loader The {@link UserDataManager} that can get the nicknames
+     * @return The display name.
+     */
     public static Text getName(User player, UserDataManager loader) {
         Optional<UserService> userService = loader.get(player);
         if (userService.isPresent()) {
@@ -70,18 +76,35 @@ public class NameUtil {
         return getName(player);
     }
 
+    /**
+     * Gets the display name from a {@link User} using the supplied {@link UserService}
+     * @param player The {@link User}
+     * @param service The {@link UserService} that contains the nickname.
+     * @return The display name.
+     */
     public static Text getName(User player, UserService service) {
+        Preconditions.checkArgument(player.getUniqueId().equals(service.getUniqueID()));
         Optional<Text> n = service.getNicknameWithPrefix();
         if (n.isPresent()) {
-            return Text.of(getNameColour(player), n.get().toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build());
+            TextColor tc = getNameColour(player);
+            Text name = n.get().toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
+            return Text.of(tc, name);
         }
 
         return getName(player);
     }
 
+    /**
+     * Gets the display name from a {@link User} as Sponge sees it.
+     *
+     * @param player The {@link User} to get the data from.
+     * @return The {@link Text}
+     */
     public static Text getName(User player) {
-        return Text.of(getNameColour(player), player.get(Keys.DISPLAY_NAME).orElse(Text.of(player.getName()))
-                .toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build());
+        TextColor tc = getNameColour(player);
+        Text name = player.get(Keys.DISPLAY_NAME).orElse(Text.of(player.getName()))
+                .toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
+        return Text.of(tc, name);
     }
 
     public static String getSerialisedName(User player) {
