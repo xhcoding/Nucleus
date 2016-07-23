@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -61,7 +62,9 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER))
+        };
     }
 
     @Override

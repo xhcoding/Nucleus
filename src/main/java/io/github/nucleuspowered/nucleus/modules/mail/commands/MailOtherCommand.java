@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.MailFilterArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
@@ -39,7 +40,7 @@ public class MailOtherCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.user(Text.of(userKey)),
+            new NicknameArgument(Text.of(userKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER),
             GenericArguments.optional(GenericArguments.allOf(new MailFilterArgument(Text.of(MailReadBase.filters), handler)))};
     }
 

@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -53,7 +54,9 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {GenericArguments.optional(GenericArguments.onlyOne(
-                GenericArguments.requiringPermission(GenericArguments.user(Text.of(player)), permissions.getPermissionWithSuffix("others"))))};
+                GenericArguments.requiringPermission(
+                        new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER),
+                        permissions.getPermissionWithSuffix("others"))))};
     }
 
     @Override

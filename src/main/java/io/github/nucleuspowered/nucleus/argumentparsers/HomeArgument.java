@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
@@ -69,18 +68,21 @@ public class HomeArgument extends CommandElement {
         }
 
         User u = (User) src;
+        try {
+            return complete(u, args.peek());
+        } catch (ArgumentParseException e) {
+            return complete(u, "");
+        }
+    }
+
+    protected List<String> complete(User src, String homeName) {
         Set<String> s;
         try {
-            s = plugin.getUserDataManager().get(u).get().getHomes().keySet();
+            s = plugin.getUserDataManager().get(src).get().getHomes().keySet();
         } catch (Exception e) {
             return null;
         }
 
-        try {
-            String n = args.peek();
-            return s.stream().filter(x -> n.toLowerCase().startsWith(x.toLowerCase())).collect(Collectors.toList());
-        } catch (ArgumentParseException e) {
-            return Lists.newArrayList(s);
-        }
+        return s.stream().filter(x -> homeName.toLowerCase().startsWith(x.toLowerCase())).collect(Collectors.toList());
     }
 }

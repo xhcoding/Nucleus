@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -47,7 +48,7 @@ public class TeleportAskCommand extends CommandBase<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
+                GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)),
                 GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("force"), "f").buildWith(GenericArguments.none())
         };
     }

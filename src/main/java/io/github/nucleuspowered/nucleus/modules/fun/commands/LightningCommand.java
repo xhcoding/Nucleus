@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -50,7 +51,9 @@ public class LightningCommand extends CommandBase<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[]{
                 GenericArguments.optional(GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))
+                        GenericArguments.onlyOne(
+                                new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)
+                        ), permissions.getPermissionWithSuffix("others")))
         };
     }
 

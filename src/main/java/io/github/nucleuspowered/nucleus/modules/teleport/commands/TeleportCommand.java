@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
@@ -66,7 +67,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
                                 permissions.getPermissionWithSuffix("others")),
 
                 // <player>
-                GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))))};
+                GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)))};
     }
 
     @Override
