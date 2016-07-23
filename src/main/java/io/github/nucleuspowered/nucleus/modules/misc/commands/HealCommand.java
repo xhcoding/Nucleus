@@ -52,6 +52,7 @@ public class HealCommand extends CommandBase<CommandSource> {
 
         Player pl = opl.get();
         if (pl.offer(Keys.HEALTH, pl.get(Keys.MAX_HEALTH).get()).isSuccessful()) {
+            pl.offer(Keys.FIRE_TICKS, 0);
             pl.sendMessages(Util.getTextMessageWithFormat("command.heal.success.self"));
             if (!pl.equals(src)) {
                 src.sendMessages(Util.getTextMessageWithFormat("command.heal.success.other", pl.getName()));

@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
@@ -23,6 +24,7 @@ public class MiscListener extends ListenerBase {
         if (event.getTargetEntity() instanceof Player) {
             Player pl = (Player)event.getTargetEntity();
             if (isInvulnerable(pl)) {
+                pl.offer(Keys.FIRE_TICKS, 0);
                 event.setBaseDamage(0);
                 event.setCancelled(true);
             }
