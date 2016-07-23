@@ -19,6 +19,7 @@ import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
@@ -559,6 +560,15 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
         // Tell the user we're warming up.
         src.sendMessage(Util.getTextMessageWithFormat("warmup.start", Util.getTimeStringFromSeconds(warmupTime)));
+
+        WarmupConfig wc = cca.getNodeOrDefault().getWarmupConfig();
+        if (wc.isOnMove() && wc.isOnCommand()) {
+            src.sendMessage(Util.getTextMessageWithFormat("warmup.both"));
+        } else if (wc.isOnMove()) {
+            src.sendMessage(Util.getTextMessageWithFormat("warmup.onMove"));
+        } else if (wc.isOnCommand()) {
+            src.sendMessage(Util.getTextMessageWithFormat("warmup.onCommand"));
+        }
 
         // Sponge should think the command was run successfully.
         return ContinueMode.STOP_SUCCESS;

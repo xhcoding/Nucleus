@@ -4,9 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
@@ -23,6 +23,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class NameUtil {
+
+    private NameUtil() {}
+
+    private static Nucleus plugin;
+
+    static void supplyPlugin(Nucleus plugin) {
+        if (NameUtil.plugin == null) {
+            NameUtil.plugin = plugin;
+        }
+    }
 
     private final static Map<Character, TextColor> colourMap = Maps.newHashMap();
 
@@ -45,6 +55,12 @@ public class NameUtil {
         colourMap.put('f', TextColors.WHITE);
     }
 
+    /**
+     * Gets the name from a command source, getting the display name if the source is a {@link User}.
+     *
+     * @param src The {@link CommandSource}
+     * @return The {@link Text} representing the name.
+     */
     public static Text getNameFromCommandSource(CommandSource src) {
         if (!(src instanceof User)) {
             return Text.of(src.getName());
@@ -53,35 +69,31 @@ public class NameUtil {
         return getName((User)src);
     }
 
-    public static Text getNameFromCommandSource(CommandSource src, UserDataManager loader) {
-        if (!(src instanceof User)) {
-            return Text.of(src.getName());
-        }
-
-        return getName((User)src, loader);
-    }
-
-    public static Text getName(User player, UserDataManager loader) {
-        Optional<UserService> userService = loader.get(player);
-        if (userService.isPresent()) {
-            return getName(player, userService.get());
-        }
-
-        return getName(player);
-    }
-
-    public static Text getName(User player, UserService service) {
-        Optional<Text> n = service.getNicknameWithPrefix();
-        if (n.isPresent()) {
-            return Text.of(getNameColour(player), n.get().toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build());
-        }
-
-        return getName(player);
-    }
-
+    /**
+     * Gets the display name from a {@link User} as Sponge sees it.
+     *
+     * @param player The {@link User} to get the data from.
+     * @return The {@link Text}
+     */
     public static Text getName(User player) {
-        return Text.of(getNameColour(player), player.get(Keys.DISPLAY_NAME).orElse(Text.of(player.getName()))
-                .toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build());
+        Preconditions.checkNotNull(player);
+
+        if (plugin != null) {
+            Optional<UserService> userService = plugin.getUserDataManager().get(player);
+            if (userService.isPresent()) {
+                Optional<Text> n = userService.get().getNicknameWithPrefix();
+                if (n.isPresent()) {
+                    TextColor tc = getNameColour(player);
+                    Text name = n.get().toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
+                    return Text.of(tc, name);
+                }
+            }
+        }
+
+        TextColor tc = getNameColour(player);
+        Text name = player.get(Keys.DISPLAY_NAME).orElse(Text.of(player.getName()))
+                .toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
+        return Text.of(tc, name);
     }
 
     public static String getSerialisedName(User player) {

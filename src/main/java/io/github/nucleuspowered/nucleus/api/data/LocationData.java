@@ -10,13 +10,13 @@ import org.spongepowered.api.world.World;
 
 import java.text.MessageFormat;
 
-public class WarpLocation {
+public class LocationData {
 
     private final String warpName;
-    protected final Location<World> location;
+    private final Location<World> location;
     private final Vector3d rotation;
 
-    public WarpLocation(String name, Location<World> location, Vector3d rotation) {
+    public LocationData(String name, Location<World> location, Vector3d rotation) {
         this.rotation = rotation;
         this.location = location;
         this.warpName = name;

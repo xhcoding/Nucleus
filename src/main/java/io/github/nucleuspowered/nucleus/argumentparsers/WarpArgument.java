@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 
 /**
- * Returns a {@link WarpData}
+ * Returns a {@link Result}
  */
 public class WarpArgument extends CommandElement {
 
@@ -63,10 +63,10 @@ public class WarpArgument extends CommandElement {
         }
 
         if (includeWarpData) {
-            return new WarpData(warpName,
+            return new Result(warpName,
                     service.getWarp(warp).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.warps.notavailable"))));
         } else {
-            return new WarpData(warpName, null);
+            return new Result(warpName, null);
         }
     }
 
@@ -98,12 +98,12 @@ public class WarpArgument extends CommandElement {
         }
     }
 
-    public class WarpData {
+    public class Result {
 
         public final String warp;
-        public final WarpLocation loc;
+        public final WarpData loc;
 
-        private WarpData(String warp, WarpLocation loc) {
+        private Result(String warp, WarpData loc) {
             this.warp = warp;
             this.loc = loc;
         }

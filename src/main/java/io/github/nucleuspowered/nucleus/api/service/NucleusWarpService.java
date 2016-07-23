@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -23,7 +23,7 @@ public interface NucleusWarpService {
      * @param warpName The name of the warp to check.
      * @return The {@link Location} of the warp, or {@link Optional#empty()} otherwise.
      */
-    Optional<WarpLocation> getWarp(String warpName);
+    Optional<WarpData> getWarp(String warpName);
 
     /**
      * Removes a warp.
@@ -42,6 +42,17 @@ public interface NucleusWarpService {
      * @return <code>true</code> if set, <code>false</code> otherwise.
      */
     boolean setWarp(String warpName, Location<World> location, Vector3d rotation);
+
+    boolean removeWarpCost(String warpName);
+
+    /**
+     * Sets the cost of a warp.
+     *
+     * @param warpName The name of the warp to change the cost of.
+     * @param cost The cost to use the warp. Set to zero to disable.
+     * @return <code>true</code> if the cost is set, <code>false</code> otherwise.
+     */
+    boolean setWarpCost(String warpName, int cost);
 
     /**
      * Gets the names of all the warp that are available.

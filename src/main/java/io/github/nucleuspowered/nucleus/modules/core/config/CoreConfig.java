@@ -19,6 +19,9 @@ public class CoreConfig {
     @Setting(value = "permission-command", comment = "loc:config.permissioncommand")
     private String permissionCommand = "";
 
+    @Setting(value = "warmup-canceling", comment = "loc:config.core.warmup.info")
+    private WarmupConfig warmupConfig = new WarmupConfig();
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -29,5 +32,9 @@ public class CoreConfig {
 
     public String getPermissionCommand() {
         return permissionCommand;
+    }
+
+    public WarmupConfig getWarmupConfig() {
+        return warmupConfig;
     }
 }

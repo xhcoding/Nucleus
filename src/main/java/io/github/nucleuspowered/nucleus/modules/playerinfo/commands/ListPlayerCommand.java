@@ -159,7 +159,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
                         tb.append(Text.of(" "));
                     }
 
-                    return tb.append(NameUtil.getName(x, loader)).build();
+                    return tb.append(NameUtil.getName(x)).build();
                 }).collect(Collectors.toList());
 
         if (!playerList.isEmpty()) {

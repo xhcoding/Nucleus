@@ -9,7 +9,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
@@ -34,7 +34,7 @@ public class JailHandler implements NucleusJailService {
     }
 
     @Override
-    public Optional<WarpLocation> getJail(String warpName) {
+    public Optional<LocationData> getJail(String warpName) {
         return store.getJailLocation(warpName);
     }
 
@@ -49,7 +49,7 @@ public class JailHandler implements NucleusJailService {
     }
 
     @Override
-    public Map<String, WarpLocation> getJails() {
+    public Map<String, LocationData> getJails() {
         return store.getJails();
     }
 
@@ -83,8 +83,8 @@ public class JailHandler implements NucleusJailService {
         }
 
         // Get the jail.
-        Optional<WarpLocation> owl = getJail(data.getJailName());
-        WarpLocation wl = owl.orElseGet(() -> {
+        Optional<LocationData> owl = getJail(data.getJailName());
+        LocationData wl = owl.orElseGet(() -> {
             if (!getJails().isEmpty()) {
                 return null;
             }
@@ -145,14 +145,14 @@ public class JailHandler implements NucleusJailService {
         return true;
     }
 
-    public Optional<WarpLocation> getWarpLocation(Player user) {
+    public Optional<LocationData> getWarpLocation(Player user) {
         if (!isPlayerJailed(user)) {
             return Optional.empty();
         }
 
-        Optional<WarpLocation> owl = getJail(getPlayerJailData(user).get().getJailName());
+        Optional<LocationData> owl = getJail(getPlayerJailData(user).get().getJailName());
         if (!owl.isPresent()) {
-            Collection<WarpLocation> wl = getJails().values();
+            Collection<LocationData> wl = getJails().values();
             if (wl.isEmpty()) {
                 return Optional.empty();
             }

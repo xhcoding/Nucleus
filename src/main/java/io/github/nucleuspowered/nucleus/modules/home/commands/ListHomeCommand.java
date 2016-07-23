@@ -5,7 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -53,7 +54,9 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {GenericArguments.optional(GenericArguments.onlyOne(
-                GenericArguments.requiringPermission(GenericArguments.user(Text.of(player)), permissions.getPermissionWithSuffix("others"))))};
+                GenericArguments.requiringPermission(
+                        new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER),
+                        permissions.getPermissionWithSuffix("others"))))};
     }
 
     @Override
@@ -68,7 +71,7 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
 
         boolean other = !src.equals(user);
 
-        Map<String, WarpLocation> msw = plugin.getUserDataManager().get(user).get().getHomes();
+        Map<String, LocationData> msw = plugin.getUserDataManager().get(user).get().getHomes();
         if (msw.isEmpty()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.home.nohomes"));
             return CommandResult.empty();

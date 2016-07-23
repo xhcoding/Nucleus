@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -32,17 +32,17 @@ public interface NucleusJailService {
     /**
      * Gets the name of the jails on the server. All jails returned in this map exist.
      *
-     * @return A {@link Map} of names to {@link WarpLocation}.
+     * @return A {@link Map} of names to {@link LocationData}.
      */
-    Map<String, WarpLocation> getJails();
+    Map<String, LocationData> getJails();
 
     /**
      * Gets the location of a jail, if it exists.
      *
      * @param name The name of the jail to get. Case in-sensitive.
-     * @return An {@link Optional} that potentially contains the {@link WarpLocation} if the jail exists.
+     * @return An {@link Optional} that potentially contains the {@link LocationData} if the jail exists.
      */
-    Optional<WarpLocation> getJail(String name);
+    Optional<LocationData> getJail(String name);
 
     /**
      * Removes a jail location from the list.

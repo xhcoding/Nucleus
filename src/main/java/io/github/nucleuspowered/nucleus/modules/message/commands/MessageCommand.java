@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -65,7 +65,7 @@ public class MessageCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                new PlayerConsoleArgument(Text.of(to)),
+                new NicknameArgument(Text.of(to), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER_CONSOLE),
                 GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };
     }

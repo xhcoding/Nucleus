@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -36,7 +36,7 @@ public class DeleteJailCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        WarpLocation wl = args.<WarpLocation>getOne(jailKey).get();
+        LocationData wl = args.<LocationData>getOne(jailKey).get();
         if (handler.removeJail(wl.getName())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.jails.del.success", wl.getName()));
             return CommandResult.success();

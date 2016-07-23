@@ -99,16 +99,16 @@ public interface NucleusUser {
      * Gets the specified home for the player.
      *
      * @param home The name of the home to get.
-     * @return An {@link Optional} containing the {@link WarpLocation}, if it exists.
+     * @return An {@link Optional} containing the {@link LocationData}, if it exists.
      */
-    Optional<WarpLocation> getHome(String home);
+    Optional<LocationData> getHome(String home);
 
     /**
      * Gets all of the homes for a player.
      *
-     * @return An {@link Map} containing the {@link WarpLocation}s of the homes, using the name of the homes as a key.
+     * @return An {@link Map} containing the {@link LocationData}s of the homes, using the name of the homes as a key.
      */
-    Map<String, WarpLocation> getHomes();
+    Map<String, LocationData> getHomes();
 
     /**
      * Sets a player's home. Will not overwrite a home that exists. Does not respect limits set in permissions and options.

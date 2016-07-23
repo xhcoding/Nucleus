@@ -313,7 +313,7 @@ public class ChatUtil {
 
     private Text getName(CommandSource cs) {
         if (cs instanceof Player) {
-            return NameUtil.getName((Player)cs, plugin.getUserDataManager());
+            return NameUtil.getName((Player)cs);
         }
 
         return Text.of(cs.getName());

@@ -70,7 +70,7 @@ public class RealnameCommand extends CommandBase<CommandSource> {
 
             return new NameTuple(x.getName().toLowerCase(), x);
         }).filter(x -> x.nickname.startsWith(name.toLowerCase()))
-                .map(x -> Text.builder().append(NameUtil.getName(x.player, udm)).append(Text.of(TextColors.GRAY, " -> ")).append(Text.of(x.player.getName())).toText())
+                .map(x -> Text.builder().append(NameUtil.getName(x.player)).append(Text.of(TextColors.GRAY, " -> ")).append(Text.of(x.player.getName())).toText())
                 .collect(Collectors.toList());
 
         if (realNames.isEmpty()) {

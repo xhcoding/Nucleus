@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -44,7 +45,8 @@ public class HatCommand extends CommandBase<Player> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.optional(GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))
+                        GenericArguments.onlyOne(new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)),
+                        permissions.getPermissionWithSuffix("others")))
         };
     }
 

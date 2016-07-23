@@ -38,6 +38,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.NucleusLoggerProxy;
 import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructor;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -102,6 +103,7 @@ public class Nucleus {
     public Nucleus(@ConfigDir(sharedRoot = true) Path configDir) {
         this.configDir = configDir.resolve(PluginInfo.ID);
         Util.setMessageProvider(() -> messageProvider);
+        NameUtil.supplyPlugin(this);
     }
 
     @Listener
@@ -259,6 +261,8 @@ public class Nucleus {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Sponge.getEventManager().post(new NucleusReloadConfigEvent(this));
     }
 
     public void reloadMessages() {

@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
+import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -11,7 +12,6 @@ import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
@@ -21,40 +21,50 @@ import java.util.stream.Collectors;
 
 public class PlayerConsoleArgument extends CommandElement {
 
-    public PlayerConsoleArgument(@Nullable Text key) {
+    private final boolean console;
+
+    public PlayerConsoleArgument(@Nullable Text key, boolean console) {
         super(key);
+        this.console = console;
     }
 
     @Nullable
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String name = args.next().toLowerCase();
-        if (name.equals("-")) {
-            return Sponge.getServer().getConsole();
+        return parseInternal(name, args);
+    }
+
+    List<CommandSource> parseInternal(String name, CommandArgs args) throws ArgumentParseException {
+        if (console && name.equals("-")) {
+            return Lists.newArrayList(Sponge.getServer().getConsole());
         }
 
-        List<Player> players = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
+        List<CommandSource> players = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
                 .sorted((x, y) -> x.getName().compareTo(y.getName())).collect(Collectors.toList());
         if (players.isEmpty()) {
             throw args.createError(Util.getTextMessageWithFormat("args.playerconsole.noexist"));
         }
 
-        return players.get(0);
+        return players;
     }
 
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
+        try {
+            return completeInternal(args.peek().toLowerCase(), args, context);
+        } catch (ArgumentParseException e) {
+            return completeInternal("", args, context);
+        }
+    }
+
+    List<String> completeInternal(final String name, CommandArgs args, CommandContext context) {
         List<String> list = Sponge.getServer().getOnlinePlayers().stream().map(User::getName).collect(Collectors.toList());
         // Console.
-        list.add("-");
-
-        String a;
-        try {
-            a = args.peek();
-        } catch (ArgumentParseException e) {
-            return list;
+        if (console) {
+            list.add("-");
         }
 
-        return list.stream().filter(x -> x.toLowerCase().startsWith(a.toLowerCase())).collect(Collectors.toList());
+        return list.stream().filter(x -> x.toLowerCase().startsWith(name.toLowerCase())).collect(Collectors.toList());
     }
 }

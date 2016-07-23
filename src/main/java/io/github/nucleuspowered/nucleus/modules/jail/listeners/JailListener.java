@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.WarpLocation;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
@@ -61,7 +61,7 @@ public class JailListener extends ListenerBase {
 
         // Jailing the player if we need to.
         if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
-            Optional<WarpLocation> owl = handler.getWarpLocation(user);
+            Optional<LocationData> owl = handler.getWarpLocation(user);
             if (!owl.isPresent()) {
                 MessageChannel.permission(JailCommand.notifyPermission)
                         .send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
