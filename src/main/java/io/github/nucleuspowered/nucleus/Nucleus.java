@@ -102,6 +102,7 @@ public class Nucleus {
     public Nucleus(@ConfigDir(sharedRoot = true) Path configDir) {
         this.configDir = configDir.resolve(PluginInfo.ID);
         Util.setMessageProvider(() -> messageProvider);
+        NameUtil.supplyPlugin(this);
     }
 
     @Listener

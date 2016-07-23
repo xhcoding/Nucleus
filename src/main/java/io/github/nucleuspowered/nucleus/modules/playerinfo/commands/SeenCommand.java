@@ -85,7 +85,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
         }
 
         messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.displayname")).append(Text.of(" "))
-                .append(NameUtil.getName(user, iqsu)).build());
+                .append(NameUtil.getName(user)).build());
         if (permissions.testSuffix(src, "extended")) {
             if (user.isOnline()) {
                 Player pl = user.getPlayer().get();

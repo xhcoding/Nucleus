@@ -77,7 +77,7 @@ public class VanishCommand extends CommandBase<CommandSource> {
 
             if (!(src instanceof Player) || !(((Player)src).getUniqueId().equals(playerToVanish.getUniqueId()))) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.vanish.successplayer",
-                        TextSerializers.FORMATTING_CODE.serialize(NameUtil.getName(playerToVanish, udm)),
+                        TextSerializers.FORMATTING_CODE.serialize(NameUtil.getName(playerToVanish)),
                         toVanish ? Util.getMessageWithFormat("command.vanish.vanished") : Util.getMessageWithFormat("command.vanish.visible")));
             }
 

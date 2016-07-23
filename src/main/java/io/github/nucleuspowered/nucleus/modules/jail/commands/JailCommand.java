@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-// quickstart.jail.notify
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoWarmup
 @NoCooldown

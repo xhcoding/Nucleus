@@ -149,7 +149,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             return Text.builder(src.getName()).color(TextColors.LIGHT_PURPLE).onClick(TextActions.suggestCommand("/msg - ")).build();
         }
 
-        return NameUtil.getNameFromCommandSource(src, ucl).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
+        return NameUtil.getNameFromCommandSource(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
     }
 
     @SuppressWarnings("unchecked")
