@@ -49,6 +49,8 @@ public class ChatUtil {
 
     private CoreConfigAdapter cca = null;
 
+    public static final StyleTuple EMPTY = new StyleTuple(TextColors.NONE, TextStyles.NONE);
+
     public ChatUtil(Nucleus plugin) {
         tokens = createTokens();
         serverTokens = createServerTokens();
@@ -149,6 +151,10 @@ public class ChatUtil {
         return tb.build();
     }
 
+    public Text addUrlsToText(Text message) {
+        return addUrlsToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(message));
+    }
+
     public Text addUrlsToAmpersandFormattedString(String message) {
         Preconditions.checkNotNull(message, "message");
         if (message.isEmpty()) {
@@ -162,7 +168,7 @@ public class ChatUtil {
 
         List<Text> texts = Lists.newArrayList();
         String remaining = message;
-        StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
+        StyleTuple st = ChatUtil.EMPTY;
         do {
 
             // We found a URL. We split on the URL that we have.
@@ -233,7 +239,7 @@ public class ChatUtil {
         return Text.join(texts);
     }
 
-    private StyleTuple getLastColourAndStyle(Text text, StyleTuple current) {
+    public StyleTuple getLastColourAndStyle(Text text, StyleTuple current) {
         List<Text> texts = flatten(text);
         TextColor tc = TextColors.NONE;
         TextStyle ts = TextStyles.NONE;
@@ -320,11 +326,11 @@ public class ChatUtil {
         return Text.of(cs.getName());
     }
 
-    private static final class StyleTuple {
-        private final TextColor colour;
-        private final TextStyle style;
+    public static final class StyleTuple {
+        public final TextColor colour;
+        public final TextStyle style;
 
-        private StyleTuple(TextColor colour, TextStyle style) {
+        public StyleTuple(TextColor colour, TextStyle style) {
             this.colour = colour;
             this.style = style;
         }
