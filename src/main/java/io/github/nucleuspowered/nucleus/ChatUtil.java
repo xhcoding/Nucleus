@@ -13,8 +13,10 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.LocatedSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.HoverAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
@@ -216,9 +218,7 @@ public class ChatUtil {
                         .build());
             } catch (MalformedURLException e) {
                 // URL parsing failed, just put the original text in here.
-                if (this.cca == null) {
-                    this.cca = plugin.getInjector().getInstance(CoreConfigAdapter.class);
-                }
+                initCoreConfigAdapter();
 
                 plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("chat.url.malformed", url));
                 texts.add(Text.builder(url).color(st.colour).style(st.style).build());
@@ -277,10 +277,10 @@ public class ChatUtil {
     private Map<String, Function<CommandSource, Text>> createTokens() {
         Map<String, Function<CommandSource, Text>> t = new HashMap<>();
 
-        t.put("{{name}}", (p) -> Text.of(p.getName()));
+        t.put("{{name}}", this::addCommandToName);
         t.put("{{prefix}}", (p) -> getTextFromOption(p, "prefix"));
         t.put("{{suffix}}", (p) -> getTextFromOption(p, "suffix"));
-        t.put("{{displayname}}", this::getName);
+        t.put("{{displayname}}", this::addCommandToDisplayName);
 
         return t;
     }
@@ -318,12 +318,70 @@ public class ChatUtil {
         return Text.EMPTY;
     }
 
+    public Text addCommandToName(CommandSource p) {
+        Text.Builder text = Text.builder(p.getName());
+        if (p instanceof User) {
+            return addCommandToNameInternal(text, (User)p);
+        }
+
+        return text.build();
+    }
+
+    public Text addCommandToDisplayName(CommandSource p) {
+        Text name = getName(p);
+        if (p instanceof User) {
+            return addCommandToNameInternal(name, (User)p);
+        }
+
+        return name;
+    }
+
+    private Text addCommandToNameInternal(Text name, User user) {
+        return addCommandToNameInternal(name.toBuilder(), user);
+    }
+
+    private Text addCommandToNameInternal(Text.Builder name, User user) {
+        initCoreConfigAdapter();
+        String cmd = cca.getNodeOrDefault().getCommandOnNameClick();
+        if (cmd == null || cmd.isEmpty()) {
+            return name.build();
+        }
+
+        if (!cmd.startsWith("/")) {
+            cmd = "/" + cmd;
+        }
+
+        if (!cmd.endsWith(" ")) {
+            cmd = cmd + " ";
+        }
+
+        final String commandToRun = cmd.replaceAll("\\{\\{player\\}\\}", user.getName());
+        Optional<HoverAction<?>> ha = name.getHoverAction();
+        Text.Builder hoverAction;
+        if (ha.isPresent() && (ha.get() instanceof HoverAction.ShowText)) {
+            HoverAction.ShowText h = (HoverAction.ShowText)ha.get();
+            hoverAction = h.getResult().toBuilder();
+            hoverAction.append(Text.NEW_LINE);
+        } else {
+            hoverAction = Text.builder();
+        }
+
+        hoverAction.append(Util.getTextMessageWithFormat("name.hover.command", commandToRun));
+        return name.onClick(TextActions.suggestCommand(commandToRun)).onHover(TextActions.showText(hoverAction.toText())).build();
+    }
+
     private Text getName(CommandSource cs) {
         if (cs instanceof Player) {
             return NameUtil.getName((Player)cs);
         }
 
         return Text.of(cs.getName());
+    }
+
+    private void initCoreConfigAdapter() {
+        if (this.cca == null) {
+            this.cca = plugin.getInjector().getInstance(CoreConfigAdapter.class);
+        }
     }
 
     public static final class StyleTuple {

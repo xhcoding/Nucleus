@@ -78,22 +78,33 @@ public class NameUtil {
     public static Text getName(User player) {
         Preconditions.checkNotNull(player);
 
+        TextColor tc = getNameColour(player);
+        Optional<Text> dname;
+        if (player.isOnline()) {
+            dname = player.getPlayer().get().get(Keys.DISPLAY_NAME);
+        } else {
+            dname = Optional.empty();
+        }
+
+        Text.Builder tb = null;
         if (plugin != null) {
             Optional<UserService> userService = plugin.getUserDataManager().get(player);
             if (userService.isPresent()) {
                 Optional<Text> n = userService.get().getNicknameWithPrefix();
                 if (n.isPresent()) {
-                    TextColor tc = getNameColour(player);
-                    Text name = n.get().toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
-                    return Text.of(tc, name);
+                    tb = n.get().toBuilder();
                 }
             }
+        } else if (dname.isPresent()) {
+            tb = dname.get().toBuilder();
         }
 
-        TextColor tc = getNameColour(player);
-        Text name = player.get(Keys.DISPLAY_NAME).orElse(Text.of(player.getName()))
-                .toBuilder().onHover(TextActions.showText(Text.of(player.getName()))).build();
-        return Text.of(tc, name);
+        if (tb == null) {
+            tb = Text.builder(player.getName());
+        }
+
+        tb.onHover(TextActions.showText(Util.getTextMessageWithFormat("name.hover.ign", player.getName()))).build();
+        return tb.color(tc).build();
     }
 
     public static String getSerialisedName(User player) {
