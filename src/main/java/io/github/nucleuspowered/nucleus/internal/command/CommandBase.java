@@ -37,7 +37,7 @@ public abstract class CommandBase<T extends CommandSource> extends AbstractComma
      * @return The description.
      */
     public String getDescription() {
-        String key = String.format("description.%sdesc", this.commandPath);
+        String key = String.format("description.%s.desc", this.commandPath);
         try {
             return Util.getMessageWithFormat(key);
         } catch (Exception e) {

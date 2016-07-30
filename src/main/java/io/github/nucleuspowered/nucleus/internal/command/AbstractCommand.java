@@ -60,7 +60,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     final String commandPath;
 
     // Null until set, then should be considered immutable.
-    private Set<Class<? extends AbstractCommand>> moduleCommands = null;
+    private Set<Class<? extends AbstractCommand<?>>> moduleCommands = null;
 
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     protected CommandPermissionHandler permissions;
@@ -74,6 +74,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private boolean generateDefaults;
     private CommandSpec cs = null;
     private final List<String> afkArgs = Lists.newArrayList();
+    private final boolean isRoot;
 
     @Inject protected Nucleus plugin;
     @Inject private CoreConfigAdapter cca;
@@ -84,6 +85,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
     @SuppressWarnings("all")
     private Optional<AFKConfigAdapter> aca = null;
+    private CommandBuilder builder;
 
     @SuppressWarnings("unchecked")
     AbstractCommand() {
@@ -123,27 +125,36 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
 
         this.commandPath = getSubcommandOf();
+        RegisterCommand rc = this.getClass().getAnnotation(RegisterCommand.class);
+        this.isRoot = rc != null && rc.subcommandOf().equals(AbstractCommand.class);
     }
 
     private String getSubcommandOf() {
         StringBuilder sb = new StringBuilder();
-        getSubcommandOf(this.getClass(), sb);
+        getSubcommandOf(this.getClass(), sb, false);
         return sb.toString();
     }
 
-    private void getSubcommandOf(Class<? extends AbstractCommand> c, StringBuilder sb) {
+    private void getSubcommandOf(Class<? extends AbstractCommand> c, StringBuilder sb, boolean appendPeriod) {
         // Get subcommand alias, if any.
         RegisterCommand rc = c.getAnnotation(RegisterCommand.class);
         if (!Modifier.isAbstract( rc.subcommandOf().getModifiers()) && rc.subcommandOf() != this.getClass()) {
-            getSubcommandOf(rc.subcommandOf(), sb);
+            getSubcommandOf(rc.subcommandOf(), sb, true);
         }
 
-        sb.append(rc.value()[0]).append(".");
+        sb.append(rc.value()[0]);
+        if (appendPeriod) {
+            sb.append(".");
+        }
     }
 
-    public final void setModuleCommands(Set<Class<? extends AbstractCommand>> moduleCommands) {
+    public final void setModuleCommands(Set<Class<? extends AbstractCommand<?>>> moduleCommands) {
         Preconditions.checkState(this.moduleCommands == null);
         this.moduleCommands = moduleCommands;
+    }
+
+    public final void setCommandBuilder(CommandBuilder builder) {
+        this.builder = builder;
     }
 
     public final void postInit() {
@@ -184,7 +195,13 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         permissions = new CommandPermissionHandler(this, plugin);
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
-        configSection = cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase();
+        if (this.commandPath == null || this.commandPath.isEmpty() || !this.commandPath.contains(".")) {
+            configSection = "";
+        } else {
+            configSection = this.commandPath.replaceAll("\\.[^.]+$", ".");
+        }
+
+        configSection = configSection + (cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase());
         generateDefaults = cca == null || cca.generate();
 
         NotifyIfAFK n = this.getClass().getAnnotation(NotifyIfAFK.class);
@@ -292,7 +309,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
-        n.getNode("enabled").setComment(Util.getMessageWithFormat("config.enabled")).setValue(true);
+
+        if (this.isRoot) {
+            n.getNode("enabled").setComment(Util.getMessageWithFormat("config.enabled")).setValue(true);
+        }
 
         if (!bypassCooldown) {
             n.getNode("cooldown").setComment(Util.getMessageWithFormat("config.cooldown")).setValue(0);
@@ -726,7 +746,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             return Maps.newHashMap();
         }
 
-        Set<Class<? extends AbstractCommand>> scb = moduleCommands.stream().filter(x -> {
+        Set<Class<? extends AbstractCommand<?>>> scb = moduleCommands.stream().filter(x -> {
                         RegisterCommand r = x.getAnnotation(RegisterCommand.class);
                         // Only commands that are subcommands of this.
                         return r != null && r.subcommandOf().equals(this.getClass());
@@ -739,21 +759,15 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return createChildCommands(scb);
     }
 
-    private Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends AbstractCommand>> bases) {
+    private Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends AbstractCommand<?>>> bases) {
         if (this.moduleCommands == null) {
             return Maps.newHashMap();
         }
 
         Map<List<String>, CommandCallable> map = Maps.newHashMap();
-        final Set<Class<? extends AbstractCommand>> s = this.moduleCommands;
-
         bases.forEach(cb -> {
-            AbstractCommand c = null;
             try {
-                c = plugin.getInjector().getInstance(cb);
-                c.setModuleCommands(s);
-                c.postInit();
-                map.put(Arrays.asList(c.getAliases()), c.createSpec());
+                builder.buildCommand(cb, false).ifPresent(x -> map.put(Arrays.asList(x.getAliases()), x.createSpec()));
             } catch (Exception e) {
                 plugin.getLogger().error(Util.getMessageWithFormat("command.child.notloaded", cb.getName()));
 
