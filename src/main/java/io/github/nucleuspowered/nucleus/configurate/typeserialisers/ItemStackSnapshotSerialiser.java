@@ -5,19 +5,26 @@
 package io.github.nucleuspowered.nucleus.configurate.typeserialisers;
 
 import com.google.common.reflect.TypeToken;
+import io.github.nucleuspowered.nucleus.Util;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.translator.ConfigurateTranslator;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnapshot> {
 
-    private final TypeToken<ItemStackSnapshot> tt = TypeToken.of(ItemStackSnapshot.class);
+    private final Logger logger;
+
+    public ItemStackSnapshotSerialiser(Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public ItemStackSnapshot deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
@@ -38,9 +45,32 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
             });
         }
 
-        return Sponge.getDataManager().deserialize(ItemStackSnapshot.class,
-                ConfigurateTranslator.instance().translateFrom(value))
-                .orElseThrow(() -> new ObjectMappingException("Could not deserialize DataSerializable of type: " + tt.getRawType().getName()));
+        Optional<ItemStackSnapshot> oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class,
+                ConfigurateTranslator.instance().translateFrom(value));
+        if (oiss.isPresent()) {
+            return oiss.get();
+        }
+
+        // If we get here, we have had a problem with the data. We should therefore remove all the data
+        // (except enchants) and see what happens.
+        ConfigurationNode unsafe = value.getNode("UnsafeData");
+        unsafe.getChildrenMap().forEach((k, v) -> {
+            if (!k.toString().equalsIgnoreCase("ench")) {
+                v.setValue(null);
+            }
+        });
+
+        // Try again
+        oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class, ConfigurateTranslator.instance().translateFrom(value));
+        if (oiss.isPresent()) {
+            logger.warn(Util.getMessageWithFormat("config.itemstacksnapshot.data", value.getNode("ItemType").getString()));
+            return oiss.get();
+        }
+
+        logger.warn(Util.getMessageWithFormat("config.itemstacksnapshot.unable", value.getNode("ItemType").getString()));
+
+        // Return an empty snapshot
+        return ItemStackSnapshot.NONE;
     }
 
     @Override
