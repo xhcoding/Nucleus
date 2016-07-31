@@ -16,11 +16,13 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.Location;
@@ -74,10 +76,16 @@ public class SpawnListener extends ListenerBase {
 
         // Throw them to the default world spawn if the config suggests so.
         if (sca.getNodeOrDefault().isSpawnOnLogin() && !pl.hasPermission(spawnExempt)) {
-            WorldProperties w = Sponge.getServer().getDefaultWorld().get();
-            Location<World> lw = new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble());
+
+            GlobalSpawnConfig sc = sca.getNodeOrDefault().getGlobalSpawn();
+            World world = joinEvent.getTargetEntity().getWorld();
+            if (sc.isOnLogin()) {
+                world = sc.getWorld().orElse(world);
+            }
+
+            Location<World> lw = world.getSpawnLocation();
             try {
-                Optional<Vector3d> ov = wcl.getWorld(w.getUniqueId()).get().getSpawnRotation();
+                Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().getSpawnRotation();
                 if (ov.isPresent()) {
                     pl.setLocationAndRotation(lw, ov.get());
                 }
@@ -89,28 +97,34 @@ public class SpawnListener extends ListenerBase {
         }
     }
 
-    @Listener
+    @Listener(order = Order.FIRST)
     public void onRespawn(RespawnPlayerEvent event) {
         if (event.isBedSpawn()) {
             // Nope, we don't care.
             return;
         }
 
-        // If we have a spawn to the world in the standard spawn location, add our rotation.
+        GlobalSpawnConfig sc = sca.getNodeOrDefault().getGlobalSpawn();
+        World world = event.getToTransform().getExtent();
+
+        // Get the world.
+        if (sc.isOnRespawn()) {
+            Optional<World> oworld = sc.getWorld();
+            if (oworld.isPresent()) {
+                world = oworld.get();
+            }
+        }
+
         try {
-            // ...of course, that depends on our rotation.
-            Optional<Vector3d> ov = wcl.getWorld(event.getToTransform().getExtent()).get().getSpawnRotation();
+            Location<World> spawn = world.getSpawnLocation();
+            Transform<World> to = new Transform<>(spawn);
+            Optional<Vector3d> ov = wcl.getWorld(world).get().getSpawnRotation();
             if (ov.isPresent()) {
                 // Compare current transform to spawn.
-                Transform<World> to = event.getToTransform();
-                Location<World> spawn = event.getToTransform().getExtent().getSpawnLocation();
-
-                // We're spawning in the same place if this is true, so set the rotation.
-                if (to.getLocation().getBlockPosition().equals(spawn.getBlockPosition())) {
-                    to.setRotation(ov.get());
-                    event.setToTransform(to);
-                }
+                to.setRotation(ov.get());
             }
+
+            event.setToTransform(to);
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
