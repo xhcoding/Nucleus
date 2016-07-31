@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
@@ -29,7 +29,7 @@ import java.util.List;
 @RegisterCommand({"firstjoinkit", "starterkit", "joinkit", "firstkit"})
 public class FirstKitCommand extends CommandBase<CommandSource> {
 
-    @Inject private GeneralDataStore gds;
+    @Inject private GeneralService gds;
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

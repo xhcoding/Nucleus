@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 public class BlacklistListener extends ListenerBase {
 
-    @Inject private GeneralDataStore store;
+    @Inject private GeneralService store;
     @Inject private BlacklistConfigAdapter bca;
 
     private final String confiscateRoot = "blacklist.confiscate";

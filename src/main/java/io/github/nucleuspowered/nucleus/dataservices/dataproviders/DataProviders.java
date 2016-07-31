@@ -7,12 +7,15 @@ package io.github.nucleuspowered.nucleus.dataservices.dataproviders;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -24,6 +27,7 @@ public class DataProviders {
     private final Nucleus plugin;
     private final TypeToken<UserDataNode> ttu = TypeToken.of(UserDataNode.class);
     private final TypeToken<WorldDataNode> ttw = TypeToken.of(WorldDataNode.class);
+    private final TypeToken<GeneralDataNode> ttg = TypeToken.of(GeneralDataNode.class);
 
     public DataProviders(Nucleus plugin) {
         this.plugin = plugin;
@@ -49,11 +53,23 @@ public class DataProviders {
         }
     }
 
+    public DataProvider<GeneralDataNode> getGeneralDataProvider() {
+        // For now, just the Configurate one.
+        try {
+            Path p = plugin.getDataPath().resolve("general.json");
+            return new ConfigurateDataProvider<>(ttg, getBuilder().setPath(p).build(), p);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private Path getFile(String template, UUID uuid) throws Exception {
         String u = uuid.toString();
         String f = u.substring(0, 2);
-        Path file = plugin.getDataPath().resolve(String.format(template, File.separator, f, u));
+        return getFile(plugin.getDataPath().resolve(String.format(template, File.separator, f, u)));
+    }
 
+    private Path getFile(Path file) throws Exception {
         if (Files.notExists(file)) {
             Files.createDirectories(file.getParent());
         }
@@ -65,6 +81,7 @@ public class DataProviders {
         GsonConfigurationLoader.Builder gsb = GsonConfigurationLoader.builder();
         ConfigurationOptions configurationOptions = gsb.getDefaultOptions();
         TypeSerializerCollection tsc = configurationOptions.getSerializers().registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
+        tsc.registerType(TypeToken.of(ItemStackSnapshot.class), new ItemStackSnapshotSerialiser(plugin.getLogger()));
         return gsb.setDefaultOptions(configurationOptions.setSerializers(tsc));
     }
 }

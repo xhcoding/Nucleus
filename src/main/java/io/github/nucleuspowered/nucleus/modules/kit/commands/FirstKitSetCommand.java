@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class FirstKitSetCommand extends CommandBase<Player> {
 
     @Inject
-    private GeneralDataStore gds;
+    private GeneralService gds;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

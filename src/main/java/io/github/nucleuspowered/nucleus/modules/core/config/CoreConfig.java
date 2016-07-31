@@ -22,6 +22,9 @@ public class CoreConfig {
     @Setting(value = "warmup-canceling", comment = "loc:config.core.warmup.info")
     private WarmupConfig warmupConfig = new WarmupConfig();
 
+    @Setting(value = "command-on-name-click", comment = "loc:config.core.commandonname")
+    private String commandOnNameClick = "/msg {{player}}";
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -36,5 +39,9 @@ public class CoreConfig {
 
     public WarmupConfig getWarmupConfig() {
         return warmupConfig;
+    }
+
+    public String getCommandOnNameClick() {
+        return commandOnNameClick;
     }
 }

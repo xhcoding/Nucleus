@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -36,7 +36,7 @@ public class BlacklistRemoveCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         ItemType itemType = args.<ItemType>getOne(item).get();
-        GeneralDataStore dataStore = this.plugin.getGeneralDataStore();
+        GeneralService dataStore = this.plugin.getGeneralService();
 
         if (dataStore.getBlacklistedTypes().contains(itemType)) {
             dataStore.removeBlacklistedType(itemType);

@@ -11,7 +11,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -25,7 +25,7 @@ import java.util.Optional;
 
 public class JailHandler implements NucleusJailService {
 
-    @Inject private GeneralDataStore store;
+    @Inject private GeneralService store;
 
     private final Nucleus plugin;
 

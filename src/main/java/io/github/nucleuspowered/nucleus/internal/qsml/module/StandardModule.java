@@ -15,11 +15,9 @@ import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.scheduler.Task;
 import uk.co.drnaylor.quickstart.Module;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
@@ -68,10 +66,10 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadCommands() {
-        Set<Class<? extends AbstractCommand>> cmds = nucleus.getModuleContainer().getLoadedClasses().stream().filter(AbstractCommand.class::isAssignableFrom)
+        Set<Class<? extends AbstractCommand<?>>> cmds = nucleus.getModuleContainer().getLoadedClasses().stream().filter(AbstractCommand.class::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(this.getClass().getPackage().getName()))
                 .filter(x -> x.isAnnotationPresent(RegisterCommand.class))
-                .map(x -> (Class<AbstractCommand>)x)
+                .map(x -> (Class<AbstractCommand<?>>)x)
                 .collect(Collectors.toSet());
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
@@ -82,35 +80,11 @@ public abstract class StandardModule implements Module {
             return (rc != null && rc.subcommandOf().equals(AbstractCommand.class));
         }).collect(Collectors.toSet());
 
-        CommentedConfigurationNode sn = SimpleCommentedConfigurationNode.root();
-        commandBases.stream().map(x -> this.getInstance(injector, x)).filter(x -> x != null).forEach(c -> {
-            try {
-                c.setModuleCommands(cmds);
-                c.postInit();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-
-            // No spec, no return. We also don't want to run it twice...
-            CommandSpec spec = c.getSpec();
-            if (spec == null) {
-                return;
-            }
-
-            // Merge in config defaults.
-            if (c.mergeDefaults()) {
-                sn.getNode(c.getCommandConfigAlias()).setValue(c.getDefaults());
-            }
-
-            if (commandsConfig.getCommandNode(c.getCommandConfigAlias()).getNode("enabled").getBoolean(true)) {
-                // Register the commands.
-                Sponge.getCommandManager().register(nucleus, spec, c.getAliases());
-            }
-        });
+        CommandBuilder builder = new CommandBuilder(nucleus, injector, cmds);
+        commandBases.forEach(builder::buildCommand);
 
         try {
-            commandsConfig.mergeDefaults(sn);
+            commandsConfig.mergeDefaults(builder.getNodeToMerge());
             commandsConfig.save();
         } catch (IOException | ObjectMappingException e) {
             nucleus.getLogger().error("Could not save defaults.");

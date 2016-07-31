@@ -33,6 +33,10 @@ public class ChatConfig {
         return modifychat;
     }
 
+    public ChatTemplateConfig getDefaultTemplate() {
+        return template;
+    }
+
     public ChatTemplateConfig getTemplate(Subject subject) {
         List<Subject> groups = subject.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         groups.sort((x, y) -> y.getParents().size() - x.getParents().size());

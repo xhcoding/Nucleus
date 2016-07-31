@@ -41,21 +41,23 @@ public class BroadcastCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String m = args.<String>getOne(message).get();
         BroadcastConfig bc = adminConfigAdapter.getNodeOrDefault().getBroadcastMessage();
-        List<String> messages = Lists.newArrayList();
+        List<Text> messages = Lists.newArrayList();
 
+        ChatUtil.StyleTuple cst = ChatUtil.EMPTY;
         String p = bc.getPrefix();
         if (!p.trim().isEmpty()) {
-            messages.add(p);
+            messages.add(chatUtil.getPlayerMessageFromTemplate(p, src, true));
+            cst = chatUtil.getLastColourAndStyle(messages.get(0), ChatUtil.EMPTY);
         }
 
-        messages.add(m);
+        messages.add(Text.of(cst.colour, cst.style, chatUtil.addUrlsToAmpersandFormattedString(m)));
 
         String s = bc.getSuffix();
         if (!s.trim().isEmpty()) {
-            messages.add(s);
+            messages.add(Text.of(cst.colour, cst.style, chatUtil.getPlayerMessageFromTemplate(s, src, true)));
         }
 
-        MessageChannel.TO_ALL.send(src, chatUtil.getPlayerMessageFromTemplate(String.join(" ", messages.toArray(new CharSequence[messages.size()])), src, true));
+        MessageChannel.TO_ALL.send(src, Text.joinWith(Text.of(" "), messages));
         return CommandResult.success();
     }
 }

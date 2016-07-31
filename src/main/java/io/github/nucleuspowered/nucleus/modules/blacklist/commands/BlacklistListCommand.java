@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -29,7 +29,7 @@ public class BlacklistListCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
-        GeneralDataStore dataStore = this.plugin.getGeneralDataStore();
+        GeneralService dataStore = this.plugin.getGeneralService();
 
         if (dataStore.getBlacklistedTypes().isEmpty()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.blacklist.list.none"));

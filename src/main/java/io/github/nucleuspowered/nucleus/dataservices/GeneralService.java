@@ -9,22 +9,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
-import io.github.nucleuspowered.nucleus.config.bases.AbstractSerialisableClassConfig;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WarpNode;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.SimpleConfigurationNode;
-import ninja.leaping.configurate.gson.GsonConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
+import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -32,14 +26,13 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import javax.annotation.Nullable;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDataNode, ConfigurationNode, ConfigurationLoader<ConfigurationNode>> {
+public class GeneralService extends Service<GeneralDataNode> {
 
     private final BiFunction<String, LocationNode, LocationData> getLocationData = (s, l) -> {
         try {
@@ -57,18 +50,9 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
         }
     };
 
-    public GeneralDataStore(Path file) throws Exception {
-        super(file, TypeToken.of(GeneralDataNode.class), GeneralDataNode::new, false);
-    }
-
-    @Override
-    protected ConfigurationNode getNode() {
-        return SimpleConfigurationNode.root();
-    }
-
-    @Override
-    protected ConfigurationLoader<ConfigurationNode> getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
-        return GsonConfigurationLoader.builder().setPath(file).build();
+    public GeneralService(DataProvider<GeneralDataNode> provider) throws Exception {
+        super(provider);
+        provider.load();
     }
 
     public List<ItemType> getBlacklistedTypes() {

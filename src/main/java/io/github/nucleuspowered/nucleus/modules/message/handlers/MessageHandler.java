@@ -109,10 +109,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
         // Create the tokens.
         Map<String, Function<CommandSource, Text>> tokens = Maps.newHashMap();
-        tokens.put("{{from}}", cs -> Text.of(sender.getName()));
-        tokens.put("{{to}}", cs -> Text.of(receiver.getName()));
-        tokens.put("{{fromdisplay}}", cs -> getName(sender));
-        tokens.put("{{todisplay}}", cs -> getName(receiver));
+        tokens.put("{{from}}", cs -> chatUtil.addCommandToName(sender));
+        tokens.put("{{to}}", cs -> chatUtil.addCommandToName(receiver));
+        tokens.put("{{fromdisplay}}", cs -> chatUtil.addCommandToDisplayName(sender));
+        tokens.put("{{todisplay}}", cs -> chatUtil.addCommandToDisplayName(receiver));
 
         MessageChannel mc = MessageChannel.fixed(lm);
         Text tm = useMessage(sender, message);

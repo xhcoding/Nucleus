@@ -12,6 +12,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -32,6 +34,7 @@ import java.util.Optional;
 public class SpawnCommand extends CommandBase<Player> {
 
     @Inject private WorldDataManager wcl;
+    @Inject private SpawnConfigAdapter sca;
 
     private final String key = "world";
 
@@ -51,7 +54,19 @@ public class SpawnCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        WorldProperties wp = args.<WorldProperties>getOne(key).orElse(src.getWorld().getProperties());
+        Optional<WorldProperties> owp = args.getOne(key);
+        WorldProperties wp;
+        GlobalSpawnConfig gsc = sca.getNodeOrDefault().getGlobalSpawn();
+        if (!owp.isPresent()) {
+            if (gsc.isOnSpawnCommand()) {
+                wp = gsc.getWorld().orElse(src.getWorld()).getProperties();
+            } else {
+                wp = src.getWorld().getProperties();
+            }
+        } else {
+            wp = owp.get();
+        }
+
         Optional<World> ow = Sponge.getServer().getWorld(wp.getUniqueId());
 
         if (!ow.isPresent()) {
@@ -61,11 +76,11 @@ public class SpawnCommand extends CommandBase<Player> {
 
         // If we don't have a rotation, then use the current rotation
         if (src.setLocationAndRotationSafely(new Location<>(ow.get(), wp.getSpawnPosition()), wcl.getWorld(wp.getUniqueId()).get().getSpawnRotation().orElse(src.getRotation()))) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.spawn.success"));
+            src.sendMessage(Util.getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.spawn.fail"));
+        src.sendMessage(Util.getTextMessageWithFormat("command.spawn.fail", wp.getWorldName()));
         return CommandResult.empty();
     }
 }

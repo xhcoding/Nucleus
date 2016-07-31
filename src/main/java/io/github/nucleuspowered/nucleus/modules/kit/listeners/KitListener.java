@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.listeners;
 
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import org.spongepowered.api.entity.living.player.Player;
@@ -18,7 +18,7 @@ import java.util.List;
 public class KitListener extends ListenerBase {
 
     @Inject private UserDataManager loader;
-    @Inject private GeneralDataStore gds;
+    @Inject private GeneralService gds;
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {

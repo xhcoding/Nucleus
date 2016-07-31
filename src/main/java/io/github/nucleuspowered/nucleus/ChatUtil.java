@@ -12,7 +12,10 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.HoverAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
@@ -47,6 +50,8 @@ public class ChatUtil {
             Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)", Pattern.CASE_INSENSITIVE);
 
     private CoreConfigAdapter cca = null;
+
+    public static final StyleTuple EMPTY = new StyleTuple(TextColors.NONE, TextStyles.NONE);
 
     public ChatUtil(Nucleus plugin) {
         tokens = createTokens();
@@ -148,6 +153,10 @@ public class ChatUtil {
         return tb.build();
     }
 
+    public Text addUrlsToText(Text message) {
+        return addUrlsToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(message));
+    }
+
     public Text addUrlsToAmpersandFormattedString(String message) {
         Preconditions.checkNotNull(message, "message");
         if (message.isEmpty()) {
@@ -161,7 +170,7 @@ public class ChatUtil {
 
         List<Text> texts = Lists.newArrayList();
         String remaining = message;
-        StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
+        StyleTuple st = ChatUtil.EMPTY;
         do {
 
             // We found a URL. We split on the URL that we have.
@@ -209,9 +218,7 @@ public class ChatUtil {
                         .build());
             } catch (MalformedURLException e) {
                 // URL parsing failed, just put the original text in here.
-                if (this.cca == null) {
-                    this.cca = plugin.getInjector().getInstance(CoreConfigAdapter.class);
-                }
+                initCoreConfigAdapter();
 
                 plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("chat.url.malformed", url));
                 texts.add(Text.builder(url).color(st.colour).style(st.style).build());
@@ -232,7 +239,7 @@ public class ChatUtil {
         return Text.join(texts);
     }
 
-    private StyleTuple getLastColourAndStyle(Text text, StyleTuple current) {
+    public StyleTuple getLastColourAndStyle(Text text, StyleTuple current) {
         List<Text> texts = flatten(text);
         TextColor tc = TextColors.NONE;
         TextStyle ts = TextStyles.NONE;
@@ -270,10 +277,10 @@ public class ChatUtil {
     private Map<String, Function<CommandSource, Text>> createTokens() {
         Map<String, Function<CommandSource, Text>> t = new HashMap<>();
 
-        t.put("{{name}}", (p) -> Text.of(p.getName()));
+        t.put("{{name}}", this::addCommandToName);
         t.put("{{prefix}}", (p) -> getTextFromOption(p, "prefix"));
         t.put("{{suffix}}", (p) -> getTextFromOption(p, "suffix"));
-        t.put("{{displayname}}", this::getName);
+        t.put("{{displayname}}", this::addCommandToDisplayName);
 
         return t;
     }
@@ -311,6 +318,58 @@ public class ChatUtil {
         return Text.EMPTY;
     }
 
+    public Text addCommandToName(CommandSource p) {
+        Text.Builder text = Text.builder(p.getName());
+        if (p instanceof User) {
+            return addCommandToNameInternal(text, (User)p);
+        }
+
+        return text.build();
+    }
+
+    public Text addCommandToDisplayName(CommandSource p) {
+        Text name = getName(p);
+        if (p instanceof User) {
+            return addCommandToNameInternal(name, (User)p);
+        }
+
+        return name;
+    }
+
+    private Text addCommandToNameInternal(Text name, User user) {
+        return addCommandToNameInternal(name.toBuilder(), user);
+    }
+
+    private Text addCommandToNameInternal(Text.Builder name, User user) {
+        initCoreConfigAdapter();
+        String cmd = cca.getNodeOrDefault().getCommandOnNameClick();
+        if (cmd == null || cmd.isEmpty()) {
+            return name.build();
+        }
+
+        if (!cmd.startsWith("/")) {
+            cmd = "/" + cmd;
+        }
+
+        if (!cmd.endsWith(" ")) {
+            cmd = cmd + " ";
+        }
+
+        final String commandToRun = cmd.replaceAll("\\{\\{player\\}\\}", user.getName());
+        Optional<HoverAction<?>> ha = name.getHoverAction();
+        Text.Builder hoverAction;
+        if (ha.isPresent() && (ha.get() instanceof HoverAction.ShowText)) {
+            HoverAction.ShowText h = (HoverAction.ShowText)ha.get();
+            hoverAction = h.getResult().toBuilder();
+            hoverAction.append(Text.NEW_LINE);
+        } else {
+            hoverAction = Text.builder();
+        }
+
+        hoverAction.append(Util.getTextMessageWithFormat("name.hover.command", commandToRun));
+        return name.onClick(TextActions.suggestCommand(commandToRun)).onHover(TextActions.showText(hoverAction.toText())).build();
+    }
+
     private Text getName(CommandSource cs) {
         if (cs instanceof Player) {
             return NameUtil.getName((Player)cs);
@@ -319,11 +378,17 @@ public class ChatUtil {
         return Text.of(cs.getName());
     }
 
-    private static final class StyleTuple {
-        private final TextColor colour;
-        private final TextStyle style;
+    private void initCoreConfigAdapter() {
+        if (this.cca == null) {
+            this.cca = plugin.getInjector().getInstance(CoreConfigAdapter.class);
+        }
+    }
 
-        private StyleTuple(TextColor colour, TextStyle style) {
+    public static final class StyleTuple {
+        public final TextColor colour;
+        public final TextStyle style;
+
+        public StyleTuple(TextColor colour, TextStyle style) {
             this.colour = colour;
             this.style = style;
         }
