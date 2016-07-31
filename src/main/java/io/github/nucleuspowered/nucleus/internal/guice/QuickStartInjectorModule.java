@@ -8,7 +8,7 @@ import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
@@ -40,7 +40,7 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(EconHelper.class).toProvider(plugin::getEconHelper);
         bind(ModuleContainer.class).toProvider(plugin::getModuleContainer);
         bind(InternalServiceManager.class).toProvider(plugin::getInternalServiceManager);
-        bind(GeneralDataStore.class).toProvider(plugin::getGeneralDataStore);
+        bind(GeneralService.class).toProvider(plugin::getGeneralService);
         bind(ChatUtil.class).toProvider(plugin::getChatUtil);
         bind(MessageProvider.class).toProvider(plugin::getMessageProvider);
     }

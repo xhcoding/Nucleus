@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @RegisterCommand("firstspawn")
 public class FirstSpawnCommand extends CommandBase<Player> {
 
-    @Inject private GeneralDataStore data;
+    @Inject private GeneralService data;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

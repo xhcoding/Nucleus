@@ -10,14 +10,14 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 
 import java.util.Optional;
 import java.util.Set;
 
 public class KitHandler implements NucleusKitService {
 
-    @Inject private GeneralDataStore store;
+    @Inject private GeneralService store;
 
     @Override
     public Set<String> getKitNames() {

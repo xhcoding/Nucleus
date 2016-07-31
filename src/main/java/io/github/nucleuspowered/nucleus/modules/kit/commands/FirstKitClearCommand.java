@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
@@ -23,7 +23,7 @@ import javax.inject.Inject;
 public class FirstKitClearCommand extends CommandBase<CommandSource> {
 
     @Inject
-    private GeneralDataStore gds;
+    private GeneralService gds;
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

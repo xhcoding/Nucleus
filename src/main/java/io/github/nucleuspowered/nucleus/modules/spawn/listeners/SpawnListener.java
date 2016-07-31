@@ -8,7 +8,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -32,7 +32,7 @@ import java.util.Optional;
 
 public class SpawnListener extends ListenerBase {
 
-    @Inject private GeneralDataStore store;
+    @Inject private GeneralService store;
     @Inject private UserDataManager loader;
     @Inject private WorldDataManager wcl;
     @Inject private CoreConfigAdapter cca;

@@ -17,7 +17,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.configurate.objectmapper.NucleusObjectMapperFactory;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -41,7 +41,6 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -74,7 +73,7 @@ public class Nucleus {
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
     private CommandsConfig commandsConfig;
-    private GeneralDataStore generalDataStore;
+    private GeneralService generalService;
     private UserDataManager userDataManager;
     private WorldDataManager worldDataManager;
     private ChatUtil chatUtil;
@@ -116,9 +115,9 @@ public class Nucleus {
             Files.createDirectories(this.configDir);
             Files.createDirectories(dataDir);
             commandsConfig = new CommandsConfig(Paths.get(configDir.toString(), "commands.conf"));
-            generalDataStore = new GeneralDataStore(Paths.get(dataDir.toString(), "general.json"));
 
             DataProviders d = new DataProviders(this);
+            generalService = new GeneralService(d.getGeneralDataProvider());
             userDataManager = new UserDataManager(this, d::getUserFileDataProviders);
             worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider);
             warmupManager = new WarmupManager();
@@ -163,7 +162,7 @@ public class Nucleus {
 
         // Load up the general data file now, mods should have registered items by now.
         try {
-            generalDataStore.load();
+            generalService.load();
         } catch (Exception e) {
             isErrored = true;
             e.printStackTrace();
@@ -202,8 +201,8 @@ public class Nucleus {
         userDataManager.saveAll();
         worldDataManager.saveAll();
         try {
-            generalDataStore.save();
-        } catch (ObjectMappingException | IOException e) {
+            generalService.save();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -298,8 +297,8 @@ public class Nucleus {
         return serviceManager;
     }
 
-    public GeneralDataStore getGeneralDataStore() {
-        return generalDataStore;
+    public GeneralService getGeneralService() {
+        return generalService;
     }
 
     public CommandsConfig getCommandsConfig() {

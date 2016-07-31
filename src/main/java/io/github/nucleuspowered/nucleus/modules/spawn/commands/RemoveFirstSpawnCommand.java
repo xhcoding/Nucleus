@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
@@ -24,7 +24,7 @@ import org.spongepowered.api.command.args.CommandContext;
 @RunAsync
 public class RemoveFirstSpawnCommand extends CommandBase<CommandSource> {
 
-    @Inject private GeneralDataStore data;
+    @Inject private GeneralService data;
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

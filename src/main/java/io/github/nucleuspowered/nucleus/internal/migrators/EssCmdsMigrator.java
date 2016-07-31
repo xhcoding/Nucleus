@@ -18,7 +18,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralDataStore;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
@@ -74,7 +74,7 @@ public class EssCmdsMigrator extends DataMigrator {
             ItemType itemType = Sponge.getRegistry().getType(ItemType.class, item).orElse(ItemTypes.NONE);
 
             if (itemType != ItemTypes.NONE) {
-                GeneralDataStore dataStore = this.plugin.getGeneralDataStore();
+                GeneralService dataStore = this.plugin.getGeneralService();
                 dataStore.addBlacklistedType(itemType);
             }
         }
