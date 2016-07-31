@@ -20,9 +20,9 @@ import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WarpNode;
+import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
-import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.entity.Transform;
@@ -68,7 +68,7 @@ public class GeneralDataStore extends AbstractSerialisableClassConfig<GeneralDat
 
     @Override
     protected ConfigurationLoader<ConfigurationNode> getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
-        return GsonConfigurationLoader.builder().setPath(file).build();
+        return DataProviders.getBuilder().setPath(file).build();
     }
 
     public List<ItemType> getBlacklistedTypes() {
