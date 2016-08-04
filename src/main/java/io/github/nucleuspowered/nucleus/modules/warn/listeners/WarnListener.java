@@ -4,26 +4,37 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warn.listeners;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.channel.MutableMessageChannel;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class WarnListener extends ListenerBase {
 
     @Inject private WarnHandler handler;
     @Inject private WarnConfigAdapter wca;
+
+    private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "note.showonlogin";
 
     /**
      * At the time the player joins, check to see if the player has been warned.
@@ -34,12 +45,9 @@ public class WarnListener extends ListenerBase {
     public void onPlayerLogin(final ClientConnectionEvent.Join event) {
         Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS).execute(() -> {
             Player player = event.getTargetEntity();
-            List<WarnData> warnings = handler.getWarnings(player);
-            if (warnings != null) {
+            List<WarnData> warnings = handler.getWarnings(player, true, false);
+            if (warnings != null && !warnings.isEmpty()) {
                 for (WarnData warning : warnings) {
-                    if (warning.isExpired()) {
-                        continue;
-                    }
                     warning.nextLoginToTimestamp();
 
                     if (warning.getEndTimestamp().isPresent() && warning.getEndTimestamp().get().isBefore(Instant.now())) {
@@ -55,7 +63,26 @@ public class WarnListener extends ListenerBase {
                         }
                     }
                 }
+
+                // Now, let's check again
+                if (wca.getNodeOrDefault().isShowOnLogin()) {
+                    List<WarnData> lwd = warnings.stream().filter(x -> !x.isExpired()).collect(Collectors.toList());
+                    if (!lwd.isEmpty()) {
+                        MutableMessageChannel messageChannel = MessageChannel.permission(showOnLogin).asMutable();
+                        messageChannel.send(Util.getTextMessageWithFormat("warn.login.notify", player.getName(), String.valueOf(lwd.size())).toBuilder()
+                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("warn.login.view", player.getName())))
+                                .onClick(TextActions.runCommand("/checkwarnings " + player.getName()))
+                                .build());
+                    }
+                }
             }
         }).submit(plugin);
+    }
+
+    @Override
+    public Map<String, PermissionInformation> getPermissions() {
+        Map<String, PermissionInformation> mp = Maps.newHashMap();
+        mp.put(showOnLogin, new PermissionInformation(Util.getMessageWithFormat("permission.warn.showonlogin"), SuggestedLevel.MOD));
+        return mp;
     }
 }

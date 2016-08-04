@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Checks the warnings of a player.
  *
- * Command Usage: /checkwarnings user Permission: quickstart.checkwarnings.base
+ * Command Usage: /checkwarnings user Permission: nucleus.checkwarnings.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
@@ -58,22 +58,23 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
 
+        handler.updateWarnings(user);
         List<WarnData> warnings;
+        final List<WarnData> allWarnings = handler.getWarnings(user);
         if (args.hasAny("all")) {
-            warnings = handler.getWarnings(user);
+            warnings = allWarnings;
         } else if (args.hasAny("expired")) {
-            warnings = handler.getWarnings(user, false, true);
+            warnings = allWarnings.stream().filter(WarnData::isExpired).collect(Collectors.toList());
         } else {
-            warnings = handler.getWarnings(user, true, false);
+            warnings = allWarnings.stream().filter(x -> !x.isExpired()).collect(Collectors.toList());
         }
 
         if (warnings.isEmpty()) {
             src.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
             return CommandResult.success();
         }
-        handler.updateWarnings(user);
 
-        List<Text> messages = warnings.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(x -> createMessage(x, user)).collect(Collectors.toList());
+        List<Text> messages = warnings.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(x -> createMessage(allWarnings, x, user)).collect(Collectors.toList());
         messages.add(0, Util.getTextMessageWithFormat("command.checkwarnings.info"));
 
         PaginationService paginationService = Sponge.getGame().getServiceManager().provideUnchecked(PaginationService.class);
@@ -94,7 +95,7 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createMessage(WarnData warning, User user) {
+    private Text createMessage(List<WarnData> allData, WarnData warning, User user) {
         String name;
         if (warning.getWarner().equals(Util.consoleFakeUUID)) {
             name = Sponge.getServer().getConsole().getName();
@@ -114,7 +115,7 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
         }
 
         //Get the ID of the warning, its index in the users List<WarnData>
-        int id = handler.getWarnings(user).indexOf(warning);
+        int id = allData.indexOf(warning) + 1;
 
         //Action buttons, for a non expired warning this should look like 'Action > [Delete] - [Expire] - [Return] <'
         Text.Builder actions = Util.getTextMessageWithFormat("command.checkwarnings.action").toBuilder();
@@ -125,7 +126,7 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
         //Add the delete button [Delete]
         actions.append(Text.builder().append(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.action.delete")))
                 .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checkwarnings.hover.delete")))
-                .onClick(TextActions.runCommand("/removewarning --remove" + user.getName() + " " + id))
+                .onClick(TextActions.runCommand("/removewarning --remove " + user.getName() + " " + id))
                 .build());
 
         //Add a - to separate it from the next action button

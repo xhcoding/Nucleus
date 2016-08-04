@@ -67,8 +67,8 @@ public class MuteCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.length", new PermissionInformation(Util.getMessageWithFormat("permission.mute.bypass"), SuggestedLevel.MOD));
-        m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.mute.bypass"), SuggestedLevel.MOD));
+        m.put("exempt.length", new PermissionInformation(Util.getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.ADMIN));
+        m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.MOD));
         return m;
     }
 

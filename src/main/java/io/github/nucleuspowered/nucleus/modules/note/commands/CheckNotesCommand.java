@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Checks the notes of a player.
  *
- * Command Usage: /checknotes user Permission: quickstart.checknotes.base
+ * Command Usage: /checknotes user Permission: nucleus.checknotes.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
@@ -91,8 +91,8 @@ public class CheckNotesCommand extends CommandBase<CommandSource> {
             name = ou.isPresent() ? ou.get().getName() : Util.getMessageWithFormat("standard.unknown");
         }
 
-        //Get the ID of the note, its index in the users List<NoteData>
-        int id = handler.getNotes(user).indexOf(note);
+        //Get the ID of the note, its index in the users List<NoteData>. Add one to start with an ID of 1.
+        int id = handler.getNotes(user).indexOf(note) + 1;
 
         //Action buttons, this should look like 'Action > [Delete] - [Return] <'
         Text.Builder actions = Util.getTextMessageWithFormat("command.checknotes.action").toBuilder();

@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarnData;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
@@ -50,7 +49,6 @@ public class WarnCommand extends CommandBase<CommandSource> {
 
     @Inject private WarnHandler warnHandler;
     @Inject private WarnConfigAdapter wca;
-    @Inject private ChatUtil chatUtil;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

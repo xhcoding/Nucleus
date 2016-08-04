@@ -52,7 +52,7 @@ public class NoteListener extends ListenerBase {
             List<NoteData> notes = handler.getNotes(player);
             if (notes != null && !notes.isEmpty()) {
                 MutableMessageChannel messageChannel = MessageChannel.permission(showOnLogin).asMutable();
-                messageChannel.send(Util.getTextMessageWithFormat("note.login.notify", player.getName()).toBuilder()
+                messageChannel.send(Util.getTextMessageWithFormat("note.login.notify", player.getName(), String.valueOf(notes.size())).toBuilder()
                         .onHover(TextActions.showText(Util.getTextMessageWithFormat("note.login.view", player.getName())))
                         .onClick(TextActions.runCommand("/checknotes " + player.getName()))
                         .build());
