@@ -11,10 +11,10 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.text.channel.MessageChannel;
 
 public class ConnectionMessagesListener extends ListenerBase {
 
@@ -32,7 +32,7 @@ public class ConnectionMessagesListener extends ListenerBase {
             if (loader.getUser(pl).get().isFirstPlay()) {
                 // First time player.
                 if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
-                    Sponge.getServer().getBroadcastChannel().send(plugin, chatUtil.getPlayerMessageFromTemplate(cma.getNodeOrDefault().getFirstTimeMessage(), pl, true));
+                    MessageChannel.TO_ALL.send(plugin, chatUtil.getPlayerMessageFromTemplate(cmc.getFirstTimeMessage(), pl, true));
                 }
             }
         } catch (Exception e) {
