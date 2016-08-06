@@ -666,7 +666,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      * @return The cost.
      */
     protected double getCost(Player src, @Nullable CommandContext args) {
-        boolean noCost = args != null && !args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
+        boolean noCost = args != null && args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
 
         // If the player or command itself is exempt, return a zero.
         if (bypassCost || noCost || permissions.testCostExempt(src)) {
