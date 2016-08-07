@@ -51,8 +51,8 @@ public class GeneralService extends Service<GeneralDataNode> {
     };
 
     public GeneralService(DataProvider<GeneralDataNode> provider) throws Exception {
-        super(provider);
-        provider.load();
+        // This gets set up early, but we don't want to load it until post-init.
+        super(provider, false);
     }
 
     public List<ItemType> getBlacklistedTypes() {

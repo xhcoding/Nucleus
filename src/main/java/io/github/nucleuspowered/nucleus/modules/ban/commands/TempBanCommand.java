@@ -4,11 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.ban.config.BanConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -26,6 +29,8 @@ import org.spongepowered.api.util.ban.BanTypes;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 @RegisterCommand("tempban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
@@ -34,9 +39,19 @@ import java.time.temporal.ChronoUnit;
 @NoCost
 public class TempBanCommand extends CommandBase<CommandSource> {
 
+    @Inject private BanConfigAdapter bca;
     private final String user = "user";
     private final String reason = "reason";
     private final String duration = "duration";
+
+    @Override
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("offline", new PermissionInformation(Util.getMessageWithFormat("permission.tempban.offline"), SuggestedLevel.MOD));
+        m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.tempban.exempt.target"), SuggestedLevel.MOD));
+        m.put("exempt.length", new PermissionInformation(Util.getMessageWithFormat("permission.tempban.exempt.length"), SuggestedLevel.MOD));
+        return m;
+    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -51,6 +66,21 @@ public class TempBanCommand extends CommandBase<CommandSource> {
         User u = args.<User>getOne(user).get();
         Long time = args.<Long>getOne(duration).get();
         String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("ban.defaultreason"));
+
+        if (permissions.testSuffix(u, "exempt.target")) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.tempban.exempt", u.getName()));
+            return CommandResult.success();
+        }
+
+        if (!u.isOnline() && !permissions.testSuffix(src, "offline")) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.tempban.offline.noperms"));
+            return CommandResult.success();
+        }
+
+        if (time > bca.getNodeOrDefault().getMaximumTempBanLength() &&  bca.getNodeOrDefault().getMaximumTempBanLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.tempban.length.toolong", Util.getTimeStringFromSeconds(bca.getNodeOrDefault().getMaximumTempBanLength())));
+            return CommandResult.success();
+        }
 
         BanService service = Sponge.getServiceManager().provideUnchecked(BanService.class);
 

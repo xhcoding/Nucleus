@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.functionalinterfaces;
+package io.github.nucleuspowered.nucleus.util;
 
 /**
  * A function that accepts two arguments and returns a result, but can also throw a checked exception.

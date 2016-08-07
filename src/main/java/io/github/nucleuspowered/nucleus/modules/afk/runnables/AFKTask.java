@@ -4,87 +4,20 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.runnables;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
-import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
-import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class AFKTask extends TaskBase {
 
-    @Inject private Nucleus plugin;
-    @Inject private PermissionRegistry permissionRegistry;
-    @Inject private AFKConfigAdapter afkconfiga;
     @Inject private AFKHandler handler;
-    private CommandPermissionHandler afkService = null;
-
-    @Override
-    public Map<String, PermissionInformation> getPermissions() {
-        Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(PermissionRegistry.PERMISSIONS_PREFIX + "afk.exempt.toggle",
-                new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
-        m.put(PermissionRegistry.PERMISSIONS_PREFIX + "afk.exempt.kick",
-                new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
-        return m;
-    }
 
     @Override
     public void accept(Task task) {
-        // Don't run the task until we have a permission service.
-        if (afkService == null) {
-            Optional<CommandPermissionHandler> ops = permissionRegistry.getService(AFKCommand.class);
-            if (!ops.isPresent()) {
-                return;
-            }
-
-            afkService = ops.get();
-        }
-
-        // Check to see if anyone has gone across the timeout.
-        handler.purgeNotOnline();
-
-        AFKConfig config = afkconfiga.getNodeOrDefault();
-
-        // AFK time
-        if (config.getAfkTime() > 0) {
-            handler.checkForAfk(config.getAfkTime());
-        }
-
-        // Kick after AFK time
-        if (config.getAfkTimeToKick() > 0) {
-            List<UUID> afking = handler.checkForAfkKick(config.getAfkTimeToKick());
-            if (!afking.isEmpty()) {
-                String message = afkconfiga.getNodeOrDefault().getMessages().getKickMessage().trim();
-                if (message.isEmpty()) {
-                    message = Util.getMessageWithFormat("afk.kickreason");
-                }
-
-                final String messageToServer = afkconfiga.getNodeOrDefault().getMessages().getOnKick().trim();
-                final String messageToGetAroundJavaRestrictions = message;
-                Sponge.getServer().getOnlinePlayers().stream()
-                    .filter(x -> !x.hasPermission(afkService.getPermissionWithSuffix("exempt.kick")) && afking.contains(x.getUniqueId()))
-                    .forEach(x -> {
-                        Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.kick(TextSerializers.FORMATTING_CODE.deserialize(messageToGetAroundJavaRestrictions)));
-
-                        if (!messageToServer.isEmpty()) {
-                            MessageChannel.TO_ALL.send(plugin.getChatUtil().getPlayerMessageFromTemplate(messageToServer, x, true));
-                        }
-                    });
-            }
-        }
+        handler.updateAfkStatus();
     }
 
     @Override
@@ -93,7 +26,7 @@ public class AFKTask extends TaskBase {
     }
 
     @Override
-    public int secondsPerRun() {
-        return 2;
+    public TimePerRun interval() {
+        return new TimePerRun(2, TimeUnit.SECONDS);
     }
 }

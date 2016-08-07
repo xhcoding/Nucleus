@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.GameReloadEvent;
@@ -30,19 +29,6 @@ public class CoreListener extends ListenerBase {
 
     @Inject private UserDataManager loader;
 
-    @Listener(order = Order.FIRST)
-    public void onPlayerLogin(final ClientConnectionEvent.Login event) {
-        Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {
-            try {
-                User player = event.getTargetUser();
-                UserService qsu = loader.get(player).get();
-                qsu.setLastLogin(Instant.now());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
     /* (non-Javadoc)
      * We do this first to try to get the first play status as quick as possible.
      */
@@ -51,16 +37,24 @@ public class CoreListener extends ListenerBase {
         try {
             Player player = event.getTargetEntity();
             UserService qsu = loader.get(player).get();
+            qsu.setLastLogin(Instant.now());
             qsu.setFirstPlay(Util.isFirstPlay(player));
 
-            // If we have a location to send them to in the config, send them there now!
-            Optional<Location<World>> olw = qsu.getLocationOnLogin();
-            if (olw.isPresent()) {
-                event.getTargetEntity().setLocation(olw.get());
-                qsu.removeLocationOnLogin();
-            }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Listener(order = Order.LAST)
+    public void onPlayerJoinLast(final ClientConnectionEvent.Join event) {
+        Player player = event.getTargetEntity();
+        UserService qsu = loader.get(player).get();
+
+        // If we have a location to send them to in the config, send them there now!
+        Optional<Location<World>> olw = qsu.getLocationOnLogin();
+        if (olw.isPresent()) {
+            event.getTargetEntity().setLocation(olw.get());
+            qsu.removeLocationOnLogin();
         }
     }
 

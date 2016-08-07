@@ -405,6 +405,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private CommandResult startExecute(T src, CommandContext args) {
         CommandResult cr;
         try {
+            // Checks to see if a target is AFK, based on the "NotifyIfAFK" argument.
             checkAfk(src, args);
 
             // Execute the command in the specific executor.
@@ -666,7 +667,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      * @return The cost.
      */
     protected double getCost(Player src, @Nullable CommandContext args) {
-        boolean noCost = args != null && !args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
+        boolean noCost = args != null && args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
 
         // If the player or command itself is exempt, return a zero.
         if (bypassCost || noCost || permissions.testCostExempt(src)) {
@@ -690,7 +691,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             afkHandler = plugin.getInternalServiceManager().getService(AFKHandler.class);
         }
 
-        return afkHandler.isPresent() && afkHandler.get().getAFKData(player).isAFK();
+        return afkHandler.isPresent() && afkHandler.get().isAfk(player);
     }
 
     protected boolean alertOnAfk() {

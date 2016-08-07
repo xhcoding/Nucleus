@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
@@ -112,7 +113,7 @@ public class InfoCommand extends CommandBase<CommandSource> {
         PaginationList.Builder pb = ps.builder().contents()
                 .header(Util.getTextMessageWithFormat("command.info.header.default"))
                 .title(Util.getTextMessageWithFormat("command.info.title.default"))
-                .contents(s)
+                .contents(s.stream().sorted((a, b) -> a.toPlain().compareTo(b.toPlain())).collect(Collectors.toList()))
                 .padding(Text.of(TextColors.GOLD, "-"));
 
         if (src instanceof ConsoleSource) {

@@ -15,6 +15,7 @@ import org.spongepowered.api.scheduler.Task;
 
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class JailTask extends TaskBase {
     @Inject private Nucleus plugin;
@@ -33,7 +34,8 @@ public class JailTask extends TaskBase {
     }
 
     @Override
-    public int secondsPerRun() {
-        return 2;
+    public TimePerRun interval() {
+        return new TimePerRun(2, TimeUnit.SECONDS);
     }
+
 }
