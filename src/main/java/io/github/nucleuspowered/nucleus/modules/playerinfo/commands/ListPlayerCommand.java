@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -40,7 +39,6 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
 
     @Inject(optional = true) @Nullable private AFKHandler handler;
     @Inject private PlayerInfoConfigAdapter config;
-    @Inject private UserDataManager loader;
 
     private Text afk = null;
     private Text hidden = null;
@@ -145,7 +143,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
                 .sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName())).map(x -> {
                     Text.Builder tb = Text.builder();
                     boolean appendSpace = false;
-                    if (handler != null && handler.getAFKData(x).isAFK()) {
+                    if (handler != null && handler.isAfk(x)) {
                         tb.append(afk);
                         appendSpace = true;
                     }

@@ -11,14 +11,9 @@ import org.spongepowered.api.scheduler.Task;
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
-public class AFKTask extends TaskBase {
+public class UpdateAFKTask extends TaskBase {
 
     @Inject private AFKHandler handler;
-
-    @Override
-    public void accept(Task task) {
-        handler.updateAfkStatus();
-    }
 
     @Override
     public boolean isAsync() {
@@ -27,6 +22,11 @@ public class AFKTask extends TaskBase {
 
     @Override
     public TimePerRun interval() {
-        return new TimePerRun(2, TimeUnit.SECONDS);
+        return new TimePerRun(500, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void accept(Task task) {
+        handler.updateUserActivity();
     }
 }

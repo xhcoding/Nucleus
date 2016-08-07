@@ -16,6 +16,7 @@ import org.spongepowered.api.scheduler.Task;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +34,8 @@ public class GodRunnable extends TaskBase {
     }
 
     @Override
-    public int secondsPerRun() {
-        return 5;
+    public TimePerRun interval() {
+        return new TimePerRun(5, TimeUnit.SECONDS);
     }
 
     @Override

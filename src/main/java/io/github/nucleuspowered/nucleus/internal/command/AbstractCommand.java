@@ -405,6 +405,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private CommandResult startExecute(T src, CommandContext args) {
         CommandResult cr;
         try {
+            // Checks to see if a target is AFK, based on the "NotifyIfAFK" argument.
             checkAfk(src, args);
 
             // Execute the command in the specific executor.
@@ -690,7 +691,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             afkHandler = plugin.getInternalServiceManager().getService(AFKHandler.class);
         }
 
-        return afkHandler.isPresent() && afkHandler.get().getAFKData(player).isAFK();
+        return afkHandler.isPresent() && afkHandler.get().isAfk(player);
     }
 
     protected boolean alertOnAfk() {

@@ -8,13 +8,15 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RegisterCommand("afk")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
@@ -25,7 +27,14 @@ import org.spongepowered.api.entity.living.player.Player;
 public class AFKCommand extends CommandBase<Player> {
 
     @Inject private AFKHandler afkHandler;
-    @Inject private AFKConfigAdapter aca;
+
+    @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("exempt.toggle", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
+        m.put("exempt.kick", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
+        return m;
+    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
@@ -34,17 +43,12 @@ public class AFKCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        boolean isAFK = afkHandler.getAFKData(src).isAFK();
+        boolean isAFK = afkHandler.isAfk(src);
 
         if (isAFK) {
-            afkHandler.updateUserActivity(src.getUniqueId());
+            afkHandler.updateUserActivity(src);
         } else {
-            afkHandler.setAFK(src.getUniqueId(), true);
-        }
-
-        if (!aca.getNodeOrDefault().isAfkOnVanish() && src.get(Keys.INVISIBLE).orElse(false)) {
-            // This tells the user they have gone AFK, but no one else.
-            src.sendMessage(Util.getTextMessageWithFormat(isAFK ? "command.afk.from.vanish" : "command.afk.to.vanish"));
+            afkHandler.setAsAfk(src);
         }
 
         return CommandResult.success();

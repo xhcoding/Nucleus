@@ -25,7 +25,6 @@ import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -116,7 +115,8 @@ public abstract class StandardModule implements Module {
         Injector injector = nucleus.getInjector();
         commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
             c.getPermissions().forEach((k, v) -> nucleus.getPermissionRegistry().registerOtherPermission(k, v));
-            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.secondsPerRun(), TimeUnit.SECONDS);
+            TaskBase.TimePerRun tpr = c.interval();
+            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(tpr.getTime(), tpr.getUnit());
             if (c.isAsync()) {
                 tb.async();
             }
