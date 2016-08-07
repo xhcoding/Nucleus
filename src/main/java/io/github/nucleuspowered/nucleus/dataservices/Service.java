@@ -12,8 +12,14 @@ public abstract class Service<T> {
     private final DataProvider<T> dataProvider;
 
     Service(DataProvider<T> dataProvider) throws Exception {
+        this(dataProvider, true);
+    }
+
+    Service(DataProvider<T> dataProvider, boolean loadNow) throws Exception {
         this.dataProvider = dataProvider;
-        data = dataProvider.load();
+        if (loadNow) {
+            data = dataProvider.load();
+        }
     }
 
     public boolean load() {
