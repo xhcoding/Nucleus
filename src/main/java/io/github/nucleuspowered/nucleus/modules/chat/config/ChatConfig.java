@@ -38,7 +38,17 @@ public class ChatConfig {
     }
 
     public ChatTemplateConfig getTemplate(Subject subject) {
-        List<Subject> groups = subject.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        List<Subject> groups;
+        try {
+             groups = subject.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        } catch (Exception e) {
+            return template;
+        }
+
+        if (groups == null) {
+            return template;
+        }
+
         groups.sort((x, y) -> y.getParents().size() - x.getParents().size());
 
         // Iterate through all groups the player is in.
