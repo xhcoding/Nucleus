@@ -12,6 +12,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.filter.Getter;
 
 public class MiscListener extends ListenerBase {
 
@@ -20,14 +21,11 @@ public class MiscListener extends ListenerBase {
 
     // For /god
     @Listener
-    public void onPlayerStruck(DamageEntityEvent event) {
-        if (event.getTargetEntity() instanceof Player) {
-            Player pl = (Player)event.getTargetEntity();
-            if (isInvulnerable(pl)) {
-                pl.offer(Keys.FIRE_TICKS, 0);
-                event.setBaseDamage(0);
-                event.setCancelled(true);
-            }
+    public void onPlayerStruck(DamageEntityEvent event, @Getter("getTargetEntity") Player pl) {
+        if (isInvulnerable(pl)) {
+            pl.offer(Keys.FIRE_TICKS, 0);
+            event.setBaseDamage(0);
+            event.setCancelled(true);
         }
     }
 
