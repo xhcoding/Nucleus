@@ -20,8 +20,7 @@ import java.util.Optional;
 public class NoteHandler implements NucleusNoteService {
 
     private final Nucleus nucleus;
-    @Inject
-    private UserDataManager userDataManager;
+    @Inject private UserDataManager userDataManager;
 
     public NoteHandler(Nucleus nucleus) {
         this.nucleus = nucleus;
