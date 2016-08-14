@@ -45,7 +45,7 @@ public class ChatConfig {
             return template;
         }
 
-        if (groups == null) {
+        if (groups == null || groups.isEmpty()) {
             return template;
         }
 
