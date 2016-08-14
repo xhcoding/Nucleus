@@ -101,6 +101,10 @@ public class TempBanCommand extends CommandBase<CommandSource> {
         send.send(Util.getTextMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName()));
         send.send(Util.getTextMessageWithFormat("standard.reason", reason));
 
+        if (Sponge.getServer().getPlayer(u.getUniqueId()).isPresent()) {
+            Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(r));
+        }
+
         return CommandResult.success();
     }
 }
