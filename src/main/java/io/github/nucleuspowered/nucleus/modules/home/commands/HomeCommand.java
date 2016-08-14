@@ -50,14 +50,14 @@ public class HomeCommand extends CommandBase<Player> {
 
         LocationData wl = owl.get();
 
-        if (wl.getLocation() == null) {
+        if (!wl.getLocation().isPresent()) {
             // Fail
             src.sendMessage(Util.getTextMessageWithFormat("command.home.invalid", wl.getName()));
             return CommandResult.empty();
         }
 
         // Warp to it safely.
-        if (src.setLocationAndRotationSafely(wl.getLocation(), wl.getRotation())) {
+        if (src.setLocationAndRotationSafely(wl.getLocation().get(), wl.getRotation())) {
             if (!wl.getName().equalsIgnoreCase("home")) {
                 src.sendMessage(Util.getTextMessageWithFormat("command.home.success", wl.getName()));
             } else {

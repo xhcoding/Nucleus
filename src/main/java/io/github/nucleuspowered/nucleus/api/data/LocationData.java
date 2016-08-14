@@ -9,6 +9,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.text.MessageFormat;
+import java.util.Optional;
 
 public class LocationData {
 
@@ -30,11 +31,15 @@ public class LocationData {
         return rotation;
     }
 
-    public Location<World> getLocation() {
-        return location;
+    public Optional<Location<World>> getLocation() {
+        return Optional.ofNullable(location);
     }
 
     public String toLocationString() {
-        return MessageFormat.format("world: {0}, x: {1}, y: {2}, z: {3}", location.getExtent().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        if (location == null) {
+            return MessageFormat.format("name: {0}, no location", warpName);
+        }
+
+        return MessageFormat.format("name: {0}, world: {1}, x: {2}, y: {3}, z: {4}", warpName, location.getExtent().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 }

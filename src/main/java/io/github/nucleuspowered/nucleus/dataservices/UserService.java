@@ -246,18 +246,18 @@ public class UserService extends Service<UserDataNode>
 
     @Override
     public Map<String, LocationData> getHomes() {
-        if (data.getHomeData() == null) {
+        if (data.getHomeData() == null || data.getHomeData().isEmpty()) {
             return Maps.newHashMap();
         }
 
         return data.getHomeData().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, x -> {
-                    try {
-                        return new LocationData(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
-                    } catch (NoSuchWorldException e) {
-                        return null;
-                    }
-                }));
+            .collect(Collectors.toMap(Map.Entry::getKey, x -> {
+                try {
+                    return new LocationData(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
+                } catch (NoSuchWorldException e) {
+                    return new LocationData(x.getKey(), null, null);
+                }
+            }));
     }
 
     @Override

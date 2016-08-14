@@ -84,15 +84,15 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
         }
 
         List<Text> lt = msw.entrySet().stream().sorted((x, y) -> x.getKey().compareTo(y.getKey())).map(x -> {
-            Location<World> lw = x.getValue().getLocation();
-            Text inner;
-            if (lw == null) {
+            Optional<Location<World>> olw = x.getValue().getLocation();
+            if (!olw.isPresent()) {
                 return Text.builder().append(
                                 Text.builder(x.getKey()).color(TextColors.RED)
                                         .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphoverinvalid", x.getKey())))
                                         .build())
                         .build();
             } else {
+                final Location<World> lw = olw.get();
                 return Text.builder().append(
                                 Text.builder(x.getKey()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
                                         .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphover", x.getKey())))
