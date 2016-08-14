@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -24,20 +25,29 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NicknameArgument extends CommandElement {
 
     private final UserDataManager userDataManager;
-    private final ThrownBiFunction<String, CommandArgs, Object, ArgumentParseException> parser;
+    private final ThrownBiFunction<String, CommandArgs, List<?>, ArgumentParseException> parser;
     private final TriFunction<String, CommandArgs, CommandContext, List<String>> completer;
+    private final boolean onlyOne;
+    private final UnderlyingType type;
 
     public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type) {
+        this(key, userDataManager, type, true);
+    }
+
+    public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type, boolean onlyOne) {
         super(key);
 
         Preconditions.checkNotNull(userDataManager);
+        this.onlyOne = onlyOne;
         this.userDataManager = userDataManager;
+        this.type = type;
 
         if (type == UnderlyingType.USER) {
             parser = (s, a) -> {
@@ -45,13 +55,25 @@ public class NicknameArgument extends CommandElement {
                     UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
                     List<User> users = uss.match(s).stream().map(uss::get).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
                     if (!users.isEmpty()) {
+                        List<User> exactUser = users.stream().filter(x -> x.getName().equalsIgnoreCase(s)).collect(Collectors.toList());
+                        if (exactUser.size() == 1) {
+                            return exactUser;
+                        }
+
+                        if (users.size() > 1 && this.onlyOne) {
+                            throw a.createError(Util.getTextMessageWithFormat("args.user.toomany", s));
+                        }
+
                         return users;
                     }
                 } catch (Exception e) {
-                    //
+                    // We want to rethrow this!
+                    if (e instanceof ArgumentParseException) {
+                        throw e;
+                    }
                 }
 
-                throw a.createError(Util.getTextMessageWithFormat("args.user.nouser", s));
+                return Lists.newArrayList();
             };
 
             completer = (s, a, c) -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).match(s).stream().filter(x -> x.getName().isPresent())
@@ -80,28 +102,35 @@ public class NicknameArgument extends CommandElement {
             fName = name;
         }
 
-        try {
-            return parser.accept(fName, args);
-        } catch (ArgumentParseException e) {
-            if (playerOnly) {
-                // Rethrow;
-                throw e;
-            }
+        List<?> obj = parser.accept(fName, args);
+        if (!obj.isEmpty()) {
+            return obj;
+        } else if (playerOnly) {
+            // Rethrow;
+            throw args.createError(Util.getTextMessageWithFormat("args.user.nouser", fName));
         }
 
         // Now check user names
-        List<UserService> players = userDataManager.getOnlineUsersInternal().stream()
-                .filter(x -> x.getUser().isOnline() && x.getNicknameAsString().isPresent() &&
-                TextSerializers.FORMATTING_CODE.stripCodes(x.getNicknameAsString().get()).toLowerCase().startsWith(fName))
-                .sorted((x, y) -> x.getNicknameAsString().get().compareTo(y.getNicknameAsString().get()))
+        Map<String, UserService> allPlayers = userDataManager.getOnlineUsersInternal().stream()
+                .filter(x -> x.getUser().isOnline() && x.getNicknameAsString().isPresent())
+                .collect(Collectors.toMap(s -> TextSerializers.FORMATTING_CODE.stripCodes(s.getNicknameAsString().get().toLowerCase()), s -> s));
+        if (allPlayers.containsKey(fName.toLowerCase())) {
+            return allPlayers.get(fName.toLowerCase()).getUser();
+        }
+
+        List<User> players = allPlayers.entrySet().stream().filter(x -> x.getKey().toLowerCase().startsWith(fName))
+                .sorted((x, y) -> x.getKey().compareTo(y.getKey()))
+                .map(x -> x.getValue().getUser())
                 .collect(Collectors.toList());
 
         if (players.isEmpty()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.playerconsole.noexist"));
+            throw args.createError(Util.getTextMessageWithFormat(type == UnderlyingType.PLAYER_CONSOLE ? "args.playerconsole.nouser" : "args.user.nouser", fName));
+        } else if (players.size() > 1 && this.onlyOne) {
+            throw args.createError(Util.getTextMessageWithFormat("args.user.toomany", fName));
         }
 
         // We know they are online.
-        return players.stream().map(x -> x.getUser().getPlayer().get()).collect(Collectors.toList());
+        return players;
     }
 
     @Override
