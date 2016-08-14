@@ -100,7 +100,7 @@ public class JailHandler implements NucleusJailService {
         if (user.isOnline()) {
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
-                player.setLocationAndRotation(owl.get().getLocation(), owl.get().getRotation());
+                player.setLocationAndRotation(owl.get().getLocation().get(), owl.get().getRotation());
                 iqsu.setFlying(false);
             });
         } else {

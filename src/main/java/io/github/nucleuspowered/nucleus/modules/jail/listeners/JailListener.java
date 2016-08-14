@@ -72,7 +72,7 @@ public class JailListener extends ListenerBase {
             JailData jd = qs.getJailData().get();
             jd.setPreviousLocation(user.getLocation());
             qs.setJailData(jd);
-            user.setLocationAndRotation(owl.get().getLocation(), owl.get().getRotation());
+            user.setLocationAndRotation(owl.get().getLocation().get(), owl.get().getRotation());
 
             Optional<Duration> timeLeft = jd.getTimeLeft();
             Text message;
@@ -130,7 +130,7 @@ public class JailListener extends ListenerBase {
     @Listener
     public void onSpawn(RespawnPlayerEvent event) {
         if (checkJail(event.getTargetEntity(), false)) {
-            event.setToTransform(event.getToTransform().setLocation(handler.getWarpLocation(event.getTargetEntity()).get().getLocation()));
+            event.setToTransform(event.getToTransform().setLocation(handler.getWarpLocation(event.getTargetEntity()).get().getLocation().get()));
         }
     }
 

@@ -37,14 +37,14 @@ public class HomeOtherCommand extends CommandBase<Player> {
         // Get the home.
         HomeOtherArgument.HomeData wl = args.<HomeOtherArgument.HomeData>getOne(home).get();
 
-        if (wl.location.getLocation() == null) {
+        if (!wl.location.getLocation().isPresent()) {
             // Fail
             src.sendMessage(Util.getTextMessageWithFormat("command.homeother.invalid", wl.user.getName(), wl.location.getName()));
             return CommandResult.empty();
         }
 
         // Warp to it safely.
-        if (src.setLocationAndRotationSafely(wl.location.getLocation(), wl.location.getRotation())) {
+        if (src.setLocationAndRotationSafely(wl.location.getLocation().get(), wl.location.getRotation())) {
             src.sendMessage(Util.getTextMessageWithFormat("command.homeother.success", wl.user.getName(), wl.location.getName()));
             return CommandResult.success();
         } else {
