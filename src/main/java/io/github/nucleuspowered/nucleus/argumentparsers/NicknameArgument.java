@@ -53,7 +53,15 @@ public class NicknameArgument extends CommandElement {
             parser = (s, a) -> {
                 try {
                     UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
-                    List<User> users = uss.match(s).stream().map(uss::get).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+                    List<User> users = uss.getAll().stream()
+                            // Get the players who start with the string.
+                            .filter(x -> x.getName().filter(y -> y.toLowerCase().startsWith(s.toLowerCase())).isPresent())
+                            .map(uss::get)
+                            // Remove players who have no user
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.toList());
+
                     if (!users.isEmpty()) {
                         List<User> exactUser = users.stream().filter(x -> x.getName().equalsIgnoreCase(s)).collect(Collectors.toList());
                         if (exactUser.size() == 1) {
