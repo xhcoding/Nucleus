@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -36,14 +34,13 @@ public class VanishCommand extends CommandBase<CommandSource> {
 
     private final String b = "toggle";
     private final String playerKey = "player";
-    @Inject private UserDataManager udm;
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.requiringPermission(
-                    GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))),
-                    permissions.getPermissionWithSuffix("other")),
+            GenericArguments.optionalWeak(GenericArguments.requiringPermission(
+                    GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
+                    permissions.getPermissionWithSuffix("other"))),
             GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))
         };
     }
