@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.ClassPath;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
@@ -289,5 +290,19 @@ public class Util {
 
         // Check that we're not too far out.
         return !(displacement.getX() > radius || displacement.getZ() > radius);
+    }
+
+    /**
+     * Gets all of the player's parent {@link Subject}s
+     *
+     * @param pl The {@link Subject} to get the parents of
+     * @return The {@link List} of {@link Subject}s, or an empty list if there nothing was found.
+     */
+    public static List<Subject> getParentSubjects(Subject pl) {
+        try {
+            return pl.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        } catch (Exception e) {
+            return Lists.newArrayList();
+        }
     }
 }
