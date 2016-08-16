@@ -31,6 +31,7 @@ public class HomeOtherArgument extends HomeArgument {
 
     @Nullable
     @Override
+    @SuppressWarnings("unchecked")
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String player = args.next();
         Optional<String> ohome = args.nextIfPresent();
@@ -40,13 +41,7 @@ public class HomeOtherArgument extends HomeArgument {
         }
 
         // We know it's an instance of a user.
-        User user;
-        try {
-             user = (User) nickArg.parseValue(source, args);
-        } catch (Exception e) {
-            throw args.createError(Util.getTextMessageWithFormat("args.homeother.nouser", player));
-        }
-
+        User user = ((List<User>)nickArg.parseInternal(player.toLowerCase(), args)).get(0);
         LocationData location = this.getHome(user, ohome.get(), args);
         return new HomeData(user, location);
     }

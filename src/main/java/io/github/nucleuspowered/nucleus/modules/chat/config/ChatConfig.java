@@ -4,15 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat.config;
 
+import io.github.nucleuspowered.nucleus.Util;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.service.permission.Subject;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @ConfigSerializable
 public class ChatConfig {
@@ -40,7 +39,7 @@ public class ChatConfig {
     public ChatTemplateConfig getTemplate(Subject subject) {
         List<Subject> groups;
         try {
-             groups = subject.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+             groups = Util.getParentSubjects(subject);
         } catch (Exception e) {
             return template;
         }
