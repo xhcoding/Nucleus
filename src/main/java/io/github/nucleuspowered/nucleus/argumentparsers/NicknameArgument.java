@@ -100,7 +100,7 @@ public class NicknameArgument extends CommandElement {
         return parseInternal(name, args);
     }
 
-    Object parseInternal(String name, CommandArgs args) throws ArgumentParseException {
+    List<?> parseInternal(String name, CommandArgs args) throws ArgumentParseException {
         boolean playerOnly = name.startsWith("p:");
 
         final String fName;
@@ -123,7 +123,7 @@ public class NicknameArgument extends CommandElement {
                 .filter(x -> x.getUser().isOnline() && x.getNicknameAsString().isPresent())
                 .collect(Collectors.toMap(s -> TextSerializers.FORMATTING_CODE.stripCodes(s.getNicknameAsString().get().toLowerCase()), s -> s));
         if (allPlayers.containsKey(fName.toLowerCase())) {
-            return allPlayers.get(fName.toLowerCase()).getUser();
+            return Lists.newArrayList(allPlayers.get(fName.toLowerCase()).getUser());
         }
 
         List<User> players = allPlayers.entrySet().stream().filter(x -> x.getKey().toLowerCase().startsWith(fName))
