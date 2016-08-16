@@ -4,10 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -21,6 +25,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,12 +38,21 @@ public class SpeedCommand extends CommandBase<CommandSource> {
     private final String typeKey = "type";
     private final String playerKey = "player";
 
+    @Inject private MiscConfigAdapter miscConfigAdapter;
+
     /**
      * As the standard flying speed is 0.05 and the standard walking speed is
      * 0.1, we multiply it by 20 and use integers. Standard walking speed is
      * therefore 2, standard flying speed - 1.
      */
     public static final int multiplier = 20;
+
+    @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> mspi = Maps.newHashMap();
+        mspi.put("exempt.max", new PermissionInformation(Util.getMessageWithFormat("permission.speed.exempt.max"), SuggestedLevel.NONE));
+        return mspi;
+    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -85,6 +99,12 @@ public class SpeedCommand extends CommandBase<CommandSource> {
 
         if (speed < 0) {
             src.sendMessage(Util.getTextMessageWithFormat("command.speed.negative"));
+            return CommandResult.empty();
+        }
+
+        int maxSpeed = miscConfigAdapter.getNodeOrDefault().getMaxSpeed();
+        if (!permissions.testSuffix(src, "exempt.max") && maxSpeed < speed) {
+            src.sendMessage(Util.getTextMessageWithFormat("command.speed.max", String.valueOf(maxSpeed)));
             return CommandResult.empty();
         }
 

@@ -4,8 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc;
 
-import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "misc", name = "Miscellaneous")
-public class MiscModule extends StandardModule {}
+public class MiscModule extends ConfigurableModule<MiscConfigAdapter> {
+    @Override
+    public MiscConfigAdapter getAdapter() {
+        return new MiscConfigAdapter();
+    }
+}
