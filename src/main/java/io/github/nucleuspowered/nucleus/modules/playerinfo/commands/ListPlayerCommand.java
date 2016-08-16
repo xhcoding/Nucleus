@@ -104,7 +104,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
 
         groups.forEach(x -> {
             // Get the players in the group.
-            Collection<Player> cp = playersToList.stream().filter(pl -> getPlayerSubjects(pl).contains(x)).collect(Collectors.toList());
+            Collection<Player> cp = playersToList.stream().filter(pl -> Util.getParentSubjects(pl).contains(x)).collect(Collectors.toList());
             playersToList.removeAll(cp);
 
             if (!cp.isEmpty()) {
@@ -123,10 +123,6 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
             getPlayerList(playersToList, showVanished).ifPresent(y -> src.sendMessage(
                     Text.builder().append(Text.of(TextColors.YELLOW, config.getNodeOrDefault().getList().getDefaultGroupName() + ": ")).append(y).build()));
         }
-    }
-
-    private List<Subject> getPlayerSubjects(Player pl) {
-        return pl.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     /**
