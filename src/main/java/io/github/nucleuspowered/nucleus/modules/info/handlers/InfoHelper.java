@@ -19,6 +19,9 @@ import java.util.List;
 
 public class InfoHelper {
 
+    private static final Text padding = Text.of(TextColors.GOLD, "-");
+    private static final Text emptyPadding = Text.of(" ");
+
     public static void sendInfo(TextFileController tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
         sendInfo(tfc.getFileContents(), src, chatUtil, motdTitle);
     }
@@ -28,10 +31,12 @@ public class InfoHelper {
         List<Text> textList = chatUtil.getFromStrings(tfc, src);
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        PaginationList.Builder pb = ps.builder().contents(textList).padding(Text.of(TextColors.GOLD, "-"));
+        PaginationList.Builder pb = ps.builder().contents(textList);
 
         if (!motdTitle.isEmpty()) {
-            pb.title(TextSerializers.FORMATTING_CODE.deserialize(motdTitle));
+            pb.title(TextSerializers.FORMATTING_CODE.deserialize(motdTitle)).padding(padding);
+        } else {
+            pb.padding(emptyPadding);
         }
 
         if (src instanceof ConsoleSource) {
