@@ -16,6 +16,8 @@ ext.url = 'http://nucleuspowered.org'
 group 'io.github.nucleuspowered'
 version '0.8.0-SNAPSHOT'
 
+def qsmlDep = "uk.co.drnaylor:quickstart-moduleloader:0.2.0-SNAPSHOT";
+
 defaultTasks 'licenseFormat'
 
 sourceCompatibility = 1.8
@@ -38,7 +40,7 @@ repositories {
 
 dependencies {
     compile "org.spongepowered:spongeapi:4.1.0"
-    compile "uk.co.drnaylor:quickstart-moduleloader:0.1.5"
+    compile qsmlDep
     compile "com.github.hsyyid:EssentialCmds:v8.1.7"
 
     testCompile "junit:junit:4.12"
@@ -112,7 +114,7 @@ def private String getGitHash() {
 
 shadowJar {
     dependencies {
-        include(dependency('uk.co.drnaylor:quickstart-moduleloader:0.1.+'))
+        include(dependency(qsmlDep))
     }
 }
 build.dependsOn(shadowJar)

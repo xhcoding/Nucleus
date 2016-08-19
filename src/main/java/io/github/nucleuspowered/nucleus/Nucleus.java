@@ -36,6 +36,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.qsml.ModuleRegistrationProxyService;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusLoggerProxy;
 import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructor;
+import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
@@ -53,9 +54,9 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
-import uk.co.drnaylor.quickstart.ModuleContainer;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleDiscoveryException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
+import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -88,7 +89,7 @@ public class Nucleus {
     private EconHelper econHelper = new EconHelper(this);
     private PermissionRegistry permissionRegistry = new PermissionRegistry();
 
-    private ModuleContainer moduleContainer;
+    private DiscoveryModuleContainer moduleContainer;
 
     private final Map<String, TextFileController> textFileControllers = Maps.newHashMap();
 
@@ -135,7 +136,7 @@ public class Nucleus {
         serviceManager.registerService(WarmupManager.class, warmupManager);
 
         try {
-            moduleContainer = ModuleContainer.builder()
+            moduleContainer = DiscoveryModuleContainer.builder()
                     .setConstructor(new QuickStartModuleConstructor(injector))
                     .setConfigurationLoader(HoconConfigurationLoader.builder()
                             .setDefaultOptions(ConfigurationOptions.defaults().setObjectMapperFactory(NucleusObjectMapperFactory.getInstance()))
@@ -143,9 +144,20 @@ public class Nucleus {
                             .build())
                     .setPackageToScan(getClass().getPackage().getName() + ".modules")
                     .setLoggerProxy(new NucleusLoggerProxy(logger))
-                    .setOnPreEnable(this::runInjectorUpdate)
-                    .setOnEnable(this::runInjectorUpdate)
+                    .setOnPreEnable(() -> {
+                        runInjectorUpdate();
+                        Sponge.getEventManager().post(new BaseModuleEvent.AboutToEnable(this));
+                    })
+                    .setOnEnable(() -> {
+                        runInjectorUpdate();
+                        Sponge.getEventManager().post(new BaseModuleEvent.PreEnable(this));
+                    })
+                    .setOnPostEnable(() -> {
+                        Sponge.getEventManager().post(new BaseModuleEvent.Enabled(this));
+                    })
                     .build();
+
+            moduleContainer.startDiscover();
         } catch (QuickStartModuleDiscoveryException e) {
             isErrored = true;
             e.printStackTrace();
@@ -170,6 +182,7 @@ public class Nucleus {
         }
 
         try {
+            Sponge.getEventManager().post(new BaseModuleEvent.AboutToConstructEvent(this));
             logger.info(messageProvider.getMessageWithFormat("startup.moduleloading", PluginInfo.NAME));
             moduleContainer.loadModules(false);
         } catch (QuickStartModuleLoaderException.Construction | QuickStartModuleLoaderException.Enabling construction) {
@@ -182,6 +195,7 @@ public class Nucleus {
         logger.info(messageProvider.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
         registerPermissions();
         modulesLoaded = true;
+        Sponge.getEventManager().post(new BaseModuleEvent.Complete(this));
 
         // Register final services
         game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, userDataManager);
@@ -289,7 +303,7 @@ public class Nucleus {
         return permissionRegistry;
     }
 
-    public ModuleContainer getModuleContainer() {
+    public DiscoveryModuleContainer getModuleContainer() {
         return moduleContainer;
     }
 
