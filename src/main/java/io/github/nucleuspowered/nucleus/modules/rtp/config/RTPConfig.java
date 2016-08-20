@@ -16,11 +16,18 @@ public class RTPConfig {
     @Setting(value = "radius", comment = "loc:config.rtp.radius")
     private int radius = 30000;
 
+    @Setting(value = "surface-only", comment = "loc:config.rtp.surface")
+    private boolean mustSeeSky = false;
+
     public int getNoOfAttempts() {
         return noOfAttempts;
     }
 
     public int getRadius() {
         return radius;
+    }
+
+    public boolean isMustSeeSky() {
+        return mustSeeSky;
     }
 }
