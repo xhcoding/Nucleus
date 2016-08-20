@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.rtp.commands;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -15,6 +16,8 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockType;
+import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -27,10 +30,13 @@ import org.spongepowered.api.world.WorldBorder;
 
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 
 @Permissions
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
 public class RandomTeleportCommand extends CommandBase<Player> {
+
+    private Set<BlockType> prohibitedTypes = null;
 
     private final Random random = new Random();
     @Inject private RTPConfigAdapter rca;
@@ -102,7 +108,7 @@ public class RandomTeleportCommand extends CommandBase<Player> {
 
             // getSafeLocation might have put us out of the world border. Best to check.
             try {
-                if (oSafeLocation.isPresent() && Util.isLocationInWorldBorder(oSafeLocation.get())) {
+                if (oSafeLocation.isPresent() && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get())) {
                     Location<World> tpTarget = oSafeLocation.get();
                     plugin.getLogger().debug(String.format("RTP of %s, found location %s, %s, %s", player.getName(),
                             String.valueOf(tpTarget.getBlockX()),
@@ -133,6 +139,23 @@ public class RandomTeleportCommand extends CommandBase<Player> {
                 // safe place.
                 Sponge.getScheduler().createTaskBuilder().delayTicks(2).execute(this).submit(plugin);
             }
+        }
+
+        private boolean isSafe(Location<World> location) {
+            return !location.hasBlock() || !getProhibitedTypes().contains(location.getBlockType());
+        }
+
+        private Set<BlockType> getProhibitedTypes() {
+            if (prohibitedTypes == null) {
+                prohibitedTypes = Sets.newHashSet(
+                    BlockTypes.WATER,
+                    BlockTypes.LAVA,
+                    BlockTypes.FLOWING_WATER,
+                    BlockTypes.FLOWING_LAVA
+                );
+            }
+
+            return prohibitedTypes;
         }
 
         @Override
