@@ -114,7 +114,7 @@ public class CommandPermissionHandler {
         mssl.put(base, new PermissionInformation(Util.getMessageWithFormat("permission.base", command), c.suggestedLevel()));
 
         if (c.supportsSelectors()) {
-            mssl.put(base, new PermissionInformation(Util.getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
+            mssl.put(selectors, new PermissionInformation(Util.getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
         }
 
         warmup = prefix + "exempt.warmup";
