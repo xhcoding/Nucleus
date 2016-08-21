@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions
+@Permissions(supportsSelectors = true)
 @RegisterCommand({"ignite", "burn"})
 public class IgniteCommand extends CommandBase<CommandSource> {
 
@@ -43,9 +44,15 @@ public class IgniteCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[]{
-                GenericArguments.optionalWeak(GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)),
-                        permissions.getPermissionWithSuffix("others"))),
+                GenericArguments.optionalWeak(
+                    GenericArguments.requiringPermission(
+                        GenericArguments.onlyOne(
+                                new SelectorWrapperArgument(
+                                    new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                                    permissions,
+                                    SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
+                        permissions.getPermissionWithSuffix("others")
+                )),
                 GenericArguments.onlyOne(GenericArguments.integer(Text.of(ticks)))
         };
     }

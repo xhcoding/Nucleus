@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 import static io.github.nucleuspowered.nucleus.modules.teleport.commands.TeleportAskHereCommand.playerKey;
 
-@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.MOD)
+@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @RunAsync
 @NoWarmup(generateConfigEntry = true)
 @RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})
@@ -47,7 +48,12 @@ public class TeleportAskHereCommand extends CommandBase<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)),
+            GenericArguments.onlyOne(
+                new SelectorWrapperArgument(
+                    new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                    permissions,
+                    SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
+            ),
             GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("force"), "f").buildWith(GenericArguments.none())
         };
     }

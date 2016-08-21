@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions
+@Permissions(supportsSelectors = true)
 @RegisterCommand({"spawnmob", "spawnentity"})
 public class SpawnMobCommand extends CommandBase<CommandSource> {
 
@@ -50,8 +51,12 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.optionalWeak(GenericArguments.requiringPermission(
-                        new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                GenericArguments.optionalWeak(
+                    GenericArguments.requiringPermission(
+                        new SelectorWrapperArgument(
+                            new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                            permissions,
+                            SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS),
                         permissions.getPermissionWithSuffix("others"))),
                 new ImprovedCatalogTypeArgument(Text.of(mobTypeKey), CatalogTypes.ENTITY_TYPE),
                 GenericArguments.optional(new PositiveIntegerArgument(Text.of(amountKey)), 1)

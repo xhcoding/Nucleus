@@ -25,6 +25,7 @@ public class CommandPermissionHandler {
     private final String warmup;
     private final String cooldown;
     private final String cost;
+    private final String selectors;
 
     private final boolean justReturnTrue;
 
@@ -38,6 +39,7 @@ public class CommandPermissionHandler {
             warmup = "";
             cooldown = "";
             cost = "";
+            selectors = "";
             return;
         }
 
@@ -62,6 +64,11 @@ public class CommandPermissionHandler {
                 @Override
                 public String sub() {
                     return "";
+                }
+
+                @Override
+                public boolean supportsSelectors() {
+                    return false;
                 }
 
                 @Override
@@ -95,6 +102,7 @@ public class CommandPermissionHandler {
         prefix = sb.toString();
 
         base = prefix + "base";
+        selectors = prefix + "selectors";
 
         // Get command name.
         String command = cb.getAliases()[0];
@@ -104,6 +112,10 @@ public class CommandPermissionHandler {
         }
 
         mssl.put(base, new PermissionInformation(Util.getMessageWithFormat("permission.base", command), c.suggestedLevel()));
+
+        if (c.supportsSelectors()) {
+            mssl.put(base, new PermissionInformation(Util.getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
+        }
 
         warmup = prefix + "exempt.warmup";
         cooldown = prefix + "exempt.cooldown";
@@ -133,19 +145,23 @@ public class CommandPermissionHandler {
     }
 
     public boolean testBase(Subject src) {
-        return justReturnTrue || src.hasPermission(base);
+        return test(src, base);
     }
 
     public boolean testWarmupExempt(Subject src) {
-        return justReturnTrue || src.hasPermission(warmup);
+        return test(src, warmup);
     }
 
     public boolean testCooldownExempt(Subject src) {
-        return justReturnTrue || src.hasPermission(cooldown);
+        return test(src, cooldown);
     }
 
     public boolean testCostExempt(Subject src) {
-        return justReturnTrue || src.hasPermission(cost);
+        return test(src, cost);
+    }
+
+    public boolean testSelectors(Subject src) {
+        return test(src, selectors);
     }
 
     public void registerPermssionSuffix(String suffix, PermissionInformation pi) {
@@ -157,7 +173,7 @@ public class CommandPermissionHandler {
     }
 
     public boolean testSuffix(Subject src, String suffix) {
-        return justReturnTrue || src.hasPermission(prefix + suffix);
+        return test(src, prefix + suffix);
     }
 
     public String getPermissionWithSuffix(String suffix) {
@@ -168,4 +184,7 @@ public class CommandPermissionHandler {
         return ImmutableMap.copyOf(mssl);
     }
 
+    private boolean test(Subject src, String permission) {
+        return justReturnTrue || src.hasPermission(permission);
+    }
 }

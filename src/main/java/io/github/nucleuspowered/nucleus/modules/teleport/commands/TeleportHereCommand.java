@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -23,7 +24,7 @@ import org.spongepowered.api.text.Text;
  * for abuse for non-admin players trying to pull players. No cost or warmups
  * will be applied. /tpahere should be used instead in these circumstances.
  */
-@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.ADMIN, supportsSelectors = true)
 @NoWarmup
 @NoCooldown
 @NoCost
@@ -38,7 +39,14 @@ public class TeleportHereCommand extends CommandBase<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(
+                new SelectorWrapperArgument(
+                    new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                    permissions,
+                    SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
+                )
+        };
     }
 
     @Override

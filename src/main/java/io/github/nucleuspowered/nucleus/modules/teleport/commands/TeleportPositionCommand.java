@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
@@ -22,7 +23,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-@Permissions(root = "teleport")
+@Permissions(root = "teleport", supportsSelectors = true)
 @NoWarmup
 @NoCooldown
 @NoCost
@@ -40,7 +41,7 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.onlyOne(GenericArguments.playerOrSource(Text.of(key))),
+                GenericArguments.onlyOne(new SelectorWrapperArgument(GenericArguments.playerOrSource(Text.of(key)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),

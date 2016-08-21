@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.fly.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -46,7 +47,10 @@ public class FlyCommand extends CommandBase<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(
-                        new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                        new SelectorWrapperArgument(
+                            new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                            permissions,
+                            SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS),
                         permissions.getPermissionWithSuffix("others")))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
         };
