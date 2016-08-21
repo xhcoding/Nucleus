@@ -518,6 +518,19 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return Sponge.getServer().getDefaultWorld().get();
     }
 
+    /**
+     * Gets a {@link User} from the specified argument, or if one does not exist, attempts to use the
+     * player currently running the command, if there is one.
+     *
+     * @param clazz The {@link Class} of the object we're expecting, which might be a {@link User} or {@link Player}
+     * @param src The {@link CommandSource} running the command.
+     * @param argument The name of the argument to check.
+     * @param args The {@link CommandContext} that would contain the arguement result.
+     * @param <U> The type of object we're looking for
+     *
+     * @return An {@link Optional} that might contain a user. This will typically only be {@link Optional#empty()} if
+     *         the command was executed on the console.
+     */
     protected <U extends User> Optional<U> getUser(Class<U> clazz, CommandSource src, String argument, CommandContext args) {
         Optional<U> opl = args.getOne(argument);
         U pl;

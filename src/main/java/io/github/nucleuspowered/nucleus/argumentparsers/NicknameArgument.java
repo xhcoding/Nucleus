@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class NicknameArgument extends CommandElement {
@@ -50,40 +51,7 @@ public class NicknameArgument extends CommandElement {
         this.type = type;
 
         if (type == UnderlyingType.USER) {
-            parser = (s, a) -> {
-                try {
-                    UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
-                    List<User> users = uss.getAll().stream()
-                            // Get the players who start with the string.
-                            .filter(x -> x.getName().filter(y -> y.toLowerCase().startsWith(s.toLowerCase())).isPresent())
-                            .map(uss::get)
-                            // Remove players who have no user
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .collect(Collectors.toList());
-
-                    if (!users.isEmpty()) {
-                        List<User> exactUser = users.stream().filter(x -> x.getName().equalsIgnoreCase(s)).collect(Collectors.toList());
-                        if (exactUser.size() == 1) {
-                            return exactUser;
-                        }
-
-                        if (users.size() > 1 && this.onlyOne) {
-                            throw a.createError(Util.getTextMessageWithFormat("args.user.toomany", s));
-                        }
-
-                        return users;
-                    }
-                } catch (Exception e) {
-                    // We want to rethrow this!
-                    if (e instanceof ArgumentParseException) {
-                        throw e;
-                    }
-                }
-
-                return Lists.newArrayList();
-            };
-
+            parser = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
             completer = (s, a, c) -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).match(s).stream().filter(x -> x.getName().isPresent())
                     .map(x -> x.getName().get()).collect(Collectors.toList());
         } else {
@@ -174,5 +142,51 @@ public class NicknameArgument extends CommandElement {
         PLAYER,
         PLAYER_CONSOLE,
         USER
+    }
+
+    public static final class UserParser implements ThrownBiFunction<String, CommandArgs, List<?>, ArgumentParseException> {
+
+        private final boolean onlyOne;
+        private final Supplier<UserStorageService> userStorageServiceSupplier;
+
+        public UserParser(boolean onlyOne, Supplier<UserStorageService> userStorageServiceSupplier) {
+            this.onlyOne = onlyOne;
+            this.userStorageServiceSupplier = userStorageServiceSupplier;
+        }
+
+        @Override
+        public List<?> accept(String s, CommandArgs a) throws ArgumentParseException {
+            try {
+                UserStorageService uss = userStorageServiceSupplier.get();
+                List<User> users = uss.getAll().stream()
+                        // Get the players who start with the string.
+                        .filter(x -> x.getName().filter(y -> y.toLowerCase().startsWith(s.toLowerCase())).isPresent())
+                        .map(uss::get)
+                        // Remove players who have no user
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList());
+
+                if (!users.isEmpty()) {
+                    List<User> exactUser = users.stream().filter(x -> x.getName().equalsIgnoreCase(s)).collect(Collectors.toList());
+                    if (exactUser.size() == 1) {
+                        return exactUser;
+                    }
+
+                    if (users.size() > 1 && this.onlyOne) {
+                        throw a.createError(Util.getTextMessageWithFormat("args.user.toomany", s));
+                    }
+
+                    return users;
+                }
+            } catch (Exception e) {
+                // We want to rethrow this!
+                if (e instanceof ArgumentParseException) {
+                    throw e;
+                }
+            }
+
+            return Lists.newArrayList();
+        }
     }
 }

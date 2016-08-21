@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.internal.qsml;
 
 import com.google.inject.Injector;
 import uk.co.drnaylor.quickstart.Module;
-import uk.co.drnaylor.quickstart.constructors.ModuleConstructor;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
+import uk.co.drnaylor.quickstart.loaders.ModuleConstructor;
 
 public class QuickStartModuleConstructor implements ModuleConstructor {
 
@@ -20,23 +20,5 @@ public class QuickStartModuleConstructor implements ModuleConstructor {
     @Override
     public Module constructModule(Class<? extends Module> moduleClass) throws QuickStartModuleLoaderException.Construction {
         return injector.getInstance(moduleClass);
-    }
-
-    @Override
-    public void preEnableModule(Module module) throws QuickStartModuleLoaderException.Enabling {
-        try {
-            module.preEnable();
-        } catch (RuntimeException e) {
-            throw new QuickStartModuleLoaderException.Enabling(module.getClass(), "An error occurred.", e);
-        }
-    }
-
-    @Override
-    public void enableModule(Module module) throws QuickStartModuleLoaderException.Enabling {
-        try {
-            module.onEnable();
-        } catch (RuntimeException e) {
-            throw new QuickStartModuleLoaderException.Enabling(module.getClass(), "An error occurred.", e);
-        }
     }
 }

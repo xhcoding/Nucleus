@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -29,7 +30,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-@Permissions
+@Permissions(supportsSelectors = true)
 public class HatCommand extends CommandBase<Player> {
 
     private final String player = "player";
@@ -45,7 +46,10 @@ public class HatCommand extends CommandBase<Player> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.optional(GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)),
+                        GenericArguments.onlyOne(new SelectorWrapperArgument(
+                                new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
+                                permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
+                            ),
                         permissions.getPermissionWithSuffix("others")))
         };
     }

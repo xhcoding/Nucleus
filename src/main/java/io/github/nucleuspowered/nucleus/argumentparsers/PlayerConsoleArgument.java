@@ -12,20 +12,31 @@ import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PlayerConsoleArgument extends CommandElement {
 
     private final boolean console;
+    private final Supplier<Collection<Player>> onlinePlayersSupplier;
 
     public PlayerConsoleArgument(@Nullable Text key, boolean console) {
+        this(key, console, () -> Sponge.getServer().getOnlinePlayers());
+    }
+
+    // For testing.
+    public PlayerConsoleArgument(@Nullable Text key, boolean console, @Nonnull Supplier<Collection<Player>> onlinePlayerSupplier) {
         super(key);
         this.console = console;
+        this.onlinePlayersSupplier = onlinePlayerSupplier;
     }
 
     @Nullable
@@ -35,15 +46,20 @@ public class PlayerConsoleArgument extends CommandElement {
         return parseInternal(name, args);
     }
 
-    List<CommandSource> parseInternal(String name, CommandArgs args) throws ArgumentParseException {
+    public List<CommandSource> parseInternal(String name, CommandArgs args) throws ArgumentParseException {
         if (console && name.equals("-")) {
             return Lists.newArrayList(Sponge.getServer().getConsole());
         }
 
-        List<CommandSource> players = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
+        List<CommandSource> players = onlinePlayersSupplier.get().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
                 .sorted((x, y) -> x.getName().compareTo(y.getName())).collect(Collectors.toList());
         if (players.isEmpty()) {
             throw args.createError(Util.getTextMessageWithFormat("args.playerconsole.noexist"));
+        }
+
+        List<CommandSource> exactUser = players.stream().filter(x -> x.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+        if (exactUser.size() == 1) {
+            return exactUser;
         }
 
         return players;

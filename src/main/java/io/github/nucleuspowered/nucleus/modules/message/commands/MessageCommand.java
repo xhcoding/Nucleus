@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * Messages a player.
  */
-@Permissions(suggestedLevel = SuggestedLevel.USER)
+@Permissions(suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @RunAsync
 @RegisterCommand({ "message", "m", "msg", "whisper", "w", "tell", "t" })
 @NotifyIfAFK(MessageCommand.to)
@@ -65,8 +66,11 @@ public class MessageCommand extends CommandBase<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
+            new SelectorWrapperArgument(
                 new NicknameArgument(Text.of(to), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER_CONSOLE),
-                GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
+                permissions,
+                SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS),
+            GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };
     }
 

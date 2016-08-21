@@ -48,6 +48,13 @@ public @interface Permissions {
     String sub() default "";
 
     /**
+     * If {@code true}, specifies that selector permissions should be generated. Purely for documentation.
+     *
+     * @return {@code true} if so.
+     */
+    boolean supportsSelectors() default false;
+
+    /**
      * The suggested permission level.
      *
      * @return The {@link SuggestedLevel}
