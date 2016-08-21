@@ -21,7 +21,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.List;
 
-@Permissions(suggestedLevel = SuggestedLevel.MOD)
+@Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RunAsync
 @NoWarmup
 @NoCooldown
