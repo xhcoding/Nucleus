@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandlogger.config;
 
+import com.google.common.collect.ImmutableList;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -22,6 +23,9 @@ public class CommandLoggerConfig {
     @Setting(value = "command-filter", comment = "loc:config.commandlogger.list")
     private List<String> commandsToFilter = new ArrayList<>();
 
+    @Setting(value = "log-to-file", comment = "loc:config.commandlogger.file")
+    private boolean logToFile = false;
+
     public LoggerTargetConfig getLoggerTarget() {
         return loggerTarget;
     }
@@ -31,6 +35,10 @@ public class CommandLoggerConfig {
     }
 
     public List<String> getCommandsToFilter() {
-        return commandsToFilter;
+        return ImmutableList.copyOf(commandsToFilter);
+    }
+
+    public boolean isLogToFile() {
+        return logToFile;
     }
 }

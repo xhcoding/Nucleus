@@ -27,7 +27,6 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
-import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
@@ -40,6 +39,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
+import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class Nucleus {
     private ChatUtil chatUtil;
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
-    private List<Reloadable> reloadableList = Lists.newArrayList();
+    private List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
 
     private InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider();
@@ -268,8 +268,8 @@ public class Nucleus {
                 tfc.load();
             }
 
-            for (Reloadable r : reloadableList) {
-                r.onReload();
+            for (ThrowableAction<? extends Exception> r : reloadableList) {
+                r.action();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -351,7 +351,7 @@ public class Nucleus {
         }
     }
 
-    public void registerReloadable(Reloadable reloadable) {
+    public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
         reloadableList.add(reloadable);
     }
 
