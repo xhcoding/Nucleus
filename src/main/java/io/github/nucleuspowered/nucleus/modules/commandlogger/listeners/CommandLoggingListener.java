@@ -10,6 +10,8 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfig;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.commandlogger.handlers.CommandLoggerHandler;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandSource;
@@ -20,7 +22,9 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,6 +32,8 @@ import java.util.stream.Collectors;
 public class CommandLoggingListener extends ListenerBase {
 
     @Inject private CommandLoggerConfigAdapter clc;
+    @Inject private CoreConfigAdapter cca;
+    @Inject private CommandLoggerHandler handler;
 
     @Listener(order = Order.LAST)
     public void onCommand(SendCommandEvent event, @First CommandSource source) {
@@ -56,7 +62,18 @@ public class CommandLoggingListener extends ListenerBase {
 
         // If whitelist, and we have the command, or if not blacklist, and we do not have the command.
         if (c.isWhitelist() == c.getCommandsToFilter().stream().map(String::toLowerCase).anyMatch(commands::contains)) {
-            plugin.getLogger().info(Util.getMessageWithFormat("commandlog.message", source.getName(), event.getCommand(), event.getArguments()));
+            String message = Util.getMessageWithFormat("commandlog.message", source.getName(), event.getCommand(), event.getArguments());
+            plugin.getLogger().info(message);
+            handler.queueEntry(message);
+        }
+    }
+
+    @Listener
+    public void onShutdown(GameStoppedServerEvent event) {
+        try {
+            handler.onServerShutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

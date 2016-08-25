@@ -8,8 +8,8 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
-import io.github.nucleuspowered.nucleus.internal.interfaces.VoidFunction;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import io.github.nucleuspowered.nucleus.util.Action;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,6 +22,12 @@ import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
@@ -29,6 +35,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPOutputStream;
 
 public class Util {
 
@@ -127,7 +134,7 @@ public class Util {
         }
     }
 
-    public static <T extends EndTimestamp> Optional<T> testForEndTimestamp(Optional<T> omd, VoidFunction function) {
+    public static <T extends EndTimestamp> Optional<T> testForEndTimestamp(Optional<T> omd, Action function) {
         if (omd.isPresent()) {
             T md = omd.get();
             if (md.getEndTimestamp().isPresent() && md.getEndTimestamp().get().isBefore(Instant.now())) {
@@ -283,5 +290,21 @@ public class Util {
         } catch (Exception e) {
             return Lists.newArrayList();
         }
+    }
+
+    public static boolean compressAndDeleteFile(Path from) throws IOException {
+        // Get the file.
+        if (Files.exists(from)) {
+            Path to = Paths.get(from.toString() + ".gz");
+            try (OutputStream os = new GZIPOutputStream(new FileOutputStream(to.toFile()))) {
+                Files.copy(from, os);
+                os.flush();
+                Files.delete(from);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

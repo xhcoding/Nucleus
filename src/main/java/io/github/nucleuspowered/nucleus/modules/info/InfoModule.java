@@ -31,7 +31,7 @@ public class InfoModule extends ConfigurableModule<InfoConfigAdapter> {
 
         InfoHandler ih = new InfoHandler(nucleus);
         serviceManager.registerService(InfoHandler.class, ih);
-        nucleus.registerReloadable(ih);
+        nucleus.registerReloadable(ih::onReload);
         ih.onReload();
     }
 }

@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
-import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.AssetManager;
 
@@ -24,7 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class InfoHandler implements Reloadable {
+public class InfoHandler {
 
     private final Map<String, TextFileController> infoFiles = Maps.newHashMap();
     private final Nucleus plugin;
@@ -59,7 +58,6 @@ public class InfoHandler implements Reloadable {
         return Optional.empty();
     }
 
-    @Override
     public void onReload() throws Exception {
         // Get the config directory, check to see if "info/" exists.
         Path infoDir = plugin.getConfigDirPath().resolve("info");
