@@ -8,13 +8,16 @@ import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.UUID;
 
 public class DataProviders {
@@ -23,6 +26,7 @@ public class DataProviders {
     private final TypeToken<UserDataNode> ttu = TypeToken.of(UserDataNode.class);
     private final TypeToken<WorldDataNode> ttw = TypeToken.of(WorldDataNode.class);
     private final TypeToken<GeneralDataNode> ttg = TypeToken.of(GeneralDataNode.class);
+    private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
 
     public DataProviders(Nucleus plugin) {
         this.plugin = plugin;
@@ -32,7 +36,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = getFile("userdata%1$s%2$s%1$s%3$s.json", uuid);
-            return new ConfigurateDataProvider<>(ttu, getBuilder().setPath(p).build(), p);
+            return new ConfigurateDataProvider<>(ttu, getGsonBuilder().setPath(p).build(), p);
         } catch (Exception e) {
             return null;
         }
@@ -42,7 +46,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = getFile("worlddata%1$s%2$s%1$s%3$s.json", uuid);
-            return new ConfigurateDataProvider<>(ttw, getBuilder().setPath(p).build(), p);
+            return new ConfigurateDataProvider<>(ttw, getGsonBuilder().setPath(p).build(), p);
         } catch (Exception e) {
             return null;
         }
@@ -52,7 +56,17 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getDataPath().resolve("general.json");
-            return new ConfigurateDataProvider<>(ttg, getBuilder().setPath(p).build(), p);
+            return new ConfigurateDataProvider<>(ttg, getGsonBuilder().setPath(p).build(), p);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public DataProvider<Map<String, ItemDataNode>> getItemDataProvider() {
+        // For now, just the Configurate one.
+        try {
+            Path p = plugin.getConfigDirPath().resolve("items.conf");
+            return new ConfigurateDataProvider<>(ttmsi, getHoconBuilder().setPath(p).build(), p);
         } catch (Exception e) {
             return null;
         }
@@ -72,8 +86,13 @@ public class DataProviders {
         return file;
     }
 
-    private GsonConfigurationLoader.Builder getBuilder() {
+    private GsonConfigurationLoader.Builder getGsonBuilder() {
         GsonConfigurationLoader.Builder gsb = GsonConfigurationLoader.builder();
+        return gsb.setDefaultOptions(ConfigurateHelper.setOptions(plugin.getLogger(), gsb.getDefaultOptions()));
+    }
+
+    private HoconConfigurationLoader.Builder getHoconBuilder() {
+        HoconConfigurationLoader.Builder gsb = HoconConfigurationLoader.builder();
         return gsb.setDefaultOptions(ConfigurateHelper.setOptions(plugin.getLogger(), gsb.getDefaultOptions()));
     }
 }

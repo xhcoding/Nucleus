@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -74,6 +75,7 @@ public class Nucleus {
     private boolean isErrored = false;
     private CommandsConfig commandsConfig;
     private GeneralService generalService;
+    private ItemDataService itemDataService;
     private UserDataManager userDataManager;
     private WorldDataManager worldDataManager;
     private ChatUtil chatUtil;
@@ -120,6 +122,7 @@ public class Nucleus {
             generalService = new GeneralService(d.getGeneralDataProvider());
             userDataManager = new UserDataManager(this, d::getUserFileDataProviders);
             worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider);
+            itemDataService = new ItemDataService(d.getItemDataProvider());
             warmupManager = new WarmupManager();
             chatUtil = new ChatUtil(this);
         } catch (Exception e) {
@@ -263,6 +266,7 @@ public class Nucleus {
             moduleContainer.reloadSystemConfig();
             reloadMessages();
             commandsConfig.load();
+            itemDataService.load();
 
             for (TextFileController tfc : textFileControllers.values()) {
                 tfc.load();
@@ -313,6 +317,10 @@ public class Nucleus {
 
     public GeneralService getGeneralService() {
         return generalService;
+    }
+
+    public ItemDataService getItemDataService() {
+        return itemDataService;
     }
 
     public CommandsConfig getCommandsConfig() {

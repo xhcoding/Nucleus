@@ -8,15 +8,15 @@ import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * A {@link SettingProcessor} that will make all entries in a list lowercase.
  */
-public class LowercaseListStringSettingProcessor implements SettingProcessor {
+public class LowercaseSetStringSettingProcessor implements SettingProcessor {
 
-    private final TypeToken<List<String>> ttListString = new TypeToken<List<String>>(String.class) {};
+    private final TypeToken<Set<String>> ttListString = new TypeToken<Set<String>>(String.class) {};
     private final TypeToken<String> ttString = TypeToken.of(String.class);
 
     @Override
@@ -25,6 +25,6 @@ public class LowercaseListStringSettingProcessor implements SettingProcessor {
             return;
         }
 
-        cn.setValue(ttListString, cn.getList(ttString).stream().map(String::toLowerCase).collect(Collectors.toList()));
+        cn.setValue(ttListString, cn.getList(ttString).stream().map(String::toLowerCase).collect(Collectors.toSet()));
     }
 }
