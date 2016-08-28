@@ -4,18 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.dataproviders;
 
-import com.flowpowered.math.vector.Vector3d;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
-import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
-import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
-import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -79,9 +74,6 @@ public class DataProviders {
 
     private GsonConfigurationLoader.Builder getBuilder() {
         GsonConfigurationLoader.Builder gsb = GsonConfigurationLoader.builder();
-        ConfigurationOptions configurationOptions = gsb.getDefaultOptions();
-        TypeSerializerCollection tsc = configurationOptions.getSerializers().registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
-        tsc.registerType(TypeToken.of(ItemStackSnapshot.class), new ItemStackSnapshotSerialiser(plugin.getLogger()));
-        return gsb.setDefaultOptions(configurationOptions.setSerializers(tsc));
+        return gsb.setDefaultOptions(ConfigurateHelper.setOptions(plugin.getLogger(), gsb.getDefaultOptions()));
     }
 }

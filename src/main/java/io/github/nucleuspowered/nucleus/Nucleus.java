@@ -16,7 +16,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.config.MessageConfig;
-import io.github.nucleuspowered.nucleus.configurate.objectmapper.NucleusObjectMapperFactory;
+import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -40,7 +40,6 @@ import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
-import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -136,10 +135,11 @@ public class Nucleus {
         serviceManager.registerService(WarmupManager.class, warmupManager);
 
         try {
+            HoconConfigurationLoader.Builder builder = HoconConfigurationLoader.builder();
             moduleContainer = DiscoveryModuleContainer.builder()
                     .setConstructor(new QuickStartModuleConstructor(injector))
-                    .setConfigurationLoader(HoconConfigurationLoader.builder()
-                            .setDefaultOptions(ConfigurationOptions.defaults().setObjectMapperFactory(NucleusObjectMapperFactory.getInstance()))
+                    .setConfigurationLoader(
+                        builder.setDefaultOptions(ConfigurateHelper.setOptions(logger, builder.getDefaultOptions()))
                             .setPath(Paths.get(configDir.toString(), "main.conf"))
                             .build())
                     .setPackageToScan(getClass().getPackage().getName() + ".modules")
