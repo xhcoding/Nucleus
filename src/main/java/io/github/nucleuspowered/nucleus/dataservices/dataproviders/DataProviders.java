@@ -17,6 +17,7 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,7 +67,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getConfigDirPath().resolve("items.conf");
-            return new ConfigurateDataProvider<>(ttmsi, getHoconBuilder().setPath(p).build(), p);
+            return new ConfigurateDataProvider<>(ttmsi, getHoconBuilder().setPath(p).build(), HashMap::new, p);
         } catch (Exception e) {
             return null;
         }

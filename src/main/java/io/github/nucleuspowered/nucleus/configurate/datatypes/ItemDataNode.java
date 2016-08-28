@@ -4,18 +4,22 @@
  */
 package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
-import io.github.nucleuspowered.nucleus.configurate.settingprocessor.LowercaseSetStringSettingProcessor;
+import io.github.nucleuspowered.nucleus.configurate.settingprocessor.ItemAliasSettingProcessor;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @ConfigSerializable
 public class ItemDataNode {
+
+    public final static Pattern ALIAS_PATTERN = Pattern.compile("^[a-z0-9_-]+$");
 
     public ItemDataNode() {}
 
@@ -28,8 +32,8 @@ public class ItemDataNode {
         this(copy.aliases, copy.price.getBuy(), copy.price.getSell());
     }
 
-    @Setting
-    @ProcessSetting(LowercaseSetStringSettingProcessor.class)
+    @Setting(comment = "loc:config.itemdatanode.aliases")
+    @ProcessSetting(ItemAliasSettingProcessor.class)
     private Set<String> aliases = new HashSet<>();
 
     @Setting
@@ -41,7 +45,9 @@ public class ItemDataNode {
 
     public void addAlias(String alias) {
         String lowerCase = alias.toLowerCase();
-        if (aliases.contains(lowerCase)) {
+        Preconditions.checkArgument(ALIAS_PATTERN.matcher(lowerCase).matches());
+
+        if (!aliases.contains(lowerCase)) {
             aliases.add(lowerCase);
         }
     }
@@ -49,6 +55,10 @@ public class ItemDataNode {
     public void removeAlias(String alias) {
         alias = alias.toLowerCase();
         aliases.remove(alias);
+    }
+
+    public void clearAliases() {
+        aliases.clear();
     }
 
     public int getServerBuyPrice() {
