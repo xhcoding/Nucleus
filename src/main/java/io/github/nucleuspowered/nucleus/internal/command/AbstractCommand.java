@@ -70,6 +70,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private boolean generateWarmupAnyway;
     private boolean bypassCooldown;
     private boolean bypassCost;
+    private boolean requiresEconomy;
     private String configSection;
     private boolean generateDefaults;
     private CommandSpec cs = null;
@@ -211,6 +212,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
         permissionsToRegister().forEach((k, v) -> permissions.registerPermssion(k, v));
         permissionSuffixesToRegister().forEach((k, v) -> permissions.registerPermssionSuffix(k, v));
+
+        requiresEconomy = this.getClass().isAnnotationPresent(RequiresEconomy.class);
     }
 
     // Abstract functions - for implementation.
@@ -360,6 +363,12 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             return CommandResult.empty();
         }
 
+        // Economy
+        if (requiresEconomy && !plugin.getEconHelper().economyServiceExists()) {
+            source.sendMessage(Util.getTextMessageWithFormat("command.economyrequired"));
+            return CommandResult.empty();
+        }
+
         // Cast as required.
         @SuppressWarnings("unchecked")
         T src = (T) source;
@@ -410,6 +419,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
             // Execute the command in the specific executor.
             cr = executeCommand(src, args);
+        } catch (ReturnMessageException e) {
+            Text t = e.getText();
+            src.sendMessage((t == null) ? Util.getTextMessageWithFormat("command.error") : t);
+            cr = CommandResult.empty();
         } catch (TextMessageException e) {
             // If the exception contains a text object, render it like so...
             Text t = e.getText();

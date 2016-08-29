@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -60,28 +61,23 @@ public class HatCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        if (pl.getItemInHand().isPresent()) {
-            ItemStack stack = pl.getItemInHand().get();
-            stack.setQuantity(1);
-            opl.get().setHelmet(stack);
-            String itemName = stack.get(Keys.DISPLAY_NAME).orElse(Text.of(stack.getItem().getName())).toPlain();
+        ItemStack stack = pl.getItemInHand().orElseThrow(() -> new ReturnMessageException(Util.getTextMessageWithFormat("command.generalerror.handempty")));
+        stack.setQuantity(1);
+        opl.get().setHelmet(stack);
+        String itemName = stack.get(Keys.DISPLAY_NAME).orElse(Text.of(stack.getItem().getName())).toPlain();
 
-            if (pl.get(Keys.GAME_MODE).get() == GameModes.SURVIVAL) {
-                stack = pl.getItemInHand().get();
+        if (pl.get(Keys.GAME_MODE).get() == GameModes.SURVIVAL) {
+            stack = pl.getItemInHand().get();
 
-                if (stack.getQuantity() > 1) {
-                    stack.setQuantity(stack.getQuantity() - 1);
-                    pl.setItemInHand(stack);
-                } else {
-                    pl.setItemInHand(null);
-                }
+            if (stack.getQuantity() > 1) {
+                stack.setQuantity(stack.getQuantity() - 1);
+                pl.setItemInHand(stack);
+            } else {
+                pl.setItemInHand(null);
             }
-
-            pl.sendMessage(Util.getTextMessageWithFormat("command.hat.success", opl.get().getName(), itemName));
-            return CommandResult.success();
-        } else {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.hat.error.handempty"));
-            return CommandResult.empty();
         }
+
+        pl.sendMessage(Util.getTextMessageWithFormat("command.hat.success", opl.get().getName(), itemName));
+        return CommandResult.success();
     }
 }

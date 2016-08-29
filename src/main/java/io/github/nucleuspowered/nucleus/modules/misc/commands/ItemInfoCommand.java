@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.servershop.ServerShopModule;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
@@ -112,7 +113,7 @@ public class ItemInfoCommand extends CommandBase<Player> {
         ItemDataNode itemDataNode = itemDataService.getDataForItem(id);
 
         // /buy and /sell prices
-        if (econHelper.economyServiceExists()) {
+        if (econHelper.economyServiceExists() && plugin.getModuleContainer().isModuleLoaded(ServerShopModule.ID)) {
             boolean space = false;
             int buyPrice = itemDataNode.getServerBuyPrice();
             if (buyPrice > -1) {
@@ -127,7 +128,7 @@ public class ItemInfoCommand extends CommandBase<Player> {
                     lt.add(Text.EMPTY);
                 }
 
-                lt.add(Util.getTextMessageWithFormat("command.iteminfo.sellprice", econHelper.getCurrencySymbol(buyPrice)));
+                lt.add(Util.getTextMessageWithFormat("command.iteminfo.sellprice", econHelper.getCurrencySymbol(sellPrice)));
             }
         }
 

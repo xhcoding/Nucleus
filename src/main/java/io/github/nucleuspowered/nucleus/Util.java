@@ -13,9 +13,12 @@ import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import io.github.nucleuspowered.nucleus.util.Action;
 import org.spongepowered.api.CatalogType;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
 import org.spongepowered.api.text.Text;
@@ -229,6 +232,30 @@ public class Util {
         }
 
         return Optional.empty();
+    }
+
+    public static Optional<CatalogType> getCatalogTypeForItemFromId(String id) {
+        // Check for ItemType.
+        Optional<ItemType> oit = Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst();
+        if (oit.isPresent()) {
+            return Optional.of(oit.get());
+        }
+
+        // BlockState, you're up next!
+        Optional<BlockState> obs = Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst();
+        if (obs.isPresent()) {
+            return Optional.of(obs.get());
+        }
+
+        return Optional.empty();
+    }
+
+    public static <T extends CatalogType> String getTranslatableIfPresentOnCatalogType(T ct) {
+        if (ct instanceof Translatable) {
+            return getTranslatableIfPresent((Translatable & CatalogType)ct);
+        }
+
+        return ct.getName();
     }
 
     /**

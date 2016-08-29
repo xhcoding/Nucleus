@@ -25,11 +25,11 @@ public class ItemDataNode {
 
     public ItemDataNode(Set<String> aliases, int buy, int sell) {
         this.aliases = aliases;
-        this.price = new PriceNode(buy, sell);
+        this.shop = new PriceNode(buy, sell);
     }
 
     public ItemDataNode(ItemDataNode copy) {
-        this(copy.aliases, copy.price.getBuy(), copy.price.getSell());
+        this(copy.aliases, copy.shop.getBuy(), copy.shop.getSell());
     }
 
     @Setting(comment = "loc:config.itemdatanode.aliases")
@@ -37,7 +37,7 @@ public class ItemDataNode {
     private Set<String> aliases = new HashSet<>();
 
     @Setting
-    private PriceNode price = new PriceNode();
+    private PriceNode shop = new PriceNode();
 
     public List<String> getAliases() {
         return ImmutableList.copyOf(aliases);
@@ -62,19 +62,19 @@ public class ItemDataNode {
     }
 
     public int getServerBuyPrice() {
-        return price.getBuy();
+        return shop.getBuy();
     }
 
     public void setServerBuyPrice(int serverBuyPrice) {
-        price.setBuy(serverBuyPrice);
+        shop.setBuy(serverBuyPrice);
     }
 
     public int getServerSellPrice() {
-        return price.getSell();
+        return shop.getSell();
     }
 
     public void setServerSellPrice(int serverSellPrice) {
-        price.setSell(serverSellPrice);
+        shop.setSell(serverSellPrice);
     }
 
 }
