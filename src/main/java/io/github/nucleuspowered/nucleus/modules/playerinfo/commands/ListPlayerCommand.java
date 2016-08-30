@@ -28,7 +28,6 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 @RegisterCommand({"list", "listplayers"})
 public class ListPlayerCommand extends CommandBase<CommandSource> {
 
-    @Inject(optional = true) @Nullable private AFKHandler handler;
+    private AFKHandler handler;
     @Inject private PlayerInfoConfigAdapter config;
 
     private Text afk = null;
@@ -47,6 +46,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
         if (afk == null) {
             afk = plugin.getMessageProvider().getTextMessageWithFormat("command.list.afk");
             hidden = plugin.getMessageProvider().getTextMessageWithFormat("command.list.hidden");
+            handler = plugin.getInternalServiceManager().getService(AFKHandler.class).orElse(null);
         }
     }
 
