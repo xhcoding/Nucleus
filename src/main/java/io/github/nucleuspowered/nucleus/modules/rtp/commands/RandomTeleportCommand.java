@@ -20,6 +20,7 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.data.property.block.PassableProperty;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
@@ -41,8 +42,6 @@ import java.util.function.Predicate;
 public class RandomTeleportCommand extends CommandBase<Player> {
 
     private Set<BlockType> prohibitedTypes = null;
-    private final int maxHeight = 255;
-    private final Vector3d maxHeightVector = new Vector3d(Double.MIN_VALUE, maxHeight + 1, Double.MIN_VALUE);
 
     private final Random random = new Random();
     @Inject private RTPConfigAdapter rca;
@@ -62,7 +61,8 @@ public class RandomTeleportCommand extends CommandBase<Player> {
         int count = Math.max(rc.getNoOfAttempts(), 1);
         src.sendMessage(Util.getTextMessageWithFormat("command.rtp.searching"));
 
-        Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args), src, currentWorld, rc.isMustSeeSky())).submit(plugin);
+        Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args), src, currentWorld,
+                rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY())).submit(plugin);
         return CommandResult.success();
     }
 
@@ -75,6 +75,8 @@ public class RandomTeleportCommand extends CommandBase<Player> {
      */
     private class RTPTask extends CostCancellableTask {
 
+        private final int minY;
+        private final int maxY;
         private int count;
         private final int maxCount;
         private final int diameter;
@@ -83,7 +85,8 @@ public class RandomTeleportCommand extends CommandBase<Player> {
         private final World currentWorld;
         private final boolean onSurface;
 
-        private RTPTask(Nucleus plugin, int count, int diameter, Vector3d centre, double cost, Player src, World currentWorld, boolean onSurface) {
+        private RTPTask(Nucleus plugin, int count, int diameter, Vector3d centre, double cost, Player src, World currentWorld, boolean onSurface,
+                int minY, int maxY) {
             super(plugin, src, cost);
             this.count = count;
             this.maxCount = count;
@@ -91,6 +94,8 @@ public class RandomTeleportCommand extends CommandBase<Player> {
             this.centre = centre;
             this.currentWorld = currentWorld;
             this.onSurface = onSurface;
+            this.minY = minY;
+            this.maxY = maxY;
         }
 
         @Override
@@ -107,8 +112,8 @@ public class RandomTeleportCommand extends CommandBase<Player> {
             int x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
             int z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
 
-            // We remove 10 to avoid getting a location too high up for the safe location teleporter to handle.
-            int y = random.nextInt(maxHeight - 10);
+            // We remove 11 to avoid getting a location too high up for the safe location teleporter to handle.
+            int y = Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, random.nextInt(maxY - minY + 1) + minY);
 
             // To get within the world border, add the centre on.
             final Location<World> test = new Location<>(currentWorld, new Vector3d(x + centre.getX(), y, z + centre.getZ()));
@@ -118,7 +123,7 @@ public class RandomTeleportCommand extends CommandBase<Player> {
             // We also check to see that it's not in water or lava, and if enabled, we see if the player would end up on the surface.
             try {
                 if (oSafeLocation.isPresent() && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get()) && (!onSurface || isOnSurface(oSafeLocation.get()))) {
-                    Location<World> tpTarget = oSafeLocation.get().add(0, 1, 0);
+                    Location<World> tpTarget = oSafeLocation.get();
 
                     plugin.getLogger().debug(String.format("RTP of %s, found location %s, %s, %s", player.getName(),
                             String.valueOf(tpTarget.getBlockX()),
@@ -152,7 +157,7 @@ public class RandomTeleportCommand extends CommandBase<Player> {
         }
 
         private boolean isSafe(Location<World> location) {
-            return !location.hasBlock() || !getProhibitedTypes().contains(location.getBlockType());
+            return !location.hasBlock() || !isSolid(location) || !getProhibitedTypes().contains(location.getBlockType());
         }
 
         private Set<BlockType> getProhibitedTypes() {
@@ -168,9 +173,15 @@ public class RandomTeleportCommand extends CommandBase<Player> {
             return prohibitedTypes;
         }
 
+        private boolean isSolid(Location<World> location) {
+            Optional<MatterProperty> pp = location.getBlockType().getProperty(MatterProperty.class);
+            return pp.isPresent() && pp.get().getValue() != MatterProperty.Matter.SOLID;
+        }
+
         private boolean isOnSurface(Location<World> location) {
             SurfaceCheckPredicate predicate = new SurfaceCheckPredicate();
-            Optional<BlockRayHit<World>> blockRayHitOptional = BlockRay.from(location).to(location.getPosition().max(maxHeightVector))
+            Optional<BlockRayHit<World>> blockRayHitOptional = BlockRay.from(location).to(
+                    new Vector3d(location.getPosition().getX(), location.getExtent().getBlockMax().toDouble().getY(), location.getPosition().getZ()))
                     .filter(predicate).end();
 
             // If we have no hit, then this is the top of the world and we should allow it.

@@ -4,9 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
+import com.google.common.collect.Lists;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.*;
+import org.spongepowered.api.command.args.parsing.SingleArg;
 import org.spongepowered.api.text.Text;
 
 import javax.annotation.Nonnull;
@@ -33,14 +35,14 @@ public class ImprovedCatalogTypeArgument extends CommandElement {
         String arg = args.peek();
         if (!arg.contains(":")) {
             args.next();
-            Object state = args.getState();
-
-            // May need to question this.
-            args.removeArgs(state, state);
-            args.insertArg("minecraft:" + arg);
+            String newArg = "minecraft:" + arg;
+            String raw = args.getRaw().replace(arg, newArg);
+            int startindex = raw.indexOf(newArg);
+            CommandArgs newArgs = new CommandArgs(raw, Lists.newArrayList(new SingleArg(newArg, startindex, startindex + newArg.length() - 1)));
+            wrapped.parse(source, newArgs, context);
+        } else {
+            wrapped.parse(source, args, context);
         }
-
-        wrapped.parse(source, args, context);
     }
 
     @Override

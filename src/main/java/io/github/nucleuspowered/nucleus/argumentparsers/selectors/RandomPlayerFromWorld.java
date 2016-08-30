@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class RandomPlayerFromWorld implements SelectorParser<Player> {
 
     public static final RandomPlayerFromWorld INSTANCE = new RandomPlayerFromWorld();
-    private final Pattern pattern = Pattern.compile("^r\\[[\\w-]+\\]$");
+    private final Pattern pattern = Pattern.compile("^r\\[([\\w-]+)\\]$");
     private final Random random = new Random();
 
     private RandomPlayerFromWorld() {}

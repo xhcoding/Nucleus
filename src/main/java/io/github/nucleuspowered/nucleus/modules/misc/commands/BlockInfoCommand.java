@@ -30,12 +30,7 @@ import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.World;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Permissions
 @RegisterCommand({"blockinfo"})
@@ -70,6 +65,7 @@ public class BlockInfoCommand extends CommandBase<Player> {
 
             List<Text> lt = new ArrayList<>();
             lt.add(Util.getTextMessageWithFormat("command.blockinfo.id", it.getId(), it.getTranslation().get()));
+            lt.add(Util.getTextMessageWithFormat("command.iteminfo.extendedid", b.getId()));
 
             if (args.hasAny("e") || args.hasAny("extended")) {
                 Collection<Property<?, ?>> cp = b.getApplicableProperties();
