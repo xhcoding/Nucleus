@@ -4,15 +4,21 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.modules.jail.commands.CheckJailCommand;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "jail", name = "Jail")
@@ -40,5 +46,31 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
             ex.printStackTrace();
             throw ex;
         }
+    }
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        createSeenModule(CheckJailCommand.class, (c, u) -> {
+
+            // If we have a ban service, then check for a ban.
+            JailHandler jh = nucleus.getInternalServiceManager().getService(JailHandler.class).get();
+            if (jh.isPlayerJailed(u)) {
+                JailData jd = jh.getPlayerJailData(u).get();
+                Text.Builder m;
+                if (jd.getEndTimestamp().isPresent()) {
+                    m = Util.getTextMessageWithFormat("seen.isjailed.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();
+                } else {
+                    m = Util.getTextMessageWithFormat("seen.isjailed.perm").toBuilder();
+                }
+
+                return Lists.newArrayList(
+                        m.onClick(TextActions.runCommand("/checkjail " + u.getName()))
+                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).build(),
+                        Util.getTextMessageWithFormat("standard.reason", jd.getReason()));
+            }
+
+            return Lists.newArrayList(Util.getTextMessageWithFormat("seen.notjailed"));
+        });
     }
 }

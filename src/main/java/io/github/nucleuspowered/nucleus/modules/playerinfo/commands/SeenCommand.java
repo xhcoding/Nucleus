@@ -16,9 +16,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.SpeedCommand;
-import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
+import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -28,28 +27,24 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Permissions
 @RunAsync
-@RegisterCommand({"seen", "seenplayer"})
+@RegisterCommand({"seen", "seenplayer", "lookup"})
 public class SeenCommand extends CommandBase<CommandSource> {
 
-    @Inject(optional = true) @Nullable private MuteHandler muteService;
-    @Inject(optional = true) @Nullable private JailHandler jailService;
     @Inject private UserDataManager udm;
+    @Inject private SeenHandler seenHandler;
 
     private final String playerKey = "player";
 
@@ -76,47 +71,41 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
         // Everyone gets the last online time.
         if (user.isOnline()) {
-            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.iscurrently", user.getName())).append(Text.of(" "))
-                    .append(Util.getTextMessageWithFormat("standard.online")).build());
-            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.loggedon")).append(Text.of(" "))
-                    .append(Text.of(TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogin()))).build());
+            messages.add(Util.getTextMessageWithFormat("command.seen.iscurrently.online", user.getName()));
+            messages.add(Util.getTextMessageWithFormat("command.seen.loggedon", Util.getTimeToNow(iqsu.getLastLogout())));
         } else {
-            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.iscurrently", user.getName()))
-                    .append(Text.of(" ", TextColors.RED, Util.getTextMessageWithFormat("standard.offline"))).build());
-            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.loggedoff"))
-                    .append(Text.of(" ", TextColors.GREEN, Util.getTimeToNow(iqsu.getLastLogout()))).build());
+            messages.add(Util.getTextMessageWithFormat("command.seen.iscurrently.offline", user.getName()));
+            messages.add(Util.getTextMessageWithFormat("command.seen.loggedoff", Util.getTimeToNow(iqsu.getLastLogout())));
         }
 
-        messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.displayname")).append(Text.of(" "))
-                .append(NameUtil.getName(user)).build());
+        messages.add(Util.getTextMessageWithTextFormat("command.seen.displayname", NameUtil.getName(user)));
+
         if (permissions.testSuffix(src, "extended")) {
+            messages.add(Text.EMPTY);
+
             if (user.isOnline()) {
                 Player pl = user.getPlayer().get();
-                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.ipaddress"))
-                        .append(Text.of(" ", pl.getConnection().getAddress().getAddress().toString())).build());
+                messages.add(Util.getTextMessageWithFormat("command.seen.ipaddress",
+                        pl.getConnection().getAddress().getAddress().toString()));
 
-                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.speed.walk")).append(Text.of(" "))
-                        .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * SpeedCommand.multiplier))).build());
+                messages.add(Util.getTextMessageWithFormat("command.seen.speed.walk",
+                        String.valueOf(Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * SpeedCommand.multiplier))));
 
-                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.speed.flying")).append(Text.of(" "))
-                        .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))).build());
+                messages.add(Util.getTextMessageWithFormat("command.seen.speed.fly",
+                        String.valueOf(Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))));
+
+                messages.add(Util.getTextMessageWithFormat("command.seen.currentlocation", getLocationString(pl.getLocation())));
+            } else {
+                Optional<Location<World>> olw = iqsu.getLogoutLocation();
+
+                if (olw.isPresent()) {
+                    messages.add(Util.getTextMessageWithFormat("command.seen.lastlocation", getLocationString(olw.get())));
+                }
             }
-
-            if (jailService != null) {
-                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.isjailed")).append(Text.of(" ")).color(TextColors.AQUA)
-                        .append(getTrueOrFalse(jailService.isPlayerJailed(user), TextActions.runCommand("/checkjail " + user.getName()))).build());
-            }
-
-            if (muteService != null) {
-                messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.ismuted")).append(Text.of(" ")).color(TextColors.AQUA)
-                        .append(getTrueOrFalse(muteService.isMuted(user), TextActions.runCommand("/checkmute " + user.getName()))).build());
-            }
-
-            BanService bs = Sponge.getServiceManager().provideUnchecked(BanService.class);
-            messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.seen.isbanned")).append(Text.of(" ")).color(TextColors.AQUA)
-                    .append(getTrueOrFalse(bs.getBanFor(user.getProfile()).isPresent(), TextActions.runCommand("/checkban " + user.getName())))
-                    .build());
         }
+
+        // Add the extra module information.
+        messages.addAll(seenHandler.buildInformation(src, user));
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         ps.builder().contents(messages).padding(Text.of(TextColors.GREEN, "-"))
@@ -124,12 +113,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text getTrueOrFalse(boolean is, ClickAction ifTrue) {
-        if (is) {
-            return Text.builder().append(Util.getTextMessageWithFormat("standard.true")).style(TextStyles.UNDERLINE)
-                    .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).onClick(ifTrue).build();
-        }
-
-        return Text.of(Util.getTextMessageWithFormat("standard.false"));
+    private String getLocationString(Location<World> lw) {
+        return Util.getMessageWithFormat("command.seen.locationtemplate", lw.getExtent().getName(), lw.getBlockPosition().toString());
     }
 }
