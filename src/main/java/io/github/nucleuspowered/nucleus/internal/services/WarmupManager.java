@@ -41,12 +41,22 @@ public class WarmupManager implements NucleusWarmupManagerService {
 
     @Override
     public boolean removeWarmup(UUID player) {
-        Task t;
-        synchronized (mapLock) {
-            t = warmupTasks.remove(player);
+        if (warmupTasks.containsKey(player)) {
+            Task t;
+            synchronized (mapLock) {
+                t = warmupTasks.remove(player);
+            }
+
+            if (t != null && t.cancel()) {
+                if (t.getConsumer() instanceof CancellableTask) {
+                    ((CancellableTask) t.getConsumer()).onCancel();
+                }
+
+                return true;
+            }
         }
 
-        return t != null && t.cancel();
+        return false;
     }
 
     @Override
