@@ -333,7 +333,9 @@ public class Util {
      */
     public static List<Subject> getParentSubjects(Subject pl) {
         try {
-            return pl.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+            return pl.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream)
+                    .sorted((x, y) -> y.getParents().size() - x.getParents().size())
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             return Lists.newArrayList();
         }
