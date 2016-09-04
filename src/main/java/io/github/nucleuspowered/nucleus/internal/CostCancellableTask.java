@@ -14,6 +14,7 @@ public abstract class CostCancellableTask implements CancellableTask {
     protected final double cost;
     protected final Nucleus plugin;
     protected final Player player;
+    private boolean hasRun = false;
 
     public CostCancellableTask(Nucleus plugin, Player src, double cost) {
         this.plugin = plugin;
@@ -23,8 +24,11 @@ public abstract class CostCancellableTask implements CancellableTask {
 
     @Override
     public void onCancel() {
-        if (cost > 0) {
-            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> plugin.getEconHelper().depositInPlayer(player, cost));
+        if (!hasRun) {
+            hasRun = true;
+            if (cost > 0) {
+                Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> plugin.getEconHelper().depositInPlayer(player, cost));
+            }
         }
     }
 }
