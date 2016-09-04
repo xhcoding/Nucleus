@@ -19,7 +19,7 @@ public class MessagesConfig {
     @Setting("on-command")
     private String onCommand = "&f{{displayname}} &7is currently AFK and may not respond quickly.";
 
-    @Setting("on-kick")
+    @Setting(value = "on-kick", comment = "loc:config.afk.messagetobroadcastonkick")
     private String onKick = "&f{{displayname}} &7has been kicked for being AFK too long.";
 
     @Setting(value = "kick-message-to-player", comment = "loc:config.afk.playerkicked")
