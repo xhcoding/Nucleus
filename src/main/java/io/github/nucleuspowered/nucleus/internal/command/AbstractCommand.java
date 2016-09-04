@@ -65,6 +65,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     protected CommandPermissionHandler permissions;
     protected String[] aliases;
+    private String[] forcedAliases;
     private final Class<T> sourceType;
     private boolean bypassWarmup;
     private boolean generateWarmupAnyway;
@@ -240,6 +241,22 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
 
         return Arrays.copyOf(aliases, aliases.length);
+    }
+
+    /**
+     * Gets any aliases that need to be forced.
+     *
+     * @return An array of aliases.
+     */
+    public String[] getForcedAliases() {
+        if (forcedAliases == null) {
+            RegisterCommand rc = getClass().getAnnotation(RegisterCommand.class);
+            if (rc != null) {
+                forcedAliases = rc.forceRegister();
+            }
+        }
+
+        return Arrays.copyOf(forcedAliases, forcedAliases.length);
     }
 
     /**
