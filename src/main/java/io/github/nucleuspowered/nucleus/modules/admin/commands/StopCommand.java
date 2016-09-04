@@ -42,6 +42,7 @@ public class StopCommand extends CommandBase<CommandSource> {
         } else {
             Sponge.getServer().shutdown();
         }
+
         return CommandResult.success();
     }
 }

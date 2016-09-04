@@ -10,17 +10,25 @@ import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 
+import javax.annotation.concurrent.GuardedBy;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class WarmupManager implements NucleusWarmupManagerService {
 
+    private final Object mapLock = new Object();
+
+    @GuardedBy("mapLock")
     private final Map<UUID, Task> warmupTasks = Maps.newHashMap();
 
     @Override
     public void addWarmup(UUID player, Task task) {
-        Task t = warmupTasks.put(player, task);
+        Task t;
+        synchronized (mapLock) {
+            t = warmupTasks.put(player, task);
+        }
+
         if (t != null) {
             t.cancel();
 
@@ -33,13 +41,30 @@ public class WarmupManager implements NucleusWarmupManagerService {
 
     @Override
     public boolean removeWarmup(UUID player) {
-        Task t = warmupTasks.remove(player);
-        return t != null && t.cancel();
+        if (warmupTasks.containsKey(player)) {
+            Task t;
+            synchronized (mapLock) {
+                t = warmupTasks.remove(player);
+            }
+
+            if (t != null && t.cancel()) {
+                if (t.getConsumer() instanceof CancellableTask) {
+                    ((CancellableTask) t.getConsumer()).onCancel();
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     public void cleanup() {
-        warmupTasks.entrySet().stream().filter(v -> !Sponge.getGame().getScheduler().getScheduledTasks().contains(v.getValue()))
-                .forEach(v -> warmupTasks.remove(v.getKey()));
+        synchronized (mapLock) {
+            warmupTasks.entrySet().stream().filter(v -> !Sponge.getGame().getScheduler().getScheduledTasks().contains(v.getValue()))
+                    .map(Map.Entry::getKey)
+                    .forEach(warmupTasks::remove);
+        }
     }
 }

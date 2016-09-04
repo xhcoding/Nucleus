@@ -23,6 +23,7 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
 
+import javax.annotation.concurrent.GuardedBy;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -38,23 +39,32 @@ public class AFKHandler {
     @Inject private AFKConfigAdapter aca;
     @Inject private PermissionRegistry permissionRegistry;
 
+    @GuardedBy("setLock")
     private final Set<Player> staged = Sets.newHashSet();
     private final Map<UUID, Data> afkData = Maps.newHashMap();
     private final String exempttoggle = "exempt.toggle";
     private final String exemptkick = "exempt.kick";
 
+    private final Object setLock = new Object();
+
     private CommandPermissionHandler s = null;
 
     public void stageUserActivityUpdate(Player player) {
-        staged.add(player);
+        synchronized (setLock) {
+            staged.add(player);
+        }
     }
 
     /**
      * Updates all staged users.
      */
     public void updateUserActivity() {
-        Set<Player> thisRun = Sets.newHashSet(staged);
-        staged.clear();
+        Set<Player> thisRun;
+        synchronized (setLock) {
+            thisRun = Sets.newHashSet(staged);
+            staged.clear();
+        }
+
         Instant now = Instant.now();
         thisRun.stream().filter(User::isOnline).forEach(x -> updateUserActivity(x, now));
     }
@@ -65,7 +75,10 @@ public class AFKHandler {
      * @param player The {@link Player} of the user to update.
      */
     public void updateUserActivity(Player player) {
-        staged.remove(player);
+        synchronized (setLock) {
+            staged.remove(player);
+        }
+
         updateUserActivity(player, Instant.now());
     }
 

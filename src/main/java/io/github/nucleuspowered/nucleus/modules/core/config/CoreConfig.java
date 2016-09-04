@@ -25,6 +25,9 @@ public class CoreConfig {
     @Setting(value = "command-on-name-click", comment = "loc:config.core.commandonname")
     private String commandOnNameClick = "/msg {{player}}";
 
+    @Setting(value = "kick-on-stop")
+    private KickOnStopConfig kickOnStop = new KickOnStopConfig();
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -43,5 +46,13 @@ public class CoreConfig {
 
     public String getCommandOnNameClick() {
         return commandOnNameClick;
+    }
+
+    public boolean isKickOnStop() {
+        return kickOnStop.isKickOnStop();
+    }
+
+    public String getKickOnStopMessage() {
+        return kickOnStop.getKickOnStopMessage();
     }
 }

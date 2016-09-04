@@ -83,6 +83,9 @@ public class UserDataNode {
     @Setting
     private boolean isFrozen = false;
 
+    @Setting
+    private LocationNode lastLocation;
+
     public MuteData getMuteData() {
         return muteData;
     }
@@ -245,5 +248,13 @@ public class UserDataNode {
 
     public void setFrozen(boolean isFrozen) {
         this.isFrozen = isFrozen;
+    }
+
+    public LocationNode getLastLocation() {
+        return lastLocation;
+    }
+
+    public void setLastLocation(LocationNode lastLocation) {
+        this.lastLocation = lastLocation;
     }
 }

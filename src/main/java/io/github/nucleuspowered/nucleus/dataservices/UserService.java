@@ -406,8 +406,9 @@ public class UserService extends Service<UserDataNode>
         setJailData(null);
     }
 
-    public void setOnLogout() {
+    public void setOnLogout(Location<World> location) {
         setLastLogout(Instant.now());
+        data.setLastLocation(new LocationNode(location));
 
         // Set data based toggles.
         isFlying();
@@ -577,6 +578,14 @@ public class UserService extends Service<UserDataNode>
      */
     public final Instant serviceLoadTime() {
         return serviceLoadTime;
+    }
+
+    public Optional<Location<World>> getLogoutLocation() {
+        try {
+            return Optional.ofNullable(data.getLastLocation().getLocation());
+        } catch (NoSuchWorldException | NullPointerException e) {
+            return Optional.empty();
+        }
     }
 
     private String getNickPrefix() {

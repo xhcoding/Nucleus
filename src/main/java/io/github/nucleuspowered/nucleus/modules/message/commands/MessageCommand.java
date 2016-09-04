@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @RunAsync
-@RegisterCommand({ "message", "m", "msg", "whisper", "w", "tell", "t" })
+@RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, forceRegister = { "tell" })
 @NotifyIfAFK(MessageCommand.to)
 public class MessageCommand extends CommandBase<CommandSource> {
     static final String to = "to";
