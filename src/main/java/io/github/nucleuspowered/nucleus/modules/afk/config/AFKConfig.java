@@ -22,6 +22,9 @@ public class AFKConfig {
     @Setting(value = "alert-on-command-send", comment = "loc:config.afk.oncommandsend")
     private boolean alertSenderOnAfk = true;
 
+    @Setting(value = "broadcast-to-all-on-kick", comment = "loc:config.afk.broadcastonkick")
+    private boolean broadcastOnKick = true;
+
     @Setting(value = "messages", comment = "loc:config.afk.messages.base")
     private MessagesConfig messages = new MessagesConfig();
 
@@ -39,6 +42,10 @@ public class AFKConfig {
 
     public boolean isAlertSenderOnAfk() {
         return alertSenderOnAfk;
+    }
+
+    public boolean isBroadcastOnKick() {
+        return broadcastOnKick;
     }
 
     public MessagesConfig getMessages() {

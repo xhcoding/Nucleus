@@ -33,6 +33,7 @@ public class AFKCommand extends CommandBase<Player> {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("exempt.toggle", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
         m.put("exempt.kick", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
+        m.put("notify", new PermissionInformation(Util.getMessageWithFormat("permission.afk.notify"), SuggestedLevel.ADMIN));
         return m;
     }
 

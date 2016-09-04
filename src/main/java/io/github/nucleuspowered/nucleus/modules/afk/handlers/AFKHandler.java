@@ -144,7 +144,14 @@ public class AFKHandler {
                 final String messageToGetAroundJavaRestrictions = message;
                 Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> x.getA().kick(TextSerializers.FORMATTING_CODE.deserialize(messageToGetAroundJavaRestrictions)));
                 if (!messageToServer.isEmpty()) {
-                    MessageChannel.TO_ALL.send(plugin.getChatUtil().getPlayerMessageFromTemplate(messageToServer, x.getA(), true));
+                    MessageChannel mc;
+                    if (config.isBroadcastOnKick()) {
+                        mc = MessageChannel.TO_ALL;
+                    } else {
+                        mc = MessageChannel.permission(getPermissionUtil().getPermissionWithSuffix("notify"));
+                    }
+
+                    mc.send(plugin.getChatUtil().getPlayerMessageFromTemplate(messageToServer, x.getA(), true));
                 }
             });
         }
