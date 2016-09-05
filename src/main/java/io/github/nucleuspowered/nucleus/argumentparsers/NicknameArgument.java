@@ -52,7 +52,10 @@ public class NicknameArgument extends CommandElement {
 
         if (type == UnderlyingType.USER) {
             parser = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
-            completer = (s, a, c) -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).match(s).stream().filter(x -> x.getName().isPresent())
+            completer = (s, a, c) -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+                    .getAll()
+                    .stream()
+                    .filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(s))
                     .map(x -> x.getName().get()).collect(Collectors.toList());
         } else {
             PlayerConsoleArgument pca = new PlayerConsoleArgument(key, type == UnderlyingType.PLAYER_CONSOLE);
