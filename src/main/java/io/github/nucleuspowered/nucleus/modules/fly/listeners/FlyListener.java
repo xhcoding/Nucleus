@@ -20,8 +20,8 @@ import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.entity.DismountEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
+import org.spongepowered.api.event.entity.RideEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -127,7 +127,7 @@ public class FlyListener extends ListenerBase {
     }
 
     @Listener
-    public void onPlayerDismount(DismountEntityEvent event, @Root Player player) {
+    public void onPlayerDismount(RideEntityEvent.Dismount event, @Root Player player) {
         // If I'm right, this will work around Pixelmon when dismounting pokemon.
         if (shouldIgnoreFromGameMode(player)) {
             return;
