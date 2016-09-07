@@ -5,14 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.fly.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -30,7 +28,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("fly")
-public class FlyCommand extends CommandBase<CommandSource> {
+public class FlyCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private static final String player = "player";
     private static final String toggle = "toggle";
@@ -39,7 +37,7 @@ public class FlyCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -69,16 +67,16 @@ public class FlyCommand extends CommandBase<CommandSource> {
         boolean fly = args.<Boolean>getOne(toggle).orElse(!pl.get(Keys.CAN_FLY).orElse(false));
 
         if (!setFlying(pl, fly)) {
-            src.sendMessages(Util.getTextMessageWithFormat("command.fly.error"));
+            src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.fly.error"));
             return CommandResult.empty();
         }
 
         uc.setFlying(fly);
         if (pl != src) {
-            src.sendMessages(Util.getTextMessageWithFormat(fly ? "command.fly.player.on" : "command.fly.player.off", pl.getName()));
+            src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat(fly ? "command.fly.player.on" : "command.fly.player.off", pl.getName()));
         }
 
-        pl.sendMessage(Util.getTextMessageWithFormat(fly ? "command.fly.on" : "command.fly.off"));
+        pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(fly ? "command.fly.on" : "command.fly.off"));
         return CommandResult.success();
     }
 

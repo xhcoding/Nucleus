@@ -92,7 +92,7 @@ public class MuteListener extends ListenerBase {
             Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
             if (omd.isPresent()) {
                 onMute(omd.get(), player);
-                MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(Util.getTextMessageWithFormat("standard.muted"))
+                MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(plugin.getMessageProvider().getTextMessageWithFormat("standard.muted"))
                         .append(Text.of("): ")).append(Text.of("/" + event.getCommand() + " " + event.getArguments())).build());
                 event.setCancelled(true);
             }
@@ -104,7 +104,7 @@ public class MuteListener extends ListenerBase {
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
         if (omd.isPresent()) {
             onMute(omd.get(), player);
-            MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(Util.getTextMessageWithFormat("standard.muted"))
+            MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(plugin.getMessageProvider().getTextMessageWithFormat("standard.muted"))
                     .append(Text.of("): ")).append(event.getRawMessage()).build());
             event.setCancelled(true);
         }
@@ -141,10 +141,10 @@ public class MuteListener extends ListenerBase {
 
     private void onMute(MuteData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify.time",
+            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.time",
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
         } else {
-            user.sendMessage(Util.getTextMessageWithFormat("mute.playernotify.standard"));
+            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.standard"));
         }
     }
 }

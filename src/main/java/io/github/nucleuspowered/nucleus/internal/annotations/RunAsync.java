@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.annotations;
 import java.lang.annotation.*;
 
 /**
- * Any {@link io.github.nucleuspowered.nucleus.internal.command.CommandBase} that is decorated with this annotation will be
+ * Any {@link io.github.nucleuspowered.nucleus.internal.command.AbstractCommand} that is decorated with this annotation will be
  * run on an async thread. This should only be used for thread-safe operations.
  */
 @Target(ElementType.TYPE)

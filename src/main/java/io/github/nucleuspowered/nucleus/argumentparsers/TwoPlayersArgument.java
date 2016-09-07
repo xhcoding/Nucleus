@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -46,15 +46,15 @@ public class TwoPlayersArgument extends CommandElement {
         Optional<String> osp2 = args.nextIfPresent();
 
         if (!osp2.isPresent()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.twoplayer.notenough"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.twoplayer.notenough"));
         }
 
         String sp2 = osp2.get();
 
         context.putArg(key.toPlain(),
-                getPlayerFromPartialName(sp1).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.twoplayer.noexist", sp1))));
+                getPlayerFromPartialName(sp1).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.twoplayer.noexist", sp1))));
         context.putArg(key2.toPlain(),
-                getPlayerFromPartialName(sp2).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.twoplayer.noexist", sp2))));
+                getPlayerFromPartialName(sp2).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.twoplayer.noexist", sp2))));
     }
 
     @Override

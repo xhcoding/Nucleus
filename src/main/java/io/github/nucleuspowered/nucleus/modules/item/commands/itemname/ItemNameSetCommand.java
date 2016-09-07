@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.item.commands.itemname;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -21,7 +20,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 @Permissions(root = "itemname")
 @RegisterCommand(value = "set", subcommandOf = ItemNameCommand.class)
-public class ItemNameSetCommand extends CommandBase<Player> {
+public class ItemNameSetCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject
     private MessageProvider provider;

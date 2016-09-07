@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class UserDataManager extends DataManager<UUID, UserDataNode, UserService> implements NucleusUserLoaderService {
 
-    public UserDataManager(Nucleus plugin, Function<UUID, DataProvider<UserDataNode>> dataProviderFactory) {
+    public UserDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<UserDataNode>> dataProviderFactory) {
         super(plugin, dataProviderFactory);
     }
 

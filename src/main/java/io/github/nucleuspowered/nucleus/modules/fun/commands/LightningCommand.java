@@ -4,13 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
-import io.github.nucleuspowered.nucleus.NameUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -38,14 +35,14 @@ import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"lightning", "smite", "thor"})
-public class LightningCommand extends CommandBase<CommandSource> {
+public class LightningCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String player = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -69,7 +66,7 @@ public class LightningCommand extends CommandBase<CommandSource> {
         // No argument, let's not smite the player.
         if (playerCollection.isEmpty()) {
             if (!(src instanceof Player)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.playeronly"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.playeronly"));
                 return CommandResult.empty();
             }
 
@@ -91,7 +88,7 @@ public class LightningCommand extends CommandBase<CommandSource> {
 
         int successCount = 0;
         for (Player pl : playerCollection) {
-            CommandResult cr = this.spawnLightning(pl.getLocation(), src, "command.lightning.success.other", "command.lightning.errorplayer", NameUtil.getSerialisedName(pl));
+            CommandResult cr = this.spawnLightning(pl.getLocation(), src, "command.lightning.success.other", "command.lightning.errorplayer", plugin.getNameUtil().getSerialisedName(pl));
             successCount += cr.getSuccessCount().orElse(0);
         }
 
@@ -107,13 +104,13 @@ public class LightningCommand extends CommandBase<CommandSource> {
                 NamedCause.source(src));
         if (bolt.isPresent() && world.spawnEntity(bolt.get(), cause)) {
             if (successKey != null) {
-                src.sendMessage(Util.getTextMessageWithFormat(successKey, replacements));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(successKey, replacements));
             }
 
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat(errorKey, replacements));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(errorKey, replacements));
         return CommandResult.empty();
     }
 }

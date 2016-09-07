@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers.selectors;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.interfaces.SelectorParser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -41,7 +41,7 @@ public class NearestPlayer implements SelectorParser<Player> {
     @Override
     public Player get(String selector, CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!(source instanceof LocatedSource)) {
-            throw args.createError(Util.getTextMessageWithFormat("args.selector.nolocation"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.nolocation"));
         }
 
         LocatedSource locatedSource = (LocatedSource)source;
@@ -62,7 +62,7 @@ public class NearestPlayer implements SelectorParser<Player> {
                 .filter(x -> x.getWorld().getUniqueId().equals(locationInWorld.getExtent().getUniqueId()))
                 .map(x -> new Tuple<>(x, x.getLocation().getPosition().distanceSquared(currentLocation)))
                 .min((x, y) -> x.getSecond().compareTo(y.getSecond()))
-                .orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.selector.notarget")))
+                .orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.notarget")))
                 .getFirst();
     }
 }

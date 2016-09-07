@@ -4,15 +4,29 @@
  */
 package io.github.nucleuspowered.nucleus.tests;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.NameUtil;
+import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
+import io.github.nucleuspowered.nucleus.internal.EconHelper;
+import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
+import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
+import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import org.junit.BeforeClass;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.FormattingCodeTextSerializer;
 import org.spongepowered.api.text.serializer.SafeTextSerializer;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public abstract class TestBase {
@@ -75,7 +89,9 @@ public abstract class TestBase {
     @BeforeClass
     public static void testSetup() throws Exception {
         try {
-            Util.setMessageProvider(ResourceMessageProvider::new);
+            Method m = Nucleus.class.getDeclaredMethod("setNucleus", Nucleus.class);
+            m.setAccessible(true);
+            m.invoke(null, new NucleusTest());
         } catch (IllegalStateException e) {
             // Nope
         }
@@ -83,5 +99,90 @@ public abstract class TestBase {
         setFinalStaticPlain(TextSerializers.class.getField("PLAIN"));
         setFinalStaticFormatters(TextSerializers.class.getField("FORMATTING_CODE"));
         setFinalStaticFormatters(TextSerializers.class.getField("LEGACY_FORMATTING_CODE"));
+    }
+
+    private static class NucleusTest extends Nucleus {
+
+        private MessageProvider mp = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
+
+        @Override
+        public void saveData() {
+
+        }
+
+        @Override
+        public UserDataManager getUserDataManager() {
+            return null;
+        }
+
+        @Override
+        public WorldDataManager getWorldDataManager() {
+            return null;
+        }
+
+        @Override
+        public void saveSystemConfig() throws IOException {
+
+        }
+
+        @Override
+        public void reload() {
+
+        }
+
+        @Override
+        public WarmupManager getWarmupManager() {
+            return null;
+        }
+
+        @Override
+        public EconHelper getEconHelper() {
+            return null;
+        }
+
+        @Override
+        public PermissionRegistry getPermissionRegistry() {
+            return null;
+        }
+
+        @Override
+        public DiscoveryModuleContainer getModuleContainer() {
+            return null;
+        }
+
+        @Override
+        public InternalServiceManager getInternalServiceManager() {
+            return null;
+        }
+
+        @Override
+        public GeneralService getGeneralService() {
+            return null;
+        }
+
+        @Override
+        public ItemDataService getItemDataService() {
+            return null;
+        }
+
+        @Override
+        public NameUtil getNameUtil() {
+            return null;
+        }
+
+        @Override
+        public ChatUtil getChatUtil() {
+            return null;
+        }
+
+        @Override
+        public MessageProvider getMessageProvider() {
+            return mp;
+        }
+
+        @Override
+        public MessageProvider getCommandMessageProvider() {
+            return null;
+        }
     }
 }

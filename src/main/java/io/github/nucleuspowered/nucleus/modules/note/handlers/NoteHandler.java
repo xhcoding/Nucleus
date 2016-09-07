@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.note.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
@@ -19,10 +19,10 @@ import java.util.Optional;
 
 public class NoteHandler implements NucleusNoteService {
 
-    private final Nucleus nucleus;
+    private final NucleusPlugin nucleus;
     @Inject private UserDataManager userDataManager;
 
-    public NoteHandler(Nucleus nucleus) {
+    public NoteHandler(NucleusPlugin nucleus) {
         this.nucleus = nucleus;
     }
 

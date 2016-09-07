@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +25,7 @@ import java.util.List;
 @NoCooldown
 @NoCost
 @RegisterCommand({"clearwarnings", "removeallwarnings"})
-public class ClearWarningsCommand extends CommandBase<CommandSource> {
+public class ClearWarningsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private WarnHandler handler;
     private final String playerKey = "player";
@@ -44,7 +42,7 @@ public class ClearWarningsCommand extends CommandBase<CommandSource> {
 
         List<WarnData> warnings = handler.getWarnings(user);
         if (warnings.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
             return CommandResult.success();
         }
 
@@ -54,17 +52,17 @@ public class ClearWarningsCommand extends CommandBase<CommandSource> {
         //If the flag --remove is used then remove all active warnings.
         boolean removeActive = false;
         boolean removeExpired = false;
-        Text message = Util.getTextMessageWithFormat("command.clearwarnings.success", user.getName());
+        Text message = plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.success", user.getName());
         if (args.hasAny("all")) {
             removeActive = true;
             removeExpired = true;
-            message = Util.getTextMessageWithFormat("command.clearwarnings.all", user.getName());
+            message = plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.all", user.getName());
         } else if (args.hasAny("remove")) {
             removeActive = true;
-            message = Util.getTextMessageWithFormat("command.clearwarnings.remove", user.getName());
+            message = plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.remove", user.getName());
         } else if (args.hasAny("expired")) {
             removeExpired = true;
-            message = Util.getTextMessageWithFormat("command.clearwarnings.expired", user.getName());
+            message = plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.expired", user.getName());
         }
 
         if (handler.clearWarnings(user, removeActive, removeExpired)) {
@@ -72,7 +70,7 @@ public class ClearWarningsCommand extends CommandBase<CommandSource> {
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.clearwarnings.failure", user.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.failure", user.getName()));
         return CommandResult.empty();
     }
 }

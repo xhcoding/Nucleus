@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -40,7 +40,7 @@ public class TimespanArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!args.hasNext()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.timespan.notime"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.timespan.notime"));
         }
 
         String s = args.next();
@@ -57,7 +57,7 @@ public class TimespanArgument extends CommandElement {
             }
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.timespan.incorrectformat", s));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.timespan.incorrectformat", s));
     }
 
     private int amount(String g, int multipler) {

@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands.itemalias;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandResult;
@@ -29,9 +27,9 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "nucleus.itemalias")
+@Permissions(root = "plugin.itemalias")
 @RegisterCommand(value = "set", subcommandOf = ItemAliasCommand.class)
-public class SetItemAliasCommand extends CommandBase<CommandSource> {
+public class SetItemAliasCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private ItemDataService itemDataService;
 
@@ -51,12 +49,12 @@ public class SetItemAliasCommand extends CommandBase<CommandSource> {
         // Do we have an item or blockstate?
         String a = args.<String>getOne(alias).get().toLowerCase();
         if (itemDataService.getIdFromAlias(a).isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.setitemalias.inuse", a));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.setitemalias.inuse", a));
             return CommandResult.empty();
         }
 
         if (!ItemDataNode.ALIAS_PATTERN.matcher(a).matches()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.setitemalias.notvalid", a));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.setitemalias.notvalid", a));
             return CommandResult.empty();
         }
 
@@ -77,11 +75,11 @@ public class SetItemAliasCommand extends CommandBase<CommandSource> {
                         type = is.getItem();
                     }
                 } else {
-                    src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.setitemalias.noneinhand"));
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.setitemalias.noneinhand"));
                     return CommandResult.empty();
                 }
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.setitemalias.noidconsole"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.setitemalias.noidconsole"));
                 return CommandResult.empty();
             }
         }
@@ -93,7 +91,7 @@ public class SetItemAliasCommand extends CommandBase<CommandSource> {
         itemDataService.setDataForItem(id, idn);
 
         // Tell the user
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.setitemalias.success", a, id));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.setitemalias.success", a, id));
         return CommandResult.success();
     }
 }

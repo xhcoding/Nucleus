@@ -5,8 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.handlers;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
@@ -30,13 +29,13 @@ import java.util.stream.Collectors;
 
 public class TeleportHandler {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final Map<UUID, TeleportPrep> ask = new HashMap<>();
 
     private static final String tptoggleBypassPermission = PermissionRegistry.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
     private Text acceptDeny;
 
-    public TeleportHandler(Nucleus plugin) {
+    public TeleportHandler(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -80,12 +79,12 @@ public class TeleportHandler {
     public Text getAcceptDenyMessage() {
         if (acceptDeny == null) {
             acceptDeny = Text.builder()
-                    .append(Text.builder().append(Util.getTextMessageWithFormat("standard.accept")).style(TextStyles.UNDERLINE)
-                            .onHover(TextActions.showText(Util.getTextMessageWithFormat("teleport.accept.hover")))
+                    .append(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("standard.accept")).style(TextStyles.UNDERLINE)
+                            .onHover(TextActions.showText(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.accept.hover")))
                             .onClick(TextActions.runCommand("/tpaccept")).build())
                     .append(Text.of(" - "))
-                    .append(Text.builder().append(Util.getTextMessageWithFormat("standard.deny")).style(TextStyles.UNDERLINE)
-                            .onHover(TextActions.showText(Util.getTextMessageWithFormat("teleport.deny.hover")))
+                    .append(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("standard.deny")).style(TextStyles.UNDERLINE)
+                            .onHover(TextActions.showText(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.deny.hover")))
                             .onClick(TextActions.runCommand("/tpdeny")).build())
                     .build();
         }
@@ -101,7 +100,7 @@ public class TeleportHandler {
         if (prep.charged != null && prep.cost > 0) {
             if (prep.charged.isOnline()) {
                 prep.charged.getPlayer().ifPresent(x -> x
-                        .sendMessage(Util.getTextMessageWithFormat("teleport.prep.cancel", plugin.getEconHelper().getCurrencySymbol(prep.cost))));
+                        .sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.prep.cancel", plugin.getEconHelper().getCurrencySymbol(prep.cost))));
             }
 
             plugin.getEconHelper().depositInPlayer(prep.charged, prep.cost);
@@ -116,15 +115,15 @@ public class TeleportHandler {
         private final double cost;
         private final boolean safe;
         private final CommandSource source;
-        private final Nucleus plugin;
+        private final NucleusPlugin plugin;
         private final boolean silentSource;
         private final boolean silentTarget;
 
-        private TeleportTask(Nucleus plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, boolean safe, boolean silentSource, boolean silentTarget) {
+        private TeleportTask(NucleusPlugin plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, boolean safe, boolean silentSource, boolean silentTarget) {
             this(plugin, source, playerToTeleport, playerToTeleportTo, null, 0, safe, silentSource, silentTarget);
         }
 
-        private TeleportTask(Nucleus plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, Player charged, double cost, boolean safe,
+        private TeleportTask(NucleusPlugin plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, Player charged, double cost, boolean safe,
                              boolean silentSource, boolean silentTarget) {
             this.plugin = plugin;
             this.source = source;
@@ -141,7 +140,7 @@ public class TeleportHandler {
             if (playerToTeleportTo.isOnline()) {
                 if (safe && !playerToTeleport.setLocationAndRotationSafely(playerToTeleportTo.getLocation(), playerToTeleportTo.getRotation())) {
                     if (!silentSource) {
-                        source.sendMessage(Util.getTextMessageWithFormat("teleport.nosafe"));
+                        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.nosafe"));
                     }
 
                     onCancel();
@@ -151,16 +150,16 @@ public class TeleportHandler {
                 }
 
                 if (!source.equals(playerToTeleport) && !silentSource) {
-                    source.sendMessage(Util.getTextMessageWithFormat("teleport.success.source", playerToTeleport.getName(), playerToTeleportTo.getName()));
+                    source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.success.source", playerToTeleport.getName(), playerToTeleportTo.getName()));
                 }
 
-                playerToTeleport.sendMessage(Util.getTextMessageWithFormat("teleport.to.success", playerToTeleportTo.getName()));
+                playerToTeleport.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.to.success", playerToTeleportTo.getName()));
                 if (!silentTarget) {
-                    playerToTeleportTo.sendMessage(Util.getTextMessageWithFormat("teleport.from.success", playerToTeleport.getName()));
+                    playerToTeleportTo.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.from.success", playerToTeleport.getName()));
                 }
             } else {
                 if (!silentSource) {
-                    source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.offline"));
+                    source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.offline"));
                 }
 
                 onCancel();
@@ -175,7 +174,7 @@ public class TeleportHandler {
         @Override
         public void onCancel() {
             if (!silentSource) {
-                source.sendMessage(Util.getTextMessageWithFormat("teleport.cancelled"));
+                source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.cancelled"));
             }
 
             if (charged != null && cost > 0) {
@@ -197,9 +196,9 @@ public class TeleportHandler {
         private boolean silentSource = false;
         private boolean silentTarget = false;
 
-        private final Nucleus plugin;
+        private final NucleusPlugin plugin;
 
-        private TeleportBuilder(Nucleus plugin) {
+        private TeleportBuilder(NucleusPlugin plugin) {
             this.plugin = plugin;
         }
 
@@ -262,20 +261,20 @@ public class TeleportHandler {
             }
 
             if (from.equals(to)) {
-                source.sendMessage(Util.getTextMessageWithFormat("command.teleport.self"));
+                source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.teleport.self"));
                 return false;
             }
 
             UserService toPlayer = plugin.getUserDataManager().get(to).get();
             if (!bypassToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(source)) {
-                source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
+                source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return false;
             }
 
             if (plugin.getUserDataManager().get(from).get().getJailData().isPresent()) {
                 // Don't teleport a jailed player.
                 if (!silentSource) {
-                    source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.jailed", from.getName()));
+                    source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.jailed", from.getName()));
                 }
 
                 return false;
@@ -289,9 +288,9 @@ public class TeleportHandler {
             }
 
             if (warmupTime > 0) {
-                from.sendMessage(Util.getTextMessageWithFormat("teleport.warmup", String.valueOf(warmupTime)));
+                from.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.warmup", String.valueOf(warmupTime)));
                 plugin.getWarmupManager().addWarmup(from.getUniqueId(), Sponge.getScheduler().createTaskBuilder().delay(warmupTime, TimeUnit.SECONDS)
-                        .execute(tt).name("Nucleus - Teleport Waiter").submit(plugin));
+                        .execute(tt).name("NucleusPlugin - Teleport Waiter").submit(plugin));
             } else {
                 tt.run();
             }

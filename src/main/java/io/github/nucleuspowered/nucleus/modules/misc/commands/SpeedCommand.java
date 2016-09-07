@@ -5,10 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
@@ -32,7 +31,7 @@ import java.util.Optional;
 
 @RegisterCommand("speed")
 @Permissions
-public class SpeedCommand extends CommandBase<CommandSource> {
+public class SpeedCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String speedKey = "speed";
     private final String typeKey = "type";
@@ -50,7 +49,7 @@ public class SpeedCommand extends CommandBase<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
-        mspi.put("exempt.max", new PermissionInformation(Util.getMessageWithFormat("permission.speed.exempt.max"), SuggestedLevel.NONE));
+        mspi.put("exempt.max", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.speed.exempt.max"), SuggestedLevel.NONE));
         return mspi;
     }
 
@@ -81,9 +80,9 @@ public class SpeedCommand extends CommandBase<CommandSource> {
         Player pl = opl.get();
         Optional<Integer> ospeed = args.getOne(speedKey);
         if (!ospeed.isPresent()) {
-            Text t = Text.builder().append(Util.getTextMessageWithFormat("command.speed.walk")).append(Text.of(" "))
+            Text t = Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.walk")).append(Text.of(" "))
                     .append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * 20)))
-                    .append(Text.builder().append(Text.of(TextColors.GREEN, ", ")).append(Util.getTextMessageWithFormat("command.speed.flying"))
+                    .append(Text.builder().append(Text.of(TextColors.GREEN, ", ")).append(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.flying"))
                             .build())
                     .append(Text.of(" ")).append(Text.of(TextColors.YELLOW, Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * 20)))
                     .append(Text.of(TextColors.GREEN, ".")).build();
@@ -98,35 +97,35 @@ public class SpeedCommand extends CommandBase<CommandSource> {
         int speed = ospeed.get();
 
         if (speed < 0) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.speed.negative"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.negative"));
             return CommandResult.empty();
         }
 
         int maxSpeed = miscConfigAdapter.getNodeOrDefault().getMaxSpeed();
         if (!permissions.testSuffix(src, "exempt.max") && maxSpeed < speed) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.speed.max", String.valueOf(maxSpeed)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.max", String.valueOf(maxSpeed)));
             return CommandResult.empty();
         }
 
         DataTransactionResult dtr = pl.offer(key.speedKey, (double) speed / (double) multiplier);
 
         if (dtr.isSuccessful()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.speed.success.base", key.name, String.valueOf(speed)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.success.base", key.name, String.valueOf(speed)));
 
             if (!pl.equals(src)) {
-                src.sendMessages(Util.getTextMessageWithFormat("command.speed.success.other", pl.getName(), key.name, String.valueOf(speed)));
+                src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.success.other", pl.getName(), key.name, String.valueOf(speed)));
             }
 
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.speed.fail", key.name));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.fail", key.name));
         return CommandResult.empty();
     }
 
     private enum SpeedType {
-        WALKING(Keys.WALKING_SPEED, Util.getMessageWithFormat("standard.walking")),
-        FLYING(Keys.FLYING_SPEED, Util.getMessageWithFormat("standard.flying"));
+        WALKING(Keys.WALKING_SPEED, Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.walking")),
+        FLYING(Keys.FLYING_SPEED, Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.flying"));
 
         final Key<Value<Double>> speedKey;
         final String name;

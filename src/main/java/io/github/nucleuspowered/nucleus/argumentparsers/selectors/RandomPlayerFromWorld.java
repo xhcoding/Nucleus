@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers.selectors;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.interfaces.SelectorParser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -42,13 +42,13 @@ public class RandomPlayerFromWorld implements SelectorParser<Player> {
         m.matches();
         String world = m.group(1);
 
-        World spongeWorld = Sponge.getServer().getWorld(world).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.selector.noworld", world)));
+        World spongeWorld = Sponge.getServer().getWorld(world).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.noworld", world)));
 
         List<Player> players = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getWorld().getUniqueId().equals(spongeWorld.getUniqueId()))
                 .filter(x -> !(source instanceof Player) || ((Player) source).getUniqueId().equals(x.getUniqueId()))
                 .sorted((x, y) -> x.getName().compareTo(y.getName())).collect(Collectors.toList());
         if (players.isEmpty()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.selector.notarget"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.notarget"));
         }
 
         return players.get(random.nextInt(players.size()));

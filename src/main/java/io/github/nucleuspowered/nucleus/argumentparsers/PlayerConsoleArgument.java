@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -54,7 +54,7 @@ public class PlayerConsoleArgument extends CommandElement {
         List<CommandSource> players = onlinePlayersSupplier.get().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
                 .sorted((x, y) -> x.getName().compareTo(y.getName())).collect(Collectors.toList());
         if (players.isEmpty()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.playerconsole.noexist"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.playerconsole.noexist"));
         }
 
         List<CommandSource> exactUser = players.stream().filter(x -> x.getName().equalsIgnoreCase(name)).collect(Collectors.toList());

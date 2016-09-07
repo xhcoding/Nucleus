@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mute.handler;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
@@ -18,10 +18,10 @@ import java.util.Optional;
 
 public class MuteHandler implements NucleusMuteService {
 
-    private final Nucleus nucleus;
+    private final NucleusPlugin nucleus;
     @Inject private UserDataManager ucl;
 
-    public MuteHandler(Nucleus nucleus) {
+    public MuteHandler(NucleusPlugin nucleus) {
         this.nucleus = nucleus;
     }
 

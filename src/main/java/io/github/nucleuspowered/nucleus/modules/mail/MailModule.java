@@ -21,8 +21,8 @@ public class MailModule extends StandardModule {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        MailHandler m = new MailHandler(game, nucleus);
+        MailHandler m = new MailHandler(game, plugin);
         serviceManager.registerService(MailHandler.class, m);
-        game.getServiceManager().setProvider(nucleus, NucleusMailService.class, m);
+        game.getServiceManager().setProvider(plugin, NucleusMailService.class, m);
     }
 }

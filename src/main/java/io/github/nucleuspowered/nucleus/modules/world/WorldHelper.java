@@ -7,8 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.world;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.LoggerWrapper;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
@@ -20,7 +19,7 @@ import java.util.UUID;
 
 public class WorldHelper {
 
-    @Inject private Nucleus plugin;
+    @Inject private NucleusPlugin plugin;
 
     private final Map<UUID, Task> pregen = Maps.newHashMap();
 
@@ -66,7 +65,7 @@ public class WorldHelper {
         private boolean sendLog() {
             if (++count % 20 == 0) {
                 count = 0;
-                wrappedLogger.info(Util.getMessageWithFormat("command.world.gen.continue", worldName));
+                wrappedLogger.info(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("command.world.gen.continue", worldName));
                 return true;
             }
 

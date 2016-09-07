@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.NameUtil;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
@@ -83,7 +83,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             return sendMessage(sender, cs.get(), message);
         }
 
-        sender.sendMessage(Util.getTextMessageWithFormat("message.noreply"));
+        sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.noreply"));
         return false;
     }
 
@@ -91,7 +91,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         // Message is about to be sent. Send the event out. If canceled, then
         // that's that.
         if (Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message))) {
-            sender.sendMessage(Util.getTextMessageWithFormat("message.cancel"));
+            sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.cancel"));
             return false;
         }
 
@@ -150,7 +150,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             return Text.builder(src.getName()).color(TextColors.LIGHT_PURPLE).onClick(TextActions.suggestCommand("/msg - ")).build();
         }
 
-        return NameUtil.getNameFromCommandSource(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
+        return Nucleus.getNucleus().getNameUtil().getNameFromCommandSource(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
     }
 
     @SuppressWarnings("unchecked")

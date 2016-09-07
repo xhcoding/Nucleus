@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
@@ -19,12 +17,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.DimensionType;
-import org.spongepowered.api.world.DimensionTypes;
-import org.spongepowered.api.world.GeneratorType;
-import org.spongepowered.api.world.GeneratorTypes;
-import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.WorldCreationSettings;
+import org.spongepowered.api.world.*;
 import org.spongepowered.api.world.difficulty.Difficulties;
 import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -35,11 +28,11 @@ import java.util.Optional;
  * Loads worlds.
  *
  * Command Usage: /world load [name] [dimension] [generator] [gamemode]
- * [difficulty] Permission: nucleus.world.load.base
+ * [difficulty] Permission: plugin.world.load.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"load"}, subcommandOf = WorldCommand.class)
-public class LoadWorldCommand extends CommandBase<CommandSource> {
+public class LoadWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String name = "name";
     private final String dimension = "dimension";
@@ -71,7 +64,7 @@ public class LoadWorldCommand extends CommandBase<CommandSource> {
         GeneratorType generator = generatorInput.orElse(GeneratorTypes.OVERWORLD);
         GameMode gamemode = gamemodeInput.orElse(GameModes.SURVIVAL);
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.world.load.begin", nameInput));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.load.begin", nameInput));
 
         WorldCreationSettings worldSettings = Sponge.getRegistry().createBuilder(WorldCreationSettings.Builder.class).name(nameInput).enabled(true)
                 .loadsOnStartup(true).keepsSpawnLoaded(true).dimension(dimension).generator(generator).gameMode(gamemode).build();
@@ -83,12 +76,12 @@ public class LoadWorldCommand extends CommandBase<CommandSource> {
 
             if (world.isPresent()) {
                 world.get().getProperties().setDifficulty(difficulty);
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.load.success", nameInput));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.load.success", nameInput));
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.load.fail", nameInput));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.load.fail", nameInput));
             }
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.load.fail", nameInput));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.load.fail", nameInput));
         }
 
         return CommandResult.success();

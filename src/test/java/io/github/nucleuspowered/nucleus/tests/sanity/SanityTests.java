@@ -21,7 +21,7 @@ public class SanityTests {
     @Test
     @SuppressWarnings("unchecked")
     public void testThatAnythingThatIsAConcreteModuleHasAModuleDataAnnotation() throws IOException {
-        Set<ClassPath.ClassInfo> ci = ClassPath.from(this.getClass().getClassLoader()).getTopLevelClassesRecursive("io.github.nucleuspowered.nucleus.modules");
+        Set<ClassPath.ClassInfo> ci = ClassPath.from(this.getClass().getClassLoader()).getTopLevelClassesRecursive("io.github.nucleuspowered.plugin.modules");
         Set<Class<? extends StandardModule>> sc = ci.stream().map(ClassPath.ClassInfo::load).filter(StandardModule.class::isAssignableFrom)
                 .map(x -> (Class<? extends StandardModule>)x).collect(Collectors.toSet());
 
@@ -36,7 +36,7 @@ public class SanityTests {
     @Test
     @SuppressWarnings("unchecked")
     public void testThatAnythingThatIsAnAbstractConfigAdapterIsAlsoANucleusConfigAdapter() throws IOException {
-        Set<ClassPath.ClassInfo> ci = ClassPath.from(this.getClass().getClassLoader()).getTopLevelClassesRecursive("io.github.nucleuspowered.nucleus.modules");
+        Set<ClassPath.ClassInfo> ci = ClassPath.from(this.getClass().getClassLoader()).getTopLevelClassesRecursive("io.github.nucleuspowered.plugin.modules");
         Set<Class<? extends AbstractConfigAdapter<?>>> sc = ci.stream().map(ClassPath.ClassInfo::load).filter(AbstractConfigAdapter.class::isAssignableFrom)
                 .map(x -> (Class<? extends AbstractConfigAdapter<?>>)x).collect(Collectors.toSet());
 
@@ -51,7 +51,18 @@ public class SanityTests {
     @Test
     public void testThatNoResourceKeyIsAParentOfAnother() throws Exception {
         // Get the resource
-        ResourceBundle rb = ResourceBundle.getBundle("assets.nucleus.messages", Locale.getDefault());
+        testKeysAreNotParents("assets.nucleus.messages");
+    }
+
+    @Test
+    public void testThatNoCommandResourceKeyIsAParentOfAnother() throws Exception {
+        // Get the resource
+        testKeysAreNotParents("assets.nucleus.commands");
+    }
+
+    private void testKeysAreNotParents(String bundle) throws Exception {
+        // Get the resource
+        ResourceBundle rb = ResourceBundle.getBundle(bundle, Locale.getDefault());
         Enumeration<String> keys = rb.getKeys();
         Set<String> s = new HashSet<>();
 

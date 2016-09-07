@@ -9,7 +9,7 @@ import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 
 /**
- * An event that is posted when a player uses /m in Nucleus
+ * An event that is posted when a player uses /m in NucleusPlugin
  */
 public interface NucleusMessageEvent extends Event, Cancellable {
 

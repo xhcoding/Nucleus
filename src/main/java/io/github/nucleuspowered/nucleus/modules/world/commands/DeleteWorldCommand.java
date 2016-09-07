@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,11 +20,11 @@ import org.spongepowered.api.world.storage.WorldProperties;
 /**
  * Deletes a world.
  *
- * Command Usage: /world delete [world] Permission: nucleus.world.delete.base
+ * Command Usage: /world delete [world] Permission: plugin.world.delete.base
  */
 @Permissions(root = "world")
 @RegisterCommand(value = {"delete", "del"}, subcommandOf = WorldCommand.class)
-public class DeleteWorldCommand extends CommandBase<CommandSource> {
+public class DeleteWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String world = "world";
 
@@ -54,7 +52,7 @@ public class DeleteWorldCommand extends CommandBase<CommandSource> {
         }
 
         worldProperties.setEnabled(false);
-        src.sendMessage(Util.getTextMessageWithFormat("command.world.delete"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.delete"));
         return CommandResult.success();
     }
 }

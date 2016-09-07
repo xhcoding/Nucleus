@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandlogger.runnables;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfig;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
@@ -23,7 +23,7 @@ public class CommandLoggerRunnable extends TaskBase {
     private CommandLoggerConfig config = null;
 
     @Inject
-    public CommandLoggerRunnable(Nucleus plugin) {
+    public CommandLoggerRunnable(NucleusPlugin plugin) {
         plugin.registerReloadable(() -> config = null);
     }
 

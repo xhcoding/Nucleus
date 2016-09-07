@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.block.BlockState;
@@ -29,7 +27,7 @@ import java.util.Optional;
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itemsell", "sell"})
-public class SellCommand extends CommandBase<Player> {
+public class SellCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private ItemDataService itemDataService;
     @Inject private EconHelper econHelper;
@@ -37,7 +35,7 @@ public class SellCommand extends CommandBase<Player> {
     @Override
     public CommandResult executeCommand(final Player src, CommandContext args) throws Exception {
         // Get the item in the hand.
-        ItemStack is = src.getItemInHand().orElseThrow(() -> new ReturnMessageException(Util.getTextMessageWithFormat("command.generalerror.handempty")));
+        ItemStack is = src.getItemInHand().orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.generalerror.handempty")));
 
         String id;
         Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
@@ -50,7 +48,7 @@ public class SellCommand extends CommandBase<Player> {
         ItemDataNode node = itemDataService.getDataForItem(id);
         final int sellPrice = node.getServerSellPrice();
         if (sellPrice < 0) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.itemsell.notforselling"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsell.notforselling"));
             return CommandResult.empty();
         }
 
@@ -59,11 +57,11 @@ public class SellCommand extends CommandBase<Player> {
         final int overallCost = sellPrice * amt;
         if (econHelper.depositInPlayer(src, overallCost, false)) {
             src.setItemInHand(null);
-            src.sendMessage(Util.getTextMessageWithFormat("command.itemsell.summary", String.valueOf(amt), is.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsell.summary", String.valueOf(amt), is.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.itemsell.error", is.getTranslation().get()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsell.error", is.getTranslation().get()));
         return CommandResult.empty();
     }
 }

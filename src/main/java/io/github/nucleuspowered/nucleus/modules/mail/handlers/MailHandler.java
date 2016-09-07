@@ -6,8 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mail.handlers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.NameUtil;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.mail.BetweenInstantsData;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
@@ -33,9 +32,9 @@ import java.util.stream.Collectors;
 public class MailHandler implements NucleusMailService {
 
     private final Game game;
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
 
-    public MailHandler(Game game, Nucleus plugin) {
+    public MailHandler(Game game, NucleusPlugin plugin) {
         this.game = game;
         this.plugin = plugin;
     }
@@ -112,17 +111,17 @@ public class MailHandler implements NucleusMailService {
         // Message is about to be sent. Send the event out. If canceled, then
         // that's that.
         if (Sponge.getEventManager().post(new InternalNucleusMailEvent(playerFrom, playerTo, message))) {
-            playerFrom.getPlayer().ifPresent(x -> x.sendMessage(Util.getTextMessageWithFormat("message.cancel")));
+            playerFrom.getPlayer().ifPresent(x -> x.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("message.cancel")));
             return;
         }
 
         MailData md = new MailData(playerFrom == null ? Util.consoleFakeUUID : playerFrom.getUniqueId(), Instant.now(), message);
         iqsu.addMail(md);
 
-        Text from = playerFrom == null ? Text.of(game.getServer().getConsole().getName()) : NameUtil.getName(playerFrom);
+        Text from = playerFrom == null ? Text.of(game.getServer().getConsole().getName()) : plugin.getNameUtil().getName(playerFrom);
         if (playerTo.isOnline()) {
             playerTo.getPlayer().get()
-                    .sendMessage(Text.builder().append(Util.getTextMessageWithFormat("mail.youvegotmail")).append(Text.of(" ", from)).build());
+                    .sendMessage(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("mail.youvegotmail")).append(Text.of(" ", from)).build());
         }
     }
 

@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.back.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -20,7 +18,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"back", "return"})
-public class BackCommand extends CommandBase<Player> {
+public class BackCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private BackHandler handler;
 
@@ -29,16 +27,16 @@ public class BackCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Optional<Transform<World>> ol = handler.getLastLocation(src);
         if (!ol.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.back.noloc"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.noloc"));
             return CommandResult.empty();
         }
 
         Transform<World> loc = ol.get();
         if (src.setLocationAndRotationSafely(loc.getLocation(), loc.getRotation())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.back.success"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.success"));
             return CommandResult.success();
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.back.nosafe"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.nosafe"));
             return CommandResult.empty();
         }
     }

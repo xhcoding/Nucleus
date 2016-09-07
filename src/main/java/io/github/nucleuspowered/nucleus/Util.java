@@ -5,12 +5,8 @@
 package io.github.nucleuspowered.nucleus;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.reflect.ClassPath;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
-import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
-import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import io.github.nucleuspowered.nucleus.util.Action;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
@@ -21,8 +17,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.option.OptionSubject;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.world.Location;
@@ -39,7 +33,6 @@ import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
@@ -48,14 +41,7 @@ public class Util {
     private Util() {
     }
 
-    private static Supplier<MessageProvider> messageProvider;
-
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-
-    public static void setMessageProvider(Supplier<MessageProvider> messageProvider) {
-        Preconditions.checkState(Util.messageProvider == null);
-        Util.messageProvider = messageProvider;
-    }
 
     public static UUID getUUID(CommandSource src) {
         if (src instanceof Identifiable) {
@@ -63,19 +49,6 @@ public class Util {
         }
 
         return consoleFakeUUID;
-    }
-
-    public static String getMessageWithFormat(String key, String... substitutions) {
-        return messageProvider.get().getMessageWithFormat(key, substitutions);
-    }
-
-    public static Text getTextMessageWithFormat(String key, String... substitutions) {
-        return messageProvider.get().getTextMessageWithFormat(key, substitutions);
-    }
-
-    public static Text getTextMessageWithTextFormat(String key, Text... substitutions) {
-        String[] text = Arrays.stream(substitutions).map(TextSerializers.FORMATTING_CODE::serialize).toArray(String[]::new);
-        return messageProvider.get().getTextMessageWithFormat(key, text);
     }
 
     public static String getTimeToNow(Instant time) {
@@ -90,16 +63,16 @@ public class Util {
         long day = time / 86400;
 
         if (time == 0) {
-            return Util.getMessageWithFormat("standard.inamoment");
+            return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.inamoment");
         }
 
         StringBuilder sb = new StringBuilder();
         if (day > 0) {
             sb.append(day).append(" ");
             if (day > 1) {
-                sb.append(Util.getMessageWithFormat("standard.days"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.days"));
             } else {
-                sb.append(Util.getMessageWithFormat("standard.day"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.day"));
             }
         }
 
@@ -107,9 +80,9 @@ public class Util {
             appendComma(sb);
             sb.append(hour).append(" ");
             if (hour > 1) {
-                sb.append(Util.getMessageWithFormat("standard.hours"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.hours"));
             } else {
-                sb.append(Util.getMessageWithFormat("standard.hour"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.hour"));
             }
         }
 
@@ -117,9 +90,9 @@ public class Util {
             appendComma(sb);
             sb.append(min).append(" ");
             if (min > 1) {
-                sb.append(Util.getMessageWithFormat("standard.minutes"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.minutes"));
             } else {
-                sb.append(Util.getMessageWithFormat("standard.minute"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.minute"));
             }
         }
 
@@ -127,16 +100,16 @@ public class Util {
             appendComma(sb);
             sb.append(sec).append(" ");
             if (sec > 1) {
-                sb.append(Util.getMessageWithFormat("standard.seconds"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.seconds"));
             } else {
-                sb.append(Util.getMessageWithFormat("standard.second"));
+                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.second"));
             }
         }
 
         if (sb.length() > 0) {
             return sb.toString();
         } else {
-            return Util.getMessageWithFormat("standard.unknown");
+            return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.unknown");
         }
     }
 
@@ -167,11 +140,11 @@ public class Util {
 
         if (hours < 12) {
             long ahours = hours == 0 ? 12 : hours;
-            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.am"), ahours, hours, m.format(mins));
+            return MessageFormat.format(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.time.am"), ahours, hours, m.format(mins));
         } else {
             hours -= 12;
             long ahours = hours == 0 ? 12 : hours;
-            return MessageFormat.format(messageProvider.get().getMessageWithFormat("standard.time.pm"), ahours, hours, m.format(mins));
+            return MessageFormat.format(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.time.pm"), ahours, hours, m.format(mins));
         }
     }
 
@@ -179,12 +152,6 @@ public class Util {
         if (sb.length() > 0) {
             sb.append(", ");
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Set<Class<? extends T>> getClasses(Class<T> base, String pack) throws IOException {
-        Set<ClassPath.ClassInfo> ci = ClassPath.from(StandardModule.class.getClassLoader()).getTopLevelClassesRecursive(pack);
-        return ci.stream().map(ClassPath.ClassInfo::load).filter(base::isAssignableFrom).map(x -> (Class<? extends T>)x).collect(Collectors.toSet());
     }
 
     public static Optional<OptionSubject> getSubject(User player) {

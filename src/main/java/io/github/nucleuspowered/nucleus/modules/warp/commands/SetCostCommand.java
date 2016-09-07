@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -24,7 +22,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @Permissions(root = "warp")
 @RegisterCommand(value = {"cost", "setcost"}, subcommandOf = WarpCommand.class)
-public class SetCostCommand extends CommandBase<CommandSource> {
+public class SetCostCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private WarpConfigAdapter warpConfigAdapter;
     @Inject private WarpHandler warpHandler;
@@ -44,19 +42,19 @@ public class SetCostCommand extends CommandBase<CommandSource> {
         WarpArgument.Result warpData = args.<WarpArgument.Result>getOne(warpKey).get();
         int cost = args.<Integer>getOne(costKey).get();
         if (cost < -1) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.warp.costset.arg"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.arg"));
             return CommandResult.empty();
         }
 
         if (cost == -1 && warpHandler.setWarpCost(warpData.warp, -1)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.warp.costset.reset", warpData.warp, String.valueOf(warpConfigAdapter.getNodeOrDefault().getDefaultWarpCost())));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.reset", warpData.warp, String.valueOf(warpConfigAdapter.getNodeOrDefault().getDefaultWarpCost())));
             return CommandResult.success();
         } else if (warpHandler.setWarpCost(warpData.warp, cost)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.warp.costset.success", warpData.warp, String.valueOf(cost)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.success", warpData.warp, String.valueOf(cost)));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.warp.costset.failed", warpData.warp));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.failed", warpData.warp));
         return CommandResult.empty();
     }
 }

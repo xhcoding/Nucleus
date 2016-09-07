@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.qsml;
 
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.quickstart.config.AbstractAdaptableConfig;
@@ -14,7 +14,7 @@ import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
 
-    @Inject private Nucleus plugin;
+    @Inject private NucleusPlugin plugin;
 
     @Override
     @SuppressWarnings("unchecked")

@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -37,7 +36,7 @@ import java.util.Set;
 /**
  * Lists all the kits.
  *
- * Command Usage: /kit list Permission: nucleus.kit.list.base
+ * Command Usage: /kit list Permission: plugin.kit.list.base
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = KitCommand.class)
@@ -45,7 +44,7 @@ import java.util.Set;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitListCommand extends CommandBase<CommandSource> {
+public class KitListCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
@@ -57,7 +56,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         Set<String> kits = kitConfig.getKitNames();
         if (kits.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.kit.list.empty"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.empty"));
             return CommandResult.empty();
         }
 
@@ -71,13 +70,13 @@ public class KitListCommand extends CommandBase<CommandSource> {
 
         final UserService user = src instanceof Player ? userConfigLoader.get(((Player)src).getUniqueId()).orElse(null) : null;
 
-        // Only show kits that the user has permission for, if needed. This is the permission "nucleus.kits.<kit>".
+        // Only show kits that the user has permission for, if needed. This is the permission "plugin.kits.<kit>".
         kitConfig.getKitNames().stream()
             .filter(kit -> !kca.getNodeOrDefault().isSeparatePermissions() || src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + kit.toLowerCase()))
             .forEach(kit -> kitConfig.getKit(kit).ifPresent(k -> kitText.add(createKit(src, user, kit, k))));
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
-                .title(Util.getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
+                .title(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
         paginationBuilder.sendTo(src);
 
         return CommandResult.success();
@@ -92,7 +91,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
             // If one time used...
             if (kitObj.isOneTime() && !kitPermissionHandler.testSuffix(p, "exempt.onetime")) {
                 return tb.color(TextColors.RED)
-                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.kit.list.onetime", kitName)))
+                        .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.onetime", kitName)))
                         .style(TextStyles.STRIKETHROUGH).build();
             }
 
@@ -106,7 +105,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
                     // Get the time to next usage.
                     String time = Util.getTimeToNow(next);
                     return tb.color(TextColors.RED)
-                            .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.kit.list.interval", kitName, time)))
+                            .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.interval", kitName, time)))
                             .style(TextStyles.STRIKETHROUGH).build();
                 }
             }
@@ -114,7 +113,7 @@ public class KitListCommand extends CommandBase<CommandSource> {
 
         // Can use.
         return tb.color(TextColors.AQUA).onClick(TextActions.runCommand("/kit " + kitName))
-                .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.kit.list.text", kitName)))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.text", kitName)))
                 .style(TextStyles.UNDERLINE).build();
     }
 }

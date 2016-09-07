@@ -11,7 +11,6 @@ import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
@@ -45,7 +44,7 @@ import java.util.UUID;
 @NoCooldown
 @NoCost
 @RegisterCommand({"mute", "unmute"})
-public class MuteCommand extends CommandBase<CommandSource> {
+public class MuteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private MuteConfigAdapter mca;
     @Inject private UserDataManager userConfigLoader;
@@ -60,15 +59,15 @@ public class MuteCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, new PermissionInformation(Util.getMessageWithFormat("permission.mute.notify"), SuggestedLevel.MOD));
+        m.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.notify"), SuggestedLevel.MOD));
         return m;
     }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.length", new PermissionInformation(Util.getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.ADMIN));
-        m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.MOD));
+        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.ADMIN));
+        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -90,7 +89,7 @@ public class MuteCommand extends CommandBase<CommandSource> {
         Optional<String> reas = args.getOne(reason);
 
         if (permissions.testSuffix(user, "exempt.target")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.mute.exempt", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.exempt", user.getName()));
             return CommandResult.success();
         }
 
@@ -98,19 +97,19 @@ public class MuteCommand extends CommandBase<CommandSource> {
         if (omd.isPresent() && !time.isPresent() && !reas.isPresent()) {
             // Unmute.
             handler.unmutePlayer(user);
-            src.sendMessage(Util.getTextMessageWithFormat("command.unmute.success", user.getName(), src.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.unmute.success", user.getName(), src.getName()));
             return CommandResult.success();
         }
 
         // Do we have a reason?
-        String rs = reas.orElse(Util.getMessageWithFormat("command.mute.defaultreason"));
+        String rs = reas.orElse(plugin.getMessageProvider().getMessageWithFormat("command.mute.defaultreason"));
         UUID ua = Util.consoleFakeUUID;
         if (src instanceof Player) {
             ua = ((Player) src).getUniqueId();
         }
 
         if (time.orElse(Long.MAX_VALUE) > mca.getNodeOrDefault().getMaximumMuteLength() &&  mca.getNodeOrDefault().getMaximumMuteLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.mute.length.toolong", Util.getTimeStringFromSeconds(mca.getNodeOrDefault().getMaximumMuteLength())));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.length.toolong", Util.getTimeStringFromSeconds(mca.getNodeOrDefault().getMaximumMuteLength())));
             return CommandResult.success();
         }
 
@@ -135,28 +134,28 @@ public class MuteCommand extends CommandBase<CommandSource> {
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.mute.fail", user.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.fail", user.getName()));
         return CommandResult.empty();
     }
 
     private void timedMute(CommandSource src, User user, MuteData data, long time, MessageChannel mc) {
         String ts = Util.getTimeStringFromSeconds(time);
-        mc.send(Util.getTextMessageWithFormat("command.mute.success.time", user.getName(), src.getName(), ts));
-        mc.send(Util.getTextMessageWithFormat("standard.reason", data.getReason()));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.success.time", user.getName(), src.getName(), ts));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", data.getReason()));
 
         if (user.isOnline()) {
-            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("mute.playernotify.time", ts));
-            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.reason", data.getReason()));
+            user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.time", ts));
+            user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.reason", data.getReason()));
         }
     }
 
     private void permMute(CommandSource src, User user, MuteData data, MessageChannel mc) {
-        mc.send(Util.getTextMessageWithFormat("command.mute.success.norm", user.getName(), src.getName()));
-        mc.send(Util.getTextMessageWithFormat("standard.reason", data.getReason()));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.success.norm", user.getName(), src.getName()));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", data.getReason()));
 
         if (user.isOnline()) {
-            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("mute.playernotify.standard"));
-            user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.reason", data.getReason()));
+            user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.standard"));
+            user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.reason", data.getReason()));
         }
     }
 }

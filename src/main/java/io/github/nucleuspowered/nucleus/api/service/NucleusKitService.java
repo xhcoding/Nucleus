@@ -15,7 +15,7 @@ import java.util.Set;
 public interface NucleusKitService {
 
     /**
-     * Gets the names of all the kits currently in Nucleus.
+     * Gets the names of all the kits currently in NucleusPlugin.
      * @return A {@link Set} of {@link String}s.
      */
     Set<String> getKitNames();

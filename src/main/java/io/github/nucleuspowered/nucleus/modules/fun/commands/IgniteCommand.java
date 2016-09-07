@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -29,7 +27,7 @@ import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"ignite", "burn"})
-public class IgniteCommand extends CommandBase<CommandSource> {
+public class IgniteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String player = "player";
     private final String ticks = "ticks";
@@ -37,7 +35,7 @@ public class IgniteCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -68,15 +66,15 @@ public class IgniteCommand extends CommandBase<CommandSource> {
         Player target = opl.get();
         GameMode gm = target.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL);
         if (gm == GameModes.CREATIVE || gm == GameModes.SPECTATOR) {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.ignite.gamemode", target.getName()));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.gamemode", target.getName()));
             return CommandResult.empty();
         }
 
         if (target.offer(Keys.FIRE_TICKS, ticksInput).isSuccessful()) {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.ignite.success", opl.get().getName(), String.valueOf(ticksInput)));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.success", opl.get().getName(), String.valueOf(ticksInput)));
             return CommandResult.success();
         } else {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.ignite.error", opl.get().getName()));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.error", opl.get().getName()));
             return CommandResult.empty();
         }
     }

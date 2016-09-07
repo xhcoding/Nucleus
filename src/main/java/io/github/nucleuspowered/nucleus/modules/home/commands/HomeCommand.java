@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -24,7 +22,7 @@ import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("home")
-public class HomeCommand extends CommandBase<Player> {
+public class HomeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String home = "home";
 
@@ -43,7 +41,7 @@ public class HomeCommand extends CommandBase<Player> {
             owl = plugin.getUserDataManager().get(src).get().getHome("home");
 
             if (!owl.isPresent()) {
-                src.sendMessage(Util.getTextMessageWithFormat("args.home.nohome", "home"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("args.home.nohome", "home"));
                 return CommandResult.empty();
             }
         }
@@ -52,21 +50,21 @@ public class HomeCommand extends CommandBase<Player> {
 
         if (!wl.getLocation().isPresent()) {
             // Fail
-            src.sendMessage(Util.getTextMessageWithFormat("command.home.invalid", wl.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.invalid", wl.getName()));
             return CommandResult.empty();
         }
 
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.getLocation().get(), wl.getRotation())) {
             if (!wl.getName().equalsIgnoreCase("home")) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.home.success", wl.getName()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.success", wl.getName()));
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.home.successdefault"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.successdefault"));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.home.fail", wl.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.fail", wl.getName()));
             return CommandResult.empty();
         }
     }

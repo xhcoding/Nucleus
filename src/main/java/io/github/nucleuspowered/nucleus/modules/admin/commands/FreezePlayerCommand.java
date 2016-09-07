@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandException;
@@ -28,7 +26,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"freezeplayer", "freeze"})
-public class FreezePlayerCommand extends CommandBase<CommandSource> {
+public class FreezePlayerCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager userConfigLoader;
 
@@ -37,7 +35,7 @@ public class FreezePlayerCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -62,7 +60,7 @@ public class FreezePlayerCommand extends CommandBase<CommandSource> {
             nu = userConfigLoader.getUser(opl.get()).get();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CommandException(Util.getTextMessageWithFormat("command.file.load"), e);
+            throw new CommandException(plugin.getMessageProvider().getTextMessageWithFormat("command.file.load"), e);
         }
 
         if (nu.isFrozen()) {
@@ -71,7 +69,7 @@ public class FreezePlayerCommand extends CommandBase<CommandSource> {
             nu.setFrozen(true);
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.freezeplayer.success", opl.get().getName(), nu.isFrozen() ? "frozen" : "un-frozen"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.freezeplayer.success", opl.get().getName(), nu.isFrozen() ? "frozen" : "un-frozen"));
         return CommandResult.success();
     }
 }

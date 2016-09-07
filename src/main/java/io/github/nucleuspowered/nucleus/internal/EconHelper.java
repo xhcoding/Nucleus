@@ -4,8 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -20,9 +19,9 @@ import java.util.Optional;
 
 public class EconHelper {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
 
-    public EconHelper(Nucleus plugin) {
+    public EconHelper(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -63,24 +62,24 @@ public class EconHelper {
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getOrCreateAccount(src.getUniqueId());
             if (!a.isPresent()) {
-                src.sendMessage(Util.getTextMessageWithFormat("cost.noaccount"));
+                src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.noaccount"));
                 return false;
             }
 
             TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
             if (tr.getResult() == ResultType.ACCOUNT_NO_FUNDS) {
                 if (message) {
-                    src.sendMessage(Util.getTextMessageWithFormat("cost.nofunds", getCurrencySymbol(cost)));
+                    src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.nofunds", getCurrencySymbol(cost)));
                 }
 
                 return false;
             } else if (tr.getResult() != ResultType.SUCCESS) {
-                src.sendMessage(Util.getTextMessageWithFormat("cost.error"));
+                src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.error"));
                 return false;
             }
 
             if (message) {
-                src.sendMessage(Util.getTextMessageWithFormat("cost.complete", getCurrencySymbol(cost)));
+                src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.complete", getCurrencySymbol(cost)));
             }
         }
 
@@ -98,18 +97,18 @@ public class EconHelper {
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getOrCreateAccount(src.getUniqueId());
             if (!a.isPresent() && src.isOnline()) {
-                src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.noaccount"));
+                src.getPlayer().get().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.noaccount"));
                 return false;
             }
 
             TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
             if (tr.getResult() != ResultType.SUCCESS && src.isOnline()) {
-                src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.error"));
+                src.getPlayer().get().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.error"));
                 return false;
             }
 
             if (message && src.isOnline()) {
-                src.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("cost.refund", getCurrencySymbol(cost)));
+                src.getPlayer().get().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.refund", getCurrencySymbol(cost)));
             }
         }
 

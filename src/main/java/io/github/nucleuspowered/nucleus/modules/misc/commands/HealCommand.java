@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -25,14 +23,14 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("heal")
-public class HealCommand extends CommandBase<CommandSource> {
+public class HealCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private static final String player = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -53,14 +51,14 @@ public class HealCommand extends CommandBase<CommandSource> {
         Player pl = opl.get();
         if (pl.offer(Keys.HEALTH, pl.get(Keys.MAX_HEALTH).get()).isSuccessful()) {
             pl.offer(Keys.FIRE_TICKS, 0);
-            pl.sendMessages(Util.getTextMessageWithFormat("command.heal.success.self"));
+            pl.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.heal.success.self"));
             if (!pl.equals(src)) {
-                src.sendMessages(Util.getTextMessageWithFormat("command.heal.success.other", pl.getName()));
+                src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.heal.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessages(Util.getTextMessageWithFormat("command.heal.error"));
+            src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.heal.error"));
             return CommandResult.empty();
         }
     }

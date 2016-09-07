@@ -6,11 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -29,7 +27,7 @@ import java.util.Optional;
  *
  * Command - /powertool del|[command].
  *
- * Permission: nucleus.powertool.base
+ * Permission: plugin.powertool.base
  */
 @Permissions
 @RunAsync
@@ -37,7 +35,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand({"powertool", "pt"})
-public class PowertoolCommand extends CommandBase<Player> {
+public class PowertoolCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;
     private final String commandKey = "command";
@@ -51,7 +49,7 @@ public class PowertoolCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Optional<ItemStack> itemStack = src.getItemInHand();
         if (!itemStack.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.noitem"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.noitem"));
             return CommandResult.empty();
         }
 
@@ -64,10 +62,10 @@ public class PowertoolCommand extends CommandBase<Player> {
     private CommandResult viewPowertool(Player src, UserService user, ItemType item) {
         Optional<List<String>> cmds = user.getPowertoolForItem(item);
         if (cmds.isPresent() && !cmds.get().isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.viewcmds", item.getId()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.viewcmds", item.getId()));
             cmds.get().forEach(f -> src.sendMessage(Text.of(TextColors.YELLOW, f)));
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.nocmds", item.getId()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.nocmds", item.getId()));
         }
 
         return CommandResult.success();
@@ -81,7 +79,7 @@ public class PowertoolCommand extends CommandBase<Player> {
         }
 
         user.setPowertool(item, Lists.newArrayList(command));
-        src.sendMessage(Util.getTextMessageWithFormat("command.powertool.set", item.getId(), command));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.set", item.getId(), command));
         return CommandResult.success();
     }
 }

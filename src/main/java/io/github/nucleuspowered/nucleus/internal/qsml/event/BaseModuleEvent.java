@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.qsml.event;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.enums.ModuleEnableState;
 import io.github.nucleuspowered.nucleus.api.events.NucleusModuleEvent;
 import io.github.nucleuspowered.nucleus.api.exceptions.ModulesLoadedException;
@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 
 public abstract class BaseModuleEvent extends AbstractEvent implements NucleusModuleEvent {
 
-    final Nucleus plugin;
+    final NucleusPlugin plugin;
     private final Cause cause;
     private final Map<String, ModuleEnableState> state;
 
-    private BaseModuleEvent(Nucleus plugin) {
+    private BaseModuleEvent(NucleusPlugin plugin) {
         this.cause = Cause.source(plugin).build();
         this.plugin = plugin;
         this.state = getState();
@@ -57,7 +57,7 @@ public abstract class BaseModuleEvent extends AbstractEvent implements NucleusMo
     }
 
     public static class AboutToConstructEvent extends BaseModuleEvent implements NucleusModuleEvent.AboutToConstruct {
-        public AboutToConstructEvent(Nucleus plugin) {
+        public AboutToConstructEvent(NucleusPlugin plugin) {
             super(plugin);
         }
 
@@ -80,28 +80,28 @@ public abstract class BaseModuleEvent extends AbstractEvent implements NucleusMo
 
     public static class AboutToEnable extends BaseModuleEvent implements NucleusModuleEvent.AboutToEnable {
 
-        public AboutToEnable(Nucleus plugin) {
+        public AboutToEnable(NucleusPlugin plugin) {
             super(plugin);
         }
     }
 
     public static class Complete extends BaseModuleEvent implements NucleusModuleEvent.Complete {
 
-        public Complete(Nucleus plugin) {
+        public Complete(NucleusPlugin plugin) {
             super(plugin);
         }
     }
 
     public static class PreEnable extends BaseModuleEvent implements NucleusModuleEvent.PreEnable {
 
-        public PreEnable(Nucleus plugin) {
+        public PreEnable(NucleusPlugin plugin) {
             super(plugin);
         }
     }
 
     public static class Enabled extends BaseModuleEvent implements NucleusModuleEvent.Enabled {
 
-        public Enabled(Nucleus plugin) {
+        public Enabled(NucleusPlugin plugin) {
             super(plugin);
         }
     }

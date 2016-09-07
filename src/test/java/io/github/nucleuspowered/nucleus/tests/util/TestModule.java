@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.tests.util;
 
 import com.google.inject.AbstractModule;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -46,13 +46,13 @@ public class TestModule extends AbstractModule {
 
         this.bind(CoreConfigAdapter.class).toInstance(mock);
 
-        Nucleus plugin = getMockPlugin();
-        this.bind(Nucleus.class).toInstance(plugin);
+        NucleusPlugin plugin = getMockPlugin();
+        this.bind(NucleusPlugin.class).toInstance(plugin);
         this.bind(UserDataManager.class).toInstance(plugin.getUserDataManager());
     }
 
-    private Nucleus getMockPlugin() {
-        Nucleus plugin = Mockito.mock(Nucleus.class);
+    private NucleusPlugin getMockPlugin() {
+        NucleusPlugin plugin = Mockito.mock(NucleusPlugin.class);
         PermissionRegistry pr = new PermissionRegistry();
         Mockito.when(plugin.getPermissionRegistry()).thenReturn(pr);
         Mockito.when(plugin.getUserDataManager()).thenReturn(Mockito.mock(UserDataManager.class));

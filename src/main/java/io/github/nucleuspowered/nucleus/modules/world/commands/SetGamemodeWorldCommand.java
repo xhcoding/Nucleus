@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -26,11 +24,11 @@ import java.util.Optional;
  * Sets gamemode of world.
  *
  * Command Usage: /world setgamemode [gamemode] [world] Permission:
- * nucleus.world.setgamemode.base
+ * plugin.world.setgamemode.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setgamemode", "setgm", "gamemode", "gm"}, subcommandOf = WorldCommand.class)
-public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
+public class SetGamemodeWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String gamemode = "gamemode";
     private final String world = "world";
@@ -48,14 +46,14 @@ public class SetGamemodeWorldCommand extends CommandBase<CommandSource> {
 
         if (optWorldProperties.isPresent()) {
             optWorldProperties.get().setGameMode(gamemodeInput);
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.setgamemode.success"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setgamemode.success"));
         } else {
             if (src instanceof Player) {
                 Player player = (Player) src;
                 player.getWorld().getProperties().setGameMode(gamemodeInput);
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.setgamemode.success"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setgamemode.success"));
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.player"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.player"));
                 return CommandResult.empty();
             }
         }

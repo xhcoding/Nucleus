@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -30,11 +29,11 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 @NoCooldown
 @NoCost
 @RegisterCommand({ "nucleus" })
-public class NucleusCommand extends CommandBase<CommandSource> {
+public class NucleusCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private ModuleContainer container;
 
-    private final Text version = Text.of(MESSAGE_PREFIX, TextColors.GREEN, NAME + " version " + VERSION + "(built from commit " + GIT_HASH + ")");
+    private final Text version = Text.of(TextColors.GREEN, NAME + " version " + VERSION + " (built from commit " + GIT_HASH + ")");
     private Text modules = null;
 
     @Override

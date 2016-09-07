@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.util.ThrownBiFunction;
@@ -86,7 +86,7 @@ public class NicknameArgument extends CommandElement {
             return obj;
         } else if (playerOnly) {
             // Rethrow;
-            throw args.createError(Util.getTextMessageWithFormat("args.user.nouser", fName));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.user.nouser", fName));
         }
 
         // Now check user names
@@ -103,9 +103,9 @@ public class NicknameArgument extends CommandElement {
                 .collect(Collectors.toList());
 
         if (players.isEmpty()) {
-            throw args.createError(Util.getTextMessageWithFormat(type == UnderlyingType.PLAYER_CONSOLE ? "args.playerconsole.nouser" : "args.user.nouser", fName));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(type == UnderlyingType.PLAYER_CONSOLE ? "args.playerconsole.nouser" : "args.user.nouser", fName));
         } else if (players.size() > 1 && this.onlyOne) {
-            throw args.createError(Util.getTextMessageWithFormat("args.user.toomany", fName));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.user.toomany", fName));
         }
 
         // We know they are online.
@@ -177,7 +177,7 @@ public class NicknameArgument extends CommandElement {
                     }
 
                     if (users.size() > 1 && this.onlyOne) {
-                        throw a.createError(Util.getTextMessageWithFormat("args.user.toomany", s));
+                        throw a.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.user.toomany", s));
                     }
 
                     return users;

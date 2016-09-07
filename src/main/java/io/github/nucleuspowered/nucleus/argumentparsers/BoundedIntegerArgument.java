@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -36,12 +36,12 @@ public class BoundedIntegerArgument extends CommandElement {
         try {
             int value = Integer.parseInt(args.next());
             if (value > max || value < min) {
-                throw args.createError(Util.getTextMessageWithFormat("args.boundedinteger.outofbounds", String.valueOf(min), String.valueOf(max)));
+                throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.boundedinteger.outofbounds", String.valueOf(min), String.valueOf(max)));
             }
 
             return value;
         } catch (NumberFormatException e) {
-            throw args.createError(Util.getTextMessageWithFormat("args.boundedinteger.nonumber"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.boundedinteger.nonumber"));
         }
     }
 

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailFilter;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
@@ -67,7 +68,7 @@ public class MailFilterArgument extends CommandElement {
                         try {
                             lmf.add(handler.createPlayerFilter(u));
                         } catch (NoSuchPlayerException e) {
-                            throw args.createError(Util.getTextMessageWithFormat("args.mailfilter.player", players.group(1)));
+                            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.mailfilter.player", players.group(1)));
                         }
                     }
                 }

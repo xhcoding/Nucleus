@@ -6,14 +6,14 @@ package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 
 import java.util.Map;
 
 public abstract class ListenerBase {
     @Inject
-    protected Nucleus plugin;
+    protected NucleusPlugin plugin;
 
     public Map<String, PermissionInformation> getPermissions() {
         return Maps.newHashMap();

@@ -4,14 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -20,10 +13,9 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 
+import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-
-import javax.inject.Inject;
 
 @Permissions(root = "teleport")
 @NoWarmup
@@ -31,7 +23,7 @@ import javax.inject.Inject;
 @NoCooldown
 @RegisterCommand({"tpaall", "tpaskall"})
 @RunAsync
-public class TeleportAskAllHereCommand extends CommandBase<Player> {
+public class TeleportAskAllHereCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
@@ -51,12 +43,12 @@ public class TeleportAskAllHereCommand extends CommandBase<Player> {
                     .setBypassToggle(true).setSilentSource(true);
             tpHandler.addAskQuestion(x.getUniqueId(), new TeleportHandler.TeleportPrep(Instant.now().plus(30, ChronoUnit.SECONDS), null, 0, tb));
 
-            x.sendMessage(Util.getTextMessageWithFormat("command.tpahere.question", src.getName()));
+            x.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpahere.question", src.getName()));
 
             x.sendMessage(tpHandler.getAcceptDenyMessage());
         });
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.tpaall.success"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpaall.success"));
         return CommandResult.success();
     }
 }

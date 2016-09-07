@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,7 +20,7 @@ import java.util.Optional;
 /**
  * Deletes the powertool associated with the item in the hand.
  *
- * Permission: nucleus.powertool.base (uses the base permission)
+ * Permission: plugin.powertool.base (uses the base permission)
  */
 @Permissions(alias = "powertool")
 @RunAsync
@@ -30,7 +28,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand(value = {"delete", "del", "rm", "remove"}, subcommandOf = PowertoolCommand.class)
-public class DeletePowertoolCommand extends CommandBase<Player> {
+public class DeletePowertoolCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;
 
@@ -38,7 +36,7 @@ public class DeletePowertoolCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Optional<ItemStack> itemStack = src.getItemInHand();
         if (!itemStack.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.noitem"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.noitem"));
             return CommandResult.empty();
         }
 
@@ -48,9 +46,9 @@ public class DeletePowertoolCommand extends CommandBase<Player> {
         Optional<List<String>> cmds = user.getPowertoolForItem(item);
         if (cmds.isPresent() && !cmds.get().isEmpty()) {
             user.clearPowertool(item);
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.removed", item.getId()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.removed", item.getId()));
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.nocmds", item.getId()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.nocmds", item.getId()));
         }
 
         return CommandResult.success();

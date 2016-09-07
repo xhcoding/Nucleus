@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers.selectors;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.interfaces.SelectorParser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -43,7 +43,7 @@ public class NearestPlayerFromSpecifiedLocation implements SelectorParser<Player
         int y = Integer.parseInt(m.group(3));
         int z = Integer.parseInt(m.group(4));
 
-        World spongeWorld = Sponge.getServer().getWorld(world).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.selector.noworld", world)));
+        World spongeWorld = Sponge.getServer().getWorld(world).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.noworld", world)));
 
         // Remove players "out of this world", then sort players by distance from current location.
         return NearestPlayer.getNearestPlayerFromLocation(Sponge.getServer().getOnlinePlayers(), new Location<>(spongeWorld, x, y, z), args);

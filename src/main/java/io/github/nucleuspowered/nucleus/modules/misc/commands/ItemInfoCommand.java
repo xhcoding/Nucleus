@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
@@ -13,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.DataScanner;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.servershop.ServerShopModule;
@@ -39,7 +37,7 @@ import java.util.*;
 
 @Permissions
 @RegisterCommand({"iteminfo", "itemdb"})
-public class ItemInfoCommand extends CommandBase<Player> {
+public class ItemInfoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private ItemDataService itemDataService;
     @Inject private EconHelper econHelper;
@@ -58,7 +56,7 @@ public class ItemInfoCommand extends CommandBase<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("extended", new PermissionInformation(Util.getMessageWithFormat("permission.iteminfo.extended"), SuggestedLevel.ADMIN));
+        m.put("extended", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.iteminfo.extended"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -72,23 +70,23 @@ public class ItemInfoCommand extends CommandBase<Player> {
                 it = ((ItemType) ct).getTemplate().createStack();
             } else {
                 BlockState bs = ((BlockState) ct);
-                it = bs.getType().getItem().orElseThrow(() -> new CommandException(Util.getTextMessageWithFormat("command.iteminfo.invalidblockstate"))).getTemplate().createStack();
+                it = bs.getType().getItem().orElseThrow(() -> new CommandException(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.invalidblockstate"))).getTemplate().createStack();
                 it.offer(Keys.ITEM_BLOCKSTATE, bs);
             }
         } else if (player.getItemInHand().isPresent()) {
             it = player.getItemInHand().get();
         } else {
-            player.sendMessage(Util.getTextMessageWithFormat("command.iteminfo.none"));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.none"));
             return CommandResult.empty();
         }
 
         final List<Text> lt = new ArrayList<>();
         String id = it.getItem().getId().toLowerCase();
-        lt.add(Util.getTextMessageWithFormat("command.iteminfo.id", it.getItem().getId(), it.getTranslation().get()));
+        lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.id", it.getItem().getId(), it.getTranslation().get()));
 
         Optional<BlockState> obs = it.get(Keys.ITEM_BLOCKSTATE);
         if (obs.isPresent()) {
-            lt.add(Util.getTextMessageWithFormat("command.iteminfo.extendedid", obs.get().getId()));
+            lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.extendedid", obs.get().getId()));
             id = obs.get().getId().toLowerCase();
         }
 
@@ -118,7 +116,7 @@ public class ItemInfoCommand extends CommandBase<Player> {
             int buyPrice = itemDataNode.getServerBuyPrice();
             if (buyPrice > -1) {
                 lt.add(Text.EMPTY);
-                lt.add(Util.getTextMessageWithFormat("command.iteminfo.buyprice", econHelper.getCurrencySymbol(buyPrice)));
+                lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.buyprice", econHelper.getCurrencySymbol(buyPrice)));
                 space = true;
             }
 
@@ -128,14 +126,14 @@ public class ItemInfoCommand extends CommandBase<Player> {
                     lt.add(Text.EMPTY);
                 }
 
-                lt.add(Util.getTextMessageWithFormat("command.iteminfo.sellprice", econHelper.getCurrencySymbol(sellPrice)));
+                lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.sellprice", econHelper.getCurrencySymbol(sellPrice)));
             }
         }
 
         List<String> aliases = itemDataNode.getAliases();
         if (!aliases.isEmpty()) {
             lt.add(Text.EMPTY);
-            lt.add(Util.getTextMessageWithFormat("command.iteminfo.list.aliases"));
+            lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.list.aliases"));
 
             Text.Builder tb = Text.builder();
             Iterator<String> iterator = aliases.iterator();
@@ -149,7 +147,7 @@ public class ItemInfoCommand extends CommandBase<Player> {
         }
 
         Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(lt).padding(Text.of(TextColors.GREEN, "-"))
-                .title(Util.getTextMessageWithFormat("command.iteminfo.list.header")).sendTo(player);
+                .title(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.list.header")).sendTo(player);
         return CommandResult.success();
     }
 }

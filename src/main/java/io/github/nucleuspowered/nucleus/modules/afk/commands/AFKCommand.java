@@ -5,9 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.afk.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
@@ -24,23 +22,23 @@ import java.util.Map;
 @NoWarmup
 @NoCost
 @RunAsync
-public class AFKCommand extends CommandBase<Player> {
+public class AFKCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private AFKHandler afkHandler;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.toggle", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
-        m.put("exempt.kick", new PermissionInformation(Util.getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
-        m.put("notify", new PermissionInformation(Util.getMessageWithFormat("permission.afk.notify"), SuggestedLevel.ADMIN));
+        m.put("exempt.toggle", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
+        m.put("exempt.kick", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
+        m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.afk.notify"), SuggestedLevel.ADMIN));
         return m;
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         if (permissions.testSuffix(src, "exempt.toggle")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.afk.exempt"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.afk.exempt"));
             return CommandResult.empty();
         }
 

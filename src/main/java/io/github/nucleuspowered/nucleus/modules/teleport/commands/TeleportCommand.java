@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
@@ -14,7 +13,6 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
@@ -35,7 +33,7 @@ import java.util.Optional;
 @Permissions(root = "teleport", alias = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand({"teleport", "tp"})
 @ConfigCommandAlias("teleport")
-public class TeleportCommand extends CommandBase<CommandSource> {
+public class TeleportCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String playerFromKey = "playerFrom";
     private final String playerKey = "player";
@@ -77,7 +75,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
         if (source instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
             Player to = args.<Player>getOne(playerKey).get();
             if (!userDataManager.get(to).get().isTeleportToggled()) {
-                source.sendMessage(Util.getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
+                source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return ContinueMode.STOP;
             }
         }
@@ -108,13 +106,13 @@ public class TeleportCommand extends CommandBase<CommandSource> {
         if (ofrom.isPresent()) {
             from = ofrom.get();
             if (from.equals(src)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.teleport.player.noself"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.teleport.player.noself"));
                 return CommandResult.empty();
             }
         } else if (src instanceof Player) {
             from = (Player) src;
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.playeronly"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.playeronly"));
             return CommandResult.empty();
         }
 
@@ -130,7 +128,7 @@ public class TeleportCommand extends CommandBase<CommandSource> {
     @Override
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode ccn = super.getDefaults();
-        ccn.getNode("use-tp-command").setComment(Util.getMessageWithFormat("config.command.teleport.tp")).setValue(true);
+        ccn.getNode("use-tp-command").setComment(plugin.getMessageProvider().getMessageWithFormat("config.command.teleport.tp")).setValue(true);
         return ccn;
     }
 }

@@ -4,8 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import org.spongepowered.api.Sponge;
@@ -25,10 +24,10 @@ import java.util.Optional;
 
 public class NoteArgument extends CommandElement {
 
-    private Nucleus plugin;
+    private NucleusPlugin plugin;
     private NoteHandler handler;
 
-    public NoteArgument(@Nullable Text key, Nucleus plugin, NoteHandler handler) {
+    public NoteArgument(@Nullable Text key, NucleusPlugin plugin, NoteHandler handler) {
         super(key);
         this.plugin = plugin;
         this.handler = handler;
@@ -39,19 +38,19 @@ public class NoteArgument extends CommandElement {
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         Optional<String> optPlayer = args.nextIfPresent();
         if (!optPlayer.isPresent()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.note.nouserarg"));
+            throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.note.nouserarg"));
         }
         String player = optPlayer.get();
 
         Optional<User> optUser = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(player);
         if (!optUser.isPresent()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.note.nouser", player));
+            throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.note.nouser", player));
         }
         User user = optUser.get();
 
         Optional<String> optIndex = args.nextIfPresent();
         if (!optIndex.isPresent()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.note.noindex", user.getName()));
+            throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.note.noindex", user.getName()));
         }
 
         List<NoteData> noteData = handler.getNotes(user);
@@ -59,17 +58,17 @@ public class NoteArgument extends CommandElement {
         try {
             index = Integer.parseInt(optIndex.get()) - 1;
             if (index >= noteData.size() || index < 0) {
-                throw args.createError(Util.getTextMessageWithFormat("args.note.nonotedata", optIndex.get(), user.getName()));
+                throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.note.nonotedata", optIndex.get(), user.getName()));
             }
         } catch (NumberFormatException ex) {
-            throw args.createError(Util.getTextMessageWithFormat("args.note.indexnotnumber"));
+            throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.note.indexnotnumber"));
         }
 
         if (!noteData.isEmpty()) {
             return new Result(user, noteData.get(index));
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.note.nousernotes",user.getName()));
+        throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.note.nousernotes",user.getName()));
     }
 
     @Override

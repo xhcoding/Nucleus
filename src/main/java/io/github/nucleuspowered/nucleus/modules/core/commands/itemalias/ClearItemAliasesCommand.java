@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands.itemalias;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -23,9 +21,9 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "nucleus.itemalias")
+@Permissions(root = "plugin.itemalias")
 @RegisterCommand(value = {"clear"}, subcommandOf = ItemAliasCommand.class)
-public class ClearItemAliasesCommand extends CommandBase<CommandSource> {
+public class ClearItemAliasesCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject
     private ItemDataService itemDataService;
@@ -46,7 +44,7 @@ public class ClearItemAliasesCommand extends CommandBase<CommandSource> {
         node.clearAliases();
         itemDataService.setDataForItem(id, node);
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.removeitemalias.cleared", id));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.removeitemalias.cleared", id));
         return CommandResult.success();
     }
 }

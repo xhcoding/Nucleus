@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
@@ -29,7 +28,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tphere", "tph"})
-public class TeleportHereCommand extends CommandBase<Player> {
+public class TeleportHereCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String playerKey = "player";
     private final String quietKey = "quiet";

@@ -6,8 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.handlers;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
@@ -27,9 +26,9 @@ public class JailHandler implements NucleusJailService {
 
     @Inject private GeneralService store;
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
 
-    public JailHandler(Nucleus plugin) {
+    public JailHandler(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -130,7 +129,7 @@ public class JailHandler implements NucleusJailService {
             Player player = user.getPlayer().get();
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 player.setLocation(ow.isPresent() ? ow.get() : player.getWorld().getSpawnLocation());
-                player.sendMessage(Util.getTextMessageWithFormat("jail.elapsed"));
+                player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("jail.elapsed"));
 
                 // Remove after the teleport for the back data.
                 iqsu.removeJailData();

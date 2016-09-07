@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.admin.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -50,7 +49,7 @@ public class AdminListener extends ListenerBase {
         }
 
         if (nu.isFrozen()) {
-            player.sendMessage(Util.getTextMessageWithFormat(message));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(message));
             return true;
         }
 

@@ -27,7 +27,7 @@ public class MessageConfig extends AbstractStandardNodeConfig<CommentedConfigura
     @Override
     protected CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode ccn = SimpleCommentedConfigurationNode.root();
-        ResourceMessageProvider rmp = new ResourceMessageProvider();
+        ResourceMessageProvider rmp = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
         rmp.getKeys().forEach(x -> ccn.getNode((Object[])x.split("\\.")).setValue(rmp.getMessageFromKey(x).get()));
 
         return ccn;

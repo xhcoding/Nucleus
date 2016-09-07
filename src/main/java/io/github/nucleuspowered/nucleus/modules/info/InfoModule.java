@@ -24,14 +24,14 @@ public class InfoModule extends ConfigurableModule<InfoConfigAdapter> {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        nucleus.addTextFileController(
+        plugin.addTextFileController(
                 MOTD_KEY,
-                Sponge.getAssetManager().getAsset(nucleus, "motd.txt").get(),
-                nucleus.getConfigDirPath().resolve("motd.txt"));
+                Sponge.getAssetManager().getAsset(plugin, "motd.txt").get(),
+                plugin.getConfigDirPath().resolve("motd.txt"));
 
-        InfoHandler ih = new InfoHandler(nucleus);
+        InfoHandler ih = new InfoHandler(plugin);
         serviceManager.registerService(InfoHandler.class, ih);
-        nucleus.registerReloadable(ih::onReload);
+        plugin.registerReloadable(ih::onReload);
         ih.onReload();
     }
 }

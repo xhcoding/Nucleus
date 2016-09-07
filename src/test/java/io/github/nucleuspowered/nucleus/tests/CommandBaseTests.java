@@ -8,7 +8,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.Test;
@@ -106,7 +105,7 @@ public class CommandBaseTests extends TestBase {
 
     @Permissions
     @RegisterCommand("test")
-    private class PlayerCommand extends CommandBase<Player> {
+    private class PlayerCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
         @Override
         public String[] getAliases() {
@@ -121,7 +120,7 @@ public class CommandBaseTests extends TestBase {
 
     @Permissions
     @RegisterCommand("test")
-    private class BasicCommand extends CommandBase<CommandSource> {
+    private class BasicCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
         @Override
         public String[] getAliases() {

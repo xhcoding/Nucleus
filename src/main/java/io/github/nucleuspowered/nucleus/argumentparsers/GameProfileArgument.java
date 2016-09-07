@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -34,7 +34,7 @@ public class GameProfileArgument extends CommandElement {
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String name = args.next();
         if (!p.matcher(name).matches()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.gameprofile.format"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.gameprofile.format"));
         }
 
         List<GameProfile> lgp = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).getAll()
@@ -42,7 +42,7 @@ public class GameProfileArgument extends CommandElement {
                 .collect(Collectors.toList());
 
         if (lgp.isEmpty()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.gameprofile.none", name));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.gameprofile.none", name));
         }
 
         if (lgp.size() == 1) {

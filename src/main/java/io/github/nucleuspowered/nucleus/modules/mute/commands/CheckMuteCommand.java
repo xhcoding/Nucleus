@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.spongepowered.api.Sponge;
@@ -36,7 +35,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand("checkmute")
-public class CheckMuteCommand extends CommandBase<CommandSource> {
+public class CheckMuteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private MuteHandler handler;
     private final String playerArgument = "player";
@@ -53,7 +52,7 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
 
         Optional<MuteData> omd = handler.getPlayerMuteData(user);
         if (!omd.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkmute.none", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.none", user.getName()));
             return CommandResult.success();
         }
 
@@ -64,21 +63,21 @@ public class CheckMuteCommand extends CommandBase<CommandSource> {
             name = Sponge.getServer().getConsole().getName();
         } else {
             Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getMuter());
-            name = ou.isPresent() ? ou.get().getName() : Util.getMessageWithFormat("standard.unknown");
+            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
         String time = "";
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
             time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
-            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
+            forString = " " + plugin.getMessageProvider().getMessageWithFormat("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
             time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
+            forString = " " + plugin.getMessageProvider().getMessageWithFormat("standard.for") + " ";
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.checkmute.mute", user.getName(), name, forString, time));
-        src.sendMessage(Util.getTextMessageWithFormat("standard.reason", md.getReason()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.mute", user.getName(), name, forString, time));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", md.getReason()));
         return CommandResult.success();
     }
 }

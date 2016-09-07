@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
@@ -40,17 +40,17 @@ public class KitArgument extends CommandElement {
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String kitName = args.next();
         if (kitName.isEmpty()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.kit.noname"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.kit.noname"));
         }
 
         Optional<Kit> kit = kitConfig.getKit(kitName);
 
         if (!kit.isPresent()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.kit.noexist"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.kit.noexist"));
         }
 
         if (!checkPermission(source, kitName)) {
-            throw args.createError(Util.getTextMessageWithFormat("args.kit.noperms"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.kit.noperms"));
         }
 
         return new KitInfo(kit.get(), kitName);

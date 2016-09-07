@@ -7,13 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
@@ -38,7 +32,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand({"checkjail"})
-public class CheckJailCommand extends CommandBase<CommandSource> {
+public class CheckJailCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String playerKey = "player";
     @Inject private JailHandler handler;
@@ -54,7 +48,7 @@ public class CheckJailCommand extends CommandBase<CommandSource> {
         Optional<JailData> jail = handler.getPlayerJailData(user);
 
         if (!jail.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkjail.nojail", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.nojail", user.getName()));
             return CommandResult.success();
         }
 
@@ -64,21 +58,21 @@ public class CheckJailCommand extends CommandBase<CommandSource> {
             name = Sponge.getServer().getConsole().getName();
         } else {
             Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getJailer());
-            name = ou.isPresent() ? ou.get().getName() : Util.getMessageWithFormat("standard.unknown");
+            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
         String time = "";
         String forString = "";
         if (md.getEndTimestamp().isPresent()) {
             time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
-            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
+            forString = " " + plugin.getMessageProvider().getMessageWithFormat("standard.for") + " ";
         } else if (md.getTimeFromNextLogin().isPresent()) {
             time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = " " + Util.getMessageWithFormat("standard.for") + " ";
+            forString = " " + plugin.getMessageProvider().getMessageWithFormat("standard.for") + " ";
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.checkjail.jailed", user.getName(), md.getJailName(), name, forString, time));
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(Util.getMessageWithFormat("standard.reason"), md.getReason())));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailed", user.getName(), md.getJailName(), name, forString, time));
+        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(plugin.getMessageProvider().getMessageWithFormat("standard.reason"), md.getReason())));
         return CommandResult.success();
     }
 }

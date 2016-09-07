@@ -27,8 +27,8 @@ public class BackModule extends ConfigurableModule<BackConfigAdapter> {
         super.performPreTasks();
 
         BackHandler m = new BackHandler();
-        nucleus.getInjector().injectMembers(m);
+        plugin.getInjector().injectMembers(m);
         serviceManager.registerService(BackHandler.class, m);
-        game.getServiceManager().setProvider(nucleus, NucleusBackService.class, m);
+        game.getServiceManager().setProvider(plugin, NucleusBackService.class, m);
     }
 }

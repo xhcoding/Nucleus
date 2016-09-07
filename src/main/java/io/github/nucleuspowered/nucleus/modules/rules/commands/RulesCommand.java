@@ -5,9 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.rules.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class RulesCommand extends CommandBase<CommandSource> {
+public class RulesCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private RulesConfigAdapter rca;
 
@@ -40,7 +38,7 @@ public class RulesCommand extends CommandBase<CommandSource> {
 
         List<String> r = rca.getNodeOrDefault().getRuleSet();
         if (r.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.rules.empty"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.empty"));
             return CommandResult.empty();
         }
 
@@ -52,7 +50,7 @@ public class RulesCommand extends CommandBase<CommandSource> {
         List<Text> rules = r.stream()
                 .map(TextSerializers.FORMATTING_CODE::deserialize).collect(Collectors.toList());
         PaginationList.Builder pb = Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(rules).padding(Text.of(TextColors.GREEN, "-"))
-                .title(Util.getTextMessageWithFormat("command.rules.list.header"));
+                .title(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.list.header"));
 
         if (!(src instanceof Player)) {
             pb.linesPerPage(-1);

@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -25,7 +23,7 @@ import org.spongepowered.api.text.Text;
 /**
  * Resets a kit usage for player.
  *
- * Command Usage: /kit list Permission: nucleus.kit.list.base
+ * Command Usage: /kit list Permission: plugin.kit.list.base
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"resetusage", "reset"}, subcommandOf = KitCommand.class)
@@ -33,7 +31,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitResetUsageCommand extends CommandBase<CommandSource> {
+public class KitResetUsageCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
@@ -60,11 +58,11 @@ public class KitResetUsageCommand extends CommandBase<CommandSource> {
             // Remove the key.
             inu.removeKitLastUsedTime(kitInfo.name.toLowerCase());
 
-            player.sendMessage(Util.getTextMessageWithFormat("command.kit.resetuser.success", u.getName(), kitInfo.name));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.resetuser.success", u.getName(), kitInfo.name));
             return CommandResult.success();
         }
 
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.resetuser.empty", u.getName(), kitInfo.name));
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.resetuser.empty", u.getName(), kitInfo.name));
         return CommandResult.empty();
     }
 }

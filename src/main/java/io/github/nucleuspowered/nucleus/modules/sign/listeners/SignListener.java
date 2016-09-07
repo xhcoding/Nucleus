@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.sign.listeners;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -37,7 +36,7 @@ public class SignListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(permission, new PermissionInformation(Util.getMessageWithFormat("permission.sign.formatting"), SuggestedLevel.ADMIN));
+        mp.put(permission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.sign.formatting"), SuggestedLevel.ADMIN));
         return mp;
     }
 }

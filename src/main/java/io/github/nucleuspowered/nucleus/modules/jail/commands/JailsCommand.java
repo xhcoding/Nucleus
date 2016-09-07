@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @RegisterCommand("jails")
 @Permissions(root = "jail", alias = "list", suggestedLevel = SuggestedLevel.MOD)
-public class JailsCommand extends CommandBase<CommandSource> {
+public class JailsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private JailHandler handler;
 
@@ -41,17 +39,17 @@ public class JailsCommand extends CommandBase<CommandSource> {
 
         Map<String, LocationData> mjs = handler.getJails();
         if (mjs.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jails.nojails"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.nojails"));
             return CommandResult.empty();
         }
 
         List<Text> lt = mjs.entrySet().stream()
                 .map(x -> Text.builder(x.getKey().toLowerCase()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
                         .onClick(TextActions.runCommand("/jails info " + x.getKey().toLowerCase()))
-                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.jails.jailprompt", x.getKey().toLowerCase()))).build())
+                        .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.jailprompt", x.getKey().toLowerCase()))).build())
                 .collect(Collectors.toList());
 
-        ps.builder().title(Util.getTextMessageWithFormat("command.jails.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt).sendTo(src);
+        ps.builder().title(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt).sendTo(src);
         return CommandResult.success();
     }
 }

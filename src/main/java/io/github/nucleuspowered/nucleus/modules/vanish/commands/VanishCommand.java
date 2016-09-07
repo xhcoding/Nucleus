@@ -5,10 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.NameUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -30,7 +27,7 @@ import java.util.Optional;
 @NoCost
 @NoWarmup
 @RegisterCommand({"vanish", "v"})
-public class VanishCommand extends CommandBase<CommandSource> {
+public class VanishCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String b = "toggle";
     private final String playerKey = "player";
@@ -48,7 +45,7 @@ public class VanishCommand extends CommandBase<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
-        mspi.put("other", new PermissionInformation(Util.getMessageWithFormat("permission.vanish.other"), SuggestedLevel.ADMIN));
+        mspi.put("other", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.other"), SuggestedLevel.ADMIN));
         return mspi;
     }
 
@@ -69,19 +66,19 @@ public class VanishCommand extends CommandBase<CommandSource> {
         playerToVanish.offer(Keys.INVISIBILITY_PREVENTS_TARGETING, toVanish);
         playerToVanish.offer(Keys.IS_SILENT, toVanish);
         if (dtr.isSuccessful()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.vanish.success",
-                    toVanish ? Util.getMessageWithFormat("command.vanish.vanished") : Util.getMessageWithFormat("command.vanish.visible")));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.success",
+                    toVanish ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") : plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
 
             if (!(src instanceof Player) || !(((Player)src).getUniqueId().equals(playerToVanish.getUniqueId()))) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.vanish.successplayer",
-                        TextSerializers.FORMATTING_CODE.serialize(NameUtil.getName(playerToVanish)),
-                        toVanish ? Util.getMessageWithFormat("command.vanish.vanished") : Util.getMessageWithFormat("command.vanish.visible")));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.successplayer",
+                        TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(playerToVanish)),
+                        toVanish ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") : plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
             }
 
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.vanish.fail"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.fail"));
         return CommandResult.empty();
     }
 }

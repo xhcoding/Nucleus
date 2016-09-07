@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers.selectors;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.interfaces.SelectorParser;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -40,7 +40,7 @@ public class AllPlayersFromWorld implements SelectorParser<Collection<Player>> {
         m.matches();
         String world = m.group(1);
 
-        World spongeWorld = Sponge.getServer().getWorld(world).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.selector.noworld", world)));
+        World spongeWorld = Sponge.getServer().getWorld(world).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.noworld", world)));
 
         return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getLocation().getExtent().getUniqueId().equals(spongeWorld.getUniqueId())).collect(Collectors.toList());
     }

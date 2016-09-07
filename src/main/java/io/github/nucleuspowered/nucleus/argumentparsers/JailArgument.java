@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandSource;
@@ -38,7 +38,7 @@ public class JailArgument extends CommandElement {
             return owl.get();
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.jail.nojail"));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.jail.nojail"));
     }
 
     @Override

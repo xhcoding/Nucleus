@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoWarmup
 @RegisterCommand(value = "set", subcommandOf = FirstKitCommand.class)
-public class FirstKitSetCommand extends CommandBase<Player> {
+public class FirstKitSetCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject
     private GeneralService gds;
@@ -35,7 +33,7 @@ public class FirstKitSetCommand extends CommandBase<Player> {
         final List<ItemStackSnapshot> stacks = slots.stream().filter(x -> x.peek().isPresent()).map(x -> x.peek().get().createSnapshot()).collect(Collectors.toList());
         gds.setFirstKit(stacks);
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.firstkit.set.success"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.set.success"));
         return CommandResult.success();
     }
 }

@@ -12,7 +12,8 @@ public class ConfigMessageProvider extends ResourceMessageProvider {
 
     private final MessageConfig mc;
 
-    public ConfigMessageProvider(MessageConfig mc) {
+    public ConfigMessageProvider(MessageConfig mc, String fallbackResource) {
+        super(fallbackResource);
         this.mc = mc;
     }
 

@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.data;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Represents data held about a user in {@link Nucleus}.
+ * Represents data held about a user in {@link NucleusPlugin}.
  *
  * <p>
  *     Please note that this is likely to disappear, in favour of separate module services.
@@ -108,7 +108,7 @@ public interface NucleusUser {
     boolean clearNotes();
 
     /**
-     * Gets whether Nucleus thinks the player should be invulnerable. Note, this means the player has been subject to
+     * Gets whether NucleusPlugin thinks the player should be invulnerable. Note, this means the player has been subject to
      * the /god command.
      *
      * @return <code>true</code> if so.
@@ -116,7 +116,7 @@ public interface NucleusUser {
     boolean isInvulnerable();
 
     /**
-     * Sets whether Nucleus thinks the player should be invulnerable. Note, this is the same as the player being subject to
+     * Sets whether NucleusPlugin thinks the player should be invulnerable. Note, this is the same as the player being subject to
      * the /god command.
      *
      * @param invuln <code>true</code> if so, <code>false</code> otherwise.
@@ -124,7 +124,7 @@ public interface NucleusUser {
     void setInvulnerable(boolean invuln);
 
     /**
-     * Gets whether Nucleus thinks the player should be flying. Note, this means the player has been subject to
+     * Gets whether NucleusPlugin thinks the player should be flying. Note, this means the player has been subject to
      * the /fly command.
      *
      * @return <code>true</code> if so.
@@ -132,7 +132,7 @@ public interface NucleusUser {
     boolean isFlying();
 
     /**
-     * Sets whether Nucleus thinks the player should be flying. This does not necessarily mean that the player is
+     * Sets whether NucleusPlugin thinks the player should be flying. This does not necessarily mean that the player is
      * actually flying, this is more for across restarts/reconnects/world transfer.
      *
      * @param fly <code>true</code> if so, <code>false</code> otherwise.

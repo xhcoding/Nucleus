@@ -14,7 +14,7 @@ import io.github.hsyyid.essentialcmds.managers.config.HomeConfig;
 import io.github.hsyyid.essentialcmds.managers.config.JailConfig;
 import io.github.hsyyid.essentialcmds.utils.Mail;
 import io.github.hsyyid.essentialcmds.utils.Utils;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
@@ -49,7 +49,7 @@ public class EssCmdsMigrator extends DataMigrator {
 
     @Override
     public void migrate(CommandSource src) throws Exception {
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.begin"));
+        src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.begin"));
 
         // Warps
         Optional<NucleusWarpService> warpService = Sponge.getServiceManager().provide(NucleusWarpService.class);
@@ -66,7 +66,7 @@ public class EssCmdsMigrator extends DataMigrator {
                 }
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.warps"));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.warps"));
         }
 
         // Blacklisted items
@@ -79,7 +79,7 @@ public class EssCmdsMigrator extends DataMigrator {
             }
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.blacklist"));
+        src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.blacklist"));
 
         // Homes
         Configurable homesConfig = HomeConfig.getConfig();
@@ -92,14 +92,14 @@ public class EssCmdsMigrator extends DataMigrator {
                 Transform<World> homeLocation = Utils.getHome(uniqueId, homeName);
 
                 if (homeLocation == null) {
-                    logger.warn(Util.getMessageWithFormat("command.nucleus.migrate.homefailiure", homeName, uuid.toString()));
+                    logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("command.nucleus.migrate.homefailiure", homeName, uuid.toString()));
                 } else {
                     getUser(uniqueId).ifPresent(x -> x.setHome(homeName, homeLocation.getLocation(), homeLocation.getRotation()));
                 }
             }
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.homes"));
+        src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.homes"));
 
         // Jails
         if (jailHandler != null) {
@@ -114,7 +114,7 @@ public class EssCmdsMigrator extends DataMigrator {
                         new Vector3d(0, 0, 0));
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.jails"));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.jails"));
 
             // Jailed players
             if (!jailHandler.getJails().isEmpty()) {
@@ -123,13 +123,13 @@ public class EssCmdsMigrator extends DataMigrator {
 
                     if (user.isPresent()) {
                         JailData data = new JailData(uuid, (String) jailHandler.getJails().keySet().toArray()[0],
-                                Util.getMessageWithFormat("command.jail.reason"), null);
+                                Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("command.jail.reason"), null);
                         jailHandler.jailPlayer(user.get(), data);
                     }
                 }
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.jailed"));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.jailed"));
         }
 
         // Mutes
@@ -138,12 +138,12 @@ public class EssCmdsMigrator extends DataMigrator {
                 Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(uuid);
 
                 if (user.isPresent()) {
-                    MuteData data = new MuteData(uuid, Util.getMessageWithFormat("command.mute.defaultreason"));
+                    MuteData data = new MuteData(uuid, Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("command.mute.defaultreason"));
                     muteHandler.mutePlayer(user.get(), data);
                 }
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.mutes"));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.mutes"));
         }
 
         // Nicknames
@@ -157,7 +157,7 @@ public class EssCmdsMigrator extends DataMigrator {
             getUser(UUID.fromString(uniqueId)).ifPresent(x -> x.setNickname(nick));
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.nicks"));
+        src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.nicks"));
 
         // Mail
         if (mailHandler != null) {
@@ -170,7 +170,7 @@ public class EssCmdsMigrator extends DataMigrator {
                 }
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.mail"));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.mail"));
         }
 
         // Locked Weather Worlds
@@ -179,7 +179,7 @@ public class EssCmdsMigrator extends DataMigrator {
             getWorld(uniqueId).ifPresent(x -> x.setLockWeather(true));
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.weather"));
+        src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.weather"));
 
         // Rules
         if (rca != null) {
@@ -190,9 +190,9 @@ public class EssCmdsMigrator extends DataMigrator {
             rca.setNode(rc);
             plugin.saveSystemConfig();
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.rules"));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.rules"));
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.success"));
+        src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.success"));
     }
 }

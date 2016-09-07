@@ -5,9 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -20,14 +18,14 @@ import org.spongepowered.api.text.Text;
 /**
  * Sets kit items.
  *
- * Command Usage: /kit add Permission: nucleus.kit.add.base
+ * Command Usage: /kit add Permission: plugin.kit.add.base
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"add"}, subcommandOf = KitCommand.class)
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitAddCommand extends CommandBase<Player> {
+public class KitAddCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private KitHandler kitConfig;
 
@@ -44,10 +42,10 @@ public class KitAddCommand extends CommandBase<Player> {
 
         if (!kitConfig.getKitNames().stream().anyMatch(kitName::equalsIgnoreCase)) {
             kitConfig.saveKit(kitName, kitConfig.createKit().updateKitInventory(player));
-            player.sendMessage(Util.getTextMessageWithFormat("command.kit.add.success", kitName));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.success", kitName));
             return CommandResult.success();
         } else {
-            player.sendMessage(Util.getTextMessageWithFormat("command.kit.add.alreadyexists", kitName));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.alreadyexists", kitName));
             return CommandResult.empty();
         }
     }

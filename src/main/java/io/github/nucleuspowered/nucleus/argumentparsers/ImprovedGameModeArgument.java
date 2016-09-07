@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -52,7 +52,7 @@ public class ImprovedGameModeArgument extends CommandElement {
         GameMode mode = gameModeMap.get(arg.toLowerCase());
 
         if (mode == null) {
-            throw args.createError(Util.getTextMessageWithFormat("args.gamemode.error", arg));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.gamemode.error", arg));
         }
 
         return mode;

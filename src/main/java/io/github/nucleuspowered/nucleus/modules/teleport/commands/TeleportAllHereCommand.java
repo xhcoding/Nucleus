@@ -4,13 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +21,7 @@ import javax.inject.Inject;
 @NoCost
 @NoCooldown
 @RegisterCommand({"tpall", "tpallhere"})
-public class TeleportAllHereCommand extends CommandBase<Player> {
+public class TeleportAllHereCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private TeleportHandler handler;
 
@@ -38,7 +32,7 @@ public class TeleportAllHereCommand extends CommandBase<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        MessageChannel.TO_ALL.send(Util.getTextMessageWithFormat("command.tpall.broadcast", src.getName()));
+        MessageChannel.TO_ALL.send(plugin.getMessageProvider().getTextMessageWithFormat("command.tpall.broadcast", src.getName()));
         Sponge.getServer().getOnlinePlayers().forEach(x -> {
             if (!x.equals(src)) {
                 try {

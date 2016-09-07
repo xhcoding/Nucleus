@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Permissions
 @RegisterCommand("enchant")
-public class EnchantCommand extends CommandBase<Player> {
+public class EnchantCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String enchantmentKey = "enchantment";
     private final String levelKey = "level";
@@ -39,7 +38,7 @@ public class EnchantCommand extends CommandBase<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> msp = Maps.newHashMap();
-        msp.put("unsafe", new PermissionInformation(Util.getMessageWithFormat("permission.enchant.unsafe"), SuggestedLevel.ADMIN));
+        msp.put("unsafe", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.enchant.unsafe"), SuggestedLevel.ADMIN));
         return msp;
     }
 
@@ -59,7 +58,7 @@ public class EnchantCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         // Check for item in hand
         if (!src.getItemInHand().isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.enchant.noitem"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.enchant.noitem"));
             return CommandResult.empty();
         }
 
@@ -73,12 +72,12 @@ public class EnchantCommand extends CommandBase<Player> {
         // Can we apply the enchantment?
         if (!allowUnsafe) {
             if (!enchantment.canBeAppliedToStack(itemInHand)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.enchant.nounsafe.enchant", itemInHand.getTranslation().get()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.enchant.nounsafe.enchant", itemInHand.getTranslation().get()));
                 return CommandResult.empty();
             }
 
             if (level > enchantment.getMaximumLevel()) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.enchant.nounsafe.level", itemInHand.getTranslation().get()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.enchant.nounsafe.level", itemInHand.getTranslation().get()));
                 return CommandResult.empty();
             }
         }
@@ -103,7 +102,7 @@ public class EnchantCommand extends CommandBase<Player> {
                 sb.append(Util.getTranslatableIfPresent(x.getEnchantment()));
             });
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.enchant.overwrite", sb.toString()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.enchant.overwrite", sb.toString()));
             return CommandResult.empty();
         }
 
@@ -119,11 +118,11 @@ public class EnchantCommand extends CommandBase<Player> {
         if (dtr.isSuccessful()) {
             // If successful, we need to put the item in the player's hand for it to actually take effect.
             src.setItemInHand(itemInHand);
-            src.sendMessage(Util.getTextMessageWithFormat("command.enchant.success", Util.getTranslatableIfPresent(enchantment), String.valueOf(level)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.enchant.success", Util.getTranslatableIfPresent(enchantment), String.valueOf(level)));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.enchant.error", Util.getTranslatableIfPresent(enchantment), String.valueOf(level)));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.enchant.error", Util.getTranslatableIfPresent(enchantment), String.valueOf(level)));
         return CommandResult.empty();
     }
 }

@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 public interface NucleusSeenService {
 
     /**
-     * Registers a {@link SeenInformationProvider} with Nucleus.
+     * Registers a {@link SeenInformationProvider} with NucleusPlugin.
      *
      * @param plugin The plugin registering the service.
      * @param seenInformationProvider The {@link SeenInformationProvider}

@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -118,7 +117,7 @@ public class PermissionsTest extends TestBase {
 
     @Permissions
     @RegisterCommand({"test", "test2"})
-    public static class PermissionOne extends CommandBase<CommandSource> {
+    public static class PermissionOne extends AbstractCommand<CommandSource> {
 
         @Override
         public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

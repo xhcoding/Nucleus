@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.warn;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarnService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.warn.commands.CheckWarningsCommand;
@@ -34,9 +33,9 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
         super.performPreTasks();
 
         try {
-            WarnHandler warnHandler = new WarnHandler(nucleus);
-            nucleus.getInjector().injectMembers(warnHandler);
-            game.getServiceManager().setProvider(nucleus, NucleusWarnService.class, warnHandler);
+            WarnHandler warnHandler = new WarnHandler(plugin);
+            plugin.getInjector().injectMembers(warnHandler);
+            game.getServiceManager().setProvider(plugin, NucleusWarnService.class, warnHandler);
             serviceManager.registerService(WarnHandler.class, warnHandler);
         } catch (Exception ex) {
             logger.warn("Could not load the warn module for the reason below.");
@@ -52,15 +51,15 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
         // Take base permission from /checkwarnings.
         createSeenModule(CheckWarningsCommand.class, (c, u) -> {
 
-            WarnHandler jh = nucleus.getInternalServiceManager().getService(WarnHandler.class).get();
+            WarnHandler jh = plugin.getInternalServiceManager().getService(WarnHandler.class).get();
             int active = jh.getWarnings(u, true, false).size();
             int expired = jh.getWarnings(u, false, true).size();
 
-            Text r = Util.getTextMessageWithFormat("seen.warnings", String.valueOf(active), String.valueOf(expired));
+            Text r = plugin.getMessageProvider().getTextMessageWithFormat("seen.warnings", String.valueOf(active), String.valueOf(expired));
             if (active > 0) {
                 return Lists.newArrayList(
                         r.toBuilder().onClick(TextActions.runCommand("/checkwarnings " + u.getName()))
-                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).build());
+                                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("standard.clicktoseemore"))).build());
             }
 
             return Lists.newArrayList(r);

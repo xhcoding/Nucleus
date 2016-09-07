@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.commandlogger.listeners;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfig;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
@@ -62,7 +61,7 @@ public class CommandLoggingListener extends ListenerBase {
 
         // If whitelist, and we have the command, or if not blacklist, and we do not have the command.
         if (c.isWhitelist() == c.getCommandsToFilter().stream().map(String::toLowerCase).anyMatch(commands::contains)) {
-            String message = Util.getMessageWithFormat("commandlog.message", source.getName(), event.getCommand(), event.getArguments());
+            String message = plugin.getMessageProvider().getMessageWithFormat("commandlog.message", source.getName(), event.getCommand(), event.getArguments());
             plugin.getLogger().info(message);
             handler.queueEntry(message);
         }

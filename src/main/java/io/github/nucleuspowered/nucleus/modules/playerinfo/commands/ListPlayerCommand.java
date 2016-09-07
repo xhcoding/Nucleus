@@ -7,12 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
@@ -34,7 +32,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"list", "listplayers"})
-public class ListPlayerCommand extends CommandBase<CommandSource> {
+public class ListPlayerCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private AFKHandler handler;
     @Inject private PlayerInfoConfigAdapter config;
@@ -53,7 +51,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("seevanished", new PermissionInformation(Util.getMessageWithFormat("permission.list.seevanished"), SuggestedLevel.ADMIN));
+        m.put("seevanished", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.list.seevanished"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -68,10 +66,10 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
 
         Text header;
         if (showVanished && hiddenCount > 0) {
-            header = Util.getTextMessageWithFormat("command.list.playercount.hidden", String.valueOf(playerCount),
+            header = plugin.getMessageProvider().getTextMessageWithFormat("command.list.playercount.hidden", String.valueOf(playerCount),
                     String.valueOf(Sponge.getServer().getMaxPlayers()), String.valueOf(hiddenCount));
         } else {
-            header = Util.getTextMessageWithFormat("command.list.playercount.base", String.valueOf(playerCount - hiddenCount),
+            header = plugin.getMessageProvider().getTextMessageWithFormat("command.list.playercount.base", String.valueOf(playerCount - hiddenCount),
                     String.valueOf(Sponge.getServer().getMaxPlayers()));
         }
 
@@ -153,7 +151,7 @@ public class ListPlayerCommand extends CommandBase<CommandSource> {
                         tb.append(Text.of(" "));
                     }
 
-                    return tb.append(NameUtil.getName(x)).build();
+                    return tb.append(plugin.getNameUtil().getName(x)).build();
                 }).collect(Collectors.toList());
 
         if (!playerList.isEmpty()) {

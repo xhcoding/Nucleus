@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -40,14 +38,14 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCost
 @RegisterCommand({"listhomes", "homes"})
-public class ListHomeCommand extends CommandBase<CommandSource> {
+public class ListHomeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String player = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others"), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -73,14 +71,14 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
 
         Map<String, LocationData> msw = plugin.getUserDataManager().get(user).get().getHomes();
         if (msw.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.home.nohomes"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.nohomes"));
             return CommandResult.empty();
         }
 
         if (other) {
-            header = Util.getTextMessageWithFormat("home.title.name", user.getName());
+            header = plugin.getMessageProvider().getTextMessageWithFormat("home.title.name", user.getName());
         } else {
-            header = Util.getTextMessageWithFormat("home.title.normal");
+            header = plugin.getMessageProvider().getTextMessageWithFormat("home.title.normal");
         }
 
         List<Text> lt = msw.entrySet().stream().sorted((x, y) -> x.getKey().compareTo(y.getKey())).map(x -> {
@@ -88,18 +86,18 @@ public class ListHomeCommand extends CommandBase<CommandSource> {
             if (!olw.isPresent()) {
                 return Text.builder().append(
                                 Text.builder(x.getKey()).color(TextColors.RED)
-                                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphoverinvalid", x.getKey())))
+                                        .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("home.warphoverinvalid", x.getKey())))
                                         .build())
                         .build();
             } else {
                 final Location<World> lw = olw.get();
                 return Text.builder().append(
                                 Text.builder(x.getKey()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("home.warphover", x.getKey())))
+                                        .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("home.warphover", x.getKey())))
                                         .onClick(TextActions.runCommand(other ? "/homeother " + user.getName() + " " + x.getValue().getName()
                                                 : "/home " + x.getValue().getName()))
                                         .build())
-                        .append(Util.getTextMessageWithFormat("home.location", lw.getExtent().getName(), String.valueOf(lw.getBlockX()),
+                        .append(plugin.getMessageProvider().getTextMessageWithFormat("home.location", lw.getExtent().getName(), String.valueOf(lw.getBlockX()),
                                 String.valueOf(lw.getBlockY()), String.valueOf(lw.getBlockZ())))
                         .build();
             }

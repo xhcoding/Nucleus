@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.NameUtil;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.SpeedCommand;
@@ -29,10 +28,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.ClickAction;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -41,7 +38,7 @@ import java.util.*;
 @Permissions
 @RunAsync
 @RegisterCommand({"seen", "seenplayer", "lookup"})
-public class SeenCommand extends CommandBase<CommandSource> {
+public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager udm;
     @Inject private SeenHandler seenHandler;
@@ -51,7 +48,7 @@ public class SeenCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("extended", new PermissionInformation(Util.getMessageWithFormat("permission.seen.extended"), SuggestedLevel.ADMIN));
+        m.put("extended", new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.seen.extended"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -71,35 +68,35 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
         // Everyone gets the last online time.
         if (user.isOnline()) {
-            messages.add(Util.getTextMessageWithFormat("command.seen.iscurrently.online", user.getName()));
-            messages.add(Util.getTextMessageWithFormat("command.seen.loggedon", Util.getTimeToNow(iqsu.getLastLogout())));
+            messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.iscurrently.online", user.getName()));
+            messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.loggedon", Util.getTimeToNow(iqsu.getLastLogout())));
         } else {
-            messages.add(Util.getTextMessageWithFormat("command.seen.iscurrently.offline", user.getName()));
-            messages.add(Util.getTextMessageWithFormat("command.seen.loggedoff", Util.getTimeToNow(iqsu.getLastLogout())));
+            messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.iscurrently.offline", user.getName()));
+            messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.loggedoff", Util.getTimeToNow(iqsu.getLastLogout())));
         }
 
-        messages.add(Util.getTextMessageWithTextFormat("command.seen.displayname", NameUtil.getName(user)));
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.displayname", TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(user))));
 
         if (permissions.testSuffix(src, "extended")) {
             messages.add(Text.EMPTY);
 
             if (user.isOnline()) {
                 Player pl = user.getPlayer().get();
-                messages.add(Util.getTextMessageWithFormat("command.seen.ipaddress",
+                messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.ipaddress",
                         pl.getConnection().getAddress().getAddress().toString()));
 
-                messages.add(Util.getTextMessageWithFormat("command.seen.speed.walk",
+                messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.speed.walk",
                         String.valueOf(Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * SpeedCommand.multiplier))));
 
-                messages.add(Util.getTextMessageWithFormat("command.seen.speed.fly",
+                messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.speed.fly",
                         String.valueOf(Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))));
 
-                messages.add(Util.getTextMessageWithFormat("command.seen.currentlocation", getLocationString(pl.getLocation())));
+                messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.currentlocation", getLocationString(pl.getLocation())));
             } else {
                 Optional<Location<World>> olw = iqsu.getLogoutLocation();
 
                 if (olw.isPresent()) {
-                    messages.add(Util.getTextMessageWithFormat("command.seen.lastlocation", getLocationString(olw.get())));
+                    messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.lastlocation", getLocationString(olw.get())));
                 }
             }
         }
@@ -109,11 +106,11 @@ public class SeenCommand extends CommandBase<CommandSource> {
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         ps.builder().contents(messages).padding(Text.of(TextColors.GREEN, "-"))
-                .title(Util.getTextMessageWithFormat("command.seen.title", user.getName())).sendTo(src);
+                .title(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.title", user.getName())).sendTo(src);
         return CommandResult.success();
     }
 
     private String getLocationString(Location<World> lw) {
-        return Util.getMessageWithFormat("command.seen.locationtemplate", lw.getExtent().getName(), lw.getBlockPosition().toString());
+        return NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("command.seen.locationtemplate", lw.getExtent().getName(), lw.getBlockPosition().toString());
     }
 }

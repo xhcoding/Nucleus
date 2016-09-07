@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.note.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +25,7 @@ import java.util.List;
 @NoCooldown
 @NoCost
 @RegisterCommand({"clearnotes", "removeallnotes"})
-public class ClearNotesCommand extends CommandBase<CommandSource> {
+public class ClearNotesCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private NoteHandler handler;
     private final String playerKey = "player";
@@ -43,16 +41,16 @@ public class ClearNotesCommand extends CommandBase<CommandSource> {
 
         List<NoteData> notes = handler.getNotes(user);
         if (notes.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checknotes.none", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.none", user.getName()));
             return CommandResult.success();
         }
 
         if (handler.clearNotes(user)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.clearnotes.success", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.clearnotes.success", user.getName()));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.clearnotes.failure", user.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.clearnotes.failure", user.getName()));
         return CommandResult.empty();
     }
 }

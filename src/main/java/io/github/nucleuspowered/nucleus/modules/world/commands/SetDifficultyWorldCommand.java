@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.DifficultyArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -26,11 +24,11 @@ import java.util.Optional;
  * Sets difficulty of world.
  *
  * Command Usage: /world setdifficulty [difficulty] [world] Permission:
- * nucleus.world.setdifficulty.base
+ * plugin.world.setdifficulty.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setdifficulty", "difficulty"}, subcommandOf = WorldCommand.class)
-public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
+public class SetDifficultyWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String difficulty = "difficulty";
     private final String world = "world";
@@ -50,14 +48,14 @@ public class SetDifficultyWorldCommand extends CommandBase<CommandSource> {
 
         if (optWorldProperties.isPresent()) {
             optWorldProperties.get().setDifficulty(difficultyInput);
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.setdifficulty.success"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setdifficulty.success"));
         } else {
             if (src instanceof Player) {
                 Player player = (Player) src;
                 player.getWorld().getProperties().setDifficulty(difficultyInput);
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.setdifficulty.success"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setdifficulty.success"));
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.player"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.player"));
                 return CommandResult.empty();
             }
         }

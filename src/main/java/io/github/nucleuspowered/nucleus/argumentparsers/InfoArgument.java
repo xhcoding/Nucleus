@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -38,7 +38,7 @@ public class InfoArgument extends CommandElement {
             return new Result(handler.getInfoSections().stream().filter(a::equalsIgnoreCase).findFirst().get(), list.get());
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.info.noinfo", a));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.info.noinfo", a));
     }
 
     @Override

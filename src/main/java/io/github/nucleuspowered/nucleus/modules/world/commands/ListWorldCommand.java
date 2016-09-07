@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -28,11 +27,11 @@ import java.util.stream.Collectors;
 /**
  * Lists all the worlds.
  *
- * Command Usage: /world list Permission: nucleus.world.list.base
+ * Command Usage: /world list Permission: plugin.world.list.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class)
-public class ListWorldCommand extends CommandBase<CommandSource> {
+public class ListWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {

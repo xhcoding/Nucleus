@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.blacklist.listeners;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -151,9 +150,9 @@ public class BlacklistListener extends ListenerBase {
         if (!messageCache.containsKey(u) || messageCache.get(u).isAfter(Instant.now())) {
             // Alert the user, but only once a second.
             if (remove.size() == 1) {
-                target.sendMessage(Util.getTextMessageWithFormat(descRoot + ".single", item));
+                target.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(descRoot + ".single", item));
             } else {
-                target.sendMessage(Util.getTextMessageWithFormat(descRoot + ".multiple", item));
+                target.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(descRoot + ".multiple", item));
             }
 
             messageCache.put(u, Instant.now().plus(1, ChronoUnit.SECONDS));
@@ -168,7 +167,7 @@ public class BlacklistListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(bypass, new PermissionInformation(Util.getMessageWithFormat("permission.blacklist.bypass"), SuggestedLevel.ADMIN));
+        mp.put(bypass, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.blacklist.bypass"), SuggestedLevel.ADMIN));
         return mp;
     }
 }

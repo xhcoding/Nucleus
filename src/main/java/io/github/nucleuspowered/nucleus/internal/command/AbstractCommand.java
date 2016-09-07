@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
@@ -25,6 +26,7 @@ import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.*;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.source.LocatedSource;
@@ -33,7 +35,10 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.pagination.PaginationList;
+import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -50,7 +55,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * DO NOT IMPLEMENT THIS DIRECTLY.
+ * The basis for any command.
  */
 public abstract class AbstractCommand<T extends CommandSource> implements CommandExecutor {
 
@@ -78,7 +83,9 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private final List<String> afkArgs = Lists.newArrayList();
     private final boolean isRoot;
 
-    @Inject protected Nucleus plugin;
+    final UsageCommand usageCommand = new UsageCommand();
+
+    @Inject protected NucleusPlugin plugin;
     @Inject private CoreConfigAdapter cca;
     @Inject private WarmupManager warmupService;
 
@@ -90,7 +97,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private CommandBuilder builder;
 
     @SuppressWarnings("unchecked")
-    AbstractCommand() {
+    public AbstractCommand() {
         // I hate type erasure - it leads to a hack like this. Admittedly, I
         // could've just created a subclass that does
         // the same thing, but I like to beat the system! :)
@@ -217,18 +224,9 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         requiresEconomy = this.getClass().isAnnotationPresent(RequiresEconomy.class);
     }
 
-    // Abstract functions - for implementation.
-
-    /**
-     * Returns a {@link CommandSpec} that allows this command to be registered.
-     *
-     * @return The {@link CommandSpec}
-     */
-    public abstract CommandSpec createSpec();
-
     /**
      * Gets the aliases for the command. The first alias will be the primary
-     * alias within Nucleus.
+     * alias within NucleusPlugin.
      *
      * @return An array of aliases.
      */
@@ -280,6 +278,37 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // -------------------------------------
 
     /**
+     * Gets the description for the command.
+     *
+     * @return The description.
+     */
+    public String getDescription() {
+        return getFromCommandKey("desc");
+    }
+
+    /**
+     * Gets the description for the command.
+     *
+     * @return The description.
+     */
+    public String getExtendedDescription() {
+        return getFromCommandKey("extended");
+    }
+
+    private String getFromCommandKey(String type) {
+        String key = String.format("%s.%s", this.commandPath, type);
+        try {
+            return NucleusPlugin.getNucleus().getCommandMessageProvider().getMessageWithFormat(key);
+        } catch (Exception e) {
+            if (cca.getNodeOrDefault().isDebugmode()) {
+                plugin.getLogger().debug("Could not get command resource key " + key);
+            }
+
+            return "";
+        }
+    }
+
+    /**
      * Contains extra permission suffixes that are to be registered in the
      * permission service.
      *
@@ -311,6 +340,52 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return configSection;
     }
 
+    /**
+     * Gets the arguments of the command.
+     *
+     * @return The arguments of the command.
+     */
+    public CommandElement[] getArguments() {
+        return new CommandElement[]{};
+    }
+
+    /**
+     * Returns a {@link CommandSpec} that allows this command to be registered.
+     *
+     * @return The {@link CommandSpec}
+     */
+    CommandSpec createSpec() {
+        Preconditions.checkState(permissions != null);
+        RegisterCommand rc = getClass().getAnnotation(RegisterCommand.class);
+
+        CommandSpec.Builder cb = CommandSpec.builder();
+        if (rc == null || rc.hasExecutor()) {
+            cb.executor(this).arguments(getArguments());
+        }
+
+        if (!permissions.isPassthrough()) {
+            cb.permission(permissions.getBase());
+        }
+
+        String description = getDescription();
+        if (!description.isEmpty()) {
+            cb.description(Text.of(description));
+        }
+
+        String extended = getExtendedDescription();
+        if (!extended.isEmpty()) {
+            cb.description(Text.of(extended));
+        }
+
+        Map<List<String>, CommandCallable> m = createChildCommands();
+        if (!m.isEmpty()) {
+            cb.children(m);
+        }
+
+        cs = cb.build();
+        return cs;
+    }
+
     public CommandSpec getSpec() {
         if (cs != null) {
             return cs;
@@ -331,19 +406,19 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
 
         if (this.isRoot) {
-            n.getNode("enabled").setComment(Util.getMessageWithFormat("config.enabled")).setValue(true);
+            n.getNode("enabled").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.enabled")).setValue(true);
         }
 
         if (!bypassCooldown) {
-            n.getNode("cooldown").setComment(Util.getMessageWithFormat("config.cooldown")).setValue(0);
+            n.getNode("cooldown").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.cooldown")).setValue(0);
         }
 
         if (!bypassWarmup || generateWarmupAnyway) {
-            n.getNode("warmup").setComment(Util.getMessageWithFormat("config.warmup")).setValue(0);
+            n.getNode("warmup").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.warmup")).setValue(0);
         }
 
         if (!bypassCost) {
-            n.getNode("cost").setComment(Util.getMessageWithFormat("config.cost")).setValue(0);
+            n.getNode("cost").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.cost")).setValue(0);
         }
 
         return n;
@@ -382,7 +457,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
         // Economy
         if (requiresEconomy && !plugin.getEconHelper().economyServiceExists()) {
-            source.sendMessage(Util.getTextMessageWithFormat("command.economyrequired"));
+            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.economyrequired"));
             return CommandResult.empty();
         }
 
@@ -397,7 +472,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             }
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.error")).build());
+            src.sendMessage(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error")).build());
 
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -438,12 +513,12 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             cr = executeCommand(src, args);
         } catch (ReturnMessageException e) {
             Text t = e.getText();
-            src.sendMessage((t == null) ? Util.getTextMessageWithFormat("command.error") : t);
+            src.sendMessage((t == null) ? NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error") : t);
             cr = CommandResult.empty();
         } catch (TextMessageException e) {
             // If the exception contains a text object, render it like so...
             Text t = e.getText();
-            src.sendMessage((t == null) ? Util.getTextMessageWithFormat("command.error") : t);
+            src.sendMessage((t == null) ? NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error") : t);
 
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -452,7 +527,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             cr = CommandResult.empty();
         } catch (Exception e) {
             // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Util.getTextMessageWithFormat("command.error"));
+            src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error"));
 
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -485,13 +560,13 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // -------------------------------------
     private boolean checkSourceType(CommandSource source) {
         if (sourceType.equals(Player.class) && !(source instanceof Player)) {
-            source.sendMessage(Util.getTextMessageWithFormat("command.playeronly"));
+            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.playeronly"));
             return false;
         } else if (sourceType.equals(ConsoleSource.class) && !(source instanceof Player)) {
-            source.sendMessage(Util.getTextMessageWithFormat("command.consoleonly"));
+            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.consoleonly"));
             return false;
         } else if (sourceType.equals(CommandBlockSource.class) && !(source instanceof CommandBlockSource)) {
-            source.sendMessage(Util.getTextMessageWithFormat("command.commandblockonly"));
+            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.commandblockonly"));
             return false;
         }
 
@@ -544,7 +619,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             return pr.get();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("args.worldproperties.default"));
+        src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldproperties.default"));
         return Sponge.getServer().getDefaultWorld().get();
     }
 
@@ -569,7 +644,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         } else if (clazz.isInstance(src)) {
             pl = clazz.cast(src);
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.playeronly"));
+            src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.playeronly"));
             return Optional.empty();
         }
 
@@ -608,7 +683,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
                     @Override
                     public void accept(Task task) {
-                        src.sendMessage(Util.getTextMessageWithFormat("warmup.end"));
+                        src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("warmup.end"));
                         warmupService.removeWarmup(src.getUniqueId());
                         startExecute((T) src, args);
                     }
@@ -623,15 +698,15 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         warmupService.addWarmup(src.getUniqueId(), tb.submit(plugin));
 
         // Tell the user we're warming up.
-        src.sendMessage(Util.getTextMessageWithFormat("warmup.start", Util.getTimeStringFromSeconds(warmupTime)));
+        src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("warmup.start", Util.getTimeStringFromSeconds(warmupTime)));
 
         WarmupConfig wc = cca.getNodeOrDefault().getWarmupConfig();
         if (wc.isOnMove() && wc.isOnCommand()) {
-            src.sendMessage(Util.getTextMessageWithFormat("warmup.both"));
+            src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("warmup.both"));
         } else if (wc.isOnMove()) {
-            src.sendMessage(Util.getTextMessageWithFormat("warmup.onMove"));
+            src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("warmup.onMove"));
         } else if (wc.isOnCommand()) {
-            src.sendMessage(Util.getTextMessageWithFormat("warmup.onCommand"));
+            src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("warmup.onCommand"));
         }
 
         // Sponge should think the command was run successfully.
@@ -649,7 +724,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         // down.
         if (!bypassCooldown && !permissions.testCooldownExempt(src) && cooldownStore.containsKey(src.getUniqueId())) {
             Instant l = cooldownStore.get(src.getUniqueId());
-            src.sendMessage(Util.getTextMessageWithFormat("cooldown.message",
+            src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cooldown.message",
                     Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))));
             return ContinueMode.STOP;
         }
@@ -785,42 +860,36 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // -------------------------------------
     // Child Commands
     // -------------------------------------
-    final Map<List<String>, CommandCallable> createChildCommands() {
-        if (this.moduleCommands == null) {
-            return Maps.newHashMap();
-        }
-
-        Set<Class<? extends AbstractCommand<?>>> scb = moduleCommands.stream().filter(x -> {
-                        RegisterCommand r = x.getAnnotation(RegisterCommand.class);
-                        // Only commands that are subcommands of this.
-                        return r != null && r.subcommandOf().equals(this.getClass());
-                    }).collect(Collectors.toSet());
-
-        if (scb.isEmpty()) {
-            return Maps.newHashMap();
+    private Map<List<String>, CommandCallable> createChildCommands() {
+        Set<Class<? extends AbstractCommand<?>>> scb = null;
+        if (this.moduleCommands != null) {
+            scb = moduleCommands.stream().filter(x -> {
+                RegisterCommand r = x.getAnnotation(RegisterCommand.class);
+                // Only commands that are subcommands of this.
+                return r != null && r.subcommandOf().equals(this.getClass());
+            }).collect(Collectors.toSet());
         }
 
         return createChildCommands(scb);
     }
 
     private Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends AbstractCommand<?>>> bases) {
-        if (this.moduleCommands == null) {
-            return Maps.newHashMap();
+        Map<List<String>, CommandCallable> map = Maps.newHashMap();
+        if (bases != null) {
+            bases.forEach(cb -> {
+                try {
+                    builder.buildCommand(cb, false).ifPresent(x -> map.put(Arrays.asList(x.getAliases()), x.createSpec()));
+                } catch (Exception e) {
+                    plugin.getLogger().error(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("command.child.notloaded", cb.getName()));
+
+                    if (cca.getNodeOrDefault().isDebugmode()) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
-        Map<List<String>, CommandCallable> map = Maps.newHashMap();
-        bases.forEach(cb -> {
-            try {
-                builder.buildCommand(cb, false).ifPresent(x -> map.put(Arrays.asList(x.getAliases()), x.createSpec()));
-            } catch (Exception e) {
-                plugin.getLogger().error(Util.getMessageWithFormat("command.child.notloaded", cb.getName()));
-
-                if (cca.getNodeOrDefault().isDebugmode()) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
+        map.put(Lists.newArrayList("?", "help"), usageCommand);
         return map;
     }
 
@@ -846,6 +915,101 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         ContinueMode(boolean cont, CommandResult returnType) {
             this.cont = cont;
             this.returnType = returnType;
+        }
+    }
+
+    private class UsageCommand implements CommandCallable {
+
+        @Override
+        @NonnullByDefault
+        public CommandResult process(CommandSource source, String arguments) throws CommandException {
+            if (!testPermission(source)) {
+                source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.nopermission"));
+                return CommandResult.empty();
+            }
+
+            Nucleus plugin = Nucleus.getNucleus();
+            AbstractCommand<?> parent = AbstractCommand.this;
+
+            String command = AbstractCommand.this.commandPath.replaceAll("\\.", " ");
+
+            // Header
+            Text header = plugin.getMessageProvider().getTextMessageWithFormat("command.usage.header", command);
+
+            List<Text> textMessages = Lists.newArrayList();
+
+            if (parent.sourceType == Player.class) {
+                textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.playeronly"));
+            }
+
+            String desc = getDescription();
+            if (!desc.isEmpty()) {
+                if (!textMessages.isEmpty()) {
+                    textMessages.add(Text.EMPTY);
+                }
+
+                textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.summary"));
+                textMessages.add(Text.of(desc));
+            }
+
+            String ext = getExtendedDescription();
+            if (!ext.isEmpty()) {
+                if (!textMessages.isEmpty()) {
+                    textMessages.add(Text.EMPTY);
+                }
+
+                textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.description"));
+                String[] split = ext.split("(\\r|\\n|\\r\\n)");
+                for (String s : split) {
+                    textMessages.add(Text.of(s));
+                }
+            }
+
+            if (!textMessages.isEmpty()) {
+                textMessages.add(Text.EMPTY);
+            }
+
+            textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.usage"));
+            textMessages.add(Text.of(TextColors.WHITE, "/" + command + " " + getSpec().getUsage(source).toPlain().replaceAll("\\?\\|", "")));
+
+            PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
+            PaginationList.Builder builder = ps.builder().title(header).contents(textMessages);
+            if (!(source instanceof Player)) {
+                builder.linesPerPage(-1);
+            }
+
+            builder.sendTo(source);
+            return CommandResult.success();
+        }
+
+        @Override
+        @NonnullByDefault
+        public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
+            return Lists.newArrayList();
+        }
+
+        @Override
+        @NonnullByDefault
+        public boolean testPermission(CommandSource source) {
+            return AbstractCommand.this.permissions.testBase(source);
+        }
+
+        @Override
+        @NonnullByDefault
+        public Optional<? extends Text> getShortDescription(CommandSource source) {
+            return Optional.empty();
+        }
+
+        @Override
+        @NonnullByDefault
+        public Optional<? extends Text> getHelp(CommandSource source) {
+            return Optional.empty();
+        }
+
+        @Override
+        @NonnullByDefault
+        public Text getUsage(CommandSource source) {
+            return Text.EMPTY;
         }
     }
 }

@@ -4,9 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -25,7 +23,7 @@ import java.util.Optional;
 @NoWarmup
 @Permissions(root = "world.border", alias = "gen")
 @RegisterCommand(value = "cancelgen", subcommandOf = BorderCommand.class)
-public class CancelChunkGenCommand extends CommandBase<CommandSource> {
+public class CancelChunkGenCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
 
@@ -49,17 +47,17 @@ public class CancelChunkGenCommand extends CommandBase<CommandSource> {
             if (src instanceof LocatedSource) {
                 wp = ((LocatedSource) src).getWorld().getProperties();
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.setborder.noworld"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.noworld"));
                 return CommandResult.empty();
             }
         }
 
         if (worldHelper.cancelPregenRunningForWorld(wp.getUniqueId())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.cancelgen.cancelled", wp.getWorldName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.cancelgen.cancelled", wp.getWorldName()));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.world.cancelgen.notask", wp.getWorldName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.cancelgen.notask", wp.getWorldName()));
         return CommandResult.empty();
     }
 }

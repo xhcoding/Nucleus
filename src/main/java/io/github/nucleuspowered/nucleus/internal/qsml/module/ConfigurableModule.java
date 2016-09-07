@@ -24,7 +24,7 @@ public abstract class ConfigurableModule<A extends NucleusConfigAdapter<?>> exte
     public final Optional<AbstractConfigAdapter<?>> getConfigAdapter() {
         if (adapter == null) {
             adapter = getAdapter();
-            nucleus.getInjector().injectMembers(adapter);
+            plugin.getInjector().injectMembers(adapter);
         }
 
         // We need to use the right type...

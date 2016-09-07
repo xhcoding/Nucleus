@@ -55,10 +55,10 @@ public class WarnListener extends ListenerBase {
                     } else {
                         if (wca.getNodeOrDefault().isShowOnLogin()) {
                             if (warning.getEndTimestamp().isPresent()) {
-                                player.sendMessage(Util.getTextMessageWithFormat("warn.playernotify.time", warning.getReason(),
+                                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("warn.playernotify.time", warning.getReason(),
                                         Util.getTimeStringFromSeconds(Instant.now().until(warning.getEndTimestamp().get(), ChronoUnit.SECONDS))));
                             } else {
-                                player.sendMessage(Util.getTextMessageWithFormat("warn.playernotify.standard", warning.getReason()));
+                                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("warn.playernotify.standard", warning.getReason()));
                             }
                         }
                     }
@@ -69,8 +69,8 @@ public class WarnListener extends ListenerBase {
                     List<WarnData> lwd = warnings.stream().filter(x -> !x.isExpired()).collect(Collectors.toList());
                     if (!lwd.isEmpty()) {
                         MutableMessageChannel messageChannel = MessageChannel.permission(showOnLogin).asMutable();
-                        messageChannel.send(Util.getTextMessageWithFormat("warn.login.notify", player.getName(), String.valueOf(lwd.size())).toBuilder()
-                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("warn.login.view", player.getName())))
+                        messageChannel.send(plugin.getMessageProvider().getTextMessageWithFormat("warn.login.notify", player.getName(), String.valueOf(lwd.size())).toBuilder()
+                                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("warn.login.view", player.getName())))
                                 .onClick(TextActions.runCommand("/checkwarnings " + player.getName()))
                                 .build());
                     }
@@ -82,7 +82,7 @@ public class WarnListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(showOnLogin, new PermissionInformation(Util.getMessageWithFormat("permission.warn.showonlogin"), SuggestedLevel.MOD));
+        mp.put(showOnLogin, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.warn.showonlogin"), SuggestedLevel.MOD));
         return mp;
     }
 }

@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.Sponge;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Checks the warnings of a player.
  *
- * Command Usage: /checkwarnings user Permission: nucleus.checkwarnings.base
+ * Command Usage: /checkwarnings user Permission: plugin.checkwarnings.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoCost
 @RegisterCommand({"checkwarnings", "checkwarn", "warnings"})
-public class CheckWarningsCommand extends CommandBase<CommandSource> {
+public class CheckWarningsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private WarnHandler handler;
     private final String playerKey = "player";
@@ -70,19 +69,19 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
         }
 
         if (warnings.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
             return CommandResult.success();
         }
 
         List<Text> messages = warnings.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(x -> createMessage(allWarnings, x, user)).collect(Collectors.toList());
-        messages.add(0, Util.getTextMessageWithFormat("command.checkwarnings.info"));
+        messages.add(0, plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.info"));
 
         PaginationService paginationService = Sponge.getGame().getServiceManager().provideUnchecked(PaginationService.class);
         paginationService.builder()
                 .title(
                         Text.builder()
                                 .color(TextColors.GOLD)
-                                .append(Text.of(Util.getMessageWithFormat("command.checkwarnings.header", user.getName())))
+                                .append(Text.of(plugin.getMessageProvider().getMessageWithFormat("command.checkwarnings.header", user.getName())))
                                 .build())
                 .padding(
                         Text.builder()
@@ -101,7 +100,7 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
             name = Sponge.getServer().getConsole().getName();
         } else {
             Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(warning.getWarner());
-            name = ou.isPresent() ? ou.get().getName() : Util.getMessageWithFormat("standard.unknown");
+            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
         //Get the remaining length of the warning
@@ -111,21 +110,21 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
         } else if (warning.getTimeFromNextLogin().isPresent()) {
             time = Util.getTimeStringFromSeconds(warning.getTimeFromNextLogin().get().getSeconds());
         } else {
-            time = Util.getMessageWithFormat("standard.restoftime");
+            time = plugin.getMessageProvider().getMessageWithFormat("standard.restoftime");
         }
 
         //Get the ID of the warning, its index in the users List<WarnData>
         int id = allData.indexOf(warning) + 1;
 
         //Action buttons, for a non expired warning this should look like 'Action > [Delete] - [Expire] - [Return] <'
-        Text.Builder actions = Util.getTextMessageWithFormat("command.checkwarnings.action").toBuilder();
+        Text.Builder actions = plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.action").toBuilder();
 
         //Add separation between the word 'Action' and action buttons
         actions.append(Text.of(TextColors.GOLD, " > "));
 
         //Add the delete button [Delete]
-        actions.append(Text.builder().append(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.action.delete")))
-                .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checkwarnings.hover.delete")))
+        actions.append(Text.builder().append(Text.of(TextColors.RED, plugin.getMessageProvider().getMessageWithFormat("standard.action.delete")))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.hover.delete")))
                 .onClick(TextActions.runCommand("/removewarning --remove " + user.getName() + " " + id))
                 .build());
 
@@ -134,8 +133,8 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
 
         //Add the expire button if the warning isn't expired [Expire]
         if (!warning.isExpired()) {
-            actions.append(Text.builder().append(Text.of(TextColors.YELLOW, Util.getMessageWithFormat("standard.action.expire")))
-                    .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checkwarnings.hover.expire")))
+            actions.append(Text.builder().append(Text.of(TextColors.YELLOW, plugin.getMessageProvider().getMessageWithFormat("standard.action.expire")))
+                    .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.hover.expire")))
                     .onClick(TextActions.runCommand("/removewarning " + user.getName() + " " + id))
                     .build());
 
@@ -144,8 +143,8 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
         }
 
         //Add the return button [Return]
-        actions.append(Text.builder().append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("standard.action.return")))
-                .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checkwarnings.hover.return")))
+        actions.append(Text.builder().append(Text.of(TextColors.GREEN, plugin.getMessageProvider().getMessageWithFormat("standard.action.return")))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.hover.return")))
                 .onClick(TextActions.runCommand("/checkwarnings " + user.getName()))
                 .build());
 
@@ -158,13 +157,13 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
 
         //Create a clickable name providing more information about the warning
         Text.Builder information = Text.builder(name)
-                .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checkwarnings.hover.check")))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.hover.check")))
                 .onClick(TextActions.executeCallback(commandSource -> {
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.id", String.valueOf(id)));
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.date", date));
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.remaining", time));
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.warner", name));
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.warning", warning.getReason()));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.id", String.valueOf(id)));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.date", date));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.remaining", time));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.warner", name));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.warning", warning.getReason()));
                     commandSource.sendMessage(actions.build());
                 }));
 
@@ -176,9 +175,9 @@ public class CheckWarningsCommand extends CommandBase<CommandSource> {
 
         //Add the remaining length of the warning
         if (warning.isExpired()) {
-            message.append(Text.of(TextColors.GRAY, " " + Util.getMessageWithFormat("standard.status.expired")));
+            message.append(Text.of(TextColors.GRAY, " " + plugin.getMessageProvider().getMessageWithFormat("standard.status.expired")));
         } else {
-            message.append(Text.of(TextColors.GREEN, " " + Util.getMessageWithFormat("standard.for") + " "));
+            message.append(Text.of(TextColors.GREEN, " " + plugin.getMessageProvider().getMessageWithFormat("standard.for") + " "));
             if (Character.isLetter(time.charAt(0))) {
                 message.append(Text.of(TextColors.YELLOW, time.substring(0, 1).toLowerCase() + time.substring(1)));
             } else {

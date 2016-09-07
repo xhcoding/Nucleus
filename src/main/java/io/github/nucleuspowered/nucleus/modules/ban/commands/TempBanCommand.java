@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.ban.config.BanConfigAdapter;
@@ -37,7 +36,7 @@ import java.util.Map;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class TempBanCommand extends CommandBase<CommandSource> {
+public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private BanConfigAdapter bca;
     private final String user = "user";
@@ -47,9 +46,9 @@ public class TempBanCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("offline", new PermissionInformation(Util.getMessageWithFormat("permission.tempban.offline"), SuggestedLevel.MOD));
-        m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.tempban.exempt.target"), SuggestedLevel.MOD));
-        m.put("exempt.length", new PermissionInformation(Util.getMessageWithFormat("permission.tempban.exempt.length"), SuggestedLevel.MOD));
+        m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.offline"), SuggestedLevel.MOD));
+        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.target"), SuggestedLevel.MOD));
+        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.length"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -65,27 +64,27 @@ public class TempBanCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User u = args.<User>getOne(user).get();
         Long time = args.<Long>getOne(duration).get();
-        String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("ban.defaultreason"));
+        String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
 
         if (permissions.testSuffix(u, "exempt.target")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.tempban.exempt", u.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.exempt", u.getName()));
             return CommandResult.success();
         }
 
         if (!u.isOnline() && !permissions.testSuffix(src, "offline")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.tempban.offline.noperms"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.offline.noperms"));
             return CommandResult.success();
         }
 
         if (time > bca.getNodeOrDefault().getMaximumTempBanLength() &&  bca.getNodeOrDefault().getMaximumTempBanLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.tempban.length.toolong", Util.getTimeStringFromSeconds(bca.getNodeOrDefault().getMaximumTempBanLength())));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.length.toolong", Util.getTimeStringFromSeconds(bca.getNodeOrDefault().getMaximumTempBanLength())));
             return CommandResult.success();
         }
 
         BanService service = Sponge.getServiceManager().provideUnchecked(BanService.class);
 
         if (service.isBanned(u.getProfile())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.ban.alreadyset", u.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.alreadyset", u.getName()));
             return CommandResult.empty();
         }
 
@@ -98,8 +97,8 @@ public class TempBanCommand extends CommandBase<CommandSource> {
 
         MutableMessageChannel send = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
         send.addMember(src);
-        send.send(Util.getTextMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName()));
-        send.send(Util.getTextMessageWithFormat("standard.reason", reason));
+        send.send(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName()));
+        send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
 
         if (Sponge.getServer().getPlayer(u.getUniqueId()).isPresent()) {
             Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(r));

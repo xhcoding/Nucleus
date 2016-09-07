@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -28,7 +28,7 @@ public class PositiveIntegerArgument extends CommandElement {
         try {
             return Integer.parseUnsignedInt(args.next());
         } catch (NumberFormatException e) {
-            throw args.createError(Util.getTextMessageWithFormat("args.positiveint.negative"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.positiveint.negative"));
         }
     }
 

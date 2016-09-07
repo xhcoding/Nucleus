@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import org.spongepowered.api.Sponge;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Checks the notes of a player.
  *
- * Command Usage: /checknotes user Permission: nucleus.checknotes.base
+ * Command Usage: /checknotes user Permission: plugin.checknotes.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
@@ -41,7 +40,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoCost
 @RegisterCommand({"checknotes", "notes"})
-public class CheckNotesCommand extends CommandBase<CommandSource> {
+public class CheckNotesCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private NoteHandler handler;
     private final String playerKey = "player";
@@ -57,19 +56,19 @@ public class CheckNotesCommand extends CommandBase<CommandSource> {
 
         List<NoteData> notes = handler.getNotes(user);
         if (notes.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checknotes.none", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.none", user.getName()));
             return CommandResult.success();
         }
 
         List<Text> messages = notes.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(x -> createMessage(x, user)).collect(Collectors.toList());
-        messages.add(0, Util.getTextMessageWithFormat("command.checknotes.info"));
+        messages.add(0, plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.info"));
 
         PaginationService paginationService = Sponge.getGame().getServiceManager().provideUnchecked(PaginationService.class);
         paginationService.builder()
                 .title(
                         Text.builder()
                         .color(TextColors.GOLD)
-                        .append(Text.of(Util.getMessageWithFormat("command.checknotes.header", user.getName())))
+                        .append(Text.of(plugin.getMessageProvider().getMessageWithFormat("command.checknotes.header", user.getName())))
                         .build())
                 .padding(
                         Text.builder()
@@ -88,21 +87,21 @@ public class CheckNotesCommand extends CommandBase<CommandSource> {
             name = Sponge.getServer().getConsole().getName();
         } else {
             Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(note.getNoter());
-            name = ou.isPresent() ? ou.get().getName() : Util.getMessageWithFormat("standard.unknown");
+            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
         //Get the ID of the note, its index in the users List<NoteData>. Add one to start with an ID of 1.
         int id = handler.getNotes(user).indexOf(note) + 1;
 
         //Action buttons, this should look like 'Action > [Delete] - [Return] <'
-        Text.Builder actions = Util.getTextMessageWithFormat("command.checknotes.action").toBuilder();
+        Text.Builder actions = plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.action").toBuilder();
 
         //Add separation between the word 'Action' and action buttons
         actions.append(Text.of(TextColors.GOLD, " > "));
 
         //Add the delete button [Delete]
-        actions.append(Text.builder().append(Text.of(TextColors.RED, Util.getMessageWithFormat("standard.action.delete")))
-                .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checknotes.hover.delete")))
+        actions.append(Text.builder().append(Text.of(TextColors.RED, plugin.getMessageProvider().getMessageWithFormat("standard.action.delete")))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.hover.delete")))
                 .onClick(TextActions.runCommand("/removenote " + user.getName() + " " + id))
                 .build());
 
@@ -110,8 +109,8 @@ public class CheckNotesCommand extends CommandBase<CommandSource> {
         actions.append(Text.of(TextColors.GOLD, " - "));
 
         //Add the return button [Return]
-        actions.append(Text.builder().append(Text.of(TextColors.GREEN, Util.getMessageWithFormat("standard.action.return")))
-                .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checknotes.hover.return")))
+        actions.append(Text.builder().append(Text.of(TextColors.GREEN, plugin.getMessageProvider().getMessageWithFormat("standard.action.return")))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.hover.return")))
                 .onClick(TextActions.runCommand("/checknotes " + user.getName()))
                 .build());
 
@@ -124,12 +123,12 @@ public class CheckNotesCommand extends CommandBase<CommandSource> {
 
         //Create a clickable name providing more information about the warning
         Text.Builder information = Text.builder(name)
-                .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.checknotes.hover.check")))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.hover.check")))
                 .onClick(TextActions.executeCallback(commandSource -> {
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checknotes.id", String.valueOf(id)));
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checknotes.date", date));
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checknotes.noter", name));
-                    commandSource.sendMessage(Util.getTextMessageWithFormat("command.checknotes.note", note.getNote()));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.id", String.valueOf(id)));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.date", date));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.noter", name));
+                    commandSource.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.note", note.getNote()));
                     commandSource.sendMessage(actions.build());
                 }));
 

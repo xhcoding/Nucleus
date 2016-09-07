@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -48,7 +48,7 @@ public class WeatherArgument extends CommandElement {
             return weather.get(arg);
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.weather.noexist", "clear, rain, storm"));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.weather.noexist", "clear, rain, storm"));
     }
 
     @Override

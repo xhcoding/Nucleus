@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -27,7 +25,7 @@ import java.util.regex.Pattern;
  */
 @Permissions(root = "warp")
 @RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class)
-public class SetWarpCommand extends CommandBase<Player> {
+public class SetWarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
 
@@ -47,7 +45,7 @@ public class SetWarpCommand extends CommandBase<Player> {
 
         // Needs to match the name...
         if (!warpRegex.matcher(warp).matches()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.warps.invalidname"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.invalidname"));
             return CommandResult.empty();
         }
 
@@ -55,19 +53,19 @@ public class SetWarpCommand extends CommandBase<Player> {
         NucleusWarpService qs = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
         if (qs.getWarp(warp).isPresent()) {
             // You have to delete to set the same name
-            src.sendMessage(Util.getTextMessageWithFormat("command.warps.nooverwrite"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.nooverwrite"));
             return CommandResult.empty();
         }
 
         // OK! Set it.
         if (qs.setWarp(warp, src.getLocation(), src.getRotation())) {
             // Worked. Tell them.
-            src.sendMessage(Util.getTextMessageWithFormat("command.warps.set", warp));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.set", warp));
             return CommandResult.success();
         }
 
         // Didn't work. Tell them.
-        src.sendMessage(Util.getTextMessageWithFormat("command.warps.seterror"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.seterror"));
         return CommandResult.empty();
     }
 }

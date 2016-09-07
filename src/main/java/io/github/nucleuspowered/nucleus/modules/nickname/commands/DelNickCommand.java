@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -23,7 +21,7 @@ import java.util.Optional;
 
 @RegisterCommand({"delnick", "delnickname", "deletenick"})
 @Permissions(alias = "nick")
-public class DelNickCommand extends CommandBase<CommandSource> {
+public class DelNickCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager loader;
 
@@ -48,11 +46,11 @@ public class DelNickCommand extends CommandBase<CommandSource> {
         userService.removeNickname();
 
         if (!src.equals(pl)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.delnick.success.other", pl.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.delnick.success.other", pl.getName()));
         }
 
         if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("command.delnick.success.base"));
+            pl.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.delnick.success.base"));
         }
 
         return CommandResult.success();

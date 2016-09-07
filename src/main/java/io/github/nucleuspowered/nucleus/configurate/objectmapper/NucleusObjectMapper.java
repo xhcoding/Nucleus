@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.configurate.objectmapper;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
 import io.github.nucleuspowered.nucleus.configurate.settingprocessor.SettingProcessor;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -39,7 +39,7 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
 
                 String comment = setting.comment();
                 if (comment.startsWith("loc:")) {
-                    comment = Util.getMessageWithFormat(setting.comment().split(":", 2)[1]);
+                    comment = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat(setting.comment().split(":", 2)[1]);
                 }
 
                 FieldData data;
