@@ -63,7 +63,8 @@ public class KickAllCommand extends CommandBase<CommandSource> {
         }
 
         // Don't kick self
-        Sponge.getServer().getOnlinePlayers().stream().filter(x -> src instanceof Player && !((Player) src).getUniqueId().equals(x.getUniqueId()))
+        Sponge.getServer().getOnlinePlayers().stream()
+                .filter(x -> !(src instanceof Player) || !((Player) src).getUniqueId().equals(x.getUniqueId()))
                 .collect(Collectors.toList())
                 .forEach(x -> x.kick(TextSerializers.FORMATTING_CODE.deserialize(r)));
 
