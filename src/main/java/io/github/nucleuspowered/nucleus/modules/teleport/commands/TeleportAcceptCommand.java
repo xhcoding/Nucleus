@@ -5,9 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -22,18 +20,18 @@ import org.spongepowered.api.entity.living.player.Player;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tpaccept", "teleportaccept"})
-public class TeleportAcceptCommand extends CommandBase<Player> {
+public class TeleportAcceptCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private TeleportHandler teleportHandler;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         if (teleportHandler.getAndExecute(src.getUniqueId())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.tpaccept.success"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpaccept.success"));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.tpaccept.nothing"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpaccept.nothing"));
         return CommandResult.empty();
     }
 }

@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.connection.listeners;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -51,7 +50,7 @@ public class ConnectionListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(joinFullServer, new PermissionInformation(Util.getMessageWithFormat("permission.connection.joinfullserver"), SuggestedLevel.MOD));
+        mp.put(joinFullServer, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.connection.joinfullserver"), SuggestedLevel.MOD));
         return mp;
     }
 }

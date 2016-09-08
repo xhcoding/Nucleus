@@ -6,10 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -25,12 +24,12 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Permissions(root = "nucleus", suggestedLevel = SuggestedLevel.NONE)
+@Permissions(root = "plugin", suggestedLevel = SuggestedLevel.NONE)
 @NoWarmup
 @NoCooldown
 @NoCost
 @RegisterCommand(value = {"setupperms", "setperms"}, subcommandOf = NucleusCommand.class)
-public class SetupPermissionsCommand extends CommandBase<CommandSource> {
+public class SetupPermissionsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private CoreConfigAdapter cca;
     @Inject private PermissionRegistry permissionRegistry;
@@ -50,12 +49,12 @@ public class SetupPermissionsCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String command = cca.getNodeOrDefault().getPermissionCommand();
         if (command.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.permission.nocommand"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.nocommand"));
             return CommandResult.empty();
         }
 
         if (!command.toLowerCase().contains("{{group}}") || !command.toLowerCase().contains("{{perm}}")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.permission.notokens"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.notokens"));
             return CommandResult.empty();
         }
 
@@ -70,7 +69,7 @@ public class SetupPermissionsCommand extends CommandBase<CommandSource> {
             Sponge.getCommandManager().process(src, c);
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.permission.success"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.success"));
         return CommandResult.success();
     }
 
@@ -89,7 +88,7 @@ public class SetupPermissionsCommand extends CommandBase<CommandSource> {
                 return ls.get();
             }
 
-            throw args.createError(Util.getTextMessageWithFormat("args.permissiongroup.nogroup", a));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.permissiongroup.nogroup", a));
         }
 
         @Override
@@ -105,7 +104,7 @@ public class SetupPermissionsCommand extends CommandBase<CommandSource> {
         private Set<String> getGroups(CommandArgs args) throws ArgumentParseException {
             Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
             if (!ops.isPresent()) {
-                throw args.createError(Util.getTextMessageWithFormat("args.permissiongroup.noservice"));
+                throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.permissiongroup.noservice"));
             }
 
             PermissionService ps = ops.get();

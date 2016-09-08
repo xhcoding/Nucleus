@@ -22,16 +22,16 @@ public class ConfigurateHelper {
     private ConfigurateHelper() {}
 
     /**
-     * Set Nucleus specific options on the {@link ConfigurationOptions}
+     * Set NucleusPlugin specific options on the {@link ConfigurationOptions}
      *
-     * @param logger The Nucleus {@link Logger}
+     * @param logger The NucleusPlugin {@link Logger}
      * @param options The {@link ConfigurationOptions} to alter.
      * @return The {@link ConfigurationOptions}, for easier inline use of this function.
      */
     public static ConfigurationOptions setOptions(Logger logger, ConfigurationOptions options) {
         TypeSerializerCollection tsc = options.getSerializers();
 
-        // Custom type serialisers for Nucleus
+        // Custom type serialisers for NucleusPlugin
         tsc.registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
         tsc.registerType(TypeToken.of(ItemStackSnapshot.class), new ItemStackSnapshotSerialiser(logger));
         tsc.registerPredicate(

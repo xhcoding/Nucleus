@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.misc.runnables;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public class GodRunnable extends TaskBase {
 
-    @Inject private Nucleus plugin;
+    @Inject private NucleusPlugin plugin;
     @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
 

@@ -5,17 +5,17 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 
 import java.util.Map;
 import java.util.Optional;
 
 public final class InternalServiceManager {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private Map<Class<?>, Object> serviceMap = Maps.newConcurrentMap();
 
-    public InternalServiceManager(Nucleus plugin) {
+    public InternalServiceManager(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 

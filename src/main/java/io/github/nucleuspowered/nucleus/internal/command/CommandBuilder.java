@@ -5,8 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.command;
 
 import com.google.inject.Injector;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -18,12 +17,12 @@ import java.util.Set;
 
 public class CommandBuilder {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final Injector injector;
     private final Set<Class<? extends AbstractCommand<?>>> commandSet;
     private final SimpleCommentedConfigurationNode sn;
 
-    public CommandBuilder(Nucleus plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet) {
+    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet) {
         this.plugin = plugin;
         this.injector = injector;
         this.commandSet = commandSet;
@@ -84,7 +83,7 @@ public class CommandBuilder {
             // I can't believe I have to do this...
         } catch (RuntimeException | NoClassDefFoundError e) {
             if (clazz.isAnnotationPresent(SkipOnError.class)) {
-                plugin.getLogger().warn(Util.getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
+                plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
                 return Optional.empty();
             }
 

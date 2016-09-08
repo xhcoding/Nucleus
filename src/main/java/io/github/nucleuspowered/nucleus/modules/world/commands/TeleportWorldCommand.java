@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -26,11 +24,11 @@ import java.util.Optional;
  * Teleports you to the world specified.
  *
  * Command Usage: /world teleport [world] Permission:
- * nucleus.world.teleport.base
+ * plugin.world.teleport.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
-public class TeleportWorldCommand extends CommandBase<CommandSource> {
+public class TeleportWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String world = "world";
     private final String playerKey = "player";
@@ -47,7 +45,7 @@ public class TeleportWorldCommand extends CommandBase<CommandSource> {
         WorldProperties worldProperties = args.<WorldProperties>getOne(world).get();
 
         if (!worldProperties.isEnabled()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.notenabled", worldProperties.getWorldName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.notenabled", worldProperties.getWorldName()));
             return CommandResult.success();
         }
 
@@ -56,7 +54,7 @@ public class TeleportWorldCommand extends CommandBase<CommandSource> {
             if (src instanceof Player) {
                 player = (Player) src;
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.player", worldProperties.getWorldName()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.player", worldProperties.getWorldName()));
                 return CommandResult.success();
             }
         } else {
@@ -65,7 +63,7 @@ public class TeleportWorldCommand extends CommandBase<CommandSource> {
 
         World world = Sponge.getServer().getWorld(worldProperties.getUniqueId()).get();
         player.transferToWorld(world.getUniqueId(), world.getSpawnLocation().getPosition());
-        src.sendMessage(Util.getTextMessageWithFormat("command.world.teleport.success", world.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", world.getName()));
 
         return CommandResult.success();
     }

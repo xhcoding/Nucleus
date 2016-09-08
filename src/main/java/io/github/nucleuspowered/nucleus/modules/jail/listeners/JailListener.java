@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
@@ -77,15 +76,15 @@ public class JailListener extends ListenerBase {
             Optional<Duration> timeLeft = jd.getTimeLeft();
             Text message;
             if (timeLeft.isPresent()) {
-                message = Util.getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()),
-                        Util.getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds()));
+                message = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), plugin.getNameUtil().getNameFromUUID(jd.getJailer()),
+                        plugin.getMessageProvider().getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(timeLeft.get().getSeconds()));
             } else {
-                message = Util.getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), NameUtil.getNameFromUUID(jd.getJailer()), "", "");
+                message = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), plugin.getNameUtil().getNameFromUUID(jd.getJailer()), "", "");
             }
 
             qs.setFlying(false);
             user.sendMessage(message);
-            user.sendMessage(Util.getTextMessageWithFormat("standard.reason", jd.getReason()));
+            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", jd.getReason()));
         }
 
         qs.setJailOnNextLogin(false);
@@ -157,13 +156,13 @@ public class JailListener extends ListenerBase {
 
     private void onJail(JailData md, Player user) {
         if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify.time",
+            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.playernotify.time",
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
         } else {
-            user.sendMessage(Util.getTextMessageWithFormat("jail.playernotify.standard"));
+            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.playernotify.standard"));
         }
 
-        user.sendMessage(Util.getTextMessageWithFormat("standard.reason", md.getReason()));
+        user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", md.getReason()));
     }
 
 }

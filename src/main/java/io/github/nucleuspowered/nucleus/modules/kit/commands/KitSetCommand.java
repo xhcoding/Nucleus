@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -22,14 +20,14 @@ import org.spongepowered.api.text.Text;
 /**
  * Sets kit items.
  *
- * Command Usage: /kit set Permission: nucleus.kit.set.base
+ * Command Usage: /kit set Permission: plugin.kit.set.base
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"set", "update"}, subcommandOf = KitCommand.class)
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitSetCommand extends CommandBase<Player> {
+public class KitSetCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
@@ -48,7 +46,7 @@ public class KitSetCommand extends CommandBase<Player> {
         KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
         kitInfo.kit.updateKitInventory(player);
         kitConfig.saveKit(kitInfo.name, kitInfo.kit);
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.set.success", kitInfo.name));
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.set.success", kitInfo.name));
         return CommandResult.success();
     }
 }

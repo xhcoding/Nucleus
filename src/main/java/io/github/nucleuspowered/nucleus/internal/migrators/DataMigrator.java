@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.migrators;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.WorldService;
 import org.slf4j.Logger;
@@ -23,11 +23,11 @@ import java.util.UUID;
  */
 public abstract class DataMigrator {
 
-    @Inject protected Nucleus plugin;
+    @Inject protected NucleusPlugin plugin;
     @Inject protected Logger logger;
 
     /**
-     * Migrates data to Nucleus from a data source.
+     * Migrates data to NucleusPlugin from a data source.
      *
      * @param src The {@link CommandSource} that requested the migration.
      * @throws Exception Any injections.

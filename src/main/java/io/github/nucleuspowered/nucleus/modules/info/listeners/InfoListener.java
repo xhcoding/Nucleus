@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.info.listeners;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -52,7 +51,7 @@ public class InfoListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> msp = Maps.newHashMap();
-        msp.put(getMotdPermission(), new PermissionInformation(Util.getMessageWithFormat("permission.motd.join"), SuggestedLevel.USER));
+        msp.put(getMotdPermission(), new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.motd.join"), SuggestedLevel.USER));
         return msp;
     }
 

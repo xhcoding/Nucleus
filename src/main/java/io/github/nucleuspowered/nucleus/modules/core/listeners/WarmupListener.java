@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -66,7 +65,7 @@ public class WarmupListener extends ListenerBase {
 
         service.cleanup();
         if (service.removeWarmup(player.getUniqueId()) && player.isOnline()) {
-            player.sendMessage(Util.getTextMessageWithFormat("warmup.cancel"));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("warmup.cancel"));
         }
     }
 }

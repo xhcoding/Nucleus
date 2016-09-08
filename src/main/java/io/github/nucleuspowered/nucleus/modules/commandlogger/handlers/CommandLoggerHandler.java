@@ -7,8 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.commandlogger.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.logging.DateRotatableFileLogger;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -32,11 +31,11 @@ public class CommandLoggerHandler {
     private final CoreConfigAdapter coreConfigAdapter;
     private DateRotatableFileLogger logger;
     private final List<String> queueEntry = Lists.newArrayList();
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final Object locking = new Object();
 
     @Inject
-    public CommandLoggerHandler(Nucleus plugin, CommandLoggerConfigAdapter clca, CoreConfigAdapter coreConfigAdapter) {
+    public CommandLoggerHandler(NucleusPlugin plugin, CommandLoggerConfigAdapter clca, CoreConfigAdapter coreConfigAdapter) {
         this.clca = clca;
         this.plugin = plugin;
         this.coreConfigAdapter = coreConfigAdapter;
@@ -86,7 +85,7 @@ public class CommandLoggerHandler {
                 try {
                     createLogger();
                 } catch (IOException e) {
-                    plugin.getLogger().warn(Util.getMessageWithFormat("commandlog.couldnotwrite"));
+                    plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("commandlog.couldnotwrite"));
                     if (coreConfigAdapter.getNodeOrDefault().isDebugmode()) {
                         e.printStackTrace();
                     }
@@ -101,7 +100,7 @@ public class CommandLoggerHandler {
         try {
             writeEntry(l);
         } catch (IOException e) {
-            plugin.getLogger().warn(Util.getMessageWithFormat("commandlog.couldnotwrite"));
+            plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("commandlog.couldnotwrite"));
             if (coreConfigAdapter.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
             }

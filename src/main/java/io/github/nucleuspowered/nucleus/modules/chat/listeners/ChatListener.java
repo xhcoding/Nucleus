@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -49,11 +48,11 @@ public class ChatListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = new HashMap<>();
-        mp.put(prefix + "color", new PermissionInformation(Util.getMessageWithFormat("permission.chat.color"), SuggestedLevel.ADMIN));
-        mp.put(prefix + "colour", new PermissionInformation(Util.getMessageWithFormat("permission.chat.colour"), SuggestedLevel.ADMIN));
-        mp.put(prefix + "style", new PermissionInformation(Util.getMessageWithFormat("permission.chat.style"), SuggestedLevel.ADMIN));
-        mp.put(prefix + "magic", new PermissionInformation(Util.getMessageWithFormat("permission.chat.magic"), SuggestedLevel.ADMIN));
-        mp.put(prefix + "url", new PermissionInformation(Util.getMessageWithFormat("permission.chat.urls"), SuggestedLevel.ADMIN));
+        mp.put(prefix + "color", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.color"), SuggestedLevel.ADMIN));
+        mp.put(prefix + "colour", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.colour"), SuggestedLevel.ADMIN));
+        mp.put(prefix + "style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.style"), SuggestedLevel.ADMIN));
+        mp.put(prefix + "magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.magic"), SuggestedLevel.ADMIN));
+        mp.put(prefix + "url", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.urls"), SuggestedLevel.ADMIN));
         return mp;
     }
 
@@ -87,7 +86,7 @@ public class ChatListener extends ListenerBase {
 
         Optional<String> chatcol = Util.getOptionFromSubject(player, "chatcolour", "chatcolor");
         if (chatcol.isPresent()) {
-            return Text.of(NameUtil.getColourFromString(chatcol.get()), result);
+            return Text.of(plugin.getNameUtil().getColourFromString(chatcol.get()), result);
         }
 
         return result;

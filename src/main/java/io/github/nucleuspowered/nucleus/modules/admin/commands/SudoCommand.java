@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -33,7 +31,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("sudo")
-public class SudoCommand extends CommandBase<CommandSource> {
+public class SudoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String playerKey = "player";
     private final String commandKey = "command";
@@ -52,7 +50,7 @@ public class SudoCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.target", new PermissionInformation(Util.getMessageWithFormat("permission.sudo.exempt"), SuggestedLevel.ADMIN));
+        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.sudo.exempt"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -61,13 +59,13 @@ public class SudoCommand extends CommandBase<CommandSource> {
         Player pl = args.<Player>getOne(playerKey).get();
         String cmd = args.<String>getOne(commandKey).get();
         if (pl.equals(src) || permissions.testSuffix(pl, "exempt.target")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.sudo.noperms"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.noperms"));
             return CommandResult.empty();
         }
 
         if (cmd.startsWith("c:")) {
             if (cmd.equals("c:")) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.sudo.chatfail"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.chatfail"));
                 return CommandResult.empty();
             }
 
@@ -91,11 +89,11 @@ public class SudoCommand extends CommandBase<CommandSource> {
                 return CommandResult.success();
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.sudo.chatcancelled"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.chatcancelled"));
             return CommandResult.empty();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.sudo.force", pl.getName(), cmd));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.force", pl.getName(), cmd));
         Sponge.getCommandManager().process(pl, cmd);
         return CommandResult.success();
     }

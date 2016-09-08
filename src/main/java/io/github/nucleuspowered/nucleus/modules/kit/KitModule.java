@@ -25,9 +25,9 @@ public class KitModule extends ConfigurableModule<KitConfigAdapter> {
 
         try {
             KitHandler kitHandler = new KitHandler();
-            nucleus.getInjector().injectMembers(kitHandler);
+            plugin.getInjector().injectMembers(kitHandler);
             serviceManager.registerService(KitHandler.class, kitHandler);
-            game.getServiceManager().setProvider(nucleus, NucleusKitService.class, kitHandler);
+            game.getServiceManager().setProvider(plugin, NucleusKitService.class, kitHandler);
         } catch (Exception ex) {
             logger.warn("Could not load the kits module for the reason below.");
             ex.printStackTrace();

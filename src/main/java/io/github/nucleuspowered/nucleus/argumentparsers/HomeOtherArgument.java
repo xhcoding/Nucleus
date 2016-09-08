@@ -4,8 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandSource;
@@ -24,7 +23,7 @@ public class HomeOtherArgument extends HomeArgument {
 
     private final NicknameArgument nickArg;
 
-    public HomeOtherArgument(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
+    public HomeOtherArgument(@Nullable Text key, NucleusPlugin plugin, CoreConfigAdapter cca) {
         super(key, plugin, cca);
         nickArg = new NicknameArgument(key, plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER);
     }
@@ -37,7 +36,7 @@ public class HomeOtherArgument extends HomeArgument {
         Optional<String> ohome = args.nextIfPresent();
 
         if (!ohome.isPresent()) {
-            throw args.createError(Util.getTextMessageWithFormat("args.homeother.notenough"));
+            throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.homeother.notenough"));
         }
 
         // We know it's an instance of a user.

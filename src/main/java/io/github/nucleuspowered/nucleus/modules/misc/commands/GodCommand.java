@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +25,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand({"god", "invuln", "invulnerability"})
-public class GodCommand extends CommandBase<CommandSource> {
+public class GodCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String playerKey = "player";
     private final String invulnKey = "invuln";
@@ -35,7 +33,7 @@ public class GodCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -61,10 +59,10 @@ public class GodCommand extends CommandBase<CommandSource> {
 
         uc.setInvulnerable(god);
         if (!pl.equals(src)) {
-            src.sendMessages(Util.getTextMessageWithFormat(god ? "command.god.player.on" : "command.god.player.off", pl.getName()));
+            src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat(god ? "command.god.player.on" : "command.god.player.off", pl.getName()));
         }
 
-        pl.sendMessage(Util.getTextMessageWithFormat(god ? "command.god.on" : "command.god.off"));
+        pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(god ? "command.god.on" : "command.god.off"));
         return CommandResult.success();
     }
 }

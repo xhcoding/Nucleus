@@ -5,13 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -34,8 +33,8 @@ import java.util.Optional;
  *
  * <p>
  * If <code>warp.separate-permissions</code> = <code>true</code> in the commands
- * config, also requires <code>nucleus.warps.[warpname]</code> permission, or
- * the Nucleus admin permission.
+ * config, also requires <code>plugin.warps.[warpname]</code> permission, or
+ * the NucleusPlugin admin permission.
  * </p>
  *
  * <p>
@@ -45,9 +44,9 @@ import java.util.Optional;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("warp")
 @NoCost
-public class WarpCommand extends CommandBase<Player> {
+public class WarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
-    static final String warpNameArg = Util.getMessageWithFormat("args.name.warpname");
+    static final String warpNameArg = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("args.name.warpname");
 
     @Inject private WarpConfigAdapter adapter;
 
@@ -55,7 +54,7 @@ public class WarpCommand extends CommandBase<Player> {
     protected Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put(PermissionRegistry.PERMISSIONS_PREFIX + "warps",
-                new PermissionInformation(Util.getMessageWithFormat("permissions.warps"), SuggestedLevel.ADMIN));
+                new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permissions.warps"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -91,13 +90,13 @@ public class WarpCommand extends CommandBase<Player> {
         String costWithUnit = plugin.getEconHelper().getCurrencySymbol(cost);
         if (plugin.getEconHelper().hasBalance(source, cost)) {
             String command = String.format("/warp -y %s", wd.warp);
-            source.sendMessage(Util.getTextMessageWithFormat("command.warp.cost.details", wd.warp, costWithUnit));
+            source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.details", wd.warp, costWithUnit));
             source.sendMessage(
-            Util.getTextMessageWithFormat("command.warp.cost.clickaccept").toBuilder()
-                    .onClick(TextActions.runCommand(command)).onHover(TextActions.showText(Util.getTextMessageWithFormat("command.warp.cost.clickhover", command)))
-                    .append(Util.getTextMessageWithFormat("command.warp.cost.alt")).build());
+            plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.clickaccept").toBuilder()
+                    .onClick(TextActions.runCommand(command)).onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.clickhover", command)))
+                    .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.alt")).build());
         } else {
-            source.sendMessage(Util.getTextMessageWithFormat("command.warp.cost.nomoney", wd.warp, costWithUnit));
+            source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.nomoney", wd.warp, costWithUnit));
         }
 
         return ContinueMode.STOP;
@@ -121,19 +120,19 @@ public class WarpCommand extends CommandBase<Player> {
             if (plugin.getEconHelper().withdrawFromPlayer(pl, cost, false)) {
                 chg = true;
             } else {
-                pl.sendMessage(Util.getTextMessageWithFormat("command.warp.cost.nomoney", wd.warp, plugin.getEconHelper().getCurrencySymbol(cost)));
+                pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.nomoney", wd.warp, plugin.getEconHelper().getCurrencySymbol(cost)));
                 return CommandResult.empty();
             }
         }
 
         // We have a warp data, warp them.
-        pl.sendMessage(Util.getTextMessageWithFormat("command.warps.start", wd.warp));
+        pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.start", wd.warp));
 
         // Warp them.
         if (args.getOne("f").isPresent()) { // Force the position.
             pl.setLocationAndRotation(wd.loc.getLocation().get(), wd.loc.getRotation());
         } else if (!pl.setLocationAndRotationSafely(wd.loc.getLocation().get(), wd.loc.getRotation())) {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.warps.nosafe"));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.nosafe"));
 
             if (chg) {
                 plugin.getEconHelper().depositInPlayer(pl, cost, false);
@@ -143,7 +142,7 @@ public class WarpCommand extends CommandBase<Player> {
         }
 
         if (chg) {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.warp.cost.charged", plugin.getEconHelper().getCurrencySymbol(cost)));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.charged", plugin.getEconHelper().getCurrencySymbol(cost)));
         }
 
         return CommandResult.success();

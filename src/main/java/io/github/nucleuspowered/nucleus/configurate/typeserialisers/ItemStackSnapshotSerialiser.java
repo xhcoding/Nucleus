@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.configurate.typeserialisers;
 
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
@@ -65,11 +65,11 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
         // Try again
         oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class, DataTranslators.CONFIGURATION_NODE.translate(value));
         if (oiss.isPresent()) {
-            logger.warn(Util.getMessageWithFormat("config.itemstacksnapshot.data", value.getNode("ItemType").getString()));
+            logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.data", value.getNode("ItemType").getString()));
             return oiss.get();
         }
 
-        logger.warn(Util.getMessageWithFormat("config.itemstacksnapshot.unable", value.getNode("ItemType").getString()));
+        logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.unable", value.getNode("ItemType").getString()));
 
         // Return an empty snapshot
         return ItemStackSnapshot.NONE;

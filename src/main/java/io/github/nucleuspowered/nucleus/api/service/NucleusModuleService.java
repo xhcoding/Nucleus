@@ -29,7 +29,7 @@ public interface NucleusModuleService {
     boolean canDisableModules();
 
     /**
-     * Removes a module from Nucleus programmatically, so plugins can override the behaviour if required. This method will
+     * Removes a module from NucleusPlugin programmatically, so plugins can override the behaviour if required. This method will
      * only work during pre-init and init - while {@link #canDisableModules()} is <code>true</code>.
      *
      * @param module The id of the module to disable.
@@ -37,7 +37,7 @@ public interface NucleusModuleService {
      *               user who is disabling the plugin.
      * @throws ModulesLoadedException Thrown if the modules have now been loaded and can no longer be removed.
      * @throws UnremovableModuleException Thrown if the module has been marked "cannot be disabled". Plugins are expected
-     *         to honour this, Nucleus does not mark any module (apart from the core) as "unable to be disabled" by default,
+     *         to honour this, NucleusPlugin does not mark any module (apart from the core) as "unable to be disabled" by default,
      *         so plugin authors are requested to not try to override any behaviour that a user has explicitly turned on.
      * @throws NoModuleException Thrown if the module does not exist.
      */

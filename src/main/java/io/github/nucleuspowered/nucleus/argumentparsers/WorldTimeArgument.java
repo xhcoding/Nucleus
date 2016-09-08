@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -81,7 +81,7 @@ public class WorldTimeArgument extends CommandElement {
             // Get the number, multiply by 1000, return.
             int i = Integer.parseInt(m1.group(1));
             if (i > 23 || i < 0) {
-                throw args.createError(Util.getTextMessageWithFormat("args.worldtime.24herror"));
+                throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldtime.24herror"));
             }
 
             i -= 6;
@@ -98,7 +98,7 @@ public class WorldTimeArgument extends CommandElement {
             // Get the number, multiply by 1000, return.
             int i = Integer.parseInt(m2.group(1));
             if (i > 12 || i < 1) {
-                throw args.createError(Util.getTextMessageWithFormat("args.worldtime.12herror"));
+                throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldtime.12herror"));
             }
 
             // Modify to 24 hour time, based on am/pm
@@ -127,10 +127,10 @@ public class WorldTimeArgument extends CommandElement {
                 return i;
             }
 
-            throw args.createError(Util.getTextMessageWithFormat("args.worldtime.ticks"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldtime.ticks"));
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.worldtime.error", arg));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldtime.error", arg));
     }
 
     @Override

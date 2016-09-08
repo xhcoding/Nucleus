@@ -8,7 +8,6 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.WorldTimeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,7 +18,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 @Permissions(root = "time")
 @RegisterCommand(value = "set", subcommandOf = TimeCommand.class)
-public class SetTimeCommand extends CommandBase<CommandSource> {
+public class SetTimeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
     private final String time = "time";
     private final String world = "world";
 
@@ -37,7 +36,7 @@ public class SetTimeCommand extends CommandBase<CommandSource> {
 
         int tick = args.<Integer>getOne(time).get();
         pr.setWorldTime(tick);
-        src.sendMessage(Util.getTextMessageWithFormat("command.settime.done", String.valueOf(Util.getTimeFromTicks(tick))));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.settime.done", String.valueOf(Util.getTimeFromTicks(tick))));
         return CommandResult.success();
     }
 }

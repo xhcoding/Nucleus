@@ -11,7 +11,6 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -30,7 +29,7 @@ import java.util.regex.Pattern;
 @Permissions(root = "home", alias = "set", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand({"homeset", "sethome"})
-public class SetHomeCommand extends CommandBase<Player> {
+public class SetHomeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String homeKey = "home";
     private final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
@@ -46,7 +45,7 @@ public class SetHomeCommand extends CommandBase<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("unlimited", new PermissionInformation(Util.getMessageWithFormat("permission.homes.unlimited"), SuggestedLevel.ADMIN));
+        m.put("unlimited", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.homes.unlimited"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -60,29 +59,29 @@ public class SetHomeCommand extends CommandBase<Player> {
         Map<String, LocationData> msw = iqsu.getHomes();
 
         if (!warpName.matcher(home).matches()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.name"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.name"));
             return CommandResult.empty();
         }
 
         // Does the home exist? You have to explicitly delete the home first.
         if (msw.entrySet().stream().anyMatch(k -> k.getKey().equalsIgnoreCase(home))) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.seterror", home));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home));
             return CommandResult.empty();
         }
 
         int c = getCount(src);
         if (msw.size() >= c) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
             return CommandResult.empty();
         }
 
         // Just in case.
         if (!iqsu.setHome(home, src.getLocation(), src.getRotation())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.sethome.seterror", home));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home));
             return CommandResult.empty();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.sethome.set", home));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.set", home));
         return CommandResult.success();
     }
 

@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -27,7 +25,7 @@ import java.util.List;
 @NoCost
 @RunAsync
 @RegisterCommand({"firstjoinkit", "starterkit", "joinkit", "firstkit"})
-public class FirstKitCommand extends CommandBase<CommandSource> {
+public class FirstKitCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private GeneralService gds;
 
@@ -35,7 +33,7 @@ public class FirstKitCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         List<ItemStackSnapshot> stacks = gds.getFirstKit();
         if (stacks == null || stacks.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.firstkit.list.none"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.list.none"));
             return CommandResult.success();
         }
 
@@ -47,7 +45,7 @@ public class FirstKitCommand extends CommandBase<CommandSource> {
 
         PaginationService service = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         service.builder().contents(itemNames)
-                .title(Util.getTextMessageWithFormat("command.firstkit.list.title")).padding(Text.of(TextColors.GREEN, "-"))
+                .title(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.list.title")).padding(Text.of(TextColors.GREEN, "-"))
                 .sendTo(src);
 
         return CommandResult.success();

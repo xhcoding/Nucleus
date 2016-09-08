@@ -6,11 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -42,7 +40,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class BanCommand extends CommandBase<CommandSource> {
+public class BanCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject
     private Logger logger;
@@ -57,14 +55,14 @@ public class BanCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> ps = Maps.newHashMap();
-        ps.put(notifyPermission, new PermissionInformation(Util.getMessageWithFormat("permission.ban.notify"), SuggestedLevel.MOD));
+        ps.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.ban.notify"), SuggestedLevel.MOD));
         return ps;
     }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("offline", new PermissionInformation(Util.getMessageWithFormat("permission.ban.offline"), SuggestedLevel.MOD));
+        m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.ban.offline"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -81,7 +79,7 @@ public class BanCommand extends CommandBase<CommandSource> {
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
-        final String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("ban.defaultreason"));
+        final String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
         Optional<GameProfile> ou = args.getOne(user);
         if (ou.isPresent()) {
             return executeBan(src, ou.get(), r);
@@ -100,7 +98,7 @@ public class BanCommand extends CommandBase<CommandSource> {
                     // Create the user.
                     UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
                     User user = uss.getOrCreate(gp);
-                    src.sendMessage(Util.getTextMessageWithFormat("gameprofile.new", user.getName()));
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("gameprofile.new", user.getName()));
 
                     try {
                         executeBan(src, gp, r);
@@ -115,7 +113,7 @@ public class BanCommand extends CommandBase<CommandSource> {
                     e.printStackTrace();
                 }
 
-                src.sendMessage(Util.getTextMessageWithFormat("command.ban.profileerror", userToFind));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.profileerror", userToFind));
             }
         });
 
@@ -128,12 +126,12 @@ public class BanCommand extends CommandBase<CommandSource> {
         UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
         User user = uss.get(u).get();
         if (!user.isOnline() && !permissions.testSuffix(src, "offline")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.ban.offline.noperms"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.offline.noperms"));
             return CommandResult.empty();
         }
 
         if (service.isBanned(u)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.ban.alreadyset", u.getName().orElse(Util.getMessageWithFormat("standard.unknown"))));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.alreadyset", u.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown"))));
             return CommandResult.empty();
         }
 
@@ -144,8 +142,8 @@ public class BanCommand extends CommandBase<CommandSource> {
         // Get the permission, "quickstart.ban.notify"
         MutableMessageChannel send = MessageChannel.permission(notifyPermission).asMutable();
         send.addMember(src);
-        send.send(Util.getTextMessageWithFormat("command.ban.applied", u.getName().orElse(Util.getMessageWithFormat("standard.unknown")), src.getName()));
-        send.send(Util.getTextMessageWithFormat("standard.reason", r));
+        send.send(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.applied", u.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown")), src.getName()));
+        send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", r));
 
         if (Sponge.getServer().getPlayer(u.getUniqueId()).isPresent()) {
             Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(r));

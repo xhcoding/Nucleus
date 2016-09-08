@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -28,7 +27,7 @@ import org.spongepowered.api.text.Text;
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)
 @RegisterCommand({"reply", "r"})
-public class ReplyCommand extends CommandBase<CommandSource> {
+public class ReplyCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String message = "message";
 

@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.DataScanner;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -35,7 +33,7 @@ import java.util.*;
 @Permissions
 @RegisterCommand({"blockinfo"})
 @RunAsync
-public class BlockInfoCommand extends CommandBase<Player> {
+public class BlockInfoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Override
     public CommandElement[] getArguments() {
@@ -46,7 +44,7 @@ public class BlockInfoCommand extends CommandBase<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("extended", new PermissionInformation(Util.getMessageWithFormat("permission.blockinfo.extended"), SuggestedLevel.ADMIN));
+        m.put("extended", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.blockinfo.extended"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -64,8 +62,8 @@ public class BlockInfoCommand extends CommandBase<Player> {
             BlockType it = b.getType();
 
             List<Text> lt = new ArrayList<>();
-            lt.add(Util.getTextMessageWithFormat("command.blockinfo.id", it.getId(), it.getTranslation().get()));
-            lt.add(Util.getTextMessageWithFormat("command.iteminfo.extendedid", b.getId()));
+            lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.blockinfo.id", it.getId(), it.getTranslation().get()));
+            lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.extendedid", b.getId()));
 
             if (args.hasAny("e") || args.hasAny("extended")) {
                 Collection<Property<?, ?>> cp = b.getApplicableProperties();
@@ -85,14 +83,14 @@ public class BlockInfoCommand extends CommandBase<Player> {
             }
 
             Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(lt).padding(Text.of(TextColors.GREEN, "-"))
-                    .title(Util.getTextMessageWithFormat("command.blockinfo.list.header", String.valueOf(brh.getBlockX()),
+                    .title(plugin.getMessageProvider().getTextMessageWithFormat("command.blockinfo.list.header", String.valueOf(brh.getBlockX()),
                             String.valueOf(brh.getBlockY()), String.valueOf(brh.getBlockZ())))
                     .sendTo(player);
 
             return CommandResult.success();
         }
 
-        player.sendMessage(Util.getTextMessageWithFormat("command.blockinfo.none"));
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.blockinfo.none"));
         return CommandResult.empty();
     }
 }

@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.staffchat.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import org.spongepowered.api.command.CommandResult;
@@ -29,7 +27,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand({"staffchat", "sc", "a"})
-public class StaffChatCommand extends CommandBase<CommandSource> {
+public class StaffChatCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String message = "message";
 
@@ -52,7 +50,7 @@ public class StaffChatCommand extends CommandBase<CommandSource> {
         }
 
         if (!(src instanceof Player)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.staffchat.consoletoggle"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.staffchat.consoletoggle"));
             return CommandResult.empty();
         }
 
@@ -61,7 +59,7 @@ public class StaffChatCommand extends CommandBase<CommandSource> {
         result = !user.isInStaffChat();
         user.setInStaffChat(result);
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.staffchat." + (result ? "on" : "off")));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.staffchat." + (result ? "on" : "off")));
         return CommandResult.success();
     }
 }

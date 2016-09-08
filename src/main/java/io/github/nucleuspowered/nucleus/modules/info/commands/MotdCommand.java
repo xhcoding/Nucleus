@@ -6,10 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.info.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
@@ -26,7 +24,7 @@ import java.util.Optional;
 @NoCost
 @NoWarmup
 @RegisterCommand("motd")
-public class MotdCommand extends CommandBase<CommandSource> {
+public class MotdCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private ChatUtil chatUtil;
     @Inject private InfoConfigAdapter infoConfigAdapter;
@@ -35,7 +33,7 @@ public class MotdCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<TextFileController> otfc = plugin.getTextFileController(InfoModule.MOTD_KEY);
         if (!otfc.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.motd.nocontroller"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.motd.nocontroller"));
             return CommandResult.empty();
         }
 

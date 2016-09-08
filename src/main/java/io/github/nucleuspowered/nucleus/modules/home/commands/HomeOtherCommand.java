@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -21,7 +19,7 @@ import org.spongepowered.api.text.Text;
 
 @Permissions(root = "home", alias = "other", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand("homeother")
-public class HomeOtherCommand extends CommandBase<Player> {
+public class HomeOtherCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String home = "home";
 
@@ -39,16 +37,16 @@ public class HomeOtherCommand extends CommandBase<Player> {
 
         if (!wl.location.getLocation().isPresent()) {
             // Fail
-            src.sendMessage(Util.getTextMessageWithFormat("command.homeother.invalid", wl.user.getName(), wl.location.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.homeother.invalid", wl.user.getName(), wl.location.getName()));
             return CommandResult.empty();
         }
 
         // Warp to it safely.
         if (src.setLocationAndRotationSafely(wl.location.getLocation().get(), wl.location.getRotation())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.homeother.success", wl.user.getName(), wl.location.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.homeother.success", wl.user.getName(), wl.location.getName()));
             return CommandResult.success();
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.homeother.fail", wl.user.getName(), wl.location.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.homeother.fail", wl.user.getName(), wl.location.getName()));
             return CommandResult.empty();
         }
     }

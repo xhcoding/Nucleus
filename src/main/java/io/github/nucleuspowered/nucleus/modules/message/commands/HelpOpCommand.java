@@ -6,11 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -30,7 +28,7 @@ import java.util.Map;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"helpop"})
-public class HelpOpCommand extends CommandBase<Player> {
+public class HelpOpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String messageKey = "message";
 
@@ -45,7 +43,7 @@ public class HelpOpCommand extends CommandBase<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("receive", new PermissionInformation(Util.getMessageWithFormat("permission.helpop.receive"), SuggestedLevel.MOD));
+        m.put("receive", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.helpop.receive"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -56,14 +54,14 @@ public class HelpOpCommand extends CommandBase<Player> {
         // Message is about to be sent. Send the event out. If canceled, then
         // that's that.
         if (Sponge.getEventManager().post(new InternalNucleusHelpOpEvent(src, message))) {
-            src.sendMessage(Util.getTextMessageWithFormat("message.cancel"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("message.cancel"));
             return CommandResult.empty();
         }
 
         Text prefix = chatUtil.getPlayerMessageFromTemplate(mca.getNodeOrDefault().getHelpOpPrefix(), src, false);
 
         MessageChannel.permission(permissions.getPermissionWithSuffix("receive")).send(src, prefix.concat(Text.of(message)));
-        src.sendMessage(Util.getTextMessageWithFormat("command.helpop.success"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.helpop.success"));
 
         return CommandResult.success();
     }

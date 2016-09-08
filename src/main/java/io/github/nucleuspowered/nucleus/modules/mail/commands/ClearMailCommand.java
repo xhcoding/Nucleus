@@ -5,9 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -24,16 +22,16 @@ import org.spongepowered.api.entity.living.player.Player;
 @NoCost
 @RunAsync
 @RegisterCommand(value = "clear", subcommandOf = MailCommand.class)
-public class ClearMailCommand extends CommandBase<Player> {
+public class ClearMailCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private MailHandler handler;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         if (handler.clearUserMail(src)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.mail.clear.success"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mail.clear.success"));
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.mail.clear.nomail"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mail.clear.nomail"));
         }
         return CommandResult.success();
     }

@@ -7,8 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.afk.handlers;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 
 public class AFKHandler {
 
-    @Inject private Nucleus plugin;
+    @Inject private NucleusPlugin plugin;
     @Inject private AFKConfigAdapter aca;
     @Inject private PermissionRegistry permissionRegistry;
 
@@ -137,7 +136,7 @@ public class AFKHandler {
             workOnAfkPlayers(now.minus(afkTimeKick, ChronoUnit.SECONDS), cph, exemptkick, x -> true, x -> {
                 String message = config.getMessages().getKickMessage().trim();
                 if (message.isEmpty()) {
-                    message = Util.getMessageWithFormat("afk.kickreason");
+                    message = NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("afk.kickreason");
                 }
 
                 final String messageToServer = config.getMessages().getOnKick().trim();
@@ -202,7 +201,7 @@ public class AFKHandler {
             }
         } else {
             // Tell the user in question about them going AFK
-            player.sendMessage(Util.getTextMessageWithFormat(isAfk ? "command.afk.from.vanish" : "command.afk.to.vanish"));
+            player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(isAfk ? "command.afk.from.vanish" : "command.afk.to.vanish"));
         }
     }
 

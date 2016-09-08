@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -16,16 +14,16 @@ import org.spongepowered.api.entity.living.player.Player;
 /**
  * Sets spawn of world.
  *
- * Command Usage: /world setspawn Permission: nucleus.world.setspawn.base
+ * Command Usage: /world setspawn Permission: plugin.world.setspawn.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setspawn"}, subcommandOf = WorldCommand.class)
-public class SetSpawnWorldCommand extends CommandBase<Player> {
+public class SetSpawnWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {
         pl.getWorld().getProperties().setSpawnPosition(pl.getLocation().getBlockPosition());
-        pl.sendMessage(Util.getTextMessageWithFormat("command.world.setspawn.success"));
+        pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setspawn.success"));
         return CommandResult.success();
     }
 }

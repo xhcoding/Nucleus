@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.jail;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
@@ -24,7 +24,7 @@ import uk.co.drnaylor.quickstart.annotations.ModuleData;
 @ModuleData(id = "jail", name = "Jail")
 public class JailModule extends ConfigurableModule<JailConfigAdapter> {
 
-    @Inject private Nucleus nucleus;
+    @Inject private NucleusPlugin nucleus;
     @Inject private Logger logger;
     @Inject private Game game;
     @Inject private InternalServiceManager serviceManager;
@@ -59,18 +59,18 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
                 JailData jd = jh.getPlayerJailData(u).get();
                 Text.Builder m;
                 if (jd.getEndTimestamp().isPresent()) {
-                    m = Util.getTextMessageWithFormat("seen.isjailed.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();
+                    m = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.isjailed.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();
                 } else {
-                    m = Util.getTextMessageWithFormat("seen.isjailed.perm").toBuilder();
+                    m = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.isjailed.perm").toBuilder();
                 }
 
                 return Lists.newArrayList(
                         m.onClick(TextActions.runCommand("/checkjail " + u.getName()))
-                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).build(),
-                        Util.getTextMessageWithFormat("standard.reason", jd.getReason()));
+                                .onHover(TextActions.showText(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("standard.clicktoseemore"))).build(),
+                        NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("standard.reason", jd.getReason()));
             }
 
-            return Lists.newArrayList(Util.getTextMessageWithFormat("seen.notjailed"));
+            return Lists.newArrayList(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.notjailed"));
         });
     }
 }

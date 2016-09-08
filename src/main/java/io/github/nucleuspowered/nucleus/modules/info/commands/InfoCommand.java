@@ -7,10 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.info.commands;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.InfoArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHelper;
@@ -40,7 +38,7 @@ import java.util.stream.Collectors;
 @NoCost
 @NoWarmup
 @RegisterCommand({"info", "einfo"})
-public class InfoCommand extends CommandBase<CommandSource> {
+public class InfoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private InfoHandler infoHandler;
     @Inject private ChatUtil chatUtil;
@@ -63,7 +61,7 @@ public class InfoCommand extends CommandBase<CommandSource> {
             Optional<String> os = getTitle(info);
             String title;
             if (os.isPresent()) {
-                title = Util.getMessageWithFormat("command.info.title.section", os.get());
+                title = plugin.getMessageProvider().getMessageWithFormat("command.info.title.section", os.get());
 
                 // Just in case the list is immutable.
                 info = Lists.newArrayList(info);
@@ -80,7 +78,7 @@ public class InfoCommand extends CommandBase<CommandSource> {
                     }
                 }
             } else {
-                title = Util.getMessageWithFormat("command.info.title.section", oir.get().name);
+                title = plugin.getMessageProvider().getMessageWithFormat("command.info.title.section", oir.get().name);
             }
 
             InfoHelper.sendInfo(info, src, chatUtil, title);
@@ -90,7 +88,7 @@ public class InfoCommand extends CommandBase<CommandSource> {
         // Create a list of pages to load.
         Set<String> sections = infoHandler.getInfoSections();
         if (sections.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.info.none"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.info.none"));
             return CommandResult.empty();
         }
 
@@ -99,7 +97,7 @@ public class InfoCommand extends CommandBase<CommandSource> {
         sections.forEach(x -> {
             Text.Builder tb = Text.builder().append(Text.builder(x)
                     .color(TextColors.GREEN).style(TextStyles.ITALIC)
-                    .onHover(TextActions.showText(Util.getTextMessageWithFormat("command.info.hover", x)))
+                    .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.info.hover", x)))
                     .onClick(TextActions.runCommand("/info " + x)).build());
 
             // If there is a title, then add it.
@@ -111,8 +109,8 @@ public class InfoCommand extends CommandBase<CommandSource> {
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         PaginationList.Builder pb = ps.builder().contents()
-                .header(Util.getTextMessageWithFormat("command.info.header.default"))
-                .title(Util.getTextMessageWithFormat("command.info.title.default"))
+                .header(plugin.getMessageProvider().getTextMessageWithFormat("command.info.header.default"))
+                .title(plugin.getMessageProvider().getTextMessageWithFormat("command.info.title.default"))
                 .contents(s.stream().sorted((a, b) -> a.toPlain().compareTo(b.toPlain())).collect(Collectors.toList()))
                 .padding(Text.of(TextColors.GOLD, "-"));
 

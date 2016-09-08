@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -30,7 +29,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RunAsync
-public class CheckBanCommand extends CommandBase<CommandSource> {
+public class CheckBanCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String key = "player";
     private final String key2 = "user";
@@ -58,7 +57,7 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
 
         Optional<Ban.Profile> obp = service.getBanFor(gp);
         if (!obp.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkban.notset", gp.getName().orElse(Util.getMessageWithFormat("standard.unknown"))));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.notset", gp.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown"))));
             return CommandResult.success();
         }
 
@@ -66,7 +65,7 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
         String f = "";
         String t = "";
         if (bp.getExpirationDate().isPresent()) {
-            f = Util.getMessageWithFormat("standard.for");
+            f = plugin.getMessageProvider().getMessageWithFormat("standard.for");
             t = Util.getTimeToNow(bp.getExpirationDate().get());
         }
 
@@ -74,11 +73,11 @@ public class CheckBanCommand extends CommandBase<CommandSource> {
         if (bp.getBanSource().isPresent()) {
             reason = bp.getBanSource().get().toPlain();
         } else {
-            reason = Util.getMessageWithFormat("standard.unknown");
+            reason = plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.checkban.banned", gp.getName().orElse(Util.getMessageWithFormat("standard.unknown")), reason, f, t));
-        src.sendMessage(Util.getTextMessageWithFormat("standard.reason", TextSerializers.FORMATTING_CODE.serialize(bp.getReason().orElse(Util.getTextMessageWithFormat("ban.defaultreason")))));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.banned", gp.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown")), reason, f, t));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", TextSerializers.FORMATTING_CODE.serialize(bp.getReason().orElse(plugin.getMessageProvider().getTextMessageWithFormat("ban.defaultreason")))));
         return CommandResult.success();
     }
 }

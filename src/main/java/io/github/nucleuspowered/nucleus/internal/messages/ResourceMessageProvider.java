@@ -11,7 +11,13 @@ import java.util.Set;
 
 public class ResourceMessageProvider extends MessageProvider {
 
-    protected final ResourceBundle rb = ResourceBundle.getBundle("assets.nucleus.messages", Locale.getDefault());
+    public static final String messagesBundle = "assets.nucleus.messages";
+    public static final String commandMessagesBundle = "assets.nucleus.commands";
+    protected final ResourceBundle rb;
+
+    public ResourceMessageProvider(String resource) {
+        rb = ResourceBundle.getBundle(resource, Locale.getDefault());
+    }
 
     @Override
     public Optional<String> getMessageFromKey(String key) {

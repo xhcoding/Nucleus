@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -30,7 +28,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class UnbanCommand extends CommandBase<CommandSource> {
+public class UnbanCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String key = "player";
     private final String key2 = "user";
@@ -58,7 +56,7 @@ public class UnbanCommand extends CommandBase<CommandSource> {
 
         Optional<Ban.Profile> obp = service.getBanFor(gp);
         if (!obp.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkban.notset", gp.getName().orElse(Util.getMessageWithFormat("standard.unknown"))));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.notset", gp.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown"))));
             return CommandResult.empty();
         }
 
@@ -66,7 +64,7 @@ public class UnbanCommand extends CommandBase<CommandSource> {
 
         MutableMessageChannel notify = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
         notify.addMember(src);
-        notify.send(Util.getTextMessageWithFormat("command.unban.success", obp.get().getProfile().getName().orElse("standard.unknown"), src.getName()));
+        notify.send(plugin.getMessageProvider().getTextMessageWithFormat("command.unban.success", obp.get().getProfile().getName().orElse("standard.unknown"), src.getName()));
         return CommandResult.success();
     }
 }

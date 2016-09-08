@@ -4,13 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -30,14 +24,14 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @Permissions
-public class ClearInventoryCommand extends CommandBase<CommandSource> {
+public class ClearInventoryCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String player = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -57,7 +51,7 @@ public class ClearInventoryCommand extends CommandBase<CommandSource> {
         }
 
         opl.get().getInventory().clear();
-        src.sendMessage(Util.getTextMessageWithFormat("command.clearinventory.success", opl.get().getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.clearinventory.success", opl.get().getName()));
         return CommandResult.success();
     }
 }

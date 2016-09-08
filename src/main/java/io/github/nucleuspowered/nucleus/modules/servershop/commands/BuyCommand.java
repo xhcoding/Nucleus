@@ -4,14 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.servershop.config.ServerShopConfigAdapter;
 import org.spongepowered.api.CatalogType;
@@ -41,7 +39,7 @@ import java.util.stream.Collectors;
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itembuy", "buy"})
-public class BuyCommand extends CommandBase<Player> {
+public class BuyCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private ServerShopConfigAdapter ssca;
     @Inject private ItemDataService itemDataService;
@@ -66,14 +64,14 @@ public class BuyCommand extends CommandBase<Player> {
 
         ItemDataNode node = itemDataService.getDataForItem(ct.getId());
         if (node.getServerBuyPrice() < 0) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.itembuy.notforsale"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.notforsale"));
             return CommandResult.empty();
         }
 
         int max = ssca.getNodeOrDefault().getMaxPurchasableAtOnce();
         if (amount > max) {
             amount = max;
-            src.sendMessage(Util.getTextMessageWithFormat("command.itembuy.maximum", String.valueOf(amount)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.maximum", String.valueOf(amount)));
         }
 
         final ItemStack created;
@@ -87,13 +85,13 @@ public class BuyCommand extends CommandBase<Player> {
         final int perUnitCost = node.getServerBuyPrice();
         final int unitCount = amount;
         final int overallCost = perUnitCost * unitCount;
-        src.sendMessage(Util.getTextMessageWithFormat("command.itembuy.summary", String.valueOf(amount), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.summary", String.valueOf(amount), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
 
         if (args.hasAny("y")) {
             new BuyCallback(src, overallCost, created, unitCount, perUnitCost).accept(src);
         } else {
             src.sendMessage(
-                    Util.getTextMessageWithFormat("command.itembuy.clickhere").toBuilder()
+                    plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.clickhere").toBuilder()
                             .onClick(TextActions.executeCallback(new BuyCallback(src, overallCost, created, unitCount, perUnitCost))).build()
             );
         }
@@ -131,20 +129,20 @@ public class BuyCommand extends CommandBase<Player> {
             if (econHelper.withdrawFromPlayer(src, overallCost, false)) {
                 InventoryTransactionResult itr = src.getInventory().offer(created);
                 if (itr.getRejectedItems().isEmpty()) {
-                    src.sendMessage(Util.getTextMessageWithFormat("command.itembuy.transactionsuccess",
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.transactionsuccess",
                             String.valueOf(unitCount), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
                 } else {
                     Collection<ItemStackSnapshot> iss = itr.getRejectedItems();
                     int rejected = iss.stream().collect(Collectors.summingInt(ItemStackSnapshot::getCount));
                     int refund = rejected * perUnitCost;
                     econHelper.depositInPlayer(src, refund, false);
-                    src.sendMessage(Util.getTextMessageWithFormat("command.itembuy.transactionpartial", String.valueOf(rejected), created.getTranslation().get()));
-                    src.sendMessage(Util.getTextMessageWithFormat("command.itembuy.transactionsuccess",
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.transactionpartial", String.valueOf(rejected), created.getTranslation().get()));
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.transactionsuccess",
                             String.valueOf(unitCount - rejected), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost - refund)));
                 }
             } else {
                 // No funds.
-                src.sendMessage(Util.getTextMessageWithFormat("command.itembuy.nofunds"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.nofunds"));
             }
         }
     }

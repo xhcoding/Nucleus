@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.tests;
 
 import com.google.inject.Guice;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -30,7 +30,7 @@ public class ChatUtilTests extends TestBase {
     public static void setup() throws Exception {
         TestBase.testSetup();
 
-        Nucleus plugin = Guice.createInjector(new TestModule()).getInstance(Nucleus.class);
+        NucleusPlugin plugin = Guice.createInjector(new TestModule()).getInstance(NucleusPlugin.class);
 
         Field parserToTest = ChatUtil.class.getDeclaredField("urlParser");
         parserToTest.setAccessible(true);

@@ -4,8 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandSource;
@@ -25,10 +24,10 @@ import java.util.stream.Collectors;
 
 public class HomeArgument extends CommandElement {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final CoreConfigAdapter cca;
 
-    public HomeArgument(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
+    public HomeArgument(@Nullable Text key, NucleusPlugin plugin, CoreConfigAdapter cca) {
         super(key);
         this.plugin = plugin;
         this.cca = cca;
@@ -38,7 +37,7 @@ public class HomeArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!(source instanceof User)) {
-            throw args.createError(Util.getTextMessageWithFormat("command.playeronly"));
+            throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.playeronly"));
         }
 
         return getHome((User) source, args.next(), args);
@@ -58,7 +57,7 @@ public class HomeArgument extends CommandElement {
             throw args.createError(Text.of(TextColors.RED, "An unspecified error occurred"));
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.home.nohome", home));
+        throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.home.nohome", home));
     }
 
     @Override

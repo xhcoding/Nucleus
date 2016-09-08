@@ -28,6 +28,6 @@ public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
 
         MessageHandler m = new MessageHandler();
         serviceManager.registerService(MessageHandler.class, m);
-        game.getServiceManager().setProvider(nucleus, NucleusPrivateMessagingService.class, m);
+        game.getServiceManager().setProvider(plugin, NucleusPrivateMessagingService.class, m);
     }
 }

@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.rules.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
@@ -32,7 +30,7 @@ import java.util.List;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class RulesDeleteCommand extends CommandBase<CommandSource> {
+public class RulesDeleteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private RulesConfigAdapter rca;
     @Inject private CoreConfigAdapter cca;
@@ -55,15 +53,15 @@ public class RulesDeleteCommand extends CommandBase<CommandSource> {
 
         int index = args.<Integer>getOne(ruleKey).get() - 1;
         if (index >= rules.size()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.rules.del.norule", String.valueOf(index + 1)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.del.norule", String.valueOf(index + 1)));
             return CommandResult.empty();
         }
 
         final String ruleToDelete = rules.get(index);
-        src.sendMessage(Util.getTextMessageWithFormat("command.rules.del.summary", ruleToDelete));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.del.summary", ruleToDelete));
         if (!flag) {
             src.sendMessage(
-                    Text.builder(Util.getMessageWithFormat("command.rules.del.confirm")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                    Text.builder(plugin.getMessageProvider().getMessageWithFormat("command.rules.del.confirm")).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
                             .onClick(TextActions.executeCallback(s -> actuallyRemove(index, ruleToDelete, s))).build());
         } else {
             return actuallyRemove(index, ruleToDelete, src);
@@ -83,7 +81,7 @@ public class RulesDeleteCommand extends CommandBase<CommandSource> {
                 rca.setNode(rc);
                 plugin.saveSystemConfig();
             } catch (ObjectMappingException | IOException e) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.rules.del.fail"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.del.fail"));
                 if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();
                 }
@@ -91,10 +89,10 @@ public class RulesDeleteCommand extends CommandBase<CommandSource> {
                 return CommandResult.empty();
             }
 
-            src.sendMessage(Util.getTextMessageWithFormat("command.rules.del.success"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.del.success"));
             return CommandResult.success();
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.rules.del.fail"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.del.fail"));
             return CommandResult.empty();
         }
     }

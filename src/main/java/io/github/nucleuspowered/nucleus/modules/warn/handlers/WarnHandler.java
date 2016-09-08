@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.warn.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.WarnData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarnService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 
 public class WarnHandler implements NucleusWarnService {
 
-    private final Nucleus nucleus;
+    private final NucleusPlugin nucleus;
     @Inject private UserDataManager userDataManager;
     @Inject private WarnConfigAdapter wca;
 
-    public WarnHandler(Nucleus nucleus) {
+    public WarnHandler(NucleusPlugin nucleus) {
         this.nucleus = nucleus;
     }
 

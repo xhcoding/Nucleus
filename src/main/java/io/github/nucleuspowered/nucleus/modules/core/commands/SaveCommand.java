@@ -4,14 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,19 +12,19 @@ import org.spongepowered.api.command.args.CommandContext;
 /**
  * Saves the data files.
  *
- * Permission: nucleus.nucleus.save
+ * Permission: plugin.plugin.save
  */
 @RunAsync
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "nucleus")
+@Permissions(root = "plugin")
 @RegisterCommand(value = "save", subcommandOf = NucleusCommand.class)
-public class SaveCommand extends CommandBase<CommandSource> {
+public class SaveCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.save.start"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.save.start"));
         plugin.saveData();
         return CommandResult.success();
     }

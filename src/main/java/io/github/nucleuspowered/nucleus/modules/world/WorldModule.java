@@ -22,7 +22,7 @@ public class WorldModule extends StandardModule {
 
         try {
             WorldHelper wh = new WorldHelper();
-            nucleus.getInjector().injectMembers(wh);
+            plugin.getInjector().injectMembers(wh);
             serviceManager.registerService(WorldHelper.class, wh);
         } catch (Exception ex) {
             logger.warn("Could not load the world module for the reason below.");

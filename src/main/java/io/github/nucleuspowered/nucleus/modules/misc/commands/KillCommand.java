@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -21,7 +19,7 @@ import org.spongepowered.api.text.Text;
 
 @Permissions
 @RegisterCommand("kill")
-public class KillCommand extends CommandBase<CommandSource> {
+public class KillCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String key = "player";
 
@@ -36,13 +34,13 @@ public class KillCommand extends CommandBase<CommandSource> {
         Player pl = args.<Player>getOne(key).get();
         GameMode gm = pl.gameMode().getDirect().orElse(pl.gameMode().getDefault());
         if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.kill.wronggm", pl.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.wronggm", pl.getName()));
             return CommandResult.empty();
         }
 
         pl.offer(Keys.HEALTH, 0d);
-        src.sendMessage(Util.getTextMessageWithFormat("command.kill.killed", pl.getName()));
-        pl.sendMessage(Util.getTextMessageWithFormat("command.kill.killedby", src.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.killed", pl.getName()));
+        pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.killedby", src.getName()));
 
         return CommandResult.success();
     }

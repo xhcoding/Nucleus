@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 public class WorldDataManager extends DataManager<UUID, WorldDataNode, WorldService> implements NucleusWorldLoaderService {
 
-    public WorldDataManager(Nucleus plugin, Function<UUID, DataProvider<WorldDataNode>> dataProviderFactory) {
+    public WorldDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<WorldDataNode>> dataProviderFactory) {
         super(plugin, dataProviderFactory);
     }
 

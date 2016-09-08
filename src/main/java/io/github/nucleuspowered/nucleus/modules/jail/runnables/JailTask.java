@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.runnables;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 public class JailTask extends TaskBase {
-    @Inject private Nucleus plugin;
+    @Inject private NucleusPlugin plugin;
     @Inject private JailHandler jailHandler;
     @Inject private UserDataManager userDataManager;
 

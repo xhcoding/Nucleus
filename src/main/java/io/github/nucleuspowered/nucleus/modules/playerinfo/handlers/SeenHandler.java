@@ -7,8 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.seen.SeenInformationProvider;
 import io.github.nucleuspowered.nucleus.api.service.NucleusSeenService;
 import org.spongepowered.api.command.CommandSource;
@@ -33,19 +32,19 @@ public class SeenHandler implements NucleusSeenService {
         Preconditions.checkNotNull(seenInformationProvider);
 
         Plugin pl = plugin.getClass().getAnnotation(Plugin.class);
-        Preconditions.checkArgument(pl != null, Util.getMessageWithFormat("seen.error.requireplugin"));
+        Preconditions.checkArgument(pl != null, NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("seen.error.requireplugin"));
 
         String name = pl.name();
-        Preconditions.checkArgument(!pluginInformationProviders.containsKey(name), Util.getMessageWithFormat("seen.error.pluginregistered"));
+        Preconditions.checkArgument(!pluginInformationProviders.containsKey(name), NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("seen.error.pluginregistered"));
 
         pluginInformationProviders.put(name, seenInformationProvider);
     }
 
-    public void register(Nucleus plugin, String module, SeenInformationProvider seenInformationProvider) throws IllegalArgumentException {
+    public void register(NucleusPlugin plugin, String module, SeenInformationProvider seenInformationProvider) throws IllegalArgumentException {
         Preconditions.checkNotNull(plugin);
         Preconditions.checkNotNull(module);
         Preconditions.checkNotNull(seenInformationProvider);
-        Preconditions.checkArgument(plugin.getClass().getAnnotation(Plugin.class).equals(Nucleus.class.getAnnotation(Plugin.class)));
+        Preconditions.checkArgument(plugin.getClass().getAnnotation(Plugin.class).equals(NucleusPlugin.class.getAnnotation(Plugin.class)));
 
         Preconditions.checkArgument(!moduleInformationProviders.containsKey(module));
         moduleInformationProviders.put(module, seenInformationProvider);
@@ -84,7 +83,7 @@ public class SeenHandler implements NucleusSeenService {
                     if (information.isEmpty()) {
                         information.add(Text.EMPTY);
                         information.add(Text.of("-----"));
-                        information.add(Util.getTextMessageWithFormat("seen.header.plugins"));
+                        information.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.header.plugins"));
                         information.add(Text.of("-----"));
                     }
 

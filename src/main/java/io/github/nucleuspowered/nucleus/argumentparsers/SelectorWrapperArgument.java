@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.selectors.*;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.interfaces.SelectorParser;
@@ -68,7 +68,7 @@ public class SelectorWrapperArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         if (!permissionHandler.testSelectors(source)) {
-            throw args.createError(Util.getTextMessageWithFormat("args.selector.nopermissions"));
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.nopermissions"));
         }
 
         String selectorRaw = args.next();
@@ -78,7 +78,7 @@ public class SelectorWrapperArgument extends CommandElement {
             return parserOptional.get().get(selector, source, args);
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.selector.noexist", selectorRaw));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.noexist", selectorRaw));
     }
 
     @Override

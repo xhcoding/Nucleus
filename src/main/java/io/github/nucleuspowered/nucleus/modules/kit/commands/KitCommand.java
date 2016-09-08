@@ -16,7 +16,6 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
@@ -38,12 +37,12 @@ import java.util.Optional;
 /**
  * Allows a user to redeem a kit.
  *
- * Command Usage: /kit Permission: nucleus.kit.base
+ * Command Usage: /kit Permission: plugin.kit.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand("kit")
 @NoCost // This is determined by the kit itself.
-public class KitCommand extends CommandBase<Player> {
+public class KitCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String kit = "kit";
 
@@ -61,15 +60,15 @@ public class KitCommand extends CommandBase<Player> {
     protected Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> pi = Maps.newHashMap();
         pi.put(PermissionRegistry.PERMISSIONS_PREFIX + "kits",
-                new PermissionInformation(Util.getMessageWithFormat("permission.kits"), SuggestedLevel.ADMIN));
+                new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kits"), SuggestedLevel.ADMIN));
         return pi;
     }
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> pi = Maps.newHashMap();
-        pi.put("exempt.cooldown", new PermissionInformation(Util.getMessageWithFormat("permission.kit.exempt.cooldown"), SuggestedLevel.ADMIN));
-        pi.put("exempt.onetime", new PermissionInformation(Util.getMessageWithFormat("permission.kit.exempt.onetime"), SuggestedLevel.ADMIN));
+        pi.put("exempt.cooldown", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kit.exempt.cooldown"), SuggestedLevel.ADMIN));
+        pi.put("exempt.onetime", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kit.exempt.onetime"), SuggestedLevel.ADMIN));
         return pi;
     }
 
@@ -89,7 +88,7 @@ public class KitCommand extends CommandBase<Player> {
 
         // If we have a cost for the kit, check we have funds.
         if (cost > 0 && !econHelper.hasBalance(player, cost)) {
-            player.sendMessage(Util.getTextMessageWithFormat("command.kit.notenough", kitName, econHelper.getCurrencySymbol(cost)));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.notenough", kitName, econHelper.getCurrencySymbol(cost)));
             return CommandResult.empty();
         }
 
@@ -100,7 +99,7 @@ public class KitCommand extends CommandBase<Player> {
             // if it's one time only and the user does not have an exemption...
             if (kit.isOneTime() && !player.hasPermission(permissions.getPermissionWithSuffix("exempt.onetime"))) {
                 // tell the user.
-                player.sendMessage(Util.getTextMessageWithFormat("command.kit.onetime.alreadyredeemed", kitName));
+                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.onetime.alreadyredeemed", kitName));
                 return CommandResult.empty();
             }
 
@@ -114,7 +113,7 @@ public class KitCommand extends CommandBase<Player> {
                     Duration d = Duration.between(now, timeForNextUse);
 
                     // tell the user.
-                    player.sendMessage(Util.getTextMessageWithFormat("command.kit.cooldown", Util.getTimeStringFromSeconds(d.getSeconds()), kitName));
+                    player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.cooldown", Util.getTimeStringFromSeconds(d.getSeconds()), kitName));
                     return CommandResult.empty();
                 }
             }
@@ -128,7 +127,7 @@ public class KitCommand extends CommandBase<Player> {
             // If some items were rejected...
             if (!itr.getRejectedItems().isEmpty()) {
                 // ...tell the user and break out.
-                player.sendMessage(Util.getTextMessageWithFormat("command.kit.fullinventory"));
+                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fullinventory"));
                 break;
             }
 
@@ -145,11 +144,11 @@ public class KitCommand extends CommandBase<Player> {
             // Register the last used time. Do it for everyone, in case
             // permissions or cooldowns change later
             user.addKitLastUsedTime(kitName, now);
-            player.sendMessage(Util.getTextMessageWithFormat("command.kit.spawned", kitName));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
             return CommandResult.success();
         } else {
             // Failed.
-            player.sendMessage(Util.getTextMessageWithFormat("command.kit.fail", kitName));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fail", kitName));
             return CommandResult.empty();
         }
     }

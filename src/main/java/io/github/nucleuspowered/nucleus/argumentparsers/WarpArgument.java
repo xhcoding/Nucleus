@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -21,8 +21,6 @@ import org.spongepowered.api.text.Text;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static io.github.nucleuspowered.nucleus.PluginInfo.ERROR_MESSAGE_PREFIX;
 
 /**
  * Returns a {@link Result}
@@ -53,18 +51,16 @@ public class WarpArgument extends CommandElement {
         String warpName = args.next();
         String warp = warpName.toLowerCase();
         if (!service.warpExists(warp)) {
-            throw args.createError(
-                    Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.warps.noexist")).build());
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.noexist"));
         }
 
         if (!checkPermission(source, warpName)) {
-            throw args.createError(
-                    Text.builder().append(Text.of(ERROR_MESSAGE_PREFIX)).append(Util.getTextMessageWithFormat("args.warps.noperms")).build());
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.noperms"));
         }
 
         if (includeWarpData) {
             return new Result(warpName,
-                    service.getWarp(warp).orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.warps.notavailable"))));
+                    service.getWarp(warp).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.notavailable"))));
         } else {
             return new Result(warpName, null);
         }

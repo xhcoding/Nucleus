@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
@@ -31,7 +29,7 @@ import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("spawn")
-public class SpawnCommand extends CommandBase<Player> {
+public class SpawnCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private WorldDataManager wcl;
     @Inject private SpawnConfigAdapter sca;
@@ -41,7 +39,7 @@ public class SpawnCommand extends CommandBase<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("otherworlds", new PermissionInformation(Util.getMessageWithFormat("permission.spawn.otherworlds"), SuggestedLevel.ADMIN));
+        m.put("otherworlds", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawn.otherworlds"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -70,17 +68,17 @@ public class SpawnCommand extends CommandBase<Player> {
         Optional<World> ow = Sponge.getServer().getWorld(wp.getUniqueId());
 
         if (!ow.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.spawn.noworld"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.noworld"));
             return CommandResult.empty();
         }
 
         // If we don't have a rotation, then use the current rotation
         if (src.setLocationAndRotationSafely(new Location<>(ow.get(), wp.getSpawnPosition()), wcl.getWorld(wp.getUniqueId()).get().getSpawnRotation().orElse(src.getRotation()))) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.spawn.fail", wp.getWorldName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.fail", wp.getWorldName()));
         return CommandResult.empty();
     }
 }

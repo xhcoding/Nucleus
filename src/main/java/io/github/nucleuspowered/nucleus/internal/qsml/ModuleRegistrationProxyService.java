@@ -5,8 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.qsml;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.exceptions.ModulesLoadedException;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoModuleException;
 import io.github.nucleuspowered.nucleus.api.exceptions.UnremovableModuleException;
@@ -21,9 +20,9 @@ import java.util.Set;
 public class ModuleRegistrationProxyService implements NucleusModuleService {
 
     private final ModuleContainer container;
-    private final Nucleus nucleus;
+    private final NucleusPlugin nucleus;
 
-    public ModuleRegistrationProxyService(Nucleus nucleus) {
+    public ModuleRegistrationProxyService(NucleusPlugin nucleus) {
         this.container = nucleus.getModuleContainer();
         this.nucleus = nucleus;
     }
@@ -53,12 +52,12 @@ public class ModuleRegistrationProxyService implements NucleusModuleService {
 
         try {
             container.disableModule(module);
-            nucleus.getLogger().info(Util.getMessageWithFormat("nucleus.module.disabled.modulerequest", pluginAnnotation.name(), pluginAnnotation.id(), module));
+            nucleus.getLogger().info(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("nucleus.module.disabled.modulerequest", pluginAnnotation.name(), pluginAnnotation.id(), module));
         } catch (IllegalStateException e) {
             throw new ModulesLoadedException();
         } catch (UndisableableModuleException e) {
-            nucleus.getLogger().warn(Util.getMessageWithFormat("nucleus.module.disabled.forceload", pluginAnnotation.name(), pluginAnnotation.id(), module));
-            nucleus.getLogger().warn(Util.getMessageWithFormat("nucleus.module.disabled.forceloadtwo", pluginAnnotation.name()));
+            nucleus.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("nucleus.module.disabled.forceload", pluginAnnotation.name(), pluginAnnotation.id(), module));
+            nucleus.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("nucleus.module.disabled.forceloadtwo", pluginAnnotation.name()));
             throw new UnremovableModuleException();
         } catch (uk.co.drnaylor.quickstart.exceptions.NoModuleException e) {
             throw new NoModuleException();

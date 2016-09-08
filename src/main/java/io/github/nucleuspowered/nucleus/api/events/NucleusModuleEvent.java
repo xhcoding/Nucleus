@@ -12,7 +12,7 @@ import org.spongepowered.api.event.Event;
 import java.util.Map;
 
 /**
- * A set of events that fire at various points of the Nucleus lifecycle.
+ * A set of events that fire at various points of the NucleusPlugin lifecycle.
  */
 public interface NucleusModuleEvent extends Event {
 
@@ -35,7 +35,7 @@ public interface NucleusModuleEvent extends Event {
          * @param plugin The plugin that is requesting to disable the module. Used for logging purposes - telling the
          *               user who is disabling the plugin.
          * @throws UnremovableModuleException Thrown if the module has been marked "cannot be disabled". Plugins are expected
-         *         to honour this, Nucleus does not mark any module (apart from the core) as "unable to be disabled" by default,
+         *         to honour this, NucleusPlugin does not mark any module (apart from the core) as "unable to be disabled" by default,
          *         so plugin authors are requested to not try to override any behaviour that a user has explicitly turned on.
          * @throws NoModuleException Thrown if the module does not exist.
          */

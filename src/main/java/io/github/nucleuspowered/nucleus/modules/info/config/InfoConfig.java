@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.info.config;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -15,7 +15,7 @@ public class InfoConfig {
     private boolean showMotdOnJoin = true;
 
     @Setting(value = "motd-title", comment = "loc:config.motd.title")
-    private String motdTitle = Util.getMessageWithFormat("motd.title");
+    private String motdTitle = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("motd.title");
 
     public boolean isShowMotdOnJoin() {
         return showMotdOnJoin;

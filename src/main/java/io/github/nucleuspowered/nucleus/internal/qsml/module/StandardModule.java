@@ -6,8 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.seen.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
@@ -39,7 +38,7 @@ import java.util.stream.Stream;
 public abstract class StandardModule implements Module {
 
     private String packageName;
-    @Inject protected Nucleus nucleus;
+    @Inject protected NucleusPlugin plugin;
     @Inject protected InternalServiceManager serviceManager;
 
     @Inject
@@ -83,21 +82,21 @@ public abstract class StandardModule implements Module {
                 .collect(Collectors.toSet());
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
-        Injector injector = nucleus.getInjector();
+        Injector injector = plugin.getInjector();
 
         Set<Class<? extends AbstractCommand>> commandBases =  cmds.stream().filter(x -> {
             RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
             return (rc != null && rc.subcommandOf().equals(AbstractCommand.class));
         }).collect(Collectors.toSet());
 
-        CommandBuilder builder = new CommandBuilder(nucleus, injector, cmds);
+        CommandBuilder builder = new CommandBuilder(plugin, injector, cmds);
         commandBases.forEach(builder::buildCommand);
 
         try {
             commandsConfig.mergeDefaults(builder.getNodeToMerge());
             commandsConfig.save();
         } catch (IOException | ObjectMappingException e) {
-            nucleus.getLogger().error("Could not save defaults.");
+            plugin.getLogger().error("Could not save defaults.");
             e.printStackTrace();
         }
     }
@@ -107,11 +106,11 @@ public abstract class StandardModule implements Module {
         Set<Class<? extends ListenerBase>> commandsToLoad = getStreamForModule(ListenerBase.class)
                 .collect(Collectors.toSet());
 
-        Injector injector = nucleus.getInjector();
+        Injector injector = plugin.getInjector();
         commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
             // Register suggested permissions
-            c.getPermissions().forEach((k, v) -> nucleus.getPermissionRegistry().registerOtherPermission(k, v));
-            Sponge.getEventManager().registerListeners(nucleus, c);
+            c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
+            Sponge.getEventManager().registerListeners(plugin, c);
         });
     }
 
@@ -120,22 +119,22 @@ public abstract class StandardModule implements Module {
         Set<Class<? extends TaskBase>> commandsToLoad = getStreamForModule(TaskBase.class)
                 .collect(Collectors.toSet());
 
-        Injector injector = nucleus.getInjector();
+        Injector injector = plugin.getInjector();
         commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
-            c.getPermissions().forEach((k, v) -> nucleus.getPermissionRegistry().registerOtherPermission(k, v));
+            c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             TaskBase.TimePerRun tpr = c.interval();
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(tpr.getTime(), tpr.getUnit());
             if (c.isAsync()) {
                 tb.async();
             }
 
-            tb.submit(nucleus);
+            tb.submit(plugin);
         });
     }
 
     @SuppressWarnings("unchecked")
     private <T> Stream<Class<? extends T>> getStreamForModule(Class<T> assignableClass) {
-        return nucleus.getModuleContainer().getLoadedClasses().stream().filter(assignableClass::isAssignableFrom)
+        return plugin.getModuleContainer().getLoadedClasses().stream().filter(assignableClass::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(packageName))
                 .map(x -> (Class<? extends T>)x);
     }
@@ -149,7 +148,7 @@ public abstract class StandardModule implements Module {
         // I can't believe I have to do this...
         } catch (RuntimeException | NoClassDefFoundError e) {
             if (clazz.isAnnotationPresent(SkipOnError.class)) {
-                nucleus.getLogger().warn(Util.getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
+                plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
                 return null;
             }
 
@@ -159,9 +158,9 @@ public abstract class StandardModule implements Module {
 
     protected final void createSeenModule(Class<? extends AbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information. Get the permission from Check Ban...
-        nucleus.getPermissionRegistry().getService(permissionClass).ifPresent(permissionHandler ->
+        plugin.getPermissionRegistry().getService(permissionClass).ifPresent(permissionHandler ->
                 // then get if the seen handler exists.
-                nucleus.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(nucleus, this.getClass().getAnnotation(ModuleData.class).name(),
+                plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(),
                         new BasicSeenInformationProvider(permissionHandler.getBase(), function))));
     }
 }

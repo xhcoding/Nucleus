@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -25,7 +24,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"jump", "j", "jmp"})
-public class JumpCommand extends CommandBase<Player> {
+public class JumpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private JumpConfigAdapter jca;
 
@@ -47,7 +46,7 @@ public class JumpCommand extends CommandBase<Player> {
 
         if (finalHitRay == null) {
             // We didn't find anywhere to jump to.
-            player.sendMessage(Util.getTextMessageWithFormat("command.jump.noblock"));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jump.noblock"));
             return CommandResult.empty();
         }
 
@@ -64,16 +63,16 @@ public class JumpCommand extends CommandBase<Player> {
         }
 
         if (!Util.isLocationInWorldBorder(finalLocation)) {
-            player.sendMessage(Util.getTextMessageWithFormat("command.jump.outsideborder"));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jump.outsideborder"));
             return CommandResult.empty();
         }
 
         if (player.setLocationSafely(finalLocation)) {
-            player.sendMessage(Util.getTextMessageWithFormat("command.jump.success"));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jump.success"));
             return CommandResult.success();
         }
 
-        player.sendMessage(Util.getTextMessageWithFormat("command.jump.notsafe"));
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jump.notsafe"));
         return CommandResult.empty();
     }
 

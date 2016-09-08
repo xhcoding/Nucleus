@@ -106,7 +106,7 @@ public class CoreListener extends ListenerBase {
     public void onGameReload(final GameReloadEvent event) {
         plugin.reload();
         CommandSource requester = event.getCause().first(CommandSource.class).orElse(Sponge.getServer().getConsole());
-        requester.sendMessage(Text.of(TextColors.YELLOW, "[Nucleus] ", Util.getTextMessageWithFormat("command.reload.one")));
-        requester.sendMessage(Text.of(TextColors.YELLOW, "[Nucleus] ", Util.getTextMessageWithFormat("command.reload.two")));
+        requester.sendMessage(Text.of(TextColors.YELLOW, "[NucleusPlugin] ", plugin.getMessageProvider().getTextMessageWithFormat("command.reload.one")));
+        requester.sendMessage(Text.of(TextColors.YELLOW, "[NucleusPlugin] ", plugin.getMessageProvider().getTextMessageWithFormat("command.reload.two")));
     }
 }

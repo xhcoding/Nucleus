@@ -20,6 +20,6 @@ public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        nucleus.reloadMessages();
+        plugin.reloadMessages();
     }
 }

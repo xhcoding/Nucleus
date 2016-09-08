@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -18,14 +16,14 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("suicide")
-public class SuicideCommand extends CommandBase<Player> {
+public class SuicideCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Override
     @SuppressWarnings("deprecation")
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         GameMode gm = src.gameMode().getDirect().orElse(src.gameMode().getDefault());
         if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.suicide.wronggm"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.suicide.wronggm"));
             return CommandResult.empty();
         }
 

@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -17,9 +16,9 @@ import org.spongepowered.api.command.args.CommandContext;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "nucleus")
+@Permissions(root = "plugin")
 @RegisterCommand(value = "migrate", subcommandOf = NucleusCommand.class, hasExecutor = false)
-public class MigrateCommand extends CommandBase<CommandSource> {
+public class MigrateCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

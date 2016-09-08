@@ -4,9 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kick.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -34,7 +32,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoCost
 @RegisterCommand("kickall")
-public class KickAllCommand extends CommandBase<CommandSource> {
+public class KickAllCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String reason = "reason";
 
@@ -49,13 +47,13 @@ public class KickAllCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("whitelist", new PermissionInformation(Util.getMessageWithFormat("permission.kickall.whitelist"), SuggestedLevel.ADMIN));
+        m.put("whitelist", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kickall.whitelist"), SuggestedLevel.ADMIN));
         return m;
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        String r = args.<String>getOne(reason).orElse(Util.getMessageWithFormat("command.kick.defaultreason"));
+        String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("command.kick.defaultreason"));
         Boolean f = args.<Boolean>getOne("f").orElse(false);
 
         if (f) {
@@ -63,15 +61,16 @@ public class KickAllCommand extends CommandBase<CommandSource> {
         }
 
         // Don't kick self
-        Sponge.getServer().getOnlinePlayers().stream().filter(x -> src instanceof Player && !((Player) src).getUniqueId().equals(x.getUniqueId()))
+        Sponge.getServer().getOnlinePlayers().stream()
+                .filter(x -> !(src instanceof Player) || !((Player) src).getUniqueId().equals(x.getUniqueId()))
                 .collect(Collectors.toList())
                 .forEach(x -> x.kick(TextSerializers.FORMATTING_CODE.deserialize(r)));
 
         MessageChannel mc = MessageChannel.fixed(Sponge.getServer().getConsole(), src);
-        mc.send(Util.getTextMessageWithFormat("command.kickall.message"));
-        mc.send(Util.getTextMessageWithFormat("command.reason", r));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.kickall.message"));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.reason", r));
         if (f) {
-            mc.send(Util.getTextMessageWithFormat("command.kickall.whitelist"));
+            mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.kickall.whitelist"));
         }
 
         return CommandResult.success();

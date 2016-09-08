@@ -5,14 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.mob.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
@@ -40,7 +38,7 @@ import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"spawnmob", "spawnentity"})
-public class SpawnMobCommand extends CommandBase<CommandSource> {
+public class SpawnMobCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String playerKey = "player";
     private final String amountKey = "amount";
@@ -66,7 +64,7 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.spawnmob.other"), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawnmob.other"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -82,7 +80,7 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
         EntityType et = args.<EntityType>getOne(mobTypeKey).get();
 
         if (!Living.class.isAssignableFrom(et.getEntityClass())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.spawnmob.livingonly", et.getTranslation().get()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.livingonly", et.getTranslation().get()));
             return CommandResult.empty();
         }
 
@@ -106,18 +104,18 @@ public class SpawnMobCommand extends CommandBase<CommandSource> {
 
         if (amount > mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()) {
             src.sendMessage(
-                    Util.getTextMessageWithFormat("command.spawnmob.limit", String.valueOf(mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn())));
+                    plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.limit", String.valueOf(mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn())));
         }
 
         if (i == 0) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.spawnmob.fail", et.getTranslation().get()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.fail", et.getTranslation().get()));
             return CommandResult.empty();
         }
 
         if (i == 1) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.spawnmob.success.singular", String.valueOf(i), et.getTranslation().get()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.success.singular", String.valueOf(i), et.getTranslation().get()));
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.spawnmob.success.plural", String.valueOf(i), et.getTranslation().get()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.success.plural", String.valueOf(i), et.getTranslation().get()));
         }
 
         return CommandResult.success();

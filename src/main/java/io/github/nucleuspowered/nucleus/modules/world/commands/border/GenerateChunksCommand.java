@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -25,7 +23,7 @@ import java.util.Optional;
 
 @Permissions(root = "world.border")
 @RegisterCommand(value = {"gen", "genchunks", "generatechunks", "chunkgen"}, subcommandOf = BorderCommand.class)
-public class GenerateChunksCommand extends CommandBase<CommandSource> {
+public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
 
@@ -49,25 +47,25 @@ public class GenerateChunksCommand extends CommandBase<CommandSource> {
             if (src instanceof Locatable) {
                 wp = ((Locatable) src).getWorld().getProperties();
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.world.setborder.noworld"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.noworld"));
                 return CommandResult.empty();
             }
         }
 
         if (worldHelper.isPregenRunningForWorld(wp.getUniqueId())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.gen.alreadyrunning", wp.getWorldName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.alreadyrunning", wp.getWorldName()));
             return CommandResult.empty();
         }
 
         Optional<World> w = Sponge.getServer().getWorld(wp.getUniqueId());
         if (!w.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.gen.notloaded", wp.getWorldName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.notloaded", wp.getWorldName()));
             return CommandResult.empty();
         }
 
         // Create the task.
         worldHelper.startPregenningForWorld(w.get());
-        src.sendMessage(Util.getTextMessageWithFormat("command.world.gen.started", wp.getWorldName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.started", wp.getWorldName()));
 
         return CommandResult.success();
     }

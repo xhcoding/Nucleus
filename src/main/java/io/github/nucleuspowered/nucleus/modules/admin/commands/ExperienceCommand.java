@@ -4,9 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -24,7 +23,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoWarmup
 @NoCost
-public class ExperienceCommand extends CommandBase<CommandSource> {
+public class ExperienceCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     public static final String playerKey = "player";
     public static final String experienceKey = "experience";
@@ -42,13 +41,13 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
         int exp = ehd.totalExperience().get();
         int lv = ehd.level().get();
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.exp.info", pl.getName(), String.valueOf(exp), String.valueOf(lv)));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.exp.info", pl.getName(), String.valueOf(exp), String.valueOf(lv)));
         return CommandResult.success();
     }
 
     public static CommandResult tellUserAboutExperience(CommandSource src, Player pl, boolean isSuccess) {
         if (!isSuccess) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.exp.set.error"));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.exp.set.error"));
             return CommandResult.empty();
         }
 
@@ -56,17 +55,17 @@ public class ExperienceCommand extends CommandBase<CommandSource> {
         int newLvl = pl.get(Keys.EXPERIENCE_LEVEL).get();
 
         if (!src.equals(pl)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.exp.set.new.other", pl.getName(), String.valueOf(exp), String.valueOf(newLvl)));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.exp.set.new.other", pl.getName(), String.valueOf(exp), String.valueOf(newLvl)));
         }
 
-        pl.sendMessage(Util.getTextMessageWithFormat("command.exp.set.new.self", String.valueOf(exp), String.valueOf(newLvl)));
+        pl.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.exp.set.new.self", String.valueOf(exp), String.valueOf(newLvl)));
         return CommandResult.success();
     }
 
     public static boolean checkGameMode(Player pl, CommandSource src) {
         GameMode gm = pl.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL);
         if (gm == GameModes.CREATIVE || gm == GameModes.SPECTATOR) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.exp.gamemode", pl.getName()));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.exp.gamemode", pl.getName()));
             return false;
         }
 

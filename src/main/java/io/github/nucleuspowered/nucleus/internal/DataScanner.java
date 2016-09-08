@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.ImmutableMap;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.key.Key;
@@ -111,14 +111,14 @@ public final class DataScanner {
         Class<?> c = x.getClass();
         if (!v.equals(String.format("%s@%s", c.getName(), Integer.toHexString(x.hashCode())))) {
             if (x instanceof Double || x instanceof Float || x instanceof BigDecimal) {
-                return Optional.of(Util.getTextMessageWithFormat(translationKey, key, nf.format(x)));
+                return Optional.of(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(translationKey, key, nf.format(x)));
             }
 
             if (x instanceof Text) {
-                return Optional.of(Util.getTextMessageWithFormat(translationKey, key, TextSerializers.FORMATTING_CODE.serialize((Text)x)));
+                return Optional.of(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(translationKey, key, TextSerializers.FORMATTING_CODE.serialize((Text)x)));
             }
 
-            return Optional.of(Util.getTextMessageWithFormat(translationKey, key, v));
+            return Optional.of(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(translationKey, key, v));
         }
 
         return Optional.empty();

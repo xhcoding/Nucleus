@@ -9,7 +9,7 @@ import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 
 /**
- * An event that is posted when a player uses /mail in Nucleus
+ * An event that is posted when a player uses /mail in NucleusPlugin
  */
 public interface NucleusMailEvent extends Event, Cancellable {
     /**

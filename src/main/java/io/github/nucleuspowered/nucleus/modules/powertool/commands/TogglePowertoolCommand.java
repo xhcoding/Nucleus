@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -20,7 +18,7 @@ import org.spongepowered.api.text.Text;
 /**
  * Toggles whether powetools will activate for this user.
  *
- * Permission: nucleus.powertool.base (uses the base permission)
+ * Permission: plugin.powertool.base (uses the base permission)
  */
 @Permissions(alias = "powertool")
 @RunAsync
@@ -28,7 +26,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCost
 @RegisterCommand(value = {"toggle"}, subcommandOf = PowertoolCommand.class)
-public class TogglePowertoolCommand extends CommandBase<Player> {
+public class TogglePowertoolCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String toggleKey = "toggle";
     @Inject private UserDataManager loader;
@@ -46,8 +44,8 @@ public class TogglePowertoolCommand extends CommandBase<Player> {
         boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!user.isPowertoolToggled());
         user.setPowertoolToggle(toggle);
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.powertool.toggle",
-                Util.getMessageWithFormat(toggle ? "standard.enabled" : "standard.disabled")));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.toggle",
+                plugin.getMessageProvider().getMessageWithFormat(toggle ? "standard.enabled" : "standard.disabled")));
         return CommandResult.success();
     }
 }

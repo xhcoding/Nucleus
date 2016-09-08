@@ -45,7 +45,7 @@ public class ChatUtil {
     private final Pattern serverTokenMatcher;
     private final Pattern serverTokenSplitter;
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final Pattern urlParser =
             Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)", Pattern.CASE_INSENSITIVE);
 
@@ -54,7 +54,7 @@ public class ChatUtil {
 
     public static final StyleTuple EMPTY = new StyleTuple(TextColors.NONE, TextStyles.NONE);
 
-    public ChatUtil(Nucleus plugin) {
+    public ChatUtil(NucleusPlugin plugin) {
         tokens = createTokens();
         serverTokens = createServerTokens();
 
@@ -219,7 +219,7 @@ public class ChatUtil {
                 }
 
                 texts.add(Text.builder(url).color(st.colour).style(st.style)
-                        .onHover(TextActions.showText(Util.getTextMessageWithFormat("chat.url.click", url)))
+                        .onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("chat.url.click", url)))
                         .onClick(TextActions.openUrl(urlObj))
                         .build());
             } catch (MalformedURLException e) {
@@ -383,13 +383,13 @@ public class ChatUtil {
             hoverAction = Text.builder();
         }
 
-        hoverAction.append(Util.getTextMessageWithFormat("name.hover.command", commandToRun));
+        hoverAction.append(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("name.hover.command", commandToRun));
         return name.onClick(TextActions.suggestCommand(commandToRun)).onHover(TextActions.showText(hoverAction.toText())).build();
     }
 
     private Text getName(CommandSource cs) {
         if (cs instanceof Player) {
-            return NameUtil.getName((Player)cs);
+            return plugin.getNameUtil().getName((Player)cs);
         }
 
         return Text.of(cs.getName());

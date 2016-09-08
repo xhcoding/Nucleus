@@ -5,14 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -27,7 +20,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = "set", subcommandOf = JailsCommand.class)
-public class SetJailCommand extends CommandBase<Player> {
+public class SetJailCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String jailName = "jail";
     @Inject private JailHandler handler;
@@ -41,15 +34,15 @@ public class SetJailCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         String name = args.<String>getOne(jailName).get().toLowerCase();
         if (handler.getJail(name).isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jails.set.exists", name));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.set.exists", name));
             return CommandResult.empty();
         }
 
         if (handler.setJail(name, src.getLocation(), src.getRotation())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jails.set.success", name));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.set.success", name));
             return CommandResult.success();
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jails.set.error", name));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.set.error", name));
             return CommandResult.empty();
         }
     }

@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -37,7 +37,7 @@ public class ExperienceLevelArgument extends CommandElement {
             return Integer.parseInt(m.group(2));
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.explevel.error"));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.explevel.error"));
     }
 
     @Override

@@ -4,12 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoPermissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -27,7 +22,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoPermissions
 @RegisterCommand({"teleportnative", "tpnative", "tpn"})
-public class TPNativeCommand extends CommandBase<CommandSource> {
+public class TPNativeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String a = "args";
 

@@ -6,8 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.info.handlers;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.AssetManager;
@@ -26,10 +25,10 @@ import java.util.stream.Stream;
 public class InfoHandler {
 
     private final Map<String, TextFileController> infoFiles = Maps.newHashMap();
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final Pattern validFile = Pattern.compile("[a-zA-Z0-9_\\.\\-]+\\.txt", Pattern.CASE_INSENSITIVE);
 
-    public InfoHandler(Nucleus plugin) {
+    public InfoHandler(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -86,7 +85,7 @@ public class InfoHandler {
                 String name = x.getFileName().toString();
                 name = name.substring(0, name.length() - 4);
                 if (mst.keySet().stream().anyMatch(name::equalsIgnoreCase)) {
-                    plugin.getLogger().warn(Util.getMessageWithFormat("info.load.duplicate", x.getFileName().toString()));
+                    plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("info.load.duplicate", x.getFileName().toString()));
 
                     // This is a function, so return is appropriate, not break.
                     return;

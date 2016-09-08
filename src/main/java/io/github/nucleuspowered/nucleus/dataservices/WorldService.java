@@ -8,7 +8,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
@@ -29,11 +29,11 @@ public class WorldService extends Service<WorldDataNode> implements NucleusWorld
         serializerMap.put(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
     }
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
 
     private final UUID world;
 
-    public WorldService(Nucleus plugin, DataProvider<WorldDataNode> provider, World world) throws Exception {
+    public WorldService(NucleusPlugin plugin, DataProvider<WorldDataNode> provider, World world) throws Exception {
         super(provider);
         Preconditions.checkNotNull("world", world);
         Preconditions.checkNotNull("plugin", plugin);

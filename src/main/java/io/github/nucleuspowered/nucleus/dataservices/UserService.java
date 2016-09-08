@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.*;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class UserService extends Service<UserDataNode>
         implements NucleusUser {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final User user;
     private final Instant serviceLoadTime = Instant.now();
 
@@ -61,7 +61,7 @@ public class UserService extends Service<UserDataNode>
     // Used as a cache.
     private Text nickname = null;
 
-    public UserService(Nucleus plugin, DataProvider<UserDataNode> provider, User user) throws Exception {
+    public UserService(NucleusPlugin plugin, DataProvider<UserDataNode> provider, User user) throws Exception {
         super(provider);
         data = provider.load();
         Preconditions.checkNotNull("user", user);

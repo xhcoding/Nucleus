@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -22,7 +20,7 @@ import org.spongepowered.api.text.Text;
 /**
  * Sets kit items.
  *
- * Command Usage: /kit remove Permission: nucleus.kit.remove.base
+ * Command Usage: /kit remove Permission: plugin.kit.remove.base
  */
 @Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"remove", "del", "delete"}, subcommandOf = KitCommand.class)
@@ -30,7 +28,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitRemoveCommand extends CommandBase<CommandSource> {
+public class KitRemoveCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
@@ -46,7 +44,7 @@ public class KitRemoveCommand extends CommandBase<CommandSource> {
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
         KitArgument.KitInfo kitName = args.<KitArgument.KitInfo>getOne(kit).get();
         kitConfig.removeKit(kitName.name);
-        player.sendMessage(Util.getTextMessageWithFormat("command.kit.remove.success", kitName.name));
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.remove.success", kitName.name));
         return CommandResult.success();
     }
 }

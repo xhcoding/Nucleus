@@ -22,6 +22,6 @@ public class StaffChatModule extends ConfigurableModule<StaffChatConfigAdapter> 
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        StaffChatMessageChannel.INSTANCE = new StaffChatMessageChannel(nucleus);
+        StaffChatMessageChannel.INSTANCE = new StaffChatMessageChannel(plugin);
     }
 }

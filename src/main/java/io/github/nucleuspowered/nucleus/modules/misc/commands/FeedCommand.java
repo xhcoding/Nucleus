@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -26,14 +24,14 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("feed")
-public class FeedCommand extends CommandBase<CommandSource> {
+public class FeedCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private static final String player = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -59,14 +57,14 @@ public class FeedCommand extends CommandBase<CommandSource> {
         foodData.set(f, d);
 
         if (pl.offer(foodData).isSuccessful()) {
-            pl.sendMessages(Util.getTextMessageWithFormat("command.feed.success.self"));
+            pl.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.feed.success.self"));
             if (!pl.equals(src)) {
-                src.sendMessages(Util.getTextMessageWithFormat("command.feed.success.other", pl.getName()));
+                src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.feed.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessages(Util.getTextMessageWithFormat("command.feed.error"));
+            src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.feed.error"));
             return CommandResult.empty();
         }
     }

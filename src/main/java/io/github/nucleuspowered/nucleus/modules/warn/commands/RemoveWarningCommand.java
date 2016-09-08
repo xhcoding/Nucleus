@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.WarnData;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarningArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -28,7 +26,7 @@ import java.util.List;
 @NoCooldown
 @NoCost
 @RegisterCommand({"removewarning", "deletewarning", "delwarn"})
-public class RemoveWarningCommand extends CommandBase<CommandSource> {
+public class RemoveWarningCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject
     private WarnHandler handler;
@@ -51,16 +49,16 @@ public class RemoveWarningCommand extends CommandBase<CommandSource> {
 
         List<WarnData> warnings = handler.getWarnings(user);
         if (warnings.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
             return CommandResult.success();
         }
 
         if (handler.removeWarning(user, result.warnData, removePermanently)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.removewarning.success", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.removewarning.success", user.getName()));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.removewarning.failure", user.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.removewarning.failure", user.getName()));
         return CommandResult.empty();
     }
 }

@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -30,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * Lists the powertools associated with the items.
  *
- * Permission: nucleus.powertool.base (uses the base permission)
+ * Permission: plugin.powertool.base (uses the base permission)
  */
 @Permissions(alias = "powertool")
 @RunAsync
@@ -38,7 +36,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCost
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = PowertoolCommand.class)
-public class ListPowertoolCommand extends CommandBase<Player> {
+public class ListPowertoolCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;
     private PaginationService paginationService = null;
@@ -55,7 +53,7 @@ public class ListPowertoolCommand extends CommandBase<Player> {
         Map<String, List<String>> powertools = inu.getPowertools();
 
         if (powertools.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.powertool.list.none"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.list.none"));
             return CommandResult.success();
         }
 
@@ -64,7 +62,7 @@ public class ListPowertoolCommand extends CommandBase<Player> {
                 .map(k -> from(inu, src, k.getKey(), k.getValue())).collect(Collectors.toList());
 
         // Paginate the tools.
-        paginationService.builder().title(Util.getTextMessageWithFormat("command.powertool.list.header", toggle ? "&aenabled" : "&cdisabled"))
+        paginationService.builder().title(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.list.header", toggle ? "&aenabled" : "&cdisabled"))
                 .padding(Text.of(TextColors.YELLOW, "-")).contents(mesl).sendTo(src);
 
         return CommandResult.success();
@@ -74,21 +72,21 @@ public class ListPowertoolCommand extends CommandBase<Player> {
         Optional<ItemType> oit = Sponge.getRegistry().getType(ItemType.class, powertool);
 
         // Create the click actions.
-        ClickAction viewAction = TextActions.executeCallback(pl -> paginationService.builder().title(Util.getTextMessageWithFormat("command.powertool.ind.header", powertool))
+        ClickAction viewAction = TextActions.executeCallback(pl -> paginationService.builder().title(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.ind.header", powertool))
                 .padding(Text.of(TextColors.GREEN, "-"))
                 .contents(commands.stream().map(x -> Text.of(TextColors.YELLOW, x)).collect(Collectors.toList())).sendTo(src));
 
         ClickAction deleteAction = TextActions.executeCallback(pl -> {
             inu.clearPowertool(powertool);
-            pl.sendMessage(Util.getTextMessageWithFormat("command.powertool.removed", powertool));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.removed", powertool));
         });
 
         TextColor tc = oit.isPresent() ? TextColors.YELLOW : TextColors.GRAY;
 
         // id - [View] - [Delete]
         return Text.builder().append(Text.of(tc, powertool)).append(Text.of(" - "))
-                .append(Text.builder(Util.getMessageWithFormat("standard.view")).color(TextColors.YELLOW).onClick(viewAction).build())
+                .append(Text.builder(plugin.getMessageProvider().getMessageWithFormat("standard.view")).color(TextColors.YELLOW).onClick(viewAction).build())
                 .append(Text.of(" - "))
-                .append(Text.builder(Util.getMessageWithFormat("standard.delete")).color(TextColors.DARK_RED).onClick(deleteAction).build()).build();
+                .append(Text.builder(plugin.getMessageProvider().getMessageWithFormat("standard.delete")).color(TextColors.DARK_RED).onClick(deleteAction).build()).build();
     }
 }

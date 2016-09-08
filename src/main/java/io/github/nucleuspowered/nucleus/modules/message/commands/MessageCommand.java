@@ -5,14 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
@@ -33,7 +31,7 @@ import java.util.Map;
 @RunAsync
 @RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, forceRegister = { "tell" })
 @NotifyIfAFK(MessageCommand.to)
-public class MessageCommand extends CommandBase<CommandSource> {
+public class MessageCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
     static final String to = "to";
     private final String message = "message";
 
@@ -55,11 +53,11 @@ public class MessageCommand extends CommandBase<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mp = new HashMap<>();
-        mp.put("color", new PermissionInformation(Util.getMessageWithFormat("permission.message.color"), SuggestedLevel.ADMIN));
-        mp.put("colour", new PermissionInformation(Util.getMessageWithFormat("permission.message.colour"), SuggestedLevel.ADMIN));
-        mp.put("style", new PermissionInformation(Util.getMessageWithFormat("permission.message.style"), SuggestedLevel.ADMIN));
-        mp.put("magic", new PermissionInformation(Util.getMessageWithFormat("permission.message.magic"), SuggestedLevel.ADMIN));
-        mp.put("url", new PermissionInformation(Util.getMessageWithFormat("permission.message.urls"), SuggestedLevel.ADMIN));
+        mp.put("color", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.color"), SuggestedLevel.ADMIN));
+        mp.put("colour", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.colour"), SuggestedLevel.ADMIN));
+        mp.put("style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.style"), SuggestedLevel.ADMIN));
+        mp.put("magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.magic"), SuggestedLevel.ADMIN));
+        mp.put("url", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.urls"), SuggestedLevel.ADMIN));
         return mp;
     }
 

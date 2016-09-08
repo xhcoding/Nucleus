@@ -6,11 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.ignore.commands;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -29,7 +27,7 @@ import java.util.Map;
 @NoWarmup
 @RegisterCommand("ignore")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-public class IgnoreCommand extends CommandBase<Player> {
+public class IgnoreCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;
 
@@ -39,7 +37,7 @@ public class IgnoreCommand extends CommandBase<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = Maps.newHashMap();
-        m.put("exempt.chat", new PermissionInformation(Util.getMessageWithFormat("permission.ignore.chat"), SuggestedLevel.MOD));
+        m.put("exempt.chat", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.ignore.chat"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -55,7 +53,7 @@ public class IgnoreCommand extends CommandBase<Player> {
         User target = args.<User>getOne(userKey).get();
 
         if (target.equals(src)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.ignore.self"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignore.self"));
             return CommandResult.empty();
         }
 
@@ -64,7 +62,7 @@ public class IgnoreCommand extends CommandBase<Player> {
         if (permissions.testSuffix(target, "exempt.chat")) {
             // Make sure they are removed.
             inu.removeFromIgnoreList(target.getUniqueId());
-            src.sendMessage(Util.getTextMessageWithFormat("command.ignore.exempt"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignore.exempt"));
             return CommandResult.empty();
         }
 
@@ -73,10 +71,10 @@ public class IgnoreCommand extends CommandBase<Player> {
 
         if (ignore) {
             inu.addToIgnoreList(target.getUniqueId());
-            src.sendMessage(Util.getTextMessageWithFormat("command.ignore.added", target.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignore.added", target.getName()));
         } else {
             inu.removeFromIgnoreList(target.getUniqueId());
-            src.sendMessage(Util.getTextMessageWithFormat("command.ignore.remove", target.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignore.remove", target.getName()));
         }
 
         return CommandResult.success();

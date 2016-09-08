@@ -7,12 +7,11 @@ package io.github.nucleuspowered.nucleus.modules.rtp.commands;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfig;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -39,7 +38,7 @@ import java.util.function.Predicate;
 
 @Permissions
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
-public class RandomTeleportCommand extends CommandBase<Player> {
+public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private Set<BlockType> prohibitedTypes = null;
 
@@ -59,7 +58,7 @@ public class RandomTeleportCommand extends CommandBase<Player> {
         Vector3d centre = wb.getCenter();
 
         int count = Math.max(rc.getNoOfAttempts(), 1);
-        src.sendMessage(Util.getTextMessageWithFormat("command.rtp.searching"));
+        src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
 
         Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args), src, currentWorld,
                 rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY())).submit(plugin);
@@ -85,8 +84,8 @@ public class RandomTeleportCommand extends CommandBase<Player> {
         private final World currentWorld;
         private final boolean onSurface;
 
-        private RTPTask(Nucleus plugin, int count, int diameter, Vector3d centre, double cost, Player src, World currentWorld, boolean onSurface,
-                int minY, int maxY) {
+        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, Player src, World currentWorld, boolean onSurface,
+                        int minY, int maxY) {
             super(plugin, src, cost);
             this.count = count;
             this.maxCount = count;
@@ -130,13 +129,13 @@ public class RandomTeleportCommand extends CommandBase<Player> {
                             String.valueOf(tpTarget.getBlockY()),
                             String.valueOf(tpTarget.getBlockZ())));
                     if (player.setLocation(tpTarget)) {
-                        player.sendMessage(Util.getTextMessageWithFormat("command.rtp.success",
+                        player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.success",
                                 String.valueOf(tpTarget.getBlockX()),
                                 String.valueOf(tpTarget.getBlockY()),
                                 String.valueOf(tpTarget.getBlockZ())));
                         return;
                     } else {
-                        player.sendMessage(Util.getTextMessageWithFormat("command.rtp.cancelled"));
+                        player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.cancelled"));
                         onCancel();
                         return;
                     }
@@ -147,7 +146,7 @@ public class RandomTeleportCommand extends CommandBase<Player> {
 
             if (count <= 0) {
                 plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", player.getName()));
-                player.sendMessage(Util.getTextMessageWithFormat("command.rtp.error"));
+                player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
                 onCancel();
             } else {
                 // We're using a scheduler to allow some ticks to go by between attempts to find a

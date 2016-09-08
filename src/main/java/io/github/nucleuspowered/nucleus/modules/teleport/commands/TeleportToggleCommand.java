@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -28,7 +26,7 @@ import java.util.Map;
 @NoCost
 @RegisterCommand({"tptoggle"})
 @RunAsync
-public class TeleportToggleCommand extends CommandBase<Player> {
+public class TeleportToggleCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String key = "toggle";
     @Inject private UserDataManager udm;
@@ -36,7 +34,7 @@ public class TeleportToggleCommand extends CommandBase<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt", new PermissionInformation(Util.getMessageWithFormat("permission.tptoggle.exempt"), SuggestedLevel.ADMIN));
+        m.put("exempt", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tptoggle.exempt"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -51,7 +49,7 @@ public class TeleportToggleCommand extends CommandBase<Player> {
         boolean flip = args.<Boolean>getOne(key).orElseGet(() -> !iqsu.isTeleportToggled());
         iqsu.setTeleportToggled(flip);
         src.sendMessage(Text.builder().append(
-                Util.getTextMessageWithFormat("command.tptoggle.success", Util.getMessageWithFormat(flip ? "standard.enabled" : "standard.disabled")))
+                plugin.getMessageProvider().getTextMessageWithFormat("command.tptoggle.success", plugin.getMessageProvider().getMessageWithFormat(flip ? "standard.enabled" : "standard.disabled")))
                 .build());
         return CommandResult.success();
     }

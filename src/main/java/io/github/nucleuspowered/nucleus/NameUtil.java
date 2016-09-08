@@ -24,15 +24,11 @@ import java.util.UUID;
 
 public class NameUtil {
 
-    private NameUtil() {}
-
-    private static Nucleus plugin;
-
-    static void supplyPlugin(Nucleus plugin) {
-        if (NameUtil.plugin == null) {
-            NameUtil.plugin = plugin;
-        }
+    NameUtil(NucleusPlugin plugin) {
+        this.plugin = plugin;
     }
+
+    private final NucleusPlugin plugin;
 
     private final static Map<Character, TextColor> colourMap = Maps.newHashMap();
 
@@ -61,7 +57,7 @@ public class NameUtil {
      * @param src The {@link CommandSource}
      * @return The {@link Text} representing the name.
      */
-    public static Text getNameFromCommandSource(CommandSource src) {
+    public Text getNameFromCommandSource(CommandSource src) {
         if (!(src instanceof User)) {
             return Text.of(src.getName());
         }
@@ -75,7 +71,7 @@ public class NameUtil {
      * @param player The {@link User} to get the data from.
      * @return The {@link Text}
      */
-    public static Text getName(User player) {
+    public Text getName(User player) {
         Preconditions.checkNotNull(player);
 
         TextColor tc = getNameColour(player);
@@ -103,15 +99,15 @@ public class NameUtil {
             tb = Text.builder(player.getName());
         }
 
-        tb.onHover(TextActions.showText(Util.getTextMessageWithFormat("name.hover.ign", player.getName()))).build();
+        tb.onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("name.hover.ign", player.getName()))).build();
         return tb.color(tc).build();
     }
 
-    public static String getSerialisedName(User player) {
+    public String getSerialisedName(User player) {
         return TextSerializers.FORMATTING_CODE.serialize(getName(player));
     }
 
-    public static String getNameFromUUID(UUID uuid) {
+    public String getNameFromUUID(UUID uuid) {
         if (Util.consoleFakeUUID.equals(uuid)) {
             return Sponge.getServer().getConsole().getName();
         }
@@ -122,10 +118,10 @@ public class NameUtil {
             return user.get().getName();
         }
 
-        return Util.getMessageWithFormat("standard.unknown");
+        return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.unknown");
     }
 
-    public static TextColor getColourFromString(String s) {
+    public TextColor getColourFromString(String s) {
         if (s.length() == 1) {
             return colourMap.getOrDefault(s.charAt(0), TextColors.NONE);
         } else {
@@ -133,7 +129,7 @@ public class NameUtil {
         }
     }
 
-    private static TextColor getNameColour(User player) {
+    private TextColor getNameColour(User player) {
         Optional<String> os = Util.getOptionFromSubject(player, "namecolor", "namecolour");
         if (os.isPresent()) {
             String s = os.get();

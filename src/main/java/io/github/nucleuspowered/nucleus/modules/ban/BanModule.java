@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.ban;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.ban.commands.CheckBanCommand;
@@ -13,6 +14,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.ban.Ban;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
@@ -42,19 +44,21 @@ public class BanModule extends ConfigurableModule<BanConfigAdapter> {
                         // Lightweight checkban.
                         Text.Builder m;
                         if (bs.get().getExpirationDate().isPresent()) {
-                            m = Util.getTextMessageWithFormat("seen.isbanned.temp", Util.getTimeToNow(bs.get().getExpirationDate().get())).toBuilder();
+                            m = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.isbanned.temp", Util.getTimeToNow(bs.get().getExpirationDate().get())).toBuilder();
                         } else {
-                            m = Util.getTextMessageWithFormat("seen.isbanned.perm").toBuilder();
+                            m = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.isbanned.perm").toBuilder();
                         }
 
                         return Lists.newArrayList(
                             m.onClick(TextActions.runCommand("/checkban " + u.getName()))
-                              .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).build(),
-                                Util.getTextMessageWithTextFormat("standard.reason", bs.get().getReason().orElse(Util.getTextMessageWithFormat("standard.unknown"))));
+                              .onHover(TextActions.showText(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("standard.clicktoseemore"))).build(),
+                                NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("standard.reason",
+                                        TextSerializers.FORMATTING_CODE.serialize(
+                                                bs.get().getReason().orElse(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("standard.unknown")))));
                     }
                 }
 
-                return Lists.newArrayList(Util.getTextMessageWithFormat("seen.notbanned"));
+                return Lists.newArrayList(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.notbanned"));
           });
     }
 }

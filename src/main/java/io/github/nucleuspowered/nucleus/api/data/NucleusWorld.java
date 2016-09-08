@@ -5,12 +5,12 @@
 package io.github.nucleuspowered.nucleus.api.data;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 
 import java.util.Optional;
 
 /**
- * Represents data held about a world in {@link Nucleus}.
+ * Represents data held about a world in {@link NucleusPlugin}.
  */
 public interface NucleusWorld {
 

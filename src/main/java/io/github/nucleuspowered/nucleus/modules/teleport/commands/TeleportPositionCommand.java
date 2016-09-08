@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -28,7 +26,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tppos"})
-public class TeleportPositionCommand extends CommandBase<CommandSource> {
+public class TeleportPositionCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject(optional = true) private BackHandler backHandler;
 
@@ -58,7 +56,7 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
 
         int yy = args.<Integer>getOne(y).get();
         if (yy < 0) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.tppos.ysmall"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.ysmall"));
             return CommandResult.empty();
         }
 
@@ -68,23 +66,23 @@ public class TeleportPositionCommand extends CommandBase<CommandSource> {
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
             pl.setLocation(loc);
-            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         }
 
         if (pl.setLocationSafely(loc)) {
-            pl.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.self"));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
             }
 
             return CommandResult.success();
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.tppos.nosafe"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.nosafe"));
             return CommandResult.empty();
         }
     }

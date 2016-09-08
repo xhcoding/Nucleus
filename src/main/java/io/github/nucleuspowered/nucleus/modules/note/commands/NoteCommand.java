@@ -9,7 +9,6 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;
@@ -35,7 +34,7 @@ import java.util.UUID;
 @NoCooldown
 @NoCost
 @RegisterCommand({"note", "addnote"})
-public class NoteCommand extends CommandBase<CommandSource> {
+public class NoteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
     public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "note.notify";
 
     private final String playerKey = "player";
@@ -47,7 +46,7 @@ public class NoteCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, new PermissionInformation(Util.getMessageWithFormat("permission.note.notify"), SuggestedLevel.MOD));
+        m.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.note.notify"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -73,12 +72,12 @@ public class NoteCommand extends CommandBase<CommandSource> {
             MutableMessageChannel messageChannel = MessageChannel.permission(notifyPermission).asMutable();
             messageChannel.addMember(src);
 
-            messageChannel.send(Util.getTextMessageWithFormat("command.note.success", src.getName(), noteData.getNote(), user.getName()));
+            messageChannel.send(plugin.getMessageProvider().getTextMessageWithFormat("command.note.success", src.getName(), noteData.getNote(), user.getName()));
 
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.warn.fail", user.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warn.fail", user.getName()));
         return CommandResult.empty();
     }
 }

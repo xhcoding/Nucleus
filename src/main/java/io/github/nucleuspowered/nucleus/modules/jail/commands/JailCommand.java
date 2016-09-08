@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
@@ -38,7 +37,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand({"jail", "unjail", "togglejail"})
-public class JailCommand extends CommandBase<CommandSource> {
+public class JailCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "jail.notify";
 
@@ -51,14 +50,14 @@ public class JailCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, new PermissionInformation(Util.getMessageWithFormat("permission.jail.notify"), SuggestedLevel.MOD));
+        m.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.jail.notify"), SuggestedLevel.MOD));
         return m;
     }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("offline", new PermissionInformation(Util.getMessageWithFormat("permission.jail.offline"), SuggestedLevel.MOD));
+        m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.jail.offline"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -75,7 +74,7 @@ public class JailCommand extends CommandBase<CommandSource> {
         // Get the player.
         User pl = args.<User>getOne(playerKey).get();
         if (!pl.isOnline() && !permissions.testSuffix(src, "offline")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jail.offline.noperms"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.offline.noperms"));
             return CommandResult.empty();
         }
 
@@ -88,10 +87,10 @@ public class JailCommand extends CommandBase<CommandSource> {
 
     private CommandResult onUnjail(CommandSource src, CommandContext args, User user) {
         if (handler.unjailPlayer(user)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jail.unjail.success", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.unjail.success", user.getName()));
             return CommandResult.success();
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jail.unjail.fail", user.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.unjail.fail", user.getName()));
             return CommandResult.empty();
         }
     }
@@ -99,13 +98,13 @@ public class JailCommand extends CommandBase<CommandSource> {
     private CommandResult onJail(CommandSource src, CommandContext args, User user) {
         Optional<LocationData> owl = args.getOne(jailKey);
         if (!owl.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.jail.jail.nojail"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jail.nojail"));
             return CommandResult.empty();
         }
 
         // This might not be there.
         Optional<Long> duration = args.getOne(durationKey);
-        String reason = args.<String>getOne(reasonKey).orElse(Util.getMessageWithFormat("command.jail.reason"));
+        String reason = args.<String>getOne(reasonKey).orElse(plugin.getMessageProvider().getMessageWithFormat("command.jail.reason"));
         JailData jd;
         Text message;
         Text messageTo;
@@ -117,31 +116,31 @@ public class JailCommand extends CommandBase<CommandSource> {
                 jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, null, Duration.of(duration.get(), ChronoUnit.SECONDS));
             }
 
-            message = Util.getTextMessageWithFormat("command.checkjail.jailed", user.getName(), owl.get().getName(), src.getName(),
-                    " " + Util.getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get()));
-            messageTo = Util.getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), src.getName(),
-                    " " + Util.getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get()));
+            message = plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailed", user.getName(), owl.get().getName(), src.getName(),
+                    " " + plugin.getMessageProvider().getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get()));
+            messageTo = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), src.getName(),
+                    " " + plugin.getMessageProvider().getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get()));
         } else {
             jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, user.isOnline() ? user.getPlayer().get().getLocation() : null);
-            message = Util.getTextMessageWithFormat("command.checkjail.jailed", user.getName(), owl.get().getName(), src.getName(), "", "");
-            messageTo = Util.getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), src.getName(), "", "");
+            message = plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailed", user.getName(), owl.get().getName(), src.getName(), "", "");
+            messageTo = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), src.getName(), "", "");
         }
 
         if (handler.jailPlayer(user, jd)) {
             MutableMessageChannel mc = MessageChannel.permission(notifyPermission).asMutable();
             mc.addMember(src);
             mc.send(message);
-            mc.send(Util.getTextMessageWithFormat("standard.reason", reason));
+            mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
 
             if (user.isOnline()) {
                 user.getPlayer().get().sendMessage(messageTo);
-                user.getPlayer().get().sendMessage(Util.getTextMessageWithFormat("standard.reason", reason));
+                user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
             }
 
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.jail.error"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.error"));
         return CommandResult.empty();
     }
 }

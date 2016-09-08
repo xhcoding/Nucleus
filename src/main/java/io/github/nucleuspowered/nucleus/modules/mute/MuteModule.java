@@ -35,9 +35,9 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
         super.performPreTasks();
 
         try {
-            MuteHandler m = new MuteHandler(nucleus);
-            nucleus.getInjector().injectMembers(m);
-            game.getServiceManager().setProvider(nucleus, NucleusMuteService.class, m);
+            MuteHandler m = new MuteHandler(plugin);
+            plugin.getInjector().injectMembers(m);
+            game.getServiceManager().setProvider(plugin, NucleusMuteService.class, m);
             serviceManager.registerService(MuteHandler.class, m);
         } catch (Exception ex) {
             logger.warn("Could not load the mute module for the reason below.");
@@ -52,24 +52,24 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
         createSeenModule(CheckMuteCommand.class, (c, u) -> {
 
             // If we have a ban service, then check for a ban.
-            MuteHandler jh = nucleus.getInternalServiceManager().getService(MuteHandler.class).get();
+            MuteHandler jh = plugin.getInternalServiceManager().getService(MuteHandler.class).get();
             if (jh.isMuted(u)) {
                 MuteData jd = jh.getPlayerMuteData(u).get();
                 // Lightweight checkban.
                 Text.Builder m;
                 if (jd.getEndTimestamp().isPresent()) {
-                    m = Util.getTextMessageWithFormat("seen.ismuted.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();
+                    m = plugin.getMessageProvider().getTextMessageWithFormat("seen.ismuted.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();
                 } else {
-                    m = Util.getTextMessageWithFormat("seen.ismuted.perm").toBuilder();
+                    m = plugin.getMessageProvider().getTextMessageWithFormat("seen.ismuted.perm").toBuilder();
                 }
 
                 return Lists.newArrayList(
                         m.onClick(TextActions.runCommand("/checkmute " + u.getName()))
-                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).build(),
-                        Util.getTextMessageWithFormat("standard.reason", jd.getReason()));
+                                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("standard.clicktoseemore"))).build(),
+                        plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", jd.getReason()));
             }
 
-            return Lists.newArrayList(Util.getTextMessageWithFormat("seen.notmuted"));
+            return Lists.newArrayList(plugin.getMessageProvider().getTextMessageWithFormat("seen.notmuted"));
         });
     }
 }

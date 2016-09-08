@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.rules.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -28,7 +26,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class RulesAddCommand extends CommandBase<CommandSource> {
+public class RulesAddCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private RulesConfigAdapter rca;
 
@@ -60,7 +58,7 @@ public class RulesAddCommand extends CommandBase<CommandSource> {
             position = pos.get();
             rules.add(position - 1, rule);
         } else if (pos.isPresent()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.rules.add.norule", String.valueOf(pos.get()), String.valueOf(rules.size())));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.add.norule", String.valueOf(pos.get()), String.valueOf(rules.size())));
             return CommandResult.empty();
         } else {
             rules.add(rule);
@@ -71,7 +69,7 @@ public class RulesAddCommand extends CommandBase<CommandSource> {
         rca.setNode(rc);
         plugin.saveSystemConfig();
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.rules.add.success", String.valueOf(position)));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.add.success", String.valueOf(position)));
         src.sendMessage(r);
         return CommandResult.success();
     }

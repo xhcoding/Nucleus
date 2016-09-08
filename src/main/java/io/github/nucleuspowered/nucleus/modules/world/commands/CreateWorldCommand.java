@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.DifficultyArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
@@ -33,11 +31,11 @@ import java.util.Optional;
  * Creates world.
  *
  * Command Usage: /world create [name] [dimension] [generator] [gamemode]
- * [difficulty] Permission: nucleus.world.create.base
+ * [difficulty] Permission: plugin.world.create.base
  */
 @Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"create"}, subcommandOf = WorldCommand.class)
-public class CreateWorldCommand extends CommandBase<CommandSource> {
+public class CreateWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String name = "name";
     private final String dimension = "dimension";
@@ -62,7 +60,7 @@ public class CreateWorldCommand extends CommandBase<CommandSource> {
         GameMode gamemodeInput = args.<GameMode>getOne(gamemode).get();
         Difficulty difficultyInput = args.<Difficulty>getOne(difficulty).get();
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.world.create.begin", nameInput));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.begin", nameInput));
 
         WorldArchetype worldSettings = Sponge.getRegistry().createBuilder(WorldArchetype.Builder.class).enabled(true)
                 .loadsOnStartup(true).keepsSpawnLoaded(true).dimension(dimensionInput).generator(generatorInput).gameMode(gamemodeInput).build(nameInput.toLowerCase(), nameInput);
@@ -72,9 +70,9 @@ public class CreateWorldCommand extends CommandBase<CommandSource> {
 
         if (world.isPresent()) {
             world.get().getProperties().setDifficulty(difficultyInput);
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.create.success", nameInput));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.success", nameInput));
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.create.fail", nameInput));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.fail", nameInput));
         }
 
         return CommandResult.success();

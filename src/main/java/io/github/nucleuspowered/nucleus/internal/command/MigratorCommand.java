@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.command;
 
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -31,7 +31,7 @@ import java.util.Arrays;
 @NoCooldown
 @NoWarmup
 @RunAsync
-public abstract class MigratorCommand<M extends DataMigrator> extends CommandBase<CommandSource> {
+public abstract class MigratorCommand<M extends DataMigrator> extends AbstractCommand<CommandSource> {
 
     private final Class<M> migratorClass;
 
@@ -69,13 +69,13 @@ public abstract class MigratorCommand<M extends DataMigrator> extends CommandBas
             } catch (Exception | NoClassDefFoundError e) {
                 e.printStackTrace();
                 if (pd != null && pd.value().length > 0) {
-                    src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.error.plugin", String.join(", ", (CharSequence[]) pd.value())));
+                    src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.error.plugin", String.join(", ", (CharSequence[]) pd.value())));
                 } else {
-                    src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.error.noplugin"));
+                    src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.error.noplugin"));
                 }
             }
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nucleus.migrate.noplugin", String.join(", ", (CharSequence[]) pd.value())));
+            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.noplugin", String.join(", ", (CharSequence[]) pd.value())));
         }
 
         return CommandResult.empty();

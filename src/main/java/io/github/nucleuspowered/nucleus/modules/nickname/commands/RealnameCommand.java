@@ -4,13 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
-import io.github.nucleuspowered.nucleus.NameUtil;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -32,7 +29,7 @@ import java.util.stream.Collectors;
 
 @RegisterCommand({"realname"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-public class RealnameCommand extends CommandBase<CommandSource> {
+public class RealnameCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String playerKey = "name";
 
@@ -70,16 +67,16 @@ public class RealnameCommand extends CommandBase<CommandSource> {
 
             return new NameTuple(x.getName().toLowerCase(), x);
         }).filter(x -> x.nickname.startsWith(name.toLowerCase()))
-                .map(x -> Text.builder().append(NameUtil.getName(x.player)).append(Text.of(TextColors.GRAY, " -> ")).append(Text.of(x.player.getName())).toText())
+                .map(x -> Text.builder().append(plugin.getNameUtil().getName(x.player)).append(Text.of(TextColors.GRAY, " -> ")).append(Text.of(x.player.getName())).toText())
                 .collect(Collectors.toList());
 
         if (realNames.isEmpty()) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.realname.nonames", argname));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.realname.nonames", argname));
         } else {
             PaginationList.Builder plb = Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder()
                     .contents(realNames)
                     .padding(Text.of(TextColors.GREEN, "-"))
-                    .title(Util.getTextMessageWithFormat("command.realname.title", argname));
+                    .title(plugin.getMessageProvider().getTextMessageWithFormat("command.realname.title", argname));
 
             if (!(src instanceof Player)) {
                 plb.linesPerPage(-1);

@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -26,7 +24,7 @@ import org.spongepowered.api.text.format.TextColors;
 @Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @RegisterCommand(value = "info", subcommandOf = JailsCommand.class)
-public class JailInfoCommand extends CommandBase<CommandSource> {
+public class JailInfoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String jailKey = "jail";
     @Inject private JailHandler handler;
@@ -39,9 +37,9 @@ public class JailInfoCommand extends CommandBase<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         LocationData wl = args.<LocationData>getOne(jailKey).get();
-        src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.jail.info.name"))
+        src.sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.info.name"))
                 .append(Text.of(": ", TextColors.GREEN, wl.getName())).build());
-        src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.jail.info.location"))
+        src.sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.info.location"))
                 .append(Text.of(": ", TextColors.GREEN, wl.toLocationString())).build());
         return CommandResult.success();
     }

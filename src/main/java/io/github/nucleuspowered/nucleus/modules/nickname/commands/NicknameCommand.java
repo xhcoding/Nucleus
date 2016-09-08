@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
@@ -36,7 +34,7 @@ import java.util.regex.Pattern;
 
 @RegisterCommand({"nick", "nickname"})
 @Permissions
-public class NicknameCommand extends CommandBase<CommandSource> {
+public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager loader;
     @Inject private NicknameConfigAdapter nicknameConfigAdapter;
@@ -51,11 +49,11 @@ public class NicknameCommand extends CommandBase<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.nick.others"), SuggestedLevel.ADMIN));
-        m.put("colour", new PermissionInformation(Util.getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
-        m.put("color", new PermissionInformation(Util.getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
-        m.put("style", new PermissionInformation(Util.getMessageWithFormat("permission.nick.style"), SuggestedLevel.ADMIN));
-        m.put("magic", new PermissionInformation(Util.getMessageWithFormat("permission.nick.magic"), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.others"), SuggestedLevel.ADMIN));
+        m.put("colour", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
+        m.put("color", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
+        m.put("style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.style"), SuggestedLevel.ADMIN));
+        m.put("magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.magic"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -83,26 +81,26 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         // The only person who can use such a name is oneself.
         if (match.isPresent() && !match.get().getUniqueId().equals(pl.getUniqueId())) {
             // Fail - cannot use another's name.
-            src.sendMessage(Util.getTextMessageWithFormat("command.nick.nameinuse", name));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.nameinuse", name));
             return CommandResult.empty();
         }
 
         // Giving player must have the colour permissions and whatnot. Also,
         // colour and color are the two spellings we support. (RULE BRITANNIA!)
         if (colourPattern.matcher(name).find() && !(permissions.testSuffix(src, "colour") || permissions.testSuffix(src, "color"))) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nick.colour.noperms"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.colour.noperms"));
             return CommandResult.empty();
         }
 
         // Giving player must have the magic permissions and whatnot.
         if (magicPattern.matcher(name).find() && !permissions.testSuffix(src, "magic")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nick.magic.noperms"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.magic.noperms"));
             return CommandResult.empty();
         }
 
         // Giving player must have the style permissions and whatnot.
         if (stylePattern.matcher(name).find() && !permissions.testSuffix(src, "style")) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nick.style.noperms"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.style.noperms"));
             return CommandResult.empty();
         }
 
@@ -110,20 +108,20 @@ public class NicknameCommand extends CommandBase<CommandSource> {
 
         // Do a regex remove to check minimum length requirements.
         if (strippedNameLength < Math.max(nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength(), 1)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nick.tooshort"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.tooshort"));
             return CommandResult.empty();
         }
 
         // Do a regex remove to check maximum length requirements. Will be at least the minimum length
         if (strippedNameLength > Math.max(nicknameConfigAdapter.getNodeOrDefault().getMaxNicknameLength(), nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nick.toolong"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.toolong"));
             return CommandResult.empty();
         }
 
         // Send an event
         ChangeNicknameEvent cne = new ChangeNicknameEvent(Cause.of(NamedCause.source(src)), TextSerializers.FORMATTING_CODE.deserialize(name), pl);
         if (Sponge.getEventManager().post(cne)) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.nick.eventcancel", pl.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.eventcancel", pl.getName()));
             return CommandResult.empty();
         }
 
@@ -132,12 +130,12 @@ public class NicknameCommand extends CommandBase<CommandSource> {
         Text set = nucleusUser.getNicknameAsText().get();
 
         if (!src.equals(pl)) {
-            src.sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.nick.success.other", pl.getName()))
+            src.sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.success.other", pl.getName()))
                     .append(Text.of(" - ", TextColors.RESET, set)).build());
         }
 
         if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(Text.builder().append(Util.getTextMessageWithFormat("command.nick.success.base"))
+            pl.getPlayer().get().sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.success.base"))
                     .append(Text.of(" - ", TextColors.RESET, set)).build());
         }
 

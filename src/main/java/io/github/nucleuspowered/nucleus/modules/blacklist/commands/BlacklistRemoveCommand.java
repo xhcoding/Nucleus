@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -22,7 +20,7 @@ import org.spongepowered.api.text.Text;
 
 @Permissions(root = "blacklist", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"remove", "delete", "del"}, subcommandOf = BlacklistCommand.class)
-public class BlacklistRemoveCommand extends CommandBase<CommandSource> {
+public class BlacklistRemoveCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String item = "item";
 
@@ -40,9 +38,9 @@ public class BlacklistRemoveCommand extends CommandBase<CommandSource> {
 
         if (dataStore.getBlacklistedTypes().contains(itemType)) {
             dataStore.removeBlacklistedType(itemType);
-            src.sendMessage(Util.getTextMessageWithFormat("command.blacklist.remove.success", itemType.getTranslation().get()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.blacklist.remove.success", itemType.getTranslation().get()));
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.blacklist.remove.notadded", itemType.getTranslation().get()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.blacklist.remove.notadded", itemType.getTranslation().get()));
             return CommandResult.empty();
         }
 

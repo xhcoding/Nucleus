@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -27,7 +25,7 @@ import java.util.Optional;
 @NoCost
 @NoWarmup
 @RegisterCommand(value = {"set"}, subcommandOf = BorderCommand.class)
-public class SetBorderCommand extends CommandBase<CommandSource> {
+public class SetBorderCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
     private final String xKey = "x";
@@ -67,7 +65,7 @@ public class SetBorderCommand extends CommandBase<CommandSource> {
 
         if (!(src instanceof Locatable) && !owp.isPresent()) {
             // Tell the user that a world is required.
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.setborder.noworld"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.noworld"));
             return CommandResult.empty();
         } else if (src instanceof Locatable) {
             wp = owp.orElse(((Locatable) src).getWorld().getProperties());
@@ -95,7 +93,7 @@ public class SetBorderCommand extends CommandBase<CommandSource> {
         if (delay == 0) {
             world.ifPresent(w -> w.getWorldBorder().setDiameter(dia));
             wp.setWorldBorderDiameter(dia);
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.setborder.set",
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.set",
                     wp.getWorldName(),
                     String.valueOf(x),
                     String.valueOf(z),
@@ -104,7 +102,7 @@ public class SetBorderCommand extends CommandBase<CommandSource> {
             world.ifPresent(w -> w.getWorldBorder().setDiameter(dia, delay * 1000L));
             wp.setWorldBorderTimeRemaining(delay * 1000L);
             wp.setWorldBorderTargetDiameter(dia);
-            src.sendMessage(Util.getTextMessageWithFormat("command.world.setborder.setdelay",
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.setdelay",
                     wp.getWorldName(),
                     String.valueOf(x),
                     String.valueOf(z),

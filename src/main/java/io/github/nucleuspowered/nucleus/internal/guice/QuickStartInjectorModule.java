@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.guice;
 
 import com.google.inject.AbstractModule;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
@@ -23,15 +23,15 @@ import uk.co.drnaylor.quickstart.ModuleContainer;
 
 public class QuickStartInjectorModule extends AbstractModule {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
 
-    public QuickStartInjectorModule(Nucleus plugin) {
+    public QuickStartInjectorModule(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     protected void configure() {
-        bind(Nucleus.class).toProvider(() -> plugin);
+        bind(NucleusPlugin.class).toProvider(() -> plugin);
         bind(Logger.class).toProvider(plugin::getLogger);
         bind(CommandsConfig.class).toProvider(plugin::getCommandsConfig);
         bind(UserDataManager.class).toProvider(plugin::getUserDataManager);

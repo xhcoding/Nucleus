@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.item.commands.lore;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandElement;
@@ -21,7 +20,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.List;
 
-abstract class LoreSetBaseCommand extends CommandBase<Player> {
+abstract class LoreSetBaseCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private MessageProvider provider;
 

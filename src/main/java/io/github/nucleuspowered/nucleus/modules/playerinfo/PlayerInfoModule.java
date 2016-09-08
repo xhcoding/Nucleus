@@ -24,7 +24,7 @@ public class PlayerInfoModule extends ConfigurableModule<PlayerInfoConfigAdapter
         super.performPreTasks();
 
         SeenHandler sh = new SeenHandler();
-        Sponge.getServiceManager().setProvider(nucleus, NucleusSeenService.class, sh);
-        nucleus.getInternalServiceManager().registerService(SeenHandler.class, sh);
+        Sponge.getServiceManager().setProvider(plugin, NucleusSeenService.class, sh);
+        plugin.getInternalServiceManager().registerService(SeenHandler.class, sh);
     }
 }

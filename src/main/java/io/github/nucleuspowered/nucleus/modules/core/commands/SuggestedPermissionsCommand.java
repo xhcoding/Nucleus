@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -24,11 +22,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RunAsync
-@Permissions(root = "nucleus")
+@Permissions(root = "plugin")
 @RegisterCommand(value = "printperms", subcommandOf = NucleusCommand.class)
-public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
+public class SuggestedPermissionsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
-    private final String file = "nucleus-perms.txt";
+    private final String file = "plugin-perms.txt";
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
@@ -78,7 +76,7 @@ public class SuggestedPermissionsCommand extends CommandBase<CommandSource> {
         f.flush();
         f.close();
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.printperms", file));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.printperms", file));
         return CommandResult.success();
     }
 }

@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.dataservices.dataproviders;
 
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
@@ -23,13 +23,13 @@ import java.util.UUID;
 
 public class DataProviders {
 
-    private final Nucleus plugin;
+    private final NucleusPlugin plugin;
     private final TypeToken<UserDataNode> ttu = TypeToken.of(UserDataNode.class);
     private final TypeToken<WorldDataNode> ttw = TypeToken.of(WorldDataNode.class);
     private final TypeToken<GeneralDataNode> ttg = TypeToken.of(GeneralDataNode.class);
     private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
 
-    public DataProviders(Nucleus plugin) {
+    public DataProviders(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 

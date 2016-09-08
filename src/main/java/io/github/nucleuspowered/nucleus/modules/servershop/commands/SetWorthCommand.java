@@ -6,13 +6,13 @@ package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandResult;
@@ -40,7 +40,7 @@ import java.util.function.Function;
 @NoWarmup
 @Permissions
 @RegisterCommand({"setworth", "setitemworth"})
-public class SetWorthCommand extends CommandBase<CommandSource> {
+public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String item = "item";
     private final String type = "type";
@@ -74,11 +74,11 @@ public class SetWorthCommand extends CommandBase<CommandSource> {
                 Optional<BlockState> blockStateOptional = is.get(Keys.ITEM_BLOCKSTATE);
                 id = (blockStateOptional.isPresent() ? blockStateOptional.get().getId() : is.getItem().getId()).toLowerCase();
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.setworth.noitemhand"));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.noitemhand"));
                 return CommandResult.empty();
             }
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.setworth.noitemconsole"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.noitemconsole"));
             return CommandResult.empty();
         }
 
@@ -94,7 +94,7 @@ public class SetWorthCommand extends CommandBase<CommandSource> {
             worth = econHelper.getCurrencySymbol(currentWorth);
             newWorth = econHelper.getCurrencySymbol(newCost);
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.setworth.noeconservice"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.noeconservice"));
             worth = String.valueOf(currentWorth);
             newWorth = String.valueOf(newCost);
         }
@@ -120,9 +120,9 @@ public class SetWorthCommand extends CommandBase<CommandSource> {
 
         if (currentWorth == newCost) {
             if (currentWorth == -1) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.setworth.alreadyunavailable", name, transactionType.getTranslation()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.alreadyunavailable", name, transactionType.getTranslation()));
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.setworth.samecost", transactionType.getTranslation(), name, worth));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.samecost", transactionType.getTranslation(), name, worth));
             }
 
             return CommandResult.empty();
@@ -134,11 +134,11 @@ public class SetWorthCommand extends CommandBase<CommandSource> {
 
         // Tell the user.
         if (currentWorth == -1) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.setworth.success.new", name, transactionType.getTranslation(), newWorth));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.success.new", name, transactionType.getTranslation(), newWorth));
         } else if (newCost == -1) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.setworth.success.removed", name, transactionType.getTranslation(), worth));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.success.removed", name, transactionType.getTranslation(), worth));
         } else {
-            src.sendMessage(Util.getTextMessageWithFormat("command.setworth.success.changed", name, transactionType.getTranslation(), worth, newWorth));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.success.changed", name, transactionType.getTranslation(), worth, newWorth));
         }
 
         return CommandResult.success();
@@ -159,7 +159,7 @@ public class SetWorthCommand extends CommandBase<CommandSource> {
         }
 
         private String getTranslation() {
-            return Util.getMessageWithFormat(transactionKey);
+            return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat(transactionKey);
         }
     }
 }

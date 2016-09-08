@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a kit in Nucleus.
+ * Represents a kit in NucleusPlugin.
  */
 public interface Kit {
     /**

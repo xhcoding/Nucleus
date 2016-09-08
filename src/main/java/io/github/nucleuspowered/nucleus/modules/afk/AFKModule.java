@@ -22,7 +22,7 @@ public class AFKModule extends ConfigurableModule<AFKConfigAdapter> {
         super.performPreTasks();
 
         AFKHandler handler = new AFKHandler();
-        nucleus.getInjector().injectMembers(handler);
+        plugin.getInjector().injectMembers(handler);
         serviceManager.registerService(AFKHandler.class, handler);
     }
 }

@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -32,14 +30,14 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @Permissions(supportsSelectors = true)
-public class HatCommand extends CommandBase<Player> {
+public class HatCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String player = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -62,7 +60,7 @@ public class HatCommand extends CommandBase<Player> {
             return CommandResult.empty();
         }
 
-        ItemStack stack = pl.getItemInHand(HandTypes.MAIN_HAND).orElseThrow(() -> new ReturnMessageException(Util.getTextMessageWithFormat("command.generalerror.handempty")));
+        ItemStack stack = pl.getItemInHand(HandTypes.MAIN_HAND).orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.generalerror.handempty")));
         stack.setQuantity(1);
         opl.get().setHelmet(stack);
         String itemName = stack.get(Keys.DISPLAY_NAME).orElse(Text.of(stack.getItem().getName())).toPlain();
@@ -78,7 +76,7 @@ public class HatCommand extends CommandBase<Player> {
             }
         }
 
-        pl.sendMessage(Util.getTextMessageWithFormat("command.hat.success", opl.get().getName(), itemName));
+        pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.hat.success", opl.get().getName(), itemName));
         return CommandResult.success();
     }
 }

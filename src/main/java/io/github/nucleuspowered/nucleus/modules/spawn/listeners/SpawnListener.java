@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -45,7 +44,7 @@ public class SpawnListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mpi = Maps.newHashMap();
-        mpi.put(spawnExempt, new PermissionInformation(Util.getMessageWithFormat("permission.spawn.exempt.login"), SuggestedLevel.ADMIN));
+        mpi.put(spawnExempt, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawn.exempt.login"), SuggestedLevel.ADMIN));
         return mpi;
     }
 

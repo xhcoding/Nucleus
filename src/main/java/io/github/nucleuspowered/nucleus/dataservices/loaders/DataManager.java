@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.Service;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 
@@ -17,9 +17,9 @@ public abstract class DataManager<I, P, S extends Service> {
 
     final Function<I, DataProvider<P>> dataProviderFactory;
     final Map<I, S> dataStore = new ConcurrentHashMap<>();
-    final Nucleus plugin;
+    final NucleusPlugin plugin;
 
-    DataManager(Nucleus plugin, Function<I, DataProvider<P>> dataProviderFactory) {
+    DataManager(NucleusPlugin plugin, Function<I, DataProvider<P>> dataProviderFactory) {
         this.dataProviderFactory = dataProviderFactory;
         this.plugin = plugin;
     }

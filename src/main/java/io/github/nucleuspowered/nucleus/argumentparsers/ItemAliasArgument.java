@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
@@ -32,15 +32,11 @@ import java.util.stream.Collectors;
  */
 public class ItemAliasArgument extends CommandElement {
 
-    private final ImprovedCatalogTypeArgument itemType;
-    private final ImprovedCatalogTypeArgument blockStateType;
     private final ItemDataService itemDataService;
 
     public ItemAliasArgument(@Nullable Text key, ItemDataService itemDataService) {
         super(key);
         Preconditions.checkNotNull(key);
-        this.itemType = new ImprovedCatalogTypeArgument(key, ItemType.class);
-        this.blockStateType = new ImprovedCatalogTypeArgument(key, BlockState.class);
         this.itemDataService = itemDataService;
     }
 
@@ -74,7 +70,7 @@ public class ItemAliasArgument extends CommandElement {
             return obs.get();
         }
 
-        throw args.createError(Util.getTextMessageWithFormat("args.itemarg.nomatch", arg));
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.itemarg.nomatch", arg));
     }
 
     private Optional<CatalogType> parseAlias(String arg, @Nonnull CommandArgs args) throws ArgumentParseException {
@@ -93,7 +89,7 @@ public class ItemAliasArgument extends CommandElement {
 
         // Well, hopefully it's a blockstate then.
         return Optional.of(Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst()
-                .orElseThrow(() -> args.createError(Util.getTextMessageWithFormat("args.itemarg.orphanedarg", arg, id))));
+                .orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.itemarg.orphanedarg", arg, id))));
     }
 
     @Override

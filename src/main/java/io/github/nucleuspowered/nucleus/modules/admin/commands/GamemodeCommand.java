@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +29,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand({"gamemode", "gm"})
-public class GamemodeCommand extends CommandBase<CommandSource> {
+public class GamemodeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String userKey = "user";
     private final String gamemodeKey = "gamemode";
@@ -39,7 +37,7 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mpi = Maps.newHashMap();
-        mpi.put("others", new PermissionInformation(Util.getMessageWithFormat("permission.gamemode.other"), SuggestedLevel.ADMIN));
+        mpi.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.other"), SuggestedLevel.ADMIN));
         return mpi;
     }
 
@@ -71,9 +69,9 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
         if (!ogm.isPresent()) {
             String mode = user.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL).getName();
             if (src.equals(user)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get.base", mode));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.gamemode.get.base", mode));
             } else {
-                src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.get.other", user.getName(), mode));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.gamemode.get.other", user.getName(), mode));
             }
 
             return CommandResult.success();
@@ -83,14 +81,14 @@ public class GamemodeCommand extends CommandBase<CommandSource> {
         DataTransactionResult dtr = user.offer(Keys.GAME_MODE, gm);
         if (dtr.isSuccessful()) {
             if (!src.equals(user)) {
-                src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set.other", user.getName(), gm.getName()));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.gamemode.set.other", user.getName(), gm.getName()));
             }
 
-            user.sendMessage(Util.getTextMessageWithFormat("command.gamemode.set.base", gm.getName()));
+            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.gamemode.set.base", gm.getName()));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.gamemode.error", user.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.gamemode.error", user.getName()));
         return CommandResult.empty();
     }
 }

@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -30,13 +28,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-@Permissions(root = "nucleus")
+@Permissions(root = "plugin")
 @RunAsync
 @NoWarmup
 @NoCooldown
 @NoCost
 @RegisterCommand(value = "resetuser", subcommandOf = NucleusCommand.class)
-public class ResetUserCommand extends CommandBase<CommandSource> {
+public class ResetUserCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String userKey = "user";
 
@@ -53,14 +51,14 @@ public class ResetUserCommand extends CommandBase<CommandSource> {
 
         List<Text> messages = new ArrayList<>();
 
-        messages.add(Util.getTextMessageWithFormat("command.nucleus.reset.warning"));
-        messages.add(Util.getTextMessageWithFormat("command.nucleus.reset.warning2", user.getName()));
-        messages.add(Util.getTextMessageWithFormat("command.nucleus.reset.warning3"));
-        messages.add(Util.getTextMessageWithFormat("command.nucleus.reset.warning4"));
-        messages.add(Util.getTextMessageWithFormat("command.nucleus.reset.warning5"));
-        messages.add(Util.getTextMessageWithFormat("command.nucleus.reset.warning6"));
-        messages.add(Util.getTextMessageWithFormat("command.nucleus.reset.warning7"));
-        messages.add(Text.builder().append(Util.getTextMessageWithFormat("command.nucleus.reset.reset")).style(TextStyles.UNDERLINE)
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.warning"));
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.warning2", user.getName()));
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.warning3"));
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.warning4"));
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.warning5"));
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.warning6"));
+        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.warning7"));
+        messages.add(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.reset")).style(TextStyles.UNDERLINE)
                 .onClick(TextActions.executeCallback(new Delete(plugin, user))).build());
 
         src.sendMessages(messages);
@@ -70,9 +68,9 @@ public class ResetUserCommand extends CommandBase<CommandSource> {
     private class Delete implements Consumer<CommandSource> {
 
         private final User user;
-        private final Nucleus plugin;
+        private final NucleusPlugin plugin;
 
-        public Delete(Nucleus plugin, User user) {
+        public Delete(NucleusPlugin plugin, User user) {
             this.user = user;
             this.plugin = plugin;
         }
@@ -80,7 +78,7 @@ public class ResetUserCommand extends CommandBase<CommandSource> {
         @Override
         public void accept(CommandSource source) {
             if (user.isOnline()) {
-                user.getPlayer().get().kick(Util.getTextMessageWithFormat("command.kick.defaultreason"));
+                user.getPlayer().get().kick(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.kick.defaultreason"));
             }
 
             // Ban temporarily.
@@ -97,9 +95,9 @@ public class ResetUserCommand extends CommandBase<CommandSource> {
                 try {
                     // Remove them from the cache immediately.
                     ucl.forceUnloadAndDelete(user.getUniqueId());
-                    source.sendMessage(Util.getTextMessageWithFormat("command.nucleus.reset.complete", user.getName()));
+                    source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.complete", user.getName()));
                 } catch (Exception e) {
-                    source.sendMessage(Util.getTextMessageWithFormat("command.nucleus.reset.failed", user.getName()));
+                    source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.failed", user.getName()));
                 } finally {
                     if (!isBanned) {
                         bss.getBanFor(user.getProfile()).ifPresent(bss::removeBan);

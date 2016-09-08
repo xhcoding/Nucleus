@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.note;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.note.commands.CheckNotesCommand;
@@ -36,9 +35,9 @@ public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
         super.performPreTasks();
 
         try {
-            NoteHandler noteHandler = new NoteHandler(nucleus);
-            nucleus.getInjector().injectMembers(noteHandler);
-            game.getServiceManager().setProvider(nucleus, NucleusNoteService.class, noteHandler);
+            NoteHandler noteHandler = new NoteHandler(plugin);
+            plugin.getInjector().injectMembers(noteHandler);
+            game.getServiceManager().setProvider(plugin, NucleusNoteService.class, noteHandler);
             serviceManager.registerService(NoteHandler.class, noteHandler);
         } catch (Exception ex) {
             logger.warn("Could not load the note module for the reason below.");
@@ -54,14 +53,14 @@ public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
         // Take base permission from /checkwarnings.
         createSeenModule(CheckNotesCommand.class, (c, u) -> {
 
-            NoteHandler jh = nucleus.getInternalServiceManager().getService(NoteHandler.class).get();
+            NoteHandler jh = plugin.getInternalServiceManager().getService(NoteHandler.class).get();
             int active = jh.getNotes(u).size();
 
-            Text r = Util.getTextMessageWithFormat("seen.notes", String.valueOf(active));
+            Text r = plugin.getMessageProvider().getTextMessageWithFormat("seen.notes", String.valueOf(active));
             if (active > 0) {
                 return Lists.newArrayList(
                         r.toBuilder().onClick(TextActions.runCommand("/checknotes " + u.getName()))
-                                .onHover(TextActions.showText(Util.getTextMessageWithFormat("standard.clicktoseemore"))).build());
+                                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("standard.clicktoseemore"))).build());
             }
 
             return Lists.newArrayList(r);

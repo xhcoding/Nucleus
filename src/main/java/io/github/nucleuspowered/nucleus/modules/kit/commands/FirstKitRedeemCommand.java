@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -20,7 +18,7 @@ import javax.inject.Inject;
 @NoCooldown
 @NoWarmup
 @RegisterCommand(value = "redeem", subcommandOf = FirstKitCommand.class)
-public class FirstKitRedeemCommand extends CommandBase<Player> {
+public class FirstKitRedeemCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject
     private GeneralService gds;
@@ -33,9 +31,9 @@ public class FirstKitRedeemCommand extends CommandBase<Player> {
             reject += src.getInventory().offer(x.createStack()).getRejectedItems().size();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.firstkit.redeem.success"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.redeem.success"));
         if (reject > 0) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.firstkit.redeem.reject"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.redeem.reject"));
         }
 
         return CommandResult.success();

@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBase;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -25,7 +23,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @NoWarmup
 @RegisterCommand({"deletehome", "delhome"})
-public class DeleteHomeCommand extends CommandBase<Player> {
+public class DeleteHomeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     private final String homeKey = "home";
 
@@ -40,11 +38,11 @@ public class DeleteHomeCommand extends CommandBase<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         LocationData wl = args.<LocationData>getOne(homeKey).get();
         if (plugin.getUserDataManager().get(src).get().deleteHome(wl.getName())) {
-            src.sendMessage(Util.getTextMessageWithFormat("command.home.delete.success", wl.getName()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.success", wl.getName()));
             return CommandResult.success();
         }
 
-        src.sendMessage(Util.getTextMessageWithFormat("command.home.delete.fail", wl.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.fail", wl.getName()));
         return CommandResult.empty();
     }
 }
