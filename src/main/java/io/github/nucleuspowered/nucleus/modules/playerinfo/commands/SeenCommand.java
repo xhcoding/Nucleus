@@ -24,6 +24,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -33,6 +34,11 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.text.DateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.*;
 
 @Permissions
@@ -85,6 +91,11 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
                 messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.ipaddress",
                         pl.getConnection().getAddress().getAddress().toString()));
 
+                messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.firstplayed",
+                        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                                .withLocale(src.getLocale())
+                                .withZone(ZoneId.systemDefault()).format(pl.getJoinData().firstPlayed().get())));
+
                 messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.speed.walk",
                         String.valueOf(Math.round(pl.get(Keys.WALKING_SPEED).orElse(0.1d) * SpeedCommand.multiplier))));
 
@@ -98,6 +109,16 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
                 if (olw.isPresent()) {
                     messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.lastlocation", getLocationString(olw.get())));
                 }
+
+                user.get(JoinData.class).ifPresent(x -> {
+                    Optional<Instant> oi = x.firstPlayed().getDirect();
+                    if (oi.isPresent()) {
+                        messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.firstplayed",
+                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                                        .withLocale(src.getLocale())
+                                        .withZone(ZoneId.systemDefault()).format(oi.get())));
+                    }
+                });
             }
         }
 
