@@ -112,7 +112,7 @@ public class NucleusPlugin extends Nucleus {
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
 
-        dataDir = game.getSavesDirectory().resolve("plugin");
+        dataDir = game.getSavesDirectory().resolve("nucleus");
         // Get the mandatory config files.
         try {
             Files.createDirectories(this.configDir);
