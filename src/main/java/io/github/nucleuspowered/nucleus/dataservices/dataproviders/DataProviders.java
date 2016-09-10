@@ -89,11 +89,11 @@ public class DataProviders {
 
     private GsonConfigurationLoader.Builder getGsonBuilder() {
         GsonConfigurationLoader.Builder gsb = GsonConfigurationLoader.builder();
-        return gsb.setDefaultOptions(ConfigurateHelper.setOptions(plugin.getLogger(), gsb.getDefaultOptions()));
+        return gsb.setDefaultOptions(ConfigurateHelper.setOptions(gsb.getDefaultOptions()));
     }
 
     private HoconConfigurationLoader.Builder getHoconBuilder() {
         HoconConfigurationLoader.Builder gsb = HoconConfigurationLoader.builder();
-        return gsb.setDefaultOptions(ConfigurateHelper.setOptions(plugin.getLogger(), gsb.getDefaultOptions()));
+        return gsb.setDefaultOptions(ConfigurateHelper.setOptions(gsb.getDefaultOptions()));
     }
 }

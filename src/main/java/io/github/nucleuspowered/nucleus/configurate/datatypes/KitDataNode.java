@@ -5,7 +5,12 @@
 package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.SimpleConfigurationNode;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -16,7 +21,9 @@ import java.util.List;
 @ConfigSerializable
 public class KitDataNode implements Kit {
 
-    @Setting private List<ItemStackSnapshot> stacks = Lists.newArrayList();
+    private static final TypeToken<ItemStackSnapshot> tt = new TypeToken<ItemStackSnapshot>() {};
+
+    @Setting private List<ConfigurationNode> stacks = Lists.newArrayList();
 
     /**
      * This is in seconds to be consistent with the rest of the plugin.
@@ -29,12 +36,32 @@ public class KitDataNode implements Kit {
 
     @Override
     public List<ItemStackSnapshot> getStacks() {
-        return stacks;
+        List<ItemStackSnapshot> lcn = Lists.newArrayList();
+        for (ConfigurationNode cn : stacks) {
+            try {
+                lcn.add(ItemStackSnapshotSerialiser.INSTANCE.deserialize(tt, cn));
+            } catch (ObjectMappingException e) {
+                //
+            }
+        }
+
+        return lcn;
     }
 
     @Override
     public Kit setStacks(List<ItemStackSnapshot> stacks) {
-        this.stacks = stacks;
+        List<ConfigurationNode> lcn = Lists.newArrayList();
+        for (ItemStackSnapshot stackSnapshot : stacks) {
+            ConfigurationNode cn = SimpleConfigurationNode.root();
+            try {
+                ItemStackSnapshotSerialiser.INSTANCE.serialize(tt, stackSnapshot, cn);
+                lcn.add(cn);
+            } catch (ObjectMappingException e) {
+                //
+            }
+        }
+
+        this.stacks = lcn;
         return this;
     }
 

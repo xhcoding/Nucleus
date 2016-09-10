@@ -144,7 +144,7 @@ public class NucleusPlugin extends Nucleus {
             moduleContainer = DiscoveryModuleContainer.builder()
                     .setConstructor(new QuickStartModuleConstructor(injector))
                     .setConfigurationLoader(
-                        builder.setDefaultOptions(ConfigurateHelper.setOptions(logger, builder.getDefaultOptions()))
+                        builder.setDefaultOptions(ConfigurateHelper.setOptions(builder.getDefaultOptions()))
                             .setPath(Paths.get(configDir.toString(), "main.conf"))
                             .build())
                     .setPackageToScan(getClass().getPackage().getName() + ".modules")
@@ -231,6 +231,7 @@ public class NucleusPlugin extends Nucleus {
         return injector;
     }
 
+    @Override
     public Logger getLogger() {
         return logger;
     }
