@@ -9,14 +9,16 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
+import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHelpOpEvent;
+import io.github.nucleuspowered.nucleus.modules.mute.commands.VoiceCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
@@ -38,6 +40,8 @@ public class MuteListener extends ListenerBase {
 
     @Inject private MuteHandler handler;
     @Inject private MuteConfigAdapter mca;
+    @Inject private PermissionRegistry permissionRegistry;
+    private CommandPermissionHandler cph;
 
     /**
      * At the time the player joins, check to see if the player is muted.
@@ -108,15 +112,19 @@ public class MuteListener extends ListenerBase {
                     .append(Text.of("): ")).append(event.getRawMessage()).build());
             event.setCancelled(true);
         }
+
+        if (cancelOnGlobalMute(player, event.isCancelled())) {
+            event.setCancelled(true);
+        }
     }
 
     @Listener
     public void onPlayerMessage(NucleusMessageEvent event) {
-        if (!(event.getSender() instanceof User)) {
+        if (!(event.getSender() instanceof Player)) {
             return;
         }
 
-        User user = (User)event.getSender();
+        Player user = (Player)event.getSender();
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(user), () -> handler.unmutePlayer(user));
         if (omd.isPresent()) {
             if (user.isOnline()) {
@@ -125,16 +133,24 @@ public class MuteListener extends ListenerBase {
 
             event.setCancelled(true);
         }
+
+        if (cancelOnGlobalMute(user, event.isCancelled())) {
+            event.setCancelled(true);
+        }
     }
 
     @Listener
-    public void onPlayerHelpOp(InternalNucleusHelpOpEvent event, @Root User user) {
+    public void onPlayerHelpOp(InternalNucleusHelpOpEvent event, @Root Player user) {
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(user), () -> handler.unmutePlayer(user));
         if (omd.isPresent()) {
             if (user.isOnline()) {
                 onMute(omd.get(), user.getPlayer().get());
             }
 
+            event.setCancelled(true);
+        }
+
+        if (cancelOnGlobalMute(user, event.isCancelled())) {
             event.setCancelled(true);
         }
     }
@@ -146,5 +162,26 @@ public class MuteListener extends ListenerBase {
         } else {
             user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.standard"));
         }
+    }
+
+    private boolean cancelOnGlobalMute(Player player, boolean isCancelled) {
+        if (isCancelled || !handler.isGlobalMuteEnabled() || getCommandPermission().testSuffix(player, "auto")) {
+            return false;
+        }
+
+        if (handler.isVoiced(player.getUniqueId())) {
+            return false;
+        }
+
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("globalmute.novoice"));
+        return true;
+    }
+
+    private CommandPermissionHandler getCommandPermission() {
+        if (cph == null) {
+            cph = permissionRegistry.getService(VoiceCommand.class).orElse(new CommandPermissionHandler(new VoiceCommand(), plugin));
+        }
+
+        return cph;
     }
 }
