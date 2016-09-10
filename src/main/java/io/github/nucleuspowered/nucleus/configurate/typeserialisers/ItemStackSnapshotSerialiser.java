@@ -46,8 +46,13 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
             });
         }
 
-        Optional<ItemStackSnapshot> oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class,
-                DataTranslators.CONFIGURATION_NODE.translate(value));
+        Optional<ItemStackSnapshot> oiss;
+        try {
+            oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class, DataTranslators.CONFIGURATION_NODE.translate(value));
+        } catch (Exception e) {
+            oiss = Optional.empty();
+        }
+
         if (oiss.isPresent()) {
             return oiss.get();
         }
@@ -63,7 +68,12 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
         });
 
         // Try again
-        oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class, DataTranslators.CONFIGURATION_NODE.translate(value));
+        try {
+            oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class, DataTranslators.CONFIGURATION_NODE.translate(value));
+        } catch (Exception e) {
+            oiss = Optional.empty();
+        }
+
         if (oiss.isPresent()) {
             logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.data", value.getNode("ItemType").getString()));
             return oiss.get();
