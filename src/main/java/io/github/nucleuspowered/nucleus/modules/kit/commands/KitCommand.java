@@ -25,6 +25,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.text.Text;
@@ -121,17 +122,20 @@ public class KitCommand extends io.github.nucleuspowered.nucleus.internal.comman
 
         boolean isConsumed = false;
         for (ItemStackSnapshot stack : kit.getStacks()) {
-            // Give them the kit.
-            InventoryTransactionResult itr = player.getInventory().offer(stack.createStack());
+            // Ignore anything that is NONE
+            if (stack.getType() != ItemTypes.NONE) {
+                // Give them the kit.
+                InventoryTransactionResult itr = player.getInventory().offer(stack.createStack());
 
-            // If some items were rejected...
-            if (!itr.getRejectedItems().isEmpty()) {
-                // ...tell the user and break out.
-                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fullinventory"));
-                break;
+                // If some items were rejected...
+                if (!itr.getRejectedItems().isEmpty()) {
+                    // ...tell the user and break out.
+                    player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fullinventory"));
+                    break;
+                }
+
+                isConsumed = true;
             }
-
-            isConsumed = true;
         }
 
         // If something was consumed, consider a success.

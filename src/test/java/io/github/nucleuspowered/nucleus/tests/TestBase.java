@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.FormattingCodeTextSerializer;
 import org.spongepowered.api.text.serializer.SafeTextSerializer;
@@ -108,6 +109,11 @@ public abstract class TestBase {
         @Override
         public void saveData() {
 
+        }
+
+        @Override
+        public Logger getLogger() {
+            return null;
         }
 
         @Override

@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
 import java.io.IOException;
@@ -32,6 +33,8 @@ public abstract class Nucleus {
     }
 
     public abstract void saveData();
+
+    public abstract Logger getLogger();
 
     public abstract UserDataManager getUserDataManager();
 

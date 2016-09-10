@@ -9,7 +9,6 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
-import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.translator.ConfigurateTranslator;
@@ -20,11 +19,7 @@ import java.util.Optional;
 
 public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnapshot> {
 
-    private final Logger logger;
-
-    public ItemStackSnapshotSerialiser(Logger logger) {
-        this.logger = logger;
-    }
+    public static final ItemStackSnapshotSerialiser INSTANCE = new ItemStackSnapshotSerialiser();
 
     @Override
     public ItemStackSnapshot deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
@@ -63,11 +58,11 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
         // Try again
         oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class, ConfigurateTranslator.instance().translateFrom(value));
         if (oiss.isPresent()) {
-            logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.data", value.getNode("ItemType").getString()));
+            Nucleus.getNucleus().getLogger().warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.data", value.getNode("ItemType").getString()));
             return oiss.get();
         }
 
-        logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.unable", value.getNode("ItemType").getString()));
+        Nucleus.getNucleus().getLogger().warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.unable", value.getNode("ItemType").getString()));
 
         // Return an empty snapshot
         return ItemStackSnapshot.NONE;
