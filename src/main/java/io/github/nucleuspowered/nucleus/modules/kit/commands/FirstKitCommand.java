@@ -11,6 +11,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -18,6 +19,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Permissions
 @NoWarmup
@@ -32,6 +34,13 @@ public class FirstKitCommand extends io.github.nucleuspowered.nucleus.internal.c
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         List<ItemStackSnapshot> stacks = gds.getFirstKit();
+        long none = gds.getFirstKit().stream().filter(x -> x.getType() == ItemTypes.NONE).count();
+
+        if (none > 0) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.list.unable", String.valueOf(none)));
+            stacks = stacks.stream().filter(x -> x.getType() != ItemTypes.NONE).collect(Collectors.toList());
+        }
+
         if (stacks == null || stacks.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.list.none"));
             return CommandResult.success();

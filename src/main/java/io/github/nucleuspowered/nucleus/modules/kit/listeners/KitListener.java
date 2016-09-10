@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import javax.inject.Inject;
@@ -27,7 +28,7 @@ public class KitListener extends ListenerBase {
             if (p.isFirstPlay()) {
                 List<ItemStackSnapshot> l = gds.getFirstKit();
                 if (l != null && !l.isEmpty()) {
-                    l.forEach(x -> player.getInventory().offer(x.createStack()));
+                    l.stream().filter(x -> x.getType() != ItemTypes.NONE).forEach(x -> player.getInventory().offer(x.createStack()));
                 }
             }
         });
