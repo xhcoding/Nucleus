@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import javax.inject.Inject;
@@ -28,7 +29,9 @@ public class FirstKitRedeemCommand extends io.github.nucleuspowered.nucleus.inte
         int reject = 0;
 
         for (ItemStackSnapshot x : gds.getFirstKit()) {
-            reject += src.getInventory().offer(x.createStack()).getRejectedItems().size();
+            if (x.getType() != ItemTypes.NONE) {
+                reject += src.getInventory().offer(x.createStack()).getRejectedItems().size();
+            }
         }
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.redeem.success"));

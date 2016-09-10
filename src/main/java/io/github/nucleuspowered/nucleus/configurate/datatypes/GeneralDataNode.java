@@ -6,6 +6,8 @@ package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.ItemType;
@@ -38,7 +40,7 @@ public class GeneralDataNode {
     private LocationNode firstspawn = null;
 
     @Setting
-    private List<ItemStackSnapshot> firstKit = Lists.newArrayList();
+    private List<ConfigurationNode> firstKit = Lists.newArrayList();
 
     private boolean kitFix = false;
     private final Object locking = new Object();
@@ -104,14 +106,18 @@ public class GeneralDataNode {
     }
 
     public List<ItemStackSnapshot> getFirstKit() {
-        return firstKit;
-    }
-
-    public void setFirstKit(List<ItemStackSnapshot> firstKit) {
         if (firstKit == null) {
             firstKit = Lists.newArrayList();
         }
 
-        this.firstKit = firstKit;
+        return ItemStackSnapshotSerialiser.INSTANCE.deserializeList(firstKit);
+    }
+
+    public void setFirstKit(List<ItemStackSnapshot> stacks) {
+        if (stacks.isEmpty()) {
+            firstKit = Lists.newArrayList();
+        }
+
+        this.firstKit = ItemStackSnapshotSerialiser.INSTANCE.serializeList(stacks);
     }
 }
