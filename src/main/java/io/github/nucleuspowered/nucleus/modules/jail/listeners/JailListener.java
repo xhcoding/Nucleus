@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
@@ -24,6 +25,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -130,6 +132,14 @@ public class JailListener extends ListenerBase {
     public void onSpawn(RespawnPlayerEvent event) {
         if (checkJail(event.getTargetEntity(), false)) {
             event.setToTransform(event.getToTransform().setLocation(handler.getWarpLocation(event.getTargetEntity()).get().getLocation().get()));
+        }
+    }
+
+    @Listener(order = Order.FIRST)
+    public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
+        if (checkJail(player, false) && jailConfigAdapter.getNodeOrDefault().isMuteOnJail()) {
+            player.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("jail.muteonchat"));
+            event.setCancelled(true);
         }
     }
 
