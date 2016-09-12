@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mute.handler;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
@@ -14,12 +15,17 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import org.spongepowered.api.entity.living.player.User;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class MuteHandler implements NucleusMuteService {
 
     private final NucleusPlugin nucleus;
     @Inject private UserDataManager ucl;
+
+    private boolean globalMuteEnabled = false;
+    private List<UUID> voicedUsers = Lists.newArrayList();
 
     public MuteHandler(NucleusPlugin nucleus) {
         this.nucleus = nucleus;
@@ -72,4 +78,27 @@ public class MuteHandler implements NucleusMuteService {
         return false;
     }
 
+    public boolean isGlobalMuteEnabled() {
+        return globalMuteEnabled;
+    }
+
+    public void setGlobalMuteEnabled(boolean globalMuteEnabled) {
+        if (this.globalMuteEnabled != globalMuteEnabled) {
+            voicedUsers.clear();
+        }
+
+        this.globalMuteEnabled = globalMuteEnabled;
+    }
+
+    public boolean isVoiced(UUID uuid) {
+        return voicedUsers.contains(uuid);
+    }
+
+    public void addVoice(UUID uuid) {
+        voicedUsers.add(uuid);
+    }
+
+    public void removeVoice(UUID uuid) {
+        voicedUsers.remove(uuid);
+    }
 }
