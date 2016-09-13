@@ -22,10 +22,8 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.*;
@@ -88,11 +86,15 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     }
 
     public boolean sendMessage(CommandSource sender, CommandSource receiver, String message) {
-        // Message is about to be sent. Send the event out. If canceled, then
-        // that's that.
-        if (Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message))) {
+        // Message is about to be sent. Send the event out. If canceled, then that's that.
+        boolean isCancelled = Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message));
+        if (isCancelled) {
             sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.cancel"));
-            return false;
+
+            // Only continue to show Social Spy messages if the player is muted.
+            if (!mca.getNodeOrDefault().isShowMessagesInSocialSpyWhileMuted()) {
+                return false;
+            }
         }
 
         // Social Spies.
@@ -118,13 +120,21 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         MessageChannel mc = MessageChannel.fixed(lm);
         Text tm = useMessage(sender, message);
 
-        sender.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageSenderPrefix(), tokens));
-        receiver.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageReceiverPrefix(), tokens));
-        mc.send(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageSocialSpyPrefix(), tokens));
+        if (!isCancelled) {
+            sender.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageSenderPrefix(), tokens));
+            receiver.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageReceiverPrefix(), tokens));
+        }
+
+        String prefix = mca.getNodeOrDefault().getMessageSocialSpyPrefix();
+        if (isCancelled) {
+            prefix = mca.getNodeOrDefault().getMutedTag() + prefix;
+        }
+
+        mc.send(constructMessage(sender, tm, prefix, tokens));
 
         // Add the UUIDs to the reply list - the receiver will now reply to the sender.
         messagesReceived.put(uuidReceiver, uuidSender);
-        return true;
+        return !isCancelled;
     }
 
     public Optional<CommandSource> getPlayerToReplyTo(UUID from) {
@@ -143,14 +153,6 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     private UUID getUUID(CommandSource sender) {
         return sender instanceof Player ? ((Player) sender).getUniqueId() : Util.consoleFakeUUID;
-    }
-
-    private Text getName(CommandSource src) {
-        if (!(src instanceof Player)) {
-            return Text.builder(src.getName()).color(TextColors.LIGHT_PURPLE).onClick(TextActions.suggestCommand("/msg - ")).build();
-        }
-
-        return Nucleus.getNucleus().getNameUtil().getNameFromCommandSource(src).toBuilder().onClick(TextActions.suggestCommand("/msg " + src.getName() + " ")).build();
     }
 
     @SuppressWarnings("unchecked")

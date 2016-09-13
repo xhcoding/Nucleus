@@ -57,17 +57,11 @@ public class MuteCommand extends io.github.nucleuspowered.nucleus.internal.comma
     private String reason = "reason";
 
     @Override
-    public Map<String, PermissionInformation> permissionsToRegister() {
-        Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.notify"), SuggestedLevel.MOD));
-        return m;
-    }
-
-    @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.ADMIN));
         m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.MOD));
+        m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.notify"), SuggestedLevel.MOD));
         return m;
     }
 

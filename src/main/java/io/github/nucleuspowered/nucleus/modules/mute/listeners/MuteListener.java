@@ -105,15 +105,20 @@ public class MuteListener extends ListenerBase {
 
     @Listener(order = Order.FIRST)
     public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
+        boolean cancel = false;
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
         if (omd.isPresent()) {
             onMute(omd.get(), player);
             MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(plugin.getMessageProvider().getTextMessageWithFormat("standard.muted"))
                     .append(Text.of("): ")).append(event.getRawMessage()).build());
-            event.setCancelled(true);
+            cancel = true;
         }
 
         if (cancelOnGlobalMute(player, event.isCancelled())) {
+            cancel = true;
+        }
+
+        if (cancel) {
             event.setCancelled(true);
         }
     }
