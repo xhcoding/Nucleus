@@ -8,8 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -47,10 +45,13 @@ import java.util.UUID;
 public class MuteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private MuteConfigAdapter mca;
-    @Inject private UserDataManager userConfigLoader;
     @Inject private MuteHandler handler;
 
-    private final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "mute.notify";
+    private static String mutedChatPermission = null;
+
+    public static String getMutedChatPermission() {
+        return mutedChatPermission;
+    }
 
     private String playerArgument = "player";
     private String timespanArgument = "time";
@@ -62,7 +63,15 @@ public class MuteCommand extends io.github.nucleuspowered.nucleus.internal.comma
         m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.ADMIN));
         m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.MOD));
         m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.notify"), SuggestedLevel.MOD));
+        m.put("seemutedchat", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.seemutedchat"), SuggestedLevel.ADMIN));
         return m;
+    }
+
+    @Override
+    protected void afterPostInit() {
+        if (mutedChatPermission == null) {
+            mutedChatPermission = permissions.getPermissionWithSuffix("seemutedchat");
+        }
     }
 
     @Override
@@ -116,7 +125,7 @@ public class MuteCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
         if (handler.mutePlayer(user, data)) {
             // Success.
-            MutableMessageChannel mc = MessageChannel.permission(notifyPermission).asMutable();
+            MutableMessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify")).asMutable();
             mc.addMember(src);
 
             if (time.isPresent()) {
