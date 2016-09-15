@@ -10,7 +10,22 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
+import java.util.List;
+
 public class CoreConfigAdapter extends NucleusConfigAdapter<CoreConfig> {
+
+    @Override
+    protected List<Transformation> getTransformations() {
+        List<Transformation> lt = super.getTransformations();
+
+        // Delete the "permission-command" node as we do not need it any more.
+        lt.add(new Transformation(new Object[] { "permission-command" }, (inputPath, valueAtPath) -> {
+            valueAtPath.setValue(null);
+            return null;
+        }));
+
+        return lt;
+    }
 
     @Override
     protected CoreConfig getDefaultObject() {
