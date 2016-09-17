@@ -9,6 +9,9 @@ import com.google.common.collect.Lists;
 import org.spongepowered.api.asset.Asset;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -17,6 +20,13 @@ import java.util.List;
  * Handles loading and reading text files.
  */
 public final class TextFileController {
+
+    private static final List<Charset> characterSetsToTest = Lists.newArrayList(
+        StandardCharsets.UTF_8,
+        StandardCharsets.ISO_8859_1,
+        StandardCharsets.US_ASCII,
+        StandardCharsets.UTF_16
+    );
 
     /**
      * The internal {@link Asset} that represents the default file.
@@ -55,8 +65,22 @@ public final class TextFileController {
         }
 
         // Load the file into the list.
-        fileContents.clear();
-        fileContents.addAll(Files.readAllLines(fileLocation));
+        MalformedInputException exception = null;
+        for (Charset charset : characterSetsToTest) {
+            try {
+                fileContents.clear();
+                fileContents.addAll(Files.readAllLines(fileLocation, charset));
+                exception = null;
+                break;
+            } catch (MalformedInputException ex) {
+                exception = ex;
+            }
+        }
+
+        // Rethrow exception if it doesn't work.
+        if (exception != null) {
+            throw exception;
+        }
     }
 
     /**
