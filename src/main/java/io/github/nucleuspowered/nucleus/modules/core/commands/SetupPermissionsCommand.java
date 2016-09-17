@@ -9,19 +9,25 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.*;
+import org.spongepowered.api.service.context.Context;
+import org.spongepowered.api.service.context.Contextual;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Tristate;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Permissions(root = "plugin", suggestedLevel = SuggestedLevel.NONE)
@@ -29,7 +35,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = {"setupperms", "setperms"}, subcommandOf = NucleusCommand.class)
-public class SetupPermissionsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
 
     @Inject private CoreConfigAdapter cca;
     @Inject private PermissionRegistry permissionRegistry;
@@ -47,29 +53,16 @@ public class SetupPermissionsCommand extends io.github.nucleuspowered.nucleus.in
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        String command = cca.getNodeOrDefault().getPermissionCommand();
-        if (command.isEmpty()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.nocommand"));
-            return CommandResult.empty();
-        }
-
-        if (!command.toLowerCase().contains("{{group}}") || !command.toLowerCase().contains("{{perm}}")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.notokens"));
-            return CommandResult.empty();
-        }
-
+        // The GroupArgument should have already checked for this.
+        Set<Context> globalContext = Sets.newHashSet();
         SuggestedLevel sl = args.<SuggestedLevel>getOne(roleKey).get();
-        String group = args.<String>getOne(groupKey).get();
+        Subject group = args.<Subject>getOne(groupKey).get();
 
         // Register all the commands.
-        List<Map.Entry<String, PermissionInformation>> l = permissionRegistry.getPermissions().entrySet().stream()
-                .filter(x -> x.getValue().level == sl).collect(Collectors.toList());
-        for (Map.Entry<String, PermissionInformation> x : l) {
-            String c = command.replaceAll("\\{\\{group\\}\\}", group).replaceAll("\\{\\{perm\\}\\}", x.getKey());
-            Sponge.getCommandManager().process(src, c);
-        }
+        permissionRegistry.getPermissions().entrySet().stream()
+                .filter(x -> x.getValue().level == sl).forEach(x -> group.getSubjectData().setPermission(globalContext, x.getKey(), Tristate.TRUE));
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.success"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.success", roleKey.toLowerCase(), group.getIdentifier()));
         return CommandResult.success();
     }
 
@@ -83,7 +76,7 @@ public class SetupPermissionsCommand extends io.github.nucleuspowered.nucleus.in
         @Override
         protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
             String a = args.next();
-            Optional<String> ls = getGroups(args).stream().filter(x -> x.equalsIgnoreCase(a)).findFirst();
+            Optional<Subject> ls = getGroups(args).stream().filter(x -> x.getIdentifier().equalsIgnoreCase(a)).findFirst();
             if (ls.isPresent()) {
                 return ls.get();
             }
@@ -95,23 +88,20 @@ public class SetupPermissionsCommand extends io.github.nucleuspowered.nucleus.in
         public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
             try {
                 String a = args.peek();
-                return getGroups(args).stream().filter(x -> x.toLowerCase().contains(a)).collect(Collectors.toList());
+                return getGroups(args).stream().map(Contextual::getIdentifier).filter(x -> x.toLowerCase().contains(a)).collect(Collectors.toList());
             } catch (Exception e) {
                 return Collections.emptyList();
             }
         }
 
-        private Set<String> getGroups(CommandArgs args) throws ArgumentParseException {
+        private Set<Subject> getGroups(CommandArgs args) throws ArgumentParseException {
             Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
             if (!ops.isPresent()) {
                 throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.permissiongroup.noservice"));
             }
 
             PermissionService ps = ops.get();
-            Iterable<Subject> is = ps.getGroupSubjects().getAllSubjects();
-            Set<String> groups = Sets.newHashSet();
-            is.forEach(x -> groups.add(x.getIdentifier()));
-            return groups;
+            return Sets.newHashSet(ps.getGroupSubjects().getAllSubjects());
         }
     }
 }

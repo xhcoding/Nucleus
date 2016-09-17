@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHelpOpEvent;
+import io.github.nucleuspowered.nucleus.modules.mute.commands.MuteCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.commands.VoiceCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
@@ -27,7 +28,11 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.channel.type.PermissionMessageChannel;
+import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -105,16 +110,26 @@ public class MuteListener extends ListenerBase {
 
     @Listener(order = Order.FIRST)
     public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
+        boolean cancel = false;
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
         if (omd.isPresent()) {
             onMute(omd.get(), player);
             MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(plugin.getMessageProvider().getTextMessageWithFormat("standard.muted"))
                     .append(Text.of("): ")).append(event.getRawMessage()).build());
-            event.setCancelled(true);
+            cancel = true;
         }
 
         if (cancelOnGlobalMute(player, event.isCancelled())) {
-            event.setCancelled(true);
+            cancel = true;
+        }
+
+        if (cancel) {
+            if (mca.getNodeOrDefault().isShowMutedChat()) {
+                // Send it to admins only.
+                event.setChannel(new AdminChannel());
+            } else {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -183,5 +198,18 @@ public class MuteListener extends ListenerBase {
         }
 
         return cph;
+    }
+
+    private class AdminChannel extends PermissionMessageChannel {
+
+        public AdminChannel() {
+            super(MuteCommand.getMutedChatPermission());
+        }
+
+        @Override
+        public void send(@Nullable Object sender, Text original, ChatType type) {
+            Text tag = TextSerializers.FORMATTING_CODE.deserialize(MuteListener.this.mca.getNodeOrDefault().getCancelledTag());
+            super.send(sender, Text.of(tag, original), type);
+        }
     }
 }

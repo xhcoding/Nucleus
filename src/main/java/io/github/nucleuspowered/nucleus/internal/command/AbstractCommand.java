@@ -224,6 +224,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         permissionSuffixesToRegister().forEach((k, v) -> permissions.registerPermssionSuffix(k, v));
 
         requiresEconomy = this.getClass().isAnnotationPresent(RequiresEconomy.class);
+        afterPostInit();
+    }
+
+    protected void afterPostInit() {
     }
 
     /**

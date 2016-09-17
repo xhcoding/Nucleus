@@ -22,6 +22,12 @@ public class MessageConfig {
     @Setting(value = "msg-socialspy-prefix", comment = "loc:config.message.socialspy.prefix")
     private String messageSocialSpyPrefix = "&7[SocialSpy] [{{fromDisplay}}&7 -> {{toDisplay}}&7]: &r";
 
+    @Setting(value = "socialspy-cancelled-messages", comment = "loc:config.message.socialspy.mutedshow")
+    private boolean showMessagesInSocialSpyWhileMuted = false;
+
+    @Setting(value = "socialspy-cancelled-tag", comment = "loc:config.message.socialspy.mutedtag")
+    private String mutedTag = "&c[cancelled] ";
+
     public String getHelpOpPrefix() {
         return helpOpPrefix;
     }
@@ -36,5 +42,13 @@ public class MessageConfig {
 
     public String getMessageSocialSpyPrefix() {
         return messageSocialSpyPrefix;
+    }
+
+    public boolean isShowMessagesInSocialSpyWhileMuted() {
+        return showMessagesInSocialSpyWhileMuted;
+    }
+
+    public String getMutedTag() {
+        return mutedTag;
     }
 }

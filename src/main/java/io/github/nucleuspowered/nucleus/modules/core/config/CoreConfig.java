@@ -16,9 +16,6 @@ public class CoreConfig {
     @Setting(value = "use-custom-message-file", comment = "loc:config.custommessages")
     private boolean custommessages = false;
 
-    @Setting(value = "permission-command", comment = "loc:config.permissioncommand")
-    private String permissionCommand = "";
-
     @Setting(value = "warmup-canceling", comment = "loc:config.core.warmup.info")
     private WarmupConfig warmupConfig = new WarmupConfig();
 
@@ -34,10 +31,6 @@ public class CoreConfig {
 
     public boolean isCustommessages() {
         return custommessages;
-    }
-
-    public String getPermissionCommand() {
-        return permissionCommand;
     }
 
     public WarmupConfig getWarmupConfig() {

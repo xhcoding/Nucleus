@@ -67,7 +67,7 @@ public class VanishCommand extends io.github.nucleuspowered.nucleus.internal.com
         playerToVanish.offer(Keys.IS_SILENT, toVanish);
 
         if (dtr.isSuccessful()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.success",
+            playerToVanish.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.success",
                     toVanish ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") : plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
 
             if (!(src instanceof Player) || !(((Player)src).getUniqueId().equals(playerToVanish.getUniqueId()))) {
