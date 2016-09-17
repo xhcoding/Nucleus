@@ -21,12 +21,16 @@ public class CommandBuilder {
     private final Injector injector;
     private final Set<Class<? extends AbstractCommand<?>>> commandSet;
     private final SimpleCommentedConfigurationNode sn;
+    private final String moduleID;
+    private final String moduleName;
 
-    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet) {
+    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
         this.plugin = plugin;
         this.injector = injector;
         this.commandSet = commandSet;
         this.sn = SimpleCommentedConfigurationNode.root();
+        this.moduleID = moduleID;
+        this.moduleName = moduleName;
     }
 
     public <T extends AbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass) {
@@ -41,6 +45,7 @@ public class CommandBuilder {
 
         T c = optionalCommand.get();
         try {
+            c.setModuleName(moduleID, moduleName);
             c.setModuleCommands(commandSet);
             c.setCommandBuilder(this);
             c.postInit();
@@ -54,6 +59,9 @@ public class CommandBuilder {
         if (spec == null) {
             return Optional.empty();
         }
+
+        // If we are using DocGen, add the command information to the system.
+        plugin.getDocGenCache().ifPresent(x -> x.addCommand(moduleID, c));
 
         if (c.mergeDefaults()) {
             sn.getNode(c.getCommandConfigAlias()).setValue(c.getDefaults());
@@ -76,9 +84,14 @@ public class CommandBuilder {
         return Optional.empty();
     }
 
-    private <T> Optional<T> getInstance(Class<T> clazz) {
+    private <T extends AbstractCommand<?>> Optional<T> getInstance(Class<T> clazz) {
         try {
-            return Optional.of(injector.getInstance(clazz));
+            T instance = injector.getInstance(clazz);
+            if (instance.canLoad()) {
+                return Optional.of(instance);
+            }
+
+            return Optional.empty();
 
             // I can't believe I have to do this...
         } catch (RuntimeException | NoClassDefFoundError e) {

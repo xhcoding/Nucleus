@@ -26,6 +26,7 @@ import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
+import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
@@ -54,6 +55,9 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
+import uk.co.drnaylor.quickstart.enums.ConstructionPhase;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleDiscoveryException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
@@ -83,6 +87,7 @@ public class NucleusPlugin extends Nucleus {
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
     private List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
+    private DocGenCache docGenCache = null;
 
     private InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
@@ -151,6 +156,7 @@ public class NucleusPlugin extends Nucleus {
                     .setLoggerProxy(new NucleusLoggerProxy(logger))
                     .setOnPreEnable(() -> {
                         runInjectorUpdate();
+                        initDocGenIfApplicable();
                         Sponge.getEventManager().post(new BaseModuleEvent.AboutToEnable(this));
                     })
                     .setOnEnable(() -> {
@@ -393,6 +399,10 @@ public class NucleusPlugin extends Nucleus {
         reloadableList.add(reloadable);
     }
 
+    public Optional<DocGenCache> getDocGenCache() {
+        return Optional.ofNullable(docGenCache);
+    }
+
     private Injector runInjectorUpdate() {
         if (subInjectorModule.isEmpty()) {
             return injector;
@@ -401,6 +411,19 @@ public class NucleusPlugin extends Nucleus {
         injector = injector.createChildInjector(subInjectorModule);
         subInjectorModule = new SubInjectorModule();
         return injector;
+    }
+
+    private void initDocGenIfApplicable() {
+        if (moduleContainer.getCurrentPhase() == ConstructionPhase.ENABLING) {
+            // If enable-doc-gen is enabled, we init the DocGen system here.
+            try {
+                if (moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isEnableDocGen()) {
+                    docGenCache = new DocGenCache(logger);
+                }
+            } catch (NoModuleException | IncorrectAdapterTypeException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void registerPermissions() {

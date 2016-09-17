@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
+import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
@@ -37,12 +38,20 @@ import java.util.stream.Stream;
 
 public abstract class StandardModule implements Module {
 
+    private final String moduleId;
+    private final String moduleName;
     private String packageName;
     @Inject protected NucleusPlugin plugin;
     @Inject protected InternalServiceManager serviceManager;
 
     @Inject
     private CommandsConfig commandsConfig;
+
+    public StandardModule() {
+        ModuleData md = this.getClass().getAnnotation(ModuleData.class);
+        this.moduleId = md.id();
+        this.moduleName = md.name();
+    }
 
     /**
      * Non-configurable module, no configuration to register.
@@ -89,7 +98,7 @@ public abstract class StandardModule implements Module {
             return (rc != null && rc.subcommandOf().equals(AbstractCommand.class));
         }).collect(Collectors.toSet());
 
-        CommandBuilder builder = new CommandBuilder(plugin, injector, cmds);
+        CommandBuilder builder = new CommandBuilder(plugin, injector, cmds, moduleId, moduleName);
         commandBases.forEach(builder::buildCommand);
 
         try {
@@ -106,10 +115,13 @@ public abstract class StandardModule implements Module {
         Set<Class<? extends ListenerBase>> commandsToLoad = getStreamForModule(ListenerBase.class)
                 .collect(Collectors.toSet());
 
+        ModuleData md = this.getClass().getAnnotation(ModuleData.class);
+        Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
         Injector injector = plugin.getInjector();
         commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
             // Register suggested permissions
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
+            docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
             Sponge.getEventManager().registerListeners(plugin, c);
         });
     }
@@ -119,9 +131,11 @@ public abstract class StandardModule implements Module {
         Set<Class<? extends TaskBase>> commandsToLoad = getStreamForModule(TaskBase.class)
                 .collect(Collectors.toSet());
 
+        Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
         Injector injector = plugin.getInjector();
         commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
+            docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
             TaskBase.TimePerRun tpr = c.interval();
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(tpr.getTime(), tpr.getUnit());
             if (c.isAsync()) {

@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.config;
 
+import io.github.nucleuspowered.nucleus.configurate.annotations.DoNotGenerate;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -24,6 +25,10 @@ public class CoreConfig {
 
     @Setting(value = "kick-on-stop")
     private KickOnStopConfig kickOnStop = new KickOnStopConfig();
+
+    @DoNotGenerate
+    @Setting(value = "enable-doc-gen")
+    private boolean enableDocGen = false;
 
     public boolean isDebugmode() {
         return debugmode;
@@ -47,5 +52,9 @@ public class CoreConfig {
 
     public String getKickOnStopMessage() {
         return kickOnStop.getKickOnStopMessage();
+    }
+
+    public boolean isEnableDocGen() {
+        return enableDocGen;
     }
 }
