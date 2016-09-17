@@ -64,7 +64,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
 
     // A period separated list of parent commands, starting with the root. Period terminateed.
-    final String commandPath;
+    private final String commandPath;
 
     // Null until set, then should be considered immutable.
     private Set<Class<? extends AbstractCommand<?>>> moduleCommands = null;
@@ -85,7 +85,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private final List<String> afkArgs = Lists.newArrayList();
     private final boolean isRoot;
 
-    final UsageCommand usageCommand = new UsageCommand();
+    private final UsageCommand usageCommand = new UsageCommand();
 
     @Inject protected NucleusPlugin plugin;
     @Inject private CoreConfigAdapter cca;
@@ -97,6 +97,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     @SuppressWarnings("all")
     private Optional<AFKConfigAdapter> aca = null;
     private CommandBuilder builder;
+    private String module;
+    private String moduleId;
 
     @SuppressWarnings("unchecked")
     public AbstractCommand() {
@@ -138,6 +140,15 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         this.commandPath = getSubcommandOf();
         RegisterCommand rc = this.getClass().getAnnotation(RegisterCommand.class);
         this.isRoot = rc != null && rc.subcommandOf().equals(AbstractCommand.class);
+    }
+
+    /**
+     * The command will only load if this condition is true. Happens after injections.
+     *
+     * @return <code>true</code> if the command can be loaded.
+     */
+    public boolean canLoad() {
+        return true;
     }
 
     private String getSubcommandOf() {
@@ -190,19 +201,19 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         // returned array, such that the permission it will generated if this
         // annotation is defined is:
         //
-        // quickstart.(primaryalias).base
+        // nucleus.(primaryalias).base
         //
         // Adding a "root" and/or "sub" string will generate:
         //
-        // quickstart.(root).(primaryalias).(sub).base
+        // nucleus.(root).(primaryalias).(sub).base
         //
         // For warmup, cooldown and cost exemption, replace base with:
         //
         // exempt.(cooldown|warmup|cost)
         //
-        // By default, the permission "quickstart.admin" also gets permission to
-        // run and bypass all warmups,
-        // cooldowns and costs, but this can be turned off in the annotation.
+        // By default, the permission "nucleus.admin" also gets permission to
+        // run and bypass all warmups, cooldowns and costs, but this can be
+        // turned off in the annotation.
         permissions = new CommandPermissionHandler(this, plugin);
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
@@ -283,6 +294,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // Metadata
     // -------------------------------------
 
+    public String getCommandPath() {
+        return commandPath;
+    }
+
     /**
      * Gets the description for the command.
      *
@@ -338,7 +353,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return permissions;
     }
 
-    public String getCommandConfigAlias() {
+    public final String getUsage(CommandSource source) {
+        return "/" + getCommandPath().replaceAll("\\.", " ") + " " + getSpec().getUsage(source).toPlain().replaceAll("\\?\\|", "");
+    }
+
+    String getCommandConfigAlias() {
         if (configSection == null) {
             return getAliases()[0];
         }
@@ -392,7 +411,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return cs;
     }
 
-    public CommandSpec getSpec() {
+    CommandSpec getSpec() {
         if (cs != null) {
             return cs;
         }
@@ -404,7 +423,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
     }
 
-    public final boolean mergeDefaults() {
+    final boolean mergeDefaults() {
         return generateDefaults;
     }
 
@@ -899,6 +918,13 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return map;
     }
 
+    public void setModuleName(String id, String module) {
+        if (this.module == null) {
+            this.moduleId = id;
+            this.module = module;
+        }
+    }
+
     protected enum ContinueMode {
         /**
          * Continue executing the command.
@@ -937,7 +963,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             Nucleus plugin = Nucleus.getNucleus();
             AbstractCommand<?> parent = AbstractCommand.this;
 
-            String command = AbstractCommand.this.commandPath.replaceAll("\\.", " ");
+            String command = getCommandPath().replaceAll("\\.", " ");
 
             // Header
             Text header = plugin.getMessageProvider().getTextMessageWithFormat("command.usage.header", command);
@@ -948,22 +974,18 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.playeronly"));
             }
 
+            textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.module", module, moduleId));
+
             String desc = getDescription();
             if (!desc.isEmpty()) {
-                if (!textMessages.isEmpty()) {
-                    textMessages.add(Text.EMPTY);
-                }
-
+                textMessages.add(Text.EMPTY);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.summary"));
                 textMessages.add(Text.of(desc));
             }
 
             String ext = getExtendedDescription();
             if (!ext.isEmpty()) {
-                if (!textMessages.isEmpty()) {
-                    textMessages.add(Text.EMPTY);
-                }
-
+                textMessages.add(Text.EMPTY);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.description"));
                 String[] split = ext.split("(\\r|\\n|\\r\\n)");
                 for (String s : split) {
@@ -971,12 +993,9 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                 }
             }
 
-            if (!textMessages.isEmpty()) {
-                textMessages.add(Text.EMPTY);
-            }
-
+            textMessages.add(Text.EMPTY);
             textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.usage"));
-            textMessages.add(Text.of(TextColors.WHITE, "/" + command + " " + getSpec().getUsage(source).toPlain().replaceAll("\\?\\|", "")));
+            textMessages.add(Text.of(TextColors.WHITE, AbstractCommand.this.getUsage(source)));
 
             PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
             PaginationList.Builder builder = ps.builder().title(header).contents(textMessages);

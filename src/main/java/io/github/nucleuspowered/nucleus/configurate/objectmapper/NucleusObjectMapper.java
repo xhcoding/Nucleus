@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.configurate.objectmapper;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.configurate.annotations.DoNotGenerate;
 import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
 import io.github.nucleuspowered.nucleus.configurate.settingprocessor.SettingProcessor;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -49,6 +50,16 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
                     } catch (IllegalArgumentException e) {
                         data = new FieldData(field, comment);
                     }
+                } else if (field.isAnnotationPresent(DoNotGenerate.class)) {
+                    Object defaultValue = null;
+                    try {
+                        field.setAccessible(true);
+                        defaultValue = field.get(clazz.newInstance());
+                    } catch (IllegalAccessException | InstantiationException e) {
+                        e.printStackTrace();
+                    }
+
+                    data = new DoNotGenerateFieldData(field, comment, defaultValue);
                 } else {
                     data = new FieldData(field, comment);
                 }
@@ -57,6 +68,30 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
                 if (!cachedFields.containsKey(path)) {
                     cachedFields.put(path, data);
                 }
+            }
+        }
+    }
+
+    private static class DoNotGenerateFieldData extends FieldData {
+
+        private final Object defaultValue;
+        private final Field field;
+
+        private DoNotGenerateFieldData(Field field, String comment, Object defaultValue) throws ObjectMappingException {
+            super(field, comment);
+            this.field = field;
+            this.defaultValue = defaultValue;
+        }
+
+        @Override
+        public void serializeTo(Object instance, ConfigurationNode node) throws ObjectMappingException {
+            try {
+                field.setAccessible(true);
+                if (!defaultValue.equals(field.get(instance))) {
+                    super.serializeTo(instance, node);
+                }
+            } catch (IllegalAccessException e) {
+                super.serializeTo(instance, node);
             }
         }
     }
