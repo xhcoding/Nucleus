@@ -10,7 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.command.MigratorCommand;
 import io.github.nucleuspowered.nucleus.internal.migrators.EssCmdsMigrator;
 import io.github.nucleuspowered.nucleus.modules.core.commands.MigrateCommand;
 
-@Permissions(root = "plugin.migrate")
+@Permissions(root = "nucleus.migrate")
 @RegisterCommand(value = "esscmds", subcommandOf = MigrateCommand.class)
 public class EssCmdsMigratorCommand extends MigratorCommand<EssCmdsMigrator> {
     public EssCmdsMigratorCommand() {

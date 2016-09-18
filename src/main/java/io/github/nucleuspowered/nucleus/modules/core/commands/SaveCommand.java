@@ -18,7 +18,7 @@ import org.spongepowered.api.command.args.CommandContext;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "plugin")
+@Permissions(root = "nucleus")
 @RegisterCommand(value = "save", subcommandOf = NucleusCommand.class)
 public class SaveCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
