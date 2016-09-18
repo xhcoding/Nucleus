@@ -11,7 +11,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 
-@Permissions(root = "plugin")
+@Permissions(root = "nucleus")
 @RegisterCommand(value = {"itemalias", "item"}, subcommandOf = NucleusCommand.class, hasExecutor = false)
 public class ItemAliasCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
     @Override
