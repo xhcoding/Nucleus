@@ -15,7 +15,7 @@ import javax.inject.Inject;
 /**
  * Clears the {@link UserDataManager} cache, so any offline user's files wll be read on next startup.
  */
-@Permissions(root = "plugin")
+@Permissions(root = "nucleus")
 @RunAsync
 @NoWarmup
 @NoCooldown

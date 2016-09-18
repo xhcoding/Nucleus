@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Permissions(root = "plugin", suggestedLevel = SuggestedLevel.NONE)
+@Permissions(root = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @NoWarmup
 @NoCooldown
 @NoCost
