@@ -379,7 +379,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      *
      * @return The {@link CommandSpec}
      */
-    CommandSpec createSpec() {
+    private CommandSpec createSpec() {
         Preconditions.checkState(permissions != null);
         RegisterCommand rc = getClass().getAnnotation(RegisterCommand.class);
 
@@ -886,24 +886,20 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     // Child Commands
     // -------------------------------------
     private Map<List<String>, CommandCallable> createChildCommands() {
-        Set<Class<? extends AbstractCommand<?>>> scb = null;
+        Set<Class<? extends AbstractCommand<?>>> bases = null;
         if (this.moduleCommands != null) {
-            scb = moduleCommands.stream().filter(x -> {
+            bases = moduleCommands.stream().filter(x -> {
                 RegisterCommand r = x.getAnnotation(RegisterCommand.class);
                 // Only commands that are subcommands of this.
                 return r != null && r.subcommandOf().equals(this.getClass());
             }).collect(Collectors.toSet());
         }
 
-        return createChildCommands(scb);
-    }
-
-    private Map<List<String>, CommandCallable> createChildCommands(Collection<Class<? extends AbstractCommand<?>>> bases) {
         Map<List<String>, CommandCallable> map = Maps.newHashMap();
         if (bases != null) {
             bases.forEach(cb -> {
                 try {
-                    builder.buildCommand(cb, false).ifPresent(x -> map.put(Arrays.asList(x.getAliases()), x.createSpec()));
+                    builder.buildCommand(cb, false).ifPresent(x -> map.put(Arrays.asList(x.getAliases()), x.getSpec()));
                 } catch (Exception e) {
                     plugin.getLogger().error(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("command.child.notloaded", cb.getName()));
 

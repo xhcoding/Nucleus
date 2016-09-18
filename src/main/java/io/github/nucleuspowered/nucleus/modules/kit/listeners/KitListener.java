@@ -11,7 +11,10 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.type.GridInventory;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -24,11 +27,12 @@ public class KitListener extends ListenerBase {
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
         Player player = event.getTargetEntity();
+        final Inventory target = player.getInventory().query(Hotbar.class, GridInventory.class);
         loader.get(player).ifPresent(p -> {
             if (p.isFirstPlay()) {
                 List<ItemStackSnapshot> l = gds.getFirstKit();
                 if (l != null && !l.isEmpty()) {
-                    l.stream().filter(x -> x.getType() != ItemTypes.NONE).forEach(x -> player.getInventory().offer(x.createStack()));
+                    l.stream().filter(x -> x.getType() != ItemTypes.NONE).forEach(x -> target.offer(x.createStack()));
                 }
             }
         });
