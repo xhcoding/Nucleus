@@ -21,9 +21,12 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
+import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
@@ -126,8 +129,9 @@ public class BuyCommand extends io.github.nucleuspowered.nucleus.internal.comman
             hasRun = true;
 
             // Get the money, transact, return the money on fail.
+            Inventory target = src.getInventory().query(Hotbar.class, GridInventory.class);
             if (econHelper.withdrawFromPlayer(src, overallCost, false)) {
-                InventoryTransactionResult itr = src.getInventory().offer(created);
+                InventoryTransactionResult itr = target.offer(created);
                 if (itr.getRejectedItems().isEmpty()) {
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.transactionsuccess",
                             String.valueOf(unitCount), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
