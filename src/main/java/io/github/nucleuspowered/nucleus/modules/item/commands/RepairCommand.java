@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.item.commands;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions
+@Permissions(supportsSelectors = true)
 @RegisterCommand({"repair", "mend"})
 public class RepairCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
@@ -40,8 +41,11 @@ public class RepairCommand extends io.github.nucleuspowered.nucleus.internal.com
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.player(Text.of(player))),
-                        permissions.getPermissionWithSuffix("others")))};
+            GenericArguments.optional(
+                GenericArguments.requiringPermission(GenericArguments.onlyOne(
+                    new SelectorWrapperArgument(GenericArguments.player(Text.of(player)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
+                permissions.getPermissionWithSuffix("others")))
+        };
     }
 
     @Override
