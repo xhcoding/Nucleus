@@ -62,7 +62,7 @@ public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
         permissionRegistry.getPermissions().entrySet().stream()
                 .filter(x -> x.getValue().level == sl).forEach(x -> group.getSubjectData().setPermission(globalContext, x.getKey(), Tristate.TRUE));
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.success", roleKey.toLowerCase(), group.getIdentifier()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.complete", roleKey.toLowerCase(), group.getIdentifier()));
         return CommandResult.success();
     }
 
