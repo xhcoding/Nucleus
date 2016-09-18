@@ -16,7 +16,7 @@ import org.spongepowered.api.command.args.CommandContext;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "plugin")
+@Permissions(root = "nucleus")
 @RegisterCommand(value = "migrate", subcommandOf = NucleusCommand.class, hasExecutor = false)
 public class MigrateCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
