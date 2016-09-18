@@ -2,9 +2,11 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.admin.commands;
+package io.github.nucleuspowered.nucleus.modules.item.commands;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -23,8 +25,8 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-@Permissions
-public class ClearInventoryCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+@Permissions(supportsSelectors = true)
+public class ClearInventoryCommand extends AbstractCommand<CommandSource> {
 
     private final String player = "player";
 
@@ -39,7 +41,9 @@ public class ClearInventoryCommand extends io.github.nucleuspowered.nucleus.inte
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.optional(GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(GenericArguments.player(Text.of(player))), permissions.getPermissionWithSuffix("others")))
+                    GenericArguments.onlyOne(
+                        new SelectorWrapperArgument(GenericArguments.player(Text.of(player)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
+                    permissions.getPermissionWithSuffix("others")))
         };
     }
 

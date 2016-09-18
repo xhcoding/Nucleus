@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
@@ -32,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions(suggestedLevel = SuggestedLevel.MOD)
+@Permissions(suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @NoWarmup
 @NoCooldown
 @NoCost
@@ -63,10 +64,11 @@ public class JailCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey))),
-                GenericArguments.optional(GenericArguments.onlyOne(new JailArgument(Text.of(jailKey), handler))),
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(new TimespanArgument(Text.of(durationKey)))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reasonKey))))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(new SelectorWrapperArgument(GenericArguments.user(Text.of(playerKey)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
+            GenericArguments.optional(GenericArguments.onlyOne(new JailArgument(Text.of(jailKey), handler))),
+            GenericArguments.optionalWeak(GenericArguments.onlyOne(new TimespanArgument(Text.of(durationKey)))),
+            GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reasonKey))))};
     }
 
     @Override
