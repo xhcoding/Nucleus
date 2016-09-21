@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -30,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RegisterCommand("speed")
-@Permissions
+@Permissions(supportsSelectors = true)
 public class SpeedCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private final String speedKey = "speed";
@@ -64,8 +65,10 @@ public class SpeedCommand extends io.github.nucleuspowered.nucleus.internal.comm
         keysMap.put("w", SpeedType.WALKING);
 
         return new CommandElement[] {GenericArguments.optional(GenericArguments.seq(
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
-                        .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(
+                        GenericArguments.requiringPermission(
+                            new SelectorWrapperArgument(GenericArguments.player(Text.of(playerKey)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
+                            , permissions.getPermissionWithSuffix("others")))),
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
                 GenericArguments.integer(Text.of(speedKey))))};
     }
