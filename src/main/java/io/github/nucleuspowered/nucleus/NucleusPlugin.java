@@ -41,6 +41,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
+import io.github.nucleuspowered.nucleus.signdata.SignListener;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.slf4j.Logger;
@@ -88,6 +89,7 @@ public class NucleusPlugin extends Nucleus {
     private ChatUtil chatUtil;
     private NameUtil nameUtil;
     private Injector injector;
+    private final SignListener signListener = new SignListener(this);
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
     private List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
     private DocGenCache docGenCache = null;
@@ -205,6 +207,8 @@ public class NucleusPlugin extends Nucleus {
             isErrored = true;
             return;
         }
+
+        Sponge.getEventManager().registerListeners(this, signListener);
 
         logger.info(messageProvider.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
         registerPermissions();
@@ -416,6 +420,14 @@ public class NucleusPlugin extends Nucleus {
 
     public Optional<Instant> getGameStartedTime() {
         return Optional.ofNullable(this.gameStartedTime);
+    }
+
+    public SignListener getSignListener() {
+        return signListener;
+    }
+
+    public boolean isModulesLoaded() {
+        return this.modulesLoaded;
     }
 
     private Injector runInjectorUpdate() {
