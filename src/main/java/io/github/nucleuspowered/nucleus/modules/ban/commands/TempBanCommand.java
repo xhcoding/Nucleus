@@ -40,7 +40,7 @@ public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.co
 
     @Inject private BanConfigAdapter bca;
     private final String user = "user";
-    private final String reason = "reason";
+    private final String reasonKey = "reasonKey";
     private final String duration = "duration";
 
     @Override
@@ -56,7 +56,7 @@ public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.co
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.onlyOne(GenericArguments.user(Text.of(user))), GenericArguments.onlyOne(new TimespanArgument(Text.of(duration))),
-                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reason)))
+                GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reasonKey)))
         };
     }
 
@@ -64,7 +64,7 @@ public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.co
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User u = args.<User>getOne(user).get();
         Long time = args.<Long>getOne(duration).get();
-        String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
+        String reason = args.<String>getOne(reasonKey).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
 
         if (permissions.testSuffix(u, "exempt.target")) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.exempt", u.getName()));
@@ -92,7 +92,7 @@ public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.co
         Instant date = Instant.now().plus(time, ChronoUnit.SECONDS);
 
         // Create the ban.
-        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u.getProfile()).source(src).expirationDate(date).reason(TextSerializers.FORMATTING_CODE.deserialize(r)).build();
+        Ban bp = Ban.builder().type(BanTypes.PROFILE).profile(u.getProfile()).source(src).expirationDate(date).reason(TextSerializers.FORMATTING_CODE.deserialize(reason)).build();
         service.addBan(bp);
 
         MutableMessageChannel send = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
@@ -101,7 +101,7 @@ public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.co
         send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
 
         if (Sponge.getServer().getPlayer(u.getUniqueId()).isPresent()) {
-            Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(r));
+            Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(reason));
         }
 
         return CommandResult.success();

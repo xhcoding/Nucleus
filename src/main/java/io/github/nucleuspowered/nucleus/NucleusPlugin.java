@@ -51,6 +51,7 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.permission.PermissionDescription;
@@ -66,6 +67,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,6 +77,7 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 @Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
 public class NucleusPlugin extends Nucleus {
 
+    private Instant gameStartedTime = null;
     private boolean modulesLoaded = false;
     private boolean isErrored = false;
     private CommandsConfig commandsConfig;
@@ -215,8 +218,16 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Listener
+    public void onGameStarted(GameStartedServerEvent event) {
+        if (!isErrored) {
+            Sponge.getScheduler().createSyncExecutor(this).submit(() -> this.gameStartedTime = Instant.now());
+        }
+    }
+
+    @Listener
     public void onServerStop(GameStoppedServerEvent event) {
         if (!isErrored) {
+            this.gameStartedTime = null;
             logger.info(messageProvider.getMessageWithFormat("startup.stopped", PluginInfo.NAME));
             saveData();
         }
@@ -401,6 +412,10 @@ public class NucleusPlugin extends Nucleus {
 
     public Optional<DocGenCache> getDocGenCache() {
         return Optional.ofNullable(docGenCache);
+    }
+
+    public Optional<Instant> getGameStartedTime() {
+        return Optional.ofNullable(this.gameStartedTime);
     }
 
     private Injector runInjectorUpdate() {
