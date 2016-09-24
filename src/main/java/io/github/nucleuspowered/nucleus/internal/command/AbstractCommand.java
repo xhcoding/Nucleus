@@ -970,6 +970,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.playeronly"));
             }
 
+            if (parent.getClass().isAnnotationPresent(RequireMixinPlugin.class)) {
+                textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.mixin"));
+            }
+
             textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.module", module, moduleId));
 
             String desc = getDescription();

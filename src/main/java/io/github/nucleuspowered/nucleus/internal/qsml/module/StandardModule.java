@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
@@ -33,6 +34,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,6 +90,7 @@ public abstract class StandardModule implements Module {
     private void loadCommands() {
         Set<Class<? extends AbstractCommand<?>>> cmds = getStreamForModule(AbstractCommand.class)
                 .filter(x -> x.isAnnotationPresent(RegisterCommand.class))
+                .filter(checkMixin("command", t -> t.getName() + ": (" + t.getAnnotation(RegisterCommand.class).value()[0] + ")"))
                 .map(x -> (Class<? extends AbstractCommand<?>>)x) // Keeping the compiler happy...
                 .collect(Collectors.toSet());
 
@@ -113,6 +117,7 @@ public abstract class StandardModule implements Module {
     @SuppressWarnings("unchecked")
     private void loadEvents() {
         Set<Class<? extends ListenerBase>> commandsToLoad = getStreamForModule(ListenerBase.class)
+                .filter(checkMixin("listener"))
                 .collect(Collectors.toSet());
 
         ModuleData md = this.getClass().getAnnotation(ModuleData.class);
@@ -129,6 +134,7 @@ public abstract class StandardModule implements Module {
     @SuppressWarnings("unchecked")
     private void loadRunnables() {
         Set<Class<? extends TaskBase>> commandsToLoad = getStreamForModule(TaskBase.class)
+                .filter(checkMixin("runnable"))
                 .collect(Collectors.toSet());
 
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
@@ -168,6 +174,35 @@ public abstract class StandardModule implements Module {
 
             throw e;
         }
+    }
+
+    private <T extends Class<?>> Predicate<T> checkMixin(String x) {
+        return checkMixin(x, t -> t.getName());
+    }
+
+    private <T extends Class<?>> Predicate<T> checkMixin(String x, Function<T, String> nameSupplier) {
+        return t -> {
+            RequireMixinPlugin requireMixinPlugin = t.getAnnotation(RequireMixinPlugin.class);
+            if (requireMixinPlugin == null) {
+                return true;
+            }
+
+            if (!plugin.areMixinsAvailable() && requireMixinPlugin.value() == RequireMixinPlugin.MixinLoad.MIXIN_ONLY) {
+                if (requireMixinPlugin.notifyOnLoad()) {
+                    plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("loader.mixinrequired." + x, nameSupplier.apply(t)));
+                }
+
+                return false;
+            } else if (!plugin.areMixinsAvailable() && requireMixinPlugin.value() == RequireMixinPlugin.MixinLoad.NO_MIXIN) {
+                if (requireMixinPlugin.notifyOnLoad()) {
+                    plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("loader.nomixinrequired." + x, nameSupplier.apply(t)));
+                }
+
+                return false;
+            }
+
+            return true;
+        };
     }
 
     protected final void createSeenModule(Class<? extends AbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {

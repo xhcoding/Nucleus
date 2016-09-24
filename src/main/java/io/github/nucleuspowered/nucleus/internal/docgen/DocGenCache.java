@@ -60,6 +60,9 @@ public class DocGenCache {
         cmd.setCost(!cac.isAnnotationPresent(NoCost.class));
         cmd.setWarmup(!cac.isAnnotationPresent(NoWarmup.class));
 
+        RequireMixinPlugin rmp = cac.getAnnotation(RequireMixinPlugin.class);
+        cmd.setRequiresMixin(rmp != null && rmp.document() && rmp.value() == RequireMixinPlugin.MixinLoad.MIXIN_ONLY);
+
         String desc = abstractCommand.getDescription();
         if (!desc.contains(" ")) {
             logger.warn("Cannot generate description for: " + abstractCommand.getAliases()[0] + ": " + desc);

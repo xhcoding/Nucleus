@@ -16,9 +16,11 @@ ext.url = 'http://nucleuspowered.org'
 group 'io.github.nucleuspowered'
 version '0.12.0-5.0-SNAPSHOT'
 
+def mixinversion = '0.12.0-5.0-SNAPSHOT';
 def qsmlDep = "uk.co.drnaylor:quickstart-moduleloader:0.3.0";
+def mixinDep = "io.github.nucleuspowered:NucleusMixins:" + mixinversion;
 
-defaultTasks 'licenseFormat'
+defaultTasks 'licenseFormat build'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -28,6 +30,10 @@ repositories {
     maven {
         name 'Sponge maven repo'
         url 'http://repo.spongepowered.org/maven'
+    }
+    maven {
+        name 'drnaylor-minecraft'
+        url 'http://repo.drnaylor.co.uk/artifactory/list/minecraft'
     }
     maven {
         name 'drnaylor'
@@ -41,6 +47,12 @@ repositories {
 dependencies {
     compile "org.spongepowered:spongeapi:5.0.0-SNAPSHOT"
     compile qsmlDep
+    compile(mixinDep) {
+        exclude module: 'mixin'
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+    }
+
     compile "com.github.hsyyid:EssentialCmds:v8.1.7"
 
     testCompile "junit:junit:4.12"
@@ -80,6 +92,7 @@ blossom {
 
     replaceToken '@description@', project.description, location
     replaceToken '@url@', project.url, location
+    replaceToken '@mixinversion@', mixinversion, location
 }
 
 jar {

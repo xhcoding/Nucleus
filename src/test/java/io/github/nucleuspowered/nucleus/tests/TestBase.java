@@ -190,5 +190,10 @@ public abstract class TestBase {
         public MessageProvider getCommandMessageProvider() {
             return null;
         }
+
+        @Override
+        public boolean areMixinsAvailable() {
+            return false;
+        }
     }
 }

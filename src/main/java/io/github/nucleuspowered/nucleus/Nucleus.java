@@ -65,4 +65,6 @@ public abstract class Nucleus {
     public abstract MessageProvider getMessageProvider();
 
     public abstract MessageProvider getCommandMessageProvider();
+
+    public abstract boolean areMixinsAvailable();
 }

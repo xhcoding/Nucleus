@@ -108,6 +108,7 @@ public class NucleusPlugin extends Nucleus {
     @Inject private Logger logger;
     private Path configDir;
     private Path dataDir;
+    private boolean mixinsAvailable = false;
 
     // We inject this into the constructor so we can build the config path ourselves.
     @Inject
@@ -119,6 +120,14 @@ public class NucleusPlugin extends Nucleus {
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
+
+        try {
+            Class.forName("io.github.nucleuspowered.nucleus.mixins.NucleusMixinSpongePlugin");
+            this.mixinsAvailable = true;
+            logger.info(messageProvider.getMessageWithFormat("startup.mixins-available"));
+        } catch (ClassNotFoundException e) {
+            logger.info(messageProvider.getMessageWithFormat("startup.mixins-notavailable"));
+        }
 
         dataDir = game.getSavesDirectory().resolve("nucleus");
         // Get the mandatory config files.
@@ -416,6 +425,11 @@ public class NucleusPlugin extends Nucleus {
 
     public Optional<Instant> getGameStartedTime() {
         return Optional.ofNullable(this.gameStartedTime);
+    }
+
+    @Override
+    public boolean areMixinsAvailable() {
+        return mixinsAvailable;
     }
 
     private Injector runInjectorUpdate() {
