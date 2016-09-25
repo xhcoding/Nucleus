@@ -111,8 +111,23 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
             int x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
             int z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
 
-            // We remove 11 to avoid getting a location too high up for the safe location teleporter to handle.
-            int y = Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, random.nextInt(maxY - minY + 1) + minY);
+            int y;
+            if (rca.getNodeOrDefault().isMustSeeSky()) {
+                // From the x and z co-ordinates, scan down from the top to get the next block.
+                Optional<BlockRayHit<World>> blockRayHitOptional = BlockRay
+                        .from(new Location<>(currentWorld, new Vector3d(x, Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, maxY), z)))
+                        .to(new Vector3d(x, Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, minY), z))
+                        .filter(BlockRay.onlyAirFilter()).end();
+                if (blockRayHitOptional.isPresent()) {
+                    y = blockRayHitOptional.get().getBlockY();
+                } else {
+                    onUnsuccesfulAttempt();
+                    return;
+                }
+            } else {
+                // We remove 11 to avoid getting a location too high up for the safe location teleporter to handle.
+                y = Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, random.nextInt(maxY - minY + 1) + minY);
+            }
 
             // To get within the world border, add the centre on.
             final Location<World> test = new Location<>(currentWorld, new Vector3d(x + centre.getX(), y, z + centre.getZ()));
@@ -144,6 +159,10 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
                 // Swallow - we treat it as a fail.
             }
 
+            onUnsuccesfulAttempt();
+        }
+
+        private void onUnsuccesfulAttempt() {
             if (count <= 0) {
                 plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", player.getName()));
                 player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
