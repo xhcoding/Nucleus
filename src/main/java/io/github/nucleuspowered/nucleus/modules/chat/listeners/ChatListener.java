@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -85,8 +86,10 @@ public class ChatListener extends ListenerBase {
         }
 
         Optional<String> chatcol = Util.getOptionFromSubject(player, "chatcolour", "chatcolor");
-        if (chatcol.isPresent()) {
-            return Text.of(plugin.getNameUtil().getColourFromString(chatcol.get()), result);
+        Optional<String> chatstyle = Util.getOptionFromSubject(player, "chatstyle");
+        if (chatcol.isPresent() || chatstyle.isPresent()) {
+            NameUtil nu = plugin.getNameUtil();
+            return Text.of(nu.getColourFromString(chatcol.orElse(null)), nu.getTextStyleFromString(chatstyle.orElse(null)), result);
         }
 
         return result;
