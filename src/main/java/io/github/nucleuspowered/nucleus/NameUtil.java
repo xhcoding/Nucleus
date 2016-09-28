@@ -16,8 +16,11 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.text.format.TextStyle;
+import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,6 +34,8 @@ public class NameUtil {
     private final NucleusPlugin plugin;
 
     private final static Map<Character, TextColor> colourMap = Maps.newHashMap();
+    private final static Map<Character, TextStyle> styleMap = Maps.newHashMap();
+    private final static Map<String, TextStyle> styleMapFull = Maps.newHashMap();
 
     static {
         colourMap.put('0', TextColors.BLACK);
@@ -49,6 +54,19 @@ public class NameUtil {
         colourMap.put('d', TextColors.LIGHT_PURPLE);
         colourMap.put('e', TextColors.YELLOW);
         colourMap.put('f', TextColors.WHITE);
+
+        styleMap.put('k', TextStyles.OBFUSCATED);
+        styleMap.put('l', TextStyles.BOLD);
+        styleMap.put('m', TextStyles.STRIKETHROUGH);
+        styleMap.put('n', TextStyles.UNDERLINE);
+        styleMap.put('o', TextStyles.ITALIC);
+
+        styleMapFull.put("OBFUSCATED", TextStyles.OBFUSCATED);
+        styleMapFull.put("MAGIC", TextStyles.OBFUSCATED);
+        styleMapFull.put("BOLD", TextStyles.BOLD);
+        styleMapFull.put("STRIKETHROUGH", TextStyles.STRIKETHROUGH);
+        styleMapFull.put("UNDERLINE", TextStyles.UNDERLINE);
+        styleMapFull.put("ITALIC", TextStyles.ITALIC);
     }
 
     /**
@@ -121,12 +139,33 @@ public class NameUtil {
         return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.unknown");
     }
 
-    public TextColor getColourFromString(String s) {
+    public TextColor getColourFromString(@Nullable String s) {
+        if (s == null || s.length() == 0) {
+            return TextColors.NONE;
+        }
+
         if (s.length() == 1) {
             return colourMap.getOrDefault(s.charAt(0), TextColors.NONE);
         } else {
             return Sponge.getRegistry().getType(TextColor.class, s.toUpperCase()).orElse(TextColors.NONE);
         }
+    }
+
+    public TextStyle getTextStyleFromString(@Nullable String s) {
+        if (s == null || s.length() == 0) {
+            return TextStyles.NONE;
+        }
+
+        TextStyle ts = TextStyles.NONE;
+        for (String split : s.split("\\s*,\\s*")) {
+            if (split.length() == 1) {
+                ts = ts.and(styleMap.getOrDefault(split.charAt(0), TextStyles.NONE));
+            } else {
+                ts = ts.and(styleMapFull.getOrDefault(split.toUpperCase(), TextStyles.NONE));
+            }
+        }
+
+        return ts;
     }
 
     private TextColor getNameColour(User player) {
