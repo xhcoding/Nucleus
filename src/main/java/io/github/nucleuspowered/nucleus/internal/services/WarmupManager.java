@@ -14,6 +14,7 @@ import javax.annotation.concurrent.GuardedBy;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class WarmupManager implements NucleusWarmupManagerService {
 
@@ -64,6 +65,7 @@ public class WarmupManager implements NucleusWarmupManagerService {
         synchronized (mapLock) {
             warmupTasks.entrySet().stream().filter(v -> !Sponge.getGame().getScheduler().getScheduledTasks().contains(v.getValue()))
                     .map(Map.Entry::getKey)
+                    .collect(Collectors.toList())
                     .forEach(warmupTasks::remove);
         }
     }
