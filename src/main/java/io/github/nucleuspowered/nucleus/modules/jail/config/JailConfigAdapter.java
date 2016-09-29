@@ -4,13 +4,25 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.config;
 
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
+
+import java.util.List;
 
 public class JailConfigAdapter extends NucleusConfigAdapter<JailConfig> {
+
+    @Override
+    protected List<Transformation> getTransformations() {
+        return Lists.newArrayList(
+            new Transformation(new Object[] { "allowedCommands" }, ((inputPath, valueAtPath) -> new Object[] { "allowed-commands" }))
+        );
+    }
+
     @Override
     protected JailConfig getDefaultObject() {
         return new JailConfig();

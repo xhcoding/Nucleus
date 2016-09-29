@@ -19,10 +19,10 @@ public class MuteConfig {
     @Setting(value = "maximum-mute-length", comment = "loc:config.mute.maxmutelength")
     private long maxMuteLength = 604800;
 
-    @Setting(value = "see-muted-chat", comment = "loc:config.mute.seemutedchattag")
+    @Setting(value = "see-muted-chat", comment = "loc:config.mute.seemutedchat")
     private boolean showMutedChat = false;
 
-    @Setting(value = "muted-chat-tag", comment = "loc:config.mute.seemutedchat")
+    @Setting(value = "muted-chat-tag", comment = "loc:config.mute.seemutedchattag")
     private String cancelledTag = "&c[cancelled] ";
 
     public List<String> getBlockedCommands() {
