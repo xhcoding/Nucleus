@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
@@ -24,9 +25,7 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
@@ -129,7 +128,7 @@ public class BuyCommand extends io.github.nucleuspowered.nucleus.internal.comman
             hasRun = true;
 
             // Get the money, transact, return the money on fail.
-            Inventory target = src.getInventory().query(Hotbar.class, GridInventory.class);
+            Inventory target = Util.getStandardInventory(src);
             if (econHelper.withdrawFromPlayer(src, overallCost, false)) {
                 InventoryTransactionResult itr = target.offer(created);
                 if (itr.getRejectedItems().isEmpty()) {

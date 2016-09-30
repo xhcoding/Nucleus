@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import org.spongepowered.api.command.CommandResult;
@@ -12,8 +13,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 
 import javax.inject.Inject;
 
@@ -31,7 +30,7 @@ public class FirstKitRedeemCommand extends io.github.nucleuspowered.nucleus.inte
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         int reject = 0;
 
-        Inventory target = src.getInventory().query(Hotbar.class, GridInventory.class);
+        Inventory target = Util.getStandardInventory(src);
         for (ItemStackSnapshot x : gds.getFirstKit()) {
             if (x.getType() != ItemTypes.NONE) {
                 reject += target.offer(x.createStack()).getRejectedItems().size();

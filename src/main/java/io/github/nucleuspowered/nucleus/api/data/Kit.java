@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.data;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Util;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -84,7 +85,7 @@ public interface Kit {
      * @return This {@link Kit} for chaining.
      */
     default Kit updateKitInventory(Player player) {
-        List<Inventory> slots = Lists.newArrayList(player.getInventory().slots());
+        List<Inventory> slots = Lists.newArrayList(Util.getStandardInventory(player).slots());
         final List<ItemStackSnapshot> stacks = slots.stream().filter(x -> x.peek().isPresent()).map(x -> x.peek().get().createSnapshot()).collect(Collectors.toList());
 
         // Add all the stacks into the kit list.

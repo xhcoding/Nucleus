@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import org.spongepowered.api.command.CommandResult;
@@ -29,7 +30,7 @@ public class FirstKitSetCommand extends io.github.nucleuspowered.nucleus.interna
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        List<Inventory> slots = Lists.newArrayList(src.getInventory().slots());
+        List<Inventory> slots = Lists.newArrayList(Util.getStandardInventory(src).slots());
         final List<ItemStackSnapshot> stacks = slots.stream().filter(x -> x.peek().isPresent()).map(x -> x.peek().get().createSnapshot()).collect(Collectors.toList());
         gds.setFirstKit(stacks);
 
