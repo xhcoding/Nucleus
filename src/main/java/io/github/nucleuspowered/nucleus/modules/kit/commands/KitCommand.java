@@ -28,9 +28,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.text.Text;
 
 import java.time.Duration;
@@ -124,7 +122,7 @@ public class KitCommand extends io.github.nucleuspowered.nucleus.internal.comman
         }
 
         boolean isConsumed = false;
-        Inventory target = player.getInventory().query(Hotbar.class, GridInventory.class);
+        Inventory target = Util.getStandardInventory(player);
         for (ItemStackSnapshot stack : kit.getStacks()) {
             // Ignore anything that is NONE
             if (stack.getType() != ItemTypes.NONE) {

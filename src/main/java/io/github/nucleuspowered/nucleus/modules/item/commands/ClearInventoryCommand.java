@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.item.commands;
 
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.*;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -54,7 +55,7 @@ public class ClearInventoryCommand extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        opl.get().getInventory().clear();
+        Util.getStandardInventory(opl.get()).clear();
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.clearinventory.success", opl.get().getName()));
         return CommandResult.success();
     }

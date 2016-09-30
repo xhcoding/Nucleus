@@ -15,6 +15,9 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
@@ -41,6 +44,10 @@ public class Util {
     }
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+    public static Inventory getStandardInventory(Player player) {
+        return player.getInventory().query(Hotbar.class, GridInventory.class);
+    }
 
     public static UUID getUUID(CommandSource src) {
         if (src instanceof Identifiable) {

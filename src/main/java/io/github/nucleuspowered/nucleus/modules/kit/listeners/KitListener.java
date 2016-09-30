@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.listeners;
 
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -13,8 +14,6 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -27,7 +26,7 @@ public class KitListener extends ListenerBase {
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
         Player player = event.getTargetEntity();
-        final Inventory target = player.getInventory().query(Hotbar.class, GridInventory.class);
+        final Inventory target = Util.getStandardInventory(player);
         loader.get(player).ifPresent(p -> {
             if (p.isFirstPlay()) {
                 List<ItemStackSnapshot> l = gds.getFirstKit();
