@@ -117,7 +117,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
                 Optional<BlockRayHit<World>> blockRayHitOptional = BlockRay
                         .from(new Location<>(currentWorld, new Vector3d(x, Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, maxY), z)))
                         .to(new Vector3d(x, Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, minY), z))
-                        .filter(BlockRay.onlyAirFilter()).end();
+                        .stopFilter(BlockRay.onlyAirFilter()).end();
                 if (blockRayHitOptional.isPresent()) {
                     y = blockRayHitOptional.get().getBlockY();
                 } else {
@@ -200,7 +200,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
             SurfaceCheckPredicate predicate = new SurfaceCheckPredicate();
             Optional<BlockRayHit<World>> blockRayHitOptional = BlockRay.from(location).to(
                     new Vector3d(location.getPosition().getX(), location.getExtent().getBlockMax().toDouble().getY(), location.getPosition().getZ()))
-                    .filter(predicate).end();
+                    .stopFilter(predicate).end();
 
             // If we have no hit, then this is the top of the world and we should allow it.
             return !blockRayHitOptional.isPresent();
