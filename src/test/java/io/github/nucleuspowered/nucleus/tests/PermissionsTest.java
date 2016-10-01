@@ -129,11 +129,11 @@ public class PermissionsTest extends TestBase {
     @RegisterCommand({"test", "test2"})
     public static class PermissionRoot extends PermissionOne { }
 
-    @Permissions(suffix = "sub")
+    @Permissions(suffix = "suffix")
     @RegisterCommand({"test", "test2"})
     public static class PermissionSub extends PermissionOne { }
 
-    @Permissions(prefix = "prefix", suffix = "sub")
+    @Permissions(prefix = "prefix", suffix = "suffix")
     @RegisterCommand({"test", "test2"})
     public static class PermissionRootSub extends PermissionOne { }
 
