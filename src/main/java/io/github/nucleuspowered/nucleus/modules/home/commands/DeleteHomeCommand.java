@@ -17,7 +17,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-@Permissions(alias = "home", suggestedLevel = SuggestedLevel.USER)
+@Permissions(mainOverride = "home", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @NoCooldown
 @NoCost

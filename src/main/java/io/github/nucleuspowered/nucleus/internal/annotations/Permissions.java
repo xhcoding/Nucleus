@@ -12,6 +12,12 @@ import java.lang.annotation.*;
  * Specifies multiple permissions that this command could use. Be sure that no permissions have been set in the
  * {@link org.spongepowered.api.command.spec.CommandSpec.Builder}.
  *
+ * <p>
+ *     If the mainOverride, prefix and suffix items are set, the default permission that would be generated is
+ *     {@code nucleus.prefix.mainOverride.suffix.[]}. Usually, it will just be {@code nucleus.main.[]}, where
+ *     main is the primary alias of the command.
+ * </p>
+ *
  * <p>By default, using this annotation will also allow the command to be run by those with the admin permission.</p>
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -27,25 +33,25 @@ public @interface Permissions {
     String[] value() default {};
 
     /**
-     * Replaces the command portion of the permission with the specified alias - "prefix.alias.base"
+     * Replaces the command portion of the permission with the specified mainOverride - "prefix.mainOverride.suffix.base"
      *
-     * @return The name of the alias to use
+     * @return The name of the mainOverride to use
      */
-    String alias() default "";
+    String mainOverride() default "";
 
     /**
-     * The root permission to use
+     * The prefix permission to use
      *
-     * @return The root, or empty string if no root
+     * @return The prefix, or empty string if no prefix
      */
-    String root() default "";
+    String prefix() default "";
 
     /**
-     * The sub permission to use
+     * The suffix permission to use
      *
-     * @return The sub, or empty string if no root
+     * @return The suffix, or empty string if no suffix
      */
-    String sub() default "";
+    String suffix() default "";
 
     /**
      * If {@code true}, specifies that selector permissions should be generated. Purely for documentation.

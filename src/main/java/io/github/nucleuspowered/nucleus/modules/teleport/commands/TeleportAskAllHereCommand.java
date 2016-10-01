@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-@Permissions(root = "teleport")
+@Permissions(prefix = "teleport")
 @NoWarmup
 @NoCost
 @NoCooldown

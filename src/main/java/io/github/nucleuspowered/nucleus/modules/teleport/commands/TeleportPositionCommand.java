@@ -21,7 +21,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-@Permissions(root = "teleport", supportsSelectors = true)
+@Permissions(prefix = "teleport", supportsSelectors = true)
 @NoWarmup
 @NoCooldown
 @NoCost

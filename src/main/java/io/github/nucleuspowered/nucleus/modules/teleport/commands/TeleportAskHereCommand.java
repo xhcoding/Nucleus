@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static io.github.nucleuspowered.nucleus.modules.teleport.commands.TeleportAskHereCommand.playerKey;
 
-@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
+@Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @RunAsync
 @NoWarmup(generateConfigEntry = true)
 @RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})

@@ -45,11 +45,11 @@ public class PermissionsTest extends TestBase {
         public static Iterable<Object[]> data() {
             return Arrays.asList(new Object[][] {
                     { PermissionRegistry.PERMISSIONS_PREFIX + "test.base", PermissionOne.class },
-                    { PermissionRegistry.PERMISSIONS_PREFIX + "root.test.base", PermissionRoot.class },
-                    { PermissionRegistry.PERMISSIONS_PREFIX + "test.sub.base", PermissionSub.class },
-                    { PermissionRegistry.PERMISSIONS_PREFIX + "root.test.sub.base", PermissionRootSub.class },
+                    { PermissionRegistry.PERMISSIONS_PREFIX + "prefix.test.base", PermissionRoot.class },
+                    { PermissionRegistry.PERMISSIONS_PREFIX + "test.suffix.base", PermissionSub.class },
+                    { PermissionRegistry.PERMISSIONS_PREFIX + "prefix.test.suffix.base", PermissionRootSub.class },
                     { PermissionRegistry.PERMISSIONS_PREFIX + "test.base", PermissionCustom.class },
-                    { PermissionRegistry.PERMISSIONS_PREFIX + "alias.base", PermissionAlias.class }
+                    { PermissionRegistry.PERMISSIONS_PREFIX + "mainOverride.base", PermissionAlias.class }
             });
         }
 
@@ -91,8 +91,8 @@ public class PermissionsTest extends TestBase {
                     { PermissionRegistry.PERMISSIONS_PREFIX + "test.base", PermissionRoot.class },
                     { PermissionRegistry.PERMISSIONS_PREFIX + "test.base", PermissionSub.class },
                     { PermissionRegistry.PERMISSIONS_PREFIX + "test.base", PermissionRootSub.class },
-                    { PermissionRegistry.PERMISSIONS_PREFIX + "root.test.base", PermissionRootSub.class },
-                    { PermissionRegistry.PERMISSIONS_PREFIX + "test.sub.base", PermissionRootSub.class }
+                    { PermissionRegistry.PERMISSIONS_PREFIX + "prefix.test.base", PermissionRootSub.class },
+                    { PermissionRegistry.PERMISSIONS_PREFIX + "test.suffix.base", PermissionRootSub.class }
             });
         }
 
@@ -125,19 +125,19 @@ public class PermissionsTest extends TestBase {
         }
     }
 
-    @Permissions(root = "root")
+    @Permissions(prefix = "prefix")
     @RegisterCommand({"test", "test2"})
     public static class PermissionRoot extends PermissionOne { }
 
-    @Permissions(sub = "sub")
+    @Permissions(suffix = "sub")
     @RegisterCommand({"test", "test2"})
     public static class PermissionSub extends PermissionOne { }
 
-    @Permissions(root = "root", sub = "sub")
+    @Permissions(prefix = "prefix", suffix = "sub")
     @RegisterCommand({"test", "test2"})
     public static class PermissionRootSub extends PermissionOne { }
 
-    @Permissions(alias = "alias")
+    @Permissions(mainOverride = "mainOverride")
     @RegisterCommand({"test", "test2"})
     public static class PermissionAlias extends PermissionOne { }
 

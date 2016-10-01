@@ -18,7 +18,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-@Permissions(root = "itemname")
+@Permissions(prefix = "itemname")
 @RegisterCommand(value = "set", subcommandOf = ItemNameCommand.class)
 public class ItemNameSetCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 

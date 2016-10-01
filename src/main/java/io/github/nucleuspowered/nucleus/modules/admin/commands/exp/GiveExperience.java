@@ -21,7 +21,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-@Permissions(root = "exp")
+@Permissions(prefix = "exp")
 @RegisterCommand(value = "give", subcommandOf = ExperienceCommand.class)
 public class GiveExperience extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

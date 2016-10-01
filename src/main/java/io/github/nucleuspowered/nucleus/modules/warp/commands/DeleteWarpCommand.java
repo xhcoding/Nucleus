@@ -24,7 +24,7 @@ import org.spongepowered.api.text.Text;
  *
  * Command Usage: /warp delete [warp] Permission: quickstart.warp.delete.base
  */
-@Permissions(root = "warp")
+@Permissions(prefix = "warp")
 @RunAsync
 @RegisterCommand(value = {"delete", "del"}, subcommandOf = WarpCommand.class)
 public class DeleteWarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {

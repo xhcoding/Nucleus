@@ -16,7 +16,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-@Permissions(root = "time")
+@Permissions(prefix = "time")
 @RegisterCommand(value = "set", subcommandOf = TimeCommand.class)
 public class SetTimeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
     private final String time = "time";

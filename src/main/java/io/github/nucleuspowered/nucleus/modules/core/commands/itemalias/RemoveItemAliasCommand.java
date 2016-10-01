@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "nucleus.itemalias")
+@Permissions(prefix = "nucleus.itemalias")
 @RegisterCommand(value = {"remove", "del"}, subcommandOf = ItemAliasCommand.class)
 public class RemoveItemAliasCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

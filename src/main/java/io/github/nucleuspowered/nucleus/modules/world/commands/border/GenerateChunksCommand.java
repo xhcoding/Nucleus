@@ -21,7 +21,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import javax.inject.Inject;
 import java.util.Optional;
 
-@Permissions(root = "world.border")
+@Permissions(prefix = "world.border")
 @RegisterCommand(value = {"gen", "genchunks", "generatechunks", "chunkgen"}, subcommandOf = BorderCommand.class)
 public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

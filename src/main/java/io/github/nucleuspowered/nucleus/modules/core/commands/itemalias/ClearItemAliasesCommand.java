@@ -21,7 +21,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "nucleus.itemalias")
+@Permissions(prefix = "nucleus.itemalias")
 @RegisterCommand(value = {"clear"}, subcommandOf = ItemAliasCommand.class)
 public class ClearItemAliasesCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

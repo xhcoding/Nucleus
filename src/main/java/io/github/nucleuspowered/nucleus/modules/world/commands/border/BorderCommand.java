@@ -26,7 +26,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.List;
 import java.util.Optional;
 
-@Permissions(root = "world")
+@Permissions(prefix = "world")
 @RegisterCommand(value = {"border"}, subcommandOf = WorldCommand.class)
 public class BorderCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

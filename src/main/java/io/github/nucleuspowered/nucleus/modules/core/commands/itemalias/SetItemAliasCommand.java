@@ -27,7 +27,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "nucleus.itemalias")
+@Permissions(prefix = "nucleus.itemalias")
 @RegisterCommand(value = "set", subcommandOf = ItemAliasCommand.class)
 public class SetItemAliasCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

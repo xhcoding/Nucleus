@@ -22,7 +22,7 @@ import org.spongepowered.api.text.Text;
  *
  * Command Usage: /kit remove Permission: plugin.kit.remove.base
  */
-@Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"remove", "del", "delete"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoWarmup

@@ -17,7 +17,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-@Permissions(root = "home", alias = "other", suggestedLevel = SuggestedLevel.MOD)
+@Permissions(prefix = "home", mainOverride = "other", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand("homeother")
 public class HomeOtherCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 

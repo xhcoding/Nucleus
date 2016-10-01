@@ -20,7 +20,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import java.util.List;
 import java.util.Optional;
 
-@Permissions(root = "rules")
+@Permissions(prefix = "rules")
 @RunAsync
 @RegisterCommand(value = {"add", "a", "+"}, subcommandOf = RulesCommand.class)
 @NoWarmup

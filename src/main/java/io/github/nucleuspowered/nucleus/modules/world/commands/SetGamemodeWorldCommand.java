@@ -26,7 +26,7 @@ import java.util.Optional;
  * Command Usage: /world setgamemode [gamemode] [world] Permission:
  * plugin.world.setgamemode.base
  */
-@Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setgamemode", "setgm", "gamemode", "gm"}, subcommandOf = WorldCommand.class)
 public class SetGamemodeWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

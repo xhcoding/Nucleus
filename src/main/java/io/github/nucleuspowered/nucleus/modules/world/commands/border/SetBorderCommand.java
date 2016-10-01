@@ -20,7 +20,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Optional;
 
-@Permissions(root = "world.border")
+@Permissions(prefix = "world.border")
 @NoCooldown
 @NoCost
 @NoWarmup

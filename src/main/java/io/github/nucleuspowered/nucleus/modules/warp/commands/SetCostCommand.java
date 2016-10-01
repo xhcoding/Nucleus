@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @NoCooldown
 @NoWarmup
-@Permissions(root = "warp")
+@Permissions(prefix = "warp")
 @RegisterCommand(value = {"cost", "setcost"}, subcommandOf = WarpCommand.class)
 public class SetCostCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

@@ -16,7 +16,7 @@ import org.spongepowered.api.text.channel.MessageChannel;
 
 import javax.inject.Inject;
 
-@Permissions(root = "teleport")
+@Permissions(prefix = "teleport")
 @NoWarmup
 @NoCost
 @NoCooldown

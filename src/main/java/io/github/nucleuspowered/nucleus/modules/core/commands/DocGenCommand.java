@@ -25,7 +25,7 @@ import java.util.List;
 @NoCost
 @NoWarmup
 @NoCooldown
-@Permissions(root = "nucleus", suggestedLevel = SuggestedLevel.NONE)
+@Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"docgen", "gendocs"}, subcommandOf = NucleusCommand.class)
 public class DocGenCommand extends AbstractCommand<CommandSource> {
 

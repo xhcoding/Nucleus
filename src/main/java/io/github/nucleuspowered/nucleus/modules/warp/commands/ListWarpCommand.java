@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  *
  * Command Usage: /warp list Permission: quickstart.warp.list.base
  */
-@Permissions(root = "warp", suggestedLevel = SuggestedLevel.USER)
+@Permissions(prefix = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class)
 public class ListWarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {

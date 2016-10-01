@@ -26,7 +26,7 @@ import java.time.Duration;
  *
  * Command Usage: /kit set Permission: plugin.kit.set.base
  */
-@Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setcooldown", "setinterval"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoWarmup

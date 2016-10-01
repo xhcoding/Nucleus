@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  *
  * Command Usage: /world list Permission: plugin.world.list.base
  */
-@Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class)
 public class ListWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

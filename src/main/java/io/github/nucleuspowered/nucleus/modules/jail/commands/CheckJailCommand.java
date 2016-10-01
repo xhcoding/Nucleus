@@ -26,7 +26,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-@Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
+@Permissions(prefix = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @NoWarmup
 @NoCooldown

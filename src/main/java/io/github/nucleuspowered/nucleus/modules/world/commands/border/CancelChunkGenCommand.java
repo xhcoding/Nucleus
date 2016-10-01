@@ -21,7 +21,7 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "world.border", alias = "gen")
+@Permissions(prefix = "world.border", mainOverride = "gen")
 @RegisterCommand(value = "cancelgen", subcommandOf = BorderCommand.class)
 public class CancelChunkGenCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @RunAsync
 @RegisterCommand("jails")
-@Permissions(root = "jail", alias = "list", suggestedLevel = SuggestedLevel.MOD)
+@Permissions(prefix = "jail", mainOverride = "list", suggestedLevel = SuggestedLevel.MOD)
 public class JailsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private JailHandler handler;

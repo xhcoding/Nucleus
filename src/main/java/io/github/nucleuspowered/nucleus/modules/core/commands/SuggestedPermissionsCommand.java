@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RunAsync
-@Permissions(root = "nucleus")
+@Permissions(prefix = "nucleus")
 @RegisterCommand(value = "printperms", subcommandOf = NucleusCommand.class)
 public class SuggestedPermissionsCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

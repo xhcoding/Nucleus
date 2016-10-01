@@ -12,7 +12,7 @@ import org.spongepowered.api.command.args.CommandContext;
 
 import javax.inject.Inject;
 
-@Permissions(root = "firstjoinkit")
+@Permissions(prefix = "firstjoinkit")
 @NoCost
 @NoCooldown
 @NoWarmup

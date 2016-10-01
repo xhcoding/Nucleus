@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
  *
  * Permission: plugin.powertool.base (uses the base permission)
  */
-@Permissions(alias = "powertool")
+@Permissions(mainOverride = "powertool")
 @RunAsync
 @NoCooldown
 @NoWarmup

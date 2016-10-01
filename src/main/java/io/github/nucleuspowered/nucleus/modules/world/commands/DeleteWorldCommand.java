@@ -22,7 +22,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
  *
  * Command Usage: /world delete [world] Permission: plugin.world.delete.base
  */
-@Permissions(root = "world")
+@Permissions(prefix = "world")
 @RegisterCommand(value = {"delete", "del"}, subcommandOf = WorldCommand.class)
 public class DeleteWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

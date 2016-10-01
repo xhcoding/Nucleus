@@ -24,7 +24,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-@Permissions(root = "mail", suggestedLevel = SuggestedLevel.USER)
+@Permissions(prefix = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"send", "s"}, subcommandOf = MailCommand.class)
 public class SendMailCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {

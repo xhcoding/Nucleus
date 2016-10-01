@@ -15,7 +15,7 @@ import org.spongepowered.api.entity.living.player.Player;
 /**
  * /tpaccept.
  */
-@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.USER)
+@Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER)
 @NoWarmup
 @NoCooldown
 @NoCost

@@ -26,7 +26,7 @@ import java.util.Optional;
  * Command Usage: /world setdifficulty [difficulty] [world] Permission:
  * plugin.world.setdifficulty.base
  */
-@Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setdifficulty", "difficulty"}, subcommandOf = WorldCommand.class)
 public class SetDifficultyWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions(root = "teleport", alias = "teleport", suggestedLevel = SuggestedLevel.MOD)
+@Permissions(prefix = "teleport", mainOverride = "teleport", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand({"teleport", "tp"})
 @ConfigCommandAlias("teleport")
 public class TeleportCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {

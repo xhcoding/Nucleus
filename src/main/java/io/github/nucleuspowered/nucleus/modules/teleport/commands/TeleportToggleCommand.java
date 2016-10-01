@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 import java.util.HashMap;
 import java.util.Map;
 
-@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.USER)
+@Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER)
 @NoWarmup
 @NoCooldown
 @NoCost

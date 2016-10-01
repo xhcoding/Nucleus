@@ -23,7 +23,7 @@ import org.spongepowered.api.text.Text;
 /**
  * Replies to the last player who sent a message.
  */
-@Permissions(alias = "message", suggestedLevel = SuggestedLevel.USER)
+@Permissions(mainOverride = "message", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)
 @RegisterCommand({"reply", "r"})

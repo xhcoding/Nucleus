@@ -32,7 +32,7 @@ import java.util.Optional;
  * Command Usage: /world create [name] [dimension] [generator] [gamemode]
  * [difficulty] Permission: plugin.world.create.base
  */
-@Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"create"}, subcommandOf = WorldCommand.class)
 public class CreateWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

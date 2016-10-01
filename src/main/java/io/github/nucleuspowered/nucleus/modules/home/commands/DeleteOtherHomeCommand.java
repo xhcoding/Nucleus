@@ -16,7 +16,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 
-@Permissions(root = "home", alias = "deleteother")
+@Permissions(prefix = "home", mainOverride = "deleteother")
 @RunAsync
 @NoCooldown
 @NoCost

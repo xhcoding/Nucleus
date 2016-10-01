@@ -17,7 +17,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-@Permissions(root = "itemname")
+@Permissions(prefix = "itemname")
 @RegisterCommand(value = "clear", subcommandOf = ItemNameCommand.class)
 public class ItemNameClearCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 

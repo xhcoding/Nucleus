@@ -26,7 +26,7 @@ import java.util.Optional;
  * Command Usage: /world teleport [world] Permission:
  * plugin.world.teleport.base
  */
-@Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
 public class TeleportWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

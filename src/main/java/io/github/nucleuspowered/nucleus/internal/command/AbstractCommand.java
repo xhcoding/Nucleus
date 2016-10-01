@@ -61,7 +61,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
 
-    // A period separated list of parent commands, starting with the root. Period terminateed.
+    // A period separated list of parent commands, starting with the prefix. Period terminateed.
     private final String commandPath;
 
     // Null until set, then should be considered immutable.
@@ -201,9 +201,9 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         //
         // nucleus.(primaryalias).base
         //
-        // Adding a "root" and/or "sub" string will generate:
+        // Adding a "prefix" and/or "suffix" string will generate:
         //
-        // nucleus.(root).(primaryalias).(sub).base
+        // nucleus.(prefix).(primaryalias).(suffix).base
         //
         // For warmup, cooldown and cost exemption, replace base with:
         //

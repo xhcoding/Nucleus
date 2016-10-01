@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
  *
  * Command Usage: /kit add Permission: plugin.kit.add.base
  */
-@Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"add"}, subcommandOf = KitCommand.class)
 @NoWarmup
 @NoCooldown

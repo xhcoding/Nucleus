@@ -30,7 +30,7 @@ import java.util.Optional;
  * Command Usage: /world load [name] [dimension] [generator] [gamemode]
  * [difficulty] Permission: plugin.world.load.base
  */
-@Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"load"}, subcommandOf = WorldCommand.class)
 public class LoadWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

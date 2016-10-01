@@ -51,17 +51,17 @@ public class CommandPermissionHandler {
                 }
 
                 @Override
-                public String alias() {
+                public String mainOverride() {
                     return "";
                 }
 
                 @Override
-                public String root() {
+                public String prefix() {
                     return "";
                 }
 
                 @Override
-                public String sub() {
+                public String suffix() {
                     return "";
                 }
 
@@ -83,19 +83,19 @@ public class CommandPermissionHandler {
         }
 
         StringBuilder sb = new StringBuilder(PermissionRegistry.PERMISSIONS_PREFIX);
-        if (!c.root().isEmpty()) {
-            sb.append(c.root()).append(".");
+        if (!c.prefix().isEmpty()) {
+            sb.append(c.prefix()).append(".");
         }
 
-        if (c.alias().isEmpty()) {
+        if (c.mainOverride().isEmpty()) {
             sb.append(cb.getAliases()[0]);
         } else {
-            sb.append(c.alias());
+            sb.append(c.mainOverride());
         }
 
         sb.append(".");
-        if (!c.sub().isEmpty()) {
-            sb.append(c.sub()).append(".");
+        if (!c.suffix().isEmpty()) {
+            sb.append(c.suffix()).append(".");
         }
 
         prefix = sb.toString();
