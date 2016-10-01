@@ -73,10 +73,7 @@ public class IgnoreListener extends ListenerBase {
      */
     private Optional<Collection<MessageReceiver>> checkCancels(Collection<MessageReceiver> collection, Player player) {
         if (ignoreHandler == null) {
-            permissionRegistry.getService(IgnoreCommand.class).ifPresent(x -> ignoreHandler = x);
-            if (ignoreHandler == null) {
-                return Optional.empty();
-            }
+            ignoreHandler = permissionRegistry.getService(IgnoreCommand.class);
         }
 
         if (ignoreHandler.testSuffix(player, "exempt.chat")) {

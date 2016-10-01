@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Permissions(prefix = "teleport", mainOverride = "teleport", suggestedLevel = SuggestedLevel.MOD)
-@RegisterCommand({"teleport", "tp"})
+@RegisterCommand(value = "teleport", forceRegister = "tp")
 @ConfigCommandAlias("teleport")
 public class TeleportCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
@@ -84,18 +84,18 @@ public class TeleportCommand extends io.github.nucleuspowered.nucleus.internal.c
     }
 
     @Override
-    public String[] getAliases() {
-        if (aliases == null) {
+    public String[] getForcedAliases() {
+        if (forcedAliases == null) {
             // Some people want /tp to be held by minecraft. This will allow us
             // to do so.
             if (plugin.getCommandsConfig().getCommandNode("teleport").getNode("use-tp-command").getBoolean(true)) {
-                aliases = new String[] {"tp", "teleport"};
+                forcedAliases = new String[]{"tp"};
             } else {
-                aliases = new String[] {"teleport"};
+                forcedAliases = new String[]{};
             }
         }
 
-        return super.getAliases();
+        return super.getForcedAliases();
     }
 
     @Override

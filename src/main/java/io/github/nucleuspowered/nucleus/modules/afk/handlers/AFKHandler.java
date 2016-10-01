@@ -22,7 +22,6 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Identifiable;
 
-import javax.annotation.concurrent.GuardedBy;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -31,6 +30,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import javax.annotation.concurrent.GuardedBy;
 
 public class AFKHandler {
 
@@ -212,7 +213,7 @@ public class AFKHandler {
      */
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = permissionRegistry.getService(AFKCommand.class).orElseGet(() -> new CommandPermissionHandler(new AFKCommand(), plugin));
+            s = permissionRegistry.getService(AFKCommand.class);
         }
 
         return s;

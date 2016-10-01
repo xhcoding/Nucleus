@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -12,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class PermissionRegistry {
 
@@ -20,8 +20,8 @@ public class PermissionRegistry {
     private final Map<Class<? extends AbstractCommand>, CommandPermissionHandler> serviceRegistry = Maps.newHashMap();
     private final Map<String, PermissionInformation> otherPermissions = Maps.newHashMap();
 
-    public Optional<CommandPermissionHandler> getService(Class<? extends AbstractCommand> command) {
-        return Optional.ofNullable(serviceRegistry.get(command));
+    public CommandPermissionHandler getService(Class<? extends AbstractCommand> command) {
+        return serviceRegistry.getOrDefault(command, new CommandPermissionHandler(command, Nucleus.getNucleus()));
     }
 
     public void addHandler(Class<? extends AbstractCommand> cb, CommandPermissionHandler cph) {

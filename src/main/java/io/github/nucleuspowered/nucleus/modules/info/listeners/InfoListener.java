@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.info.listeners;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -57,7 +56,7 @@ public class InfoListener extends ListenerBase {
 
     private String getMotdPermission() {
         if (motdPermission == null) {
-            motdPermission = pr.getService(MotdCommand.class).orElse(new CommandPermissionHandler(new MotdCommand(), plugin)).getPermissionWithSuffix("login");
+            motdPermission = pr.getService(MotdCommand.class).getPermissionWithSuffix("login");
         }
 
         return motdPermission;
