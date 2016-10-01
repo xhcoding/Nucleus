@@ -4,9 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
+import io.github.nucleuspowered.nucleus.modules.world.commands.border.gen.EnhancedGeneration;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -19,7 +23,10 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 @Permissions(root = "world.border")
 @RegisterCommand(value = {"gen", "genchunks", "generatechunks", "chunkgen"}, subcommandOf = BorderCommand.class)
@@ -30,15 +37,35 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
     @Inject
     private WorldHelper worldHelper;
 
+    private final BiFunction<World, CommandSource, CommandResult> standardGeneration = (world, source) -> {
+        // Create the task.
+        this.worldHelper.startPregenningForWorld(world);
+        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.standard"));
+        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
+
+        return CommandResult.success();
+    };
+
+    private BiFunction<World, CommandSource, CommandResult> generator;
+
+    @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        return new HashMap<String, PermissionInformation>() {{
+            put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.world.border.gen.notify"), SuggestedLevel.ADMIN));
+        }};
+    }
+
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(worldKey))))
+                GenericArguments.flags().flag("s").buildWith(
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(worldKey)))))
         };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        setupGenerationClass();
         Optional<WorldProperties> owp = args.getOne(worldKey);
         WorldProperties wp;
         if (owp.isPresent()) {
@@ -63,10 +90,21 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
             return CommandResult.empty();
         }
 
-        // Create the task.
-        worldHelper.startPregenningForWorld(w.get());
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.started", wp.getWorldName()));
+        if (args.hasAny("s")) {
+            return standardGeneration.apply(w.get(), src);
+        } else {
+            return this.generator.apply(w.get(), src);
+        }
+    }
 
-        return CommandResult.success();
+    // Lazy load.
+    private void setupGenerationClass() {
+        if (generator == null) {
+            if (plugin.areMixinsAvailable()) {
+                this.generator = new EnhancedGeneration(worldHelper, permissions.getPermissionWithSuffix("notify"));
+            } else {
+                this.generator = standardGeneration;
+            }
+        }
     }
 }
