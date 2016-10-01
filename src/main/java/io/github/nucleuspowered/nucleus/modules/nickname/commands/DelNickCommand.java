@@ -20,7 +20,7 @@ import org.spongepowered.api.text.Text;
 import java.util.Optional;
 
 @RegisterCommand({"delnick", "delnickname", "deletenick"})
-@Permissions(alias = "nick")
+@Permissions(mainOverride = "nick")
 public class DelNickCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager loader;

@@ -27,7 +27,7 @@ import java.util.UUID;
 @NoWarmup
 @NoCooldown
 @NoCost
-@Permissions(root = "globalmute")
+@Permissions(prefix = "globalmute")
 @RegisterCommand("voice")
 public class VoiceCommand extends AbstractCommand<CommandSource> {
 

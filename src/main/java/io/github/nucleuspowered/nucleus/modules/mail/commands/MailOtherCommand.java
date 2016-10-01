@@ -18,7 +18,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-@Permissions(root = "mail")
+@Permissions(prefix = "mail")
 @RunAsync
 @NoWarmup
 @NoCooldown

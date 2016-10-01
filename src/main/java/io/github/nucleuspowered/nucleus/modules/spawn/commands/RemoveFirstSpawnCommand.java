@@ -15,7 +15,7 @@ import org.spongepowered.api.command.args.CommandContext;
  * plugin.firstspawn.remove.base
  */
 @RegisterCommand(value = {"del", "rm"}, subcommandOf = SetFirstSpawnCommand.class)
-@Permissions(root = "firstspawn", alias = "remove")
+@Permissions(prefix = "firstspawn", mainOverride = "remove")
 @NoWarmup
 @NoCooldown
 @NoCost

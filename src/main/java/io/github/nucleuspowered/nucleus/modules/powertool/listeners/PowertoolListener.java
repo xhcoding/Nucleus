@@ -31,7 +31,7 @@ public class PowertoolListener extends ListenerBase {
 
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = permissionRegistry.getService(PowertoolCommand.class).orElseGet(() -> new CommandPermissionHandler(new PowertoolCommand(), plugin));
+            s = permissionRegistry.getService(PowertoolCommand.class);
         }
 
         return s;

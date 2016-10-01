@@ -24,7 +24,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.io.IOException;
 import java.util.List;
 
-@Permissions(root = "rules")
+@Permissions(prefix = "rules")
 @RunAsync
 @RegisterCommand(value = {"remove", "delete", "del", "-"}, subcommandOf = RulesCommand.class)
 @NoWarmup

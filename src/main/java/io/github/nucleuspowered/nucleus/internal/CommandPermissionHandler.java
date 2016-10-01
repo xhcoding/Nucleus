@@ -6,8 +6,13 @@ package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoPermissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -28,8 +33,8 @@ public class CommandPermissionHandler {
 
     private final boolean justReturnTrue;
 
-    public CommandPermissionHandler(AbstractCommand<?> cb, NucleusPlugin plugin) {
-        justReturnTrue = cb.getClass().isAnnotationPresent(NoPermissions.class);
+    public CommandPermissionHandler(Class<? extends AbstractCommand> cab, Nucleus plugin) {
+        justReturnTrue = cab.isAnnotationPresent(NoPermissions.class);
 
         // If there are no permissions to assign, we just return true.
         if (justReturnTrue) {
@@ -42,7 +47,7 @@ public class CommandPermissionHandler {
             return;
         }
 
-        Permissions c = cb.getClass().getAnnotation(Permissions.class);
+        Permissions c = cab.getAnnotation(Permissions.class);
         if (c == null) {
             c = new Permissions() {
                 @Override
@@ -51,17 +56,17 @@ public class CommandPermissionHandler {
                 }
 
                 @Override
-                public String alias() {
+                public String mainOverride() {
                     return "";
                 }
 
                 @Override
-                public String root() {
+                public String prefix() {
                     return "";
                 }
 
                 @Override
-                public String sub() {
+                public String suffix() {
                     return "";
                 }
 
@@ -82,20 +87,22 @@ public class CommandPermissionHandler {
             };
         }
 
+        RegisterCommand co = cab.getAnnotation(RegisterCommand.class);
+        String command = co.value()[0];
         StringBuilder sb = new StringBuilder(PermissionRegistry.PERMISSIONS_PREFIX);
-        if (!c.root().isEmpty()) {
-            sb.append(c.root()).append(".");
+        if (!c.prefix().isEmpty()) {
+            sb.append(c.prefix()).append(".");
         }
 
-        if (c.alias().isEmpty()) {
-            sb.append(cb.getAliases()[0]);
+        if (c.mainOverride().isEmpty()) {
+            sb.append(command);
         } else {
-            sb.append(c.alias());
+            sb.append(c.mainOverride());
         }
 
         sb.append(".");
-        if (!c.sub().isEmpty()) {
-            sb.append(c.sub()).append(".");
+        if (!c.suffix().isEmpty()) {
+            sb.append(c.suffix()).append(".");
         }
 
         prefix = sb.toString();
@@ -103,36 +110,33 @@ public class CommandPermissionHandler {
         base = prefix + "base";
         selectors = prefix + "selectors";
 
-        // Get command name.
-        String command = cb.getAliases()[0];
-        RegisterCommand co = cb.getClass().getAnnotation(RegisterCommand.class);
         if (co.subcommandOf() != AbstractCommand.class) {
             command = String.format("%s %s", co.subcommandOf().getAnnotation(RegisterCommand.class).value()[0], command);
         }
 
-        mssl.put(base, new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.base", command), c.suggestedLevel()));
+        mssl.put(base, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.base", command), c.suggestedLevel()));
 
         if (c.supportsSelectors()) {
-            mssl.put(selectors, new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
+            mssl.put(selectors, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
         }
 
         warmup = prefix + "exempt.warmup";
         cooldown = prefix + "exempt.cooldown";
         cost = prefix + "exempt.cost";
 
-        if (!cb.getClass().isAnnotationPresent(NoWarmup.class)) {
-            mssl.put(warmup, new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.exempt.warmup", command), SuggestedLevel.ADMIN));
+        if (!cab.isAnnotationPresent(NoWarmup.class)) {
+            mssl.put(warmup, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.warmup", command), SuggestedLevel.ADMIN));
         }
 
-        if (!cb.getClass().isAnnotationPresent(NoCooldown.class)) {
-            mssl.put(cooldown, new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.exempt.cooldown", command), SuggestedLevel.ADMIN));
+        if (!cab.isAnnotationPresent(NoCooldown.class)) {
+            mssl.put(cooldown, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cooldown", command), SuggestedLevel.ADMIN));
         }
 
-        if (!cb.getClass().isAnnotationPresent(NoCost.class)) {
-            mssl.put(cost, new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.exempt.cost", command), SuggestedLevel.ADMIN));
+        if (!cab.isAnnotationPresent(NoCost.class)) {
+            mssl.put(cost, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cost", command), SuggestedLevel.ADMIN));
         }
 
-        plugin.getPermissionRegistry().addHandler(cb.getClass(), this);
+        plugin.getPermissionRegistry().addHandler(cab, this);
     }
 
     public boolean isPassthrough() {

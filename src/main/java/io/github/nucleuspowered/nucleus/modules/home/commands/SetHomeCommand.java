@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-@Permissions(root = "home", alias = "set", suggestedLevel = SuggestedLevel.USER)
+@Permissions(prefix = "home", mainOverride = "set", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand({"homeset", "sethome"})
 public class SetHomeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {

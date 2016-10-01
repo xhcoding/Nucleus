@@ -12,7 +12,12 @@ import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -38,7 +43,7 @@ import java.util.Set;
  *
  * Command Usage: /kit list Permission: plugin.kit.list.base
  */
-@Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoWarmup
@@ -62,7 +67,7 @@ public class KitListCommand extends io.github.nucleuspowered.nucleus.internal.co
 
         // Get permission handler for the /kit command in question.
         if (kitPermissionHandler == null) {
-            kitPermissionHandler = plugin.getPermissionRegistry().getService(KitCommand.class).orElse(new CommandPermissionHandler(new KitCommand(), plugin));
+            kitPermissionHandler = plugin.getPermissionRegistry().getService(KitCommand.class);
         }
 
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();

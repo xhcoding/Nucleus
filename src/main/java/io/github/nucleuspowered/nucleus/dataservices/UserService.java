@@ -12,14 +12,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.*;
+import io.github.nucleuspowered.nucleus.api.data.JailData;
+import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.MuteData;
+import io.github.nucleuspowered.nucleus.api.data.NoteData;
+import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
+import io.github.nucleuspowered.nucleus.api.data.WarnData;
 import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import org.spongepowered.api.data.key.Keys;
@@ -168,12 +172,7 @@ public class UserService extends Service<UserDataNode>
 
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
-        Optional<CommandPermissionHandler> ps = plugin.getPermissionRegistry().getService(SocialSpyCommand.class);
-        if (ps.isPresent()) {
-            return data.isSocialspy() && ps.get().testBase(user);
-        }
-
-        return data.isSocialspy();
+        return plugin.getPermissionRegistry().getService(SocialSpyCommand.class).testBase(user);
     }
 
     public boolean setSocialSpy(boolean socialSpy) {

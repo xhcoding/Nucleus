@@ -23,7 +23,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
-@Permissions(root = "exp")
+@Permissions(prefix = "exp")
 @RegisterCommand(value = "set", subcommandOf = ExperienceCommand.class)
 public class SetExperience extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

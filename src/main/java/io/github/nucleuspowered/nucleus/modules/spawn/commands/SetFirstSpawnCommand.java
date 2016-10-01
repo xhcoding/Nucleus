@@ -15,7 +15,7 @@ import org.spongepowered.api.entity.living.player.Player;
  * nucleus.firstspawn.set.base
  */
 @RegisterCommand({"setfirstspawn"})
-@Permissions(root = "firstspawn", alias = "set")
+@Permissions(prefix = "firstspawn", mainOverride = "set")
 @NoWarmup
 @NoCooldown
 @NoCost

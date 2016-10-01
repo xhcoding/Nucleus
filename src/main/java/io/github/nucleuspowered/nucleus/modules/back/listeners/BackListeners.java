@@ -38,7 +38,7 @@ public class BackListeners extends ListenerBase {
 
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = plugin.getPermissionRegistry().getService(BackCommand.class).orElseGet(() -> new CommandPermissionHandler(new BackCommand(), plugin));
+            s = plugin.getPermissionRegistry().getService(BackCommand.class);
         }
 
         return s;

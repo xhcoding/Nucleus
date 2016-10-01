@@ -22,9 +22,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-import java.util.Optional;
-
-@Permissions(root = "mail", suggestedLevel = SuggestedLevel.USER)
+@Permissions(prefix = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"send", "s"}, subcommandOf = MailCommand.class)
 public class SendMailCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
@@ -46,10 +44,10 @@ public class SendMailCommand extends io.github.nucleuspowered.nucleus.internal.c
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = args.<User>getOne(player).orElseThrow(() -> new CommandException(plugin.getMessageProvider().getTextMessageWithFormat("args.user.none")));
-        Optional<CommandPermissionHandler> oservice = permissionRegistry.getService(MailCommand.class);
+        CommandPermissionHandler permissionHandler = permissionRegistry.getService(MailCommand.class);
 
         // Only send mails to players that can read them.
-        if (oservice.isPresent() && !oservice.get().testBase(pl)) {
+        if (!permissionHandler.testBase(pl)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mail.send.error", pl.getName()));
             return CommandResult.empty();
         }

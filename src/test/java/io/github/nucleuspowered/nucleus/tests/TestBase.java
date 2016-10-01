@@ -105,6 +105,7 @@ public abstract class TestBase {
     private static class NucleusTest extends Nucleus {
 
         private MessageProvider mp = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
+        private PermissionRegistry permissionRegistry = new PermissionRegistry();
 
         @Override
         public void saveData() {
@@ -148,7 +149,7 @@ public abstract class TestBase {
 
         @Override
         public PermissionRegistry getPermissionRegistry() {
-            return null;
+            return permissionRegistry;
         }
 
         @Override

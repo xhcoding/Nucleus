@@ -21,7 +21,7 @@ import org.spongepowered.api.text.format.TextColors;
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(root = "jail", suggestedLevel = SuggestedLevel.MOD)
+@Permissions(prefix = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @RegisterCommand(value = "info", subcommandOf = JailsCommand.class)
 public class JailInfoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {

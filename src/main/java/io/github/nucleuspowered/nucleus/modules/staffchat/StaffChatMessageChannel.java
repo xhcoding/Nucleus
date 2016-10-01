@@ -21,12 +21,13 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class StaffChatMessageChannel implements MessageChannel {
 
@@ -83,7 +84,7 @@ public class StaffChatMessageChannel implements MessageChannel {
 
     private String getPermission() {
         if (basePerm == null) {
-            basePerm = plugin.getPermissionRegistry().getService(StaffChatCommand.class).get().getBase();
+            basePerm = plugin.getPermissionRegistry().getService(StaffChatCommand.class).getBase();
         }
 
         return basePerm;

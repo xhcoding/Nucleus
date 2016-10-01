@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Permissions(root = "home", alias = "list", suggestedLevel = SuggestedLevel.USER)
+@Permissions(prefix = "home", mainOverride = "list", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @NoCooldown
 @NoWarmup

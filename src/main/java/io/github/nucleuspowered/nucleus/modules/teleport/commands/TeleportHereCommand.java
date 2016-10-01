@@ -23,7 +23,7 @@ import org.spongepowered.api.text.Text;
  * for abuse for non-admin players trying to pull players. No cost or warmups
  * will be applied. /tpahere should be used instead in these circumstances.
  */
-@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.ADMIN, supportsSelectors = true)
+@Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.ADMIN, supportsSelectors = true)
 @NoWarmup
 @NoCooldown
 @NoCost

@@ -14,7 +14,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-@Permissions(root = "jail")
+@Permissions(prefix = "jail")
 @RunAsync
 @NoWarmup
 @NoCooldown

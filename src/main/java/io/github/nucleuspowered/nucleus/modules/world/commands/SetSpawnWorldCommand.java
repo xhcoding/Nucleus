@@ -16,7 +16,7 @@ import org.spongepowered.api.entity.living.player.Player;
  *
  * Command Usage: /world setspawn Permission: plugin.world.setspawn.base
  */
-@Permissions(root = "world", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setspawn"}, subcommandOf = WorldCommand.class)
 public class SetSpawnWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 

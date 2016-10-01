@@ -9,7 +9,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 
-@Permissions(root = "nucleus")
+@Permissions(prefix = "nucleus")
 @NoCooldown
 @NoCost
 @NoWarmup

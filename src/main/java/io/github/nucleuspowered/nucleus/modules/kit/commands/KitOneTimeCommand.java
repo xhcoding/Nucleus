@@ -22,7 +22,7 @@ import org.spongepowered.api.text.Text;
  *
  * Command Usage: /kit set Permission: plugin.kit.onetime.base
  */
-@Permissions(root = "kit", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"onetime"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoWarmup

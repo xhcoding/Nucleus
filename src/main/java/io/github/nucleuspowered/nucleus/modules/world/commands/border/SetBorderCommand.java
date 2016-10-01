@@ -4,8 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -20,7 +25,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Optional;
 
-@Permissions(root = "world.border")
+@Permissions(prefix = "world.border")
 @NoCooldown
 @NoCost
 @NoWarmup
@@ -39,7 +44,7 @@ public class SetBorderCommand extends io.github.nucleuspowered.nucleus.internal.
             GenericArguments.firstParsing(
                 // Console + player
                 GenericArguments.seq(
-                    GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(worldKey)))),
+                    GenericArguments.optionalWeak(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ALL))),
                     GenericArguments.onlyOne(GenericArguments.integer(Text.of(xKey))),
                     GenericArguments.onlyOne(GenericArguments.integer(Text.of(zKey))),
                     GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(diameter))),

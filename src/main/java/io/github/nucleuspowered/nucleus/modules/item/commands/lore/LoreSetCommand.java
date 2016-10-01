@@ -10,7 +10,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 
-@Permissions(root = "lore")
+@Permissions(prefix = "lore")
 @RegisterCommand(value = "set", subcommandOf = LoreCommand.class)
 public class LoreSetCommand extends LoreSetBaseCommand {
 

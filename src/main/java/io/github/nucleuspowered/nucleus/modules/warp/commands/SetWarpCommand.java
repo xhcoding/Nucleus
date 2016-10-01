@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  *
  * Command Usage: /warp set [warp] Permission: quickstart.warp.set.base
  */
-@Permissions(root = "warp")
+@Permissions(prefix = "warp")
 @RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class)
 public class SetWarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 

@@ -14,7 +14,14 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
@@ -24,7 +31,11 @@ import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.*;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandPermissionException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.source.CommandBlockSource;
@@ -47,14 +58,20 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 /**
  * The basis for any command.
@@ -63,7 +80,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
 
-    // A period separated list of parent commands, starting with the root. Period terminateed.
+    // A period separated list of parent commands, starting with the prefix. Period terminateed.
     private final String commandPath;
 
     // Null until set, then should be considered immutable.
@@ -72,7 +89,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     protected CommandPermissionHandler permissions;
     protected String[] aliases;
-    private String[] forcedAliases;
+    protected String[] forcedAliases;
     private final Class<T> sourceType;
     private boolean bypassWarmup;
     private boolean generateWarmupAnyway;
@@ -203,9 +220,9 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         //
         // nucleus.(primaryalias).base
         //
-        // Adding a "root" and/or "sub" string will generate:
+        // Adding a "prefix" and/or "suffix" string will generate:
         //
-        // nucleus.(root).(primaryalias).(sub).base
+        // nucleus.(prefix).(primaryalias).(suffix).base
         //
         // For warmup, cooldown and cost exemption, replace base with:
         //
@@ -214,7 +231,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         // By default, the permission "nucleus.admin" also gets permission to
         // run and bypass all warmups, cooldowns and costs, but this can be
         // turned off in the annotation.
-        permissions = new CommandPermissionHandler(this, plugin);
+        permissions = plugin.getPermissionRegistry().getService(this.getClass());
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         if (this.commandPath == null || this.commandPath.isEmpty() || !this.commandPath.contains(".")) {
@@ -646,6 +663,21 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
         src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldproperties.default"));
         return Sponge.getServer().getDefaultWorld().get();
+    }
+
+    protected final <U extends User> U getUserFromArgs(Class<U> clazz, CommandSource src, String argument, CommandContext args) throws ReturnMessageException {
+        return getUserFromArgs(clazz, src, argument, args, "command.playeronly");
+    }
+
+    protected final <U extends User> U getUserFromArgs(Class<U> clazz, CommandSource src, String argument, CommandContext args, String failKey) throws ReturnMessageException {
+        Optional<U> opl = args.getOne(argument);
+        if (opl.isPresent()) {
+            return opl.get();
+        } else if (clazz.isInstance(src)) {
+            return clazz.cast(src);
+        } else {
+            throw new ReturnMessageException(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(failKey));
+        }
     }
 
     /**

@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Sends a request to a player to teleport to them, using click handlers.
  */
-@Permissions(root = "teleport", suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
+@Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @NoWarmup(generateConfigEntry = true)
 @RegisterCommand({"tpa", "teleportask"})
 @RunAsync

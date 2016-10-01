@@ -15,7 +15,7 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-@Permissions(root = "lore", alias = "set")
+@Permissions(prefix = "lore", mainOverride = "set")
 @RegisterCommand(value = "clear", subcommandOf = LoreCommand.class)
 public class LoreClearCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 

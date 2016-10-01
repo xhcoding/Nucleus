@@ -23,7 +23,7 @@ import java.util.Optional;
  *
  * Permission: plugin.powertool.base (uses the base permission)
  */
-@Permissions(alias = "powertool")
+@Permissions(mainOverride = "powertool")
 @RunAsync
 @NoCooldown
 @NoWarmup

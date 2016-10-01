@@ -18,7 +18,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
 
-@Permissions(root = "blacklist", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "blacklist", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"add"}, subcommandOf = BlacklistCommand.class)
 public class BlacklistAddCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

@@ -21,7 +21,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Permissions(root = "blacklist", suggestedLevel = SuggestedLevel.ADMIN)
+@Permissions(prefix = "blacklist", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = BlacklistCommand.class)
 public class BlacklistListCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 

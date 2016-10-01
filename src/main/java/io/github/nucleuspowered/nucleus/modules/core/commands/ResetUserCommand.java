@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-@Permissions(root = "nucleus")
+@Permissions(prefix = "nucleus")
 @RunAsync
 @NoWarmup
 @NoCooldown

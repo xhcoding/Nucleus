@@ -9,6 +9,7 @@ import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.seen.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
+import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
@@ -206,10 +207,11 @@ public abstract class StandardModule implements Module {
     }
 
     protected final void createSeenModule(Class<? extends AbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
-        // Register seen information. Get the permission from Check Ban...
-        plugin.getPermissionRegistry().getService(permissionClass).ifPresent(permissionHandler ->
-                // then get if the seen handler exists.
-                plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(),
-                        new BasicSeenInformationProvider(permissionHandler.getBase(), function))));
+        // Register seen information.
+        CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getService(permissionClass);
+
+        // then get if the seen handler exists.
+        plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(),
+                new BasicSeenInformationProvider(permissionHandler.getBase(), function)));
     }
 }

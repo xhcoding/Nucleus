@@ -32,7 +32,6 @@ import org.spongepowered.api.text.channel.type.PermissionMessageChannel;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -40,6 +39,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class MuteListener extends ListenerBase {
 
@@ -194,7 +195,7 @@ public class MuteListener extends ListenerBase {
 
     private CommandPermissionHandler getCommandPermission() {
         if (cph == null) {
-            cph = permissionRegistry.getService(VoiceCommand.class).orElse(new CommandPermissionHandler(new VoiceCommand(), plugin));
+            cph = permissionRegistry.getService(VoiceCommand.class);
         }
 
         return cph;
