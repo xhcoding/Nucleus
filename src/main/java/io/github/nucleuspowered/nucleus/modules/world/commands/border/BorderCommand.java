@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.modules.world.commands.WorldCommand;
@@ -35,7 +36,7 @@ public class BorderCommand extends io.github.nucleuspowered.nucleus.internal.com
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(worldKey))))
+            GenericArguments.optional(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY)))
         };
     }
 

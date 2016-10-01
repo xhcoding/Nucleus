@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
@@ -18,8 +19,9 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import javax.inject.Inject;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 @Permissions(prefix = "world.border")
 @RegisterCommand(value = {"gen", "genchunks", "generatechunks", "chunkgen"}, subcommandOf = BorderCommand.class)
@@ -33,7 +35,7 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.world(Text.of(worldKey))))
+                GenericArguments.optional(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY)))
         };
     }
 

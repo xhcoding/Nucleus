@@ -4,10 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -15,17 +17,11 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- * Teleports you to the world specified.
- *
- * Command Usage: /world teleport [world] Permission:
- * plugin.world.teleport.base
- */
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
 public class TeleportWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
@@ -34,36 +30,41 @@ public class TeleportWorldCommand extends io.github.nucleuspowered.nucleus.inter
     private final String playerKey = "player";
 
     @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        return new HashMap<String, PermissionInformation>() {{
+            put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.world.teleport.other"), SuggestedLevel.ADMIN));
+        }};
+    }
+
+    @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.seq(GenericArguments.world(Text.of(world)),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey)))))};
+        return new CommandElement[] {
+            new NucleusWorldPropertiesArgument(Text.of(world), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY),
+            GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.player(Text.of(playerKey))),
+                permissions.getPermissionWithSuffix("others")
+            ))
+        };
     }
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> optPlayer = args.getOne(playerKey);
+        Player player = getUserFromArgs(Player.class, src, playerKey, args, "command.world.player");
         WorldProperties worldProperties = args.<WorldProperties>getOne(world).get();
-
         if (!worldProperties.isEnabled()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.notenabled", worldProperties.getWorldName()));
-            return CommandResult.success();
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.notenabled", worldProperties.getWorldName()));
         }
 
-        Player player;
-        if (!optPlayer.isPresent()) {
-            if (src instanceof Player) {
-                player = (Player) src;
-            } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.player", worldProperties.getWorldName()));
-                return CommandResult.success();
-            }
+        if (!player.transferToWorld(worldProperties.getUniqueId(), worldProperties.getSpawnPosition().toDouble())) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.failed", worldProperties.getWorldName()));
+        }
+
+        if (src instanceof Player && ((Player) src).getUniqueId().equals(player.getUniqueId())) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", worldProperties.getWorldName()));
         } else {
-            player = optPlayer.get();
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.successplayer",
+                plugin.getNameUtil().getSerialisedName(player), worldProperties.getWorldName()));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", worldProperties.getWorldName()));
         }
-
-        World world = Sponge.getServer().getWorld(worldProperties.getUniqueId()).get();
-        player.transferToWorld(world.getUniqueId(), world.getSpawnLocation().getPosition());
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", world.getName()));
 
         return CommandResult.success();
     }

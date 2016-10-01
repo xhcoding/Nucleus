@@ -663,6 +663,21 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return Sponge.getServer().getDefaultWorld().get();
     }
 
+    protected final <U extends User> U getUserFromArgs(Class<U> clazz, CommandSource src, String argument, CommandContext args) throws ReturnMessageException {
+        return getUserFromArgs(clazz, src, argument, args, "command.playeronly");
+    }
+
+    protected final <U extends User> U getUserFromArgs(Class<U> clazz, CommandSource src, String argument, CommandContext args, String failKey) throws ReturnMessageException {
+        Optional<U> opl = args.getOne(argument);
+        if (opl.isPresent()) {
+            return opl.get();
+        } else if (clazz.isInstance(src)) {
+            return clazz.cast(src);
+        } else {
+            throw new ReturnMessageException(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(failKey));
+        }
+    }
+
     /**
      * Gets a {@link User} from the specified argument, or if one does not exist, attempts to use the
      * player currently running the command, if there is one.
