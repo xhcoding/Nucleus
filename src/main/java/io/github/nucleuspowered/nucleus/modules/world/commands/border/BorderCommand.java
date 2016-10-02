@@ -21,11 +21,9 @@ import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.List;
-import java.util.Optional;
 
 @Permissions(prefix = "world")
 @RegisterCommand(value = {"border"}, subcommandOf = WorldCommand.class)
@@ -42,19 +40,7 @@ public class BorderCommand extends io.github.nucleuspowered.nucleus.internal.com
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<WorldProperties> owp = args.getOne(worldKey);
-        WorldProperties wp;
-        if (owp.isPresent()) {
-            wp = owp.get();
-        } else {
-            if (src instanceof Locatable) {
-                wp = ((Locatable) src).getWorld().getProperties();
-            } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.noworld"));
-                return CommandResult.empty();
-            }
-        }
-
+        WorldProperties wp = getWorldFromUserOrArgs(src, worldKey, args);
         List<Text> worldBorderInfo = Lists.newArrayList();
 
         Vector3d centre = wp.getWorldBorderCenter();

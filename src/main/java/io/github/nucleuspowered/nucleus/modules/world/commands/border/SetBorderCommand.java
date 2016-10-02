@@ -61,19 +61,13 @@ public class SetBorderCommand extends io.github.nucleuspowered.nucleus.internal.
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<WorldProperties> owp = args.getOne(worldKey);
-        WorldProperties wp;
+        WorldProperties wp = getWorldFromUserOrArgs(src, worldKey, args);
         int x;
         int z;
         int dia = args.<Integer>getOne(diameter).get();
         int delay = args.<Integer>getOne(delayKey).orElse(0);
 
-        if (!(src instanceof Locatable) && !owp.isPresent()) {
-            // Tell the user that a world is required.
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.noworld"));
-            return CommandResult.empty();
-        } else if (src instanceof Locatable) {
-            wp = owp.orElse(((Locatable) src).getWorld().getProperties());
+        if (src instanceof Locatable) {
             Location<World> lw = ((Locatable) src).getLocation();
             if (args.hasAny(zKey)) {
                 x = args.<Integer>getOne(xKey).get();
@@ -83,7 +77,6 @@ public class SetBorderCommand extends io.github.nucleuspowered.nucleus.internal.
                 z = lw.getBlockZ();
             }
         } else {
-            wp = owp.get();
             x = args.<Integer>getOne(xKey).get();
             z = args.<Integer>getOne(zKey).get();
         }

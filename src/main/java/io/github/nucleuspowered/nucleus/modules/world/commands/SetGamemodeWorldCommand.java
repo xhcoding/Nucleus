@@ -46,25 +46,12 @@ public class SetGamemodeWorldCommand extends io.github.nucleuspowered.nucleus.in
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         GameMode gamemodeInput = args.<GameMode>getOne(gamemode).get();
-        Optional<WorldProperties> optWorldProperties = args.getOne(world);
+        WorldProperties worldProperties = getWorldFromUserOrArgs(src, world, args);
 
-        if (optWorldProperties.isPresent()) {
-            optWorldProperties.get().setGameMode(gamemodeInput);
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setgamemode.success",
-                optWorldProperties.get().getWorldName(),
-                Util.getTranslatableIfPresent(gamemodeInput)));
-        } else {
-            if (src instanceof Player) {
-                Player player = (Player) src;
-                player.getWorld().getProperties().setGameMode(gamemodeInput);
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setgamemode.success",
-                    optWorldProperties.get().getWorldName(),
-                    Util.getTranslatableIfPresent(gamemodeInput)));
-            } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.player"));
-                return CommandResult.empty();
-            }
-        }
+        worldProperties.setGameMode(gamemodeInput);
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setgamemode.success",
+            worldProperties.getWorldName(),
+            Util.getTranslatableIfPresent(gamemodeInput)));
 
         return CommandResult.success();
     }
