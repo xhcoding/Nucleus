@@ -41,19 +41,7 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<WorldProperties> owp = args.getOne(worldKey);
-        WorldProperties wp;
-        if (owp.isPresent()) {
-            wp = owp.get();
-        } else {
-            if (src instanceof LocatedSource) {
-                wp = ((LocatedSource) src).getWorld().getProperties();
-            } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.noworld"));
-                return CommandResult.empty();
-            }
-        }
-
+        WorldProperties wp = getWorldFromUserOrArgs(src, worldKey, args);
         if (worldHelper.isPregenRunningForWorld(wp.getUniqueId())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.alreadyrunning", wp.getWorldName()));
             return CommandResult.empty();

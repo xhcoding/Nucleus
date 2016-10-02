@@ -42,19 +42,7 @@ public class BorderCommand extends io.github.nucleuspowered.nucleus.internal.com
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<WorldProperties> owp = args.getOne(worldKey);
-        WorldProperties wp;
-        if (owp.isPresent()) {
-            wp = owp.get();
-        } else {
-            if (src instanceof LocatedSource) {
-                wp = ((LocatedSource) src).getWorld().getProperties();
-            } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setborder.noworld"));
-                return CommandResult.empty();
-            }
-        }
-
+        WorldProperties wp = getWorldFromUserOrArgs(src, worldKey, args);
         List<Text> worldBorderInfo = Lists.newArrayList();
 
         Vector3d centre = wp.getWorldBorderCenter();

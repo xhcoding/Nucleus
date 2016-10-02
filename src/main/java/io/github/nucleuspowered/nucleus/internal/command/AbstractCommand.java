@@ -69,6 +69,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -675,6 +676,20 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             return clazz.cast(src);
         } else {
             throw new ReturnMessageException(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(failKey));
+        }
+    }
+
+    @Nonnull
+    protected final WorldProperties getWorldFromUserOrArgs(CommandSource src, String argument, CommandContext args) throws ReturnMessageException {
+        Optional<WorldProperties> owp = args.getOne(argument);
+        if (owp.isPresent()) {
+           return owp.get();
+        } else {
+            if (src instanceof LocatedSource) {
+                return ((LocatedSource) src).getWorld().getProperties();
+            } else {
+                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.noworldconsole"));
+            }
         }
     }
 
