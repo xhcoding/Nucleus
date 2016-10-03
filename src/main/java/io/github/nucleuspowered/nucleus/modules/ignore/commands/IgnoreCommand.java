@@ -8,7 +8,12 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -62,7 +67,7 @@ public class IgnoreCommand extends io.github.nucleuspowered.nucleus.internal.com
         if (permissions.testSuffix(target, "exempt.chat")) {
             // Make sure they are removed.
             inu.removeFromIgnoreList(target.getUniqueId());
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignore.exempt"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignore.exempt", target.getName()));
             return CommandResult.empty();
         }
 
