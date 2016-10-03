@@ -67,12 +67,7 @@ public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.c
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<User> opl = this.getUser(User.class, src, playerKey, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        User pl = opl.get();
+        User pl = this.getUserFromArgs(User.class, src, playerKey, args);
         String name = args.<String>getOne(nickName).get();
 
         // Does the user exist?

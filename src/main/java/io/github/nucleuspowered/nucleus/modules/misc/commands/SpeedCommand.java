@@ -25,10 +25,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 @RegisterCommand("speed")
 @Permissions(supportsSelectors = true)
@@ -75,12 +76,7 @@ public class SpeedCommand extends io.github.nucleuspowered.nucleus.internal.comm
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, playerKey, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player pl = opl.get();
+        Player pl = this.getUserFromArgs(Player.class, src, playerKey, args);
         Optional<Integer> ospeed = args.getOne(speedKey);
         if (!ospeed.isPresent()) {
             Text t = Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.walk")).append(Text.of(" "))

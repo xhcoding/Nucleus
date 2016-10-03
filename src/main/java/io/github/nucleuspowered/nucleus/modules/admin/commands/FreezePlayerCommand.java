@@ -22,7 +22,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"freezeplayer", "freeze"})
@@ -49,15 +48,10 @@ public class FreezePlayerCommand extends io.github.nucleuspowered.nucleus.intern
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, player, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
+        Player pl = this.getUserFromArgs(Player.class, src, player, args);
         NucleusUser nu;
-
         try {
-            nu = userConfigLoader.getUser(opl.get()).get();
+            nu = userConfigLoader.getUser(pl).get();
         } catch (Exception e) {
             e.printStackTrace();
             throw new CommandException(plugin.getMessageProvider().getTextMessageWithFormat("command.file.load"), e);
@@ -69,7 +63,7 @@ public class FreezePlayerCommand extends io.github.nucleuspowered.nucleus.intern
             nu.setFrozen(true);
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.freezeplayer.success", opl.get().getName(), nu.isFrozen() ? "frozen" : "un-frozen"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.freezeplayer.success", pl.getName(), nu.isFrozen() ? "frozen" : "un-frozen"));
         return CommandResult.success();
     }
 }

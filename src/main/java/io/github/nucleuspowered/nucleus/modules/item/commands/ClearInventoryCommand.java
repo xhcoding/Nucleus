@@ -6,7 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.item.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -20,7 +24,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RegisterCommand({"clear", "clearinv", "clearinventory", "ci"})
 @NoCooldown
@@ -50,13 +53,9 @@ public class ClearInventoryCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, player, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Util.getStandardInventory(opl.get()).clear();
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.clearinventory.success", opl.get().getName()));
+        Player pl = this.getUserFromArgs(Player.class, src, player, args);
+        Util.getStandardInventory(pl).clear();
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.clearinventory.success", pl.getName()));
         return CommandResult.success();
     }
 }

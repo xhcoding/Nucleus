@@ -70,10 +70,7 @@ public class SpawnMobCommand extends io.github.nucleuspowered.nucleus.internal.c
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, playerKey, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
+        Player pl = this.getUserFromArgs(Player.class, src, playerKey, args);
 
         // Get the amount
         int amount = args.<Integer>getOne(amountKey).get();
@@ -84,7 +81,7 @@ public class SpawnMobCommand extends io.github.nucleuspowered.nucleus.internal.c
             return CommandResult.empty();
         }
 
-        Location<World> loc = opl.get().getLocation();
+        Location<World> loc = pl.getLocation();
         World w = loc.getExtent();
 
         // Count the number of entities spawned.
@@ -94,7 +91,7 @@ public class SpawnMobCommand extends io.github.nucleuspowered.nucleus.internal.c
         // we make use of Sponge's awesome Cause system, and just make them the second argument.
         Cause cause = Cause.of(
                 NamedCause.owner(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()),
-                NamedCause.source(opl.get()));
+                NamedCause.source(pl));
         do {
             Optional<Entity> e = w.createEntity(et, loc.getPosition());
             if (e.isPresent() && w.spawnEntity(e.get(), cause)) {

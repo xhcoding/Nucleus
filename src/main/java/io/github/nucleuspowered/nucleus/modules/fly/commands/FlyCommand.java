@@ -24,7 +24,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions
 @RegisterCommand("fly")
@@ -56,13 +55,7 @@ public class FlyCommand extends io.github.nucleuspowered.nucleus.internal.comman
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, player, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player pl = opl.get();
-
+        Player pl = this.getUserFromArgs(Player.class, src, player, args);
         UserService uc = udm.get(pl).get();
         boolean fly = args.<Boolean>getOne(toggle).orElse(!pl.get(Keys.CAN_FLY).orElse(false));
 

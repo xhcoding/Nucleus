@@ -6,7 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -59,12 +63,7 @@ public class GamemodeCommand extends io.github.nucleuspowered.nucleus.internal.c
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> ou = this.getUser(Player.class, src, userKey, args);
-        if (!ou.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player user = ou.get();
+        Player user = this.getUserFromArgs(Player.class, src, userKey, args);
         Optional<GameMode> ogm = args.getOne(gamemodeKey);
         if (!ogm.isPresent()) {
             String mode = user.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL).getName();

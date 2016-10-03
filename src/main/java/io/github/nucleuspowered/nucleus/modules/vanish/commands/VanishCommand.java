@@ -5,7 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -20,7 +24,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions
 @NoCooldown
@@ -51,12 +54,7 @@ public class VanishCommand extends io.github.nucleuspowered.nucleus.internal.com
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, playerKey, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player playerToVanish = opl.get();
+        Player playerToVanish = this.getUserFromArgs(Player.class, src, playerKey, args);
 
         // If we don't specify whether to vanish, toggle
         boolean toVanish = args.<Boolean>getOne(b).orElse(!playerToVanish.get(Keys.INVISIBLE).orElse(false));
