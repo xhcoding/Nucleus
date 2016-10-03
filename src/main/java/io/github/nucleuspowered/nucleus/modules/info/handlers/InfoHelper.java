@@ -16,6 +16,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InfoHelper {
 
@@ -28,7 +29,8 @@ public class InfoHelper {
 
     public static void sendInfo(List<String> tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
         // Get the text.
-        List<Text> textList = chatUtil.getFromStrings(tfc, src);
+        List<Text> textList = chatUtil.getPlayerMessageFromTemplate(tfc, src, true).stream()
+            .map(chatUtil::addUrlsToText).collect(Collectors.toList());
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         PaginationList.Builder pb = ps.builder().contents(textList);

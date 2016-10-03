@@ -28,19 +28,22 @@ import org.spongepowered.api.world.World;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class ChatUtil {
 
     private final Map<String, BiFunction<CommandSource, String, Text>> tokens;
     private final Map<String, BiFunction<CommandSource, String, Text>> serverTokens;
 
-    private final Pattern playerTokenMatcher;
-    private final Pattern playerTokenSplitter;
+    private final Pattern playerAndServerTokenMatcher;
+    private final Pattern playerAndServerTokenSplitter;
 
     private final Pattern serverTokenMatcher;
     private final Pattern serverTokenSplitter;
@@ -61,8 +64,8 @@ public class ChatUtil {
         Set<String> t = Sets.newHashSet(tokens.keySet());
         t.addAll(serverTokens.keySet());
         String m = getRegex(t);
-        playerTokenMatcher = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
-        playerTokenSplitter = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
+        playerAndServerTokenMatcher = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
+        playerAndServerTokenSplitter = Pattern.compile(MessageFormat.format("(?<={0})|(?={0})", m), Pattern.CASE_INSENSITIVE);
 
         m = getRegex(serverTokens.keySet());
         serverTokenMatcher = Pattern.compile(m, Pattern.CASE_INSENSITIVE);
@@ -75,12 +78,6 @@ public class ChatUtil {
         StringBuilder sb = new StringBuilder("(");
         keys.forEach(k -> sb.append(k.replaceAll("\\{\\{", "\\\\{\\\\{").replaceAll("\\}\\}", "\\\\}\\\\}")).append("|"));
         return sb.deleteCharAt(sb.length() - 1).append(")").toString();
-    }
-
-    public List<Text> getFromStrings(List<String> strings, CommandSource cs) {
-        return strings.stream().map(x -> this.getServerMessageFromTemplate(x, cs, true))
-                .map(x -> addUrlsToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(x)))
-                .collect(Collectors.toList());
     }
 
     @SafeVarargs
@@ -109,7 +106,11 @@ public class ChatUtil {
     // String -> Text parser. Should split on all {{}} tags, but keep the tags in. We can then use the target map
     // to do the replacements!
     public Text getPlayerMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
-        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerTokenSplitter, playerTokenMatcher, tokens, serverTokens);
+        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerAndServerTokenSplitter, playerAndServerTokenMatcher, tokens, serverTokens);
+    }
+
+    public List<Text> getPlayerMessageFromTemplate(List<String> template, CommandSource cs, boolean trimTrailingSpace) {
+        return getMessageFromTemplate(template, cs, trimTrailingSpace, playerAndServerTokenSplitter, playerAndServerTokenMatcher, tokens, serverTokens);
     }
 
     public Text getServerMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace) {
@@ -118,45 +119,57 @@ public class ChatUtil {
 
     @SafeVarargs
     private final Text getMessageFromTemplate(String template, CommandSource cs, boolean trimTrailingSpace,
-                                              Pattern splitter, Pattern matcher, Map<String, BiFunction<CommandSource, String, Text>>... tokensArray) {
-        StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
+        Pattern splitter, Pattern matcher, Map<String, BiFunction<CommandSource, String, Text>>... tokensArray) {
+        return getMessageFromTemplate(Lists.newArrayList(template), cs, trimTrailingSpace, splitter, matcher, tokensArray).get(0);
+    }
 
+    @SafeVarargs
+    private final List<Text> getMessageFromTemplate(List<String> templates, CommandSource cs, final boolean trimTrailingSpace,
+                                              Pattern splitter, Pattern matcher, Map<String, BiFunction<CommandSource, String, Text>>... tokensArray) {
         Map<String, BiFunction<CommandSource, String, Text>> tokens = Maps.newHashMap();
         for (Map<String, BiFunction<CommandSource, String, Text>> stringFunctionMap : tokensArray) {
             tokens.putAll(stringFunctionMap);
         }
 
-        Text.Builder tb = Text.builder();
-        for (String textElement : splitter.split(template)) {
-            if (matcher.matcher(textElement).matches()) {
+        List<Text> texts = Lists.newArrayList();
+        templates.forEach(template -> {
+            StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
+            boolean trimNext = trimTrailingSpace;
 
-                // Bit hacky, but it allows the rest of the token system to work. If we get something beginning with
-                // {{o: then we get the specific function out.
-                String elementToUse = textElement.toLowerCase().startsWith("{{o:") ? this.customPrefixPatten : textElement.toLowerCase();
+            Text.Builder tb = Text.builder();
+            for (String textElement : splitter.split(template)) {
+                if (matcher.matcher(textElement).matches()) {
 
-                // If we have a token, do the replacement as specified by the function
-                Text message = Text.builder().color(st.colour).style(st.style)
+                    // Bit hacky, but it allows the rest of the token system to work. If we get something beginning with
+                    // {{o: then we get the specific function out.
+                    String elementToUse = textElement.toLowerCase().startsWith("{{o:") ? this.customPrefixPatten : textElement.toLowerCase();
+
+                    // If we have a token, do the replacement as specified by the function
+                    Text message = Text.builder().color(st.colour).style(st.style)
                         .append(tokens.get(elementToUse).apply(cs, textElement)).build();
-                if (!message.isEmpty()) {
-                    trimTrailingSpace = false;
-                    tb.append(message);
-                }
-            } else {
-                if (trimTrailingSpace) {
-                    textElement = textElement.replaceAll("^\\s+", "");
-                }
+                    if (!message.isEmpty()) {
+                        trimNext = false;
+                        tb.append(message);
+                    }
+                } else {
+                    if (trimNext) {
+                        textElement = textElement.replaceAll("^\\s+", "");
+                    }
 
-                if (!textElement.isEmpty()) {
-                    // Just convert the colour codes, but that's it.
-                    Text r = TextSerializers.FORMATTING_CODE.deserialize(textElement);
-                    tb.append(Text.of(st.colour, st.style, r));
-                    st = getLastColourAndStyle(r, st);
-                    trimTrailingSpace = false;
+                    if (!textElement.isEmpty()) {
+                        // Just convert the colour codes, but that's it.
+                        Text r = TextSerializers.FORMATTING_CODE.deserialize(textElement);
+                        tb.append(Text.of(st.colour, st.style, r));
+                        st = getLastColourAndStyle(r, st);
+                        trimNext = false;
+                    }
                 }
             }
-        }
 
-        return tb.build();
+            texts.add(tb.build());
+        });
+
+        return texts;
     }
 
     public Text addUrlsToText(Text message) {
