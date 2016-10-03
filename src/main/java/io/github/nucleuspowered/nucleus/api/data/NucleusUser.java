@@ -185,6 +185,8 @@ public interface NucleusUser {
      */
     boolean setHome(String home, Location<World> location, Vector3d rotation);
 
+    boolean setHome(String home, Location<World> location, Vector3d rotation, boolean overwrite);
+
     /**
      * Deletes the named home.
      *
