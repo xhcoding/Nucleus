@@ -57,7 +57,7 @@ public class VanishCommand extends io.github.nucleuspowered.nucleus.internal.com
         Player playerToVanish = this.getUserFromArgs(Player.class, src, playerKey, args);
 
         // If we don't specify whether to vanish, toggle
-        boolean toVanish = args.<Boolean>getOne(b).orElse(!playerToVanish.get(Keys.INVISIBLE).orElse(false));
+        boolean toVanish = args.<Boolean>getOne(b).orElse(!playerToVanish.get(Keys.VANISH).orElse(false));
 
         DataTransactionResult dtr = playerToVanish.offer(Keys.VANISH, toVanish);
         playerToVanish.offer(Keys.VANISH_PREVENTS_TARGETING, toVanish);
