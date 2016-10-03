@@ -671,6 +671,20 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return getUserFromArgs(clazz, src, argument, args, "command.playeronly");
     }
 
+    /**
+     * Gets a {@link User} from the specified argument, or if one does not exist, attempts to use the
+     * player currently running the command, if there is one.
+     *
+     * @param clazz The {@link Class} of the object we're expecting, which might be a {@link User} or {@link Player}
+     * @param src The {@link CommandSource} running the command.
+     * @param argument The name of the argument to check.
+     * @param args The {@link CommandContext} that would contain the arguement result.
+     * @param failKey The translation key to use if the method fails to produce a user.
+     * @param <U> The type of object we're looking for.
+     * @throws ReturnMessageException if no user was found.
+     *
+     * @return An object of type {@code clazz}.
+     */
     protected final <U extends User> U getUserFromArgs(Class<U> clazz, CommandSource src, String argument, CommandContext args, String failKey) throws ReturnMessageException {
         Optional<U> opl = args.getOne(argument);
         if (opl.isPresent()) {
@@ -694,34 +708,6 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.noworldconsole"));
             }
         }
-    }
-
-    /**
-     * Gets a {@link User} from the specified argument, or if one does not exist, attempts to use the
-     * player currently running the command, if there is one.
-     *
-     * @param clazz The {@link Class} of the object we're expecting, which might be a {@link User} or {@link Player}
-     * @param src The {@link CommandSource} running the command.
-     * @param argument The name of the argument to check.
-     * @param args The {@link CommandContext} that would contain the arguement result.
-     * @param <U> The type of object we're looking for
-     *
-     * @return An {@link Optional} that might contain a user. This will typically only be {@link Optional#empty()} if
-     *         the command was executed on the console.
-     */
-    protected <U extends User> Optional<U> getUser(Class<U> clazz, CommandSource src, String argument, CommandContext args) {
-        Optional<U> opl = args.getOne(argument);
-        U pl;
-        if (opl.isPresent()) {
-            pl = opl.get();
-        } else if (clazz.isInstance(src)) {
-            pl = clazz.cast(src);
-        } else {
-            src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.playeronly"));
-            return Optional.empty();
-        }
-
-        return Optional.of(pl);
     }
 
     // -------------------------------------

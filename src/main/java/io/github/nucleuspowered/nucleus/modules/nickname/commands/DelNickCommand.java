@@ -17,8 +17,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-import java.util.Optional;
-
 @RegisterCommand({"delnick", "delnickname", "deletenick"})
 @Permissions(mainOverride = "nick")
 public class DelNickCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
@@ -36,12 +34,7 @@ public class DelNickCommand extends io.github.nucleuspowered.nucleus.internal.co
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<User> opl = this.getUser(User.class, src, playerKey, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        User pl = opl.get();
+        User pl = this.getUserFromArgs(User.class, src, playerKey, args);
         UserService userService = loader.get(pl).get();
         userService.removeNickname();
 

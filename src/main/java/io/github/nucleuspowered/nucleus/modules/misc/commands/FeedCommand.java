@@ -21,7 +21,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand("feed")
@@ -50,12 +49,7 @@ public class FeedCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, player, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player pl = opl.get();
+        Player pl = this.getUserFromArgs(Player.class, src, player, args);
 
         // Get the food data and modify it.
         FoodData foodData = pl.getFoodData();

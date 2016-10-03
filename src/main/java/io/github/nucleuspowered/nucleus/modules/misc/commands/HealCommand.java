@@ -20,7 +20,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand("heal")
@@ -49,12 +48,7 @@ public class HealCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, player, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player pl = opl.get();
+        Player pl = this.getUserFromArgs(Player.class, src, player, args);
         if (pl.offer(Keys.HEALTH, pl.get(Keys.MAX_HEALTH).get()).isSuccessful()) {
             pl.offer(Keys.FIRE_TICKS, 0);
             pl.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.heal.success.self"));

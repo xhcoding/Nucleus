@@ -24,7 +24,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"repair", "mend"})
@@ -51,20 +50,15 @@ public class RepairCommand extends io.github.nucleuspowered.nucleus.internal.com
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, player, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        if (opl.get().getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
-            ItemStack stack = opl.get().getItemInHand(HandTypes.MAIN_HAND).get();
-
+        Player pl = this.getUserFromArgs(Player.class, src, player, args);
+        if (pl.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+            ItemStack stack = pl.getItemInHand(HandTypes.MAIN_HAND).get();
             if (stack.get(DurabilityData.class).isPresent()) {
                 DurabilityData durabilityData = stack.get(DurabilityData.class).get();
                 DataTransactionResult transactionResult = stack.offer(Keys.ITEM_DURABILITY, durabilityData.durability().getMaxValue());
                 if (transactionResult.isSuccessful()) {
-                    opl.get().setItemInHand(HandTypes.MAIN_HAND, stack);
-                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.repair.success", opl.get().getName()));
+                    pl.setItemInHand(HandTypes.MAIN_HAND, stack);
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.repair.success", pl.getName()));
                     return CommandResult.success();
                 } else {
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.repair.error"));

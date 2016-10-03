@@ -6,7 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands.exp;
 
 import io.github.nucleuspowered.nucleus.argumentparsers.ExperienceLevelArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.modules.admin.commands.ExperienceCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -42,12 +46,7 @@ public class SetExperience extends io.github.nucleuspowered.nucleus.internal.com
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, ExperienceCommand.playerKey, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player pl = opl.get();
+        Player pl = this.getUserFromArgs(Player.class, src, ExperienceCommand.playerKey, args);
         if (!ExperienceCommand.checkGameMode(pl, src)) {
             return CommandResult.empty();
         }

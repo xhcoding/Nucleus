@@ -23,7 +23,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"ignite", "burn"})
@@ -58,12 +57,7 @@ public class IgniteCommand extends io.github.nucleuspowered.nucleus.internal.com
     @Override
     public CommandResult executeCommand(CommandSource pl, CommandContext args) throws Exception {
         int ticksInput = args.<Integer>getOne(ticks).get();
-        Optional<Player> opl = this.getUser(Player.class, pl, player, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player target = opl.get();
+        Player target = this.getUserFromArgs(Player.class, pl, player, args);
         GameMode gm = target.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL);
         if (gm == GameModes.CREATIVE || gm == GameModes.SPECTATOR) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.gamemode", target.getName()));
@@ -71,10 +65,10 @@ public class IgniteCommand extends io.github.nucleuspowered.nucleus.internal.com
         }
 
         if (target.offer(Keys.FIRE_TICKS, ticksInput).isSuccessful()) {
-            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.success", opl.get().getName(), String.valueOf(ticksInput)));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.success", target.getName(), String.valueOf(ticksInput)));
             return CommandResult.success();
         } else {
-            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.error", opl.get().getName()));
+            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ignite.error", target.getName()));
             return CommandResult.empty();
         }
     }

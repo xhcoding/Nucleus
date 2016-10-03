@@ -6,7 +6,12 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -59,13 +64,8 @@ public class ListHomeCommand extends io.github.nucleuspowered.nucleus.internal.c
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<User> ou = this.getUser(User.class, src, player, args); // args.getOne(player);
-        if (!ou.isPresent()) {
-            return CommandResult.empty();
-        }
-
+        User user = this.getUserFromArgs(User.class, src, player, args); // args.getOne(player);
         Text header;
-        User user = ou.get();
 
         boolean other = !src.equals(user);
 

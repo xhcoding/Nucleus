@@ -5,7 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -18,7 +22,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions
 @NoCooldown
@@ -47,13 +50,7 @@ public class GodCommand extends io.github.nucleuspowered.nucleus.internal.comman
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Optional<Player> opl = this.getUser(Player.class, src, playerKey, args);
-        if (!opl.isPresent()) {
-            return CommandResult.empty();
-        }
-
-        Player pl = opl.get();
-
+        Player pl = this.getUserFromArgs(Player.class, src, playerKey, args);
         UserService uc = plugin.getUserDataManager().get(pl).get();
         boolean god = args.<Boolean>getOne(invulnKey).orElse(!uc.isInvulnerable());
 
