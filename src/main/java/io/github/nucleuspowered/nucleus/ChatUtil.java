@@ -37,6 +37,8 @@ import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 public class ChatUtil {
 
     private final Map<String, BiFunction<CommandSource, String, Text>> tokens;
@@ -50,7 +52,15 @@ public class ChatUtil {
 
     private final NucleusPlugin plugin;
     private final Pattern urlParser =
-            Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)", Pattern.CASE_INSENSITIVE);
+        Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)",
+        Pattern.CASE_INSENSITIVE);
+
+    private final Pattern enhancedUrlParser =
+            Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?"
+                + "((?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
+                + "(?<specialUrl>(\\[(?<msg>.+)\\]\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,})\\)))|"
+                + "(?<specialCmd>(\\[(?<sMsg>.+)\\]\\((?<sCmd>/.+)\\))))",
+                Pattern.CASE_INSENSITIVE);
 
     private final String customPrefixPatten = "{{o:([a-zA-Z0-9_-]{1,15})(:s)?}}";
     private CoreConfigAdapter cca = null;
@@ -176,13 +186,21 @@ public class ChatUtil {
         return addUrlsToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(message));
     }
 
+    public Text addLinksToText(Text message, @Nullable Player player) {
+        return addLinksToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(message), player, enhancedUrlParser);
+    }
+
     public Text addUrlsToAmpersandFormattedString(String message) {
+        return addLinksToAmpersandFormattedString(message, null, urlParser);
+    }
+
+    public Text addLinksToAmpersandFormattedString(String message, @Nullable Player player, Pattern parser) {
         Preconditions.checkNotNull(message, "message");
         if (message.isEmpty()) {
             return Text.EMPTY;
         }
 
-        Matcher m = urlParser.matcher(message);
+        Matcher m = parser.matcher(message);
         if (!m.find()) {
             return TextSerializers.FORMATTING_CODE.deserialize(message);
         }
@@ -191,9 +209,8 @@ public class ChatUtil {
         String remaining = message;
         StyleTuple st = ChatUtil.EMPTY;
         do {
-
             // We found a URL. We split on the URL that we have.
-            String[] textArray = remaining.split(urlParser.pattern(), 2);
+            String[] textArray = remaining.split(parser.pattern(), 2);
             Text first = Text.builder().color(st.colour).style(st.style)
                     .append(TextSerializers.FORMATTING_CODE.deserialize(textArray[0])).build();
 
@@ -216,35 +233,26 @@ public class ChatUtil {
             st = getLastColourAndStyle(first, st);
 
             // Build the URL
-            String url = m.group("url");
-            String toParse = TextSerializers.FORMATTING_CODE.stripCodes(url);
             String whiteSpace = m.group("first");
-            if (!whiteSpace.isEmpty()) {
-                url = String.join("", whiteSpace, url);
-            }
-
-            try {
-                URL urlObj;
-                if (!toParse.startsWith("http://") && !toParse.startsWith("https://")) {
-                    urlObj = new URL("http://" + toParse);
-                } else {
-                    urlObj = new URL(toParse);
+            if (m.group("url") != null) {
+                String url = m.group("url");
+                texts.add(getTextForUrl(url, url, whiteSpace, st));
+            } else if (m.group("specialUrl") != null) {
+                String url = m.group("sUrl");
+                String msg = m.group("msg");
+                texts.add(getTextForUrl(url, msg, whiteSpace, st));
+            } else {
+                // Must be rules.
+                String cmd = m.group("sCmd");
+                String msg = m.group("sMsg");
+                if (player != null) {
+                    cmd = cmd.replace("{{player}}", player.getName());
                 }
 
-                texts.add(Text.builder(url).color(st.colour).style(st.style)
-                        .onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("chat.url.click", url)))
-                        .onClick(TextActions.openUrl(urlObj))
-                        .build());
-            } catch (MalformedURLException e) {
-                // URL parsing failed, just put the original text in here.
-                initCoreConfigAdapter();
-
-                plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("chat.url.malformed", url));
-                texts.add(Text.builder(url).color(st.colour).style(st.style).build());
-
-                if (this.cca.getNodeOrDefault().isDebugmode()) {
-                    e.printStackTrace();
-                }
+                return Text.builder(msg).color(st.colour).style(st.style)
+                    .onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("chat.command.click", cmd)))
+                    .onClick(TextActions.runCommand(cmd))
+                    .build();
             }
         } while (remaining != null && m.find());
 
@@ -257,6 +265,38 @@ public class ChatUtil {
         // Join it all together.
         return Text.join(texts);
     }
+
+    private Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st) {
+        String toParse = TextSerializers.FORMATTING_CODE.stripCodes(url);
+        if (!whiteSpace.isEmpty()) {
+            msg = String.join("", whiteSpace, msg);
+        }
+
+        try {
+            URL urlObj;
+            if (!toParse.startsWith("http://") && !toParse.startsWith("https://")) {
+                urlObj = new URL("http://" + toParse);
+            } else {
+                urlObj = new URL(toParse);
+            }
+
+            return Text.builder(msg).color(st.colour).style(st.style)
+                .onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("chat.url.click", url)))
+                .onClick(TextActions.openUrl(urlObj))
+                .build();
+        } catch (MalformedURLException e) {
+            // URL parsing failed, just put the original text in here.
+            initCoreConfigAdapter();
+
+            plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("chat.url.malformed", url));
+            if (this.cca.getNodeOrDefault().isDebugmode()) {
+                e.printStackTrace();
+            }
+
+            return Text.builder(url).color(st.colour).style(st.style).build();
+        }
+    }
+
 
     public StyleTuple getLastColourAndStyle(Text text, StyleTuple current) {
         List<Text> texts = flatten(text);

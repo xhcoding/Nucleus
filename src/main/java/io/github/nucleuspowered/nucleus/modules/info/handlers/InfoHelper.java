@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ConsoleSource;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -30,7 +31,7 @@ public class InfoHelper {
     public static void sendInfo(List<String> tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
         // Get the text.
         List<Text> textList = chatUtil.getPlayerMessageFromTemplate(tfc, src, true).stream()
-            .map(chatUtil::addUrlsToText).collect(Collectors.toList());
+            .map(x -> chatUtil.addLinksToText(x, src instanceof Player ? (Player)src : null)).collect(Collectors.toList());
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         PaginationList.Builder pb = ps.builder().contents(textList);
