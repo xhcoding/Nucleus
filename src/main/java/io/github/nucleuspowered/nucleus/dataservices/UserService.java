@@ -261,6 +261,11 @@ public class UserService extends Service<UserDataNode>
 
     @Override
     public boolean setHome(String home, Location<World> location, Vector3d rotation) {
+        return setHome(home, location, rotation, false);
+    }
+
+    @Override
+    public boolean setHome(String home, Location<World> location, Vector3d rotation, boolean overwrite) {
         final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
 
         Map<String, LocationNode> homeData = data.getHomeData();
@@ -270,7 +275,9 @@ public class UserService extends Service<UserDataNode>
 
         Optional<String> os = Util.getKeyIgnoreCase(data.getHomeData(), home);
         if (os.isPresent() || !warpName.matcher(home).matches()) {
-            return false;
+            if (!overwrite || !deleteHome(home)) {
+                return false;
+            }
         }
 
         homeData.put(home, new LocationNode(location, rotation));
