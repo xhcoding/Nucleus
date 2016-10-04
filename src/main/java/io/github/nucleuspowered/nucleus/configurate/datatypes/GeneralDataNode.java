@@ -46,11 +46,19 @@ public class GeneralDataNode {
     private final Object locking = new Object();
 
     public List<ItemType> getBlacklistedTypes() {
-        return blacklistedTypes;
+        if (this.blacklistedTypes == null) {
+            this.blacklistedTypes = Lists.newArrayList();
+        }
+
+        return this.blacklistedTypes;
     }
 
     public void setBlacklistedTypes(List<ItemType> blacklistedTypes) {
-        this.blacklistedTypes = blacklistedTypes;
+        if (blacklistedTypes == null) {
+            this.blacklistedTypes = Lists.newArrayList();
+        } else {
+            this.blacklistedTypes = blacklistedTypes;
+        }
     }
 
     public Map<String, LocationNode> getJails() {
