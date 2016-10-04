@@ -4,6 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import static io.github.nucleuspowered.nucleus.PluginInfo.DESCRIPTION;
+import static io.github.nucleuspowered.nucleus.PluginInfo.ID;
+import static io.github.nucleuspowered.nucleus.PluginInfo.NAME;
+import static io.github.nucleuspowered.nucleus.PluginInfo.VERSION;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
@@ -15,7 +20,6 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusUserLoaderService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
-import io.github.nucleuspowered.nucleus.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
@@ -71,8 +75,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static io.github.nucleuspowered.nucleus.PluginInfo.*;
 
 @Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
 public class NucleusPlugin extends Nucleus {
@@ -319,14 +321,23 @@ public class NucleusPlugin extends Nucleus {
     public void reloadMessages() {
         try {
             if (moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isCustommessages()) {
-                this.messageProvider = new ConfigMessageProvider(new MessageConfig(configDir.resolve("messages.conf")), ResourceMessageProvider.messagesBundle);
-                this.commandMessageProvider = new ConfigMessageProvider(new MessageConfig(configDir.resolve("command-help-messages.conf")), ResourceMessageProvider.messagesBundle);
+                this.messageProvider = new ConfigMessageProvider(configDir.resolve("messages.conf"), ResourceMessageProvider.messagesBundle);
+                this.commandMessageProvider = new ConfigMessageProvider(configDir.resolve("command-help-messages.conf"), ResourceMessageProvider.commandMessagesBundle);
             } else {
                 this.messageProvider = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
                 this.commandMessageProvider = new ResourceMessageProvider(ResourceMessageProvider.commandMessagesBundle);
             }
         } catch (Exception e) {
             // On error, fallback.
+            logger.warn("Could not load custom messages file. Falling back.");
+            try {
+                if (getModuleContainer().getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isDebugmode()) {
+                    e.printStackTrace();
+                }
+            } catch (NoModuleException | IncorrectAdapterTypeException e1) {
+                e.printStackTrace();
+            }
+
             this.messageProvider = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
             this.commandMessageProvider = new ResourceMessageProvider(ResourceMessageProvider.commandMessagesBundle);
         }

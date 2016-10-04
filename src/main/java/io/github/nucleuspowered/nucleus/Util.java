@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.util.Action;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
@@ -34,7 +35,11 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
@@ -58,7 +63,7 @@ public class Util {
     }
 
     public static String getTimeToNow(Instant time) {
-        return getTimeStringFromSeconds(Math.abs(Instant.now().getEpochSecond() - time.getEpochSecond()));
+        return getTimeStringFromSeconds(Instant.now().getEpochSecond() - time.getEpochSecond());
     }
 
     public static String getTimeStringFromSeconds(long time) {
@@ -68,17 +73,18 @@ public class Util {
         long hour = (time / 3600) % 24;
         long day = time / 86400;
 
+        MessageProvider messageProvider = Nucleus.getNucleus().getMessageProvider();
         if (time == 0) {
-            return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.inamoment");
+            return messageProvider.getMessageWithFormat("standard.inamoment");
         }
 
         StringBuilder sb = new StringBuilder();
         if (day > 0) {
             sb.append(day).append(" ");
             if (day > 1) {
-                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.days"));
+                sb.append(messageProvider.getMessageWithFormat("standard.days"));
             } else {
-                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.day"));
+                sb.append(messageProvider.getMessageWithFormat("standard.day"));
             }
         }
 
@@ -86,9 +92,9 @@ public class Util {
             appendComma(sb);
             sb.append(hour).append(" ");
             if (hour > 1) {
-                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.hours"));
+                sb.append(messageProvider.getMessageWithFormat("standard.hours"));
             } else {
-                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.hour"));
+                sb.append(messageProvider.getMessageWithFormat("standard.hour"));
             }
         }
 
@@ -96,9 +102,9 @@ public class Util {
             appendComma(sb);
             sb.append(min).append(" ");
             if (min > 1) {
-                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.minutes"));
+                sb.append(messageProvider.getMessageWithFormat("standard.minutes"));
             } else {
-                sb.append(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.minute"));
+                sb.append(messageProvider.getMessageWithFormat("standard.minute"));
             }
         }
 
@@ -115,7 +121,7 @@ public class Util {
         if (sb.length() > 0) {
             return sb.toString();
         } else {
-            return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.unknown");
+            return messageProvider.getMessageWithFormat("standard.unknown");
         }
     }
 

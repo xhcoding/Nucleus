@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
@@ -19,11 +19,14 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 public class NameUtil {
 
@@ -32,6 +35,10 @@ public class NameUtil {
     }
 
     private final NucleusPlugin plugin;
+
+    // An empty optional indicates we checked.
+    @SuppressWarnings("all")
+    private Optional<ChatConfigAdapter> chatConfigAdapterOptional = null;
 
     private final static Map<Character, TextColor> colourMap = Maps.newHashMap();
     private final static Map<Character, TextStyle> styleMap = Maps.newHashMap();
@@ -69,21 +76,7 @@ public class NameUtil {
         styleMapFull.put("ITALIC", TextStyles.ITALIC);
     }
 
-    /**
-     * Gets the name from a command source, getting the display name if the source is a {@link User}.
-     *
-     * @param src The {@link CommandSource}
-     * @return The {@link Text} representing the name.
-     */
-    public Text getNameFromCommandSource(CommandSource src) {
-        if (!(src instanceof User)) {
-            return Text.of(src.getName());
-        }
-
-        return getName((User)src);
-    }
-
-    /**
+     /**
      * Gets the display name from a {@link User} as Sponge sees it.
      *
      * @param player The {@link User} to get the data from.
@@ -169,10 +162,22 @@ public class NameUtil {
     }
 
     private TextColor getNameColour(User player) {
+        if (chatConfigAdapterOptional == null) {
+            try {
+                chatConfigAdapterOptional = Optional.of(plugin.getModuleContainer().getConfigAdapterForModule("chat", ChatConfigAdapter.class));
+            } catch (NoModuleException | IncorrectAdapterTypeException e) {
+                chatConfigAdapterOptional = Optional.empty();
+            }
+        }
+
         Optional<String> os = Util.getOptionFromSubject(player, "namecolor", "namecolour");
         if (os.isPresent()) {
             String s = os.get();
             return getColourFromString(s);
+        }
+
+        if (chatConfigAdapterOptional.isPresent()) {
+            return getColourFromString(chatConfigAdapterOptional.get().getNodeOrDefault().getTemplate(player).getNamecolour());
         }
 
         return TextColors.NONE;

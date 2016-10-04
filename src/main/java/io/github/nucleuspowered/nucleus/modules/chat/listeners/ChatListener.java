@@ -27,7 +27,6 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 public class ChatListener extends ListenerBase {
@@ -67,34 +66,6 @@ public class ChatListener extends ListenerBase {
         return t;
     }
 
-    private Text useMessage(Player player, Text rawMessage) {
-        String m = rawMessage.toPlain();
-
-        for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
-            // If we don't have the required permission...
-            if (Arrays.stream(r.getKey()).noneMatch(player::hasPermission)) {
-                // ...strip the codes.
-                m = r.getValue().apply(m);
-            }
-        }
-
-        Text result;
-        if (player.hasPermission(prefix + "url")) {
-            result = chatUtil.addUrlsToAmpersandFormattedString(m);
-        } else {
-            result = TextSerializers.formattingCode('&').deserialize(m);
-        }
-
-        Optional<String> chatcol = Util.getOptionFromSubject(player, "chatcolour", "chatcolor");
-        Optional<String> chatstyle = Util.getOptionFromSubject(player, "chatstyle");
-        if (chatcol.isPresent() || chatstyle.isPresent()) {
-            NameUtil nu = plugin.getNameUtil();
-            return Text.of(nu.getColourFromString(chatcol.orElse(null)), nu.getTextStyleFromString(chatstyle.orElse(null)), result);
-        }
-
-        return result;
-    }
-
     // We do this first so that other plugins can alter it later if needs be.
     @Listener(order = Order.EARLY)
     public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
@@ -112,7 +83,32 @@ public class ChatListener extends ListenerBase {
         ChatTemplateConfig ctc = config.getTemplate(player);
         event.setMessage(
                 chatUtil.getPlayerMessageFromTemplate(ctc.getPrefix(), player, true),
-                useMessage(player, rawMessage),
+                useMessage(player, rawMessage, ctc),
                 chatUtil.getPlayerMessageFromTemplate(ctc.getSuffix(), player, false));
+    }
+
+    private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {
+        String m = rawMessage.toPlain();
+
+        for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
+            // If we don't have the required permission...
+            if (Arrays.stream(r.getKey()).noneMatch(player::hasPermission)) {
+                // ...strip the codes.
+                m = r.getValue().apply(m);
+            }
+        }
+
+        Text result;
+        if (player.hasPermission(prefix + "url")) {
+            result = chatUtil.addUrlsToAmpersandFormattedString(m);
+        } else {
+            result = TextSerializers.FORMATTING_CODE.deserialize(m);
+        }
+
+        String chatcol = Util.getOptionFromSubject(player, "chatcolour", "chatcolor").orElse(chatTemplateConfig.getChatcolour());
+        String chatstyle = Util.getOptionFromSubject(player, "chatstyle").orElse(chatTemplateConfig.getChatstyle());
+
+        NameUtil nu = plugin.getNameUtil();
+        return Text.of(nu.getColourFromString(chatcol), nu.getTextStyleFromString(chatstyle), result);
     }
 }

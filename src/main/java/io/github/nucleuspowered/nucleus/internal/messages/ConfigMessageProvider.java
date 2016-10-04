@@ -5,16 +5,20 @@
 package io.github.nucleuspowered.nucleus.internal.messages;
 
 import io.github.nucleuspowered.nucleus.config.MessageConfig;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 public class ConfigMessageProvider extends ResourceMessageProvider {
 
     private final MessageConfig mc;
 
-    public ConfigMessageProvider(MessageConfig mc, String fallbackResource) {
+    public ConfigMessageProvider(Path file, String fallbackResource) throws Exception {
         super(fallbackResource);
-        this.mc = mc;
+        this.mc = new MessageConfig(file, new ResourceMessageProvider(this.rb));
     }
 
     @Override
@@ -25,5 +29,13 @@ public class ConfigMessageProvider extends ResourceMessageProvider {
         }
 
         return super.getMessageFromKey(key);
+    }
+
+    public List<String> checkForMigration() {
+        return mc.walkThroughForMismatched();
+    }
+
+    public void reset(List<String> keys) throws IOException, ObjectMappingException {
+        mc.fixMistmatched(keys);
     }
 }
