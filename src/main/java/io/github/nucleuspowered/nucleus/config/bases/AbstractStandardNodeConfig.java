@@ -21,12 +21,18 @@ public abstract class AbstractStandardNodeConfig<T extends ConfigurationNode, L 
     protected T node;
 
     protected AbstractStandardNodeConfig(Path file) throws Exception {
-        this(file, Maps.newHashMap());
+        this(file, Maps.newHashMap(), true);
     }
 
-    protected AbstractStandardNodeConfig(Path file, Map<TypeToken<?>, TypeSerializer<?>> serializerMap) throws Exception {
+    protected AbstractStandardNodeConfig(Path file, boolean loadNow) throws Exception {
+        this(file, Maps.newHashMap(), loadNow);
+    }
+
+    protected AbstractStandardNodeConfig(Path file, Map<TypeToken<?>, TypeSerializer<?>> serializerMap, boolean loadNow) throws Exception {
         loader = getLoader(file, serializerMap);
-        load();
+        if (loadNow) {
+            load();
+        }
     }
 
     public void save() throws IOException, ObjectMappingException {
