@@ -135,7 +135,8 @@ public class AFKHandler {
         }
 
         if (afkTimeKick > 0) {
-            workOnAfkPlayers(now.minus(afkTimeKick, ChronoUnit.SECONDS), cph, exemptkick, x -> true, x -> {
+            workOnAfkPlayers(now.minus(afkTimeKick, ChronoUnit.SECONDS), cph, exemptkick, x -> !x.getValue().kickRequested, x -> {
+                x.getSecond().kickRequested = true;
                 String message = config.getMessages().getKickMessage().trim();
                 if (message.isEmpty()) {
                     message = NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("afk.kickreason");
@@ -192,6 +193,7 @@ public class AFKHandler {
         }
 
         data.afk = false;
+        data.kickRequested = false;
     }
 
     private void sendAFKMessage(Player player, boolean isAfk) {
@@ -223,5 +225,6 @@ public class AFKHandler {
     private static class Data {
         private Instant lastActivity = Instant.now();
         private boolean afk = false;
+        private boolean kickRequested = false;
     }
 }
