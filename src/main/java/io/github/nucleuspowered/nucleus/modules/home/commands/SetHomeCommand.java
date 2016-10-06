@@ -79,9 +79,11 @@ public class SetHomeCommand extends io.github.nucleuspowered.nucleus.internal.co
             return CommandResult.empty();
         }
 
-        int c = getCount(src);
-        if (msw.size() >= c) {
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
+        if (!hasHome) {
+            int c = getCount(src);
+            if (msw.size() >= c) {
+                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
+            }
         }
 
         // Just in case.
