@@ -4,7 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import com.flowpowered.math.TrigMath;
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
@@ -18,6 +20,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
@@ -462,5 +465,91 @@ public class Util {
         Entity entityToDrop = world.createEntity(EntityTypes.ITEM, position);
         entityToDrop.offer(Keys.REPRESENTED_ITEM, itemStackSnapshotToDrop);
         world.spawnEntity(entityToDrop, Cause.of(NamedCause.owner(Nucleus.getNucleus())));
+    }
+
+    /**
+     * Gets the rotation required to face the required point.
+     * @param entityLocation The {@link Transform} of the {@link Entity} in question.
+     * @param locationToFace The {@link Location} to face.
+     * @return An {@link Optional#empty()} if the two worlds are not the same, else an {@link Optional} containing the {@link Vector3d}
+     *         containing the Euler angles to set the rotation to. If the rotation causes the entity to look straight up or down, sets
+     *         the yaw to the original yaw.
+     */
+    public static Optional<Vector3d> getRotationToFace(Transform<World> entityLocation, Location<World> locationToFace) {
+        if (!entityLocation.getExtent().equals(locationToFace.getExtent())) {
+            return Optional.empty();
+        }
+
+        Vector3d directionToFace = locationToFace.getPosition().sub(entityLocation.getLocation().getPosition());
+        Vector3d rotation = getRotationFromDirection(directionToFace);
+
+        // If we look directly up or down, keep the yaw intact.
+        if (directionToFace.getX() == 0 && directionToFace.getZ() == 0) {
+            return Optional.of(new Vector3d(rotation.getX(), entityLocation.getYaw(), 0));
+        }
+
+        // Otherwise, get the rotation
+        return Optional.of(rotation);
+    }
+
+    /**
+     * Gets a rotation from a direction as specified by a {@link Vector3d}
+     * @param direction The direction to be facing.
+     * @return The {@link Vector3d} containing the required rotation. If looking straight up or down, the yaw will be either 90 or -90.
+     */
+    public static Vector3d getRotationFromDirection(Vector3d direction) {
+        Preconditions.checkArgument(direction.lengthSquared() != 0, "Direction cannot be zero in all directions");
+        Vector3d normalised = direction.normalize();
+
+        // x-z plane represented by theta = atan2
+        double yaw;
+        final double z = normalised.getZ();
+        if (z != 0) {
+            yaw = TrigMath.RAD_TO_DEG * TrigMath.atan2(normalised.getX(), z);
+        } else {
+            // If Z is zero, it's either -90 (for +X) or 90 (for -X)
+            yaw = normalised.getX() > 0 ? -90 : 90;
+        }
+
+        // y direction represented by angle between direction in x-z plane and actual direction
+        // Normalised, so we know the length of the overall direction is one. Sign of y determines the pitch being up or down.
+        double pitch = TrigMath.acos(normalised.toVector2(true).length()) * -Math.signum(normalised.getY());
+
+        return new Vector3d(TrigMath.RAD_TO_DEG * pitch, yaw, 0);
+    }
+
+    /**
+     * Gets the {@link Vector3d} direction from the rotation of an object.
+     * @param rotation The Euler angle rotation.
+     * @return The {@link Vector3d} that represents the direction.
+     */
+    public static Vector3d getDirectionFromRotation(Vector3d rotation) {
+        // Special cases.
+        if (rotation.getX() <= -90) {
+            return Vector3d.UP;
+        } else if (rotation.getX() >= 90) {
+            return Vector3d.UP.negate();
+        }
+
+        // X - y = -90 is UP, y = 90 is DOWN.
+        double rotx = rotation.getX();
+        double y = -TrigMath.sin(TrigMath.DEG_TO_RAD * rotx);
+        double roty = rotation.getY();
+        if (roty == 0) {
+            return Vector3d.UNIT_Z.add(0, y, 0);
+        } else if (Math.abs(roty) >= 180) {
+            return Vector3d.UNIT_Z.negate().add(0, y, 0);
+        } else if (roty == 90) {
+            return Vector3d.UNIT_X.negate().add(0, y, 0);
+        } else if (roty == -90) {
+            return Vector3d.UNIT_X.add(0, y, 0);
+        }
+
+        // x is the x-z plane.
+        // Z = 1 @ pitch = 0, Z = -1 @ pitch = +-180, X = 1 @ pitch = -90, X = -1 @ pitch = 90
+        // OK, calculation time.
+        double x = TrigMath.sin(TrigMath.DEG_TO_RAD * roty) * Math.signum(roty);
+        double z = TrigMath.cos(TrigMath.DEG_TO_RAD * roty);
+        return new Vector3d(x, y, z);
     }
 }
