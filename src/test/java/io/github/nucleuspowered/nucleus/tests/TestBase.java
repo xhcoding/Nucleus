@@ -17,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.spongepowered.api.text.Text;
@@ -189,6 +190,11 @@ public abstract class TestBase {
 
         @Override
         public MessageProvider getCommandMessageProvider() {
+            return null;
+        }
+
+        @Override
+        public NucleusTeleportHandler getTeleportHandler() {
             return null;
         }
     }

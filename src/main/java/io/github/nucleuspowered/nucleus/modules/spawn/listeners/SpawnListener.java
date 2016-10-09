@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
@@ -59,7 +60,8 @@ public class SpawnListener extends ListenerBase {
 
                 // Bit of an odd line, but what what is going on here is checking for first spawn, and if it exists, then
                 // setting the location the player safely. If this cannot be done in either case, send them to world spawn.
-                if (!ofs.isPresent() || !pl.setLocationAndRotationSafely(ofs.get().getLocation(), ofs.get().getRotation())) {
+                if (!ofs.isPresent() ||
+                        !plugin.getTeleportHandler().teleportPlayer(pl, ofs.get().getLocation(), ofs.get().getRotation(), sca.getNodeOrDefault().isSafeTeleport())) {
                     WorldProperties w = Sponge.getServer().getDefaultWorld().get();
                     pl.setLocation(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble()));
 
@@ -86,13 +88,16 @@ public class SpawnListener extends ListenerBase {
             try {
                 Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().getSpawnRotation();
                 if (ov.isPresent()) {
-                    pl.setLocationAndRotation(lw, ov.get());
+                    plugin.getTeleportHandler().teleportPlayer(pl, lw, ov.get(),
+                        sca.getNodeOrDefault().isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
+                    return;
                 }
             } catch (Exception e) {
                 //
             }
 
-            pl.setLocation(lw);
+            plugin.getTeleportHandler().teleportPlayer(pl, lw,
+                sca.getNodeOrDefault().isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
         }
     }
 

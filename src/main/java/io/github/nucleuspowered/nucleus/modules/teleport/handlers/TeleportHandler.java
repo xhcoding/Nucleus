@@ -9,6 +9,8 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -17,8 +19,9 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextStyles;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +29,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class TeleportHandler {
 
@@ -138,15 +143,18 @@ public class TeleportHandler {
 
         private void run() {
             if (playerToTeleportTo.isOnline()) {
-                if (safe && !playerToTeleport.setLocationAndRotationSafely(playerToTeleportTo.getLocation(), playerToTeleportTo.getRotation())) {
+                // If safe, get the teleport mode
+                NucleusTeleportHandler tpHandler = plugin.getTeleportHandler();
+                NucleusTeleportHandler.TeleportMode mode = safe ? tpHandler.getTeleportModeForPlayer(playerToTeleport) :
+                    NucleusTeleportHandler.TeleportMode.NO_CHECK;
+
+                if (!tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode)) {
                     if (!silentSource) {
                         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.nosafe"));
                     }
 
                     onCancel();
                     return;
-                } else {
-                    playerToTeleport.setLocationAndRotation(playerToTeleportTo.getLocation(), playerToTeleportTo.getRotation());
                 }
 
                 if (!source.equals(playerToTeleport) && !silentSource) {
@@ -192,7 +200,7 @@ public class TeleportHandler {
         private double cost;
         private int warmupTime = 0;
         private boolean bypassToggle = false;
-        private boolean safe = true;
+        private boolean safe;
         private boolean silentSource = false;
         private boolean silentTarget = false;
 
@@ -200,6 +208,12 @@ public class TeleportHandler {
 
         private TeleportBuilder(NucleusPlugin plugin) {
             this.plugin = plugin;
+            try {
+                this.safe = plugin.getModuleContainer().getConfigAdapterForModule("teleport", TeleportConfigAdapter.class)
+                    .getNodeOrDefault().isUseSafeTeleport();
+            } catch (NoModuleException | IncorrectAdapterTypeException e) {
+                this.safe = true;
+            }
         }
 
         public TeleportBuilder setSafe(boolean safe) {

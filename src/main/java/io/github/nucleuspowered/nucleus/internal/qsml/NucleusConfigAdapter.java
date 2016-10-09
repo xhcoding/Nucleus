@@ -7,7 +7,10 @@ package io.github.nucleuspowered.nucleus.internal.qsml;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.quickstart.config.AbstractAdaptableConfig;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
@@ -48,4 +51,28 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
             return node;
         }
     }
+
+    public abstract static class Standard<R> extends NucleusConfigAdapter<R> {
+
+        private final TypeToken<R> typeToken;
+
+        public Standard(Class<R> clazz) {
+            this(TypeToken.of(clazz));
+        }
+
+        public Standard(TypeToken<R> typeToken) {
+            this.typeToken = typeToken;
+        }
+
+        @Override
+        protected R convertFromConfigurateNode(ConfigurationNode node) throws ObjectMappingException {
+            return node.getValue(typeToken, getDefaultObject());
+        }
+
+        @Override
+        protected ConfigurationNode insertIntoConfigurateNode(R data) throws ObjectMappingException {
+            return SimpleCommentedConfigurationNode.root(ConfigurateHelper.setOptions(ConfigurationOptions.defaults())).setValue(typeToken, data);
+        }
+    }
+
 }

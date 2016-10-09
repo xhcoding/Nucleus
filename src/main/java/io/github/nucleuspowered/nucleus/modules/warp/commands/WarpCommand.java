@@ -129,9 +129,8 @@ public class WarpCommand extends io.github.nucleuspowered.nucleus.internal.comma
         pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.start", wd.warp));
 
         // Warp them.
-        if (args.getOne("f").isPresent()) { // Force the position.
-            pl.setLocationAndRotation(wd.loc.getLocation().get(), wd.loc.getRotation());
-        } else if (!pl.setLocationAndRotationSafely(wd.loc.getLocation().get(), wd.loc.getRotation())) {
+        boolean isSafe = !args.getOne("f").isPresent() && adapter.getNodeOrDefault().isSafeTeleport();
+        if (!plugin.getTeleportHandler().teleportPlayer(pl, wd.loc.getLocation().get(), wd.loc.getRotation(), isSafe)) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.nosafe"));
 
             if (chg) {

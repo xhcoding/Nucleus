@@ -14,13 +14,20 @@ public class WarpConfig {
     private int defaultWarpCost = 0;
 
     @Setting(value = "separate-permissions", comment = "loc:config.warps.separate")
-    private boolean separate_permissions = false;
+    private boolean separatePermissions = false;
+
+    @Setting(value = "use-safe-warp", comment = "loc:config.warps.safe")
+    private boolean safeTeleport = true;
 
     public boolean isSeparatePermissions() {
-        return separate_permissions;
+        return separatePermissions;
     }
 
     public int getDefaultWarpCost() {
         return Math.max(0, defaultWarpCost);
+    }
+
+    public boolean isSafeTeleport() {
+        return safeTeleport;
     }
 }

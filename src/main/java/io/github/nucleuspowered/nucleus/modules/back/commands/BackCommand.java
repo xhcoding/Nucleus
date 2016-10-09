@@ -32,7 +32,7 @@ public class BackCommand extends io.github.nucleuspowered.nucleus.internal.comma
         }
 
         Transform<World> loc = ol.get();
-        if (src.setLocationAndRotationSafely(loc.getLocation(), loc.getRotation())) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, loc)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.success"));
             return CommandResult.success();
         } else {

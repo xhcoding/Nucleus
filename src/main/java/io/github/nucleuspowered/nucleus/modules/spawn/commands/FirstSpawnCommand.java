@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.Transform;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class FirstSpawnCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject private GeneralService data;
+    @Inject private SpawnConfigAdapter spawnConfigAdapter;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
@@ -32,7 +34,7 @@ public class FirstSpawnCommand extends io.github.nucleuspowered.nucleus.internal
             return CommandResult.empty();
         }
 
-        if (src.setLocationAndRotationSafely(olwr.get().getLocation(), olwr.get().getRotation())) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, olwr.get(), spawnConfigAdapter.getNodeOrDefault().isSafeTeleport())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstspawn.success"));
             return CommandResult.success();
         }
