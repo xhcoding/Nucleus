@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
@@ -67,4 +68,6 @@ public abstract class Nucleus {
     public abstract MessageProvider getCommandMessageProvider();
 
     public abstract boolean areMixinsAvailable();
+
+    public abstract NucleusTeleportHandler getTeleportHandler();
 }

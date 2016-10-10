@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfig;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -131,7 +132,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
 
             // To get within the world border, add the centre on.
             final Location<World> test = new Location<>(currentWorld, new Vector3d(x + centre.getX(), y, z + centre.getZ()));
-            Optional<Location<World>> oSafeLocation = th.getSafeLocation(test, 10, 5);
+            Optional<Location<World>> oSafeLocation = NucleusTeleportHandler.TELEPORT_HELPER.getSafeLocation(test, 10, 5);
 
             // getSafeLocation might have put us out of the world border. Best to check.
             // We also check to see that it's not in water or lava, and if enabled, we see if the player would end up on the surface.

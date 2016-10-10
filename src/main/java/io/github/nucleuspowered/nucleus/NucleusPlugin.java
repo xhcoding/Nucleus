@@ -43,6 +43,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.NucleusLoggerProxy;
 import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructor;
 import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
@@ -93,6 +94,7 @@ public class NucleusPlugin extends Nucleus {
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
     private List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
     private DocGenCache docGenCache = null;
+    private NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
 
     private InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
@@ -403,6 +405,11 @@ public class NucleusPlugin extends Nucleus {
     @Override
     public MessageProvider getCommandMessageProvider() {
         return commandMessageProvider;
+    }
+
+    @Override
+    public NucleusTeleportHandler getTeleportHandler() {
+        return teleportHandler;
     }
 
     public <T> void preInjectorUpdate(Class<T> clazz, T instance) {

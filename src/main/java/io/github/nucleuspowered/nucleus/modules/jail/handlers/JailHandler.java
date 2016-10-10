@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -99,7 +100,8 @@ public class JailHandler implements NucleusJailService {
         if (user.isOnline()) {
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
-                player.setLocationAndRotation(owl.get().getLocation().get(), owl.get().getRotation());
+                plugin.getTeleportHandler().teleportPlayer(player, owl.get().getLocation().get(), owl.get().getRotation(),
+                    NucleusTeleportHandler.TeleportMode.NO_CHECK);
                 iqsu.setFlying(false);
             });
         } else {

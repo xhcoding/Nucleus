@@ -73,7 +73,8 @@ public class SpawnCommand extends io.github.nucleuspowered.nucleus.internal.comm
         }
 
         // If we don't have a rotation, then use the current rotation
-        if (src.setLocationAndRotationSafely(new Location<>(ow.get(), wp.getSpawnPosition()), wcl.getWorld(wp.getUniqueId()).get().getSpawnRotation().orElse(src.getRotation()))) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, new Location<>(ow.get(), wp.getSpawnPosition()),
+                wcl.getWorld(wp.getUniqueId()).get().getSpawnRotation().orElse(src.getRotation()), sca.getNodeOrDefault().isSafeTeleport())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
             return CommandResult.success();
         }

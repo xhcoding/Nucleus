@@ -30,6 +30,9 @@ public class CoreConfig {
     @Setting(value = "enable-doc-gen")
     private boolean enableDocGen = false;
 
+    @Setting(value = "safe-teleport-check", comment = "loc:config.core.safeteleport")
+    private SafeTeleportConfig safeTeleportConfig = new SafeTeleportConfig();
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -56,5 +59,9 @@ public class CoreConfig {
 
     public boolean isEnableDocGen() {
         return enableDocGen;
+    }
+
+    public SafeTeleportConfig getSafeTeleportConfig() {
+        return safeTeleportConfig;
     }
 }
