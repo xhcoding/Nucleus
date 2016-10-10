@@ -44,6 +44,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructo
 import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.logging.DebugLogger;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
@@ -108,22 +109,23 @@ public class NucleusPlugin extends Nucleus {
 
     private final Map<String, TextFileController> textFileControllers = Maps.newHashMap();
 
-    @Inject private Game game;
-    @Inject private Logger logger;
+    private final Logger logger;
     private Path configDir;
     private Path dataDir;
     private boolean mixinsAvailable = false;
 
     // We inject this into the constructor so we can build the config path ourselves.
     @Inject
-    public NucleusPlugin(@ConfigDir(sharedRoot = true) Path configDir) {
+    public NucleusPlugin(@ConfigDir(sharedRoot = true) Path configDir, Logger logger) {
         Nucleus.setNucleus(this);
         this.configDir = configDir.resolve(PluginInfo.ID);
+        this.logger = new DebugLogger(this, logger);
     }
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
+        Game game = Sponge.getGame();
 
         try {
             Class.forName("io.github.nucleuspowered.nucleus.mixins.NucleusMixinSpongePlugin");
@@ -228,6 +230,7 @@ public class NucleusPlugin extends Nucleus {
         Sponge.getEventManager().post(new BaseModuleEvent.Complete(this));
 
         // Register final services
+        Game game = Sponge.getGame();
         game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, userDataManager);
         game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldDataManager);
         logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
