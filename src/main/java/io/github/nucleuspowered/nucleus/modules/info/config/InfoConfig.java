@@ -4,31 +4,35 @@
  */
 package io.github.nucleuspowered.nucleus.modules.info.config;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
 public class InfoConfig {
 
-    @Setting(value = "show-motd-on-join", comment = "loc:config.motd.onjoin")
-    private boolean showMotdOnJoin = true;
+    @Setting(value = "motd")
+    private MotdConfig motdConfig = new MotdConfig();
 
-    @Setting(value = "motd-title", comment = "loc:config.motd.title")
-    private String motdTitle = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("motd.title");
-
-    @Setting(value = "use-pagination", comment = "loc:config.motd.pagination")
-    private boolean usePagination = true;
+    @Setting("info")
+    private InfoFileConfig infoFileConfig = new InfoFileConfig();
 
     public boolean isShowMotdOnJoin() {
-        return showMotdOnJoin;
+        return motdConfig.isShowMotdOnJoin();
     }
 
     public String getMotdTitle() {
-        return motdTitle;
+        return motdConfig.getMotdTitle();
     }
 
-    public boolean isUsePagination() {
-        return usePagination;
+    public boolean isMotdUsePagination() {
+        return motdConfig.isUsePagination();
+    }
+
+    public boolean isUseDefaultFile() {
+        return infoFileConfig.isUseDefaultFile();
+    }
+
+    public String getDefaultInfoSection() {
+        return infoFileConfig.getDefaultInfoSection();
     }
 }

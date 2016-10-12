@@ -14,10 +14,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class InfoArgument extends CommandElement {
 
@@ -55,7 +56,7 @@ public class InfoArgument extends CommandElement {
         public final String name;
         public final List<String> text;
 
-        private Result(String name, List<String> text) {
+        public Result(String name, List<String> text) {
             this.name = name;
             this.text = text;
         }

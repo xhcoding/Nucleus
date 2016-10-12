@@ -8,8 +8,16 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.argumentparsers.InfoArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
+import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHelper;
 import org.spongepowered.api.Sponge;
@@ -26,8 +34,10 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,19 +52,37 @@ public class InfoCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
     @Inject private InfoHandler infoHandler;
     @Inject private ChatUtil chatUtil;
+    @Inject private InfoConfigAdapter infoConfigAdapter;
 
     private final String key = "section";
+
+    @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> map = new HashMap<>();
+        map.put("list", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.info.list"), SuggestedLevel.ADMIN));
+        return map;
+    }
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.optional(new InfoArgument(Text.of(key), infoHandler))
+            GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("list"), "l", "-list").buildWith(
+                GenericArguments.optional(new InfoArgument(Text.of(key), infoHandler)))
         };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<InfoArgument.Result> oir = args.getOne(key);
+        InfoConfig infoConfig = infoConfigAdapter.getNodeOrDefault();
+        if (infoConfig.isUseDefaultFile() && !oir.isPresent() && !args.hasAny("l")) {
+            // Do we have a default?
+            String def = infoConfig.getDefaultInfoSection();
+            Optional<List<String>> list = infoHandler.getSection(def);
+            if (list.isPresent()) {
+                oir = Optional.of(new InfoArgument.Result(infoHandler.getInfoSections().stream().filter(def::equalsIgnoreCase).findFirst().get(), list.get()));
+            }
+        }
+
         if (oir.isPresent()) {
             // Get the list.
             List<String> info = oir.get().text;

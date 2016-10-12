@@ -43,7 +43,7 @@ public class InfoListener extends ListenerBase {
         Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
                 if (player.hasPermission(getMotdPermission())) {
                     plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> {
-                        if (ica.getNodeOrDefault().isUsePagination()) {
+                        if (ica.getNodeOrDefault().isMotdUsePagination()) {
                             InfoHelper.sendInfo(x, player, chatUtil, ica.getNodeOrDefault().getMotdTitle());
                         } else {
                             InfoHelper.getTextFromStrings(x.getFileContents(), player, chatUtil).forEach(player::sendMessage);
