@@ -7,7 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.info.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
@@ -37,7 +42,7 @@ public class MotdCommand extends io.github.nucleuspowered.nucleus.internal.comma
             return CommandResult.empty();
         }
 
-        if (infoConfigAdapter.getNodeOrDefault().isUsePagination()) {
+        if (infoConfigAdapter.getNodeOrDefault().isMotdUsePagination()) {
             InfoHelper.sendInfo(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
         } else {
             InfoHelper.getTextFromStrings(otfc.get().getFileContents(), src, chatUtil).forEach(src::sendMessage);
