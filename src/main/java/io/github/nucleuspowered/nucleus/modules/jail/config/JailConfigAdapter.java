@@ -14,27 +14,16 @@ import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.util.List;
 
-public class JailConfigAdapter extends NucleusConfigAdapter<JailConfig> {
+public class JailConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<JailConfig> {
+
+    public JailConfigAdapter() {
+        super(JailConfig.class);
+    }
 
     @Override
     protected List<Transformation> getTransformations() {
         return Lists.newArrayList(
             new Transformation(new Object[] { "allowedCommands" }, ((inputPath, valueAtPath) -> new Object[] { "allowed-commands" }))
         );
-    }
-
-    @Override
-    protected JailConfig getDefaultObject() {
-        return new JailConfig();
-    }
-
-    @Override
-    protected JailConfig convertFromConfigurateNode(ConfigurationNode node) throws ObjectMappingException {
-        return node.getValue(TypeToken.of(JailConfig.class), new JailConfig());
-    }
-
-    @Override
-    protected ConfigurationNode insertIntoConfigurateNode(JailConfig data) throws ObjectMappingException {
-        return SimpleCommentedConfigurationNode.root().setValue(TypeToken.of(JailConfig.class), data);
     }
 }

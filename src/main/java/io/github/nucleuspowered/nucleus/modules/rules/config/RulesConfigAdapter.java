@@ -4,26 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.rules.config;
 
-import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-public class RulesConfigAdapter extends NucleusConfigAdapter<RulesConfig> {
+public class RulesConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<RulesConfig> {
 
-    @Override
-    protected RulesConfig getDefaultObject() {
-        return new RulesConfig();
-    }
-
-    @Override
-    protected RulesConfig convertFromConfigurateNode(ConfigurationNode node) throws ObjectMappingException {
-        return node.getValue(TypeToken.of(RulesConfig.class), new RulesConfig());
-    }
-
-    @Override
-    protected ConfigurationNode insertIntoConfigurateNode(RulesConfig data) throws ObjectMappingException {
-        return SimpleCommentedConfigurationNode.root().setValue(TypeToken.of(RulesConfig.class), data);
+    public RulesConfigAdapter() {
+        super(RulesConfig.class);
     }
 }

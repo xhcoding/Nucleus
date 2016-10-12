@@ -10,20 +10,9 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-public class MessageConfigAdapter extends NucleusConfigAdapter<MessageConfig> {
+public class MessageConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<MessageConfig> {
 
-    @Override
-    protected MessageConfig getDefaultObject() {
-        return new MessageConfig();
-    }
-
-    @Override
-    protected MessageConfig convertFromConfigurateNode(ConfigurationNode node) throws ObjectMappingException {
-        return node.getValue(TypeToken.of(MessageConfig.class), new MessageConfig());
-    }
-
-    @Override
-    protected ConfigurationNode insertIntoConfigurateNode(MessageConfig data) throws ObjectMappingException {
-        return SimpleCommentedConfigurationNode.root().setValue(TypeToken.of(MessageConfig.class), data);
+    public MessageConfigAdapter() {
+        super(MessageConfig.class);
     }
 }

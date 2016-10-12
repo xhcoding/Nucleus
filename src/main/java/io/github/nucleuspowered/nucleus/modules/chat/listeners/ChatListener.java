@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
+import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -37,11 +38,13 @@ public class ChatListener extends ListenerBase {
 
     private final ChatConfigAdapter cca;
     private final ChatUtil chatUtil;
+    private final TemplateUtil templateUtil;
 
     @Inject
-    public ChatListener(ChatUtil chatUtil, ChatConfigAdapter cca) {
+    public ChatListener(ChatUtil chatUtil, ChatConfigAdapter cca, TemplateUtil templateUtil) {
         this.chatUtil = chatUtil;
         this.cca = cca;
+        this.templateUtil = templateUtil;
         replacements = createReplacements();
     }
 
@@ -80,7 +83,7 @@ public class ChatListener extends ListenerBase {
         }
 
         Text rawMessage = event.getRawMessage();
-        ChatTemplateConfig ctc = config.getTemplate(player);
+        ChatTemplateConfig ctc = templateUtil.getTemplate(player);
         event.setMessage(
                 chatUtil.getPlayerMessageFromTemplate(ctc.getPrefix(), player, true),
                 useMessage(player, rawMessage, ctc),

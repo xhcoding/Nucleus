@@ -10,19 +10,9 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-public class BlacklistConfigAdapter extends NucleusConfigAdapter<BlacklistConfig> {
-    @Override
-    protected BlacklistConfig getDefaultObject() {
-        return new BlacklistConfig();
-    }
+public class BlacklistConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<BlacklistConfig> {
 
-    @Override
-    protected BlacklistConfig convertFromConfigurateNode(ConfigurationNode node) throws ObjectMappingException {
-        return node.getValue(TypeToken.of(BlacklistConfig.class), new BlacklistConfig());
-    }
-
-    @Override
-    protected ConfigurationNode insertIntoConfigurateNode(BlacklistConfig data) throws ObjectMappingException {
-        return SimpleCommentedConfigurationNode.root().setValue(TypeToken.of(BlacklistConfig.class), data);
+    public BlacklistConfigAdapter() {
+        super(BlacklistConfig.class);
     }
 }
