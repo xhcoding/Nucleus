@@ -5,7 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.CommandDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
@@ -17,6 +22,7 @@ import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.yaml.snakeyaml.DumperOptions;
 
 import java.util.Comparator;
 import java.util.List;
@@ -44,7 +50,8 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
         DocGenCache genCache = plugin.getDocGenCache().get();
 
         // Generate command file.
-        YAMLConfigurationLoader configurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("commands.yml")).build();
+        YAMLConfigurationLoader configurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("commands.yml"))
+            .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
         ConfigurationNode commandConfigurationNode = SimpleConfigurationNode.root().setValue(ttlcd, getAndSort(genCache.getCommandDocs(), (first, second) -> {
             int m = first.getModule().compareToIgnoreCase(second.getModule());
             if (m == 0) {
@@ -57,7 +64,8 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
         configurationLoader.save(commandConfigurationNode);
 
         // Generate permission file.
-        YAMLConfigurationLoader permissionsConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("permissions.yml")).build();
+        YAMLConfigurationLoader permissionsConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("permissions.yml"))
+            .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
         ConfigurationNode permissionConfigurationNode = SimpleConfigurationNode.root().setValue(ttlpd, getAndSort(genCache.getPermissionDocs(),  (first, second) -> {
             int m = first.getModule().compareToIgnoreCase(second.getModule());
             if (m == 0) {
