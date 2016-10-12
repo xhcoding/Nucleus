@@ -18,9 +18,10 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 /**
  * Returns a {@link Result}
@@ -54,7 +55,7 @@ public class WarpArgument extends CommandElement {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.noexist"));
         }
 
-        if (!checkPermission(source, warpName)) {
+        if (!checkPermission(source, warpName) && !checkPermission(source, warpName.toLowerCase())) {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.noperms"));
         }
 
