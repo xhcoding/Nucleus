@@ -17,11 +17,18 @@ public class InfoConfig {
     @Setting(value = "motd-title", comment = "loc:config.motd.title")
     private String motdTitle = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("motd.title");
 
+    @Setting(value = "use-pagination", comment = "loc:config.motd.pagination")
+    private boolean usePagination = true;
+
     public boolean isShowMotdOnJoin() {
         return showMotdOnJoin;
     }
 
     public String getMotdTitle() {
         return motdTitle;
+    }
+
+    public boolean isUsePagination() {
+        return usePagination;
     }
 }

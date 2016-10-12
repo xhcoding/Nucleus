@@ -37,7 +37,12 @@ public class MotdCommand extends io.github.nucleuspowered.nucleus.internal.comma
             return CommandResult.empty();
         }
 
-        InfoHelper.sendInfo(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
+        if (infoConfigAdapter.getNodeOrDefault().isUsePagination()) {
+            InfoHelper.sendInfo(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
+        } else {
+            InfoHelper.getTextFromStrings(otfc.get().getFileContents(), src, chatUtil).forEach(src::sendMessage);
+        }
+
         return CommandResult.success();
     }
 }

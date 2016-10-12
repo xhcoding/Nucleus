@@ -28,10 +28,14 @@ public class InfoHelper {
         sendInfo(tfc.getFileContents(), src, chatUtil, motdTitle);
     }
 
+    public static List<Text> getTextFromStrings(List<String> tfc, CommandSource src, ChatUtil chatUtil) {
+        return chatUtil.getPlayerMessageFromTemplate(tfc, src, true).stream()
+            .map(x -> chatUtil.addLinksToText(x, src instanceof Player ? (Player)src : null)).collect(Collectors.toList());
+    }
+
     public static void sendInfo(List<String> tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
         // Get the text.
-        List<Text> textList = chatUtil.getPlayerMessageFromTemplate(tfc, src, true).stream()
-            .map(x -> chatUtil.addLinksToText(x, src instanceof Player ? (Player)src : null)).collect(Collectors.toList());
+        List<Text> textList = getTextFromStrings(tfc, src, chatUtil);
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         PaginationList.Builder pb = ps.builder().contents(textList);

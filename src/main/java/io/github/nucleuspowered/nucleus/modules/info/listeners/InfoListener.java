@@ -42,7 +42,13 @@ public class InfoListener extends ListenerBase {
         // Send message one second later on the Async thread.
         Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
                 if (player.hasPermission(getMotdPermission())) {
-                    plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> InfoHelper.sendInfo(x, player, chatUtil, ica.getNodeOrDefault().getMotdTitle()));
+                    plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> {
+                        if (ica.getNodeOrDefault().isUsePagination()) {
+                            InfoHelper.sendInfo(x, player, chatUtil, ica.getNodeOrDefault().getMotdTitle());
+                        } else {
+                            InfoHelper.getTextFromStrings(x.getFileContents(), player, chatUtil).forEach(player::sendMessage);
+                        }
+                    });
                 }
             }, 500, TimeUnit.MILLISECONDS);
     }
