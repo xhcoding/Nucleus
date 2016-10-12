@@ -4,12 +4,17 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat.config;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.nucleuspowered.nucleus.Util;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.service.context.Contextual;
 import org.spongepowered.api.service.permission.Subject;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ConfigSerializable
 public class ChatConfig {
@@ -28,28 +33,7 @@ public class ChatConfig {
         return templates.getDefaultTemplate();
     }
 
-    public ChatTemplateConfig getTemplate(Subject subject) {
-        List<Subject> groups;
-        try {
-             groups = Util.getParentSubjects(subject);
-        } catch (Exception e) {
-            return getDefaultTemplate();
-        }
-
-        if (groups == null || groups.isEmpty()) {
-            return getDefaultTemplate();
-        }
-
-        groups.sort((x, y) -> y.getParents().size() - x.getParents().size());
-
-        // Iterate through all groups the player is in.
-        for (Subject group : groups) {
-            if (templates.getGroupTemplates().containsKey(group.getIdentifier())) {
-                return templates.getGroupTemplates().get(group.getIdentifier());
-            }
-        }
-
-        // Return the default.
-        return getDefaultTemplate();
+    public Map<String, WeightedChatTemplateConfig> getGroupTemplates() {
+        return ImmutableMap.copyOf(templates.getGroupTemplates());
     }
 }

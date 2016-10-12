@@ -17,16 +17,16 @@ public class TemplateConfig {
     private ChatTemplateConfig defaultTemplate = new ChatTemplateConfig();
 
     @Setting(value = "group-templates", comment = "loc:config.chat.group-templates")
-    private Map<String, ChatTemplateConfig> groupTemplates = new HashMap<String, ChatTemplateConfig>() {{
+    private Map<String, WeightedChatTemplateConfig> groupTemplates = new HashMap<String, WeightedChatTemplateConfig>() {{
         // We don't want this affecting the default group, but we need an example.
-        put("DefaultTemplate", new ChatTemplateConfig());
+        put("DefaultTemplate", new WeightedChatTemplateConfig());
     }};
 
     public ChatTemplateConfig getDefaultTemplate() {
         return defaultTemplate;
     }
 
-    public Map<String, ChatTemplateConfig> getGroupTemplates() {
+    public Map<String, WeightedChatTemplateConfig> getGroupTemplates() {
         return groupTemplates;
     }
 }

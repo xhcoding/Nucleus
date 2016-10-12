@@ -8,6 +8,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.chat.config.TemplateConfig;
+import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.User;
@@ -176,8 +178,9 @@ public class NameUtil {
             return getColourFromString(s);
         }
 
-        if (chatConfigAdapterOptional.isPresent()) {
-            return getColourFromString(chatConfigAdapterOptional.get().getNodeOrDefault().getTemplate(player).getNamecolour());
+        Optional<TemplateUtil> optionalTemplateUtil = plugin.getInternalServiceManager().getService(TemplateUtil.class);
+        if (optionalTemplateUtil.isPresent()) {
+            return getColourFromString(optionalTemplateUtil.get().getTemplate(player).getNamecolour());
         }
 
         return TextColors.NONE;

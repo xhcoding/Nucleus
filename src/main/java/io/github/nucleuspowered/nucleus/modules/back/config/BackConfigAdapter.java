@@ -10,20 +10,9 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-public class BackConfigAdapter extends NucleusConfigAdapter<BackConfig> {
+public class BackConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<BackConfig> {
 
-    @Override
-    protected BackConfig getDefaultObject() {
-        return new BackConfig();
-    }
-
-    @Override
-    protected BackConfig convertFromConfigurateNode(ConfigurationNode node) throws ObjectMappingException {
-        return node.getValue(TypeToken.of(BackConfig.class), new BackConfig());
-    }
-
-    @Override
-    protected ConfigurationNode insertIntoConfigurateNode(BackConfig data) throws ObjectMappingException {
-        return SimpleCommentedConfigurationNode.root().setValue(TypeToken.of(BackConfig.class), data);
+    public BackConfigAdapter() {
+        super(BackConfig.class);
     }
 }

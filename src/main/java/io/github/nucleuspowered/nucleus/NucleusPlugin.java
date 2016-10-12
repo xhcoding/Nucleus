@@ -230,6 +230,13 @@ public class NucleusPlugin extends Nucleus {
     @Listener
     public void onGameStarted(GameStartedServerEvent event) {
         if (!isErrored) {
+            try {
+                // Save any additions.
+                moduleContainer.refreshSystemConfig();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             Sponge.getScheduler().createSyncExecutor(this).submit(() -> this.gameStartedTime = Instant.now());
         }
     }

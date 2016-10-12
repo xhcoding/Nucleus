@@ -54,7 +54,7 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
 
     public abstract static class Standard<R> extends NucleusConfigAdapter<R> {
 
-        private final TypeToken<R> typeToken;
+        final TypeToken<R> typeToken;
 
         public Standard(Class<R> clazz) {
             this(TypeToken.of(clazz));
@@ -70,9 +70,28 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
         }
 
         @Override
-        protected ConfigurationNode insertIntoConfigurateNode(R data) throws ObjectMappingException {
-            return SimpleCommentedConfigurationNode.root(ConfigurateHelper.setOptions(ConfigurationOptions.defaults())).setValue(typeToken, data);
+        protected ConfigurationNode insertIntoConfigurateNode(ConfigurationNode newNode, R data) throws ObjectMappingException {
+            return newNode.setValue(typeToken, data);
         }
     }
 
+    public abstract static class StandardWithSimpleDefault<R> extends NucleusConfigAdapter.Standard<R> {
+
+        public StandardWithSimpleDefault(Class<R> clazz) {
+            super(clazz);
+        }
+
+        public StandardWithSimpleDefault(TypeToken<R> typeToken) {
+            super(typeToken);
+        }
+
+        @Override
+        protected R getDefaultObject() {
+            try {
+                return (R) typeToken.getRawType().newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

@@ -4,25 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.connectionmessages.config;
 
-import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-public class ConnectionMessagesConfigAdapter extends NucleusConfigAdapter<ConnectionMessagesConfig> {
-    @Override
-    protected ConnectionMessagesConfig getDefaultObject() {
-        return new ConnectionMessagesConfig();
-    }
+public class ConnectionMessagesConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<ConnectionMessagesConfig> {
 
-    @Override
-    protected ConnectionMessagesConfig convertFromConfigurateNode(ConfigurationNode node) throws ObjectMappingException {
-        return node.getValue(TypeToken.of(ConnectionMessagesConfig.class), new ConnectionMessagesConfig());
-    }
-
-    @Override
-    protected ConfigurationNode insertIntoConfigurateNode(ConnectionMessagesConfig data) throws ObjectMappingException {
-        return SimpleCommentedConfigurationNode.root().setValue(TypeToken.of(ConnectionMessagesConfig.class), data);
+    public ConnectionMessagesConfigAdapter() {
+        super(ConnectionMessagesConfig.class);
     }
 }
