@@ -172,7 +172,7 @@ public class UserService extends Service<UserDataNode>
 
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
-        return plugin.getPermissionRegistry().getService(SocialSpyCommand.class).testBase(user);
+        return data.isSocialspy() && plugin.getPermissionRegistry().getService(SocialSpyCommand.class).testBase(user);
     }
 
     public boolean setSocialSpy(boolean socialSpy) {
