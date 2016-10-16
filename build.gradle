@@ -45,7 +45,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.spongepowered:spongeapi:5.0.0-SNAPSHOT"
+    compile "org.spongepowered:spongeapi:5.0.0"
     compile qsmlDep
     compile(mixinDep) {
         exclude module: 'mixin'
