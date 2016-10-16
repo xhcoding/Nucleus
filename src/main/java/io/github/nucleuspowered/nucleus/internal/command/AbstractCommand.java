@@ -34,7 +34,6 @@ import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
-import org.spongepowered.api.command.CommandPermissionException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -487,12 +486,6 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     @Override
     @NonnullByDefault
     public final CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
-        // If they don't match ANY permission, throw 'em.
-        // This should have been done if the standard base has been used, but in case it hasn't, here it is!
-        if (!permissions.testBase(source)) {
-            throw new CommandPermissionException();
-        }
-
         // If the implementing class has defined a generic parameter, then check
         // the source type.
         if (!checkSourceType(source)) {
