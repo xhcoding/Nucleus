@@ -137,7 +137,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
             // getSafeLocation might have put us out of the world border. Best to check.
             // We also check to see that it's not in water or lava, and if enabled, we see if the player would end up on the surface.
             try {
-                if (oSafeLocation.isPresent() && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get()) && (!onSurface || isOnSurface(oSafeLocation.get()))) {
+                if (oSafeLocation.isPresent() && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get())) {
                     Location<World> tpTarget = oSafeLocation.get();
 
                     plugin.getLogger().debug(String.format("RTP of %s, found location %s, %s, %s", player.getName(),
@@ -195,16 +195,6 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
         private boolean isSolid(Location<World> location) {
             Optional<MatterProperty> pp = location.getBlockType().getProperty(MatterProperty.class);
             return pp.isPresent() && pp.get().getValue() != MatterProperty.Matter.SOLID;
-        }
-
-        private boolean isOnSurface(Location<World> location) {
-            SurfaceCheckPredicate predicate = new SurfaceCheckPredicate();
-            Optional<BlockRayHit<World>> blockRayHitOptional = BlockRay.from(location).to(
-                    new Vector3d(location.getPosition().getX(), location.getExtent().getBlockMax().toDouble().getY(), location.getPosition().getZ()))
-                    .stopFilter(predicate).end();
-
-            // If we have no hit, then this is the top of the world and we should allow it.
-            return !blockRayHitOptional.isPresent();
         }
 
         @Override
