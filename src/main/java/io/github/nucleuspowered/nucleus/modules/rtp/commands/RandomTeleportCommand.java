@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.rtp.commands;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
@@ -111,6 +112,9 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
             // Generate random co-ords.
             int x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
             int z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
+
+            // Load the chunk before continuing with /rtp. Sponge issue means we have to load the chunk first.
+            currentWorld.loadChunk(new Vector3i(x, 0, z), true);
 
             int y;
             if (rca.getNodeOrDefault().isMustSeeSky()) {
