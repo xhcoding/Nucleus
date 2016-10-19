@@ -4,7 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kick.commands;
 
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -38,12 +43,14 @@ public class KickCommand extends io.github.nucleuspowered.nucleus.internal.comma
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.player(Text.of(player))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))};
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))
+        };
     }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kick.exempt.target"), SuggestedLevel.MOD));
         m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kick.notify"), SuggestedLevel.MOD));
         return m;
     }
@@ -52,6 +59,11 @@ public class KickCommand extends io.github.nucleuspowered.nucleus.internal.comma
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(player).get();
         String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("command.kick.defaultreason"));
+
+        if (permissions.testSuffix(pl, "exempt.target")) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kick.exempt", pl.getName()));
+        }
+
         pl.kick(TextSerializers.FORMATTING_CODE.deserialize(r));
 
         MessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify"));

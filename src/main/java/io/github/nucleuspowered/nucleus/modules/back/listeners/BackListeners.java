@@ -4,13 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.back.listeners;
 
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.back.commands.BackCommand;
 import io.github.nucleuspowered.nucleus.modules.back.config.BackConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
@@ -22,13 +19,11 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.type.Exclude;
 
-import java.util.Map;
-
 public class BackListeners extends ListenerBase {
 
-    static final String onTeleport = "targets.teleport";
-    static final String onDeath = "targets.death";
-    static final String onPortal = "targets.portal";
+    public static final String onTeleport = "targets.teleport";
+    public static final String onDeath = "targets.death";
+    public static final String onPortal = "targets.portal";
 
     @Inject private BackHandler handler;
     @Inject private BackConfigAdapter bca;
@@ -42,15 +37,6 @@ public class BackListeners extends ListenerBase {
         }
 
         return s;
-    }
-
-    @Override
-    public Map<String, PermissionInformation> getPermissions() {
-        Map<String, PermissionInformation> m = Maps.newHashMap();
-        m.put(getPermissionUtil().getPermissionWithSuffix(onDeath), new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.back.ondeath"), SuggestedLevel.USER));
-        m.put(getPermissionUtil().getPermissionWithSuffix(onTeleport), new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.back.onteleport"), SuggestedLevel.USER));
-        m.put(getPermissionUtil().getPermissionWithSuffix(onPortal), new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.back.onportal"), SuggestedLevel.USER));
-        return m;
     }
 
     @Listener

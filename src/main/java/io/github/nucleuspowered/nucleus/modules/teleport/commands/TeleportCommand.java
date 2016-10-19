@@ -55,18 +55,19 @@ public class TeleportCommand extends io.github.nucleuspowered.nucleus.internal.c
     public CommandElement[] getArguments() {
        return new CommandElement[]{
                 GenericArguments.flags().flag("f")
-                        .valueFlag(GenericArguments.requiringPermission(GenericArguments.bool(Text.of(quietKey)), permissions.getPermissionWithSuffix("quiet")), "q")
-                        .buildWith(GenericArguments.none()),
+                    .valueFlag(GenericArguments.requiringPermission(GenericArguments.bool(Text.of(quietKey)), permissions.getPermissionWithSuffix("quiet")), "q")
+                    .buildWith(
 
-                // Either we get two arguments, or we get one.
-                GenericArguments.firstParsing(
+                    // Either we get two arguments, or we get one.
+                    GenericArguments.firstParsing(
                         // <player> <player>
                         // TODO: Hook up with selectors
                         GenericArguments.requiringPermission(new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey)))),
                                 permissions.getPermissionWithSuffix("others")),
 
-                // <player>
-                GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)))};
+                    // <player>
+                    GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER))))
+       };
     }
 
     @Override

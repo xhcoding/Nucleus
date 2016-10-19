@@ -7,7 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.ban.config.BanConfigAdapter;
@@ -67,13 +72,11 @@ public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.co
         String reason = args.<String>getOne(reasonKey).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
 
         if (permissions.testSuffix(u, "exempt.target")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.exempt", u.getName()));
-            return CommandResult.success();
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.exempt", u.getName()));
         }
 
         if (!u.isOnline() && !permissions.testSuffix(src, "offline")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.offline.noperms"));
-            return CommandResult.success();
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.offline.noperms"));
         }
 
         if (time > bca.getNodeOrDefault().getMaximumTempBanLength() &&  bca.getNodeOrDefault().getMaximumTempBanLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
