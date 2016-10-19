@@ -8,7 +8,12 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -63,6 +68,7 @@ public class BanCommand extends io.github.nucleuspowered.nucleus.internal.comman
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.ban.offline"), SuggestedLevel.MOD));
+        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.target"), SuggestedLevel.MOD));
         return m;
     }
 
@@ -82,7 +88,20 @@ public class BanCommand extends io.github.nucleuspowered.nucleus.internal.comman
         final String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
         Optional<GameProfile> ou = args.getOne(user);
         if (ou.isPresent()) {
+            Optional<User> optionalUser = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(ou.get());
+            if ((!optionalUser.isPresent() || !optionalUser.get().isOnline()) && !permissions.testSuffix(src, "offline")) {
+                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.offline.noperms"));
+            }
+
+            if (optionalUser.isPresent() && permissions.testSuffix(optionalUser.get(), "exempt.target")) {
+                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.exempt", optionalUser.get().getName()));
+            }
+
             return executeBan(src, ou.get(), r);
+        }
+
+        if (!permissions.testSuffix(src, "offline")) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.offline.noperms"));
         }
 
         final String userToFind = args.<String>getOne(name).get();
