@@ -4,9 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.internal.docgen;
 
+import io.github.nucleuspowered.nucleus.internal.annotations.Since;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 @ConfigSerializable
@@ -44,6 +46,15 @@ public class CommandDoc {
 
     @Setting
     private boolean cost;
+
+    @Setting
+    private String nucleusVersion;
+
+    @Setting
+    private String minecraftVersion;
+
+    @Setting
+    private String spongeVersion;
 
     @Setting
     private List<PermissionDoc> permissions;
@@ -142,5 +153,43 @@ public class CommandDoc {
 
     public void setPermissions(List<PermissionDoc> permissions) {
         this.permissions = permissions;
+    }
+
+    public String getNucleusVersion() {
+        return nucleusVersion;
+    }
+
+    public String getMinecraftVersion() {
+        return minecraftVersion;
+    }
+
+    public String getSpongeVersion() {
+        return spongeVersion;
+    }
+
+    public void setSince(Since since) {
+        if (since == null) {
+            since = new Since() {
+                @Override public Class<? extends Annotation> annotationType() {
+                    return Since.class;
+                }
+
+                @Override public String nucleusVersion() {
+                    return "";
+                }
+
+                @Override public String spongeApiVersion() {
+                    return "";
+                }
+
+                @Override public String minecraftVersion() {
+                    return "";
+                }
+            };
+        }
+
+        nucleusVersion = since.nucleusVersion().isEmpty() ? null : since.nucleusVersion();
+        minecraftVersion = since.minecraftVersion().isEmpty() ? null : since.minecraftVersion();
+        spongeVersion = since.spongeApiVersion().isEmpty() ? null : since.spongeApiVersion();
     }
 }
