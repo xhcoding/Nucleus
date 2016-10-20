@@ -44,6 +44,7 @@ public class InvSeeCommand extends AbstractCommand<Player> {
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = super.permissionSuffixesToRegister();
         mspi.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.invsee.exempt.inspect"), SuggestedLevel.ADMIN));
+        mspi.put("exempt.interact", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.invsee.exempt.interact"), SuggestedLevel.ADMIN));
         return mspi;
     }
 
