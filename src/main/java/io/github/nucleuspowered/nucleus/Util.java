@@ -19,6 +19,8 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.type.GridInventory;
+import org.spongepowered.api.service.pagination.PaginationList;
+import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
@@ -323,5 +325,14 @@ public class Util {
         }
 
         return false;
+    }
+
+    public static PaginationList.Builder getPaginationBuilder(CommandSource source) {
+        PaginationList.Builder plb = Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder();
+        if (!(source instanceof Player)) {
+            plb.linesPerPage(-1);
+        }
+
+        return plb;
     }
 }
