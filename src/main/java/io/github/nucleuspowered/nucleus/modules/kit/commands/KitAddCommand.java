@@ -5,7 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -21,7 +25,7 @@ import org.spongepowered.api.text.Text;
  * Command Usage: /kit add Permission: plugin.kit.add.base
  */
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"add"}, subcommandOf = KitCommand.class)
+@RegisterCommand(value = {"add", "createFromInventory"}, subcommandOf = KitCommand.class)
 @NoWarmup
 @NoCooldown
 @NoCost
