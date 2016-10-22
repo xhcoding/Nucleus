@@ -7,22 +7,27 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 @Permissions
 @NoCost
 @NoCooldown
 @NoWarmup
-@RegisterCommand(value = "set", subcommandOf = FirstKitCommand.class)
+@RegisterCommand(value = {"set", "updateFromInventory"}, subcommandOf = FirstKitCommand.class)
 public class FirstKitSetCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject
