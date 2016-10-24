@@ -10,14 +10,14 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 
 import java.util.Optional;
 import java.util.Set;
 
 public class KitHandler implements NucleusKitService {
 
-    @Inject private GeneralService store;
+    @Inject private KitService store;
 
     @Override
     public Set<String> getKitNames() {
@@ -31,14 +31,20 @@ public class KitHandler implements NucleusKitService {
 
     @Override
     public boolean removeKit(String kitName) {
-        return store.removeKit(kitName);
+        if (store.removeKit(kitName)) {
+            store.save();
+            return true;
+        }
+
+        return false;
     }
 
     @Override
-    public void saveKit(String kitName, Kit kit) {
+    public synchronized void saveKit(String kitName, Kit kit) {
         Preconditions.checkArgument(kit instanceof KitDataNode);
         Util.getKeyIgnoreCase(store.getKits(), kitName).ifPresent(store::removeKit);
         store.addKit(kitName, (KitDataNode)kit);
+        store.save();
     }
 
     @Override

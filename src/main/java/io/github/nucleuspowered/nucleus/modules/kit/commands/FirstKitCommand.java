@@ -5,8 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -17,9 +22,10 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 @Permissions
 @NoWarmup
@@ -29,7 +35,7 @@ import java.util.stream.Collectors;
 @RegisterCommand({"firstjoinkit", "starterkit", "joinkit", "firstkit"})
 public class FirstKitCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
-    @Inject private GeneralService gds;
+    @Inject private KitService gds;
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

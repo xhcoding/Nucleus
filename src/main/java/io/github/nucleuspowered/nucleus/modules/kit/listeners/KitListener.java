@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.kit.listeners;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import org.spongepowered.api.entity.living.player.Player;
@@ -15,13 +15,14 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
-import javax.inject.Inject;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class KitListener extends ListenerBase {
 
     @Inject private UserDataManager loader;
-    @Inject private GeneralService gds;
+    @Inject private KitService gds;
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {

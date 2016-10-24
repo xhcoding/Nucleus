@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
@@ -45,5 +46,6 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(ChatUtil.class).toProvider(plugin::getChatUtil);
         bind(MessageProvider.class).toProvider(plugin::getMessageProvider);
         bind(ItemDataService.class).toProvider(plugin::getItemDataService);
+        bind(KitService.class).toProvider(plugin::getKitService);
     }
 }

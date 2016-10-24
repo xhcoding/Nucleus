@@ -23,12 +23,14 @@ import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.PreloadTasks;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
@@ -89,6 +91,7 @@ public class NucleusPlugin extends Nucleus {
     private ItemDataService itemDataService;
     private UserDataManager userDataManager;
     private WorldDataManager worldDataManager;
+    private KitService kitService;
     private ChatUtil chatUtil;
     private NameUtil nameUtil;
     private Injector injector;
@@ -118,6 +121,7 @@ public class NucleusPlugin extends Nucleus {
     public NucleusPlugin(@ConfigDir(sharedRoot = true) Path configDir, Logger logger) {
         Nucleus.setNucleus(this);
         this.configDir = configDir.resolve(PluginInfo.ID);
+        this.dataDir = Sponge.getGame().getSavesDirectory().resolve("nucleus");
         this.logger = new DebugLogger(this, logger);
     }
 
@@ -126,7 +130,9 @@ public class NucleusPlugin extends Nucleus {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
         Game game = Sponge.getGame();
 
-        dataDir = game.getSavesDirectory().resolve("nucleus");
+        // Startup tasks, for the migrations I need to do.
+        PreloadTasks.getPreloadTasks().forEach(x -> x.accept(this));
+
         // Get the mandatory config files.
         try {
             Files.createDirectories(this.configDir);
@@ -138,6 +144,7 @@ public class NucleusPlugin extends Nucleus {
             itemDataService = new ItemDataService(d.getItemDataProvider());
             userDataManager = new UserDataManager(this, d::getUserFileDataProviders);
             worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider);
+            kitService = new KitService(d.getKitsDataProvider());
             warmupManager = new WarmupManager();
             chatUtil = new ChatUtil(this);
             nameUtil = new NameUtil(this);
@@ -191,10 +198,11 @@ public class NucleusPlugin extends Nucleus {
 
         logger.info(messageProvider.getMessageWithFormat("startup.postinit", PluginInfo.NAME));
 
-        // Load up the general data file now, mods should have registered items by now.
+        // Load up the general data files now, mods should have registered items by now.
         try {
             itemDataService.load();
             generalService.load();
+            kitService.load();
 
             // Reload so that we can update the serialisers.
             moduleContainer.reloadSystemConfig();
@@ -382,6 +390,10 @@ public class NucleusPlugin extends Nucleus {
     @Override
     public ItemDataService getItemDataService() {
         return itemDataService;
+    }
+
+    public KitService getKitService() {
+        return kitService;
     }
 
     public CommandsConfig getCommandsConfig() {
