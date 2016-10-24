@@ -7,25 +7,19 @@ package io.github.nucleuspowered.nucleus.dataservices;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WarpNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,47 +65,6 @@ public class GeneralService extends Service<GeneralDataNode> {
 
     public boolean removeBlacklistedType(ItemType type) {
         return data.getBlacklistedTypes().remove(type);
-    }
-
-    public Optional<KitDataNode> getKit(String name) {
-        Map<String, KitDataNode> msk = data.getKits();
-        Optional<String> key = Util.getKeyIgnoreCase(data.getKits(), name);
-        if (key.isPresent()) {
-            return Optional.of(msk.get(key.get()));
-        }
-
-        return Optional.empty();
-    }
-
-    public Map<String, Kit> getKits() {
-        return ImmutableMap.copyOf(data.getKits());
-    }
-
-    public boolean addKit(String name, KitDataNode kit) {
-        if (data.getKits().keySet().stream().anyMatch(name::equalsIgnoreCase)) {
-            return false;
-        }
-
-        data.getKits().put(name, kit);
-        return true;
-    }
-
-    public boolean removeKit(String name) {
-        Map<String, KitDataNode> msk = data.getKits();
-        Optional<String> key = msk.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
-        return key.isPresent() && data.getKits().remove(key.get()) != null;
-    }
-
-    public List<ItemStackSnapshot> getFirstKit() {
-        return data.getFirstKit();
-    }
-
-    public void setFirstKit(@Nullable List<ItemStackSnapshot> stack) {
-        if (stack == null) {
-            stack = Lists.newArrayList();
-        }
-
-        data.setFirstKit(stack);
     }
 
     public Optional<LocationData> getJailLocation(String name) {

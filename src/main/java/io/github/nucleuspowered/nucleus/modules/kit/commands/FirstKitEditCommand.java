@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -40,7 +41,7 @@ import java.util.Optional;
 @Since(spongeApiVersion = "5.0", minecraftVersion = "1.10.2", nucleusVersion = "0.13")
 public class FirstKitEditCommand extends AbstractCommand<Player> {
 
-    @Inject private GeneralService generalService;
+    @Inject private KitService generalService;
     @Inject private KitHandler kitHandler;
 
     @Override

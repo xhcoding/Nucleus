@@ -12,10 +12,10 @@ import io.github.nucleuspowered.nucleus.api.data.Kit;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.util.Tuple;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,9 +25,9 @@ import javax.annotation.Nullable;
 
 public class KitHandler implements NucleusKitService {
 
-    @Inject private GeneralService store;
     private final Map<Container, Tuple<KitArgument.KitInfo, Inventory>> inventoryKitMap = Maps.newHashMap();
     private Tuple<Container, Inventory> firstJoinKitInventory = null;
+    @Inject private KitService store;
 
     @Override
     public Set<String> getKitNames() {
@@ -41,14 +41,20 @@ public class KitHandler implements NucleusKitService {
 
     @Override
     public boolean removeKit(String kitName) {
-        return store.removeKit(kitName);
+        if (store.removeKit(kitName)) {
+            store.save();
+            return true;
+        }
+
+        return false;
     }
 
     @Override
-    public void saveKit(String kitName, Kit kit) {
+    public synchronized void saveKit(String kitName, Kit kit) {
         Preconditions.checkArgument(kit instanceof KitDataNode);
         Util.getKeyIgnoreCase(store.getKits(), kitName).ifPresent(store::removeKit);
         store.addKit(kitName, (KitDataNode)kit);
+        store.save();
     }
 
     @Override

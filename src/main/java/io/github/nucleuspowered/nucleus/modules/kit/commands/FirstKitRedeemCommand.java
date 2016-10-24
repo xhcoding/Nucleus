@@ -5,8 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -16,7 +20,7 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import javax.inject.Inject;
 
-@Permissions
+@Permissions(prefix = "firstjoinkit")
 @NoCost
 @NoCooldown
 @NoWarmup
@@ -24,7 +28,7 @@ import javax.inject.Inject;
 public class FirstKitRedeemCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject
-    private GeneralService gds;
+    private KitService gds;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

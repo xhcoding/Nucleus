@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.KitConfigDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -34,6 +35,7 @@ public class DataProviders {
     private final TypeToken<WorldDataNode> ttw = TypeToken.of(WorldDataNode.class);
     private final TypeToken<GeneralDataNode> ttg = TypeToken.of(GeneralDataNode.class);
     private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
+    private final TypeToken<KitConfigDataNode> ttmk = TypeToken.of(KitConfigDataNode.class);
 
     public DataProviders(NucleusPlugin plugin) {
         this.plugin = plugin;
@@ -59,6 +61,16 @@ public class DataProviders {
         }
     }
 
+    public DataProvider<KitConfigDataNode> getKitsDataProvider() {
+        // For now, just the Configurate one.
+        try {
+            Path p = plugin.getDataPath().resolve("kits.json");
+            return new ConfigurateDataProvider<>(ttmk, new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(p).build()), p);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public DataProvider<GeneralDataNode> getGeneralDataProvider() {
         // For now, just the Configurate one.
         try {
@@ -73,7 +85,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getConfigDirPath().resolve("items.conf");
-            return new ConfigurateDataProvider<>(ttmsi, new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(p).build()), HashMap::new, p);
+            return new ConfigurateDataProvider<>(ttmsi, new LazyConfigurationLoader<>(() -> getHoconBuilder().setPath(p).build()), HashMap::new, p);
         } catch (Exception e) {
             return null;
         }

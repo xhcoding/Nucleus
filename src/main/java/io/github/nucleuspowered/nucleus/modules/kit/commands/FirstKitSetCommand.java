@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-@Permissions
+@Permissions(prefix = "firstjoinkit")
 @NoCost
 @NoCooldown
 @NoWarmup
@@ -31,13 +31,14 @@ import javax.inject.Inject;
 public class FirstKitSetCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
     @Inject
-    private GeneralService gds;
+    private KitService gds;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         List<Inventory> slots = Lists.newArrayList(Util.getStandardInventory(src).slots());
         final List<ItemStackSnapshot> stacks = slots.stream().filter(x -> x.peek().isPresent()).map(x -> x.peek().get().createSnapshot()).collect(Collectors.toList());
         gds.setFirstKit(stacks);
+        gds.save();
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.set.success"));
         return CommandResult.success();

@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.listeners;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -32,9 +32,9 @@ import javax.inject.Inject;
 public class KitListener extends ListenerBase {
 
     @Inject private UserDataManager loader;
-    @Inject private GeneralService gds;
     @Inject private CoreConfigAdapter coreConfigAdapter;
     @Inject private KitHandler handler;
+    @Inject private KitService gds;
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
