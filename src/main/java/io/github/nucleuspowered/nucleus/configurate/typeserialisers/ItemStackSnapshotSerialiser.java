@@ -14,10 +14,13 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.persistence.DataTranslators;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnapshot> {
 
@@ -54,8 +57,8 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
 
     @Override
     public ItemStackSnapshot deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
-        // Process enchantments, temporary fix before Sponge gets a more general
-        // fix in.
+        // Process enchantments, temporary fix before Sponge gets a more general fix in.
+        boolean emptyEnchant = false;
         ConfigurationNode ench = value.getNode("UnsafeData", "ench");
         if (!ench.isVirtual()) {
             List<? extends ConfigurationNode> enchantments = ench.getChildrenList();
@@ -77,6 +80,24 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
             }
         }
 
+        ConfigurationNode data = value.getNode("Data");
+        if (!data.isVirtual() && data.hasListChildren()) {
+            List<? extends ConfigurationNode> n = data.getChildrenList().stream()
+                .filter(x ->
+                    !x.getNode("DataClass").getString().endsWith("SpongeEnchantmentData")
+                    || (!x.getNode("ManipulatorData", "ItemEnchantments").isVirtual() && x.getNode("ManipulatorData", "ItemEnchantments").hasListChildren()))
+                .collect(Collectors.toList());
+            emptyEnchant = n.size() != data.getChildrenList().size();
+
+            if (emptyEnchant) {
+                if (n.isEmpty()) {
+                    value.removeChild("Data");
+                } else {
+                    value.getNode("Data").setValue(n);
+                }
+            }
+        }
+
         Optional<ItemStackSnapshot> oiss;
         try {
             oiss = Sponge.getDataManager().deserialize(ItemStackSnapshot.class, DataTranslators.CONFIGURATION_NODE.translate(value));
@@ -85,7 +106,14 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
         }
 
         if (oiss.isPresent()) {
-            return oiss.get();
+            ItemStackSnapshot iss = oiss.get();
+            if (emptyEnchant) {
+                ItemStack is = oiss.get().createStack();
+                is.offer(Keys.ITEM_ENCHANTMENTS, Lists.newArrayList());
+                iss = is.createSnapshot();
+            }
+
+            return iss;
         }
 
         // If we get here, we have had a problem with the data. We should
@@ -107,7 +135,14 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
 
         if (oiss.isPresent()) {
             Nucleus.getNucleus().getLogger().warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.data", value.getNode("ItemType").getString()));
-            return oiss.get();
+            ItemStackSnapshot iss = oiss.get();
+            if (emptyEnchant) {
+                ItemStack is = oiss.get().createStack();
+                is.offer(Keys.ITEM_ENCHANTMENTS, Lists.newArrayList());
+                iss = is.createSnapshot();
+            }
+
+            return iss;
         }
 
         Nucleus.getNucleus().getLogger().warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("config.itemstacksnapshot.unable", value.getNode("ItemType").getString()));
@@ -120,13 +155,6 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
     public void serialize(TypeToken<?> type, ItemStackSnapshot obj, ConfigurationNode value) throws ObjectMappingException {
         DataContainer container = obj.toContainer();
         ConfigurationNode root = DataTranslators.CONFIGURATION_NODE.translate(container);
-        ConfigurationNode ench = root.getNode("UnsafeData", "ench");
-
-        // Remove empty enchantment list.
-        if (!ench.isVirtual() && !ench.hasListChildren()) {
-            root.getNode("UnsafeData").removeChild("ench");
-        }
-
         value.setValue(root);
     }
 }
