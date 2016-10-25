@@ -70,4 +70,6 @@ public abstract class Nucleus {
     public abstract boolean areMixinsAvailable();
 
     public abstract NucleusTeleportHandler getTeleportHandler();
+
+    public abstract boolean isDebugMode();
 }

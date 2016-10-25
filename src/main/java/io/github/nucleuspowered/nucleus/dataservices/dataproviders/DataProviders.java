@@ -85,7 +85,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getConfigDirPath().resolve("items.conf");
-            return new ConfigurateDataProvider<>(ttmsi, new LazyConfigurationLoader<>(() -> getHoconBuilder().setPath(p).build()), HashMap::new, p);
+            return new ConfigurateDataProvider<>(ttmsi, new LazyConfigurationLoader<>(() -> getHoconBuilder().setPath(p).build()), HashMap::new, p, false);
         } catch (Exception e) {
             return null;
         }
