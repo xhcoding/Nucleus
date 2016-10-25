@@ -68,4 +68,6 @@ public abstract class Nucleus {
     public abstract MessageProvider getCommandMessageProvider();
 
     public abstract NucleusTeleportHandler getTeleportHandler();
+
+    public abstract boolean isDebugMode();
 }
