@@ -425,6 +425,14 @@ public class NucleusPlugin extends Nucleus {
         return teleportHandler;
     }
 
+    @Override public boolean isDebugMode() {
+        try {
+            return this.getModuleContainer().getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isDebugmode();
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            return true;
+        }
+    }
+
     public <T> void preInjectorUpdate(Class<T> clazz, T instance) {
         if (injector.getExistingBinding(Key.get(clazz)) == null) {
             subInjectorModule.addInjection(clazz, instance);
