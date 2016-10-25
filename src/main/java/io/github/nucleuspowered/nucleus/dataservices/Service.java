@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 
 public abstract class Service<T> {
@@ -27,7 +28,11 @@ public abstract class Service<T> {
             data = dataProvider.load();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Nucleus.getNucleus().getLogger().error(e.getMessage());
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
+
             return false;
         }
     }
@@ -37,7 +42,11 @@ public abstract class Service<T> {
             dataProvider.save(data);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Nucleus.getNucleus().getLogger().error(e.getMessage());
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
+
             return false;
         }
     }
@@ -47,7 +56,11 @@ public abstract class Service<T> {
             dataProvider.delete();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            Nucleus.getNucleus().getLogger().error(e.getMessage());
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
+
             return false;
         }
     }

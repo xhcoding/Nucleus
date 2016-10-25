@@ -202,5 +202,9 @@ public abstract class TestBase {
         public NucleusTeleportHandler getTeleportHandler() {
             return null;
         }
+
+        @Override public boolean isDebugMode() {
+            return true;
+        }
     }
 }

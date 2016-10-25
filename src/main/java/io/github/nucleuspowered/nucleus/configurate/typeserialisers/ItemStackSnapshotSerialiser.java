@@ -59,17 +59,22 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
         ConfigurationNode ench = value.getNode("UnsafeData", "ench");
         if (!ench.isVirtual()) {
             List<? extends ConfigurationNode> enchantments = ench.getChildrenList();
-            enchantments.forEach(x -> {
-                try {
-                    int id = Integer.parseInt(x.getNode("id").getString());
-                    int lvl = Integer.parseInt(x.getNode("lvl").getString());
+            if (enchantments.isEmpty()) {
+                // Remove empty enchantment list.
+                value.getNode("UnsafeData").removeChild("ench");
+            } else {
+                enchantments.forEach(x -> {
+                    try {
+                        int id = Integer.parseInt(x.getNode("id").getString());
+                        int lvl = Integer.parseInt(x.getNode("lvl").getString());
 
-                    x.getNode("id").setValue(id);
-                    x.getNode("lvl").setValue(lvl);
-                } catch (NumberFormatException e) {
-                    x.setValue(null);
-                }
-            });
+                        x.getNode("id").setValue(id);
+                        x.getNode("lvl").setValue(lvl);
+                    } catch (NumberFormatException e) {
+                        x.setValue(null);
+                    }
+                });
+            }
         }
 
         Optional<ItemStackSnapshot> oiss;
@@ -114,6 +119,14 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
     @Override
     public void serialize(TypeToken<?> type, ItemStackSnapshot obj, ConfigurationNode value) throws ObjectMappingException {
         DataContainer container = obj.toContainer();
-        value.setValue(DataTranslators.CONFIGURATION_NODE.translate(container));
+        ConfigurationNode root = DataTranslators.CONFIGURATION_NODE.translate(container);
+        ConfigurationNode ench = root.getNode("UnsafeData", "ench");
+
+        // Remove empty enchantment list.
+        if (!ench.isVirtual() && !ench.hasListChildren()) {
+            root.getNode("UnsafeData").removeChild("ench");
+        }
+
+        value.setValue(root);
     }
 }
