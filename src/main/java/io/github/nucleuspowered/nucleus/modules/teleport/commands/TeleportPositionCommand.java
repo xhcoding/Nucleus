@@ -4,11 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
-import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -27,8 +30,6 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @NoCost
 @RegisterCommand({"tppos"})
 public class TeleportPositionCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
-
-    @Inject(optional = true) private BackHandler backHandler;
 
     private final String key = "player";
     private final String location = "world";
@@ -74,7 +75,7 @@ public class TeleportPositionCommand extends io.github.nucleuspowered.nucleus.in
             return CommandResult.success();
         }
 
-        if (pl.setLocationSafely(loc)) {
+        if (Nucleus.getNucleus().getTeleportHandler().teleportPlayer(pl, loc)) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));

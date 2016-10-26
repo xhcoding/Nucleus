@@ -71,6 +71,10 @@ public class NucleusTeleportHandler {
         return teleportPlayer(player, worldLocation, rotation, mode);
     }
 
+    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo) {
+        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), getTeleportModeForPlayer(player));
+    }
+
     public boolean teleportPlayer(Player player, Transform<World> worldTransform) {
         return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), getTeleportModeForPlayer(player));
     }
