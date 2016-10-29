@@ -10,11 +10,18 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 @ConfigSerializable
 public class WarpNode extends LocationNode {
 
     @Setting("cost")
     private int cost = -1;
+
+    @Setting("category")
+    private String category = null;
 
     public WarpNode() {
         super();
@@ -50,4 +57,11 @@ public class WarpNode extends LocationNode {
         this.cost = cost;
     }
 
+    public Optional<String> getCategory() {
+        return Optional.ofNullable(category);
+    }
+
+    public void setCategory(@Nullable String category) {
+        this.category = category;
+    }
 }

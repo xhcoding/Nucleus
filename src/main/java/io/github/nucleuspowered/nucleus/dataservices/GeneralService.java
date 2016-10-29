@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 public class GeneralService extends Service<GeneralDataNode> {
 
     private final BiFunction<String, LocationNode, LocationData> getLocationData = (s, l) -> {
@@ -38,9 +40,9 @@ public class GeneralService extends Service<GeneralDataNode> {
 
     private final BiFunction<String, WarpNode, WarpData> getWarpLocation = (s, l) -> {
         try {
-            return new WarpData(s, l.getLocation(), l.getRotation(), l.getCost());
+            return new WarpData(s, l.getLocation(), l.getRotation(), l.getCost(), l.getCategory().orElse(null));
         } catch (NoSuchWorldException e) {
-            return null;
+            return new WarpData(s, null, null, l.getCost(), l.getCategory().orElse(null));
         }
     };
 
@@ -108,6 +110,18 @@ public class GeneralService extends Service<GeneralDataNode> {
         if (os.isPresent()) {
             // No need to put it back - it's saved automatically.
             os.get().setCost(cost);
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean setWarpCategory(String name, @Nullable String category) {
+        Map<String, WarpNode> m = data.getWarps();
+        Optional<WarpNode> os = Util.getValueIgnoreCase(m, name);
+        if (os.isPresent()) {
+            // No need to put it back - it's saved automatically.
+            os.get().setCategory(category);
             return true;
         }
 
