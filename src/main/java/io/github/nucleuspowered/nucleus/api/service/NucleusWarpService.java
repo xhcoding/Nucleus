@@ -9,8 +9,13 @@ import io.github.nucleuspowered.nucleus.api.data.WarpData;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 /**
  * Gets a service that allows users to warp about using defined warp.
@@ -43,6 +48,14 @@ public interface NucleusWarpService {
      */
     boolean setWarp(String warpName, Location<World> location, Vector3d rotation);
 
+    List<WarpData> getUncategorisedWarps();
+
+    List<WarpData> getWarpsForCategory(String category);
+
+    Map<String, List<WarpData>> getCategorisedWarps();
+
+    Map<String, List<WarpData>> getCategorisedWarps(Predicate<WarpData> warpDataPredicate);
+
     boolean removeWarpCost(String warpName);
 
     /**
@@ -53,6 +66,8 @@ public interface NucleusWarpService {
      * @return <code>true</code> if the cost is set, <code>false</code> otherwise.
      */
     boolean setWarpCost(String warpName, int cost);
+
+    boolean setWarpCategory(String warpName, @Nullable String category);
 
     /**
      * Gets the names of all the warp that are available.

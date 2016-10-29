@@ -19,6 +19,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -32,16 +33,22 @@ public class WarpArgument extends CommandElement {
     private NucleusWarpService service;
     private final WarpConfigAdapter configAdapter;
     private final boolean permissionCheck;
+    private final boolean requiresLocation;
 
     public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck) {
         this(key, configAdapter, permissionCheck, true);
     }
 
     public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean includeWarpData) {
+        this(key, configAdapter, permissionCheck, includeWarpData, true);
+    }
+
+    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean includeWarpData, boolean requiresLocation) {
         super(key);
         this.configAdapter = configAdapter;
         this.permissionCheck = permissionCheck;
         this.includeWarpData = includeWarpData;
+        this.requiresLocation = requiresLocation;
     }
 
     @Nullable
@@ -73,8 +80,15 @@ public class WarpArgument extends CommandElement {
 
         try {
             String name = args.peek().toLowerCase();
-            return service.getWarpNames().stream().filter(s -> s.startsWith(name)).filter(s -> !includeWarpData || service.getWarp(s).isPresent())
-                    .filter(x -> checkPermission(src, name)).collect(Collectors.toList());
+            return service.getWarpNames().stream().filter(s -> s.startsWith(name))
+                .filter(s -> {
+                    if (!includeWarpData) {
+                        return true;
+                    }
+
+                    Optional<WarpData> warpDataOptional = service.getWarp(s);
+                    return (warpDataOptional.isPresent() && (!requiresLocation || warpDataOptional.get().getLocation().isPresent()));
+                }).filter(x -> checkPermission(src, name)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Lists.newArrayList();
         }

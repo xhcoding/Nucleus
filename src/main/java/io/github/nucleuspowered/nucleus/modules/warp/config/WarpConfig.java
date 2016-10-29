@@ -19,6 +19,12 @@ public class WarpConfig {
     @Setting(value = "use-safe-warp", comment = "loc:config.warps.safe")
     private boolean safeTeleport = true;
 
+    @Setting(value = "list-warps-by-category", comment = "loc:config.warps.categories")
+    private boolean categoriseWarps = false;
+
+    @Setting(value = "default-category-name")
+    private String defaultName = "Uncategorised";
+
     public boolean isSeparatePermissions() {
         return separatePermissions;
     }
@@ -29,5 +35,13 @@ public class WarpConfig {
 
     public boolean isSafeTeleport() {
         return safeTeleport;
+    }
+
+    public boolean isCategoriseWarps() {
+        return categoriseWarps;
+    }
+
+    public String getDefaultName() {
+        return defaultName == null || defaultName.isEmpty() ? "Uncategorised" : defaultName;
     }
 }

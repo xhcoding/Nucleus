@@ -10,13 +10,17 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 public class WarpData extends LocationData {
 
     private final int cost;
+    private final String category;
 
-    public WarpData(String name, Location<World> location, Vector3d rotation, int cost) {
+    public WarpData(String name, Location<World> location, Vector3d rotation, int cost, @Nullable String category) {
         super(name, location, rotation);
         this.cost = Math.max(-1, cost);
+        this.category = category;
     }
 
     public Optional<Integer> getCost() {
@@ -25,6 +29,10 @@ public class WarpData extends LocationData {
         }
 
         return Optional.empty();
+    }
+
+    public Optional<String> getCategory() {
+        return Optional.ofNullable(category);
     }
 
     @Override
