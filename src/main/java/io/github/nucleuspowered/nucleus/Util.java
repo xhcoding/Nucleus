@@ -13,11 +13,14 @@ import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.type.GridInventory;
@@ -206,6 +209,21 @@ public class Util {
         return Optional.empty();
     }
 
+    public static Optional<String> getTranslatedStringFromItemId(String id) {
+        Optional<CatalogType> type = getCatalogTypeForItemFromId(id);
+        if (type.isPresent()) {
+            return Optional.of(getTranslatableIfPresentOnCatalogType(type.get()));
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Gets the {@link ItemType} or {@link BlockState} for an ID.
+     *
+     * @param id The ID to check.
+     * @return An {@link Optional} containing the intended {@link CatalogType}
+     */
     public static Optional<CatalogType> getCatalogTypeForItemFromId(String id) {
         // Check for ItemType.
         Optional<ItemType> oit = Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst();
@@ -340,5 +358,23 @@ public class Util {
 
     public static Inventory.Builder getKitInventoryBuilder() {
         return Inventory.builder().of(InventoryArchetypes.CHEST).property(InventoryDimension.PROPERTY_NAM, new InventoryDimension(9, 4));
+    }
+
+    public static Optional<CatalogType> getTypeFromItemInHand(Player src) {
+        // If player, get the item in hand, otherwise, we can't continue.
+        if (src.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+            return Optional.of(getTypeFromItem(src.getItemInHand(HandTypes.MAIN_HAND).get()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static CatalogType getTypeFromItem(ItemStack is) {
+        Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
+        if (blockState.isPresent()) {
+            return blockState.get();
+        }
+
+        return is.getItem();
     }
 }

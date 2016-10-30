@@ -4,13 +4,25 @@
  */
 package io.github.nucleuspowered.nucleus.modules.blacklist.config;
 
-import com.google.common.reflect.TypeToken;
+import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+
+import java.util.List;
 
 public class BlacklistConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<BlacklistConfig> {
+
+    @Override protected List<Transformation> getTransformations() {
+        return Lists.newArrayList(
+            new Transformation(new Object[]{"environment"}, (inputPath, valueAtPath) -> {
+                valueAtPath.setValue(null);
+                return null;
+            }),
+            new Transformation(new Object[]{"inventory"}, (inputPath, valueAtPath) -> {
+                valueAtPath.setValue(null);
+                return null;
+            })
+        );
+    }
 
     public BlacklistConfigAdapter() {
         super(BlacklistConfig.class);

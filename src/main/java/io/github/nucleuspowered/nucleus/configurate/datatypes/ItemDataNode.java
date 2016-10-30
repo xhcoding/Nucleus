@@ -7,6 +7,8 @@ package io.github.nucleuspowered.nucleus.configurate.datatypes;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.item.BlacklistNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.item.PriceNode;
 import io.github.nucleuspowered.nucleus.configurate.settingprocessor.ItemAliasSettingProcessor;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -38,6 +40,9 @@ public class ItemDataNode {
 
     @Setting
     private PriceNode shop = new PriceNode();
+
+    @Setting
+    private BlacklistNode blacklist = new BlacklistNode();
 
     public List<String> getAliases() {
         return ImmutableList.copyOf(aliases);
@@ -77,4 +82,11 @@ public class ItemDataNode {
         shop.setSell(serverSellPrice);
     }
 
+    public BlacklistNode getBlacklist() {
+        return blacklist;
+    }
+
+    public boolean isBlacklisted() {
+        return blacklist.isEnvironment() || blacklist.isInventory() || blacklist.isUse();
+    }
 }
