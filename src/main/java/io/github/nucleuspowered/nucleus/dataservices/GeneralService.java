@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.dataservices;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.data.WarpData;
@@ -16,11 +15,9 @@ import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WarpNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import org.spongepowered.api.entity.Transform;
-import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -49,24 +46,6 @@ public class GeneralService extends Service<GeneralDataNode> {
     public GeneralService(DataProvider<GeneralDataNode> provider) throws Exception {
         // This gets set up early, but we don't want to load it until post-init.
         super(provider, false);
-    }
-
-    public List<ItemType> getBlacklistedTypes() {
-        return ImmutableList.copyOf(data.getBlacklistedTypes());
-    }
-
-    public boolean addBlacklistedType(ItemType type) {
-        List<ItemType> types = data.getBlacklistedTypes();
-        if (!types.contains(type)) {
-            types.add(type);
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean removeBlacklistedType(ItemType type) {
-        return data.getBlacklistedTypes().remove(type);
     }
 
     public Optional<LocationData> getJailLocation(String name) {

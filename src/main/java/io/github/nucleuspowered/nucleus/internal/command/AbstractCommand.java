@@ -30,6 +30,7 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
+import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
@@ -697,6 +698,23 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             } else {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.noworldconsole"));
             }
+        }
+    }
+
+    @Nonnull
+    protected final CatalogType getCatalogTypeFromHandOrArgs(CommandSource src, String argument, CommandContext args) throws ReturnMessageException {
+        Optional<CatalogType> catalogTypeOptional = args.getOne(argument);
+        CatalogType type;
+        if (catalogTypeOptional.isPresent()) {
+            return catalogTypeOptional.get();
+        } else {
+            // If player, get the item in hand, otherwise, we can't continue.
+            if (src instanceof Player) {
+                return Util.getTypeFromItemInHand((Player)src)
+                    .orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.noneinhand")));
+            }
+
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.noitemconsole"));
         }
     }
 

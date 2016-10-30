@@ -4,13 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import org.spongepowered.api.item.ItemType;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,9 +15,6 @@ import javax.annotation.Nullable;
 
 @ConfigSerializable
 public class GeneralDataNode {
-
-    @Setting
-    private List<ItemType> blacklistedTypes = Lists.newArrayList();
 
     @Setting
     private Map<String, LocationNode> jails = Maps.newHashMap();
@@ -31,22 +25,6 @@ public class GeneralDataNode {
     @Setting
     @Nullable
     private LocationNode firstspawn = null;
-
-    public List<ItemType> getBlacklistedTypes() {
-        if (this.blacklistedTypes == null) {
-            this.blacklistedTypes = Lists.newArrayList();
-        }
-
-        return this.blacklistedTypes;
-    }
-
-    public void setBlacklistedTypes(List<ItemType> blacklistedTypes) {
-        if (blacklistedTypes == null) {
-            this.blacklistedTypes = Lists.newArrayList();
-        } else {
-            this.blacklistedTypes = blacklistedTypes;
-        }
-    }
 
     public Map<String, LocationNode> getJails() {
         return jails;

@@ -8,20 +8,19 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
-
-import java.util.Optional;
 
 @RunAsync
 @NoCooldown
@@ -58,31 +57,7 @@ public class SetItemAliasCommand extends io.github.nucleuspowered.nucleus.intern
             return CommandResult.empty();
         }
 
-        Optional<CatalogType> catalogTypeOptional = args.getOne(item);
-        CatalogType type;
-        if (catalogTypeOptional.isPresent()) {
-            type = catalogTypeOptional.get();
-        } else {
-            // If player, get the item in hand, otherwise, we can't continue.
-            if (src instanceof Player) {
-                Player pl = (Player)src;
-                if (pl.getItemInHand().isPresent()) {
-                    final ItemStack is = pl.getItemInHand().get();
-                    Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
-                    if (blockState.isPresent()) {
-                        type = blockState.get();
-                    } else {
-                        type = is.getItem();
-                    }
-                } else {
-                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.setitemalias.noneinhand"));
-                    return CommandResult.empty();
-                }
-            } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.setitemalias.noidconsole"));
-                return CommandResult.empty();
-            }
-        }
+        CatalogType type = getCatalogTypeFromHandOrArgs(src, item, args);
 
         // Set the alias.
         String id = type.getId().toLowerCase();
