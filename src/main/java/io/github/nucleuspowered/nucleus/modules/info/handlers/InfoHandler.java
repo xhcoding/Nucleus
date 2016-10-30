@@ -67,6 +67,7 @@ public class InfoHandler {
             // They exist.
             am.getAsset(plugin, "info.txt").get().copyToFile(infoDir.resolve("info.txt"));
             am.getAsset(plugin, "colors.txt").get().copyToFile(infoDir.resolve("colors.txt"));
+            am.getAsset(plugin, "links.txt").get().copyToFile(infoDir.resolve("links.txt"));
         } else if (!Files.isDirectory(infoDir)) {
             throw new IllegalStateException("The file " + infoDir.toAbsolutePath().toString() + " should be a directory.");
         }
