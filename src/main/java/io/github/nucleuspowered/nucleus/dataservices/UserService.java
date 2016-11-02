@@ -26,12 +26,16 @@ import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
@@ -49,7 +53,7 @@ public class UserService extends Service<UserDataNode>
         implements NucleusUser {
 
     private final NucleusPlugin plugin;
-    private final User user;
+    private final UUID uuid;
     private final Instant serviceLoadTime = Instant.now();
 
     // Use to keep hold of whether this is the first time on the server for a player.
@@ -63,20 +67,31 @@ public class UserService extends Service<UserDataNode>
     private boolean inStaffChat = false;
 
     // Used as a cache.
+    private UserStorageService uss;
     private Text nickname = null;
 
+    @NonnullByDefault
     public UserService(NucleusPlugin plugin, DataProvider<UserDataNode> provider, User user) throws Exception {
+        this(plugin, provider, user.getUniqueId());
+    }
+
+    @NonnullByDefault
+    public UserService(NucleusPlugin plugin, DataProvider<UserDataNode> provider, UUID uuid) throws Exception {
         super(provider);
         data = provider.load();
-        Preconditions.checkNotNull("user", user);
+        Preconditions.checkNotNull("uuid", uuid );
         Preconditions.checkNotNull("plugin", plugin);
         this.plugin = plugin;
-        this.user = user;
+        this.uuid = uuid;
     }
 
     @Override
     public User getUser() {
-        return user;
+        if (uss == null) {
+            uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
+        }
+
+        return uss.get(this.uuid).orElseGet(() -> uss.getOrCreate(GameProfile.of(this.uuid, null)));
     }
 
     public Optional<MuteData> getMuteData() {
@@ -172,7 +187,7 @@ public class UserService extends Service<UserDataNode>
 
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
-        return data.isSocialspy() && plugin.getPermissionRegistry().getService(SocialSpyCommand.class).testBase(user);
+        return data.isSocialspy() && plugin.getPermissionRegistry().getService(SocialSpyCommand.class).testBase(getUser());
     }
 
     public boolean setSocialSpy(boolean socialSpy) {
@@ -194,6 +209,7 @@ public class UserService extends Service<UserDataNode>
 
     @Override
     public boolean isFlying() {
+        User user = getUser();
         if (user.isOnline()) {
             data.setFly(user.getPlayer().get().get(Keys.CAN_FLY).orElse(false));
         }
@@ -356,13 +372,13 @@ public class UserService extends Service<UserDataNode>
         }
 
         Text nick = TextSerializers.FORMATTING_CODE.deserialize(nickname);
-        user.getPlayer().ifPresent(x -> x.offer(Keys.DISPLAY_NAME, nick));
+        getUser().getPlayer().ifPresent(x -> x.offer(Keys.DISPLAY_NAME, nick));
     }
 
     @Override
     public void removeNickname() {
         nickname = null;
-        user.remove(Keys.DISPLAY_NAME);
+        getUser().remove(Keys.DISPLAY_NAME);
         data.setNickname(null);
     }
 
@@ -448,7 +464,7 @@ public class UserService extends Service<UserDataNode>
 
     @Override
     public UUID getUniqueID() {
-        return user.getUniqueId();
+        return getUser().getUniqueId();
     }
 
     public boolean jailOnNextLogin() {
@@ -456,7 +472,7 @@ public class UserService extends Service<UserDataNode>
     }
 
     public void setJailOnNextLogin(boolean set) {
-        data.setJailOffline(!user.isOnline() && set);
+        data.setJailOffline(!getUser().isOnline() && set);
     }
 
     public Map<String, Instant> getKitLastUsedTime() {
