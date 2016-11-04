@@ -21,6 +21,9 @@ public class CommandDoc {
     private String aliases;
 
     @Setting
+    private String rootAliases;
+
+    @Setting
     private String defaultLevel;
 
     @Setting
@@ -176,6 +179,14 @@ public class CommandDoc {
 
     public String getSpongeVersion() {
         return spongeVersion;
+    }
+
+    public String getRootAliases() {
+        return rootAliases;
+    }
+
+    public void setRootAliases(String rootAliases) {
+        this.rootAliases = rootAliases;
     }
 
     public void setSince(Since since) {

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class)
+@RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class, rootAliasRegister = "worlds")
 public class ListWorldCommand extends AbstractCommand<CommandSource> {
 
     // Use a space over EMPTY so pagination doesn't mess up.

@@ -47,10 +47,12 @@ public class DocGenCache {
 
         cmd.setCommandName(abstractCommand.getCommandPath().replaceAll("\\.", " "));
 
-        List<String> aliases = Lists.newArrayList(abstractCommand.getAliases());
-        aliases.addAll(Arrays.asList(abstractCommand.getForcedAliases()));
+        cmd.setAliases(String.join(", ", Lists.newArrayList(abstractCommand.getAliases())));
 
-        cmd.setAliases(String.join(", ", aliases));
+        if (abstractCommand.getRootCommandAliases().length > 0) {
+            cmd.setRootAliases(String.join(", ", Arrays.asList(abstractCommand.getRootCommandAliases())));
+        }
+
         cmd.setPermissionbase(abstractCommand.getPermissionHandler().getBase());
 
         Class<? extends AbstractCommand> cac = abstractCommand.getClass();

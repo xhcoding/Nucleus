@@ -71,9 +71,11 @@ public class CommandBuilder {
             // Register the commands.
             if (rootCmd) {
                 Sponge.getCommandManager().register(plugin, spec, c.getAliases());
+            }
 
-                // Register as another full blown command.
-                for (String s : c.getForcedAliases()) {
+            // Register as another full blown command.
+            for (String s : c.getRootCommandAliases()) {
+                if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("aliases", s).getBoolean(true)) {
                     Sponge.getCommandManager().register(plugin, spec, s);
                 }
             }
