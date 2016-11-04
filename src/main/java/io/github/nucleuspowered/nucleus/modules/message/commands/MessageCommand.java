@@ -29,7 +29,7 @@ import java.util.Map;
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @RunAsync
-@RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, forceRegister = { "tell" })
+@RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, rootAliasRegister = { "tell" })
 @NotifyIfAFK(MessageCommand.to)
 public class MessageCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
     static final String to = "to";

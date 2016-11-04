@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
  */
 @Permissions(prefix = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
-@RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class)
+@RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class, rootAliasRegister = "warps")
 public class ListWarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     @Inject private WarpHandler service;

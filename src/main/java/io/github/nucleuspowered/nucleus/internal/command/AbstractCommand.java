@@ -279,11 +279,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      *
      * @return An array of aliases.
      */
-    public String[] getForcedAliases() {
+    public String[] getRootCommandAliases() {
         if (forcedAliases == null) {
             RegisterCommand rc = getClass().getAnnotation(RegisterCommand.class);
             if (rc != null) {
-                forcedAliases = rc.forceRegister();
+                forcedAliases = rc.rootAliasRegister();
             }
         }
 
@@ -460,6 +460,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
         if (!bypassCost) {
             n.getNode("cost").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.cost")).setValue(0);
+        }
+
+        for (String alias : this.getRootCommandAliases()) {
+            n.getNode("aliases").getNode(alias).setValue(true);
         }
 
         return n;

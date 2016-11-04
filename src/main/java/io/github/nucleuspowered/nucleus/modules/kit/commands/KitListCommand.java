@@ -44,7 +44,7 @@ import java.util.Set;
  * Command Usage: /kit list Permission: plugin.kit.list.base
  */
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"list", "ls"}, subcommandOf = KitCommand.class)
+@RegisterCommand(value = {"list", "ls"}, subcommandOf = KitCommand.class, rootAliasRegister = "kits")
 @RunAsync
 @NoWarmup
 @NoCooldown

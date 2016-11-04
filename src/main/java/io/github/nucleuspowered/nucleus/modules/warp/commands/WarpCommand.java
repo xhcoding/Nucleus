@@ -42,7 +42,7 @@ import java.util.Optional;
  * </p>
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-@RegisterCommand("warp")
+@RegisterCommand(value = "warp")
 @NoCost
 public class WarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 

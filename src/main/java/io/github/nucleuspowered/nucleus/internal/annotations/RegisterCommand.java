@@ -6,7 +6,11 @@ package io.github.nucleuspowered.nucleus.internal.annotations;
 
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Specifies that the class is a command and that the command loader should register it at startup.
@@ -32,11 +36,11 @@ public @interface RegisterCommand {
 
     /**
      * The aliases for this command that should try to be registered as primary aliases, mainly to override
-     * Minecraft commands.
+     * Minecraft commands or provide a root level alias for a subcommand.
      *
      * @return Any aliases that should be forced.
      */
-    String[] forceRegister() default {};
+    String[] rootAliasRegister() default {};
 
     /**
      * Sets whether the command should register it's executor. This can be false if there are only child commands.
