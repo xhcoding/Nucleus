@@ -8,13 +8,20 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.channel.MessageChannel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConnectionMessagesListener extends ListenerBase {
 
@@ -22,11 +29,23 @@ public class ConnectionMessagesListener extends ListenerBase {
     @Inject private CoreConfigAdapter cca;
     @Inject private ConnectionMessagesConfigAdapter cma;
     @Inject private UserDataManager loader;
+    private final String disablePermission = PermissionRegistry.PERMISSIONS_PREFIX + "connectionmessages.disable";
+
+    @Override public Map<String, PermissionInformation> getPermissions() {
+        return new HashMap<String, PermissionInformation>() {{
+            put(disablePermission, new PermissionInformation(
+                plugin.getMessageProvider().getMessageWithFormat("permission.connectionmesssages.disable"),
+                SuggestedLevel.NONE));
+        }};
+    }
 
     @Listener
-    public void onPlayerLogin(ClientConnectionEvent.Join joinEvent) {
-        Player pl = joinEvent.getTargetEntity();
+    public void onPlayerLogin(ClientConnectionEvent.Join joinEvent, @Getter("getTargetEntity") Player pl) {
         ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
+        if (pl.hasPermission(this.disablePermission)) {
+            joinEvent.setMessageCancelled(true);
+            return;
+        }
 
         try {
             if (loader.getUser(pl).get().isFirstPlay()) {
@@ -51,8 +70,12 @@ public class ConnectionMessagesListener extends ListenerBase {
     }
 
     @Listener
-    public void onPlayerQuit(ClientConnectionEvent.Disconnect leaveEvent) {
-        Player pl = leaveEvent.getTargetEntity();
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect leaveEvent, @Getter("getTargetEntity") Player pl) {
+        if (pl.hasPermission(this.disablePermission)) {
+            leaveEvent.setMessageCancelled(true);
+            return;
+        }
+
         ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
 
         if (cmc.isModifyLogoutMessage()) {
