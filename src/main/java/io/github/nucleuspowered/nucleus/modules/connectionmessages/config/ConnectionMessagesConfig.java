@@ -28,6 +28,9 @@ public class ConnectionMessagesConfig {
     @Setting(value = "logout-message", comment = "loc:config.connectionmessages.logoutmessage")
     private String logoutMessage = "&8[&c-&8] &f{{name}}";
 
+    @Setting(value = "disable-with-permission", comment = "loc:config.connectionmessages.disablepermission")
+    private boolean disableWithPermission = false;
+
     public boolean isShowFirstTimeMessage() {
         return showFirstTimeMessage;
     }
@@ -50,5 +53,9 @@ public class ConnectionMessagesConfig {
 
     public String getLogoutMessage() {
         return logoutMessage;
+    }
+
+    public boolean isDisableWithPermission() {
+        return disableWithPermission;
     }
 }
