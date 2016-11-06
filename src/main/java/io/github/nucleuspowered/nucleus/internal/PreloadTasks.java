@@ -5,7 +5,10 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
+import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -78,5 +81,40 @@ public abstract class PreloadTasks {
                     // ignored
                 }
             });
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Consumer<NucleusPlugin>> getPreloadTasks2() {
+        return Lists.newArrayList(
+        plugin -> {
+            try {
+                Path path = plugin.getDataPath().resolve("general.json");
+                if (Files.exists(path)) {
+                    GsonConfigurationLoader old = GsonConfigurationLoader.builder().setPath(path).build();
+                    ConfigurationNode cn = old.load();
+                    if (!cn.getNode("blacklistedTypes").isVirtual()) {
+                        plugin.getLogger().info("Moving blacklist to items.conf");
+                        List<String> types = cn.getNode("blacklistedTypes").getList(TypeToken.of(String.class));
+                        final ItemDataService service = plugin.getItemDataService();
+                        types.forEach(s -> {
+                            ItemDataNode idn = service.getDataForItem(s);
+                            idn.getBlacklist().setInventory(true);
+                            idn.getBlacklist().setEnvironment(true);
+                            idn.getBlacklist().setUse(true);
+                            service.setDataForItem(s, idn);
+                        });
+
+                        if (!types.isEmpty()) {
+                            service.save();
+                        }
+
+                        cn.removeChild("blacklistedTypes");
+                        old.save(cn);
+                    }
+                }
+            } catch (Exception ignored) {
+                // ignored
+            }
+        });
     }
 }

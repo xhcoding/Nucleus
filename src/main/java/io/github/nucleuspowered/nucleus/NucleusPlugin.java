@@ -154,6 +154,8 @@ public class NucleusPlugin extends Nucleus {
             return;
         }
 
+        PreloadTasks.getPreloadTasks2().forEach(x -> x.accept(this));
+
         // We register the ModuleService NOW so that others can hook into it.
         game.getServiceManager().setProvider(this, NucleusModuleService.class, new ModuleRegistrationProxyService(this));
         game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
@@ -200,7 +202,6 @@ public class NucleusPlugin extends Nucleus {
 
         // Load up the general data files now, mods should have registered items by now.
         try {
-            itemDataService.load();
             generalService.load();
             kitService.load();
 
