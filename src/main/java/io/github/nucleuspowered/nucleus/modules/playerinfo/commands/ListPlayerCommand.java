@@ -26,12 +26,17 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-@RegisterCommand({"list", "listplayers"})
+@RegisterCommand({"list", "listplayers", "ls"})
 public class ListPlayerCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
     private AFKHandler handler;

@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
@@ -128,6 +129,31 @@ public abstract class StandardModule implements Module {
             // Register suggested permissions
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
+
+            final ConditionalListener conditionalListener = c.getClass().getAnnotation(ConditionalListener.class);
+            if (conditionalListener != null) {
+                // Add reloadable to load in the listener dynamically if required.
+                plugin.registerReloadable(() -> {
+                    Sponge.getEventManager().unregisterListeners(c);
+                    if (conditionalListener.value().newInstance().test(plugin)) {
+                        Sponge.getEventManager().registerListeners(plugin, c);
+                    }
+                });
+
+                // If the condition is NOT met, return out of here early.
+                try {
+                    if (!conditionalListener.value().newInstance().test(plugin)) {
+                        return;
+                    }
+                } catch (InstantiationException | IllegalAccessException e) {
+                    if (plugin.isDebugMode()) {
+                        e.printStackTrace();
+                    }
+
+                    return;
+                }
+            }
+
             Sponge.getEventManager().registerListeners(plugin, c);
         });
     }

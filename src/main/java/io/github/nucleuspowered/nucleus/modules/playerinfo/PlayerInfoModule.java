@@ -11,8 +11,10 @@ import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "playerinfo", name = "Player Info")
+@ModuleData(id = PlayerInfoModule.ID, name = "Player Info")
 public class PlayerInfoModule extends ConfigurableModule<PlayerInfoConfigAdapter> {
+
+    public static final String ID = "playerinfo";
 
     @Override
     public PlayerInfoConfigAdapter getAdapter() {

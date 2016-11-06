@@ -30,7 +30,7 @@ public class ItemDataService extends Service<Map<String, ItemDataNode>> {
     private Map<CatalogType, BlacklistNode> blacklistTypeCache = null;
 
     public ItemDataService(DataProvider<Map<String, ItemDataNode>> dataProvider) throws Exception {
-        super(dataProvider, false);
+        super(dataProvider, true);
     }
 
     @Override

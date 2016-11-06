@@ -16,6 +16,9 @@ public class ListConfig {
     @Setting(value = "default-group-name", comment = "loc:config.playerinfo.list.defaultname")
     private String defaultGroupName = "Default";
 
+    @Setting(value = "multicraft-compatibility", comment = "loc:config.playerinfo.list.multicraft")
+    private boolean multicraftCompatibility = false;
+
     public boolean isGroupByPermissionGroup() {
         return groupByPermissionGroup;
     }
@@ -26,5 +29,9 @@ public class ListConfig {
         }
 
         return defaultGroupName;
+    }
+
+    public boolean isMulticraftCompatibility() {
+        return multicraftCompatibility;
     }
 }
