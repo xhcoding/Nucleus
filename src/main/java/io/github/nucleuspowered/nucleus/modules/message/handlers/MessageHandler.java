@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
 import org.spongepowered.api.Sponge;
@@ -26,7 +27,12 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -87,12 +93,13 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     public boolean sendMessage(CommandSource sender, CommandSource receiver, String message) {
         // Message is about to be sent. Send the event out. If canceled, then that's that.
+        MessageConfig messageConfig = mca.getNodeOrDefault();
         boolean isCancelled = Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message));
         if (isCancelled) {
             sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.cancel"));
 
             // Only continue to show Social Spy messages if the player is muted.
-            if (!mca.getNodeOrDefault().isShowMessagesInSocialSpyWhileMuted()) {
+            if (!messageConfig.isShowMessagesInSocialSpyWhileMuted()) {
                 return false;
             }
         }
@@ -100,15 +107,6 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         // Social Spies.
         final UUID uuidSender = getUUID(sender);
         final UUID uuidReceiver = getUUID(receiver);
-        List<MessageReceiver> lm =
-                ucl.getOnlineUsersInternal().stream().filter(x -> !uuidSender.equals(x.getUniqueID()) && !uuidReceiver.equals(x.getUniqueID()))
-                        .filter(UserService::isSocialSpy).map(x -> x.getUser().getPlayer().orElse(null))
-                        .filter(x -> x != null && x.isOnline()).collect(Collectors.toList());
-
-        // If the console is not involved, make them involved.
-        if (!uuidSender.equals(Util.consoleFakeUUID) && !uuidReceiver.equals(Util.consoleFakeUUID)) {
-            lm.add(Sponge.getServer().getConsole());
-        }
 
         // Create the tokens.
         Map<String, BiFunction<CommandSource, String, Text>> tokens = Maps.newHashMap();
@@ -117,7 +115,6 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         tokens.put("{{fromdisplay}}", (cs, g) -> chatUtil.addCommandToDisplayName(sender));
         tokens.put("{{todisplay}}", (cs, g) -> chatUtil.addCommandToDisplayName(receiver));
 
-        MessageChannel mc = MessageChannel.fixed(lm);
         Text tm = useMessage(sender, message);
 
         if (!isCancelled) {
@@ -130,7 +127,23 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             prefix = mca.getNodeOrDefault().getMutedTag() + prefix;
         }
 
-        mc.send(constructMessage(sender, tm, prefix, tokens));
+        // Always if it's a player who does the sending, if player only is disabled in the config, to all.
+        if (!messageConfig.isOnlyPlayerSocialSpy() || sender instanceof Player) {
+            List<MessageReceiver> lm =
+                ucl.getOnlineUsersInternal().stream().filter(x -> !uuidSender.equals(x.getUniqueID()) && !uuidReceiver.equals(x.getUniqueID()))
+                    .filter(UserService::isSocialSpy).map(x -> x.getUser().getPlayer().orElse(null))
+                    .filter(x -> x != null && x.isOnline()).collect(Collectors.toList());
+
+            // If the console is not involved, make them involved.
+            if (!uuidSender.equals(Util.consoleFakeUUID) && !uuidReceiver.equals(Util.consoleFakeUUID)) {
+                lm.add(Sponge.getServer().getConsole());
+            }
+
+            MessageChannel mc = MessageChannel.fixed(lm);
+            if (!mc.getMembers().isEmpty()) {
+                mc.send(constructMessage(sender, tm, prefix, tokens));
+            }
+        }
 
         // Add the UUIDs to the reply list - the receiver will now reply to the sender.
         messagesReceived.put(uuidReceiver, uuidSender);

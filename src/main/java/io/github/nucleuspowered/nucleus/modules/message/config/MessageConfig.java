@@ -28,6 +28,9 @@ public class MessageConfig {
     @Setting(value = "socialspy-cancelled-tag", comment = "loc:config.message.socialspy.mutedtag")
     private String mutedTag = "&c[cancelled] ";
 
+    @Setting(value = "socialspy-only-players", comment = "loc:config.message.socialspy.playeronly")
+    private boolean onlyPlayerSocialSpy = false;
+
     public String getHelpOpPrefix() {
         return helpOpPrefix;
     }
@@ -50,5 +53,9 @@ public class MessageConfig {
 
     public String getMutedTag() {
         return mutedTag;
+    }
+
+    public boolean isOnlyPlayerSocialSpy() {
+        return onlyPlayerSocialSpy;
     }
 }
