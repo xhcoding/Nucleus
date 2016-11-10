@@ -58,6 +58,29 @@ public class NucleusTeleportHandler {
     }
 
     /**
+     * Attempts to teleport a player using the appropriate {@link TeleportMode} strategy.
+     *
+     * @param player The {@link Player}
+     * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
+     * @return {@code true} if successful.
+     */
+    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo) {
+        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), getTeleportModeForPlayer(player));
+    }
+
+    /**
+     * Attempts to teleport a player using the appropriate {@link TeleportMode} strategy.
+     *
+     * @param player The {@link Player}
+     * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
+     * @param safe If {@code true}, try to teleport the player safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
+     * @return {@code true} if successful.
+     */
+    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, boolean safe) {
+        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), safe);
+    }
+
+    /**
      * Attempts to teleport a player using a {@link TeleportMode} strategy.
      *
      * @param player The {@link Player}
@@ -69,10 +92,6 @@ public class NucleusTeleportHandler {
     public boolean teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {
         TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
         return teleportPlayer(player, worldLocation, rotation, mode);
-    }
-
-    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo) {
-        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), getTeleportModeForPlayer(player));
     }
 
     public boolean teleportPlayer(Player player, Transform<World> worldTransform) {
