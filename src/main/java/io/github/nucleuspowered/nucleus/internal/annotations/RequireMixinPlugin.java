@@ -4,7 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.internal.annotations;
 
-import java.lang.annotation.*;
+import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.function.Predicate;
 
 /**
  * Indicates that the Nucleus Mixin plugin is required for this command/listener/event to be loaded.
@@ -36,9 +43,23 @@ public @interface RequireMixinPlugin {
      */
     MixinLoad value();
 
+    /**
+     * A class that contains a predicate that determines whether to load the class, if {@link MixinLoad#MIXIN_ONLY} is present.
+     *
+     * @return The {@link Class} of the {@link Predicate}. It must have a public no-args constructor.
+     */
+    Class<? extends Predicate<MixinConfigProxy>> loadWhen() default TruePredicate.class;
+
     enum MixinLoad {
         BOTH,
         NO_MIXIN,
         MIXIN_ONLY
+    }
+
+    class TruePredicate implements Predicate<MixinConfigProxy> {
+
+        @Override public boolean test(MixinConfigProxy mixinConfigProxy) {
+            return true;
+        }
     }
 }

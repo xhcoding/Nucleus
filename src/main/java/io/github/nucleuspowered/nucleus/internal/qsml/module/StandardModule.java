@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -214,13 +215,32 @@ public abstract class StandardModule implements Module {
                 return true;
             }
 
-            if (!plugin.areMixinsAvailable() && requireMixinPlugin.value() == RequireMixinPlugin.MixinLoad.MIXIN_ONLY) {
+            Optional<MixinConfigProxy> mixinConfigProxyOptional = plugin.getMixinConfigIfAvailable();
+            if (!mixinConfigProxyOptional.isPresent() && requireMixinPlugin.value() == RequireMixinPlugin.MixinLoad.MIXIN_ONLY) {
                 if (requireMixinPlugin.notifyOnLoad()) {
                     plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("loader.mixinrequired." + x, nameSupplier.apply(t)));
                 }
 
                 return false;
-            } else if (!plugin.areMixinsAvailable() && requireMixinPlugin.value() == RequireMixinPlugin.MixinLoad.NO_MIXIN) {
+            } else if (mixinConfigProxyOptional.isPresent() && requireMixinPlugin.value() == RequireMixinPlugin.MixinLoad.MIXIN_ONLY) {
+                try {
+                    if (requireMixinPlugin.loadWhen().newInstance().test(mixinConfigProxyOptional.get())) {
+                        return true;
+                    }
+
+                    if (requireMixinPlugin.notifyOnLoad()) {
+                        plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("loader.mixinrequired." + x, nameSupplier.apply(t)));
+                    }
+
+                    return false;
+                } catch (Exception e) {
+                    if (plugin.isDebugMode()) {
+                        e.printStackTrace();
+                    }
+
+                    return false;
+                }
+            } else if (mixinConfigProxyOptional.isPresent() && requireMixinPlugin.value() == RequireMixinPlugin.MixinLoad.NO_MIXIN) {
                 if (requireMixinPlugin.notifyOnLoad()) {
                     plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("loader.nomixinrequired." + x, nameSupplier.apply(t)));
                 }

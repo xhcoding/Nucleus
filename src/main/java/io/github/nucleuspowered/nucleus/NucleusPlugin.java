@@ -29,6 +29,7 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
+import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.PreloadTasks;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
@@ -80,6 +81,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 @Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
 public class NucleusPlugin extends Nucleus {
 
@@ -115,7 +118,7 @@ public class NucleusPlugin extends Nucleus {
     private final Logger logger;
     private Path configDir;
     private Path dataDir;
-    private boolean mixinsAvailable = false;
+    @Nullable private MixinConfigProxy mixinConfigProxy = null;
 
     // We inject this into the constructor so we can build the config path ourselves.
     @Inject
@@ -133,7 +136,7 @@ public class NucleusPlugin extends Nucleus {
 
         try {
             Class.forName("io.github.nucleuspowered.nucleus.mixins.NucleusMixinSpongePlugin");
-            this.mixinsAvailable = true;
+            this.mixinConfigProxy = new MixinConfigProxy();
             logger.info(messageProvider.getMessageWithFormat("startup.mixins-available"));
         } catch (ClassNotFoundException e) {
             logger.info(messageProvider.getMessageWithFormat("startup.mixins-notavailable"));
@@ -479,9 +482,8 @@ public class NucleusPlugin extends Nucleus {
         return Optional.ofNullable(this.gameStartedTime);
     }
 
-    @Override
-    public boolean areMixinsAvailable() {
-        return mixinsAvailable;
+    public Optional<MixinConfigProxy> getMixinConfigIfAvailable() {
+        return Optional.ofNullable(this.mixinConfigProxy);
     }
 
     private Injector runInjectorUpdate() {

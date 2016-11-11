@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
+import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -19,7 +20,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -90,7 +90,8 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
     // Lazy load.
     private void setupGenerationClass() {
         if (generator == null) {
-            if (plugin.areMixinsAvailable()) {
+            Optional<MixinConfigProxy> mixinConfigProxy = plugin.getMixinConfigIfAvailable();
+            if (mixinConfigProxy.isPresent() && mixinConfigProxy.get().get().config.isWorldgeneration()) {
                 this.generator = new EnhancedGeneration(worldHelper, permissions.getPermissionWithSuffix("notify"));
             } else {
                 this.generator = standardGeneration;
