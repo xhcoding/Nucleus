@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.item.commands;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -12,8 +13,11 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.item.config.ItemConfigAdapter;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -46,6 +50,7 @@ public class SkullCommand extends AbstractCommand<Player> {
 
     private final String player = "player";
     private final String amountKey = "amount";
+    @Inject private ItemConfigAdapter itemConfigAdapter;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -68,6 +73,17 @@ public class SkullCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {
         User user = this.getUserFromArgs(User.class, pl, player, args);
         int amount = args.<Integer>getOne(amountKey).orElse(1);
+
+        if (itemConfigAdapter.getNodeOrDefault().getSkullConfig().isUseMinecraftCommand()) {
+            CommandResult result = Sponge.getCommandManager().process(Sponge.getServer().getConsole(),
+                String.format("minecraft:give %s skull %d 3 {SkullOwner:%s}", pl.getName(), amount, user.getName()));
+            if (result.getSuccessCount().orElse(0) > 0) {
+                pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.skull.success.plural", String.valueOf(amount), user.getName()));
+                return result;
+            }
+
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.skull.error", user.getName()));
+        }
 
         int fullStacks = amount / 64;
         int partialStack = amount % 64;
