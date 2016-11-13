@@ -4,9 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.item;
 
-import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.modules.item.config.ItemConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "item", name = "Item")
-public class ItemModule extends StandardModule {
+public class ItemModule extends ConfigurableModule<ItemConfigAdapter> {
+
+    @Override public ItemConfigAdapter getAdapter() {
+        return new ItemConfigAdapter();
+    }
 }
