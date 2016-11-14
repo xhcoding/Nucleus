@@ -42,7 +42,7 @@ public class ConnectionMessagesListener extends ListenerBase {
     @Listener
     public void onPlayerLogin(ClientConnectionEvent.Join joinEvent, @Getter("getTargetEntity") Player pl) {
         ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
-        if (pl.hasPermission(this.disablePermission)) {
+        if (cmc.isDisableWithPermission() && pl.hasPermission(this.disablePermission)) {
             joinEvent.setMessageCancelled(true);
             return;
         }
@@ -71,12 +71,11 @@ public class ConnectionMessagesListener extends ListenerBase {
 
     @Listener
     public void onPlayerQuit(ClientConnectionEvent.Disconnect leaveEvent, @Getter("getTargetEntity") Player pl) {
-        if (pl.hasPermission(this.disablePermission)) {
+        ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
+        if (cmc.isDisableWithPermission() && pl.hasPermission(this.disablePermission)) {
             leaveEvent.setMessageCancelled(true);
             return;
         }
-
-        ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
 
         if (cmc.isModifyLogoutMessage()) {
             if (cmc.getLogoutMessage().isEmpty()) {
