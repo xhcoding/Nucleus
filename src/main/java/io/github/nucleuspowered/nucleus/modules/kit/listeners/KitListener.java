@@ -58,6 +58,7 @@ public class KitListener extends ListenerBase {
                 x.getFirst().kit.updateKitInventory(x.getSecond());
 
                 if (event instanceof InteractInventoryEvent.Close) {
+                    gds.save();
                     player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.edit.success", x.getFirst().name));
                     handler.removeKitInventoryFromListener(inventory);
                 }
@@ -78,6 +79,7 @@ public class KitListener extends ListenerBase {
                         slots.stream().filter(y -> y.peek().isPresent()).map(z -> z.peek().get().createSnapshot()).collect(Collectors.toList()));
 
                     if (event instanceof InteractInventoryEvent.Close) {
+                        gds.save();
                         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.edit.success"));
                         handler.setFirstJoinKitInventory(null);
                     }
