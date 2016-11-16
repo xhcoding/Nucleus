@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 @ConfigSerializable
 public class UserDataNode {
     @Setting
@@ -37,6 +39,9 @@ public class UserDataNode {
 
     @Setting("lastLogout")
     private long logout;
+
+    @Setting("lastIP")
+    private String ipaddress;
 
     @Setting
     private boolean invulnerable;
@@ -256,5 +261,14 @@ public class UserDataNode {
 
     public void setLastLocation(LocationNode lastLocation) {
         this.lastLocation = lastLocation;
+    }
+
+    @Nullable
+    public String getIpaddress() {
+        return ipaddress;
+    }
+
+    public void setIpaddress(String ipaddress) {
+        this.ipaddress = ipaddress;
     }
 }

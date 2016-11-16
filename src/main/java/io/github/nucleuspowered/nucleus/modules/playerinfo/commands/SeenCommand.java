@@ -34,12 +34,15 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.text.DateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Permissions
 @RunAsync
@@ -104,6 +107,10 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
                 messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.currentlocation", getLocationString(pl.getLocation())));
             } else {
+                iqsu.getLastIp().ifPresent(x ->
+                    messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.lastipaddress", x))
+                );
+
                 Optional<Location<World>> olw = iqsu.getLogoutLocation();
 
                 if (olw.isPresent()) {

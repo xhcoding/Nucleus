@@ -41,6 +41,7 @@ import org.spongepowered.api.world.World;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
+import java.net.InetAddress;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -591,6 +592,14 @@ public class UserService extends Service<UserDataNode>
 
     public void setFirstPlay(boolean firstPlay) {
         this.firstPlay = firstPlay;
+    }
+
+    public Optional<String> getLastIp() {
+        return Optional.ofNullable(data.getIpaddress());
+    }
+
+    public void setLastIp(InetAddress address) {
+        data.setIpaddress(address.toString());
     }
 
     /**

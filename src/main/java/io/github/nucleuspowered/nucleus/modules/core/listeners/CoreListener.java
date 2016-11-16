@@ -25,6 +25,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.Optional;
@@ -40,13 +41,12 @@ public class CoreListener extends ListenerBase {
      * We do this first to try to get the first play status as quick as possible.
      */
     @Listener(order = Order.FIRST)
-    public void onPlayerJoinFirst(final ClientConnectionEvent.Join event) {
+    public void onPlayerJoinFirst(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
         try {
-            Player player = event.getTargetEntity();
             UserService qsu = loader.get(player).get();
             qsu.setLastLogin(Instant.now());
             qsu.setFirstPlay(Util.isFirstPlay(player));
-
+            qsu.setLastIp(player.getConnection().getAddress().getAddress());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,17 +68,21 @@ public class CoreListener extends ListenerBase {
     @Listener
     public void onPlayerQuit(final ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") final Player player) {
         final Location<World> location = player.getLocation();
+        final InetAddress address = player.getConnection().getAddress().getAddress();
         if (runSync) {
             // Work around things not existing, run quit events sync just as the server draws to a close.
-            onPlayerQuitInner(player, location);
+            onPlayerQuitInner(player, location, address);
         } else {
-            Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> onPlayerQuitInner(player, location), 200, TimeUnit.MILLISECONDS);
+            Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> onPlayerQuitInner(player, location, address), 200, TimeUnit.MILLISECONDS);
         }
     }
 
-    private void onPlayerQuitInner(final Player player, final Location<World> location) {
+    private void onPlayerQuitInner(final Player player, final Location<World> location, final InetAddress address) {
         try {
-            this.plugin.getUserDataManager().get(player).ifPresent(x -> x.setOnLogout(location));
+            this.plugin.getUserDataManager().get(player).ifPresent(x -> {
+                x.setOnLogout(location);
+                x.setLastIp(address);
+            });
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
