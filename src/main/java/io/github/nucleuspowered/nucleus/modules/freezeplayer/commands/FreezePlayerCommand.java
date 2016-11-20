@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.admin.commands;
+package io.github.nucleuspowered.nucleus.modules.freezeplayer.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
@@ -63,7 +63,8 @@ public class FreezePlayerCommand extends io.github.nucleuspowered.nucleus.intern
             nu.setFrozen(true);
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.freezeplayer.success", pl.getName(), nu.isFrozen() ? "frozen" : "un-frozen"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(
+            nu.isFrozen() ? "command.freezeplayer.success.frozen" : "command.freezeplayer.success.unfrozen", plugin.getNameUtil().getSerialisedName(pl)));
         return CommandResult.success();
     }
 }
