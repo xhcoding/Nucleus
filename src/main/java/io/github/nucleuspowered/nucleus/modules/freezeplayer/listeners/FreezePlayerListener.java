@@ -2,8 +2,9 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.admin.listeners;
+package io.github.nucleuspowered.nucleus.modules.freezeplayer.listeners;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -16,10 +17,17 @@ import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 
-public class AdminListener extends ListenerBase {
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Map;
+import java.util.UUID;
+
+public class FreezePlayerListener extends ListenerBase {
 
     @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
+
+    private final Map<UUID, Instant> lastFreezeNotification = Maps.newHashMap();
 
     @Listener
     public void onPlayerMovement(MoveEntityEvent event, @Root Player player) {
@@ -49,7 +57,12 @@ public class AdminListener extends ListenerBase {
         }
 
         if (nu.isFrozen()) {
-            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(message));
+            Instant now = Instant.now();
+            if (lastFreezeNotification.getOrDefault(player.getUniqueId(), now).isBefore(now)) {
+                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(message));
+                lastFreezeNotification.put(player.getUniqueId(), now.plus(2, ChronoUnit.SECONDS));
+            }
+
             return true;
         }
 

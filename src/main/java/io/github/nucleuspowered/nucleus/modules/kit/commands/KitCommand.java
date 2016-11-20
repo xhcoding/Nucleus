@@ -25,11 +25,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Tristate;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -121,27 +118,13 @@ public class KitCommand extends io.github.nucleuspowered.nucleus.internal.comman
             }
         }
 
-        boolean isConsumed = false;
-        Inventory target = Util.getStandardInventory(player);
-        for (ItemStackSnapshot stack : kit.getStacks()) {
-            // Ignore anything that is NONE
-            if (stack.getType() != ItemTypes.NONE) {
-                // Give them the kit.
-                InventoryTransactionResult itr = target.offer(stack.createStack());
-
-                // If some items were rejected...
-                if (!itr.getRejectedItems().isEmpty()) {
-                    // ...tell the user and break out.
-                    player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fullinventory"));
-                    break;
-                }
-
-                isConsumed = true;
-            }
+        Tristate tristate = Util.addToStandardInventory(player, kit.getStacks());
+        if (tristate != Tristate.TRUE) {
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fullinventory"));
         }
 
         // If something was consumed, consider a success.
-        if (isConsumed) {
+        if (tristate != Tristate.FALSE) {
             // Charge, if necessary
             if (cost > 0 && econHelper.economyServiceExists()) {
                 econHelper.withdrawFromPlayer(player, cost);

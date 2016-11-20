@@ -18,17 +18,21 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
+import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
+import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -59,6 +63,35 @@ public class Util {
 
     public static Inventory getStandardInventory(Player player) {
         return player.getInventory().query(Hotbar.class, GridInventory.class);
+    }
+
+    /**
+     * Adds items to a {@link Player}s {@link Inventory}
+     * @param player The {@link Player}
+     * @param itemStacks The {@link ItemStackSnapshot}s to add.
+     * @return {@link Tristate#TRUE} if everything is successful, {@link Tristate#FALSE} if nothing was added, {@link Tristate#UNDEFINED}
+     * if some stacks were added.
+     */
+    public static Tristate addToStandardInventory(Player player, Collection<ItemStackSnapshot> itemStacks) {
+        Tristate ts = Tristate.FALSE;
+        Inventory target = Util.getStandardInventory(player);
+        for (ItemStackSnapshot stack : itemStacks) {
+            // Ignore anything that is NONE
+            if (stack.getType() != ItemTypes.NONE) {
+                // Give them the kit.
+                InventoryTransactionResult itr = target.offer(stack.createStack());
+
+                // If some items were rejected...
+                if (!itr.getRejectedItems().isEmpty()) {
+                    // ...tell the user and break out.
+                    return ts;
+                }
+
+                ts = Tristate.UNDEFINED;
+            }
+        }
+
+        return Tristate.TRUE;
     }
 
     public static UUID getUUID(CommandSource src) {
