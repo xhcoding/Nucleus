@@ -26,6 +26,7 @@ import org.spongepowered.api.world.World;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 /**
  * Common class for handling teleport related tasks.
@@ -231,38 +232,57 @@ public class NucleusTeleportHandler {
          * Perform safe teleport checks, but ascend on failure.
          */
         SAFE_TELEPORT_ASCENDING {
-            private CoreConfigAdapter coreConfigAdapter = null;
-
-            private CoreConfigAdapter getCoreConfigAdapter() throws Exception {
-                if (coreConfigAdapter == null) {
-                    coreConfigAdapter = Nucleus.getNucleus().getModuleContainer().getConfigAdapterForModule("core", CoreConfigAdapter.class);
-                }
-
-                return coreConfigAdapter;
-            }
-
             @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
-                Location<World> locationToCheck = location;
-                int y = location.getExtent().getBlockMax().getY() - 1;
-                int height;
-                try {
-                    height = getCoreConfigAdapter().getNodeOrDefault().getSafeTeleportConfig().getHeight();
-                } catch (Exception e) {
-                    height = TeleportHelper.DEFAULT_HEIGHT;
-                }
-
-                while (locationToCheck.getBlockY() < y) {
-                    Optional<Location<World>> olw = SAFE_TELEPORT.apply(player, locationToCheck);
-                    if (olw.isPresent()) {
-                        return olw;
-                    }
-
-                    // Go up as far as we've already checked.
-                    locationToCheck = locationToCheck.add(0, height, 0);
-                }
-
-                return Optional.empty();
+                return TeleportMode.teleportCheck(player, location, (l, h) -> l.add(0, h, 0), i -> i < location.getExtent().getBlockMax().getY() - 1);
             }
         },
+
+        /**
+         * Perform safe teleport checks, but descend to the surface first.
+         */
+        SAFE_TELEPORT_DESCEND {
+            @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
+                return TeleportMode.teleportCheck(player, location, (l, h) -> l.sub(0, h, 0), i -> i > 1);
+            }
+        };
+
+        //
+
+        private static CoreConfigAdapter coreConfigAdapter = null;
+
+        private static CoreConfigAdapter getCoreConfigAdapter() throws Exception {
+            if (coreConfigAdapter == null) {
+                coreConfigAdapter = Nucleus.getNucleus().getModuleContainer().getConfigAdapterForModule("core", CoreConfigAdapter.class);
+            }
+
+            return coreConfigAdapter;
+        }
+
+        private static Optional<Location<World>> teleportCheck(
+            Player player,
+            Location<World> location,
+            BiFunction<Location<World>, Integer, Location<World>> locationTransformFunction,
+            Predicate<Integer> blockWhileLoop) {
+
+            Location<World> locationToCheck = location;
+            int height;
+            try {
+                height = getCoreConfigAdapter().getNodeOrDefault().getSafeTeleportConfig().getHeight();
+            } catch (Exception e) {
+                height = TeleportHelper.DEFAULT_HEIGHT;
+            }
+
+            while (blockWhileLoop.test(locationToCheck.getBlockY())) {
+                Optional<Location<World>> olw = SAFE_TELEPORT.apply(player, locationToCheck);
+                if (olw.isPresent()) {
+                    return olw;
+                }
+
+                // Go up as far as we've already checked.
+                locationToCheck = locationTransformFunction.apply(locationToCheck, height);
+            }
+
+            return Optional.empty();
+        }
     }
 }

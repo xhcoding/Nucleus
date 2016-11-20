@@ -7,8 +7,11 @@ package io.github.nucleuspowered.nucleus.modules.fly.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.fly.commands.FlyCommand;
 import io.github.nucleuspowered.nucleus.modules.fly.config.FlyConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
@@ -25,47 +28,51 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.World;
 
+import java.util.Optional;
+
 public class FlyListener extends ListenerBase {
 
     @Inject private UserDataManager ucl;
     @Inject private CoreConfigAdapter cca;
     @Inject private FlyConfigAdapter fca;
+    private CommandPermissionHandler flyCommandHandler = null;
 
     // Do it first, so other plugins can have a say.
     @Listener(order = Order.FIRST)
-    public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        Player pl = event.getTargetEntity();
+    public void onPlayerJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player pl) {
         if (shouldIgnoreFromGameMode(pl)) {
             return;
         }
 
-        try {
-            ucl.get(pl).ifPresent(uc -> {
+        if (fca.getNodeOrDefault().isPermissionOnLogin() && !getFlyCommandHandler().testBase(pl)) {
+            safeTeleport(pl);
+            return;
+        }
 
-                // Let's just reset these...
-                if (uc.isFlyingSafe()) {
-                    pl.offer(Keys.CAN_FLY, true);
+        Optional<UserService> serviceOptional = ucl.get(pl);
+        if (serviceOptional.isPresent()) {
+            // Let's just reset these...
+            if (serviceOptional.get().isFlyingSafe()) {
+                pl.offer(Keys.CAN_FLY, true);
 
-                    // If in the air, flying!
-                    if (pl.getLocation().add(0, -1, 0).getBlockType().getId().equals(BlockTypes.AIR.getId())) {
-                        pl.offer(Keys.IS_FLYING, true);
-                    }
+                // If in the air, flying!
+                if (pl.getLocation().add(0, -1, 0).getBlockType().getId().equals(BlockTypes.AIR.getId())) {
+                    pl.offer(Keys.IS_FLYING, true);
                 }
-            });
-        } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
+
+                return;
             }
         }
+
+        safeTeleport(pl);
     }
 
     @Listener
-    public void onPlayerQuit(ClientConnectionEvent.Disconnect event) {
+    public void onPlayerQuit(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player pl) {
         if (!fca.getNodeOrDefault().isSaveOnQuit()) {
             return;
         }
 
-        Player pl = event.getTargetEntity();
         if (shouldIgnoreFromGameMode(pl)) {
             return;
         }
@@ -127,5 +134,20 @@ public class FlyListener extends ListenerBase {
     static boolean shouldIgnoreFromGameMode(Player player) {
         GameMode gm = player.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET);
         return (gm.equals(GameModes.CREATIVE) || gm.equals(GameModes.SPECTATOR));
+    }
+
+    private CommandPermissionHandler getFlyCommandHandler() {
+        if (flyCommandHandler == null) {
+            flyCommandHandler = plugin.getPermissionRegistry().getService(FlyCommand.class);
+        }
+
+        return flyCommandHandler;
+    }
+
+    private void safeTeleport(Player pl) {
+        if (!pl.isOnGround() && fca.getNodeOrDefault().isFindSafeOnLogin()) {
+            // Try to bring the player down.
+            plugin.getTeleportHandler().teleportPlayer(pl, pl.getTransform(), NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_DESCEND);
+        }
     }
 }
