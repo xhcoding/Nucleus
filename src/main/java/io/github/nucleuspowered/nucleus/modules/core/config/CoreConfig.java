@@ -30,6 +30,10 @@ public class CoreConfig {
     @Setting(value = "enable-doc-gen")
     private boolean enableDocGen = false;
 
+    @DoNotGenerate
+    @Setting(value = "simulate-error-on-startup")
+    private boolean errorOnStartup = false;
+
     @Setting(value = "safe-teleport-check", comment = "loc:config.core.safeteleport")
     private SafeTeleportConfig safeTeleportConfig = new SafeTeleportConfig();
 
@@ -59,6 +63,10 @@ public class CoreConfig {
 
     public boolean isEnableDocGen() {
         return enableDocGen;
+    }
+
+    public boolean isErrorOnStartup() {
+        return errorOnStartup;
     }
 
     public SafeTeleportConfig getSafeTeleportConfig() {
