@@ -5,11 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -52,12 +54,15 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
     @Inject private UserDataManager udm;
     @Inject private SeenHandler seenHandler;
 
+    private static final String EXTENDED_SUFFIX = "extended";
+    public static final String EXTENDED_PERMISSION = PermissionRegistry.PERMISSIONS_PREFIX + "seen." + EXTENDED_SUFFIX;
+
     private final String playerKey = "player";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("extended", new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.seen.extended"), SuggestedLevel.ADMIN));
+        m.put(EXTENDED_SUFFIX, new PermissionInformation(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("permission.seen.extended"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -86,7 +91,7 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
         messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.displayname", TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(user))));
 
-        if (permissions.testSuffix(src, "extended")) {
+        if (permissions.testSuffix(src, EXTENDED_SUFFIX)) {
             messages.add(Text.EMPTY);
 
             if (user.isOnline()) {
@@ -106,6 +111,9 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
                         String.valueOf(Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))));
 
                 messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.currentlocation", getLocationString(pl.getLocation())));
+
+                messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.canfly", getYesNo(pl.get(Keys.CAN_FLY).orElse(false))));
+                messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.isflying", getYesNo(pl.get(Keys.IS_FLYING).orElse(false))));
             } else {
                 iqsu.getLastIp().ifPresent(x ->
                     messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.lastipaddress", x))
@@ -140,5 +148,13 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
     private String getLocationString(Location<World> lw) {
         return NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("command.seen.locationtemplate", lw.getExtent().getName(), lw.getBlockPosition().toString());
+    }
+
+    private String getYesNo(Boolean bool) {
+        if (bool == null) {
+            bool = false;
+        }
+
+        return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.yesno." + bool.toString().toLowerCase());
     }
 }

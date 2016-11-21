@@ -16,15 +16,16 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 public class SeenHandler implements NucleusSeenService {
 
-    private final Map<String, SeenInformationProvider> moduleInformationProviders = Maps.newTreeMap();
-    private final Map<String, SeenInformationProvider> pluginInformationProviders = Maps.newTreeMap();
+    private final Map<String, List<SeenInformationProvider>> moduleInformationProviders = Maps.newTreeMap();
+    private final Map<String, List<SeenInformationProvider>> pluginInformationProviders = Maps.newTreeMap();
 
     @Override
     public void register(@Nonnull Object plugin, @Nonnull SeenInformationProvider seenInformationProvider) throws IllegalArgumentException {
@@ -35,9 +36,15 @@ public class SeenHandler implements NucleusSeenService {
         Preconditions.checkArgument(pl != null, NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("seen.error.requireplugin"));
 
         String name = pl.name();
-        Preconditions.checkArgument(!pluginInformationProviders.containsKey(name), NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("seen.error.pluginregistered"));
+        List<SeenInformationProvider> providers;
+        if (pluginInformationProviders.containsKey(name)) {
+            providers = pluginInformationProviders.get(name);
+        } else {
+            providers = Lists.newArrayList();
+            pluginInformationProviders.put(name, providers);
+        }
 
-        pluginInformationProviders.put(name, seenInformationProvider);
+        providers.add(seenInformationProvider);
     }
 
     public void register(NucleusPlugin plugin, String module, SeenInformationProvider seenInformationProvider) throws IllegalArgumentException {
@@ -46,8 +53,15 @@ public class SeenHandler implements NucleusSeenService {
         Preconditions.checkNotNull(seenInformationProvider);
         Preconditions.checkArgument(plugin.getClass().getAnnotation(Plugin.class).equals(NucleusPlugin.class.getAnnotation(Plugin.class)));
 
-        Preconditions.checkArgument(!moduleInformationProviders.containsKey(module));
-        moduleInformationProviders.put(module, seenInformationProvider);
+        List<SeenInformationProvider> providers;
+        if (moduleInformationProviders.containsKey(module)) {
+            providers = moduleInformationProviders.get(module);
+        } else {
+            providers = Lists.newArrayList();
+            moduleInformationProviders.put(module, providers);
+        }
+
+        providers.add(seenInformationProvider);
     }
 
     public List<Text> buildInformation(final CommandSource requester, final User user) {
@@ -59,14 +73,13 @@ public class SeenHandler implements NucleusSeenService {
     private List<Text> getModuleText(final CommandSource requester, final User user) {
         List<Text> information = Lists.newArrayList();
 
-        for (Map.Entry<String, SeenInformationProvider> entry : moduleInformationProviders.entrySet()) {
-            SeenInformationProvider sip = entry.getValue();
-            if (sip.hasPermission(requester, user)) {
-                Collection<Text> input = entry.getValue().getInformation(requester, user);
+        for (Map.Entry<String, List<SeenInformationProvider>> entry : moduleInformationProviders.entrySet()) {
+            entry.getValue().stream().filter(sip -> sip.hasPermission(requester, user)).forEach(sip -> {
+                Collection<Text> input = sip.getInformation(requester, user);
                 if (input != null && !input.isEmpty()) {
                     information.addAll(input);
                 }
-            }
+            });
         }
 
         return information;
@@ -75,10 +88,9 @@ public class SeenHandler implements NucleusSeenService {
     private List<Text> getText(final CommandSource requester, final User user) {
         List<Text> information = Lists.newArrayList();
 
-        for (Map.Entry<String, SeenInformationProvider> entry : pluginInformationProviders.entrySet()) {
-            SeenInformationProvider sip = entry.getValue();
-            if (sip.hasPermission(requester, user)) {
-                Collection<Text> input = entry.getValue().getInformation(requester, user);
+        for (Map.Entry<String, List<SeenInformationProvider>> entry : pluginInformationProviders.entrySet()) {
+            entry.getValue().stream().filter(sip -> sip.hasPermission(requester, user)).forEach(sip -> {
+                Collection<Text> input = sip.getInformation(requester, user);
                 if (input != null && !input.isEmpty()) {
                     if (information.isEmpty()) {
                         information.add(Text.EMPTY);
@@ -91,7 +103,7 @@ public class SeenHandler implements NucleusSeenService {
                     information.add(Text.of(TextColors.AQUA, entry.getKey() + ":"));
                     information.addAll(input);
                 }
-            }
+            });
         }
 
         return information;

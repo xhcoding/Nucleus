@@ -32,11 +32,12 @@ public class GodCommand extends io.github.nucleuspowered.nucleus.internal.comman
 
     private final String playerKey = "player";
     private final String invulnKey = "invuln";
+    public static final String OTHER_SUFFIX = "others";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
+        m.put(OTHER_SUFFIX, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -44,7 +45,7 @@ public class GodCommand extends io.github.nucleuspowered.nucleus.internal.comman
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments
-                        .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix("others")))),
+                        .requiringPermission(GenericArguments.player(Text.of(playerKey)), permissions.getPermissionWithSuffix(OTHER_SUFFIX)))),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(invulnKey))))};
     }
 
