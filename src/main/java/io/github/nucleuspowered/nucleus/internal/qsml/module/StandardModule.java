@@ -42,6 +42,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 public abstract class StandardModule implements Module {
 
     private final String moduleId;
@@ -252,12 +254,24 @@ public abstract class StandardModule implements Module {
         };
     }
 
-    protected final void createSeenModule(Class<? extends AbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
+    protected final void createSeenModule(BiFunction<CommandSource, User, Collection<Text>> function) {
+        createSeenModule((String)null, function);
+    }
+
+    protected final void createSeenModule(@Nullable Class<? extends AbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information.
         CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getService(permissionClass);
+        createSeenModule(permissionHandler == null ? null : permissionHandler.getBase(), function);
+    }
 
-        // then get if the seen handler exists.
+    protected final void createSeenModule(@Nullable Class<? extends AbstractCommand> permissionClass, String suffix, BiFunction<CommandSource, User, Collection<Text>> function) {
+        // Register seen information.
+        CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getService(permissionClass);
+        createSeenModule(permissionHandler == null ? null : permissionHandler.getPermissionWithSuffix(suffix), function);
+    }
+
+    protected final void createSeenModule(@Nullable String permission, BiFunction<CommandSource, User, Collection<Text>> function) {
         plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(),
-                new BasicSeenInformationProvider(permissionHandler.getBase(), function)));
+            new BasicSeenInformationProvider(permission == null ? null : permission, function)));
     }
 }

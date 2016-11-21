@@ -8,19 +8,12 @@ import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 @ConfigSerializable
-public class PlayerInfoConfig {
+public class SeenConfig {
 
-    @Setting("list")
-    private ListConfig list = new ListConfig();
+    @Setting(value = "require-extended-permission-for-module-info", comment = "loc:config.playerinfo.seen.extended")
+    private boolean extendedPermRequired = false;
 
-    @Setting
-    private SeenConfig seen = new SeenConfig();
-
-    public ListConfig getList() {
-        return list;
-    }
-
-    public SeenConfig getSeen() {
-        return seen;
+    public boolean isExtendedPermRequired() {
+        return extendedPermRequired;
     }
 }
