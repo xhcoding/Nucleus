@@ -34,6 +34,7 @@ import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -121,17 +122,21 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadEvents() {
-        Set<Class<? extends ListenerBase>> commandsToLoad = getStreamForModule(ListenerBase.class)
-                .filter(checkMixin("listener"))
-                .collect(Collectors.toSet());
+        Set<Class<? extends ListenerBase>> listenersToLoad = getStreamForModule(ListenerBase.class)
+            .filter(checkMixin("listener"))
+            .collect(Collectors.toSet());
 
         ModuleData md = this.getClass().getAnnotation(ModuleData.class);
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
         Injector injector = plugin.getInjector();
-        commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(lb -> lb != null).forEach(c -> {
+        listenersToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
             // Register suggested permissions
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
+
+            if (c instanceof ListenerBase.Reloadable) {
+                plugin.registerReloadable((ListenerBase.Reloadable)c);
+            }
 
             final ConditionalListener conditionalListener = c.getClass().getAnnotation(ConditionalListener.class);
             if (conditionalListener != null) {

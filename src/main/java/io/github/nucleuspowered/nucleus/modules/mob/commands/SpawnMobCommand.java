@@ -11,8 +11,10 @@ import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.mob.config.BlockSpawnsConfig;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -77,8 +79,13 @@ public class SpawnMobCommand extends io.github.nucleuspowered.nucleus.internal.c
         EntityType et = args.<EntityType>getOne(mobTypeKey).get();
 
         if (!Living.class.isAssignableFrom(et.getEntityClass())) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.livingonly", et.getTranslation().get()));
-            return CommandResult.empty();
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.livingonly", et.getTranslation().get()));
+        }
+
+        String id = et.getId().toLowerCase();
+        Optional<BlockSpawnsConfig> config = mobConfigAdapter.getNodeOrDefault().getBlockSpawnsConfigForWorld(pl.getWorld());
+        if (config.isPresent() && (config.get().isBlockVanillaMobs() && id.startsWith("minecraft:") || config.get().getIdsToBlock().contains(id))) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.blockedinconfig", et.getTranslation().get()));
         }
 
         Location<World> loc = pl.getLocation();
@@ -94,9 +101,11 @@ public class SpawnMobCommand extends io.github.nucleuspowered.nucleus.internal.c
                 NamedCause.source(pl));
         do {
             Entity e = w.createEntity(et, loc.getPosition());
-            if (w.spawnEntity(e, cause)) {
-                i++;
+            if (!w.spawnEntity(e, cause)) {
+                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.fail", et.getTranslation().get()));
             }
+
+            i++;
         } while (i < Math.min(amount, mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()));
 
         if (amount > mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()) {
