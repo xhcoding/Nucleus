@@ -57,7 +57,7 @@ public class ChatUtil {
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?"
                 + "((?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
-                + "(?<specialUrl>(\\[(?<msg>.+)\\]\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,})\\)))|"
+                + "(?<specialUrl>(\\[(?<msg>.+)\\]\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
                 + "(?<specialCmd>(\\[(?<sMsg>.+)\\]\\((?<sCmd>/.+)\\))))",
                 Pattern.CASE_INSENSITIVE);
 
