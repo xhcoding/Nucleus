@@ -255,8 +255,12 @@ public class NucleusPlugin extends Nucleus {
             try {
                 // Save any additions.
                 moduleContainer.refreshSystemConfig();
-            } catch (IOException e) {
-                e.printStackTrace();
+                fireReloadables();
+            } catch (Exception e) {
+                isErrored = e;
+                disable();
+                errorOnStartup();
+                return;
             }
 
             Sponge.getScheduler().createSyncExecutor(this).submit(() -> this.gameStartedTime = Instant.now());
@@ -336,14 +340,18 @@ public class NucleusPlugin extends Nucleus {
                 tfc.load();
             }
 
-            for (ThrowableAction<? extends Exception> r : reloadableList) {
-                r.action();
-            }
+            fireReloadables();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         Sponge.getEventManager().post(new NucleusReloadConfigEvent(this));
+    }
+
+    private void fireReloadables() throws Exception {
+        for (ThrowableAction<? extends Exception> r : reloadableList) {
+            r.action();
+        }
     }
 
     public void reloadMessages() {

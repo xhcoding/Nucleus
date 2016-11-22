@@ -8,8 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "mob", name = "Mob")
+@ModuleData(id = MobModule.ID, name = "Mob")
 public class MobModule extends ConfigurableModule<MobConfigAdapter> {
+
+    public final static String ID = "mob";
 
     @Override
     public MobConfigAdapter getAdapter() {
