@@ -22,6 +22,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -112,14 +113,22 @@ public class NucleusTeleportHandler {
     }
 
     public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode) {
+        Optional<Location<World>> targetLocation = getSafeLocation(player, locationToTeleportTo, teleportMode);
+
+        // Do it, tell the routine if it worked.
+        return targetLocation.isPresent() && player.setLocationAndRotation(targetLocation.get(), rotation);
+    }
+
+    public Optional<Location<World>> getSafeLocation(@Nullable Player player, Location<World> locationToTeleportTo, TeleportMode teleportMode) {
+        if (player == null && teleportMode == TeleportMode.FLYING_THEN_SAFE) {
+            teleportMode = TeleportMode.SAFE_TELEPORT;
+        }
+
         // World around Sponge not loading chunks properly sometimes.
         locationToTeleportTo.getExtent().loadChunk(locationToTeleportTo.getChunkPosition(), true);
 
         // Find a location to teleport to.
-        Optional<Location<World>> targetLocation = teleportMode.apply(player, locationToTeleportTo);
-
-        // Do it, tell the routine if it worked.
-        return targetLocation.isPresent() && player.setLocationAndRotation(targetLocation.get(), rotation);
+        return teleportMode.apply(player, locationToTeleportTo);
     }
 
     @SuppressWarnings("all")

@@ -151,14 +151,14 @@ public interface NucleusUser {
      *
      * @return The {@link Instant}
      */
-    Instant getLastLogin();
+    Optional<Instant> getLastLogin();
 
     /**
      * Gets the time the player last logged out.
      *
      * @return The {@link Instant}
      */
-    Instant getLastLogout();
+    Optional<Instant> getLastLogout();
 
     /**
      * Gets the specified home for the player.

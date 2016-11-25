@@ -229,8 +229,12 @@ public class UserService extends Service<UserDataNode>
     }
 
     @Override
-    public Instant getLastLogin() {
-        return Instant.ofEpochMilli(data.getLogin());
+    public Optional<Instant> getLastLogin() {
+        if (data.getLogin() == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Instant.ofEpochMilli(data.getLogin()));
     }
 
     public void setLastLogin(Instant login) {
@@ -238,8 +242,12 @@ public class UserService extends Service<UserDataNode>
     }
 
     @Override
-    public Instant getLastLogout() {
-        return Instant.ofEpochMilli(data.getLogout());
+    public Optional<Instant> getLastLogout() {
+        if (data.getLogout() == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Instant.ofEpochMilli(data.getLogout()));
     }
 
     @Override

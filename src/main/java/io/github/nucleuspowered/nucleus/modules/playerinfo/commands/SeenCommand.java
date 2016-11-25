@@ -83,10 +83,10 @@ public class SeenCommand extends io.github.nucleuspowered.nucleus.internal.comma
         // Everyone gets the last online time.
         if (user.isOnline()) {
             messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.iscurrently.online", user.getName()));
-            messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.loggedon", Util.getTimeToNow(iqsu.getLastLogout())));
+            iqsu.getLastLogin().ifPresent(x -> messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.loggedon", Util.getTimeToNow(x))));
         } else {
             messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.iscurrently.offline", user.getName()));
-            messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.loggedoff", Util.getTimeToNow(iqsu.getLastLogout())));
+            iqsu.getLastLogout().ifPresent(x -> messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.loggedoff", Util.getTimeToNow(x))));
         }
 
         messages.add(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.seen.displayname", TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(user))));

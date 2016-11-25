@@ -20,17 +20,19 @@ import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SpawnListener extends ListenerBase {
 
@@ -50,20 +52,28 @@ public class SpawnListener extends ListenerBase {
     }
 
     @Listener
-    public void onJoin(ClientConnectionEvent.Join joinEvent) {
-        Player pl = joinEvent.getTargetEntity();
+    public void onJoin(ClientConnectionEvent.Login loginEvent) {
+        UUID pl = loginEvent.getProfile().getUniqueId();
+        boolean first = !loader.getUser(pl).isPresent() || !loader.getUser(pl).get().getLastLogin().isPresent();
 
         try {
-            if (loader.getUser(pl).get().isFirstPlay()) {
+            if (first) {
                 // first spawn.
                 Optional<Transform<World>> ofs = store.getFirstSpawn();
 
                 // Bit of an odd line, but what what is going on here is checking for first spawn, and if it exists, then
                 // setting the location the player safely. If this cannot be done in either case, send them to world spawn.
-                if (!ofs.isPresent() ||
-                        !plugin.getTeleportHandler().teleportPlayer(pl, ofs.get().getLocation(), ofs.get().getRotation(), sca.getNodeOrDefault().isSafeTeleport())) {
+                if (ofs.isPresent()) {
+                    NucleusTeleportHandler.TeleportMode mode = sca.getNodeOrDefault().isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT : NucleusTeleportHandler.TeleportMode.WALL_CHECK;
+                    Optional<Location<World>> location = plugin.getTeleportHandler().getSafeLocation(null, ofs.get().getLocation(), mode);
+
+                    if (location.isPresent()) {
+                        loginEvent.setToTransform(new Transform<>(location.get().getExtent(), location.get().getPosition().add(0.5, 0, 0.5), ofs.get().getRotation()));
+                        return;
+                    }
+
                     WorldProperties w = Sponge.getServer().getDefaultWorld().get();
-                    pl.setLocation(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().toDouble()));
+                    loginEvent.setToTransform(new Transform<>(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().add(0.5, 0, 0.5))));
 
                     // We don't want to boot them elsewhere.
                     return;
@@ -76,28 +86,33 @@ public class SpawnListener extends ListenerBase {
         }
 
         // Throw them to the default world spawn if the config suggests so.
-        if (sca.getNodeOrDefault().isSpawnOnLogin() && !pl.hasPermission(spawnExempt)) {
+        User user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).getOrCreate(loginEvent.getProfile());
+        if (sca.getNodeOrDefault().isSpawnOnLogin() && !user.hasPermission(spawnExempt)) {
 
             GlobalSpawnConfig sc = sca.getNodeOrDefault().getGlobalSpawn();
-            World world = joinEvent.getTargetEntity().getWorld();
+            World world = loginEvent.getFromTransform().getExtent();
             if (sc.isOnLogin()) {
                 world = sc.getWorld().orElse(world);
             }
 
-            Location<World> lw = world.getSpawnLocation();
-            try {
-                Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().getSpawnRotation();
-                if (ov.isPresent()) {
-                    plugin.getTeleportHandler().teleportPlayer(pl, lw, ov.get(),
-                        sca.getNodeOrDefault().isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
-                    return;
+            Location<World> lw = world.getSpawnLocation().add(0.5, 0, 0.5);
+            Optional<Location<World>> safe = plugin.getTeleportHandler().getSafeLocation(null, lw,
+                    sca.getNodeOrDefault().isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
+            if (safe.isPresent()) {
+                try {
+                    Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().getSpawnRotation();
+                    if (ov.isPresent()) {
+                        loginEvent.setToTransform(new Transform<>(safe.get().getExtent(),
+                                safe.get().getPosition().add(0.5, 0, 0.5),
+                                ov.get()));
+                        return;
+                    }
+                } catch (Exception e) {
+                    //
                 }
-            } catch (Exception e) {
-                //
-            }
 
-            plugin.getTeleportHandler().teleportPlayer(pl, lw,
-                sca.getNodeOrDefault().isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
+                loginEvent.setToTransform(new Transform<>(safe.get().add(0.5, 0, 0.5)));
+            }
         }
     }
 
@@ -120,13 +135,11 @@ public class SpawnListener extends ListenerBase {
         }
 
         try {
-            Location<World> spawn = world.getSpawnLocation();
+            Location<World> spawn = world.getSpawnLocation().add(0.5, 0, 0.5);
             Transform<World> to = new Transform<>(spawn);
-            Optional<Vector3d> ov = wcl.getWorld(world).get().getSpawnRotation();
-            if (ov.isPresent()) {
-                // Compare current transform to spawn.
-                to.setRotation(ov.get());
-            }
+
+            // Compare current transform to spawn.
+            wcl.getWorld(world).ifPresent(x -> x.getSpawnRotation().ifPresent(to::setRotation));
 
             event.setToTransform(to);
         } catch (Exception e) {
