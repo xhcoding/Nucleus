@@ -17,6 +17,7 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.item.ItemType;
 
@@ -64,8 +65,31 @@ public class PowertoolListener extends ListenerBase {
                 // Cancel the interaction.
                 event.setCancelled(true);
 
+                final Player interacting;
+                if (event instanceof InteractEntityEvent && ((InteractEntityEvent) event).getTargetEntity() instanceof Player) {
+                    interacting = (Player)((InteractEntityEvent) event).getTargetEntity();
+                } else {
+                    interacting = null;
+                }
+
                 // Run each command.
-                x.forEach(s -> Sponge.getCommandManager().process(player, s));
+                if (interacting == null && x.stream().allMatch(i -> i.contains("{{player}}"))) {
+                    player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("powertool.playeronly"));
+                    return;
+                }
+
+                x.forEach(s -> {
+                    if (s.contains("{{player}}")) {
+                        if (interacting != null) {
+                            s = s.replace("{{player}}", interacting.getName());
+                        } else {
+                            // Don't execute when no player is in the way.
+                            return;
+                        }
+                    }
+
+                    Sponge.getCommandManager().process(player, s);
+                });
             });
         }
     }
