@@ -10,10 +10,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class StaffChatConfig {
 
-    @Setting(comment = "loc:config.staffchat.template")
+    @Setting(value = "message-template", comment = "loc:config.staffchat.template")
     private String messageTemplate = "&b[STAFF] &r{{displayname}}&b: ";
 
-    @Setting(comment = "loc:config.staffchat.colour")
+    @Setting(value = "message-colour", comment = "loc:config.staffchat.colour")
     private String messageColour = "b";
 
     public String getMessageTemplate() {

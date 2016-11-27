@@ -5,13 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.chat.config;
 
 import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
-import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.util.List;
 
@@ -26,6 +21,7 @@ public class ChatConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDe
         return Lists.newArrayList(
             new Transformation(new Object[] {"template"}, ((inputPath, valueAtPath) -> new Object[] { "templates", "default" })),
             new Transformation(new Object[] {"group-templates"}, ((inputPath, valueAtPath) -> new Object[] { "templates", "group-templates" })),
+            new Transformation(new Object[] {"modifychat"}, ((inputPath, valueAtPath) -> new Object[] { "modify-chat" })),
             new Transformation(new Object[] {"templates", "group-templates"}, (((inputPath, valueAtPath) -> {
                 if (valueAtPath instanceof CommentedConfigurationNode) {
                     CommentedConfigurationNode ccn = (CommentedConfigurationNode)valueAtPath;

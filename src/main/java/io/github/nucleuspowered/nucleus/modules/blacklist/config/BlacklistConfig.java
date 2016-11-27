@@ -19,7 +19,7 @@ import java.util.Optional;
 @ConfigSerializable
 public class BlacklistConfig {
 
-    @Setting(comment = "loc:config.blacklist.use-replacement")
+    @Setting(value = "use-replacement", comment = "loc:config.blacklist.use-replacement")
     private boolean useReplacement = false;
 
     @Setting(comment = "loc:config.blacklist.replacement")
