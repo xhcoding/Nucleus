@@ -9,7 +9,7 @@ Nucleus
 * [TeamCity]
 * [IRC] | EsperNet - #nucleus
 
-Master branch build status:  [![Master branch](https://img.shields.io/travis/NucleusPowered/Nucleus/master.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
+Master branch build status:  [![API 5 branch](https://img.shields.io/travis/NucleusPowered/Nucleus/sponge-api/5.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
 
 Licence: [MIT](LICENSE.md)
 
@@ -20,7 +20,7 @@ elite plugin for providing simple server tasks, and an essential addition to you
  
 We're in beta right now, but we'd love the feedback!
 
-Nucleus requires Sponge API 4.1 or higher to run.
+Nucleus is being actively developed for Sponge API 5 and Sponge API 6. Sponge API 4.1 builds are receiving bug fixes only.  
 
 ## Contributions
 
