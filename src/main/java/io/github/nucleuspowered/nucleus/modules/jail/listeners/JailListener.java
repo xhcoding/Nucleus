@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.events.NucleusSendToSpawnEvent;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
@@ -19,12 +20,14 @@ import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.action.InteractEvent;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -144,7 +147,15 @@ public class JailListener extends ListenerBase {
         }
     }
 
-    private boolean checkJail(final Player player, boolean sendMessage) {
+    @Listener
+    public void onSendToSpawn(NucleusSendToSpawnEvent event, @Getter("getTargetUser") User user) {
+        if (checkJail(user, false)) {
+            event.setCancelled(true);
+            event.setCancelReason(plugin.getMessageProvider().getMessageWithFormat("jail.isjailed"));
+        }
+    }
+
+    private boolean checkJail(final User player, boolean sendMessage) {
         Optional<UserService> oqs = loader.get(player);
         if (!oqs.isPresent()) {
             return false;
@@ -156,7 +167,7 @@ public class JailListener extends ListenerBase {
         if (omd.isPresent()) {
             if (sendMessage) {
                 qs.setFlying(false);
-                onJail(omd.get(), player);
+                player.getPlayer().ifPresent(x -> onJail(omd.get(), x));
             }
 
             return true;

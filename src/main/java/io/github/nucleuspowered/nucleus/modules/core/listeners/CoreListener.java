@@ -19,6 +19,7 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -38,6 +39,21 @@ public class CoreListener extends ListenerBase {
     private boolean runSync = false;
 
     /* (non-Javadoc)
+     * We do this last to avoid interfering with other modules.
+     */
+    @Listener(order = Order.LATE)
+    public void onPlayerLoginLast(final ClientConnectionEvent.Login event, @Getter("getProfile") GameProfile profile) {
+        loader.get(profile.getUniqueId()).ifPresent(qsu -> {
+            // If we have a location to send them to in the config, send them there now!
+            Optional<Location<World>> olw = qsu.getLocationOnLogin();
+            if (olw.isPresent()) {
+                event.setToTransform(event.getFromTransform().setLocation(olw.get()));
+                qsu.removeLocationOnLogin();
+            }
+        });
+    }
+
+    /* (non-Javadoc)
      * We do this first to try to get the first play status as quick as possible.
      */
     @Listener(order = Order.FIRST)
@@ -49,19 +65,6 @@ public class CoreListener extends ListenerBase {
             qsu.setLastIp(player.getConnection().getAddress().getAddress());
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    @Listener(order = Order.LAST)
-    public void onPlayerJoinLast(final ClientConnectionEvent.Join event) {
-        Player player = event.getTargetEntity();
-        UserService qsu = loader.get(player).get();
-
-        // If we have a location to send them to in the config, send them there now!
-        Optional<Location<World>> olw = qsu.getLocationOnLogin();
-        if (olw.isPresent()) {
-            event.getTargetEntity().setLocation(olw.get());
-            qsu.removeLocationOnLogin();
         }
     }
 
