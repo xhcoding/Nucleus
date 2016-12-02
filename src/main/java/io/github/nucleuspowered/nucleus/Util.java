@@ -73,29 +73,44 @@ public class Util {
      * Adds items to a {@link Player}s {@link Inventory}
      * @param player The {@link Player}
      * @param itemStacks The {@link ItemStackSnapshot}s to add.
+     * @param dropRejected If true, drop items that are rejected from the inventory.
      * @return {@link Tristate#TRUE} if everything is successful, {@link Tristate#FALSE} if nothing was added, {@link Tristate#UNDEFINED}
      * if some stacks were added.
      */
-    public static Tristate addToStandardInventory(Player player, Collection<ItemStackSnapshot> itemStacks) {
+    public static Tristate addToStandardInventory(Player player, Collection<ItemStackSnapshot> itemStacks, boolean dropRejected) {
         Tristate ts = Tristate.FALSE;
         Inventory target = Util.getStandardInventory(player);
+        boolean dropItems = false;
         for (ItemStackSnapshot stack : itemStacks) {
-            // Ignore anything that is NONE
-            if (stack.getType() != ItemTypes.NONE) {
-                // Give them the kit.
-                InventoryTransactionResult itr = target.offer(stack.createStack());
+            if (dropItems) {
+                Util.dropItemOnFloorAtLocation(stack, player.getWorld(), player.getLocation().getPosition());
+            } else {
 
-                // If some items were rejected...
-                if (!itr.getRejectedItems().isEmpty()) {
-                    // ...tell the user and break out.
-                    return ts;
+                // Ignore anything that is NONE
+                if (stack.getType() != ItemTypes.NONE) {
+                    // Give them the kit.
+                    InventoryTransactionResult itr = target.offer(stack.createStack());
+
+                    // If some items were rejected...
+                    if (!itr.getRejectedItems().isEmpty()) {
+                        // ...tell the user and break out.
+                        if (dropRejected) {
+                            dropItems = true;
+                            itr.getRejectedItems()
+                                .forEach(x -> Util.dropItemOnFloorAtLocation(x, player.getWorld(), player.getLocation().getPosition()));
+                        } else {
+                            return ts;
+                        }
+                    }
+
+                    if (!dropItems) {
+                        ts = Tristate.UNDEFINED;
+                    }
                 }
-
-                ts = Tristate.UNDEFINED;
             }
         }
 
-        return Tristate.TRUE;
+        return dropItems ? ts : Tristate.TRUE;
     }
 
     public static UUID getUUID(CommandSource src) {
