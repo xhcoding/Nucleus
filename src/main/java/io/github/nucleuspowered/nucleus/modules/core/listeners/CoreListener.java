@@ -69,7 +69,15 @@ public class CoreListener extends ListenerBase {
     }
 
     @Listener
+    @SuppressWarnings("ConstantConditionalExpression")
     public void onPlayerQuit(final ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") final Player player) {
+        // There is an issue in Sponge where the connection may not even exist, because they were disconnected before the connection was
+        // completely established.
+        //noinspection ConstantConditions
+        if (player.getConnection() == null || player.getConnection().getAddress() == null) {
+            return;
+        }
+
         final Location<World> location = player.getLocation();
         final InetAddress address = player.getConnection().getAddress().getAddress();
         if (runSync) {
