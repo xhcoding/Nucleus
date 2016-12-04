@@ -24,6 +24,7 @@ import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.KitService;
+import io.github.nucleuspowered.nucleus.dataservices.NameBanService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -99,6 +100,7 @@ public class NucleusPlugin extends Nucleus {
     private ItemDataService itemDataService;
     private UserDataManager userDataManager;
     private WorldDataManager worldDataManager;
+    private NameBanService nameBanService;
     private KitService kitService;
     private ChatUtil chatUtil;
     private NameUtil nameUtil;
@@ -162,6 +164,7 @@ public class NucleusPlugin extends Nucleus {
             userDataManager = new UserDataManager(this, d::getUserFileDataProviders);
             worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider);
             kitService = new KitService(d.getKitsDataProvider());
+            nameBanService = new NameBanService(d.getNameBanDataProvider());
             warmupManager = new WarmupManager();
             chatUtil = new ChatUtil(this);
             nameUtil = new NameUtil(this);
@@ -294,6 +297,7 @@ public class NucleusPlugin extends Nucleus {
         worldDataManager.saveAll();
         try {
             generalService.save();
+            nameBanService.save();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -429,6 +433,8 @@ public class NucleusPlugin extends Nucleus {
     public KitService getKitService() {
         return kitService;
     }
+
+    public NameBanService getNameBanService() { return nameBanService; }
 
     public CommandsConfig getCommandsConfig() {
         return commandsConfig;

@@ -63,6 +63,8 @@ public class Util {
     private Util() {
     }
 
+    public static final String usernameRegexPattern = "[0-9a-zA-Z_]{3,16}";
+
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     public static Inventory getStandardInventory(Player player) {
