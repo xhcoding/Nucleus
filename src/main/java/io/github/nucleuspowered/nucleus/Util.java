@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.api.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.util.Action;
@@ -31,6 +32,7 @@ import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.item.inventory.type.GridInventory;
+import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.service.permission.Subject;
@@ -51,10 +53,13 @@ import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
@@ -370,15 +375,21 @@ public class Util {
     }
 
     /**
-     * Gets all of the player's parent {@link Subject}s
+     * Gets all of the player's parent {@link Subject}s for the given {@link Context}
      *
      * @param pl The {@link Subject} to get the parents of
      * @return The {@link List} of {@link Subject}s, or an empty list if there nothing was found.
      */
     public static List<Subject> getParentSubjects(Subject pl) {
         try {
-            return pl.getSubjectData().getAllParents().values().stream().flatMap(Collection::stream)
-                    .sorted((x, y) -> y.getParents().size() - x.getParents().size())
+            Set<Context> contextSet = pl.getActiveContexts();
+            Map<Subject, Integer> subjects = Maps.newHashMap();
+
+            // Try to cache already known values
+            Function<Subject, Integer> subjectIntegerFunction = subject -> subjects.computeIfAbsent(subject, k -> k.getParents(contextSet).size());
+
+            return pl.getParents(contextSet).stream().distinct()
+                    .sorted(Comparator.comparingInt(subjectIntegerFunction::apply))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             return Lists.newArrayList();
