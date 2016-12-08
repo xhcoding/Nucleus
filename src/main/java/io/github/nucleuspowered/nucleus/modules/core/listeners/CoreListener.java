@@ -10,11 +10,15 @@ import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.events.NucleusOnLoginEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
@@ -42,13 +46,25 @@ public class CoreListener extends ListenerBase {
      * We do this last to avoid interfering with other modules.
      */
     @Listener(order = Order.LATE)
-    public void onPlayerLoginLast(final ClientConnectionEvent.Login event, @Getter("getProfile") GameProfile profile) {
+    public void onPlayerLoginLast(final ClientConnectionEvent.Login event, @Getter("getProfile") GameProfile profile,
+        @Getter("getTargetUser") User user) {
+
         loader.get(profile.getUniqueId()).ifPresent(qsu -> {
-            // If we have a location to send them to in the config, send them there now!
-            Optional<Location<World>> olw = qsu.getLocationOnLogin();
-            if (olw.isPresent()) {
-                event.setToTransform(event.getFromTransform().setLocation(olw.get()));
-                qsu.removeLocationOnLogin();
+            if (event.getFromTransform().equals(event.getToTransform())) {
+                NucleusOnLoginEvent onLoginEvent = new NucleusOnLoginEvent(Cause.of(NamedCause.source(profile)), user, qsu, event.getFromTransform());
+                Sponge.getEventManager().post(onLoginEvent);
+                if (onLoginEvent.getTo().isPresent()) {
+                    event.setToTransform(onLoginEvent.getTo().get());
+                    qsu.removeLocationOnLogin();
+                    return;
+                }
+
+                // If we have a location to send them to in the config, send them there now!
+                Optional<Location<World>> olw = qsu.getLocationOnLogin();
+                if (olw.isPresent()) {
+                    event.setToTransform(event.getFromTransform().setLocation(olw.get()));
+                    qsu.removeLocationOnLogin();
+                }
             }
         });
     }
