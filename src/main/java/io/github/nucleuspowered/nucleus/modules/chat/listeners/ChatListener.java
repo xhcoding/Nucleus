@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTokenServiceImpl;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
@@ -24,7 +23,6 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Arrays;
@@ -32,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ChatListener extends ListenerBase.Reloadable {
+public class ChatListener extends ListenerBase {
 
     private final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
 
@@ -41,17 +39,12 @@ public class ChatListener extends ListenerBase.Reloadable {
     private final ChatConfigAdapter cca;
     private final ChatUtil chatUtil;
     private final TemplateUtil templateUtil;
-    private final NucleusTokenServiceImpl chatService;
-
-    private TextTemplate prefixtt;
-    private TextTemplate suffixtt;
 
     @Inject
-    public ChatListener(ChatUtil chatUtil, ChatConfigAdapter cca, TemplateUtil templateUtil, NucleusTokenServiceImpl chatService) {
+    public ChatListener(ChatUtil chatUtil, ChatConfigAdapter cca, TemplateUtil templateUtil) {
         this.chatUtil = chatUtil;
         this.cca = cca;
         this.templateUtil = templateUtil;
-        this.chatService = chatService;
         replacements = createReplacements();
     }
 
@@ -120,11 +113,5 @@ public class ChatListener extends ListenerBase.Reloadable {
 
         NameUtil nu = plugin.getNameUtil();
         return Text.of(nu.getColourFromString(chatcol), nu.getTextStyleFromString(chatstyle), result);
-    }
-
-    @Override public void onReload() throws Exception {
-        // Create the TextTemplate for the prefix
-        prefixtt = TextTemplate.of("{{", "}}", new Object[] { TextSerializers.FORMATTING_CODE.deserialize(cca.getNodeOrDefault().getDefaultTemplate().getPrefix()) } );
-        suffixtt = TextTemplate.of("{{", "}}", new Object[] { TextSerializers.FORMATTING_CODE.deserialize(cca.getNodeOrDefault().getDefaultTemplate().getSuffix()) } );
     }
 }
