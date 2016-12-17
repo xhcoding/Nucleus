@@ -12,7 +12,12 @@ import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandResult;
@@ -53,7 +58,7 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
         return new CommandElement[] {
             GenericArguments.optionalWeak(new ItemAliasArgument(Text.of(item), itemDataService)),
             GenericArguments.choices(Text.of(type), ImmutableMap.of("buy", Type.BUY, "sell", Type.SELL)),
-            GenericArguments.integer(Text.of(cost))
+            GenericArguments.doubleNum(Text.of(cost))
         };
     }
 
@@ -61,7 +66,10 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Type transactionType = args.<Type>getOne(type).get();
         Optional<CatalogType> catalogTypeOptional = args.getOne(item);
-        int newCost = Math.max(-1, args.<Integer>getOne(cost).get());
+        double newCost = args.<Double>getOne(cost).get();
+        if (newCost < 0) {
+            newCost = -1;
+        }
 
         String id;
 
@@ -86,7 +94,7 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
         ItemDataNode node = itemDataService.getDataForItem(id);
 
         // Get the current item worth.
-        int currentWorth = transactionType.getter.apply(node);
+        double currentWorth = transactionType.getter.apply(node);
         String worth;
         String newWorth;
 
@@ -119,7 +127,7 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
         }
 
         if (currentWorth == newCost) {
-            if (currentWorth == -1) {
+            if (currentWorth < 0) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.alreadyunavailable", name, transactionType.getTranslation()));
             } else {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.samecost", transactionType.getTranslation(), name, worth));
@@ -148,11 +156,11 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
         BUY(ItemDataNode::getServerBuyPrice, ItemDataNode::setServerBuyPrice, "standard.buyfrom"),
         SELL(ItemDataNode::getServerSellPrice, ItemDataNode::setServerSellPrice, "standard.sellto");
 
-        private final Function<ItemDataNode, Integer> getter;
-        private final BiConsumer<ItemDataNode, Integer> setter;
+        private final Function<ItemDataNode, Double> getter;
+        private final BiConsumer<ItemDataNode, Double> setter;
         private final String transactionKey;
 
-        Type(Function<ItemDataNode, Integer> get, BiConsumer<ItemDataNode, Integer> set, String transactionKey) {
+        Type(Function<ItemDataNode, Double> get, BiConsumer<ItemDataNode, Double> set, String transactionKey) {
             this.getter = get;
             this.setter = set;
             this.transactionKey = transactionKey;
