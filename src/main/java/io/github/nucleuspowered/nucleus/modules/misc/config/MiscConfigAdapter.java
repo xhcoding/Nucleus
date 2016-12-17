@@ -4,11 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.config;
 
-import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public class MiscConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<MiscConfig> {
 
