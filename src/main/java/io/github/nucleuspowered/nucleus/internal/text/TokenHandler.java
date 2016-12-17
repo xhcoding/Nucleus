@@ -76,7 +76,7 @@ public class TokenHandler {
     private Optional<Text> getTextFromPluginToken(String pluginId, String token, CommandSource source, boolean addSpace) {
         Optional<NucleusTokenServiceImpl> optionalChatService = plugin.getInternalServiceManager().getService(NucleusTokenServiceImpl.class);
         if (optionalChatService.isPresent()) {
-            Optional<Text> opt = optionalChatService.get().getTokenForCommandSource(pluginId, token, source);
+            Optional<Text> opt = optionalChatService.get().applyToken(pluginId, token, source);
             if (opt.isPresent() && addSpace) {
                 return Optional.of(opt.get().toBuilder().append(SPACE).build());
             }

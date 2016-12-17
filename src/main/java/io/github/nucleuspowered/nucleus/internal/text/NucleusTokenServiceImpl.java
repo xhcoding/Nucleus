@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.text;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -15,20 +16,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.annotation.Nullable;
-
 public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
 
-    private final Function<CommandSource, Optional<Text>> defaultFunction = p -> Optional.empty();
     private final Map<String, Map<String, Function<CommandSource, Optional<Text>>>> tokenStore = Maps.newHashMap();
-
-    public Optional<Text> getTokenForCommandSource(String plugin, String token, @Nullable CommandSource source) {
-        if (tokenStore.containsKey(plugin.toLowerCase())) {
-            return tokenStore.get(plugin.toLowerCase()).getOrDefault(token.toLowerCase(), defaultFunction).apply(source);
-        }
-
-        return Optional.empty();
-    }
 
     @Override public void register(PluginContainer pluginContainer, String tokenIdentifier, Function<CommandSource, Optional<Text>> textFunction) {
         Preconditions.checkNotNull(pluginContainer);
@@ -63,5 +53,14 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         }
 
         return false;
+    }
+
+    @Override public Optional<Function<CommandSource, Optional<Text>>> getToken(String plugin, String token) {
+        Map<String, Function<CommandSource, Optional<Text>>> inner = tokenStore.computeIfAbsent(plugin.toLowerCase(), k -> Maps.newHashMap());
+        return Optional.ofNullable(inner.get(token.toLowerCase()));
+    }
+
+    @Override public Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source) {
+        return Nucleus.getNucleus().getChatUtil().getMessageFromTemplate(input, source, true);
     }
 }
