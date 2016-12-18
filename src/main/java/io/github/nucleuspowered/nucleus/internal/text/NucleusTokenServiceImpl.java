@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.text;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -37,6 +38,8 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
     }
 
     @Override public boolean unregister(PluginContainer pluginContainer, String tokenIdentifier) {
+        Preconditions.checkState(!pluginContainer.getId().equalsIgnoreCase(PluginInfo.ID), "Cannot remove Nucleus tokens");
+
         Map<String, Function<CommandSource, Optional<Text>>> inner = tokenStore.get(pluginContainer.getId().toLowerCase());
         if (inner != null && inner.containsKey(tokenIdentifier.toLowerCase())) {
             inner.remove(tokenIdentifier.toLowerCase());
@@ -47,6 +50,8 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
     }
 
     @Override public boolean unregisterAll(PluginContainer pluginContainer) {
+        Preconditions.checkState(!pluginContainer.getId().equalsIgnoreCase(PluginInfo.ID), "Cannot remove Nucleus tokens");
+
         if (tokenStore.containsKey(pluginContainer.getId().toLowerCase())) {
             tokenStore.remove(pluginContainer.getId().toLowerCase());
             return true;
