@@ -83,7 +83,14 @@ public class ChatListener extends ListenerBase {
         }
 
         Text rawMessage = event.getRawMessage();
-        ChatTemplateConfig ctc = templateUtil.getTemplate(player);
+
+        final ChatTemplateConfig ctc;
+        if (config.isUseGroupTemplates()) {
+            ctc = templateUtil.getTemplate(player);
+        } else {
+            ctc = config.getDefaultTemplate();
+        }
+
         event.setMessage(
                 chatUtil.getMessageFromTemplate(ctc.getPrefix(), player, true),
                 useMessage(player, rawMessage, ctc),

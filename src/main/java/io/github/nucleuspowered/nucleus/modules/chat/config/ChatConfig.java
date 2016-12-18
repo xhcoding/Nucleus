@@ -16,11 +16,18 @@ public class ChatConfig {
     @Setting(value = "modify-chat", comment = "loc:config.chat.modify")
     private boolean modifychat = true;
 
+    @Setting(value = "use-group-templates", comment = "loc:config.chat.useGroupTemplates")
+    private boolean useGroupTemplates = true;
+
     @Setting(value = "templates")
     private TemplateConfig templates = new TemplateConfig();
 
     public boolean isModifychat() {
         return modifychat;
+    }
+
+    public boolean isUseGroupTemplates() {
+        return useGroupTemplates;
     }
 
     public ChatTemplateConfig getDefaultTemplate() {
