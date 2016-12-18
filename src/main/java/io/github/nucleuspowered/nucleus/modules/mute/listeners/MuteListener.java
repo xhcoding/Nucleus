@@ -91,11 +91,8 @@ public class MuteListener extends ListenerBase {
         Set<String> cmd;
 
         // If the command exists, then get all aliases.
-        if (oc.isPresent()) {
-            cmd = oc.get().getAllAliases().stream().map(String::toLowerCase).collect(Collectors.toSet());
-        } else {
-            cmd = Sets.newHashSet(command);
-        }
+        cmd = oc.map(commandMapping -> commandMapping.getAllAliases().stream().map(String::toLowerCase).collect(Collectors.toSet()))
+            .orElseGet(() -> Sets.newHashSet(command));
 
         // If the command is in the list, block it.
         if (commands.stream().map(String::toLowerCase).anyMatch(cmd::contains)) {
