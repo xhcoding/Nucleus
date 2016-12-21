@@ -19,17 +19,11 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import org.spongepowered.api.CatalogType;
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.type.HandTypes;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
@@ -64,30 +58,11 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        String id = getCatalogTypeFromHandOrArgs(src, item, args).getId();
         Type transactionType = args.<Type>getOne(type).get();
-        Optional<CatalogType> catalogTypeOptional = args.getOne(item);
         double newCost = args.<Double>getOne(cost).get();
         if (newCost < 0) {
             newCost = -1;
-        }
-
-        String id;
-
-        if (catalogTypeOptional.isPresent()) {
-            id = catalogTypeOptional.get().getId().toLowerCase();
-        } else if (src instanceof Player) {
-            Optional<ItemStack> itemStack = ((Player) src).getItemInHand(HandTypes.MAIN_HAND);
-            if (itemStack.isPresent()) {
-                ItemStack is = itemStack.get();
-                Optional<BlockState> blockStateOptional = is.get(Keys.ITEM_BLOCKSTATE);
-                id = (blockStateOptional.isPresent() ? blockStateOptional.get().getId() : is.getItem().getId()).toLowerCase();
-            } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.noitemhand"));
-                return CommandResult.empty();
-            }
-        } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.noitemconsole"));
-            return CommandResult.empty();
         }
 
         // Get the item from the system.
@@ -109,22 +84,7 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
 
         String name;
         Optional<CatalogType> type = Util.getCatalogTypeForItemFromId(id);
-        if (type.isPresent()) {
-            CatalogType ct = type.get();
-            if (ct instanceof ItemType) {
-                name = ItemStack.of((ItemType)ct, 1).getTranslation().get();
-            } else if (ct instanceof BlockState) {
-                name = ItemStack.builder().fromBlockState(((BlockState) ct)).build().getTranslation().get();
-            } else {
-                name = Util.getTranslatableIfPresentOnCatalogType(ct);
-            }
-        } else {
-            name = id;
-        }
-
-        if (name.isEmpty()) {
-            name = id;
-        }
+        name = type.map(Util::getTranslatableIfPresentOnCatalogType).orElse(id);
 
         if (currentWorth == newCost) {
             if (currentWorth < 0) {
