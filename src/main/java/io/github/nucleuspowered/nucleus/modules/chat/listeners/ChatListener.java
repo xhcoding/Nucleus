@@ -7,11 +7,14 @@ package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.chat.ChatModule;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
@@ -24,12 +27,21 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
+import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
+/**
+ * A listener that modifies all chat messages. Uses the
+ * {@link io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService}, which
+ * should be used if tokens need to be registered.
+ */
+@ConditionalListener(ChatListener.Test.class)
 public class ChatListener extends ListenerBase {
 
     private final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
@@ -78,10 +90,6 @@ public class ChatListener extends ListenerBase {
         }
 
         ChatConfig config = cca.getNodeOrDefault();
-        if (!config.isModifychat()) {
-            return;
-        }
-
         Text rawMessage = event.getRawMessage();
 
         final ChatTemplateConfig ctc;
@@ -120,5 +128,23 @@ public class ChatListener extends ListenerBase {
 
         NameUtil nu = plugin.getNameUtil();
         return Text.of(nu.getColourFromString(chatcol), nu.getTextStyleFromString(chatstyle), result);
+    }
+
+    public static class Test implements Predicate<Nucleus> {
+
+        @Override
+        public boolean test(Nucleus nucleus) {
+            try {
+                return nucleus.getModuleContainer()
+                        .getConfigAdapterForModule(ChatModule.ID, ChatConfigAdapter.class)
+                        .getNodeOrDefault().isModifychat();
+            } catch (NoModuleException | IncorrectAdapterTypeException e) {
+                if (nucleus.isDebugMode()) {
+                    e.printStackTrace();
+                }
+
+                return false;
+            }
+        }
     }
 }
