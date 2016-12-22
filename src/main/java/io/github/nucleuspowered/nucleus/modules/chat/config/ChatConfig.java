@@ -22,6 +22,15 @@ public class ChatConfig {
     @Setting(value = "templates")
     private TemplateConfig templates = new TemplateConfig();
 
+    @Setting(value = "modify-main-message", comment = "loc:config.chat.main")
+    private boolean modifyMainMessage = true;
+
+    @Setting(value = "overwrite-early-prefixes", comment = "loc:config.chat.includeprefix")
+    private boolean overwriteEarlyPrefixes = false;
+
+    @Setting(value = "overwrite-early-suffixes", comment = "loc:config.chat.includesuffix")
+    private boolean overwriteEarlySuffixes = false;
+
     public boolean isModifychat() {
         return modifychat;
     }
@@ -36,5 +45,17 @@ public class ChatConfig {
 
     public Map<String, WeightedChatTemplateConfig> getGroupTemplates() {
         return ImmutableMap.copyOf(templates.getGroupTemplates());
+    }
+
+    public boolean isModifyMainMessage() {
+        return modifyMainMessage;
+    }
+
+    public boolean isOverwriteEarlyPrefixes() {
+        return overwriteEarlyPrefixes;
+    }
+
+    public boolean isOverwriteEarlySuffixes() {
+        return overwriteEarlySuffixes;
     }
 }

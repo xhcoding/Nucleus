@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
@@ -37,16 +36,14 @@ import java.util.function.Predicate;
 public class NoteListener extends ListenerBase {
 
     @Inject private NoteHandler handler;
-    @Inject private NoteConfigAdapter nca;
-    @Inject private UserDataManager userDataManager;
     private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "note.showonlogin";
-
 
     /**
      * At the time the player joins, check to see if the player has any notes,
      * if he does send them to users with the permission plugin.note.showonlogin
      *
      * @param event The event.
+     * @param player The {@link Player} that has just logged in.
      */
     @Listener
     public void onPlayerLogin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {

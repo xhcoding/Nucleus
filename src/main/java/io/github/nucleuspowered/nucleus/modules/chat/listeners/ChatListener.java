@@ -25,6 +25,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
+import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
@@ -89,8 +90,11 @@ public class ChatListener extends ListenerBase {
             return;
         }
 
+        MessageEvent.MessageFormatter eventFormatter = event.getFormatter();
         ChatConfig config = cca.getNodeOrDefault();
-        Text rawMessage = event.getRawMessage();
+        Text rawMessage = eventFormatter.getBody().isEmpty() ? event.getRawMessage() : eventFormatter.getBody().toText();
+        Text prefix = config.isOverwriteEarlyPrefixes() ? Text.EMPTY : event.getFormatter().getHeader().toText();
+        Text footer = config.isOverwriteEarlySuffixes() ? Text.EMPTY : event.getFormatter().getHeader().toText();
 
         final ChatTemplateConfig ctc;
         if (config.isUseGroupTemplates()) {
@@ -100,13 +104,13 @@ public class ChatListener extends ListenerBase {
         }
 
         event.setMessage(
-                chatUtil.getMessageFromTemplate(ctc.getPrefix(), player, true),
-                useMessage(player, rawMessage, ctc),
-                chatUtil.getMessageFromTemplate(ctc.getSuffix(), player, false));
+                Text.join(prefix, chatUtil.getMessageFromTemplate(ctc.getPrefix(), player, true)),
+                config.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
+                Text.join(footer, chatUtil.getMessageFromTemplate(ctc.getSuffix(), player, false)));
     }
 
     private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {
-        String m = rawMessage.toPlain();
+        String m = TextSerializers.FORMATTING_CODE.serialize(rawMessage);
 
         for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
             // If we don't have the required permission...
