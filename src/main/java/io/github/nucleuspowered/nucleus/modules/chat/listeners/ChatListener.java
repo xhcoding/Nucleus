@@ -93,8 +93,15 @@ public class ChatListener extends ListenerBase {
         MessageEvent.MessageFormatter eventFormatter = event.getFormatter();
         ChatConfig config = cca.getNodeOrDefault();
         Text rawMessage = eventFormatter.getBody().isEmpty() ? event.getRawMessage() : eventFormatter.getBody().toText();
-        Text prefix = config.isOverwriteEarlyPrefixes() ? Text.EMPTY : event.getFormatter().getHeader().toText();
-        Text footer = config.isOverwriteEarlySuffixes() ? Text.EMPTY : event.getFormatter().getHeader().toText();
+
+        Text prefix = Text.EMPTY;
+
+        // Avoid adding <name>.
+        if (!config.isOverwriteEarlyPrefixes() && !eventFormatter.getHeader().toText().toPlain().equalsIgnoreCase("<" + player.getName() + "> ")) {
+            prefix = eventFormatter.getHeader().toText();
+        }
+
+        Text footer = config.isOverwriteEarlySuffixes() ? Text.EMPTY : event.getFormatter().getFooter().toText();
 
         final ChatTemplateConfig ctc;
         if (config.isUseGroupTemplates()) {
