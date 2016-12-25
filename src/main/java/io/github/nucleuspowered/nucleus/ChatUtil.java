@@ -20,18 +20,15 @@ import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 public class ChatUtil {
 
@@ -56,22 +53,6 @@ public class ChatUtil {
 
     public ChatUtil(NucleusPlugin plugin) {
         this.plugin = plugin;
-    }
-
-    @SafeVarargs
-    @Deprecated
-    public final List<Text> getMessageFromTemplate(List<String> templates, CommandSource cs, final boolean trimTrailingSpace,
-        Map<String, Function<CommandSource, Optional<Text>>>... tokensArray) {
-
-        if (tokensArray.length == 0) {
-            return getMessageFromTemplate(templates, cs, trimTrailingSpace, Maps.newHashMap());
-        } else if (tokensArray.length == 1) {
-            return getMessageFromTemplate(templates, cs, trimTrailingSpace, tokensArray[0]);
-        } else {
-            return getMessageFromTemplate(templates, cs, trimTrailingSpace, new HashMap<String, Function<CommandSource, Optional<Text>>>() {{
-                Arrays.stream(tokensArray).forEach(this::putAll);
-            }});
-        }
     }
 
     public final Text getMessageFromTemplate(String templates, CommandSource cs, final boolean trimTrailingSpace) {

@@ -9,7 +9,7 @@ plugins {
     id "com.qixalite.spongestart" version "1.4.3"
 }
 
-ext.spongeapi = '5.0.0'
+ext.spongeapi = '5.1.0-SNAPSHOT'
 description = 'The Ultimate Essentials Plugin.'
 ext.url = 'http://nucleuspowered.org'
 
