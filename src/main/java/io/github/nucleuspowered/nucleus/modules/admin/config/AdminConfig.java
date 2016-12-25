@@ -13,7 +13,15 @@ public class AdminConfig {
     @Setting(value = "broadcast-message-template", comment = "loc:config.broadcast.template")
     private BroadcastConfig broadcastMessage = new BroadcastConfig();
 
+    // TODO: Make the default true in future versions?
+    @Setting(value = "separate-gamemode-permissions", comment = "loc:config.gamemode.separate")
+    private boolean separateGamemodePermission = false;
+
     public BroadcastConfig getBroadcastMessage() {
         return broadcastMessage;
+    }
+
+    public boolean isSeparateGamemodePermission() {
+        return separateGamemodePermission;
     }
 }

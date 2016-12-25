@@ -5,14 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -25,6 +24,7 @@ import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,11 +37,23 @@ public class GamemodeCommand extends io.github.nucleuspowered.nucleus.internal.c
 
     private final String userKey = "user";
     private final String gamemodeKey = "gamemode";
+    @Inject private AdminConfigAdapter adminConfigAdapter;
+
+    private final Map<String, String> modeMap = new HashMap<String, String>() {{
+        put(GameModes.SURVIVAL.getId(), "modes.survival");
+        put(GameModes.CREATIVE.getId(), "modes.creative");
+        put(GameModes.ADVENTURE.getId(), "modes.adventure");
+        put(GameModes.SPECTATOR.getId(), "modes.spectator");
+    }};
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mpi = Maps.newHashMap();
         mpi.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.other"), SuggestedLevel.ADMIN));
+        mpi.put("modes.survival", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.survival"), SuggestedLevel.ADMIN));
+        mpi.put("modes.creative", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.creative"), SuggestedLevel.ADMIN));
+        mpi.put("modes.adventure", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.adventure"), SuggestedLevel.ADMIN));
+        mpi.put("modes.spectator", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.spectator"), SuggestedLevel.ADMIN));
         return mpi;
     }
 
@@ -77,6 +89,20 @@ public class GamemodeCommand extends io.github.nucleuspowered.nucleus.internal.c
         }
 
         GameMode gm = ogm.get();
+
+        // We now check for the correct permissions for the game mode we are switching to, if set in config.
+        if (adminConfigAdapter.getNodeOrDefault().isSeparateGamemodePermission()
+                && !permissions.testSuffix(src, modeMap.computeIfAbsent(
+            gm.getId(), key -> {
+                String[] keySplit = key.split(":", 2);
+                String r = keySplit[keySplit.length - 1].toLowerCase();
+                modeMap.put(key, "modes." + r);
+                return "modes." + r;
+            }
+        ))) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.gamemode.permission", gm.getTranslation().get()));
+        }
+
         DataTransactionResult dtr = user.offer(Keys.GAME_MODE, gm);
         if (dtr.isSuccessful()) {
             if (!src.equals(user)) {
