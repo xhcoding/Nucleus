@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -22,12 +23,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
-import javax.inject.Inject;
 
 @Permissions(prefix = "home", mainOverride = "set", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
@@ -59,7 +59,7 @@ public class SetHomeCommand extends io.github.nucleuspowered.nucleus.internal.co
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         // Get the home key.
-        String home = args.<String>getOne(homeKey).orElse("home").toLowerCase();
+        String home = args.<String>getOne(homeKey).orElse(HomeModule.DEFAULT_HOME_NAME).toLowerCase();
 
         // Get the homes.
         UserService iqsu = udm.get(src).get();

@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -40,7 +41,7 @@ public class HomeCommand extends io.github.nucleuspowered.nucleus.internal.comma
         // Get the home.
         Optional<LocationData> owl = args.getOne(home);
         if (!owl.isPresent()) {
-            owl = plugin.getUserDataManager().get(src).get().getHome("home");
+            owl = plugin.getUserDataManager().get(src).get().getHome(HomeModule.DEFAULT_HOME_NAME);
 
             if (!owl.isPresent()) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("args.home.nohome", "home"));
@@ -58,7 +59,7 @@ public class HomeCommand extends io.github.nucleuspowered.nucleus.internal.comma
 
         // Warp to it safely.
         if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault().isSafeTeleport())) {
-            if (!wl.getName().equalsIgnoreCase("home")) {
+            if (!wl.getName().equalsIgnoreCase(HomeModule.DEFAULT_HOME_NAME)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.success", wl.getName()));
             } else {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.successdefault"));

@@ -13,7 +13,14 @@ public class HomeConfig {
     @Setting(value = "use-safe-warp", comment = "loc:config.home.safeTeleport")
     private boolean safeTeleport = true;
 
+    @Setting(value = "respawn-at-home", comment = "loc:config.home.respawnAtHome")
+    private boolean respawnAtHome = false;
+
     public boolean isSafeTeleport() {
         return safeTeleport;
+    }
+
+    public boolean isRespawnAtHome() {
+        return respawnAtHome;
     }
 }
