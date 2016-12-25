@@ -36,11 +36,7 @@ public class TokenHandler {
     }
 
     public final Optional<Text> getTextFromToken(String token, CommandSource source) {
-        token = token.toLowerCase();
-        if (token.startsWith("{{") && token.endsWith("}}")) {
-            token = token.substring(2, token.length() - 2);
-        }
-
+        token = token.toLowerCase().trim().replace("{{", "").replace("}}", "");
         boolean addSpace = token.endsWith(":s");
         if (addSpace) {
             token = token.substring(0, token.length() - 2);
