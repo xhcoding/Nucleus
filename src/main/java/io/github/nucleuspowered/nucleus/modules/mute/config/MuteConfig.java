@@ -14,7 +14,7 @@ import java.util.List;
 public class MuteConfig {
 
     @Setting(value = "blocked-commands", comment = "loc:config.mute.blocked")
-    private List<String> blockedCommands = Lists.newArrayList("me", "say");
+    private List<String> blockedCommands = Lists.newArrayList("minecraft:me", "say");
 
     @Setting(value = "maximum-mute-length", comment = "loc:config.mute.maxmutelength")
     private long maxMuteLength = 604800;

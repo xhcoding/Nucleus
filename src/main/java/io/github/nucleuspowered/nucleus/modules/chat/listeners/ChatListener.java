@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.util.NucleusIgnorableChatChannel;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
@@ -19,13 +20,13 @@ import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
-import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
@@ -45,10 +46,32 @@ import java.util.function.Predicate;
 @ConditionalListener(ChatListener.Test.class)
 public class ChatListener extends ListenerBase {
 
-    private final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
+    private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
+    private static final Map<String[], Function<String, String>> replacements = createReplacements();
 
-    private final Map<String[], Function<String, String>> replacements;
+    private static Map<String[], Function<String, String>> createReplacements() {
+        Map<String[], Function<String, String>> t = new HashMap<>();
 
+        t.put(new String[] { prefix + "colour", prefix + "color" }, s -> s.replaceAll("[&]+[0-9a-fA-F]", ""));
+        t.put(new String[] { prefix + "style" }, s -> s.replaceAll("[&]+[l-oL-O]", ""));
+        t.put(new String[] { prefix + "magic" }, s -> s.replaceAll("[&]+[kK]", ""));
+
+        return t;
+    }
+
+    public static String stripPermissionless(Subject source, String message) {
+        for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
+            // If we don't have the required permission...
+            if (Arrays.stream(r.getKey()).noneMatch(source::hasPermission)) {
+                // ...strip the codes.
+                message = r.getValue().apply(message);
+            }
+        }
+
+        return message;
+    }
+
+    // --- Listener Proper
     private final ChatConfigAdapter cca;
     private final ChatUtil chatUtil;
     private final TemplateUtil templateUtil;
@@ -58,7 +81,6 @@ public class ChatListener extends ListenerBase {
         this.chatUtil = chatUtil;
         this.cca = cca;
         this.templateUtil = templateUtil;
-        replacements = createReplacements();
     }
 
     @Override
@@ -72,20 +94,10 @@ public class ChatListener extends ListenerBase {
         return mp;
     }
 
-    private Map<String[], Function<String, String>> createReplacements() {
-        Map<String[], Function<String, String>> t = new HashMap<>();
-
-        t.put(new String[] { prefix + "colour", prefix + "color" }, s -> s.replaceAll("[&]+[0-9a-fA-F]", ""));
-        t.put(new String[] { prefix + "style" }, s -> s.replaceAll("[&]+[l-oL-O]", ""));
-        t.put(new String[] { prefix + "magic" }, s -> s.replaceAll("[&]+[kK]", ""));
-
-        return t;
-    }
-
     // We do this first so that other plugins can alter it later if needs be.
     @Listener(order = Order.EARLY)
     public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
-        if (event.getChannel().isPresent() && event.getChannel().get() instanceof StaffChatMessageChannel) {
+        if (event.getChannel().isPresent() && event.getChannel().get() instanceof NucleusIgnorableChatChannel) {
             // Staff chat. Not interested in applying these transforms.
             return;
         }
@@ -117,15 +129,7 @@ public class ChatListener extends ListenerBase {
     }
 
     private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {
-        String m = TextSerializers.FORMATTING_CODE.serialize(rawMessage);
-
-        for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
-            // If we don't have the required permission...
-            if (Arrays.stream(r.getKey()).noneMatch(player::hasPermission)) {
-                // ...strip the codes.
-                m = r.getValue().apply(m);
-            }
-        }
+        String m = stripPermissionless(player, TextSerializers.FORMATTING_CODE.serialize(rawMessage));
 
         Text result;
         if (player.hasPermission(prefix + "url")) {

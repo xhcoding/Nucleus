@@ -31,6 +31,13 @@ public class ChatConfig {
     @Setting(value = "overwrite-early-suffixes", comment = "loc:config.chat.includesuffix")
     private boolean overwriteEarlySuffixes = false;
 
+    @Setting(value = "me-prefix", comment = "loc:config.chat.meprefix")
+    private String mePrefix = "&7* {{displayName}} ";
+
+    public String getMePrefix() {
+        return mePrefix;
+    }
+
     public boolean isModifychat() {
         return modifychat;
     }

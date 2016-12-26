@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.staffchat;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.api.util.NucleusIgnorableChatChannel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.commands.StaffChatCommand;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfig;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
@@ -14,22 +15,20 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class StaffChatMessageChannel implements MessageChannel {
+public class StaffChatMessageChannel implements NucleusIgnorableChatChannel {
 
     static StaffChatMessageChannel INSTANCE = null;
 
