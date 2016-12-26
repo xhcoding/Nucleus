@@ -77,13 +77,6 @@ public class ChatUtil {
             boolean trimNext = trimTrailingSpace;
 
             Text.Builder tb = Text.builder();
-
-            String[] split = tokenParserLookAhead.split(template);
-            if (split.length == 1) {
-                texts.add(TextSerializers.FORMATTING_CODE.deserialize(template));
-                return;
-            }
-
             String[] items = tokenParserLookAhead.split(template);
             Matcher tokenCheck = tokenParser.matcher("");
             for (String textElement : items) {
