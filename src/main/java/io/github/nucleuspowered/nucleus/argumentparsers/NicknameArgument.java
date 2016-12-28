@@ -17,18 +17,21 @@ import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class NicknameArgument extends CommandElement {
 
@@ -81,8 +84,14 @@ public class NicknameArgument extends CommandElement {
             fName = name;
         }
 
-        List<?> obj = parser.accept(fName, args);
-        if (!obj.isEmpty()) {
+        List<?> obj = null;
+        try {
+            obj = parser.accept(fName, args);
+        } catch (ArgumentParseException ex) {
+            // ignored
+        }
+
+        if (obj != null && !obj.isEmpty()) {
             return obj;
         } else if (playerOnly) {
             // Rethrow;
@@ -94,13 +103,15 @@ public class NicknameArgument extends CommandElement {
                 .filter(x -> x.getUser().isOnline() && x.getNicknameAsString().isPresent())
                 .collect(Collectors.toMap(s -> TextSerializers.FORMATTING_CODE.stripCodes(s.getNicknameAsString().get().toLowerCase()), s -> s));
         if (allPlayers.containsKey(fName.toLowerCase())) {
-            return Lists.newArrayList(allPlayers.get(fName.toLowerCase()).getUser());
+            return Lists.newArrayList(allPlayers.get(fName.toLowerCase()).getUser().getPlayer().get());
         }
 
-        List<User> players = allPlayers.entrySet().stream().filter(x -> x.getKey().toLowerCase().startsWith(fName))
-                .sorted((x, y) -> x.getKey().compareTo(y.getKey()))
-                .map(x -> x.getValue().getUser())
-                .collect(Collectors.toList());
+        List<Player> players = allPlayers.entrySet().stream()
+            .filter(x -> x.getKey().toLowerCase().startsWith(fName))
+            .sorted(Comparator.comparing(Map.Entry::getKey))
+            .filter(x -> x.getValue().getUser().getPlayer().isPresent())
+            .map(x -> x.getValue().getUser().getPlayer().get())
+            .collect(Collectors.toList());
 
         if (players.isEmpty()) {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(type == UnderlyingType.PLAYER_CONSOLE ? "args.playerconsole.nouser" : "args.user.nouser", fName));
