@@ -25,6 +25,22 @@ public class BlacklistConfig {
     @Setting(comment = "loc:config.blacklist.replacement")
     private String replacement = ItemTypes.DIRT.getId();
 
+    @Setting(value = "blocked-actions", comment = "loc:config.blacklist.blockedactions")
+    private Types blockedActions = new Types();
+
+    @ConfigSerializable
+    public static class Types {
+
+        @Setting(value = "possession", comment = "loc:config.blacklist.possession")
+        private boolean possession = true;
+
+        @Setting(value = "environment", comment = "loc:config.blacklist.environment")
+        private boolean environment = true;
+
+        @Setting(value = "use", comment = "loc:config.blacklist.use")
+        private boolean use = true;
+    }
+
     public boolean shouldUseReplacement() {
         return useReplacement;
     }
@@ -54,5 +70,17 @@ public class BlacklistConfig {
         }
 
         return Optional.empty();
+    }
+
+    public boolean getPossession() {
+        return blockedActions.possession;
+    }
+
+    public boolean getEnvironment() {
+        return blockedActions.environment;
+    }
+
+    public boolean getUse() {
+        return blockedActions.use;
     }
 }

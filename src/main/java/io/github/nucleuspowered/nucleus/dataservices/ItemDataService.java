@@ -6,10 +6,12 @@ package io.github.nucleuspowered.nucleus.dataservices;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.item.BlacklistNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
+import io.github.nucleuspowered.nucleus.util.Action;
 import io.github.nucleuspowered.nucleus.util.Tuples;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockState;
@@ -28,15 +30,24 @@ public class ItemDataService extends Service<Map<String, ItemDataNode>> {
     private Map<String, String> aliasToItemIdCache = null;
     private Map<String, BlacklistNode> blacklistCache = null;
     private Map<CatalogType, BlacklistNode> blacklistTypeCache = null;
+    private final Set<Action> onItemUpdate = Sets.newHashSet();
 
     public ItemDataService(DataProvider<Map<String, ItemDataNode>> dataProvider) throws Exception {
         super(dataProvider, true);
     }
 
+    public void addOnItemUpdate(Action onUpdate) {
+        onItemUpdate.add(onUpdate);
+    }
+
     @Override
     public boolean load() {
-        clearCache();
-        return super.load();
+        if (super.load()) {
+            clearCache();
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -143,5 +154,6 @@ public class ItemDataService extends Service<Map<String, ItemDataNode>> {
         aliasToItemIdCache = null;
         blacklistCache = null;
         blacklistTypeCache = null;
+        onItemUpdate.forEach(Action::action);
     }
 }

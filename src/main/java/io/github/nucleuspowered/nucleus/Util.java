@@ -439,6 +439,10 @@ public class Util {
         }
     }
 
+    public static CatalogType getTypeFromItem(ItemStackSnapshot is) {
+        return getTypeFromItem(is.createStack());
+    }
+
     public static CatalogType getTypeFromItem(ItemStack is) {
         Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
         if (blockState.isPresent()) {

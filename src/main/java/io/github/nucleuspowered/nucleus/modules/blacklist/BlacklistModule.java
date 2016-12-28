@@ -8,8 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.blacklist.config.BlacklistConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "blacklist", name = "Blacklist")
+@ModuleData(id = BlacklistModule.ID, name = "Blacklist")
 public class BlacklistModule extends ConfigurableModule<BlacklistConfigAdapter> {
+
+    public final static String ID = "blacklist";
 
     @Override
     public BlacklistConfigAdapter getAdapter() {
