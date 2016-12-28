@@ -29,6 +29,7 @@ import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAd
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Transform;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.profile.GameProfile;
@@ -86,10 +87,19 @@ public class UserService extends Service<UserDataNode>
         this.uuid = uuid;
     }
 
+    @Override public Optional<Player> getPlayer() {
+        return Sponge.getServer().getPlayer(this.uuid);
+    }
+
     @Override
     public User getUser() {
         if (uss == null) {
             uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
+        }
+
+        Optional<Player> p = getPlayer();
+        if (p.isPresent()) {
+            return p.get();
         }
 
         return uss.get(this.uuid).orElseGet(() -> uss.getOrCreate(GameProfile.of(this.uuid, null)));

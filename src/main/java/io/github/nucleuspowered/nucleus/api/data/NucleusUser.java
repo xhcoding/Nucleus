@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.api.data;
 
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
@@ -27,6 +28,8 @@ import java.util.UUID;
  * </p>
  */
 public interface NucleusUser {
+
+    Optional<Player> getPlayer();
 
     /**
      * Returns the user associated with this data.
