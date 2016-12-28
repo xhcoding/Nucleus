@@ -35,6 +35,7 @@ import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -138,11 +139,20 @@ public class ChatListener extends ListenerBase {
             result = TextSerializers.FORMATTING_CODE.deserialize(m);
         }
 
-        String chatcol = Util.getOptionFromSubject(player, "chatcolour", "chatcolor").orElse(chatTemplateConfig.getChatcolour());
-        String chatstyle = Util.getOptionFromSubject(player, "chatstyle").orElse(chatTemplateConfig.getChatstyle());
+        String chatcol = getOption(player, "chatcolour", "chatcolor").orElseGet(chatTemplateConfig::getChatcolour);
+        String chatstyle = getOption(player, "chatstyle").orElseGet(chatTemplateConfig::getChatstyle);
 
         NameUtil nu = plugin.getNameUtil();
         return Text.of(nu.getColourFromString(chatcol), nu.getTextStyleFromString(chatstyle), result);
+    }
+
+    private Optional<String> getOption(Player player, String... option) {
+        Optional<String> optional = Util.getOptionFromSubject(player, option);
+        if (optional.isPresent() && !optional.get().isEmpty()) {
+            return optional;
+        }
+
+        return Optional.empty();
     }
 
     public static class Test implements Predicate<Nucleus> {
