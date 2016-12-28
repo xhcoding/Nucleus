@@ -28,8 +28,6 @@ import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.channel.type.PermissionMessageChannel;
-import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -41,23 +39,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 public class MuteListener extends ListenerBase {
 
     @Inject private MuteHandler handler;
     @Inject private MuteConfigAdapter mca;
     @Inject private PermissionRegistry permissionRegistry;
     private CommandPermissionHandler cph;
-    private AdminChannel adminChannel;
-
-    private AdminChannel getAdminChannel() {
-        if (adminChannel == null) {
-            adminChannel = new AdminChannel();
-        }
-
-        return adminChannel;
-    }
 
     /**
      * At the time the player joins, check to see if the player is muted.
@@ -116,7 +103,7 @@ public class MuteListener extends ListenerBase {
         }
     }
 
-    @Listener(order = Order.LAST)
+    @Listener(order = Order.LATE)
     public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
         boolean cancel = false;
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
@@ -134,7 +121,13 @@ public class MuteListener extends ListenerBase {
         if (cancel) {
             if (mca.getNodeOrDefault().isShowMutedChat()) {
                 // Send it to admins only.
-                getAdminChannel().send(player, event.getMessage(), ChatTypes.SYSTEM);
+                String m = mca.getNodeOrDefault().getCancelledTag();
+                if (!m.isEmpty()) {
+                    event.getFormatter().setHeader(
+                        Text.join(TextSerializers.FORMATTING_CODE.deserialize(m), event.getFormatter().getHeader().toText()));
+                }
+
+                MessageChannel.permission(MuteCommand.getMutedChatPermission()).send(player, event.getMessage(), ChatTypes.SYSTEM);
             }
 
             event.setCancelled(true);
@@ -206,18 +199,5 @@ public class MuteListener extends ListenerBase {
         }
 
         return cph;
-    }
-
-    private class AdminChannel extends PermissionMessageChannel {
-
-        private AdminChannel() {
-            super(MuteCommand.getMutedChatPermission());
-        }
-
-        @Override
-        public void send(@Nullable Object sender, Text original, ChatType type) {
-            Text tag = TextSerializers.FORMATTING_CODE.deserialize(MuteListener.this.mca.getNodeOrDefault().getCancelledTag());
-            super.send(sender, Text.of(tag, original), type);
-        }
     }
 }
