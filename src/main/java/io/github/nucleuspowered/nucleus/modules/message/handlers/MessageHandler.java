@@ -107,6 +107,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         final UUID uuidSender = getUUID(sender);
         final UUID uuidReceiver = getUUID(receiver);
 
+        final Map<String, Object> variables = Maps.newHashMap();
+        variables.put("from", sender);
+        variables.put("to", receiver);
+
         // Create the tokens.
         Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
         tokens.put("from", cs -> Optional.of(chatUtil.addCommandToName(sender)));
@@ -117,8 +121,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         Text tm = useMessage(sender, message);
 
         if (!isCancelled) {
-            sender.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageSenderPrefix(), tokens));
-            receiver.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageReceiverPrefix(), tokens));
+            sender.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageSenderPrefix(), tokens, variables));
+            receiver.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageReceiverPrefix(), tokens, variables));
         }
 
         String prefix = mca.getNodeOrDefault().getMessageSocialSpyPrefix();
@@ -140,7 +144,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
             MessageChannel mc = MessageChannel.fixed(lm);
             if (!mc.getMembers().isEmpty()) {
-                mc.send(constructMessage(sender, tm, prefix, tokens));
+                mc.send(constructMessage(sender, tm, prefix, tokens, variables));
             }
         }
 
@@ -171,8 +175,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     }
 
     @SuppressWarnings("unchecked")
-    private Text constructMessage(CommandSource sender, Text message, String template, Map<String, Function<CommandSource, Optional<Text>>> tokens) {
-        return Text.of(chatUtil.getMessageFromTemplate(template, sender, false, tokens), message);
+    private Text constructMessage(CommandSource sender, Text message, String template, Map<String, Function<CommandSource, Optional<Text>>> tokens, Map<String, Object> variables) {
+        return Text.of(chatUtil.getMessageFromTemplate(template, sender, false, tokens, variables), message);
     }
 
     private Map<String[], Function<String, String>> createReplacements() {

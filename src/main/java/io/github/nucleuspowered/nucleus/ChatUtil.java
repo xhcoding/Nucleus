@@ -20,7 +20,6 @@ import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import javax.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -30,6 +29,8 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 public class ChatUtil {
 
     private final NucleusPlugin plugin;
@@ -37,8 +38,8 @@ public class ChatUtil {
         Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)",
         Pattern.CASE_INSENSITIVE);
 
-    private final Pattern tokenParser = Pattern.compile("^\\{\\{(?<capture>[a-zA-Z:]+)}}", Pattern.CASE_INSENSITIVE);
-    private final Pattern tokenParserLookAhead = Pattern.compile("(?=\\{\\{(?<capture>[a-zA-Z:]+)}})", Pattern.CASE_INSENSITIVE);
+    private final Pattern tokenParser = Pattern.compile("^\\{\\{(?<capture>[\\S]+)}}", Pattern.CASE_INSENSITIVE);
+    private final Pattern tokenParserLookAhead = Pattern.compile("(?=\\{\\{(?<capture>[\\S]+)}})", Pattern.CASE_INSENSITIVE);
 
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?"
@@ -56,20 +57,24 @@ public class ChatUtil {
     }
 
     public final Text getMessageFromTemplate(String templates, CommandSource cs, final boolean trimTrailingSpace) {
-        return getMessageFromTemplate(Lists.newArrayList(templates), cs, trimTrailingSpace, Maps.newHashMap()).get(0);
+        return getMessageFromTemplate(Lists.newArrayList(templates), cs, trimTrailingSpace, Maps.newHashMap(), Maps.newHashMap()).get(0);
+    }
+
+    public final Text getMessageFromTemplateWithVariables(String templates, CommandSource cs, final boolean trimTrailingSpace, Map<String, Object> variables) {
+        return getMessageFromTemplate(Lists.newArrayList(templates), cs, trimTrailingSpace, Maps.newHashMap(), variables).get(0);
     }
 
     public final List<Text> getMessageFromTemplate(List<String> templates, CommandSource cs, final boolean trimTrailingSpace) {
-        return getMessageFromTemplate(templates, cs, trimTrailingSpace, Maps.newHashMap());
+        return getMessageFromTemplate(templates, cs, trimTrailingSpace, Maps.newHashMap(), Maps.newHashMap());
     }
 
     public final Text getMessageFromTemplate(String templates, CommandSource cs, final boolean trimTrailingSpace,
-        Map<String, Function<CommandSource, Optional<Text>>> tokensArray) {
-        return getMessageFromTemplate(Lists.newArrayList(templates), cs, trimTrailingSpace, tokensArray).get(0);
+        Map<String, Function<CommandSource, Optional<Text>>> tokensArray, Map<String, Object> variables) {
+        return getMessageFromTemplate(Lists.newArrayList(templates), cs, trimTrailingSpace, tokensArray, variables).get(0);
     }
 
     public final List<Text> getMessageFromTemplate(List<String> templates, CommandSource cs, final boolean trimTrailingSpace,
-            Map<String, Function<CommandSource, Optional<Text>>> tokensArray) {
+            Map<String, Function<CommandSource, Optional<Text>>> tokensArray, Map<String, Object> variables) {
 
         List<Text> texts = Lists.newArrayList();
         templates.forEach(template -> {
@@ -89,7 +94,7 @@ public class ChatUtil {
                     if (tokensArray.containsKey(tokenName.toLowerCase())) {
                         tokenResult = tokensArray.get(tokenName.toLowerCase()).apply(cs);
                     } else {
-                        tokenResult = plugin.getTokenHandler().getTextFromToken(tokenName, cs);
+                        tokenResult = plugin.getTokenHandler().getTextFromToken(tokenName, cs, variables);
                     }
 
                     if (tokenResult.isPresent()) {

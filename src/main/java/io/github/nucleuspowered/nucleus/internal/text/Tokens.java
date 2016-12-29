@@ -4,35 +4,57 @@
  */
 package io.github.nucleuspowered.nucleus.internal.text;
 
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.World;
 
+import java.util.Map;
 import java.util.Optional;
 
-final class Tokens {
+import javax.annotation.Nonnull;
 
-    private Tokens() {}
+final class Tokens implements NucleusMessageTokenService.TokenParser {
 
-    static void registerNucleusTokens(NucleusPlugin plugin, NucleusTokenServiceImpl service) {
-        PluginContainer container = plugin.getPluginContainer();
-        service.register(container, "name", p -> Optional.of(Nucleus.getNucleus().getChatUtil().addCommandToName(p)));
-        service.register(container, "prefix", p -> Optional.of(getTextFromOption(p, "prefix")));
-        service.register(container, "suffix", p -> Optional.of(getTextFromOption(p, "suffix")));
-        service.register(container, "displayname", p -> Optional.of(Nucleus.getNucleus().getChatUtil().addCommandToDisplayName(p)));
+    private final Map<String, Translator> translatorMap = Maps.newHashMap();
 
-        service.register(container, "maxplayers", p -> Optional.of(Text.of(Sponge.getServer().getMaxPlayers())));
-        service.register(container, "onlineplayers", p -> Optional.of(Text.of(Sponge.getServer().getOnlinePlayers().size())));
-        service.register(container, "currentworld", p -> Optional.of(Text.of(getWorld(p).getName())));
-        service.register(container, "time", p -> Optional.of(Text.of(String.valueOf(Util.getTimeFromTicks(getWorld(p).getProperties().getWorldTime())))));
+    Tokens() {
+        translatorMap.put("name", (p, v, m) -> Optional.of(Nucleus.getNucleus().getChatUtil().addCommandToName(getFromVariableIfExists(p, v, m))));
+
+        translatorMap.put("prefix", (p, v, m) -> Optional.of(getTextFromOption(getFromVariableIfExists(p, v, m), "prefix")));
+        translatorMap.put("suffix", (p, v, m) -> Optional.of(getTextFromOption(getFromVariableIfExists(p, v, m), "suffix")));
+        translatorMap.put("displayname", (p, v, m) -> Optional.of(Nucleus.getNucleus().getChatUtil().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
+
+        translatorMap.put("maxplayers", (p, v, m) -> Optional.of(Text.of(Sponge.getServer().getMaxPlayers())));
+        translatorMap.put("onlineplayers", (p, v, m) -> Optional.of(Text.of(Sponge.getServer().getOnlinePlayers().size())));
+        translatorMap.put("currentworld", (p, v, m) -> Optional.of(Text.of(getWorld(getFromVariableIfExists(p, v, m)).getName())));
+        translatorMap.put("time", (p, v, m) -> Optional.of(Text.of(String.valueOf(Util.getTimeFromTicks(getWorld(getFromVariableIfExists(p, v, m)).getProperties().getWorldTime())))));
+    }
+
+    @Nonnull @Override public Optional<Text> parse(String tokenInput, CommandSource source, Map<String, Object> variables) {
+        // Token
+        String[] split = tokenInput.split("\\|", 2);
+        String var = "";
+        if (split.length == 2) {
+            var = split[1];
+        }
+
+        return translatorMap.getOrDefault(split[0].toLowerCase(), (p, v, m) -> Optional.empty()).get(source, var, variables);
+    }
+
+    private static CommandSource getFromVariableIfExists(CommandSource source, String v, Map<String, Object> m) {
+        if (m.containsKey(v) && m.get(v) instanceof CommandSource) {
+            return (CommandSource)m.get(v);
+        }
+
+        return source;
     }
 
     private static World getWorld(CommandSource p) {
@@ -55,5 +77,11 @@ final class Tokens {
         }
 
         return Text.EMPTY;
+    }
+
+    @FunctionalInterface
+    private interface Translator {
+
+        Optional<Text> get(CommandSource source, String variableString, Map<String, Object> variables);
     }
 }

@@ -7,11 +7,13 @@ package io.github.nucleuspowered.nucleus.internal.text;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class TokenHandler {
@@ -30,12 +32,17 @@ public class TokenHandler {
 
     public final void register(NucleusTokenServiceImpl service) {
         Preconditions.checkState(!registered);
-        Tokens.registerNucleusTokens(plugin, service);
         this.service = service;
+        try {
+            service.register(plugin.getPluginContainer(), new Tokens());
+        } catch (PluginAlreadyRegisteredException e) {
+            e.printStackTrace();
+        }
+
         registered = true;
     }
 
-    public final Optional<Text> getTextFromToken(String token, CommandSource source) {
+    public final Optional<Text> getTextFromToken(String token, CommandSource source, Map<String, Object> variables) {
         token = token.toLowerCase().trim().replace("{{", "").replace("}}", "");
         boolean addSpace = token.endsWith(":s");
         if (addSpace) {
@@ -50,12 +57,12 @@ public class TokenHandler {
                     return EMPTY;
                 }
 
-                return getTextFromPluginToken(tokSplit[1], tokSplit[2], source, addSpace);
+                return getTextFromPluginToken(tokSplit[1], tokSplit[2], source, addSpace, variables);
             } else if (token.startsWith("o:")) { // Option identifier.
                 return getTextFromOption(source, token.substring(2), addSpace);
             } else {
                 // Standard.
-                return getTextFromPluginToken(plugin.getPluginContainer().getId(), token, source, addSpace);
+                return getTextFromPluginToken(plugin.getPluginContainer().getId(), token, source, addSpace, variables);
             }
         } catch (Exception e) {
             if (plugin.isDebugMode()) {
@@ -66,9 +73,9 @@ public class TokenHandler {
         }
     }
 
-    private Optional<Text> getTextFromPluginToken(String pluginId, String token, CommandSource source, boolean addSpace) {
+    private Optional<Text> getTextFromPluginToken(String pluginId, String token, CommandSource source, boolean addSpace, Map<String, Object> variables) {
         if (service != null) {
-            Optional<Text> opt = service.applyToken(pluginId, token, source);
+            Optional<Text> opt = service.applyToken(pluginId, token, source, variables);
             if (opt.isPresent() && addSpace) {
                 return Optional.of(opt.get().toBuilder().append(SPACE).build());
             }

@@ -4,12 +4,19 @@
  */
 package io.github.nucleuspowered.nucleus.api.service;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageReceiver;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
 
 /**
  * Allows plugins to register their own tokens for use in templated messages.
@@ -21,62 +28,56 @@ public interface NucleusMessageTokenService {
      * is optional.
      *
      * @param pluginContainer The {@link PluginContainer} of the plugin.
-     * @param tokenIdentifier The identifier for the token.
-     * @param textFunction A {@link Function} that returns a {@link Text} to put in place of the token. The {@link CommandSource} generating the message
-     *                     is provided. If {@link Optional#empty()} is returned, then {@link Text#EMPTY} is used in the token's place.
-     * @throws IllegalArgumentException Thrown if the token has been registered previously.
+     * @param parser The {@link TokenParser} that recieves the identifier from the token, along with any contextual variables and
+     *               the target {@link MessageReceiver} of the message.
+     * @throws PluginAlreadyRegisteredException Thrown if the token has been registered previously.
      */
-    void register(PluginContainer pluginContainer, String tokenIdentifier, Function<CommandSource, Optional<Text>> textFunction);
+    void register(PluginContainer pluginContainer, TokenParser parser) throws PluginAlreadyRegisteredException;
 
     /**
-     * Unregisters a token.
-     *
-     * @param pluginContainer The {@link PluginContainer} of the plugin.
-     * @param tokenIdentifier The identifier for the token.
-     * @return <code>true</code> if successful.
-     */
-    boolean unregister(PluginContainer pluginContainer, String tokenIdentifier);
-
-    /**
-     * Unregisters all tokens for a plugin.
+     * Unregisters the {@link TokenParser} for a plugin.
      *
      * @param pluginContainer The {@link PluginContainer} of the plugin.
      * @return <code>true</code> if successful.
      */
-    boolean unregisterAll(PluginContainer pluginContainer);
+    boolean unregister(PluginContainer pluginContainer);
 
     /**
-     * Gets the function applied for the specified token, if it exists.
+     * Gets the function applied for the specified {@link PluginContainer}, if it exists.
      *
-     * @param plugin The {@link PluginContainer} that registered the token.
-     * @param token The ID of the token.
-     * @return The {@link Function} that is run for the token, if it exists.
+     * @param pluginContainer The {@link PluginContainer} of the pluginContainer that registered the token.
+     * @return The {@link TokenParser} that is run for the token, if it exists.
      */
-    default Optional<Function<CommandSource, Optional<Text>>> getToken(PluginContainer plugin, String token) {
-        return getToken(plugin.getId().toLowerCase(), token);
+    default Optional<TokenParser> getTokenParser(PluginContainer pluginContainer) {
+        Preconditions.checkNotNull(pluginContainer, "pluginContainer");
+        return getTokenParser(pluginContainer.getId());
     }
 
     /**
-     * Gets the function applied for the specified token, if it exists.
+     * Gets the function applied for the specified plugin, if it exists.
      *
      * @param plugin The ID of the plugin that registered the token.
-     * @param token The ID of the token.
-     * @return The {@link Function} that is run for the token, if it exists.
+     * @return The {@link TokenParser} that is run for the token, if it exists.
      */
-    Optional<Function<CommandSource, Optional<Text>>> getToken(String plugin, String token);
+    Optional<TokenParser> getTokenParser(String plugin);
+
+    default Optional<Text> applyToken(String plugin, String token, CommandSource source) {
+        return applyToken(plugin, token, source, Maps.newHashMap());
+    }
 
     /**
      * Gets the result of a token's registered {@link Function} on a {@link CommandSource}
      *
      * @param plugin The ID of the plugin that registered the token.
      * @param token The ID of the token.
-     * @param source The {@link CommandSource} to perform the operation with.
+     * @param source The {@link MessageReceiver} to perform the operation with.
+     * @param variables The variables that could be used in the token.
      * @return The {@link Text}, if any.
      */
-    default Optional<Text> applyToken(String plugin, String token, CommandSource source) {
-        Optional<Function<CommandSource, Optional<Text>>> tokenFunction = getToken(plugin, token);
+    default Optional<Text> applyToken(String plugin, String token, CommandSource source, Map<String, Object> variables) {
+        Optional<TokenParser> tokenFunction = getTokenParser(plugin);
         if (tokenFunction.isPresent()) {
-            return tokenFunction.get().apply(source);
+            return tokenFunction.get().parse(token, source, variables);
         }
 
         return Optional.empty();
@@ -89,5 +90,33 @@ public interface NucleusMessageTokenService {
      * @param source The {@link CommandSource} that will view the message.
      * @return The {@link Text} that represents the output.
      */
-    Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source);
+    default Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source) {
+        return formatAmpersandEncodedStringWithTokens(input, source, Maps.newHashMap());
+    }
+
+    /**
+     * Uses Nucleus' parser to format a string that uses Minecraft colour codes.
+     *
+     * @param input The input.
+     * @param source The {@link CommandSource} that will view the message.
+     * @param variables Any variables to be provided to the text.
+     * @return The {@link Text} that represents the output.
+     */
+    Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source, Map<String, Object> variables);
+
+    @FunctionalInterface
+    interface TokenParser {
+
+        /**
+         * Parses a plugin's token and returns {@link Text}, if any.
+         *
+         * @param tokenInput The identifier for the token.
+         * @param source The {@link CommandSource} that will be viewing the output of this token.
+         * @param variables A map of variable names to variable objects. Consult documentation for the
+         *                  variables that might be caused by an event or command.
+         * @return The {@link Text} to display, or {@link Optional#empty()} if the token cannot be parsed.
+         */
+        @Nonnull
+        Optional<Text> parse(String tokenInput, CommandSource source, Map<String, Object> variables);
+    }
 }
