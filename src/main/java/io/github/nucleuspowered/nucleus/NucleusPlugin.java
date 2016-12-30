@@ -350,7 +350,7 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Override
-    public void reload() {
+    public synchronized void reload() {
         try {
             moduleContainer.reloadSystemConfig();
             reloadMessages();

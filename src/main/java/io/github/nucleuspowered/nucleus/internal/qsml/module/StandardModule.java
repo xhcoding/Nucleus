@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.seen.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
@@ -141,17 +142,18 @@ public abstract class StandardModule implements Module {
 
             final ConditionalListener conditionalListener = c.getClass().getAnnotation(ConditionalListener.class);
             if (conditionalListener != null) {
-                // Add reloadable to load in the listener dynamically if required.
-                plugin.registerReloadable(() -> {
-                    Sponge.getEventManager().unregisterListeners(c);
-                    if (conditionalListener.value().newInstance().test(plugin)) {
-                        Sponge.getEventManager().registerListeners(plugin, c);
-                    }
-                });
-
-                // If the condition is NOT met, return out of here early.
                 try {
-                    if (!conditionalListener.value().newInstance().test(plugin)) {
+                    Predicate<Nucleus> cl = conditionalListener.value().newInstance();
+
+                    // Add reloadable to load in the listener dynamically if required.
+                    plugin.registerReloadable(() -> {
+                        Sponge.getEventManager().unregisterListeners(c);
+                        if (cl.test(plugin)) {
+                            Sponge.getEventManager().registerListeners(plugin, c);
+                        }
+                    });
+
+                    if (!cl.test(plugin)) {
                         return;
                     }
                 } catch (InstantiationException | IllegalAccessException e) {
