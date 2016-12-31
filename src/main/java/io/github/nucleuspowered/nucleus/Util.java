@@ -244,6 +244,32 @@ public class Util {
         return firstPlayed.isAfter(lastPlayed.minus(3, ChronoUnit.SECONDS));
     }
 
+    public static Optional<Double> getDoubleOptionFromSubject(Subject player, String... options) {
+        try {
+            Optional<String> optional = getOptionFromSubject(player, options);
+            if (optional.isPresent()) {
+                return Optional.ofNullable(Double.parseDouble(optional.get()));
+            }
+        } catch (NumberFormatException e) {
+            // ignored
+        }
+
+        return Optional.empty();
+    }
+
+    public static Optional<Integer> getIntOptionFromSubject(Subject player, String... options) {
+        try {
+            Optional<String> optional = getOptionFromSubject(player, options);
+            if (optional.isPresent()) {
+                return Optional.ofNullable(Integer.parseUnsignedInt(optional.get()));
+            }
+        } catch (NumberFormatException e) {
+            // ignored
+        }
+
+        return Optional.empty();
+    }
+
     /**
      * Utility method for getting the first available option from an {@link Subject}
      *

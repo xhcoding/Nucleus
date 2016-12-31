@@ -91,7 +91,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
     protected CommandPermissionHandler permissions;
     protected String[] aliases;
-    protected String[] forcedAliases;
+    private String[] forcedAliases;
     private final Class<T> sourceType;
     private boolean bypassWarmup;
     private boolean generateWarmupAnyway;
@@ -118,6 +118,10 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private CommandBuilder builder;
     private String module;
     private String moduleId;
+
+    private String warmupKey;
+    private String cooldownKey;
+    private String costKey;
 
     @SuppressWarnings("unchecked")
     public AbstractCommand() {
@@ -150,11 +154,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         // If there is a second executeCommand method, then we know that's the
         // type that we need and we can do our source
         // checks against it accordingly.
-        if (me.isPresent()) {
-            sourceType = (Class<T>) (me.get().getParameterTypes()[0]);
-        } else {
-            sourceType = (Class<T>) CommandSource.class;
-        }
+        sourceType = me.map(method -> (Class<T>) (method.getParameterTypes()[0])).orElseGet(() -> (Class<T>) CommandSource.class);
 
         this.commandPath = getSubcommandOf();
         RegisterCommand rc = this.getClass().getAnnotation(RegisterCommand.class);
@@ -244,6 +244,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
 
         configSection = configSection + (cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase());
         generateDefaults = cca == null || cca.generate();
+
+        warmupKey = "nucleus." + configSection + ".warmup";
+        cooldownKey = "nucleus." + configSection + ".cooldown";
+        costKey = "nucleus." + configSection + ".cost";
+
 
         NotifyIfAFK n = this.getClass().getAnnotation(NotifyIfAFK.class);
         if (n != null) {
@@ -734,7 +739,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
 
         // Get the warmup time.
-        return plugin.getCommandsConfig().getCommandNode(configSection).getNode("warmup").getInt();
+        return Util.getIntOptionFromSubject(src, warmupKey)
+            .orElseGet(() -> plugin.getCommandsConfig().getCommandNode(configSection).getNode("warmup").getInt());
     }
 
     @SuppressWarnings("unchecked")
@@ -809,7 +815,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private void setCooldown(Player src) {
         if (!permissions.testCooldownExempt(src)) {
             // Get the cooldown time.
-            int cooldownTime = plugin.getCommandsConfig().getCommandNode(configSection).getNode("cooldown").getInt();
+            int cooldownTime = Util.getIntOptionFromSubject(src, cooldownKey).orElseGet(() -> plugin.getCommandsConfig().getCommandNode(configSection).getNode("cooldown").getInt());
             if (cooldownTime > 0) {
                 // If there is a cooldown, add the cooldown to the list, with
                 // the end time as an Instant.
@@ -867,7 +873,8 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
 
         // Return the cost if positive, else, zero.
-        double cost = plugin.getCommandsConfig().getCommandNode(configSection).getNode("cost").getDouble(0.);
+        double cost = Util.getDoubleOptionFromSubject(src, costKey)
+            .orElseGet(() -> plugin.getCommandsConfig().getCommandNode(configSection).getNode("cost").getDouble(0.));
         if (cost <= 0.) {
             return 0.;
         }
