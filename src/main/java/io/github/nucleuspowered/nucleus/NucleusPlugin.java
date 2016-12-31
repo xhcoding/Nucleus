@@ -229,8 +229,8 @@ public class NucleusPlugin extends Nucleus {
 
         // Load up the general data files now, mods should have registered items by now.
         try {
-            generalService.load();
-            kitService.load();
+            generalService.loadInternal();
+            kitService.loadInternal();
 
             // Reload so that we can update the serialisers.
             moduleContainer.reloadSystemConfig();

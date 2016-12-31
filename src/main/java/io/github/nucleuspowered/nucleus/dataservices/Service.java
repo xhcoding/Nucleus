@@ -25,7 +25,7 @@ public abstract class Service<T> {
 
     public boolean load() {
         try {
-            data = dataProvider.load();
+            loadInternal();
             return true;
         } catch (Exception e) {
             Nucleus.getNucleus().getLogger().error(e.getMessage());
@@ -35,6 +35,10 @@ public abstract class Service<T> {
 
             return false;
         }
+    }
+
+    public void loadInternal() throws Exception {
+        data = dataProvider.load();
     }
 
     public boolean save() {
