@@ -535,6 +535,14 @@ public class Util {
         double rotx = rotation.getX();
         double y = -TrigMath.sin(TrigMath.DEG_TO_RAD * rotx);
         double roty = rotation.getY();
+
+        // Corrections.
+        if (roty > 180) {
+            roty -= 360;
+        } else if (roty < -180) {
+            roty += 360;
+        }
+
         if (roty == 0) {
             return Vector3d.UNIT_Z.add(0, y, 0);
         } else if (Math.abs(roty) >= 180) {
@@ -548,7 +556,7 @@ public class Util {
         // x is the x-z plane.
         // Z = 1 @ pitch = 0, Z = -1 @ pitch = +-180, X = 1 @ pitch = -90, X = -1 @ pitch = 90
         // OK, calculation time.
-        double x = TrigMath.sin(TrigMath.DEG_TO_RAD * roty) * Math.signum(roty);
+        double x = -TrigMath.sin(TrigMath.DEG_TO_RAD * roty);
         double z = TrigMath.cos(TrigMath.DEG_TO_RAD * roty);
         return new Vector3d(x, y, z);
     }
