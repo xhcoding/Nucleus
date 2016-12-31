@@ -46,7 +46,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = getFile("userdata%1$s%2$s%1$s%3$s.json", uuid);
-            return new ConfigurateDataProvider<>(ttu, getGsonBuilder().setPath(p).build(), p);
+            return new ConfigurateDataProvider<>(ttu, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -56,7 +56,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = getFile("worlddata%1$s%2$s%1$s%3$s.json", uuid);
-            return new ConfigurateDataProvider<>(ttw, getGsonBuilder().setPath(p).build(), p);
+            return new ConfigurateDataProvider<>(ttw, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -66,7 +66,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getDataPath().resolve("kits.json");
-            return new ConfigurateDataProvider<>(ttmk, new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(p).build()), p);
+            return new ConfigurateDataProvider<>(ttmk, path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -76,7 +76,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getDataPath().resolve("general.json");
-            return new ConfigurateDataProvider<>(ttg, new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(p).build()), p);
+            return new ConfigurateDataProvider<>(ttg, path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -86,7 +86,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getConfigDirPath().resolve("items.conf");
-            return new ConfigurateDataProvider<>(ttmsi, new LazyConfigurationLoader<>(() -> getHoconBuilder().setPath(p).build()), HashMap::new, p, false);
+            return new ConfigurateDataProvider<>(ttmsi, path -> new LazyConfigurationLoader<>(() -> getHoconBuilder().setPath(path).build()), HashMap::new, p, false, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -96,7 +96,7 @@ public class DataProviders {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getDataPath().resolve("namebans.json");
-            return new ConfigurateDataProvider<>(ttss, new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(p).build()), HashMap::new, p, false);
+            return new ConfigurateDataProvider<>(ttss, path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), HashMap::new, p, false, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
