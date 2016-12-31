@@ -444,9 +444,15 @@ public class Util {
     }
 
     public static CatalogType getTypeFromItem(ItemStack is) {
-        Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
-        if (blockState.isPresent()) {
-            return blockState.get();
+        try {
+            Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
+            if (blockState.isPresent()) {
+                return blockState.get();
+            }
+        } catch (IllegalArgumentException e) {
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
         }
 
         return is.getItem();
