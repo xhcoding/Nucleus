@@ -451,7 +451,7 @@ public class Util {
             }
         } catch (IllegalArgumentException e) {
             if (Nucleus.getNucleus().isDebugMode()) {
-                e.getStackTrace();
+                e.printStackTrace();
             }
         }
 
