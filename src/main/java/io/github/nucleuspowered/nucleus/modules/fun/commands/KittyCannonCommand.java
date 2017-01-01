@@ -4,10 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
+import com.flowpowered.math.imaginary.Quaterniond;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -99,8 +99,9 @@ public class KittyCannonCommand extends AbstractCommand<CommandSource> {
 
     private void getACat(CommandSource source, Player spawnAt, boolean damageEntities, boolean breakBlocks, boolean causeFire) {
         // Fire it in the direction that the player is facing with a speed of 0.5 to 3.5, plus the player's current velocity.
-        Vector3d velocity = spawnAt.getVelocity().add(
-            Util.getDirectionFromRotation(spawnAt.getHeadRotation()).mul(2 * random.nextDouble() + 1));
+        Vector3d headRotation = spawnAt.getHeadRotation();
+        Quaterniond rot = Quaterniond.fromAxesAnglesDeg(headRotation.getX(), -headRotation.getY(), headRotation.getZ());
+        Vector3d velocity = spawnAt.getVelocity().add(rot.rotate(Vector3d.UNIT_Z).mul(5 * random.nextDouble() + 1));
         World world = spawnAt.getWorld();
         Entity cat = world.createEntity(EntityTypes.OCELOT, spawnAt.getLocation()
             .getPosition().add(0, 1, 0).add(spawnAt.getTransform().getRotationAsQuaternion().getDirection()));
