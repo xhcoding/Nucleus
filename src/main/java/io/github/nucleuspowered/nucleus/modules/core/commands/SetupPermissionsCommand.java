@@ -8,14 +8,22 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.*;
+import org.spongepowered.api.command.args.ArgumentParseException;
+import org.spongepowered.api.command.args.CommandArgs;
+import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.context.Contextual;
 import org.spongepowered.api.service.permission.PermissionService;
@@ -23,12 +31,13 @@ import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tristate;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @NoWarmup
@@ -62,7 +71,7 @@ public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
         permissionRegistry.getPermissions().entrySet().stream()
                 .filter(x -> x.getValue().level == sl).forEach(x -> group.getSubjectData().setPermission(globalContext, x.getKey(), Tristate.TRUE));
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.complete", roleKey.toLowerCase(), group.getIdentifier()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.permission.complete", sl.toString().toLowerCase(), group.getIdentifier()));
         return CommandResult.success();
     }
 
