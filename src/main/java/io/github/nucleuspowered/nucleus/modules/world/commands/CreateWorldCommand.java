@@ -33,6 +33,8 @@ import org.spongepowered.api.world.difficulty.Difficulty;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -62,6 +64,7 @@ public class CreateWorldCommand extends io.github.nucleuspowered.nucleus.interna
                 .valueFlag(GenericArguments.onlyOne(GenericArguments.longNum(Text.of(seed))), "s", "-" + seed)
                 .valueFlag(GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemode))), "-gm", "-" + gamemode)
                 .valueFlag(GenericArguments.onlyOne(new DifficultyArgument(Text.of(difficulty))), "-di", "-" + difficulty)
+                .flag("i")
                 .buildWith(GenericArguments.onlyOne(GenericArguments.string(Text.of(name))))
         };
     }
@@ -76,8 +79,14 @@ public class CreateWorldCommand extends io.github.nucleuspowered.nucleus.interna
         Collection<WorldGeneratorModifier> modifiers = args.getAll(modifier);
         Optional<Long> seedInput = args.getOne(seed);
 
-        if (Sponge.getServer().getWorld(nameInput).isPresent()) {
+        if (Sponge.getServer().getAllWorldProperties().stream().anyMatch(x -> x.getWorldName().equalsIgnoreCase(nameInput))) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.exists", nameInput));
+        }
+
+        // Does the world exist?
+        Path worldPath = Sponge.getGame().getGameDirectory().resolve("world");
+        if (!args.hasAny("i") && Files.exists(worldPath.resolve(nameInput))) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.import.noexist", nameInput));
         }
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.begin", nameInput));
@@ -100,6 +109,9 @@ public class CreateWorldCommand extends io.github.nucleuspowered.nucleus.interna
         WorldProperties worldProperties = Sponge.getGame().getServer().createWorldProperties(nameInput, wa);
 
         worldConfigAdapter.getNodeOrDefault().getWorldBorderDefault().ifPresent(worldProperties::setWorldBorderDiameter);
+        worldProperties.setDifficulty(difficultyInput);
+
+        Sponge.getServer().saveWorldProperties(worldProperties);
         Optional<World> world = Sponge.getGame().getServer().loadWorld(worldProperties);
 
         if (world.isPresent()) {
