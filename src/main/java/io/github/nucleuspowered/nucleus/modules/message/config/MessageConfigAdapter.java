@@ -4,13 +4,22 @@
  */
 package io.github.nucleuspowered.nucleus.modules.message.config;
 
-import com.google.common.reflect.TypeToken;
+import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+
+import java.util.List;
 
 public class MessageConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDefault<MessageConfig> {
+
+    @Override protected List<Transformation> getTransformations() {
+        return Lists.newArrayList(
+            // 0.18.0
+            Transformation.moveTopLevel("msg-socialspy-prefix", "socialspy", "msg-prefix"),
+            Transformation.moveTopLevel("socialspy-cancelled-messages", "socialspy", "show-cancelled-messages"),
+            Transformation.moveTopLevel("socialspy-cancelled-tag", "socialspy", "cancelled-messages-tag"),
+            Transformation.moveTopLevel("socialspy-only-players", "socialspy", "show-only-players")
+        );
+    }
 
     public MessageConfigAdapter() {
         super(MessageConfig.class);

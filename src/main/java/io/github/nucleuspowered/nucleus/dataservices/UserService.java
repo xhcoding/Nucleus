@@ -24,6 +24,7 @@ import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -57,6 +58,7 @@ public class UserService extends Service<UserDataNode>
     private final NucleusPlugin plugin;
     private final UUID uuid;
     private final Instant serviceLoadTime = Instant.now();
+    private final CommandPermissionHandler ssSocialSpy;
 
     // Use to keep hold of whether this is the first time on the server for a player.
     private boolean firstPlay = false;
@@ -85,6 +87,7 @@ public class UserService extends Service<UserDataNode>
         Preconditions.checkNotNull("plugin", plugin);
         this.plugin = plugin;
         this.uuid = uuid;
+        this.ssSocialSpy = plugin.getPermissionRegistry().getService(SocialSpyCommand.class);
     }
 
     @Override public Optional<Player> getPlayer() {
@@ -198,7 +201,8 @@ public class UserService extends Service<UserDataNode>
 
     public boolean isSocialSpy() {
         // Only a spy if they have the permission!
-        return data.isSocialspy() && plugin.getPermissionRegistry().getService(SocialSpyCommand.class).testBase(getUser());
+
+        return (ssSocialSpy.testSuffix(getUser(), "force") || data.isSocialspy()) && ssSocialSpy.testBase(getUser());
     }
 
     public boolean setSocialSpy(boolean socialSpy) {

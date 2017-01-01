@@ -19,17 +19,8 @@ public class MessageConfig {
     @Setting(value = "msg-sender-prefix", comment = "loc:config.message.sender.prefix")
     private String messageSenderPrefix = "&7[me -> {{toDisplay}}&7]: &r";
 
-    @Setting(value = "msg-socialspy-prefix", comment = "loc:config.message.socialspy.prefix")
-    private String messageSocialSpyPrefix = "&7[SocialSpy] [{{fromDisplay}}&7 -> {{toDisplay}}&7]: &r";
-
-    @Setting(value = "socialspy-cancelled-messages", comment = "loc:config.message.socialspy.mutedshow")
-    private boolean showMessagesInSocialSpyWhileMuted = false;
-
-    @Setting(value = "socialspy-cancelled-tag", comment = "loc:config.message.socialspy.mutedtag")
-    private String mutedTag = "&c[cancelled] ";
-
-    @Setting(value = "socialspy-only-players", comment = "loc:config.message.socialspy.playeronly")
-    private boolean onlyPlayerSocialSpy = false;
+    @Setting(value = "socialspy")
+    private SocialSpy socialSpy = new SocialSpy();
 
     public String getHelpOpPrefix() {
         return helpOpPrefix;
@@ -44,18 +35,54 @@ public class MessageConfig {
     }
 
     public String getMessageSocialSpyPrefix() {
-        return messageSocialSpyPrefix;
+        return socialSpy.messageSocialSpyPrefix;
+    }
+
+    public boolean isSocialSpyLevels() {
+        return socialSpy.socialSpyLevels;
+    }
+
+    public boolean isSocialSpySameLevel() {
+        return socialSpy.socialSpySameLevel;
+    }
+
+    public int getServerLevel() {
+        return socialSpy.serverLevel;
     }
 
     public boolean isShowMessagesInSocialSpyWhileMuted() {
-        return showMessagesInSocialSpyWhileMuted;
+        return socialSpy.showMessagesInSocialSpyWhileMuted;
     }
 
     public String getMutedTag() {
-        return mutedTag;
+        return socialSpy.mutedTag;
     }
 
     public boolean isOnlyPlayerSocialSpy() {
-        return onlyPlayerSocialSpy;
+        return socialSpy.onlyPlayerSocialSpy;
+    }
+
+    @ConfigSerializable
+    public static class SocialSpy {
+        @Setting(value = "msg-prefix", comment = "loc:config.message.socialspy.prefix")
+        private String messageSocialSpyPrefix = "&7[SocialSpy] [{{fromDisplay}}&7 -> {{toDisplay}}&7]: &r";
+
+        @Setting(value = "use-levels", comment = "loc:config.message.socialspy.levels")
+        private boolean socialSpyLevels = false;
+
+        @Setting(value = "same-levels-can-see-each-other", comment = "loc:config.message.socialspy.samelevel")
+        private boolean socialSpySameLevel = true;
+
+        @Setting(value = "server-level", comment = "loc:config.message.socialspy.serverlevel")
+        private int serverLevel = Integer.MAX_VALUE;
+
+        @Setting(value = "show-cancelled-messages", comment = "loc:config.message.socialspy.mutedshow")
+        private boolean showMessagesInSocialSpyWhileMuted = false;
+
+        @Setting(value = "cancelled-messages-tag", comment = "loc:config.message.socialspy.mutedtag")
+        private String mutedTag = "&c[cancelled] ";
+
+        @Setting(value = "show-only-players", comment = "loc:config.message.socialspy.playeronly")
+        private boolean onlyPlayerSocialSpy = false;
     }
 }

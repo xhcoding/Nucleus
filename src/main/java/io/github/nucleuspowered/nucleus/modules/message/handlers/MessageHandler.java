@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.message.handlers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -14,7 +13,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingServi
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.message.MessageModule;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
@@ -39,14 +38,32 @@ import java.util.stream.Collectors;
 
 public class MessageHandler implements NucleusPrivateMessagingService {
 
-    @Inject private UserDataManager ucl;
-    @Inject private CoreConfigAdapter cca;
-    @Inject private MessageConfigAdapter mca;
-    @Inject private ChatUtil chatUtil;
+    private final MessageConfigAdapter mca;
+    private final UserDataManager ucl;
+    private final ChatUtil chatUtil;
+    private MessageConfig messageConfig;
+    private boolean useLevels = false;
+    private boolean sameLevel = false;
+    private int serverLevel = 0;
     private Supplier<CommandPermissionHandler> cph = null;
 
     private final Map<String[], Function<String, String>> replacements = createReplacements();
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
+    public static final String socialSpyOption = "nucleus.socialspy.level";
+
+    public MessageHandler(Nucleus nucleus) throws Exception {
+        chatUtil = nucleus.getChatUtil();
+        ucl = nucleus.getUserDataManager();
+        mca = nucleus.getModuleContainer().getConfigAdapterForModule(MessageModule.ID, MessageConfigAdapter.class);
+        onReload();
+    }
+
+    public void onReload() {
+        messageConfig = mca.getNodeOrDefault();
+        useLevels = messageConfig.isSocialSpyLevels();
+        sameLevel = messageConfig.isSocialSpySameLevel();
+        serverLevel = messageConfig.getServerLevel();
+    }
 
     public void setCommandPermissionHandler(Supplier<CommandPermissionHandler> commandPermissionHandler) {
         if (cph == null) {
@@ -59,7 +76,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         try {
             return ucl.get(user).get().isSocialSpy();
         } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
+            if (Nucleus.getNucleus().isDebugMode()) {
                 e.printStackTrace();
             }
 
@@ -72,7 +89,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         try {
             return ucl.get(user).get().setSocialSpy(isSocialSpy);
         } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
+            if (Nucleus.getNucleus().isDebugMode()) {
                 e.printStackTrace();
             }
 
@@ -92,7 +109,6 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     public boolean sendMessage(CommandSource sender, CommandSource receiver, String message) {
         // Message is about to be sent. Send the event out. If canceled, then that's that.
-        MessageConfig messageConfig = mca.getNodeOrDefault();
         boolean isCancelled = Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message));
         if (isCancelled) {
             sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.cancel"));
@@ -121,21 +137,44 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         Text tm = useMessage(sender, message);
 
         if (!isCancelled) {
-            sender.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageSenderPrefix(), tokens, variables));
-            receiver.sendMessage(constructMessage(sender, tm, mca.getNodeOrDefault().getMessageReceiverPrefix(), tokens, variables));
+            sender.sendMessage(constructMessage(sender, tm, messageConfig.getMessageSenderPrefix(), tokens, variables));
+            receiver.sendMessage(constructMessage(sender, tm, messageConfig.getMessageReceiverPrefix(), tokens, variables));
         }
 
-        String prefix = mca.getNodeOrDefault().getMessageSocialSpyPrefix();
+        String prefix = messageConfig.getMessageSocialSpyPrefix();
         if (isCancelled) {
-            prefix = mca.getNodeOrDefault().getMutedTag() + prefix;
+            prefix = messageConfig.getMutedTag() + prefix;
         }
+
+        final int senderLevel = useLevels ? Util.getIntOptionFromSubject(sender, socialSpyOption)
+            .orElseGet(() -> sender instanceof Player ? 0 : serverLevel) : 0;
+        final int receiverLevel = useLevels ? Util.getIntOptionFromSubject(receiver, socialSpyOption)
+            .orElseGet(() -> receiver instanceof Player ? 0 : serverLevel) : 0;
 
         // Always if it's a player who does the sending, if player only is disabled in the config, to all.
         if (!messageConfig.isOnlyPlayerSocialSpy() || sender instanceof Player) {
             List<MessageReceiver> lm =
-                ucl.getOnlineUsersInternal().stream().filter(x -> !uuidSender.equals(x.getUniqueID()) && !uuidReceiver.equals(x.getUniqueID()))
-                    .filter(UserService::isSocialSpy).map(x -> x.getUser().getPlayer().orElse(null))
-                    .filter(x -> x != null && x.isOnline()).collect(Collectors.toList());
+                ucl.getOnlineUsersInternal().stream()
+                    .filter(x -> !uuidSender.equals(x.getUniqueID()) && !uuidReceiver.equals(x.getUniqueID()))
+                    .filter(UserService::isSocialSpy)
+                    .map(UserService::getPlayer)
+                    .filter(x -> {
+                        if (!x.isPresent()) {
+                            return false;
+                        }
+
+                        if (!useLevels) {
+                            return true;
+                        }
+
+                        int rLvl =  Util.getIntOptionFromSubject(x.get(), socialSpyOption).orElse(0);
+                        if (sameLevel) {
+                            return rLvl >= senderLevel && rLvl >= receiverLevel;
+                        }
+
+                        return rLvl > senderLevel && rLvl > receiverLevel;
+                    })
+                    .map(Optional::get).collect(Collectors.toList());
 
             // If the console is not involved, make them involved.
             if (!uuidSender.equals(Util.consoleFakeUUID) && !uuidReceiver.equals(Util.consoleFakeUUID)) {

@@ -37,13 +37,6 @@ public class MessageCommand extends io.github.nucleuspowered.nucleus.internal.co
 
     private final MessageHandler handler;
 
-    /**
-     * Testing only.
-     */
-    public MessageCommand() {
-        handler = new MessageHandler();
-    }
-
     @Inject
     private MessageCommand(MessageHandler handler) {
         this.handler = handler;
