@@ -188,10 +188,11 @@ public class ChatUtil {
                     cmd = cmd.replace("{{player}}", player.getName());
                 }
 
-                return Text.builder(msg).color(st.colour).style(st.style)
+                msg = String.join("", whiteSpace, msg);
+                texts.add(Text.builder(msg).color(st.colour).style(st.style)
                     .onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("chat.command.click", cmd)))
                     .onClick(TextActions.runCommand(cmd))
-                    .build();
+                    .build());
             }
         } while (remaining != null && m.find());
 
