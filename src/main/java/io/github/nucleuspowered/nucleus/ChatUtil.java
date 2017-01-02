@@ -20,6 +20,7 @@ import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import javax.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -28,8 +29,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
 
 public class ChatUtil {
 
@@ -43,9 +42,9 @@ public class ChatUtil {
 
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?"
-                + "((?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
-                + "(?<specialUrl>(\\[(?<msg>.+)\\]\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
-                + "(?<specialCmd>(\\[(?<sMsg>.+)\\]\\((?<sCmd>/.+)\\))))",
+                + "((?<options>\\{[a-z]+\\})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
+                + "(?<specialUrl>(\\[(?<msg>.+)\\](?<optionssurl>\\{[a-z]+\\})?\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
+                + "(?<specialCmd>(\\[(?<sMsg>.+)\\](?<optionsscmd>\\{[a-z]+\\})?\\((?<sCmd>/.+)\\))))",
                 Pattern.CASE_INSENSITIVE);
 
     private CoreConfigAdapter cca = null;
@@ -175,24 +174,28 @@ public class ChatUtil {
             String whiteSpace = m.group("first");
             if (m.group("url") != null) {
                 String url = m.group("url");
-                texts.add(getTextForUrl(url, url, whiteSpace, st));
+                texts.add(getTextForUrl(url, url, whiteSpace, st, m.group("options")));
             } else if (m.group("specialUrl") != null) {
                 String url = m.group("sUrl");
                 String msg = m.group("msg");
-                texts.add(getTextForUrl(url, msg, whiteSpace, st));
+                texts.add(getTextForUrl(url, msg, whiteSpace, st, m.group("optionssurl")));
             } else {
-                // Must be rules.
+                // Must be commands.
                 String cmd = m.group("sCmd");
                 String msg = m.group("sMsg");
+                String optionList = m.group("optionsscmd");
                 if (player != null) {
                     cmd = cmd.replace("{{player}}", player.getName());
                 }
 
                 msg = String.join("", whiteSpace, msg);
-                texts.add(Text.builder(msg).color(st.colour).style(st.style)
-                    .onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("chat.command.click", cmd)))
-                    .onClick(TextActions.runCommand(cmd))
-                    .build());
+                Text.Builder textBuilder = Text.builder(msg).color(st.colour).style(st.style).onClick(TextActions.runCommand(cmd))
+                        .onHover(setupHoverOnCmd(cmd, optionList));
+                if (optionList != null && optionList.contains("s")) {
+                    textBuilder.onClick(TextActions.suggestCommand(cmd));
+                }
+
+                texts.add(textBuilder.build());
             }
         } while (remaining != null && m.find());
 
@@ -206,7 +209,22 @@ public class ChatUtil {
         return Text.join(texts);
     }
 
-    private Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st) {
+    @Nullable
+    private HoverAction<?> setupHoverOnCmd(String cmd, @Nullable String optionList) {
+        if (optionList != null) {
+            if (optionList.contains("h")) {
+                return null;
+            }
+
+            if (optionList.contains("s")) {
+                return TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.command.clicksuggest", cmd));
+            }
+        }
+
+        return TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.command.click", cmd));
+    }
+
+    private Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st, @Nullable String optionString) {
         String toParse = TextSerializers.FORMATTING_CODE.stripCodes(url);
         if (!whiteSpace.isEmpty()) {
             msg = String.join("", whiteSpace, msg);
@@ -220,10 +238,12 @@ public class ChatUtil {
                 urlObj = new URL(toParse);
             }
 
-            return Text.builder(msg).color(st.colour).style(st.style)
-                .onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("chat.url.click", url)))
-                .onClick(TextActions.openUrl(urlObj))
-                .build();
+            Text.Builder textBuilder = Text.builder(msg).color(st.colour).style(st.style).onClick(TextActions.openUrl(urlObj));
+            if (optionString != null && optionString.contains("h")) {
+                textBuilder.onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.url.click", url)));
+            }
+
+            return textBuilder.build();
         } catch (MalformedURLException e) {
             // URL parsing failed, just put the original text in here.
             initCoreConfigAdapter();
