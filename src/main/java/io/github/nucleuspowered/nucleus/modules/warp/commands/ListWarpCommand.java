@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
@@ -26,15 +27,10 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 /**
  * Lists all the warps that a player can access.
@@ -76,8 +72,9 @@ public class ListWarpCommand extends io.github.nucleuspowered.nucleus.internal.c
     }
 
     private void createMain(final CommandSource src, final Map<String, List<WarpData>> warps) {
-        List<Text> lt = warps.keySet().stream().filter(x -> x != null).sorted(Comparator.comparing(Function.identity()))
-            .map(s -> Text.builder("> " + s).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+        List<Text> lt = warps.keySet().stream().filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Function.identity()))
+                .map(s -> Text.builder("> " + s).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
                 .onClick(TextActions.executeCallback(source -> createSub(source, s, warps))).build()).collect(Collectors.toList());
 
         // Uncategorised
@@ -86,8 +83,10 @@ public class ListWarpCommand extends io.github.nucleuspowered.nucleus.internal.c
                 .onClick(TextActions.executeCallback(source -> createSub(source, null, warps))).build());
         }
 
+        MessageProvider messageProvider = plugin.getMessageProvider();
         Util.getPaginationBuilder(src)
-            .title(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.list.maincategory")).padding(Text.of(TextColors.GREEN, "-"))
+            .header(messageProvider.getTextMessageWithFormat("command.warps.list.headercategory"))
+            .title(messageProvider.getTextMessageWithFormat("command.warps.list.maincategory")).padding(Text.of(TextColors.GREEN, "-"))
             .contents(lt)
             .sendTo(src);
     }
