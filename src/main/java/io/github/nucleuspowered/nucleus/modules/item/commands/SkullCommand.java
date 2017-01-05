@@ -42,9 +42,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RegisterCommand({"skull"})
-@NoCooldown
-@NoWarmup
-@NoCost
 @Permissions
 public class SkullCommand extends AbstractCommand<Player> {
 
