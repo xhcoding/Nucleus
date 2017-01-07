@@ -28,7 +28,7 @@ import javax.annotation.concurrent.GuardedBy;
 
 public class AFKHandler {
 
-    private final Map<UUID, AFKData> data = Maps.newHashMap();
+    private final Map<UUID, AFKData> data = Maps.newConcurrentMap();
     private final AFKConfigAdapter afkConfigAdapter;
     private final NucleusPlugin plugin;
     private CommandPermissionHandler afkPermissionHandler;
