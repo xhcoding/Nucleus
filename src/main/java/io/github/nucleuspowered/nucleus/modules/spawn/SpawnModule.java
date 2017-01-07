@@ -8,8 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "spawn", name = "Spawn")
+@ModuleData(id = SpawnModule.ID, name = "Spawn")
 public class SpawnModule extends ConfigurableModule<SpawnConfigAdapter> {
+
+    public static final String ID = "spawn";
 
     @Override
     public SpawnConfigAdapter createAdapter() {

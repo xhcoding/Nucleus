@@ -242,7 +242,7 @@ public class Util {
 
         // lastPlayed is always ticking - give three seconds.
         // TODO: Better way of doing this.
-        return firstPlayed.isAfter(lastPlayed.minus(3, ChronoUnit.SECONDS));
+        return firstPlayed.isAfter(lastPlayed.minus(10, ChronoUnit.SECONDS));
     }
 
     public static Optional<Double> getDoubleOptionFromSubject(Subject player, String... options) {

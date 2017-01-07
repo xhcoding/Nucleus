@@ -16,6 +16,9 @@ public class SpawnConfig {
     @Setting(value = "use-safe-spawn", comment = "loc:config.spawn.safe")
     private boolean safeTeleport = true;
 
+    @Setting(value = "force-first-spawn", comment = "loc:config.spawn.forcefirstspawn")
+    private boolean forceFirstSpawn = false;
+
     @Setting(value = "global-spawn", comment = "loc:config.spawn.global.base")
     private GlobalSpawnConfig globalSpawn = new GlobalSpawnConfig();
 
@@ -25,6 +28,10 @@ public class SpawnConfig {
 
     public boolean isSafeTeleport() {
         return safeTeleport;
+    }
+
+    public boolean isForceFirstSpawn() {
+        return forceFirstSpawn;
     }
 
     public GlobalSpawnConfig getGlobalSpawn() {
