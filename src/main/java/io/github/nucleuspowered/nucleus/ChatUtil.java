@@ -20,7 +20,6 @@ import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import javax.annotation.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -29,6 +28,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 public class ChatUtil {
 
@@ -42,9 +43,9 @@ public class ChatUtil {
 
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?"
-                + "((?<options>\\{[a-z]+\\})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
-                + "(?<specialUrl>(\\[(?<msg>.+)\\](?<optionssurl>\\{[a-z]+\\})?\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
-                + "(?<specialCmd>(\\[(?<sMsg>.+)\\](?<optionsscmd>\\{[a-z]+\\})?\\((?<sCmd>/.+)\\))))",
+                + "((?<options>\\{[a-z]+?\\})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
+                + "(?<specialUrl>(\\[(?<msg>.+?)\\](?<optionssurl>\\{[a-z]+\\})?\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
+                + "(?<specialCmd>(\\[(?<sMsg>.+?)\\](?<optionsscmd>\\{[a-z]+\\})?\\((?<sCmd>/.+?)\\))))",
                 Pattern.CASE_INSENSITIVE);
 
     private CoreConfigAdapter cca = null;
