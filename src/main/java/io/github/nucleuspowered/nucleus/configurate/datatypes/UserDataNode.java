@@ -94,6 +94,9 @@ public class UserDataNode {
     @Setting
     private boolean isCommandSpy = false;
 
+    @Setting
+    private boolean vanish = false;
+
     public MuteData getMuteData() {
         return muteData;
     }
@@ -281,5 +284,13 @@ public class UserDataNode {
 
     public void setCommandSpy(boolean commandSpy) {
         isCommandSpy = commandSpy;
+    }
+
+    public boolean isVanish() {
+        return vanish;
+    }
+
+    public void setVanish(boolean vanish) {
+        this.vanish = vanish;
     }
 }

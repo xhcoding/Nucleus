@@ -4,9 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.vanish;
 
-import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = "vanish", name = "Vanish")
-public class VanishModule extends StandardModule {
+public class VanishModule extends ConfigurableModule<VanishConfigAdapter> {
+
+    @Override public VanishConfigAdapter createAdapter() {
+        return new VanishConfigAdapter();
+    }
 }

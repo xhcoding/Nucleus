@@ -212,6 +212,14 @@ public class UserService extends Service<UserDataNode>
         return isSocialSpy() == socialSpy;
     }
 
+    public boolean isVanished() {
+        return data.isVanish();
+    }
+
+    public void setVanished(boolean vanished) {
+        data.setVanish(vanished);
+    }
+
     @Override
     public boolean isInvulnerable() {
         return data.isInvulnerable();
