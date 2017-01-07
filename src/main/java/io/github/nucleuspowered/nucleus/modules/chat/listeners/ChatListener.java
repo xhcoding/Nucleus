@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * A listener that modifies all chat messages. Uses the
@@ -47,6 +48,7 @@ import java.util.function.Predicate;
 @ConditionalListener(ChatListener.Test.class)
 public class ChatListener extends ListenerBase {
 
+    private static final Pattern prefixPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*$");
     private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
     private static final Map<String[], Function<String, String>> replacements = createReplacements();
 
@@ -110,7 +112,7 @@ public class ChatListener extends ListenerBase {
         Text prefix = Text.EMPTY;
 
         // Avoid adding <name>.
-        if (!config.isOverwriteEarlyPrefixes() && !eventFormatter.getHeader().toText().toPlain().equalsIgnoreCase("<" + player.getName() + "> ")) {
+        if (!config.isOverwriteEarlyPrefixes() && !prefixPattern.matcher(eventFormatter.getHeader().toText().toPlain()).matches()) {
             prefix = eventFormatter.getHeader().toText();
         }
 
