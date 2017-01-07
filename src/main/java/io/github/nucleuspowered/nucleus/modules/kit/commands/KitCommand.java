@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -47,6 +48,7 @@ import java.util.Optional;
  */
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand("kit")
+@NoCooldown // This is determined by the kit itself.
 @NoCost // This is determined by the kit itself.
 public class KitCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
 
