@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -12,14 +11,17 @@ import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class GameProfileArgument extends CommandElement {
 
@@ -54,6 +56,24 @@ public class GameProfileArgument extends CommandElement {
 
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        return Lists.newArrayList();
+        try {
+            String arg = args.peek().toLowerCase();
+            List<String> onlinePlayers = Sponge.getServer().getOnlinePlayers().stream().map(User::getName).collect(Collectors.toList());
+            return Sponge.getServiceManager().provideUnchecked(UserStorageService.class).getAll()
+                .stream().filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(arg))
+                .map(x -> x.getName().get())
+                .sorted((first, second) -> {
+                    boolean firstBool = onlinePlayers.contains(first);
+                    boolean secondBool = onlinePlayers.contains(second);
+                    if (firstBool == secondBool) {
+                        return first.compareTo(second);
+                    }
+
+                    return firstBool ? -1 : 1;
+                })
+                .collect(Collectors.toList());
+        } catch (ArgumentParseException e) {
+            return new ArrayList<>();
+        }
     }
 }

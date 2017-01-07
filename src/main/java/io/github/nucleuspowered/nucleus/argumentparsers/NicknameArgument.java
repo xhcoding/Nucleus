@@ -23,6 +23,7 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +56,24 @@ public class NicknameArgument extends CommandElement {
 
         if (type == UnderlyingType.USER) {
             parser = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
-            completer = (s, a, c) -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+            completer = (s, a, c) -> {
+                Collection<String> onlinePlayers = Sponge.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+                return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
                     .getAll()
                     .stream()
                     .filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(s))
-                    .map(x -> x.getName().get()).collect(Collectors.toList());
+                    .map(x -> x.getName().get())
+                    .sorted((first, second) -> {
+                        boolean firstBool = onlinePlayers.contains(first);
+                        boolean secondBool = onlinePlayers.contains(second);
+                        if (firstBool == secondBool) {
+                            return first.compareTo(second);
+                        }
+
+                        return firstBool ? -1 : 1;
+                    })
+                    .collect(Collectors.toList());
+            };
         } else {
             PlayerConsoleArgument pca = new PlayerConsoleArgument(key, type == UnderlyingType.PLAYER_CONSOLE);
             parser = pca::parseInternal;

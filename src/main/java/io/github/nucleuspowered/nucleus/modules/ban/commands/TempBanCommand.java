@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.ResortUserArgumentParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -60,7 +61,7 @@ public class TempBanCommand extends io.github.nucleuspowered.nucleus.internal.co
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.onlyOne(GenericArguments.user(Text.of(user))), GenericArguments.onlyOne(new TimespanArgument(Text.of(duration))),
+                GenericArguments.onlyOne(new ResortUserArgumentParser(Text.of(user))), GenericArguments.onlyOne(new TimespanArgument(Text.of(duration))),
                 GenericArguments.optionalWeak(GenericArguments.remainingJoinedStrings(Text.of(reasonKey)))
         };
     }
