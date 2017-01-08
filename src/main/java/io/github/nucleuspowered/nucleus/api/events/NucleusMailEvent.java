@@ -8,16 +8,18 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
 
+import java.util.Optional;
+
 /**
  * An event that is posted when a player uses /mail in NucleusPlugin
  */
 public interface NucleusMailEvent extends Event, Cancellable {
     /**
-     * The sender of the mail.
+     * The sender of the mail. If {@link Optional#empty()}, this means it was some server process.
      *
      * @return The sender
      */
-    User getSender();
+    Optional<User> getSender();
 
     /**
      * The recipient of the mail.

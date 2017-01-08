@@ -9,8 +9,10 @@ import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLogg
 import io.github.nucleuspowered.nucleus.modules.commandlogger.handlers.CommandLoggerHandler;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "command-logger", name = "Command Logger")
+@ModuleData(id = CommandLoggerModule.ID, name = "Command Logger")
 public class CommandLoggerModule extends ConfigurableModule<CommandLoggerConfigAdapter> {
+
+    public static final String ID = "command-logger";
 
     @Override
     public CommandLoggerConfigAdapter createAdapter() {

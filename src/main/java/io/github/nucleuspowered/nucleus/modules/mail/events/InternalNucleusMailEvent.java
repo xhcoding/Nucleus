@@ -10,6 +10,8 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.impl.AbstractEvent;
 
+import java.util.Optional;
+
 public class InternalNucleusMailEvent extends AbstractEvent implements io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent {
 
     private final User from;
@@ -43,8 +45,8 @@ public class InternalNucleusMailEvent extends AbstractEvent implements io.github
     }
 
     @Override
-    public User getSender() {
-        return from;
+    public Optional<User> getSender() {
+        return Optional.ofNullable(from);
     }
 
     @Override

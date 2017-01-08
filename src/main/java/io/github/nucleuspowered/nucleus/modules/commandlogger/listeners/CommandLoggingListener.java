@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfig;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.handlers.CommandLoggerHandler;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.command.CommandSource;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 public class CommandLoggingListener extends ListenerBase {
 
     @Inject private CommandLoggerConfigAdapter clc;
-    @Inject private CoreConfigAdapter cca;
     @Inject private CommandLoggerHandler handler;
 
     @Listener(order = Order.LAST)
