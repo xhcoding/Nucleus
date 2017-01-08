@@ -53,11 +53,8 @@ public class CommandLoggingListener extends ListenerBase {
         Set<String> commands;
 
         // If the command exists, then get all aliases.
-        if (oc.isPresent()) {
-            commands = oc.get().getAllAliases().stream().map(String::toLowerCase).collect(Collectors.toSet());
-        } else {
-            commands = Sets.newHashSet(command);
-        }
+        commands = oc.map(commandMapping -> commandMapping.getAllAliases().stream().map(String::toLowerCase).collect(Collectors.toSet()))
+            .orElseGet(() -> Sets.newHashSet(command));
 
         // If whitelist, and we have the command, or if not blacklist, and we do not have the command.
         if (c.isWhitelist() == c.getCommandsToFilter().stream().map(String::toLowerCase).anyMatch(commands::contains)) {

@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 public class DateRotatableFileLogger implements Closeable {
 
-    private final static Path nucleusBase = Paths.get("logs/plugin");
+    private final static Path nucleusBase = Paths.get("logs/nucleus");
 
     private final Path directory;
     private final String filenamePrefix;
