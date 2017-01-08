@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.chat.ChatModule;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import org.spongepowered.api.entity.living.player.Player;
@@ -19,6 +20,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@ConditionalListener(BodyFixChatListener.Condition.class)
 public class BodyFixChatListener extends ListenerBase {
 
     private static final Pattern bodyPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*");
