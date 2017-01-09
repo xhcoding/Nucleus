@@ -29,9 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Permissions
-@NoCooldown
-@NoWarmup
-@NoCost
 @RegisterCommand({"gamemode", "gm"})
 public class GamemodeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
 
