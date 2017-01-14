@@ -9,7 +9,6 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -27,7 +26,6 @@ public class GodRunnable extends TaskBase {
 
     @Inject private NucleusPlugin plugin;
     @Inject private UserDataManager ucl;
-    @Inject private CoreConfigAdapter cca;
 
     @Override
     public boolean isAsync() {

@@ -228,6 +228,9 @@ public class UserService extends Service<UserDataNode>
     @Override
     public void setInvulnerable(boolean invuln) {
         data.setInvulnerable(invuln);
+
+        // Reduce saturation to normal levels - this will get topped up later.
+        getPlayer().ifPresent(p -> p.offer(Keys.FOOD_LEVEL, 20));
     }
 
     @Override
