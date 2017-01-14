@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -18,9 +19,7 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
-import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.Slot;
 
@@ -35,16 +34,15 @@ public class KitListener extends ListenerBase {
     @Inject private CoreConfigAdapter coreConfigAdapter;
     @Inject private KitHandler handler;
     @Inject private KitService gds;
+    @Inject private KitConfigAdapter kitConfigAdapter;
 
     @Listener
-    public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        Player player = event.getTargetEntity();
-        final Inventory target = Util.getStandardInventory(player);
+    public void onPlayerJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
         loader.get(player).ifPresent(p -> {
             if (p.isFirstPlay()) {
                 List<ItemStackSnapshot> l = gds.getFirstKit();
                 if (l != null && !l.isEmpty()) {
-                    l.stream().filter(x -> x.getType() != ItemTypes.NONE).forEach(x -> target.offer(x.createStack()));
+                    Util.addToStandardInventory(player, gds.getFirstKit(), false, kitConfigAdapter.getNodeOrDefault().isProcessTokens());
                 }
             }
         });

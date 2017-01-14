@@ -119,7 +119,7 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
 
         boolean mustConsumeAll = kitConfigAdapter.getNodeOrDefault().isMustGetAll();
         boolean dropItems = kitConfigAdapter.getNodeOrDefault().isDropKitIfFull();
-        Tristate tristate = Util.addToStandardInventory(player, kit.getStacks(), !mustConsumeAll && dropItems);
+        Tristate tristate = Util.addToStandardInventory(player, kit.getStacks(), !mustConsumeAll && dropItems, kitConfigAdapter.getNodeOrDefault().isProcessTokens());
         if (tristate != Tristate.TRUE) {
             if (mustConsumeAll) {
                 Inventory inventory = Util.getStandardInventory(player);

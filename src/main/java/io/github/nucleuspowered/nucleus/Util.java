@@ -40,6 +40,8 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.util.Tristate;
@@ -64,6 +66,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
@@ -80,18 +84,22 @@ public class Util {
         return player.getInventory().query(Hotbar.class, GridInventory.class);
     }
 
+    private static final Pattern inventory = Pattern.compile("\\{\\{.+?}}");
+
     /**
      * Adds items to a {@link Player}s {@link Inventory}
      * @param player The {@link Player}
      * @param itemStacks The {@link ItemStackSnapshot}s to add.
      * @param dropRejected If true, drop items that are rejected from the inventory.
+     * @param replaceTokensInLore If true, the display name
      * @return {@link Tristate#TRUE} if everything is successful, {@link Tristate#FALSE} if nothing was added, {@link Tristate#UNDEFINED}
      * if some stacks were added.
      */
-    public static Tristate addToStandardInventory(Player player, Collection<ItemStackSnapshot> itemStacks, boolean dropRejected) {
+    public static Tristate addToStandardInventory(Player player, Collection<ItemStackSnapshot> itemStacks, boolean dropRejected, boolean replaceTokensInLore) {
         Tristate ts = Tristate.FALSE;
         Inventory target = Util.getStandardInventory(player);
         boolean dropItems = false;
+        final Matcher m = inventory.matcher("");
         for (ItemStackSnapshot stack : itemStacks) {
             if (dropItems) {
                 Util.dropItemOnFloorAtLocation(stack, player.getWorld(), player.getLocation().getPosition());
@@ -99,8 +107,27 @@ public class Util {
 
                 // Ignore anything that is NONE
                 if (stack.getType() != ItemTypes.NONE) {
+                    ItemStack itemStack = stack.createStack();
+
+                    if (replaceTokensInLore) {
+                        itemStack.get(Keys.DISPLAY_NAME).ifPresent(x -> {
+                            if (m.reset(x.toPlain()).find()) {
+                                itemStack.offer(Keys.DISPLAY_NAME, Nucleus.getNucleus().getChatUtil()
+                                    .getMessageFromTemplate(TextSerializers.FORMATTING_CODE.serialize(x), player, true));
+                            }
+                        });
+
+                        itemStack.get(Keys.ITEM_LORE).ifPresent(x -> {
+                            if (x.stream().map(Text::toPlain).anyMatch(y -> m.reset(y).find())) {
+                                itemStack.offer(Keys.ITEM_LORE, Nucleus.getNucleus().getChatUtil()
+                                    .getMessageFromTemplate(x.stream().map(TextSerializers.FORMATTING_CODE::serialize).collect(Collectors.toList()),
+                                        player, true));
+                            }
+                        });
+                    }
+
                     // Give them the kit.
-                    InventoryTransactionResult itr = target.offer(stack.createStack());
+                    InventoryTransactionResult itr = target.offer(itemStack);
 
                     // If some items were rejected...
                     if (!itr.getRejectedItems().isEmpty()) {

@@ -133,7 +133,7 @@ public class KitCommand extends io.github.nucleuspowered.nucleus.internal.comman
         List<Optional<ItemStackSnapshot>> slotList = Lists.newArrayList();
         Util.getStandardInventory(player).slots().forEach(x -> slotList.add(x.peek().map(ItemStack::createSnapshot)));
 
-        Tristate tristate = Util.addToStandardInventory(player, kit.getStacks(), !mustConsumeAll && dropItems);
+        Tristate tristate = Util.addToStandardInventory(player, kit.getStacks(), !mustConsumeAll && dropItems, kca.getNodeOrDefault().isProcessTokens());
         if (tristate != Tristate.TRUE) {
             if (mustConsumeAll) {
                 Inventory inventory = Util.getStandardInventory(player);

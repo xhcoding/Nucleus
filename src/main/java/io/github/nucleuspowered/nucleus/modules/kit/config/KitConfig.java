@@ -19,6 +19,9 @@ public class KitConfig {
     @Setting(value = "separate-permissions", comment = "loc:config.kits.separate")
     private boolean separatePermissions = false;
 
+    @Setting(value = "process-tokens-in-lore", comment = "loc:config.kits.process-tokens")
+    private boolean processTokens = false;
+
     public boolean isMustGetAll() {
         return mustGetAll;
     }
@@ -29,5 +32,9 @@ public class KitConfig {
 
     public boolean isDropKitIfFull() {
         return dropKitIfFull;
+    }
+
+    public boolean isProcessTokens() {
+        return processTokens;
     }
 }
