@@ -4,11 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.NameUtil;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
@@ -22,14 +27,18 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Tuple;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RegisterCommand({"nick", "nickname"})
@@ -42,9 +51,41 @@ public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.c
     private final String playerKey = "player";
     private final String nickName = "nickname";
 
-    private final Pattern colourPattern = Pattern.compile("&[0-9a-f]", Pattern.CASE_INSENSITIVE);
-    private final Pattern stylePattern = Pattern.compile("&[omnl]", Pattern.CASE_INSENSITIVE);
-    private final Pattern magicPattern = Pattern.compile("&k", Pattern.CASE_INSENSITIVE);
+    // Order is important here! TODO: Need to de-dup
+    private final Map<String, String> permissionToDesc = Maps.newHashMap();
+    private final Map<String[], Tuple<Matcher, Text>> replacements = Maps.newHashMap();
+
+    @Override protected void afterPostInit() {
+        super.afterPostInit();
+
+        MessageProvider mp = Nucleus.getNucleus().getMessageProvider();
+
+        String colPerm = permissions.getPermissionWithSuffix("colour.");
+        String colPerm2 = permissions.getPermissionWithSuffix("color.");
+
+        NameUtil.getColours().forEach((key, value) -> {
+            replacements.put(new String[]{colPerm + value.getName(), colPerm2 + value.getName()},
+                Tuple.of(Pattern.compile("[&]+" + key.toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
+                    mp.getTextMessageWithFormat("command.nick.colour.nopermswith", value.getName())));
+
+            permissionToDesc.put(colPerm + value.getName(), mp.getMessageWithFormat("permission.nick.colourspec", value.getName().toLowerCase(), key.toString()));
+            permissionToDesc.put(colPerm2 + value.getName(), mp.getMessageWithFormat("permission.nick.colorspec", value.getName().toLowerCase(), key.toString()));
+        });
+
+        String stylePerm = permissions.getPermissionWithSuffix("style.");
+        NameUtil.getStyles().entrySet().stream().filter(x -> x.getKey().getFirst() != 'k').forEach((k) -> {
+            replacements.put(new String[] { stylePerm + k.getKey().getSecond().toLowerCase() },
+                Tuple.of(Pattern.compile("[&]+" + k.getKey().getFirst().toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
+                    mp.getTextMessageWithFormat("command.nick.style.nopermswith", k.getKey().getSecond().toLowerCase())));
+
+            permissionToDesc.put(stylePerm + k.getKey().getSecond().toLowerCase(),
+                mp.getMessageWithFormat("permission.nick.stylespec", k.getKey().getSecond().toLowerCase(), k.getKey().getFirst().toString()));
+        });
+
+        replacements.put(new String[] { permissions.getPermissionWithSuffix("magic") },
+            Tuple.of(Pattern.compile("[&]+k", Pattern.CASE_INSENSITIVE).matcher(""),
+                mp.getTextMessageWithFormat("command.nick.style.nopermswith", "magic")));
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -54,6 +95,7 @@ public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.c
         m.put("color", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
         m.put("style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.style"), SuggestedLevel.ADMIN));
         m.put("magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.magic"), SuggestedLevel.ADMIN));
+        permissionToDesc.forEach((k, v) -> m.put(k, new PermissionInformation(v, SuggestedLevel.ADMIN)));
         return m;
     }
 
@@ -82,22 +124,7 @@ public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.c
 
         // Giving player must have the colour permissions and whatnot. Also,
         // colour and color are the two spellings we support. (RULE BRITANNIA!)
-        if (colourPattern.matcher(name).find() && !(permissions.testSuffix(src, "colour") || permissions.testSuffix(src, "color"))) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.colour.noperms"));
-            return CommandResult.empty();
-        }
-
-        // Giving player must have the magic permissions and whatnot.
-        if (magicPattern.matcher(name).find() && !permissions.testSuffix(src, "magic")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.magic.noperms"));
-            return CommandResult.empty();
-        }
-
-        // Giving player must have the style permissions and whatnot.
-        if (stylePattern.matcher(name).find() && !permissions.testSuffix(src, "style")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.style.noperms"));
-            return CommandResult.empty();
-        }
+        stripPermissionless(src, name);
 
         int strippedNameLength = name.replaceAll("&[0-9a-fomlnk]", "").length();
 
@@ -135,5 +162,18 @@ public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.c
         }
 
         return CommandResult.success();
+    }
+
+
+    private String stripPermissionless(Subject source, String message) throws ReturnMessageException {
+        for (Map.Entry<String[], Tuple<Matcher, Text>> r : replacements.entrySet()) {
+            // If we don't have the required permission...
+            if (r.getValue().getFirst().reset(message).find() && Arrays.stream(r.getKey()).noneMatch(source::hasPermission)) {
+                // throw
+                throw new ReturnMessageException(r.getValue().getSecond());
+            }
+        }
+
+        return message;
     }
 }

@@ -71,7 +71,7 @@ public class ChatListener extends ListenerBase {
         NameUtil.getStyles().entrySet().stream().filter(x -> x.getKey().getFirst() != 'k').forEach((k) -> {
             t.put(new String[] { prefix + "style." + k.getKey().getSecond().toLowerCase() }, s -> fss.apply(k.getKey().getFirst().toString(), s));
             permissionToDesc.put(prefix + "style." + k.getKey().getSecond().toLowerCase(),
-                mp.getMessageWithFormat("permission.chat.colorspec", k.getKey().getSecond().toLowerCase(), k.getKey().getFirst().toString()));
+                mp.getMessageWithFormat("permission.chat.stylespec", k.getKey().getSecond().toLowerCase(), k.getKey().getFirst().toString()));
         });
 
         t.put(new String[] { prefix + "magic" }, s -> s.replaceAll("[&]+[kK]", ""));
