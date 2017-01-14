@@ -17,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.junit.BeforeClass;
@@ -158,6 +159,10 @@ public abstract class TestBase {
         @Override
         public DiscoveryModuleContainer getModuleContainer() {
             return null;
+        }
+
+        @Override public <T extends NucleusConfigAdapter<?>> Optional<T> getConfigAdapter(String id, Class<T> configAdapterClass) {
+            return Optional.empty();
         }
 
         @Override

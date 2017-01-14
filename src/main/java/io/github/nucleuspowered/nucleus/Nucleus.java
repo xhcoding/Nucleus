@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Function;
 
 public abstract class Nucleus {
 
@@ -54,6 +56,17 @@ public abstract class Nucleus {
     public abstract PermissionRegistry getPermissionRegistry();
 
     public abstract DiscoveryModuleContainer getModuleContainer();
+
+    public abstract <T extends NucleusConfigAdapter<?>> Optional<T> getConfigAdapter(String id, Class<T> configAdapterClass);
+
+    public <R, C, T extends NucleusConfigAdapter<C>> Optional<R> getConfigValue(String id, Class<T> configAdapterClass, Function<C, R> fnToGetValue) {
+        Optional<T> tOptional = getConfigAdapter(id, configAdapterClass);
+        if (tOptional.isPresent()) {
+            return Optional.of(fnToGetValue.apply(tOptional.get().getNodeOrDefault()));
+        }
+
+        return Optional.empty();
+    }
 
     public abstract InternalServiceManager getInternalServiceManager();
 

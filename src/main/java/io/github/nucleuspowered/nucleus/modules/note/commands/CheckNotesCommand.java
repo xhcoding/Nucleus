@@ -7,7 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.note.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import org.spongepowered.api.Sponge;
@@ -25,6 +30,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,7 +66,7 @@ public class CheckNotesCommand extends io.github.nucleuspowered.nucleus.internal
             return CommandResult.success();
         }
 
-        List<Text> messages = notes.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(x -> createMessage(x, user)).collect(Collectors.toList());
+        List<Text> messages = notes.stream().sorted(Comparator.comparing(NoteData::getDate)).map(x -> createMessage(x, user)).collect(Collectors.toList());
         messages.add(0, plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.info"));
 
         PaginationService paginationService = Sponge.getGame().getServiceManager().provideUnchecked(PaginationService.class);

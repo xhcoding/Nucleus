@@ -43,6 +43,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvide
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.qsml.ModuleRegistrationProxyService;
+import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusLoggerProxy;
 import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructor;
 import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
@@ -418,6 +419,19 @@ public class NucleusPlugin extends Nucleus {
     @Override
     public DiscoveryModuleContainer getModuleContainer() {
         return moduleContainer;
+    }
+
+    @Override
+    public <R extends NucleusConfigAdapter<?>> Optional<R> getConfigAdapter(String id, Class<R> configAdapterClass) {
+        try {
+            return Optional.of(getModuleContainer().getConfigAdapterForModule(id, configAdapterClass));
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            if (isDebugMode()) {
+                e.printStackTrace();
+            }
+
+            return Optional.empty();
+        }
     }
 
     @Override

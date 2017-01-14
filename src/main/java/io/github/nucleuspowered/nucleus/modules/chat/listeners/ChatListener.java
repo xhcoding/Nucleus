@@ -29,8 +29,6 @@ import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -161,17 +159,7 @@ public class ChatListener extends ListenerBase {
 
         @Override
         public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer()
-                        .getConfigAdapterForModule(ChatModule.ID, ChatConfigAdapter.class)
-                        .getNodeOrDefault().isModifychat();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
+            return nucleus.getConfigValue(ChatModule.ID, ChatConfigAdapter.class, ChatConfig::isModifychat).orElse(false);
         }
     }
 }

@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.NoteModule;
+import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfig;
 import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import org.spongepowered.api.Sponge;
@@ -24,8 +25,6 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.List;
 import java.util.Map;
@@ -70,15 +69,7 @@ public class NoteListener extends ListenerBase {
     public static class Condition implements Predicate<Nucleus> {
 
         @Override public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(NoteModule.ID, NoteConfigAdapter.class).getNodeOrDefault().isShowOnLogin();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
+            return nucleus.getConfigValue(NoteModule.ID, NoteConfigAdapter.class, NoteConfig::isShowOnLogin).orElse(false);
         }
     }
 }
