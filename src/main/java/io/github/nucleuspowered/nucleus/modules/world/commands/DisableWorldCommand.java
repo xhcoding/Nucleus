@@ -50,6 +50,10 @@ public class DisableWorldCommand extends AbstractCommand<CommandSource> {
         }
 
         worldProperties.setEnabled(false);
+        if (worldProperties.isEnabled()) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.disable.couldnotdisable", worldProperties.getWorldName()));
+        }
+
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.disable.success", worldProperties.getWorldName()));
         return CommandResult.success();
     }
