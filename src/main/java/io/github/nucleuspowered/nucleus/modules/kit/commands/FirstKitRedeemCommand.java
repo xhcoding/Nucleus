@@ -33,7 +33,6 @@ public class FirstKitRedeemCommand extends io.github.nucleuspowered.nucleus.inte
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        int reject = 0;
 
         Tristate tristate = Util.addToStandardInventory(src, gds.getFirstKit(), false, kca.getNodeOrDefault().isProcessTokens());
 
