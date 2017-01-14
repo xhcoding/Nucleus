@@ -34,7 +34,7 @@ public class WarnListener extends ListenerBase {
     @Inject private WarnHandler handler;
     @Inject private WarnConfigAdapter wca;
 
-    private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "note.showonlogin";
+    private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "warn.showonlogin";
 
     /**
      * At the time the player joins, check to see if the player has been warned.
