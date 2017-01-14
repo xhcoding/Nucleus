@@ -23,12 +23,17 @@ import java.util.function.Predicate;
 @ConditionalListener(CommandListener.Condition.class)
 public class CommandListener extends ListenerBase {
 
+    private boolean messageShown = false;
+
     @Listener
     public void onCommandPreProcess(SendCommandEvent event, @Root ConsoleSource source, @Getter("getCommand") String command) {
         if (command.equalsIgnoreCase("list")) {
             event.setCommand("minecraft:list");
-            Sponge.getScheduler().createSyncExecutor(plugin).submit(() ->
-                source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("list.listener.multicraftcompat")));
+            if (!messageShown) {
+                messageShown = true;
+                Sponge.getScheduler().createSyncExecutor(plugin).submit(() ->
+                    source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("list.listener.multicraftcompat")));
+            }
         }
     }
 
