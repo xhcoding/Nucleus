@@ -35,14 +35,14 @@ public class ChatUtil {
 
     private final NucleusPlugin plugin;
     private final Pattern urlParser =
-        Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)",
+        Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)",
         Pattern.CASE_INSENSITIVE);
 
     private final Pattern tokenParser = Pattern.compile("^\\{\\{(?<capture>[\\S]+)}}", Pattern.CASE_INSENSITIVE);
     private final Pattern tokenParserLookAhead = Pattern.compile("(?=\\{\\{(?<capture>[\\S]+)}})", Pattern.CASE_INSENSITIVE);
 
     private final Pattern enhancedUrlParser =
-            Pattern.compile("(?<first>(^|\\s))(?<colour>(&[0-9a-flmnork])+)?"
+            Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
                 + "((?<options>\\{[a-z]+?\\})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
                 + "(?<specialUrl>(\\[(?<msg>.+?)\\](?<optionssurl>\\{[a-z]+\\})?\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
                 + "(?<specialCmd>(\\[(?<sMsg>.+?)\\](?<optionsscmd>\\{[a-z]+\\})?\\((?<sCmd>/.+?)\\))))",
@@ -166,7 +166,14 @@ public class ChatUtil {
             // Get the last colour & styles
             String colourMatch = m.group("colour");
             if (colourMatch != null && !colourMatch.isEmpty()) {
-                first = TextSerializers.FORMATTING_CODE.deserialize(m.group("colour") + " ");
+
+                // If there is a reset, explicitly do it.
+                TextStyle reset = TextStyles.NONE;
+                if (m.group("reset") != null) {
+                    reset = TextStyles.RESET;
+                }
+
+                first = Text.of(reset, TextSerializers.FORMATTING_CODE.deserialize(m.group("colour") + " "));
             }
 
             st = getLastColourAndStyle(first, st);
@@ -268,7 +275,7 @@ public class ChatUtil {
             if (tc != TextColors.NONE && ts != TextStyles.NONE) {
                 break;
             }
-            
+
             if (tc == TextColors.NONE) {
                 tc = texts.get(i).getColor();
             }
