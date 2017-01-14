@@ -11,12 +11,11 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
+import org.spongepowered.api.util.Tristate;
 
 import javax.inject.Inject;
 
@@ -30,19 +29,16 @@ public class FirstKitRedeemCommand extends io.github.nucleuspowered.nucleus.inte
     @Inject
     private KitService gds;
 
+    @Inject private KitConfigAdapter kca;
+
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         int reject = 0;
 
-        Inventory target = Util.getStandardInventory(src);
-        for (ItemStackSnapshot x : gds.getFirstKit()) {
-            if (x.getType() != ItemTypes.NONE) {
-                reject += target.offer(x.createStack()).getRejectedItems().size();
-            }
-        }
+        Tristate tristate = Util.addToStandardInventory(src, gds.getFirstKit(), false, kca.getNodeOrDefault().isProcessTokens());
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.redeem.success"));
-        if (reject > 0) {
+        if (tristate != Tristate.TRUE) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.redeem.reject"));
         }
 
