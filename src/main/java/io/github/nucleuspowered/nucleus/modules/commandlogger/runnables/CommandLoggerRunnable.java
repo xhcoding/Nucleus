@@ -13,8 +13,10 @@ import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import javax.inject.Inject;
-import java.util.concurrent.TimeUnit;
 
 public class CommandLoggerRunnable extends TaskBase {
 
@@ -33,8 +35,8 @@ public class CommandLoggerRunnable extends TaskBase {
     }
 
     @Override
-    public TimePerRun interval() {
-        return new TimePerRun(1, TimeUnit.SECONDS);
+    public Duration interval() {
+        return Duration.of(1, ChronoUnit.SECONDS);
     }
 
     @Override

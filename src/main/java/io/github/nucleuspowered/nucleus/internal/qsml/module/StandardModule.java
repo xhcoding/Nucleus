@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -180,8 +181,7 @@ public abstract class StandardModule implements Module {
         commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
-            TaskBase.TimePerRun tpr = c.interval();
-            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(tpr.getTime(), tpr.getUnit());
+            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.interval().toMillis(), TimeUnit.MILLISECONDS);
             if (c.isAsync()) {
                 tb.async();
             }

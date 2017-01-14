@@ -13,22 +13,19 @@ import java.time.temporal.ChronoUnit;
 
 import javax.inject.Inject;
 
-public class AFKTask extends TaskBase {
+public class AFKRefreshPermsTask extends TaskBase {
 
     @Inject private AFKHandler handler;
 
-    @Override
-    public void accept(Task task) {
-        handler.onTick();
-    }
-
-    @Override
-    public boolean isAsync() {
+    @Override public boolean isAsync() {
         return true;
     }
 
-    @Override
-    public Duration interval() {
-        return Duration.of(1, ChronoUnit.SECONDS);
+    @Override public Duration interval() {
+        return Duration.of(2, ChronoUnit.MINUTES);
+    }
+
+    @Override public void accept(Task task) {
+        handler.invalidateAfkCache();
     }
 }

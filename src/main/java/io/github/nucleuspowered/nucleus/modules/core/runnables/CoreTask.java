@@ -11,7 +11,8 @@ import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.scheduler.Task;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Core tasks. No module, must always run.
@@ -27,8 +28,8 @@ public class CoreTask extends TaskBase {
     }
 
     @Override
-    public TimePerRun interval() {
-        return new TimePerRun(300, TimeUnit.SECONDS);
+    public Duration interval() {
+        return Duration.of(5, ChronoUnit.MINUTES);
     }
 
     @Override

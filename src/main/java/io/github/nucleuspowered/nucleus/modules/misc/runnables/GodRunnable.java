@@ -14,9 +14,10 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +34,8 @@ public class GodRunnable extends TaskBase {
     }
 
     @Override
-    public TimePerRun interval() {
-        return new TimePerRun(5, TimeUnit.SECONDS);
+    public Duration interval() {
+        return Duration.of(5, ChronoUnit.SECONDS);
     }
 
     @Override

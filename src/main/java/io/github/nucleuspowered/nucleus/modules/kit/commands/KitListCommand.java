@@ -100,7 +100,7 @@ public class KitListCommand extends io.github.nucleuspowered.nucleus.internal.co
                         .style(TextStyles.STRIKETHROUGH).build();
             }
 
-            // If an interval is used...
+            // If an intervalOld is used...
             Duration interval = kitObj.getInterval();
             if (!interval.isZero() && !kitPermissionHandler.testCooldownExempt(p)) {
 

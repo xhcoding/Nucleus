@@ -13,9 +13,11 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
-import javax.inject.Inject;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 public class JailTask extends TaskBase {
     @Inject private NucleusPlugin plugin;
@@ -34,8 +36,8 @@ public class JailTask extends TaskBase {
     }
 
     @Override
-    public TimePerRun interval() {
-        return new TimePerRun(2, TimeUnit.SECONDS);
+    public Duration interval() {
+        return Duration.of(1, ChronoUnit.SECONDS);
     }
 
 }

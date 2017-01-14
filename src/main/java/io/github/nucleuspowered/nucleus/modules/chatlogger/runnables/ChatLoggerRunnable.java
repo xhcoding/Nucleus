@@ -13,7 +13,8 @@ import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 import javax.inject.Inject;
 
@@ -36,9 +37,10 @@ public class ChatLoggerRunnable extends TaskBase {
     }
 
     @Override
-    public TimePerRun interval() {
-        return new TimePerRun(1, TimeUnit.SECONDS);
+    public Duration interval() {
+        return Duration.of(1, ChronoUnit.SECONDS);
     }
+
 
     @Override
     public void accept(Task task) {

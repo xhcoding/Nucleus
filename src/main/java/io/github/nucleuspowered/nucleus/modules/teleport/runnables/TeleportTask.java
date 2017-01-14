@@ -8,10 +8,13 @@ import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.scheduler.Task;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import javax.inject.Inject;
-import java.util.concurrent.TimeUnit;
 
 public class TeleportTask extends TaskBase {
+
     @Inject private TeleportHandler handler;
 
     @Override
@@ -25,9 +28,7 @@ public class TeleportTask extends TaskBase {
     }
 
     @Override
-    public TimePerRun interval() {
-        return new TimePerRun(2, TimeUnit.SECONDS);
+    public Duration interval() {
+        return Duration.of(2, ChronoUnit.SECONDS);
     }
-
-
 }
