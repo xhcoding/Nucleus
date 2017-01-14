@@ -5,10 +5,10 @@
 package io.github.nucleuspowered.nucleus;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.chat.config.TemplateConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -21,12 +21,14 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Tuple;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -43,8 +45,8 @@ public class NameUtil {
     private Optional<ChatConfigAdapter> chatConfigAdapterOptional = null;
 
     private final static Map<Character, TextColor> colourMap = Maps.newHashMap();
-    private final static Map<Character, TextStyle> styleMap = Maps.newHashMap();
-    private final static Map<String, TextStyle> styleMapFull = Maps.newHashMap();
+    private final static Map<Character, TextStyle> styleMap;
+    private final static Map<Tuple<Character, String>, TextStyle> styleMapFull = Maps.newHashMap();
 
     static {
         colourMap.put('0', TextColors.BLACK);
@@ -64,18 +66,26 @@ public class NameUtil {
         colourMap.put('e', TextColors.YELLOW);
         colourMap.put('f', TextColors.WHITE);
 
-        styleMap.put('k', TextStyles.OBFUSCATED);
-        styleMap.put('l', TextStyles.BOLD);
-        styleMap.put('m', TextStyles.STRIKETHROUGH);
-        styleMap.put('n', TextStyles.UNDERLINE);
-        styleMap.put('o', TextStyles.ITALIC);
+        styleMapFull.put(Tuple.of('k', "OBFUSCATED"), TextStyles.OBFUSCATED);
+        styleMapFull.put(Tuple.of('l', "BOLD"), TextStyles.BOLD);
+        styleMapFull.put(Tuple.of('m', "STRIKETHROUGH"), TextStyles.STRIKETHROUGH);
+        styleMapFull.put(Tuple.of('n', "UNDERLINE"), TextStyles.UNDERLINE);
+        styleMapFull.put(Tuple.of('o', "ITALIC"), TextStyles.ITALIC);
+        styleMapFull.put(Tuple.of('r', "RESET"), TextStyles.RESET);
 
-        styleMapFull.put("OBFUSCATED", TextStyles.OBFUSCATED);
-        styleMapFull.put("MAGIC", TextStyles.OBFUSCATED);
-        styleMapFull.put("BOLD", TextStyles.BOLD);
-        styleMapFull.put("STRIKETHROUGH", TextStyles.STRIKETHROUGH);
-        styleMapFull.put("UNDERLINE", TextStyles.UNDERLINE);
-        styleMapFull.put("ITALIC", TextStyles.ITALIC);
+        styleMap = styleMapFull.entrySet().stream()
+            .collect(Collectors.toMap(x -> x.getKey().getFirst(), Map.Entry::getValue));
+
+        // Do after to avoid exceptions.
+        styleMapFull.put(Tuple.of('k', "MAGIC"), TextStyles.OBFUSCATED);
+    }
+
+    public static ImmutableMap<Character, TextColor> getColours() {
+        return ImmutableMap.copyOf(colourMap);
+    }
+
+    public static ImmutableMap<Tuple<Character, String>, TextStyle> getStyles() {
+        return ImmutableMap.copyOf(styleMapFull);
     }
 
      /**

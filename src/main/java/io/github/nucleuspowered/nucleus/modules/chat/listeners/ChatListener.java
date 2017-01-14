@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
@@ -13,6 +14,7 @@ import io.github.nucleuspowered.nucleus.api.util.NucleusIgnorableChatChannel;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.chat.ChatModule;
@@ -34,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -48,13 +51,29 @@ public class ChatListener extends ListenerBase {
 
     private static final Pattern prefixPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*$");
     private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
+
+    // Order is important here!
+    private static final Map<String, String> permissionToDesc = Maps.newHashMap();
     private static final Map<String[], Function<String, String>> replacements = createReplacements();
 
     private static Map<String[], Function<String, String>> createReplacements() {
         Map<String[], Function<String, String>> t = new HashMap<>();
 
-        t.put(new String[] { prefix + "colour", prefix + "color" }, s -> s.replaceAll("[&]+[0-9a-fA-F]", ""));
-        t.put(new String[] { prefix + "style" }, s -> s.replaceAll("[&]+[l-oL-O]", ""));
+        MessageProvider mp = Nucleus.getNucleus().getMessageProvider();
+
+        BiFunction<String, String, String> fss = (key, s) -> s.replaceAll("[&]+[" + key.toLowerCase() + key.toUpperCase() + "]", "");
+        NameUtil.getColours().forEach((key, value) -> {
+            t.put(new String[]{prefix + "colour." + value.getName(), prefix + "color." + value.getName()}, s -> fss.apply(key.toString(), s));
+            permissionToDesc.put(prefix + "colour." + value.getName(), mp.getMessageWithFormat("permission.chat.colourspec", value.getName().toLowerCase(), key.toString()));
+            permissionToDesc.put(prefix + "color." + value.getName(), mp.getMessageWithFormat("permission.chat.colorspec", value.getName().toLowerCase(), key.toString()));
+        });
+
+        NameUtil.getStyles().entrySet().stream().filter(x -> x.getKey().getFirst() != 'k').forEach((k) -> {
+            t.put(new String[] { prefix + "style." + k.getKey().getSecond().toLowerCase() }, s -> fss.apply(k.getKey().getFirst().toString(), s));
+            permissionToDesc.put(prefix + "style." + k.getKey().getSecond().toLowerCase(),
+                mp.getMessageWithFormat("permission.chat.colorspec", k.getKey().getSecond().toLowerCase(), k.getKey().getFirst().toString()));
+        });
+
         t.put(new String[] { prefix + "magic" }, s -> s.replaceAll("[&]+[kK]", ""));
 
         return t;
@@ -92,6 +111,7 @@ public class ChatListener extends ListenerBase {
         mp.put(prefix + "style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.style"), SuggestedLevel.ADMIN));
         mp.put(prefix + "magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.magic"), SuggestedLevel.ADMIN));
         mp.put(prefix + "url", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.chat.urls"), SuggestedLevel.ADMIN));
+        permissionToDesc.forEach((k, v) -> mp.put(k, new PermissionInformation(v, SuggestedLevel.ADMIN)));
         return mp;
     }
 
