@@ -60,6 +60,8 @@ public class UserService extends Service<UserDataNode>
     private final Instant serviceLoadTime = Instant.now();
     private final CommandPermissionHandler ssSocialSpy;
 
+    private int previousHungerValue = 20;
+
     // Use to keep hold of whether this is the first time on the server for a player.
     private boolean firstPlay = false;
 
@@ -229,8 +231,11 @@ public class UserService extends Service<UserDataNode>
     public void setInvulnerable(boolean invuln) {
         data.setInvulnerable(invuln);
 
-        // Reduce saturation to normal levels - this will get topped up later.
-        getPlayer().ifPresent(p -> p.offer(Keys.FOOD_LEVEL, 20));
+        if (invuln) {
+            getPlayer().ifPresent(x -> previousHungerValue = x.get(Keys.FOOD_LEVEL).orElse(20));
+        } else {
+            getPlayer().ifPresent(p -> p.offer(Keys.FOOD_LEVEL, previousHungerValue));
+        }
     }
 
     @Override
