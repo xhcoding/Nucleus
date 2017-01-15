@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.WorldBorder;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Map;
@@ -29,22 +30,32 @@ public class WorldHelper {
         return pregen.containsKey(uuid);
     }
 
-    public boolean addPregenForWorld(World world, EnhancedGeneration.NucleusChunkPreGenerator preGenerator) {
+    public boolean addPregenForWorld(World world, EnhancedGeneration.NucleusChunkPreGenerator preGenerator, Boolean aggressive) {
         cleanup();
         if (!isPregenRunningForWorld(world.getUniqueId())) {
-            pregen.put(world.getUniqueId(), Sponge.getScheduler().createTaskBuilder().intervalTicks(4).execute(preGenerator).submit(plugin));
+            if (aggressive) {
+                pregen.put(world.getUniqueId(), Sponge.getScheduler().createTaskBuilder().intervalTicks(3).execute(preGenerator).submit(plugin));
+            } else {
+                pregen.put(world.getUniqueId(), Sponge.getScheduler().createTaskBuilder().intervalTicks(10).execute(preGenerator).submit(plugin));
+            }
+
             return true;
         }
 
         return false;
     }
 
-    public boolean startPregenningForWorld(World world) {
+    public boolean startPregenningForWorld(World world, boolean agressive) {
         cleanup();
         if (!isPregenRunningForWorld(world.getUniqueId())) {
             WorldProperties wp = world.getProperties();
-            pregen.put(world.getUniqueId(), world.newChunkPreGenerate(wp.getWorldBorderCenter(), wp.getWorldBorderDiameter())
-                    .owner(plugin).logger(new GenerationLogger(plugin.getLogger(), world.getName())).start());
+            WorldBorder.ChunkPreGenerate wbcp = world.newChunkPreGenerate(wp.getWorldBorderCenter(), wp.getWorldBorderDiameter())
+                .owner(plugin).logger(new GenerationLogger(plugin.getLogger(), world.getName()));
+            if (agressive) {
+                wbcp.tickPercentLimit(90).tickInterval(3);
+            }
+
+            pregen.put(world.getUniqueId(), wbcp.start());
             return true;
         }
 

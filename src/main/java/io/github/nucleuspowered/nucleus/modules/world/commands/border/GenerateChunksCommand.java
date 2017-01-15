@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.gen.EnhancedGeneration;
+import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -26,7 +27,6 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 import javax.inject.Inject;
 
@@ -39,16 +39,16 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
     @Inject
     private WorldHelper worldHelper;
 
-    private final BiFunction<World, CommandSource, CommandResult> standardGeneration = (world, source) -> {
+    private final TriFunction<World, CommandSource, Boolean, CommandResult> standardGeneration = (world, source, aggressive) -> {
         // Create the task.
-        this.worldHelper.startPregenningForWorld(world);
+        this.worldHelper.startPregenningForWorld(world, aggressive);
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.standard"));
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
 
         return CommandResult.success();
     };
 
-    private BiFunction<World, CommandSource, CommandResult> generator;
+    private TriFunction<World, CommandSource, Boolean, CommandResult> generator;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -60,7 +60,7 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.flags().flag("s").buildWith(
+                GenericArguments.flags().flag("s").flag("a").buildWith(
                 GenericArguments.optional(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY))))
         };
     }
@@ -81,9 +81,9 @@ public class GenerateChunksCommand extends io.github.nucleuspowered.nucleus.inte
         }
 
         if (args.hasAny("s")) {
-            return standardGeneration.apply(w.get(), src);
+            return standardGeneration.accept(w.get(), src, args.hasAny("a"));
         } else {
-            return this.generator.apply(w.get(), src);
+            return this.generator.accept(w.get(), src, args.hasAny("a"));
         }
     }
 

@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorld;
 import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorldServer;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
+import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -22,13 +23,12 @@ import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
  * Generation for the NucleusMixin enhanced version.
  */
-public class EnhancedGeneration implements BiFunction<World, CommandSource, CommandResult> {
+public class EnhancedGeneration implements TriFunction<World, CommandSource, Boolean, CommandResult> {
 
     private final String notifyPermission;
     private final WorldHelper worldHelper;
@@ -39,8 +39,8 @@ public class EnhancedGeneration implements BiFunction<World, CommandSource, Comm
     }
 
     @Override
-    public CommandResult apply(World world, CommandSource source) {
-        worldHelper.addPregenForWorld(world, new NucleusChunkPreGenerator(world, notifyPermission));
+    public CommandResult accept(World world, CommandSource source, Boolean aggressive) {
+        worldHelper.addPregenForWorld(world, new NucleusChunkPreGenerator(world, notifyPermission, aggressive), aggressive);
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.enhanced"));
         source.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
         return CommandResult.success();
@@ -81,11 +81,20 @@ public class EnhancedGeneration implements BiFunction<World, CommandSource, Comm
         private int skipped = 0;
         private boolean highMemTriggered = false;
 
-        private NucleusChunkPreGenerator(World world, String permission) {
+        private final boolean aggressive;
+
+        private NucleusChunkPreGenerator(World world, String permission, boolean aggressive) {
             this.notifyPermission = permission;
+            this.aggressive = aggressive;
             this.world = world;
             this.chunkRadius = GenericMath.floor(world.getWorldBorder().getDiameter() / (2 * Sponge.getServer().getChunkLayout().getChunkSize().getX()));
-            this.tickTimeLimit = Math.round(Sponge.getScheduler().getPreferredTickInterval() * 0.8);
+
+            if (aggressive) {
+                this.tickTimeLimit = Math.round(Sponge.getScheduler().getPreferredTickInterval() * 0.9);
+            } else {
+                this.tickTimeLimit = Math.round(Sponge.getScheduler().getPreferredTickInterval() * 0.8);
+            }
+
             final Optional<Vector3i> currentPosition = Sponge.getServer().getChunkLayout().toChunk(world.getWorldBorder().getCenter().toInt());
             if (currentPosition.isPresent()) {
                 this.currentPosition = currentPosition.get();
@@ -110,21 +119,24 @@ public class EnhancedGeneration implements BiFunction<World, CommandSource, Comm
                 lastSaveTime = startTime;
             }
 
-            long percent = getMemPercent();
-            if (percent >= 90) {
-                if (!highMemTriggered) {
-                    world.getLoadedChunks().forEach(Chunk::unloadChunk);
-                    save();
-                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.memory.high", String.valueOf(percent));
-                    highMemTriggered = true;
-                }
+            if (!aggressive) {
+                long percent = getMemPercent();
+                if (percent >= 90) {
+                    if (!highMemTriggered) {
+                        world.getLoadedChunks().forEach(Chunk::unloadChunk);
+                        save();
+                        NucleusPlugin.getNucleus().getMessageProvider()
+                            .getTextMessageWithFormat("command.pregen.gen.memory.high", String.valueOf(percent));
+                        highMemTriggered = true;
+                    }
 
-                // Try again next tick.
-                return;
-            } else if (highMemTriggered && percent <= 80) {
-                // Get the memory usage down to 80% to prevent too much ping pong.
-                highMemTriggered = false;
-                NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.memory.low");
+                    // Try again next tick.
+                    return;
+                } else if (highMemTriggered && percent <= 80) {
+                    // Get the memory usage down to 80% to prevent too much ping pong.
+                    highMemTriggered = false;
+                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.memory.low");
+                }
             }
 
             INucleusMixinWorld inmw = ((INucleusMixinWorld)world);
