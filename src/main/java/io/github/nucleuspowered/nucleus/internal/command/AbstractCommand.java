@@ -255,11 +255,12 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             this.afkArgs.addAll(Arrays.asList(n.value()));
         }
 
+        requiresEconomy = this.getClass().isAnnotationPresent(RequiresEconomy.class);
+
+        afterPostInit();
+
         permissionsToRegister().forEach((k, v) -> permissions.registerPermssion(k, v));
         permissionSuffixesToRegister().forEach((k, v) -> permissions.registerPermssionSuffix(k, v));
-
-        requiresEconomy = this.getClass().isAnnotationPresent(RequiresEconomy.class);
-        afterPostInit();
     }
 
     protected void afterPostInit() {

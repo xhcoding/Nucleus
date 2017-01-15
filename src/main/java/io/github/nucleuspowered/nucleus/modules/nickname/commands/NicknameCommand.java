@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RegisterCommand({"nick", "nickname"})
 @Permissions
@@ -88,15 +89,20 @@ public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.c
     }
 
     @Override
-    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.others"), SuggestedLevel.ADMIN));
         m.put("colour", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
         m.put("color", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
         m.put("style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.style"), SuggestedLevel.ADMIN));
         m.put("magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.magic"), SuggestedLevel.ADMIN));
-        permissionToDesc.forEach((k, v) -> m.put(k, new PermissionInformation(v, SuggestedLevel.ADMIN)));
         return m;
+    }
+
+    @Override
+    protected Map<String, PermissionInformation> permissionsToRegister() {
+        return permissionToDesc.entrySet().stream().collect(Collectors.toMap(
+            Map.Entry::getKey, v -> new PermissionInformation(v.getValue(), SuggestedLevel.ADMIN)));
     }
 
     @Override
