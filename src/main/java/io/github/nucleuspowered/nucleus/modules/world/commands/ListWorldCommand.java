@@ -14,6 +14,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -52,6 +53,10 @@ public class ListWorldCommand extends AbstractCommand<CommandSource> {
             }
 
             listContent.add(plugin.getMessageProvider().getTextMessageWithFormat("command.world.list.worlditem", x.getWorldName()));
+
+            // As requested by Pixelmon for use in their config.
+            x.getAdditionalProperties().getInt(DataQuery.of("SpongeData", "dimensionId")).ifPresent(i ->
+                listContent.add(plugin.getMessageProvider().getTextMessageWithFormat("command.world.list.dimensionid", String.valueOf(i))));
 
             if (x.isEnabled()) {
                 boolean worldLoaded = Sponge.getServer().getWorld(x.getUniqueId()).isPresent();
