@@ -505,7 +505,7 @@ public class Util {
             if (blockState.isPresent()) {
                 return blockState.get();
             }
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             if (Nucleus.getNucleus().isDebugMode()) {
                 e.printStackTrace();
             }
