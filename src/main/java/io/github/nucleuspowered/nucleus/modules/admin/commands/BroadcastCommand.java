@@ -61,7 +61,7 @@ public class BroadcastCommand extends io.github.nucleuspowered.nucleus.internal.
             messages.add(Text.of(cst.colour, cst.style, chatUtil.getMessageFromTemplate(s, src, true)));
         }
 
-        MessageChannel.TO_ALL.send(src, Text.joinWith(Text.of(" "), messages));
+        MessageChannel.TO_ALL.send(src, Text.joinWith(Text.EMPTY, messages));
         return CommandResult.success();
     }
 }

@@ -278,6 +278,12 @@ public class ChatUtil {
 
             if (tc == TextColors.NONE) {
                 tc = texts.get(i).getColor();
+
+                // If the text colour is reset, the style requires a reset too.
+                if (tc == TextColors.RESET) {
+                    ts = TextStyles.RESET;
+                    break;
+                }
             }
 
             if (ts == TextStyles.NONE) {
