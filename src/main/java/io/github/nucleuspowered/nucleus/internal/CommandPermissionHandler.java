@@ -16,6 +16,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.Subject;
 
 import java.lang.annotation.Annotation;
@@ -195,6 +197,10 @@ public class CommandPermissionHandler {
     }
 
     public boolean testSuffix(Subject src, String suffix) {
+        if (src instanceof User && !(src instanceof Player) && ((User) src).getPlayer().isPresent()) {
+            src = ((User) src).getPlayer().get();
+        }
+
         return test(src, prefix + suffix);
     }
 
