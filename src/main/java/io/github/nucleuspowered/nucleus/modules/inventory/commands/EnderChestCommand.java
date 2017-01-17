@@ -28,9 +28,6 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 
-@NoWarmup
-@NoCooldown
-@NoCost
 @Permissions
 @RegisterCommand({"enderchest", "ec", "echest"})
 @Since(minecraftVersion = "1.10.2", spongeApiVersion = "5.0.0", nucleusVersion = "0.13.0")
