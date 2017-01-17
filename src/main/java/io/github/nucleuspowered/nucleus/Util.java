@@ -21,7 +21,6 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
@@ -518,31 +517,6 @@ public class Util {
         Entity entityToDrop = world.createEntity(EntityTypes.ITEM, position);
         entityToDrop.offer(Keys.REPRESENTED_ITEM, itemStackSnapshotToDrop);
         world.spawnEntity(entityToDrop, Cause.of(NamedCause.owner(Nucleus.getNucleus())));
-    }
-
-    /**
-     * Gets the rotation required to face the required point.
-     * @param entityLocation The {@link Transform} of the {@link Entity} in question.
-     * @param locationToFace The {@link Location} to face.
-     * @return An {@link Optional#empty()} if the two worlds are not the same, else an {@link Optional} containing the {@link Vector3d}
-     *         containing the Euler angles to set the rotation to. If the rotation causes the entity to look straight up or down, sets
-     *         the yaw to the original yaw.
-     */
-    public static Optional<Vector3d> getRotationToFace(Transform<World> entityLocation, Location<World> locationToFace) {
-        if (!entityLocation.getExtent().equals(locationToFace.getExtent())) {
-            return Optional.empty();
-        }
-
-        Vector3d directionToFace = locationToFace.getPosition().sub(entityLocation.getLocation().getPosition());
-        Vector3d rotation = getRotationFromDirection(directionToFace);
-
-        // If we look directly up or down, keep the yaw intact.
-        if (directionToFace.getX() == 0 && directionToFace.getZ() == 0) {
-            return Optional.of(new Vector3d(rotation.getX(), entityLocation.getYaw(), 0));
-        }
-
-        // Otherwise, get the rotation
-        return Optional.of(rotation);
     }
 
     /**
