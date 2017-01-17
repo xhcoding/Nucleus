@@ -106,7 +106,7 @@ public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.c
         } else if (newCost == -1) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.success.removed", name, transactionType.getTranslation(), worth));
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.success.changed", name, transactionType.getTranslation(), worth, newWorth));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setworth.success.changed", name, transactionType.getTranslation(), newWorth, worth));
         }
 
         return CommandResult.success();
