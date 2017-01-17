@@ -57,7 +57,7 @@ public class AFKHandler {
         }
     }
 
-    public void stageUserActivityUpdate(UUID uuid) {
+    private void stageUserActivityUpdate(UUID uuid) {
         synchronized (lock) {
             activity.add(uuid);
         }
@@ -222,22 +222,26 @@ public class AFKHandler {
         }
 
         private void updateFromPermissions() {
-            // Get the subject.
-            Sponge.getServer().getPlayer(uuid).ifPresent(x -> {
-                if (getPermissionUtil().testSuffix(x, exempttoggle)) {
-                    timeToAfk = -1;
-                } else {
-                    timeToAfk = Util.getPositiveLongOptionFromSubject(x, afkOption).orElseGet(() -> config.getAfkTime()) * 1000;
-                }
+            synchronized (this) {
+                if (!cacheValid) {
+                    // Get the subject.
+                    Sponge.getServer().getPlayer(uuid).ifPresent(x -> {
+                        if (getPermissionUtil().testSuffix(x, exempttoggle)) {
+                            timeToAfk = -1;
+                        } else {
+                            timeToAfk = Util.getPositiveLongOptionFromSubject(x, afkOption).orElseGet(() -> config.getAfkTime()) * 1000;
+                        }
 
-                if (getPermissionUtil().testSuffix(x, exemptkick)) {
-                    timeToKick = -1;
-                } else {
-                    timeToKick = Util.getPositiveLongOptionFromSubject(x, afkKickOption).orElseGet(() -> config.getAfkTimeToKick()) * 1000;
-                }
+                        if (getPermissionUtil().testSuffix(x, exemptkick)) {
+                            timeToKick = -1;
+                        } else {
+                            timeToKick = Util.getPositiveLongOptionFromSubject(x, afkKickOption).orElseGet(() -> config.getAfkTimeToKick()) * 1000;
+                        }
 
-                cacheValid = true;
-            });
+                        cacheValid = true;
+                    });
+                }
+            }
         }
     }
 }
