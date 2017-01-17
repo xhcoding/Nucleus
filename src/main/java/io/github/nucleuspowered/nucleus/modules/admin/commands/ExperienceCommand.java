@@ -5,7 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -23,7 +28,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoWarmup
 @NoCost
-public class ExperienceCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class ExperienceCommand extends AbstractCommand<CommandSource> {
 
     public static final String playerKey = "player";
     public static final String experienceKey = "experience";

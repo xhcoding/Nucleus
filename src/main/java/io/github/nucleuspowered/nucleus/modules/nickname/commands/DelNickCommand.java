@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,7 +20,7 @@ import org.spongepowered.api.text.Text;
 
 @RegisterCommand({"delnick", "delnickname", "deletenick"})
 @Permissions(mainOverride = "nick")
-public class DelNickCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class DelNickCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager loader;
 

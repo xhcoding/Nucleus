@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -32,7 +33,7 @@ import java.util.Map;
 @NoCooldown
 @NoCost
 @RegisterCommand("socialspy")
-public class SocialSpyCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class SocialSpyCommand extends AbstractCommand<Player> {
 
     private final String arg = "Social Spy";
     @Inject private UserDataManager userConfigLoader;

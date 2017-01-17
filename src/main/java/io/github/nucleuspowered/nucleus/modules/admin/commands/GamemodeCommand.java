@@ -7,7 +7,9 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -30,7 +32,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"gamemode", "gm"})
-public class GamemodeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class GamemodeCommand extends AbstractCommand<CommandSource> {
 
     private final String userKey = "user";
     private final String gamemodeKey = "gamemode";

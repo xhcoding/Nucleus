@@ -19,12 +19,12 @@ public class CommandBuilder {
 
     private final NucleusPlugin plugin;
     private final Injector injector;
-    private final Set<Class<? extends AbstractCommand<?>>> commandSet;
+    private final Set<Class<? extends StandardAbstractCommand<?>>> commandSet;
     private final SimpleCommentedConfigurationNode sn;
     private final String moduleID;
     private final String moduleName;
 
-    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
+    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends StandardAbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
         this.plugin = plugin;
         this.injector = injector;
         this.commandSet = commandSet;
@@ -33,11 +33,11 @@ public class CommandBuilder {
         this.moduleName = moduleName;
     }
 
-    public <T extends AbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass) {
+    public <T extends StandardAbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass) {
         return buildCommand(commandClass, true);
     }
 
-    <T extends AbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass, boolean rootCmd) {
+    <T extends StandardAbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass, boolean rootCmd) {
         Optional<T> optionalCommand = getInstance(commandClass);
         if (!optionalCommand.isPresent()) {
             return Optional.empty();
@@ -86,7 +86,7 @@ public class CommandBuilder {
         return Optional.empty();
     }
 
-    private <T extends AbstractCommand<?>> Optional<T> getInstance(Class<T> clazz) {
+    private <T extends StandardAbstractCommand<?>> Optional<T> getInstance(Class<T> clazz) {
         try {
             T instance = injector.getInstance(clazz);
             if (instance.canLoad()) {

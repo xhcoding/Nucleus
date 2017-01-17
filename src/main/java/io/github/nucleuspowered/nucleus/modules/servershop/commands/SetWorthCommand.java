@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -39,7 +40,7 @@ import java.util.function.Function;
 @NoWarmup
 @Permissions
 @RegisterCommand({"setworth", "setitemworth"})
-public class SetWorthCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SetWorthCommand extends AbstractCommand<CommandSource> {
 
     private final String item = "item";
     private final String type = "type";

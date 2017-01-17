@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -44,7 +45,7 @@ import java.util.Optional;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand(value = "warp")
 @NoCost
-public class WarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class WarpCommand extends AbstractCommand<Player> {
 
     static final String warpNameArg = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("args.name.warpname");
 

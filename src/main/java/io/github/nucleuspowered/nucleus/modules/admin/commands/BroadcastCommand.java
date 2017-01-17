@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.admin.config.BroadcastConfig;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +32,7 @@ import java.util.List;
 @NoWarmup
 @Permissions
 @RegisterCommand({ "broadcast", "bcast", "bc" })
-public class BroadcastCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class BroadcastCommand extends AbstractCommand<CommandSource> {
     private final String message = "message";
     @Inject private AdminConfigAdapter adminConfigAdapter;
     @Inject private ChatUtil chatUtil;

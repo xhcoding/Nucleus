@@ -13,7 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoPermissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.entity.living.player.Player;
@@ -36,7 +36,7 @@ public class CommandPermissionHandler {
 
     private final boolean justReturnTrue;
 
-    public CommandPermissionHandler(Class<? extends AbstractCommand> cab, Nucleus plugin) {
+    public CommandPermissionHandler(Class<? extends StandardAbstractCommand> cab, Nucleus plugin) {
         justReturnTrue = cab.isAnnotationPresent(NoPermissions.class);
 
         // If there are no permissions to assign, we just return true.
@@ -118,7 +118,7 @@ public class CommandPermissionHandler {
         base = prefix + "base";
         selectors = prefix + "selectors";
 
-        if (co.subcommandOf() != AbstractCommand.class) {
+        if (co.subcommandOf() != StandardAbstractCommand.class) {
             command = String.format("%s %s", co.subcommandOf().getAnnotation(RegisterCommand.class).value()[0], command);
         }
 

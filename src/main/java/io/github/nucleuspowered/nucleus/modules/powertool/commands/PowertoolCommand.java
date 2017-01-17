@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -39,7 +40,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @RegisterCommand({"powertool", "pt"})
-public class PowertoolCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class PowertoolCommand extends AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;
     private final String commandKey = "command";

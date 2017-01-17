@@ -7,7 +7,13 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -26,7 +32,7 @@ import java.util.Map;
 @NoCost
 @RegisterCommand({"tptoggle"})
 @RunAsync
-public class TeleportToggleCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class TeleportToggleCommand extends AbstractCommand<Player> {
 
     private final String key = "toggle";
     @Inject private UserDataManager udm;

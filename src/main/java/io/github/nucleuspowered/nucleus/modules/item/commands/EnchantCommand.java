@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Permissions
 @RegisterCommand("enchant")
-public class EnchantCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class EnchantCommand extends AbstractCommand<Player> {
 
     private final String enchantmentKey = "enchantment";
     private final String levelKey = "level";

@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -28,7 +29,7 @@ import java.util.Map;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"helpop"})
-public class HelpOpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class HelpOpCommand extends AbstractCommand<Player> {
 
     private final String messageKey = "message";
 

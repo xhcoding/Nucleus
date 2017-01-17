@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.admin.commands.ExperienceCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -25,7 +26,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @Permissions(prefix = "exp")
 @RegisterCommand(value = "take", subcommandOf = ExperienceCommand.class)
-public class TakeExperience extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class TakeExperience extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {

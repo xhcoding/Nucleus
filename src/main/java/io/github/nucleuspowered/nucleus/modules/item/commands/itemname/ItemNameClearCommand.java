@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.item.commands.itemname;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 @Permissions(prefix = "itemname")
 @RegisterCommand(value = "clear", subcommandOf = ItemNameCommand.class)
-public class ItemNameClearCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class ItemNameClearCommand extends AbstractCommand<Player> {
 
     @Inject private MessageProvider provider;
 

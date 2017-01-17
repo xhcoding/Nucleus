@@ -7,7 +7,13 @@ package io.github.nucleuspowered.nucleus.modules.note.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoteArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -26,7 +32,7 @@ import java.util.List;
 @NoCooldown
 @NoCost
 @RegisterCommand({"removenote", "deletenote", "delnote"})
-public class RemoveNoteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class RemoveNoteCommand extends AbstractCommand<CommandSource> {
 
     @Inject private NoteHandler handler;
     private final String noteKey = "note";

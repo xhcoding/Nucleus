@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -18,7 +19,7 @@ import org.spongepowered.api.entity.living.player.Player;
  */
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setspawn"}, subcommandOf = WorldCommand.class)
-public class SetSpawnWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class SetSpawnWorldCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {

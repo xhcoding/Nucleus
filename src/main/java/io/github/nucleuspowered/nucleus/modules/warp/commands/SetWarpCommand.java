@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
  */
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class)
-public class SetWarpCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class SetWarpCommand extends AbstractCommand<Player> {
 
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
 

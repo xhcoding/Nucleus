@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
+import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -13,10 +14,10 @@ public abstract class CostCancellableTask implements CancellableTask {
 
     protected final double cost;
     protected final NucleusPlugin plugin;
-    protected final Player player;
+    protected final SubjectPermissionCache<Player> player;
     private boolean hasRun = false;
 
-    public CostCancellableTask(NucleusPlugin plugin, Player src, double cost) {
+    public CostCancellableTask(NucleusPlugin plugin, SubjectPermissionCache<Player> src, double cost) {
         this.plugin = plugin;
         this.player = src;
         this.cost = cost;
@@ -27,7 +28,7 @@ public abstract class CostCancellableTask implements CancellableTask {
         if (!hasRun) {
             hasRun = true;
             if (cost > 0) {
-                Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> plugin.getEconHelper().depositInPlayer(player, cost));
+                Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> plugin.getEconHelper().depositInPlayer(player.getSubject(), cost));
             }
         }
     }

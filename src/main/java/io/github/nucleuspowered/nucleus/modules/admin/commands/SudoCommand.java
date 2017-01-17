@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 import com.google.common.collect.ImmutableMap;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -31,7 +32,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("sudo")
-public class SudoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SudoCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "player";
     private final String commandKey = "command";

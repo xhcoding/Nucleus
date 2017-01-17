@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.admin.commands.ExperienceCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -29,7 +30,7 @@ import java.util.Optional;
 @NoCost
 @Permissions(prefix = "exp")
 @RegisterCommand(value = "set", subcommandOf = ExperienceCommand.class)
-public class SetExperience extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SetExperience extends AbstractCommand<CommandSource> {
 
     private final String levelKey = "level";
 

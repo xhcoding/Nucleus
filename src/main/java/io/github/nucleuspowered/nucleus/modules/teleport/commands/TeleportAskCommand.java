@@ -6,8 +6,14 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -17,11 +23,12 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  * Sends a request to a player to teleport to them, using click handlers.
@@ -31,7 +38,7 @@ import java.util.Map;
 @RegisterCommand({"tpa", "teleportask"})
 @RunAsync
 @NotifyIfAFK(TeleportAskCommand.playerKey)
-public class TeleportAskCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class TeleportAskCommand extends StandardAbstractCommand<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
@@ -58,7 +65,8 @@ public class TeleportAskCommand extends io.github.nucleuspowered.nucleus.interna
     }
 
     @Override
-    public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+    public CommandResult executeCommand(SubjectPermissionCache<Player> cache, CommandContext args) throws Exception {
+        Player src = cache.getSubject();
         Player target = args.<Player>getOne(playerKey).get();
         if (src.equals(target)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.teleport.self"));
@@ -66,12 +74,12 @@ public class TeleportAskCommand extends io.github.nucleuspowered.nucleus.interna
         }
 
         TeleportHandler.TeleportBuilder tb = tpHandler.getBuilder().setFrom(src).setTo(target).setSafe(!args.<Boolean>getOne("f").orElse(false));
-        int warmup = getWarmup(src);
+        int warmup = getWarmup(cache);
         if (warmup > 0) {
             tb.setWarmupTime(warmup);
         }
 
-        double cost = getCost(src, args);
+        double cost = getCost(cache, args);
         if (cost > 0.) {
             tb.setCharge(src).setCost(cost);
         }

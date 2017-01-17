@@ -19,8 +19,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
-import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -97,18 +97,18 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadCommands() {
-        Set<Class<? extends AbstractCommand<?>>> cmds = getStreamForModule(AbstractCommand.class)
+        Set<Class<? extends StandardAbstractCommand<?>>> cmds = getStreamForModule(StandardAbstractCommand.class)
                 .filter(x -> x.isAnnotationPresent(RegisterCommand.class))
                 .filter(checkMixin("command", t -> t.getName() + ": (" + t.getAnnotation(RegisterCommand.class).value()[0] + ")"))
-                .map(x -> (Class<? extends AbstractCommand<?>>)x) // Keeping the compiler happy...
+                .map(x -> (Class<? extends StandardAbstractCommand<?>>)x) // Keeping the compiler happy...
                 .collect(Collectors.toSet());
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
         Injector injector = plugin.getInjector();
 
-        Set<Class<? extends AbstractCommand>> commandBases =  cmds.stream().filter(x -> {
+        Set<Class<? extends StandardAbstractCommand>> commandBases =  cmds.stream().filter(x -> {
             RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
-            return (rc != null && rc.subcommandOf().equals(AbstractCommand.class));
+            return (rc != null && rc.subcommandOf().equals(StandardAbstractCommand.class));
         }).collect(Collectors.toSet());
 
         CommandBuilder builder = new CommandBuilder(plugin, injector, cmds, moduleId, moduleName);
@@ -268,13 +268,13 @@ public abstract class StandardModule implements Module {
         createSeenModule((String)null, function);
     }
 
-    protected final void createSeenModule(@Nullable Class<? extends AbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
+    protected final void createSeenModule(@Nullable Class<? extends StandardAbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information.
         CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getService(permissionClass);
         createSeenModule(permissionHandler == null ? null : permissionHandler.getBase(), function);
     }
 
-    protected final void createSeenModule(@Nullable Class<? extends AbstractCommand> permissionClass, String suffix, BiFunction<CommandSource, User, Collection<Text>> function) {
+    protected final void createSeenModule(@Nullable Class<? extends StandardAbstractCommand> permissionClass, String suffix, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information.
         CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getService(permissionClass);
         createSeenModule(permissionHandler == null ? null : permissionHandler.getPermissionWithSuffix(suffix), function);

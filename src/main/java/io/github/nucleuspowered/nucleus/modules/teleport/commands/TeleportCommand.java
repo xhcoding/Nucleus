@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
@@ -31,7 +32,7 @@ import java.util.Optional;
 
 @Permissions(prefix = "teleport", mainOverride = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @RegisterCommand(value = "teleport", rootAliasRegister = "tp")
-public class TeleportCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class TeleportCommand extends AbstractCommand<CommandSource> {
 
     private final String playerFromKey = "playerFrom";
     private final String playerKey = "player";

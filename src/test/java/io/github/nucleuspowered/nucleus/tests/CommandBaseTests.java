@@ -8,6 +8,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.Tristate;
 
 public class CommandBaseTests extends TestBase {
 
@@ -90,6 +92,7 @@ public class CommandBaseTests extends TestBase {
     private Player getMockPlayer() {
         Player pl = Mockito.mock(Player.class);
         Mockito.when(pl.hasPermission(Matchers.any())).thenReturn(true);
+        Mockito.when(pl.getPermissionValue(Matchers.any(), Matchers.any())).thenReturn(Tristate.TRUE);
         return pl;
     }
 
@@ -105,7 +108,7 @@ public class CommandBaseTests extends TestBase {
 
     @Permissions
     @RegisterCommand("test")
-    private class PlayerCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+    private class PlayerCommand extends AbstractCommand<Player> {
 
         @Override
         public String[] getAliases() {
@@ -120,7 +123,7 @@ public class CommandBaseTests extends TestBase {
 
     @Permissions
     @RegisterCommand("test")
-    private class BasicCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+    private class BasicCommand extends AbstractCommand<CommandSource> {
 
         @Override
         public String[] getAliases() {

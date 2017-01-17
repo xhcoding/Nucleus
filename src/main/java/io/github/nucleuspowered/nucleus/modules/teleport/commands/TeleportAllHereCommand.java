@@ -4,7 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -21,7 +26,7 @@ import javax.inject.Inject;
 @NoCost
 @NoCooldown
 @RegisterCommand({"tpall", "tpallhere"})
-public class TeleportAllHereCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class TeleportAllHereCommand extends AbstractCommand<Player> {
 
     @Inject private TeleportHandler handler;
 

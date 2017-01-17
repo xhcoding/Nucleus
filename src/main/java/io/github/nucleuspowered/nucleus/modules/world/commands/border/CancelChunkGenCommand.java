@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -17,10 +18,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.storage.WorldProperties;
-
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -29,7 +27,7 @@ import javax.inject.Inject;
 @NoWarmup
 @Permissions(prefix = "world.border", mainOverride = "gen")
 @RegisterCommand(value = "cancelgen", subcommandOf = BorderCommand.class)
-public class CancelChunkGenCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class CancelChunkGenCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
 

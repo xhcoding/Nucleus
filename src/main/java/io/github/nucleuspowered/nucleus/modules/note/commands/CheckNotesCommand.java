@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import org.spongepowered.api.Sponge;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoCost
 @RegisterCommand({"checknotes", "notes"})
-public class CheckNotesCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class CheckNotesCommand extends AbstractCommand<CommandSource> {
 
     @Inject private NoteHandler handler;
     private final String playerKey = "player";

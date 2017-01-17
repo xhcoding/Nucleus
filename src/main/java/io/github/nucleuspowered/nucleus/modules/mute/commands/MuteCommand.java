@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
@@ -48,7 +49,7 @@ import java.util.UUID;
 @NoCooldown
 @NoCost
 @RegisterCommand({"mute", "unmute"})
-public class MuteCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class MuteCommand extends AbstractCommand<CommandSource> {
 
     @Inject private MuteConfigAdapter mca;
     @Inject private MuteHandler handler;

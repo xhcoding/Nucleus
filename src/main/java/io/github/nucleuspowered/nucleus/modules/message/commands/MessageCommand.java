@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
@@ -31,7 +32,7 @@ import java.util.Map;
 @RunAsync
 @RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, rootAliasRegister = { "tell" })
 @NotifyIfAFK(MessageCommand.to)
-public class MessageCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class MessageCommand extends AbstractCommand<CommandSource> {
     static final String to = "to";
     private final String message = "message";
 

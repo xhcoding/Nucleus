@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.WeatherArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("weather")
-public class WeatherCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class WeatherCommand extends AbstractCommand<CommandSource> {
     private final String world = "world";
     private final String weather = "weather";
     private final String duration = "duration";

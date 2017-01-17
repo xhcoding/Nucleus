@@ -13,6 +13,8 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfig;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
@@ -23,13 +25,13 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.data.property.block.PassableProperty;
+import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
 
@@ -40,7 +42,7 @@ import java.util.function.Predicate;
 
 @Permissions
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
-public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
 
     private Set<BlockType> prohibitedTypes = null;
     // Works around a problem in the Sponge implementation.
@@ -50,9 +52,9 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
     @Inject private RTPConfigAdapter rca;
 
     @Override
-    public CommandResult executeCommand(final Player src, CommandContext args) throws Exception {
+    public CommandResult executeCommand(final SubjectPermissionCache<Player> src, CommandContext args) throws Exception {
         // Get the current world.
-        World currentWorld = src.getWorld();
+        World currentWorld = src.getSubject().getWorld();
 
         // World border
         WorldBorder wb = currentWorld.getWorldBorder();
@@ -62,7 +64,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
         Vector3d centre = wb.getCenter();
 
         int count = Math.max(rc.getNoOfAttempts(), 1);
-        src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
+        src.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
 
         Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args), src, currentWorld,
                 rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY())).submit(plugin);
@@ -84,11 +86,10 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
         private final int maxCount;
         private final int diameter;
         private final Vector3d centre;
-        private final TeleportHelper th = Sponge.getGame().getTeleportHelper();
         private final World currentWorld;
         private final boolean onSurface;
 
-        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, Player src, World currentWorld, boolean onSurface,
+        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, SubjectPermissionCache<Player> src, World currentWorld, boolean onSurface,
                         int minY, int maxY) {
             super(plugin, src, cost);
             this.count = count;
@@ -104,12 +105,16 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
         @Override
         public void accept(Task task) {
             count--;
-            if (!player.isOnline()) {
+            Player p = player.getSubject();
+            if (!p.isOnline()) {
                 onCancel();
                 return;
             }
 
-            plugin.getLogger().debug(String.format("RTP of %s, attempt %s of %s", player.getName(), maxCount - count, maxCount));
+            Transform<World> transform = p.getTransform();
+            World world = transform.getExtent();
+
+            plugin.getLogger().debug(String.format("RTP of %s, attempt %s of %s", p.getName(), maxCount - count, maxCount));
 
             // Generate random co-ords.
             int x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
@@ -119,9 +124,9 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
             currentWorld.loadChunk(new Vector3i(x, 0, z), true);
 
             int y;
-            if (rca.getNodeOrDefault().isMustSeeSky()) {
-                int startY = Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, maxY);
-                int distance = startY - Math.max(player.getLocation().getExtent().getBlockMin().getY(), minY);
+            if (onSurface) {
+                int startY = Math.min(world.getBlockMax().getY() - 11, maxY);
+                int distance = startY - Math.max(world.getBlockMin().getY(), minY);
                 if (distance < 0) {
                     onUnsuccesfulAttempt();
                     return;
@@ -129,7 +134,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
 
                 // From the x and z co-ordinates, scan down from the top to get the next block.
                 BlockRay<World> blockRay = BlockRay
-                    .from(new Location<>(currentWorld, new Vector3d(x, Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, maxY), z)))
+                    .from(new Location<>(currentWorld, new Vector3d(x, Math.min(world.getBlockMax().getY() - 11, maxY), z)))
                     .direction(direction)
                     .distanceLimit(distance)
                     .stopFilter(BlockRay.onlyAirFilter()).build();
@@ -142,7 +147,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
                 }
             } else {
                 // We remove 11 to avoid getting a location too high up for the safe location teleporter to handle.
-                y = Math.min(player.getLocation().getExtent().getBlockMax().getY() - 11, random.nextInt(maxY - minY + 1) + minY);
+                y = Math.min(world.getBlockMax().getY() - 11, random.nextInt(maxY - minY + 1) + minY);
             }
 
             // To get within the world border, add the centre on.
@@ -156,18 +161,18 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
                     && isOnSurface(oSafeLocation.get())) {
                     Location<World> tpTarget = oSafeLocation.get();
 
-                    plugin.getLogger().debug(String.format("RTP of %s, found location %s, %s, %s", player.getName(),
+                    plugin.getLogger().debug(String.format("RTP of %s, found location %s, %s, %s", p.getName(),
                             String.valueOf(tpTarget.getBlockX()),
                             String.valueOf(tpTarget.getBlockY()),
                             String.valueOf(tpTarget.getBlockZ())));
-                    if (player.setLocation(tpTarget)) {
-                        player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.success",
+                    if (p.setLocation(tpTarget)) {
+                        p.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.success",
                                 String.valueOf(tpTarget.getBlockX()),
                                 String.valueOf(tpTarget.getBlockY()),
                                 String.valueOf(tpTarget.getBlockZ())));
                         return;
                     } else {
-                        player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.cancelled"));
+                        p.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.cancelled"));
                         onCancel();
                         return;
                     }
@@ -185,8 +190,8 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
 
         private void onUnsuccesfulAttempt() {
             if (count <= 0) {
-                plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", player.getName()));
-                player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
+                plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", player.getSubject().getName()));
+                player.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
                 onCancel();
             } else {
                 // We're using a scheduler to allow some ticks to go by between attempts to find a
@@ -224,7 +229,7 @@ public class RandomTeleportCommand extends io.github.nucleuspowered.nucleus.inte
         @Override
         public void onCancel() {
             super.onCancel();
-            RandomTeleportCommand.this.removeCooldown(player.getUniqueId());
+            RandomTeleportCommand.this.removeCooldown(player.getSubject().getUniqueId());
         }
 
         private class SurfaceCheckPredicate implements Predicate<BlockRayHit<World>> {

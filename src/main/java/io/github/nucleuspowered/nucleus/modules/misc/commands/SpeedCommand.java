@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
@@ -33,7 +34,7 @@ import javax.inject.Inject;
 
 @RegisterCommand("speed")
 @Permissions(supportsSelectors = true)
-public class SpeedCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SpeedCommand extends AbstractCommand<CommandSource> {
 
     private final String speedKey = "speed";
     private final String typeKey = "type";

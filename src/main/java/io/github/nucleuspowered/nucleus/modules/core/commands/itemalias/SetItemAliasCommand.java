@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -28,7 +29,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @Permissions(prefix = "nucleus.itemalias")
 @RegisterCommand(value = "set", subcommandOf = ItemAliasCommand.class)
-public class SetItemAliasCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SetItemAliasCommand extends AbstractCommand<CommandSource> {
 
     @Inject private ItemDataService itemDataService;
 

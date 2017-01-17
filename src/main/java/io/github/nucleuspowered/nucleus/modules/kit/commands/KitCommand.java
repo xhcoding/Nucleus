@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -50,7 +51,7 @@ import java.util.Optional;
 @RegisterCommand("kit")
 @NoCooldown // This is determined by the kit itself.
 @NoCost // This is determined by the kit itself.
-public class KitCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class KitCommand extends AbstractCommand<Player> {
 
     private final String kit = "kit";
 

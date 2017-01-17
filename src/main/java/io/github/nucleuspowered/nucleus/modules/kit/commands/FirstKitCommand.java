@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -33,7 +34,7 @@ import javax.inject.Inject;
 @NoCost
 @RunAsync
 @RegisterCommand({"firstjoinkit", "starterkit", "joinkit", "firstkit"})
-public class FirstKitCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class FirstKitCommand extends AbstractCommand<CommandSource> {
 
     @Inject private KitService gds;
 

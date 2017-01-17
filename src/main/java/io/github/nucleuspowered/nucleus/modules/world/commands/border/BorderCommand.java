@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.world.commands.WorldCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +28,7 @@ import java.util.List;
 
 @Permissions(prefix = "world")
 @RegisterCommand(value = {"border"}, subcommandOf = WorldCommand.class)
-public class BorderCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class BorderCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
 

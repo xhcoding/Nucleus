@@ -5,7 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -17,7 +22,7 @@ import javax.inject.Inject;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class SetSpawnCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class SetSpawnCommand extends AbstractCommand<Player> {
 
     @Inject
     private WorldDataManager wcl;

@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.WorldTimeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -18,7 +19,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 @Permissions(prefix = "time")
 @RegisterCommand(value = "set", subcommandOf = TimeCommand.class)
-public class SetTimeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SetTimeCommand extends AbstractCommand<CommandSource> {
     private final String time = "time";
     private final String world = "world";
 

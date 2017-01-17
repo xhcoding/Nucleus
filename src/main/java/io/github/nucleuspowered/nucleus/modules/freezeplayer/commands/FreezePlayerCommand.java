@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandException;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 @Permissions
 @RegisterCommand({"freezeplayer", "freeze"})
-public class FreezePlayerCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class FreezePlayerCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager userConfigLoader;
 

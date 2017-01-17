@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(prefix = "blacklist", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = BlacklistCommand.class)
-public class BlacklistListCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class BlacklistListCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {

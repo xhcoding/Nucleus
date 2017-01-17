@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
@@ -23,7 +24,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"back", "return"})
-public class BackCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class BackCommand extends AbstractCommand<Player> {
 
     @Inject private BackHandler handler;
 

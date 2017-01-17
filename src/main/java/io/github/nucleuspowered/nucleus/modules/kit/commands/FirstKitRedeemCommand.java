@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -24,7 +25,7 @@ import javax.inject.Inject;
 @NoCooldown
 @NoWarmup
 @RegisterCommand(value = "redeem", subcommandOf = FirstKitCommand.class)
-public class FirstKitRedeemCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class FirstKitRedeemCommand extends AbstractCommand<Player> {
 
     @Inject
     private KitService gds;

@@ -7,7 +7,13 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -36,7 +42,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCost
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = PowertoolCommand.class)
-public class ListPowertoolCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class ListPowertoolCommand extends AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;
     private PaginationService paginationService = null;

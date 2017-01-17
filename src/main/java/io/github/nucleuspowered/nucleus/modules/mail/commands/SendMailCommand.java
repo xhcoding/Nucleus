@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.command.CommandException;
@@ -25,7 +26,7 @@ import org.spongepowered.api.text.Text;
 @Permissions(prefix = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"send", "s"}, subcommandOf = MailCommand.class)
-public class SendMailCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class SendMailCommand extends AbstractCommand<CommandSource> {
 
     @Inject private MailHandler handler;
     @Inject private PermissionRegistry permissionRegistry;

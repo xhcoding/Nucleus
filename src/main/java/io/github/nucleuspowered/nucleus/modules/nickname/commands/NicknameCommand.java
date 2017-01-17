@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
 
 @RegisterCommand({"nick", "nickname"})
 @Permissions
-public class NicknameCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class NicknameCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager loader;
     @Inject private NicknameConfigAdapter nicknameConfigAdapter;

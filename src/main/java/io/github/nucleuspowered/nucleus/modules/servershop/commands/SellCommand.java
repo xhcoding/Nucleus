@@ -7,7 +7,14 @@ package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.block.BlockState;
@@ -18,8 +25,9 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import javax.inject.Inject;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 @RunAsync
 @NoCost
@@ -28,7 +36,7 @@ import java.util.Optional;
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itemsell", "sell"})
-public class SellCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class SellCommand extends AbstractCommand<Player> {
 
     @Inject private ItemDataService itemDataService;
     @Inject private EconHelper econHelper;

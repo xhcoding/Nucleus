@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -31,7 +32,7 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @Permissions(supportsSelectors = true, supportsOthers = true)
-public class HatCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class HatCommand extends AbstractCommand<Player> {
 
     private final String playerKey = "player";
 

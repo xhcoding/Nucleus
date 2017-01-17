@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
@@ -28,7 +29,7 @@ import javax.inject.Inject;
 @NoCooldown
 @NoWarmup
 @RegisterCommand(value = {"set", "updateFromInventory"}, subcommandOf = FirstKitCommand.class)
-public class FirstKitSetCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class FirstKitSetCommand extends AbstractCommand<Player> {
 
     @Inject
     private KitService gds;

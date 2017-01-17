@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.DifficultyArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
@@ -42,7 +43,7 @@ import javax.inject.Inject;
 
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"create"}, subcommandOf = WorldCommand.class)
-public class CreateWorldCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class CreateWorldCommand extends AbstractCommand<CommandSource> {
 
     private final String name = "name";
     private final String dimension = "dimension";

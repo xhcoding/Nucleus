@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
@@ -20,7 +21,7 @@ import org.spongepowered.api.text.Text;
 
 @Permissions(prefix = "home", mainOverride = "other", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand("homeother")
-public class HomeOtherCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class HomeOtherCommand extends AbstractCommand<Player> {
 
     private final String home = "home";
 

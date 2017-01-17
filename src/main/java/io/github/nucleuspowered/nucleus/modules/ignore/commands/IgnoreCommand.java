@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -32,7 +33,7 @@ import java.util.Map;
 @NoWarmup
 @RegisterCommand("ignore")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-public class IgnoreCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class IgnoreCommand extends AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;
 

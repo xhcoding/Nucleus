@@ -5,7 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -20,7 +25,7 @@ import org.spongepowered.api.entity.living.player.Player;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tpaccept", "teleportaccept"})
-public class TeleportAcceptCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class TeleportAcceptCommand extends AbstractCommand<Player> {
 
     @Inject private TeleportHandler teleportHandler;
 

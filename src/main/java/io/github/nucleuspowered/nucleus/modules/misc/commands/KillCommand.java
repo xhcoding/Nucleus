@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.misc.commands;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -20,7 +21,7 @@ import org.spongepowered.api.text.Text;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand("kill")
-public class KillCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class KillCommand extends AbstractCommand<CommandSource> {
 
     private final String key = "player";
 

@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.DataScanner;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.servershop.ServerShopModule;
@@ -34,11 +35,16 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"iteminfo", "itemdb"})
-public class ItemInfoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class ItemInfoCommand extends AbstractCommand<Player> {
 
     @Inject private ItemDataService itemDataService;
     @Inject private EconHelper econHelper;

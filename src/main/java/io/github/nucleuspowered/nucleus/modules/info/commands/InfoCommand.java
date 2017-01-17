@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
@@ -49,7 +50,7 @@ import java.util.stream.Collectors;
 @NoCost
 @NoWarmup
 @RegisterCommand({"info", "einfo"})
-public class InfoCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<CommandSource> {
+public class InfoCommand extends AbstractCommand<CommandSource> {
 
     @Inject private InfoHandler infoHandler;
     @Inject private ChatUtil chatUtil;

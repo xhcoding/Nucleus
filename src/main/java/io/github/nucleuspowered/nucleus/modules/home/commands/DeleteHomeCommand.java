@@ -7,7 +7,13 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
@@ -23,7 +29,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @NoWarmup
 @RegisterCommand({"deletehome", "delhome"})
-public class DeleteHomeCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class DeleteHomeCommand extends AbstractCommand<Player> {
 
     private final String homeKey = "home";
 

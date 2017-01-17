@@ -10,7 +10,14 @@ import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.servershop.config.ServerShopConfigAdapter;
 import org.spongepowered.api.CatalogType;
@@ -29,9 +36,10 @@ import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResu
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
-import javax.inject.Inject;
 import java.util.Collection;
 import java.util.function.Consumer;
+
+import javax.inject.Inject;
 
 @RunAsync
 @NoCost
@@ -40,7 +48,7 @@ import java.util.function.Consumer;
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itembuy", "buy"})
-public class BuyCommand extends io.github.nucleuspowered.nucleus.internal.command.AbstractCommand<Player> {
+public class BuyCommand extends AbstractCommand<Player> {
 
     @Inject private ServerShopConfigAdapter ssca;
     @Inject private ItemDataService itemDataService;

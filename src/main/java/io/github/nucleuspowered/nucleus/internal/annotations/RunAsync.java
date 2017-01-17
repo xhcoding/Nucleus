@@ -4,10 +4,17 @@
  */
 package io.github.nucleuspowered.nucleus.internal.annotations;
 
-import java.lang.annotation.*;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Any {@link io.github.nucleuspowered.nucleus.internal.command.AbstractCommand} that is decorated with this annotation will be
+ * Any {@link StandardAbstractCommand} that is decorated with this annotation will be
  * run on an async thread. This should only be used for thread-safe operations.
  */
 @Target(ElementType.TYPE)

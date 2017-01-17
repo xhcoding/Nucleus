@@ -12,7 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
-import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -42,7 +42,7 @@ public class DocGenCache {
         return permissionDocs;
     }
 
-    public void addCommand(final String moduleID, final AbstractCommand<?> abstractCommand) {
+    public void addCommand(final String moduleID, final StandardAbstractCommand<?> abstractCommand) {
         CommandDoc cmd = new CommandDoc();
 
         cmd.setCommandName(abstractCommand.getCommandPath().replaceAll("\\.", " "));
@@ -55,7 +55,7 @@ public class DocGenCache {
 
         cmd.setPermissionbase(abstractCommand.getPermissionHandler().getBase());
 
-        Class<? extends AbstractCommand> cac = abstractCommand.getClass();
+        Class<? extends StandardAbstractCommand> cac = abstractCommand.getClass();
         Permissions s = cac.getAnnotation(Permissions.class);
         if (s == null) {
             cmd.setDefaultLevel(cac.isAnnotationPresent(NoPermissions.class) ? SuggestedLevel.USER.name() : SuggestedLevel.ADMIN.name());
