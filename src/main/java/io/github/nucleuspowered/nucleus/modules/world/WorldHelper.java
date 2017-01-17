@@ -52,7 +52,7 @@ public class WorldHelper {
             WorldBorder.ChunkPreGenerate wbcp = world.newChunkPreGenerate(wp.getWorldBorderCenter(), wp.getWorldBorderDiameter())
                 .owner(plugin).logger(new GenerationLogger(plugin.getLogger(), world.getName()));
             if (agressive) {
-                wbcp.tickPercentLimit(90).tickInterval(3);
+                wbcp.tickPercentLimit(0.9f).tickInterval(3);
             }
 
             pregen.put(world.getUniqueId(), wbcp.start());
