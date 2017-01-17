@@ -173,11 +173,13 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
 
 
     private String stripPermissionless(Subject source, String message) throws ReturnMessageException {
-        for (Map.Entry<String[], Tuple<Matcher, Text>> r : replacements.entrySet()) {
-            // If we don't have the required permission...
-            if (r.getValue().getFirst().reset(message).find() && Arrays.stream(r.getKey()).noneMatch(source::hasPermission)) {
-                // throw
-                throw new ReturnMessageException(r.getValue().getSecond());
+        if (message.contains("&")) {
+            for (Map.Entry<String[], Tuple<Matcher, Text>> r : replacements.entrySet()) {
+                // If we don't have the required permission...
+                if (r.getValue().getFirst().reset(message).find() && Arrays.stream(r.getKey()).noneMatch(source::hasPermission)) {
+                    // throw
+                    throw new ReturnMessageException(r.getValue().getSecond());
+                }
             }
         }
 
