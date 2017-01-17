@@ -31,11 +31,11 @@ import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Tuple;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -54,37 +54,41 @@ public class ChatListener extends ListenerBase {
 
     // Order is important here!
     private static final Map<String, String> permissionToDesc = Maps.newHashMap();
-    private static final Map<String[], Function<String, String>> replacements = createReplacements();
+    private static final Map<String, Tuple<String[], Function<String, String>>> replacements = createReplacements();
 
-    private static Map<String[], Function<String, String>> createReplacements() {
-        Map<String[], Function<String, String>> t = new HashMap<>();
+    private static Map<String, Tuple<String[], Function<String, String>>> createReplacements() {
+        Map<String, Tuple<String[], Function<String, String>>> t = new HashMap<>();
 
         MessageProvider mp = Nucleus.getNucleus().getMessageProvider();
 
         BiFunction<String, String, String> fss = (key, s) -> s.replaceAll("[&]+[" + key.toLowerCase() + key.toUpperCase() + "]", "");
         NameUtil.getColours().forEach((key, value) -> {
-            t.put(new String[]{prefix + "colour." + value.getName(), prefix + "color." + value.getName()}, s -> fss.apply(key.toString(), s));
+            t.put("&" + key, Tuple.of(
+                new String[]{ prefix + "colour." + value.getName(), prefix + "color." + value.getName() },
+                s -> fss.apply(key.toString(), s)));
+
             permissionToDesc.put(prefix + "colour." + value.getName(), mp.getMessageWithFormat("permission.chat.colourspec", value.getName().toLowerCase(), key.toString()));
             permissionToDesc.put(prefix + "color." + value.getName(), mp.getMessageWithFormat("permission.chat.colorspec", value.getName().toLowerCase(), key.toString()));
         });
 
         NameUtil.getStyles().entrySet().stream().filter(x -> x.getKey().getFirst() != 'k').forEach((k) -> {
-            t.put(new String[] { prefix + "style." + k.getKey().getSecond().toLowerCase() }, s -> fss.apply(k.getKey().getFirst().toString(), s));
+            t.put("&" + k.getKey().getFirst(), Tuple.of(new String[] { prefix + "style." + k.getKey().getSecond().toLowerCase() }, s -> fss.apply(k.getKey().getFirst().toString(), s)));
             permissionToDesc.put(prefix + "style." + k.getKey().getSecond().toLowerCase(),
                 mp.getMessageWithFormat("permission.chat.stylespec", k.getKey().getSecond().toLowerCase(), k.getKey().getFirst().toString()));
         });
 
-        t.put(new String[] { prefix + "magic" }, s -> s.replaceAll("[&]+[kK]", ""));
+        t.put("&k", Tuple.of(new String[] { prefix + "magic" }, s -> s.replaceAll("[&]+[kK]", "")));
 
         return t;
     }
 
     public static String stripPermissionless(Subject source, String message) {
-        for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
-            // If we don't have the required permission...
-            if (Arrays.stream(r.getKey()).noneMatch(source::hasPermission)) {
-                // ...strip the codes.
-                message = r.getValue().apply(message);
+        if (message.contains("&")) {
+            String m = message.toLowerCase();
+            for (Map.Entry<String, Tuple<String[], Function<String, String>>> r : replacements.entrySet()) {
+                if (m.contains(r.getKey()) && Arrays.stream(r.getValue().getFirst()).noneMatch(source::hasPermission)) {
+                    message = r.getValue().getSecond().apply(message);
+                }
             }
         }
 
@@ -159,20 +163,11 @@ public class ChatListener extends ListenerBase {
             result = TextSerializers.FORMATTING_CODE.deserialize(m);
         }
 
-        String chatcol = getOption(player, "chatcolour", "chatcolor").orElseGet(chatTemplateConfig::getChatcolour);
-        String chatstyle = getOption(player, "chatstyle").orElseGet(chatTemplateConfig::getChatstyle);
+        String chatcol = Util.getOptionFromSubject(player, "chatcolour", "chatcolor").orElseGet(chatTemplateConfig::getChatcolour);
+        String chatstyle = Util.getOptionFromSubject(player, "chatstyle").orElseGet(chatTemplateConfig::getChatstyle);
 
         NameUtil nu = plugin.getNameUtil();
         return Text.of(nu.getColourFromString(chatcol), nu.getTextStyleFromString(chatstyle), result);
-    }
-
-    private Optional<String> getOption(Player player, String... option) {
-        Optional<String> optional = Util.getOptionFromSubject(player, option);
-        if (optional.isPresent() && !optional.get().isEmpty()) {
-            return optional;
-        }
-
-        return Optional.empty();
     }
 
     public static class Test implements Predicate<Nucleus> {
