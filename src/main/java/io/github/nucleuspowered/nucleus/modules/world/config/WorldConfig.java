@@ -15,6 +15,13 @@ public class WorldConfig {
     @Setting(value = "default-world-border-diameter", comment = "loc:config.world.defaultborder")
     private long worldBorderDefault = 0;
 
+    @Setting(value = "display-generation-warning", comment = "loc:config.world.gen.warning")
+    private boolean displayWarningGeneration = true;
+
+    public boolean isDisplayWarningGeneration() {
+        return displayWarningGeneration;
+    }
+
     public Optional<Long> getWorldBorderDefault() {
         if (worldBorderDefault < 1) {
             return Optional.empty();

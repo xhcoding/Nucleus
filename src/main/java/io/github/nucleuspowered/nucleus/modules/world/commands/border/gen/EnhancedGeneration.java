@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorld;
 import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorldServer;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.GenerateChunksCommand;
+import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
 import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.spongepowered.api.Sponge;
@@ -34,17 +35,19 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
 
     private final String notifyPermission;
     private final WorldHelper worldHelper;
+    private final WorldConfigAdapter worldConfigAdapter;
 
-    public EnhancedGeneration(WorldHelper worldHelper, String notifyPermission) {
+    public EnhancedGeneration(WorldHelper worldHelper, String notifyPermission, WorldConfigAdapter worldConfigAdapter) {
         this.worldHelper = worldHelper;
         this.notifyPermission = notifyPermission;
+        this.worldConfigAdapter = worldConfigAdapter;
     }
 
     @Override
     public CommandResult accept(World world, CommandSource source, CommandContext args) {
         boolean aggressive = args.hasAny("a");
         worldHelper.addPregenForWorld(world, new NucleusChunkPreGenerator(world, notifyPermission, aggressive,
-            args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L)), aggressive);
+            args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L), worldConfigAdapter), aggressive);
 
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.enhanced"));
         source.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
@@ -88,8 +91,9 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
         private boolean highMemTriggered = false;
 
         private final boolean aggressive;
+        private final WorldConfigAdapter worldConfigAdapter;
 
-        private NucleusChunkPreGenerator(World world, String permission, boolean aggressive, long timeToSave) {
+        private NucleusChunkPreGenerator(World world, String permission, boolean aggressive, long timeToSave, WorldConfigAdapter worldConfigAdapter) {
             this.notifyPermission = permission;
             this.aggressive = aggressive;
             this.world = world;
@@ -115,6 +119,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
             this.totalTime = 0;
             this.finalTotal = Math.pow(this.chunkRadius * 2 + 1, 2);
             this.timeToSave = timeToSave * 1000L;
+            this.worldConfigAdapter = worldConfigAdapter;
         }
 
         @Override
@@ -200,7 +205,10 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
             }
 
             if (lastSaveTime + timeToSave < currentTimeMillis) {
-                MessageChannel.TO_ALL.send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.all"));
+                if (worldConfigAdapter.getNodeOrDefault().isDisplayWarningGeneration()) {
+                    MessageChannel.TO_ALL.send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.all"));
+                }
+
                 save();
             }
 

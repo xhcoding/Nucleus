@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.gen.EnhancedGeneration;
+import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
 import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -41,6 +42,9 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     @Inject
     private WorldHelper worldHelper;
+
+    @Inject
+    private WorldConfigAdapter worldConfigAdapter;
 
     private final TriFunction<World, CommandSource, CommandContext, CommandResult> standardGeneration = (world, source, args) -> {
         // Create the task.
@@ -103,7 +107,7 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
         if (generator == null) {
             Optional<MixinConfigProxy> mixinConfigProxy = plugin.getMixinConfigIfAvailable();
             if (mixinConfigProxy.isPresent() && mixinConfigProxy.get().get().config.isWorldgeneration()) {
-                this.generator = new EnhancedGeneration(worldHelper, permissions.getPermissionWithSuffix("notify"));
+                this.generator = new EnhancedGeneration(worldHelper, permissions.getPermissionWithSuffix("notify"), worldConfigAdapter);
             } else {
                 this.generator = standardGeneration;
             }
