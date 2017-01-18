@@ -20,9 +20,11 @@ import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.service.user.UserStorageService;
@@ -116,7 +118,18 @@ public class SpawnListener extends ListenerBase {
         }
     }
 
-    @Listener(order = Order.FIRST)
+    @Listener(order = Order.EARLY)
+    public void onPlayerWorldTransfer(MoveEntityEvent.Teleport event) {
+        if (event.getTargetEntity() instanceof Player && !event.getFromTransform().getExtent().equals(event.getToTransform().getExtent())) {
+            // Are we heading TO a spawn?
+            Transform<World> to = event.getToTransform();
+            if (to.getLocation().getBlockPosition().equals(to.getExtent().getSpawnLocation().getBlockPosition())) {
+                wcl.getWorld(to.getExtent()).ifPresent(x -> x.getSpawnRotation().ifPresent(y -> event.setToTransform(to.setRotation(y))));
+            }
+        }
+    }
+
+    @Listener(order = Order.EARLY)
     public void onRespawn(RespawnPlayerEvent event) {
         if (event.isBedSpawn()) {
             // Nope, we don't care.
@@ -134,18 +147,10 @@ public class SpawnListener extends ListenerBase {
             }
         }
 
-        try {
-            Location<World> spawn = world.getSpawnLocation().add(0.5, 0, 0.5);
-            Transform<World> to = new Transform<>(spawn);
+        Location<World> spawn = world.getSpawnLocation().add(0.5, 0, 0.5);
+        Transform<World> to = new Transform<>(spawn);
 
-            // Compare current transform to spawn.
-            wcl.getWorld(world).ifPresent(x -> x.getSpawnRotation().ifPresent(to::setRotation));
-
-            event.setToTransform(to);
-        } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
-            }
-        }
+        // Compare current transform to spawn.
+        wcl.getWorld(world).ifPresent(x -> x.getSpawnRotation().ifPresent(y -> event.setToTransform(to.setRotation(y))));
     }
 }

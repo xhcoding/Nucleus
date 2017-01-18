@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
+import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -23,12 +24,17 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
 public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
 
     private final String world = "world";
     private final String playerKey = "player";
+
+    @Inject
+    private WorldDataManager worldDataManager;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -59,6 +65,8 @@ public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.failed", worldProperties.getWorldName()));
         }
 
+        // Rotate.
+        worldDataManager.getWorld(worldProperties.getUniqueId()).ifPresent(x -> x.getSpawnRotation().ifPresent(player::setRotation));
         if (src instanceof Player && ((Player) src).getUniqueId().equals(player.getUniqueId())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", worldProperties.getWorldName()));
         } else {
