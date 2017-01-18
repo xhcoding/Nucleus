@@ -11,11 +11,13 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorld;
 import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorldServer;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
+import io.github.nucleuspowered.nucleus.modules.world.commands.border.GenerateChunksCommand;
 import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -28,7 +30,7 @@ import java.util.function.Consumer;
 /**
  * Generation for the NucleusMixin enhanced version.
  */
-public class EnhancedGeneration implements TriFunction<World, CommandSource, Boolean, CommandResult> {
+public class EnhancedGeneration implements TriFunction<World, CommandSource, CommandContext, CommandResult> {
 
     private final String notifyPermission;
     private final WorldHelper worldHelper;
@@ -39,8 +41,11 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Boo
     }
 
     @Override
-    public CommandResult accept(World world, CommandSource source, Boolean aggressive) {
-        worldHelper.addPregenForWorld(world, new NucleusChunkPreGenerator(world, notifyPermission, aggressive), aggressive);
+    public CommandResult accept(World world, CommandSource source, CommandContext args) {
+        boolean aggressive = args.hasAny("a");
+        worldHelper.addPregenForWorld(world, new NucleusChunkPreGenerator(world, notifyPermission, aggressive,
+            args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L)), aggressive);
+
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.enhanced"));
         source.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
         return CommandResult.success();
@@ -63,6 +68,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Boo
         private final int chunkRadius;
         private final long tickTimeLimit;
         private final String notifyPermission;
+        private final long timeToSave;
         private double finalTotal;
         private Vector3i currentPosition;
         private int currentGenCount;
@@ -83,7 +89,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Boo
 
         private final boolean aggressive;
 
-        private NucleusChunkPreGenerator(World world, String permission, boolean aggressive) {
+        private NucleusChunkPreGenerator(World world, String permission, boolean aggressive, long timeToSave) {
             this.notifyPermission = permission;
             this.aggressive = aggressive;
             this.world = world;
@@ -108,6 +114,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Boo
             this.totalCount = 0;
             this.totalTime = 0;
             this.finalTotal = Math.pow(this.chunkRadius * 2 + 1, 2);
+            this.timeToSave = timeToSave * 1000L;
         }
 
         @Override
@@ -192,7 +199,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Boo
                 chunksGenerated = 0;
             }
 
-            if (lastSaveTime + 20000 < currentTimeMillis) {
+            if (lastSaveTime + timeToSave < currentTimeMillis) {
                 MessageChannel.TO_ALL.send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.all"));
                 save();
             }

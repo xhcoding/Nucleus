@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -36,20 +37,26 @@ import javax.inject.Inject;
 public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
+    public static final String saveTimeKey = "time between saves";
 
     @Inject
     private WorldHelper worldHelper;
 
-    private final TriFunction<World, CommandSource, Boolean, CommandResult> standardGeneration = (world, source, aggressive) -> {
+    private final TriFunction<World, CommandSource, CommandContext, CommandResult> standardGeneration = (world, source, args) -> {
         // Create the task.
-        this.worldHelper.startPregenningForWorld(world, aggressive);
+        this.worldHelper.startPregenningForWorld(world, args.hasAny("a"));
+
+        if (args.hasAny(saveTimeKey)) {
+            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.nosave"));
+        }
+
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.standard"));
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
 
         return CommandResult.success();
     };
 
-    private TriFunction<World, CommandSource, Boolean, CommandResult> generator;
+    private TriFunction<World, CommandSource, CommandContext, CommandResult> generator;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -61,7 +68,10 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.flags().flag("s").flag("a").buildWith(
+                GenericArguments.flags()
+                    .flag("s")
+                    .flag("a")
+                    .valueFlag(new TimespanArgument(Text.of(saveTimeKey)), "-save").buildWith(
                 GenericArguments.optional(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY))))
         };
     }
@@ -82,9 +92,9 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
         }
 
         if (args.hasAny("s")) {
-            return standardGeneration.accept(w.get(), src, args.hasAny("a"));
+            return standardGeneration.accept(w.get(), src, args);
         } else {
-            return this.generator.accept(w.get(), src, args.hasAny("a"));
+            return this.generator.accept(w.get(), src, args);
         }
     }
 
