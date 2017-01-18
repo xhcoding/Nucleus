@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
+import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
@@ -35,7 +36,9 @@ import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -97,11 +100,18 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadCommands() {
-        Set<Class<? extends StandardAbstractCommand<?>>> cmds = getStreamForModule(StandardAbstractCommand.class)
-                .filter(x -> x.isAnnotationPresent(RegisterCommand.class))
-                .filter(checkMixin("command", t -> t.getName() + ": (" + t.getAnnotation(RegisterCommand.class).value()[0] + ")"))
-                .map(x -> (Class<? extends StandardAbstractCommand<?>>)x) // Keeping the compiler happy...
-                .collect(Collectors.toSet());
+
+        Set<Class<? extends StandardAbstractCommand<?>>> cmds = new HashSet<>(
+            performFilter(getStreamForModule(StandardAbstractCommand.class).map(x -> (Class<? extends StandardAbstractCommand<?>>)x))
+                .collect(Collectors.toSet()));
+
+        // Find all commands that are also scannable.
+        performFilter(plugin.getModuleContainer().getLoadedClasses().stream()
+            .filter(x -> x.isAnnotationPresent(Scan.class))
+            .flatMap(x -> Arrays.stream(x.getDeclaredClasses()))
+            .filter(StandardAbstractCommand.class::isAssignableFrom)
+            .map(x -> (Class<? extends StandardAbstractCommand<?>>)x))
+            .forEach(cmds::add);
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
         Injector injector = plugin.getInjector();
@@ -123,13 +133,18 @@ public abstract class StandardModule implements Module {
         }
     }
 
+    private Stream<Class<? extends StandardAbstractCommand<?>>> performFilter(Stream<Class<? extends StandardAbstractCommand<?>>> stream) {
+        return stream.filter(x -> x.isAnnotationPresent(RegisterCommand.class))
+            .filter(checkMixin("command", t -> t.getName() + ": (" + t.getAnnotation(RegisterCommand.class).value()[0] + ")"))
+            .map(x -> (Class<? extends StandardAbstractCommand<?>>)x); // Keeping the compiler happy...
+    }
+
     @SuppressWarnings("unchecked")
     private void loadEvents() {
         Set<Class<? extends ListenerBase>> listenersToLoad = getStreamForModule(ListenerBase.class)
             .filter(checkMixin("listener"))
             .collect(Collectors.toSet());
 
-        ModuleData md = this.getClass().getAnnotation(ModuleData.class);
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
         Injector injector = plugin.getInjector();
         listenersToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
