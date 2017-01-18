@@ -7,7 +7,7 @@ Nucleus
 * [Downloads]
 * [Documentation]
 * [TeamCity]
-* [IRC] | EsperNet - #nucleus
+* [Discord]
 
 Master branch build status:  [![API 5 branch](https://img.shields.io/travis/NucleusPowered/Nucleus/sponge-api/5.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
 
@@ -76,4 +76,4 @@ See [THIRDPARTY.md](THIRDPARTY.md) for more details.
 [Documentation]: http://nucleuspowered.org/docs
 [guidelines]: Contributing.md
 [TeamCity]: https://teamcity.drnaylor.co.uk/project.html?projectId=QuickStart&tab=projectOverview
-[IRC]: http://esper.net/publicirc.php
+[Discord]: https://discord.gg/MC2mAuS
