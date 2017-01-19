@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mob.config.BlockSpawnsConfig;
+import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfig;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfigAdapter;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -40,7 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Permissions(supportsSelectors = true)
-@RegisterCommand({"spawnmob", "spawnentity"})
+@RegisterCommand({"spawnmob", "spawnentity", "mobspawn"})
 public class SpawnMobCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "player";
@@ -68,6 +69,7 @@ public class SpawnMobCommand extends AbstractCommand<CommandSource> {
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawnmob.other"), SuggestedLevel.ADMIN));
+        m.put("mob", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawnmob.mob"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -83,8 +85,13 @@ public class SpawnMobCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.livingonly", et.getTranslation().get()));
         }
 
+        MobConfig mc = mobConfigAdapter.getNodeOrDefault();
         String id = et.getId().toLowerCase();
-        Optional<BlockSpawnsConfig> config = mobConfigAdapter.getNodeOrDefault().getBlockSpawnsConfigForWorld(pl.getWorld());
+        if (mc.isPerMobPermission() && !permissions.testSuffix(src, "mob." + id.replace(":", "."))) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.mobnoperm", et.getTranslation().get()));
+        }
+
+        Optional<BlockSpawnsConfig> config = mc.getBlockSpawnsConfigForWorld(pl.getWorld());
         if (config.isPresent() && (config.get().isBlockVanillaMobs() && id.startsWith("minecraft:") || config.get().getIdsToBlock().contains(id))) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.blockedinconfig", et.getTranslation().get()));
         }

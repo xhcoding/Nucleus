@@ -26,6 +26,9 @@ public class MobConfig {
         put("DIM1", new BlockSpawnsConfig());
     }};
 
+    @Setting(value = "separate-mob-spawning-permissions", comment = "loc:config.mobspawn.permob")
+    private boolean perMobPermission = false;
+
     public int getMaxMobsToSpawn() {
         return Math.max(1, maxMobsToSpawn);
     }
@@ -36,5 +39,9 @@ public class MobConfig {
 
     public Optional<BlockSpawnsConfig> getBlockSpawnsConfigForWorld(World world) {
         return Optional.ofNullable(blockSpawnsConfig.get(world.getName()));
+    }
+
+    public boolean isPerMobPermission() {
+        return perMobPermission;
     }
 }
