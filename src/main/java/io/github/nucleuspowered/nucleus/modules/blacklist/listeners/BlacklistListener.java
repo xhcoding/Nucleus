@@ -16,6 +16,8 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.blacklist.BlacklistModule;
 import io.github.nucleuspowered.nucleus.modules.blacklist.config.BlacklistConfig;
 import io.github.nucleuspowered.nucleus.modules.blacklist.config.BlacklistConfigAdapter;
+import org.spongepowered.api.GameState;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.entity.living.player.Player;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
@@ -102,6 +104,10 @@ public abstract class BlacklistListener extends ListenerBase.Reloadable {
         public abstract boolean configPredicate(BlacklistConfig config);
 
         @Override public boolean test(Nucleus nucleus) {
+            if (Sponge.getGame().getState().ordinal() < GameState.SERVER_STARTING.ordinal()) {
+                return false;
+            }
+
             try {
                 return configPredicate(nucleus.getModuleContainer().getConfigAdapterForModule(BlacklistModule.ID, BlacklistConfigAdapter.class)
                     .getNodeOrDefault());
