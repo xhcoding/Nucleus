@@ -61,7 +61,7 @@ public class InvSeeCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         User target = args.<User>getOne(player).get();
 
-        if (!target.isOnline() && permissions.testSuffix(src, "offline")) {
+        if (!target.isOnline() && !permissions.testSuffix(src, "offline")) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.invsee.nooffline"));
         }
 
