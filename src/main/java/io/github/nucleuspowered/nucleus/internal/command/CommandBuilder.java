@@ -80,6 +80,10 @@ public class CommandBuilder {
                 }
             }
 
+            if (c instanceof StandardAbstractCommand.Reloadable) {
+                plugin.registerReloadable(((StandardAbstractCommand.Reloadable) c)::onReload);
+            }
+
             return Optional.of(c);
         }
 

@@ -1098,4 +1098,15 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             return Text.EMPTY;
         }
     }
+
+    /**
+     * If this is implemented, signifies that this command should be run on reload.
+     */
+    public interface Reloadable {
+
+        /**
+         * To run on reload.
+         */
+        void onReload();
+    }
 }

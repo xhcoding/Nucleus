@@ -4,34 +4,72 @@
  */
 package io.github.nucleuspowered.nucleus.modules.playerinfo.config;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ConfigSerializable
 public class ListConfig {
 
-    @Setting(value = "group-by-permission-groups", comment = "loc:config.playerinfo.list.groups")
-    private boolean groupByPermissionGroup = false;
-
-    @Setting(value = "default-group-name", comment = "loc:config.playerinfo.list.defaultname")
-    private String defaultGroupName = "Default";
+    @Setting("list-grouping-by-permission")
+    private GroupConfig groupByPermissionGroup = new GroupConfig();
 
     @Setting(value = "multicraft-compatibility", comment = "loc:config.playerinfo.list.multicraft")
     private boolean multicraftCompatibility = false;
 
     public boolean isGroupByPermissionGroup() {
-        return groupByPermissionGroup;
+        return groupByPermissionGroup.enabled;
+    }
+
+    public Map<String, String> getAliases() {
+        return ImmutableMap.copyOf(groupByPermissionGroup.groupAliasing);
+    }
+
+    public List<String> getOrder() {
+        return ImmutableList.copyOf(groupByPermissionGroup.groupPriority);
     }
 
     public String getDefaultGroupName() {
-        if (defaultGroupName.isEmpty()) {
+        if (groupByPermissionGroup.defaultGroupName.isEmpty()) {
             return "Default";
         }
 
-        return defaultGroupName;
+        return groupByPermissionGroup.defaultGroupName;
+    }
+
+    public boolean isUseAliasOnly() {
+        return groupByPermissionGroup.useAliasOnly;
     }
 
     public boolean isMulticraftCompatibility() {
         return multicraftCompatibility;
+    }
+
+    @ConfigSerializable
+    public static class GroupConfig {
+
+        @Setting(value = "enabled", comment = "loc:config.playerinfo.list.groups")
+        private boolean enabled = false;
+
+        @Setting(value = "use-aliases-only", comment = "loc:config.playerinfo.list.aliasonly")
+        private boolean useAliasOnly = false;
+
+        @Setting(value = "group-aliases", comment = "loc:config.playerinfo.list.groupaliases")
+        private Map<String, String> groupAliasing = new HashMap<String, String>() {{
+            put("example-default-group", "Default Group");
+            put("example-default-group-2", "Default Group");
+        }};
+
+        @Setting(value = "group-order", comment = "loc:config.playerinfo.list.grouporder")
+        private List<String> groupPriority = Lists.newArrayList();
+
+        @Setting(value = "default-group-name", comment = "loc:config.playerinfo.list.defaultname")
+        private String defaultGroupName = "Default";
     }
 }

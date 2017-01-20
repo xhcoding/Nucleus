@@ -12,9 +12,11 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
+import io.github.nucleuspowered.nucleus.modules.playerinfo.config.ListConfig;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.config.PlayerInfoConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -38,10 +40,11 @@ import java.util.stream.Collectors;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"list", "listplayers", "ls"})
-public class ListPlayerCommand extends AbstractCommand<CommandSource> {
+public class ListPlayerCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
 
     private AFKHandler handler;
-    @Inject private PlayerInfoConfigAdapter config;
+    @Inject private PlayerInfoConfigAdapter configAdapter;
+    private ListConfig listConfig = null;
 
     private Text afk = null;
     private Text hidden = null;
@@ -82,7 +85,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> {
         src.sendMessage(header);
 
         Optional<PermissionService> optPermissionService = Sponge.getServiceManager().provide(PermissionService.class);
-        if (config.getNodeOrDefault().getList().isGroupByPermissionGroup() && optPermissionService.isPresent()) {
+        if (listConfig.isGroupByPermissionGroup() && optPermissionService.isPresent()) {
             listByPermissionGroup(optPermissionService.get(), players, src, showVanished);
         } else {
             // If we have players, send them on.
@@ -96,36 +99,83 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> {
         // Get the groups
         List<Subject> groups = Lists.newArrayList(service.getGroupSubjects().getAllSubjects());
 
-        // Sort them in reverse order - that way we get the most inherited
+        // If weights are the same, sort them in reverse order - that way we get the most inherited
         // groups first and display them first.
-        groups.sort((x, y) -> y.getParents().size() - x.getParents().size());
+        groups.sort((x, y) -> {
+            int res = Util.getPositiveIntOptionFromSubject(x, "nucleus.list.weight").orElse(0)
+                - Util.getPositiveIntOptionFromSubject(y, "nucleus.list.weight").orElse(0);
+            if (res != 0) {
+                return y.getParents().size() - x.getParents().size();
+            }
+
+            return res;
+        });
 
         // Keep a copy of the players that we will remove from.
         final List<Player> playersToList = new ArrayList<>(players);
 
-        // We're sorting by name though, so we need to do that later.
-        final Map<String, Text> messages = Maps.newHashMap();
+        final List<Text> messages = Lists.newArrayList();
 
+        final Map<String, List<Player>> groupToPlayer = Maps.newHashMap();
+
+        // Add players to groups.
         groups.forEach(x -> {
+            List<Player> groupPlayerList;
+            String groupName = x.getIdentifier();
+            if (listConfig.isGroupByPermissionGroup() && listConfig.getAliases().containsKey(x.getIdentifier())) {
+                groupName = listConfig.getAliases().get(x.getIdentifier());
+            }
+
+            groupPlayerList = groupToPlayer.computeIfAbsent(groupName, g -> Lists.newArrayList());
+
             // Get the players in the group.
             Collection<Player> cp = playersToList.stream().filter(pl -> Util.getParentSubjects(pl).contains(x)).collect(Collectors.toList());
             playersToList.removeAll(cp);
-
-            if (!cp.isEmpty()) {
-                // Get and put the player list into the map, if there is a
-                // player to show. There might not be, they might be vanished!
-                getPlayerList(cp, showVanished).ifPresent(y -> messages.put(x.getIdentifier(),
-                        Text.builder().append(Text.of(TextColors.YELLOW, x.getIdentifier() + ": ")).append(y).build()));
-            }
+            groupPlayerList.addAll(cp);
         });
 
-        // Now sort by identifier and send the messages in that order.
-        messages.entrySet().stream().sorted((x, y) -> x.getKey().compareToIgnoreCase(y.getKey())).forEach(x -> src.sendMessage(x.getValue()));
-
+        // For the rest of the players...
         if (!playersToList.isEmpty()) {
-            // Show any unknown groups last.
-            getPlayerList(playersToList, showVanished).ifPresent(y -> src.sendMessage(
-                    Text.builder().append(Text.of(TextColors.YELLOW, config.getNodeOrDefault().getList().getDefaultGroupName() + ": ")).append(y).build()));
+            groupToPlayer.computeIfAbsent(listConfig.getDefaultGroupName(), g -> Lists.newArrayList()).addAll(playersToList);
+        }
+
+        // Create messages based on the alias list first.
+        listConfig.getOrder().forEach(alias -> {
+            List<Player> plList = groupToPlayer.get(alias);
+            if (plList != null && !plList.isEmpty()) {
+                // Get and put the player list into the map, if there is a
+                // player to show. There might not be, they might be vanished!
+                getPlayerList(plList, showVanished).ifPresent(y ->
+                    messages.add(Text.builder().append(Text.of(TextColors.YELLOW, alias + ": ")).append(y).build()));
+            }
+
+            groupToPlayer.remove(alias);
+        });
+
+        if (listConfig.isUseAliasOnly()) {
+            List<Player> playersLeft = groupToPlayer.entrySet().stream().flatMap(x -> x.getValue().stream()).collect(Collectors.toList());
+            if (!playersLeft.isEmpty()) {
+                getPlayerList(playersLeft, showVanished).ifPresent(y ->
+                    messages.add(Text.builder().append(Text.of(TextColors.YELLOW, listConfig.getDefaultGroupName() + ": ")).append(y).build()));
+            }
+        } else {
+            groupToPlayer.entrySet().stream()
+                .filter(x -> !x.getValue().isEmpty())
+                .filter(x -> !x.getKey().equals(listConfig.getDefaultGroupName()))
+                .sorted((x, y) -> x.getKey().compareToIgnoreCase(y.getKey())).forEach(x ->
+                    getPlayerList(x.getValue(), showVanished).ifPresent(y ->
+                        messages.add(Text.builder().append(Text.of(TextColors.YELLOW, x.getKey() + ": ")).append(y).build()))
+            );
+
+            List<Player> pl = groupToPlayer.get(listConfig.getDefaultGroupName());
+            if (pl != null && !pl.isEmpty()) {
+                getPlayerList(pl, showVanished).ifPresent(y ->
+                    messages.add(Text.builder().append(Text.of(TextColors.YELLOW, listConfig.getDefaultGroupName() + ": ")).append(y).build()));
+            }
+        }
+
+        if (!messages.isEmpty()) {
+            src.sendMessages(messages);
         }
     }
 
@@ -176,5 +226,9 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> {
         }
 
         return Optional.empty();
+    }
+
+    @Override public void onReload() {
+        listConfig = configAdapter.getNodeOrDefault().getList();
     }
 }
