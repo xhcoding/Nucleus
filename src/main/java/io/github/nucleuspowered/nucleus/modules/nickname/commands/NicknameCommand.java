@@ -120,13 +120,18 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
         String name = args.<String>getOne(nickName).get();
 
         // Does the user exist?
-        Optional<User> match = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(TextSerializers.FORMATTING_CODE.stripCodes(name));
+        try {
+            Optional<User> match =
+                Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(TextSerializers.FORMATTING_CODE.stripCodes(name));
 
-        // The only person who can use such a name is oneself.
-        if (match.isPresent() && !match.get().getUniqueId().equals(pl.getUniqueId())) {
-            // Fail - cannot use another's name.
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.nameinuse", name));
-            return CommandResult.empty();
+            // The only person who can use such a name is oneself.
+            if (match.isPresent() && !match.get().getUniqueId().equals(pl.getUniqueId())) {
+                // Fail - cannot use another's name.
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.nameinuse", name));
+                return CommandResult.empty();
+            }
+        } catch (IllegalArgumentException ignored) {
+            // We allow some other nicknames too.
         }
 
         // Giving player must have the colour permissions and whatnot. Also,
