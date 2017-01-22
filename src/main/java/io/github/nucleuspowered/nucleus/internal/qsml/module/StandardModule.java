@@ -23,7 +23,9 @@ import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
+import io.github.nucleuspowered.nucleus.internal.signs.SignDataListenerBase;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
+import io.github.nucleuspowered.nucleus.modules.sign.handlers.ActionSignHandler;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -95,6 +97,7 @@ public abstract class StandardModule implements Module {
         // Construct commands
         loadCommands();
         loadEvents();
+        loadSignEvents();
         loadRunnables();
     }
 
@@ -182,6 +185,21 @@ public abstract class StandardModule implements Module {
             }
 
             Sponge.getEventManager().registerListeners(plugin, c);
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadSignEvents() {
+        plugin.getInternalServiceManager().getService(ActionSignHandler.class).ifPresent(x -> {
+            Set<Class<? extends SignDataListenerBase>> listenersToLoad = getStreamForModule(SignDataListenerBase.class)
+                .collect(Collectors.toSet());
+
+            Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
+            Injector injector = plugin.getInjector();
+            listenersToLoad.stream().map(y -> this.getInstance(injector, y)).filter(Objects::nonNull).forEach(c -> {
+                docGenCache.ifPresent(y -> y.addPermissionDocs(moduleId, c.getPermissions()));
+                x.registerSignInteraction(c);
+            });
         });
     }
 
