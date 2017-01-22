@@ -27,4 +27,8 @@ public class ActionSignHandler {
     public Collection<SignDataListenerBase<?>> getListeners() {
         return listeners.values();
     }
+
+    public Collection<Class<? extends AbstractSignManipulator<?, ?>>> getRegisteredClasses() {
+        return listeners.keySet();
+    }
 }
