@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.world.commands;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.DifficultyArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedGameModeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -13,16 +14,20 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
+import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.CatalogTypes;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.ArgumentParseException;
+import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.GeneratorType;
@@ -37,8 +42,12 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
@@ -59,9 +68,9 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.flags()
-                .valueFlag(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(dimension), CatalogTypes.DIMENSION_TYPE)), "d", "-" + dimension)
-                .valueFlag(GenericArguments.onlyOne(GenericArguments.catalogedElement(Text.of(generator), CatalogTypes.GENERATOR_TYPE)), "g", "-" + generator)
-                .valueFlag(GenericArguments.catalogedElement(Text.of(modifier), CatalogTypes.WORLD_GENERATOR_MODIFIER), "m", "-" + modifier)
+                .valueFlag(GenericArguments.onlyOne(new ExtendedDimensionArgument(Text.of(dimension))), "d", "-" + dimension)
+                .valueFlag(GenericArguments.onlyOne(new ImprovedCatalogTypeArgument(Text.of(generator), CatalogTypes.GENERATOR_TYPE)), "g", "-" + generator)
+                .valueFlag(new ImprovedCatalogTypeArgument(Text.of(modifier), CatalogTypes.WORLD_GENERATOR_MODIFIER), "m", "-" + modifier)
                 .valueFlag(GenericArguments.onlyOne(GenericArguments.longNum(Text.of(seed))), "s", "-" + seed)
                 .valueFlag(GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemode))), "-gm", "-" + gamemode)
                 .valueFlag(GenericArguments.onlyOne(new DifficultyArgument(Text.of(difficulty))), "-di", "-" + difficulty)
@@ -139,5 +148,44 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
         });
 
         return sb.toString();
+    }
+
+    @NonnullByDefault
+    public static class ExtendedDimensionArgument extends CommandElement {
+
+        private static HashMap<String, DimensionType> replacement = new HashMap<String, DimensionType>() {{
+            put("dim0", DimensionTypes.OVERWORLD);
+            put("dim-1", DimensionTypes.NETHER);
+            put("dim1", DimensionTypes.THE_END);
+        }};
+
+        private ExtendedDimensionArgument(@Nullable Text key) {
+            super(key);
+        }
+
+        @Nullable @Override protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
+            final String arg = args.next();
+            if (replacement.containsKey(arg.toLowerCase())) {
+                return replacement.get(arg.toLowerCase());
+            }
+
+            String arg2 = arg;
+            if (!arg2.contains(":")) {
+                arg2 = "minecraft:" + arg2;
+            }
+
+            return Sponge.getRegistry().getType(DimensionType.class, arg2)
+                .orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.dimensiontype.notfound", arg)));
+        }
+
+        @Override public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
+            List<String> ids = Sponge.getRegistry().getAllOf(DimensionType.class).stream().map(CatalogType::getId).collect(Collectors.toList());
+            try {
+                String a = args.peek();
+                return ids.stream().filter(x -> x.startsWith(a)).collect(Collectors.toList());
+            } catch (Exception e) {
+                return ids;
+            }
+        }
     }
 }
