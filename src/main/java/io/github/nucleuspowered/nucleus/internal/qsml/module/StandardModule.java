@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequireModule;
 import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
@@ -33,6 +34,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.quickstart.Module;
+import uk.co.drnaylor.quickstart.ModuleContainer;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
@@ -41,6 +43,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -226,6 +229,15 @@ public abstract class StandardModule implements Module {
     @SuppressWarnings("unchecked")
     private <T> Stream<Class<? extends T>> getStreamForModule(Class<T> assignableClass) {
         return plugin.getModuleContainer().getLoadedClasses().stream()
+                .filter(x -> { // This allows us to have a command depend on two modules.
+                    if (x.isAnnotationPresent(RequireModule.class)) {
+                        List<String> modules = plugin.getModuleContainer().getModules(ModuleContainer.ModuleStatusTristate.ENABLE)
+                            .stream().map(String::toLowerCase).collect(Collectors.toList());
+                        return Arrays.stream(x.getAnnotation(RequireModule.class).value()).allMatch(modules::contains);
+                    }
+
+                    return true;
+                })
                 .filter(assignableClass::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(packageName))
                 .filter(x -> !Modifier.isAbstract(x.getModifiers()) && !Modifier.isInterface(x.getModifiers()))
