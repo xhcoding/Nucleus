@@ -248,7 +248,7 @@ public class ChatUtil {
             }
 
             Text.Builder textBuilder = Text.builder(msg).color(st.colour).style(st.style).onClick(TextActions.openUrl(urlObj));
-            if (optionString != null && optionString.contains("h")) {
+            if (optionString != null && !optionString.contains("h")) {
                 textBuilder.onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.url.click", url)));
             }
 
