@@ -197,14 +197,18 @@ public class ChatUtil {
                     cmd = cmd.replace("{{player}}", player.getName());
                 }
 
-                msg = String.join("", whiteSpace, msg);
                 Text.Builder textBuilder = Text.builder(msg).color(st.colour).style(st.style).onClick(TextActions.runCommand(cmd))
                         .onHover(setupHoverOnCmd(cmd, optionList));
                 if (optionList != null && optionList.contains("s")) {
                     textBuilder.onClick(TextActions.suggestCommand(cmd));
                 }
 
-                texts.add(textBuilder.build());
+                Text toAdd = textBuilder.build();
+                if (!whiteSpace.isEmpty()) {
+                    toAdd = Text.join(Text.of(whiteSpace), toAdd);
+                }
+
+                texts.add(toAdd);
             }
         } while (remaining != null && m.find());
 
@@ -235,9 +239,6 @@ public class ChatUtil {
 
     private Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st, @Nullable String optionString) {
         String toParse = TextSerializers.FORMATTING_CODE.stripCodes(url);
-        if (!whiteSpace.isEmpty()) {
-            msg = String.join("", whiteSpace, msg);
-        }
 
         try {
             URL urlObj;
@@ -248,8 +249,12 @@ public class ChatUtil {
             }
 
             Text.Builder textBuilder = Text.builder(msg).color(st.colour).style(st.style).onClick(TextActions.openUrl(urlObj));
-            if (optionString != null && !optionString.contains("h")) {
+            if (optionString == null || !optionString.contains("h")) {
                 textBuilder.onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.url.click", url)));
+            }
+
+            if (!whiteSpace.isEmpty()) {
+                return Text.builder(whiteSpace).append(textBuilder.build()).build();
             }
 
             return textBuilder.build();
@@ -262,7 +267,12 @@ public class ChatUtil {
                 e.printStackTrace();
             }
 
-            return Text.builder(url).color(st.colour).style(st.style).build();
+            Text ret = Text.builder(url).color(st.colour).style(st.style).build();
+            if (!whiteSpace.isEmpty()) {
+                return Text.builder(whiteSpace).append(ret).build();
+            }
+
+            return ret;
         }
     }
 
