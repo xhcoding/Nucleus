@@ -9,8 +9,8 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.util.ThrownBiFunction;
-import io.github.nucleuspowered.nucleus.util.TriFunction;
+import io.github.nucleuspowered.nucleus.util.QuadFunction;
+import io.github.nucleuspowered.nucleus.util.ThrownTriFunction;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -37,8 +37,8 @@ import javax.annotation.Nullable;
 public class NicknameArgument extends CommandElement {
 
     private final UserDataManager userDataManager;
-    private final ThrownBiFunction<String, CommandArgs, List<?>, ArgumentParseException> parser;
-    private final TriFunction<String, CommandArgs, CommandContext, List<String>> completer;
+    private final ThrownTriFunction<String, CommandSource, CommandArgs, List<?>, ArgumentParseException> parser;
+    private final QuadFunction<String, CommandSource, CommandArgs, CommandContext, List<String>> completer;
     private final boolean onlyOne;
     private final UnderlyingType type;
 
@@ -56,12 +56,13 @@ public class NicknameArgument extends CommandElement {
 
         if (type == UnderlyingType.USER) {
             parser = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
-            completer = (s, a, c) -> {
+            completer = (s, cs, a, c) -> {
                 Collection<String> onlinePlayers = Sponge.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
                 return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
                     .getAll()
                     .stream()
                     .filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(s))
+                    .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
                     .map(x -> x.getName().get())
                     .sorted((first, second) -> {
                         boolean firstBool = onlinePlayers.contains(first);
@@ -85,10 +86,10 @@ public class NicknameArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String name = args.next().toLowerCase();
-        return parseInternal(name, args);
+        return parseInternal(name, source, args);
     }
 
-    List<?> parseInternal(String name, CommandArgs args) throws ArgumentParseException {
+    List<?> parseInternal(String name, CommandSource src, CommandArgs args) throws ArgumentParseException {
         boolean playerOnly = name.startsWith("p:");
 
         final String fName;
@@ -100,7 +101,7 @@ public class NicknameArgument extends CommandElement {
 
         List<?> obj = null;
         try {
-            obj = parser.accept(fName, args);
+            obj = parser.accept(fName, src, args);
         } catch (ArgumentParseException ex) {
             // ignored
         }
@@ -154,7 +155,7 @@ public class NicknameArgument extends CommandElement {
             fName = name;
         }
 
-        List<String> original = completer.accept(fName, args, context);
+        List<String> original = completer.accept(fName, src, args, context);
         if (playerOnly) {
             return original.stream().map(x -> "p:" + x).collect(Collectors.toList());
         } else {
@@ -172,7 +173,7 @@ public class NicknameArgument extends CommandElement {
         USER
     }
 
-    public static final class UserParser implements ThrownBiFunction<String, CommandArgs, List<?>, ArgumentParseException> {
+    public static final class UserParser implements ThrownTriFunction<String, CommandSource, CommandArgs, List<?>, ArgumentParseException> {
 
         private final boolean onlyOne;
         private final Supplier<UserStorageService> userStorageServiceSupplier;
@@ -183,7 +184,7 @@ public class NicknameArgument extends CommandElement {
         }
 
         @Override
-        public List<?> accept(String s, CommandArgs a) throws ArgumentParseException {
+        public List<?> accept(String s, CommandSource cs, CommandArgs a) throws ArgumentParseException {
             try {
                 UserStorageService uss = userStorageServiceSupplier.get();
                 List<User> users = uss.getAll().stream()
@@ -193,6 +194,7 @@ public class NicknameArgument extends CommandElement {
                         // Remove players who have no user
                         .filter(Optional::isPresent)
                         .map(Optional::get)
+                        .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
                         .collect(Collectors.toList());
 
                 if (!users.isEmpty()) {

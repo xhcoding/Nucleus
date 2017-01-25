@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.tests.TestBase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,7 +25,7 @@ public class PlayerConsoleArgumentTest extends TestBase {
 
     @Test
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseOnlyAnExactMatchIsReturned() throws ArgumentParseException {
-        List<?> list = getParser().parseInternal("test" , new CommandArgs("", new ArrayList<>()));
+        List<?> list = getParser().parseInternal("test" , mockSource(), new CommandArgs("", new ArrayList<>()));
 
         Assert.assertEquals(1, list.size());
         Assert.assertEquals("test", ((User)list.get(0)).getName());
@@ -32,20 +33,20 @@ public class PlayerConsoleArgumentTest extends TestBase {
 
     @Test
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseWithNoExactMatchReturnsBothIfTheyOtherwiseMatch() throws ArgumentParseException {
-        List<?> list = getParser().parseInternal("tes" , new CommandArgs("", new ArrayList<>()));
+        List<?> list = getParser().parseInternal("tes" , mockSource(), new CommandArgs("", new ArrayList<>()));
         Assert.assertEquals(2, list.size());
     }
 
     @Test
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseWithNoExactMatchReturnsOneReturnsIfOnlyOneMatches() throws ArgumentParseException {
-        List<?> list = getParser().parseInternal("testt" , new CommandArgs("", new ArrayList<>()));
+        List<?> list = getParser().parseInternal("testt" , mockSource(), new CommandArgs("", new ArrayList<>()));
         Assert.assertEquals(1, list.size());
         Assert.assertEquals("testtest", ((User)list.get(0)).getName());
     }
 
     @Test(expected = ArgumentParseException.class)
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseWithNoExactMatchReturnsNoneReturnIfNoneMatch() throws ArgumentParseException {
-        getParser().parseInternal("blah" , new CommandArgs("", new ArrayList<>()));
+        getParser().parseInternal("blah" , mockSource(), new CommandArgs("", new ArrayList<>()));
     }
 
     private PlayerConsoleArgument getParser() {
@@ -59,5 +60,11 @@ public class PlayerConsoleArgumentTest extends TestBase {
         Mockito.when(u2.getName()).thenReturn("testtest");
 
         return Lists.newArrayList(u1, u2);
+    }
+
+    private CommandSource mockSource() {
+        CommandSource mock = Mockito.mock(CommandSource.class);
+        Mockito.when(mock.hasPermission(Mockito.any())).thenReturn(true);
+        return mock;
     }
 }

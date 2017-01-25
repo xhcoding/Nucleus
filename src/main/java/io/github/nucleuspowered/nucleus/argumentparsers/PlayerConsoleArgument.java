@@ -6,27 +6,34 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.modules.vanish.commands.VanishCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class PlayerConsoleArgument extends CommandElement {
 
     private final boolean console;
     private final Supplier<Collection<Player>> onlinePlayersSupplier;
+    private static final String vanishPermission = Nucleus.getNucleus().getPermissionRegistry().getService(VanishCommand.class).getPermissionWithSuffix("see");
 
     public PlayerConsoleArgument(@Nullable Text key, boolean console) {
         this(key, console, () -> Sponge.getServer().getOnlinePlayers());
@@ -43,16 +50,16 @@ public class PlayerConsoleArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String name = args.next().toLowerCase();
-        return parseInternal(name, args);
+        return parseInternal(name, source, args);
     }
 
-    public List<CommandSource> parseInternal(String name, CommandArgs args) throws ArgumentParseException {
+    public List<CommandSource> parseInternal(String name, CommandSource src, CommandArgs args) throws ArgumentParseException {
         if (console && name.equals("-")) {
             return Lists.newArrayList(Sponge.getServer().getConsole());
         }
 
         List<CommandSource> players = onlinePlayersSupplier.get().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
-                .sorted((x, y) -> x.getName().compareTo(y.getName())).collect(Collectors.toList());
+                .sorted(Comparator.comparing(User::getName)).collect(Collectors.toList());
         if (players.isEmpty()) {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.playerconsole.noexist"));
         }
@@ -68,19 +75,37 @@ public class PlayerConsoleArgument extends CommandElement {
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         try {
-            return completeInternal(args.peek().toLowerCase(), args, context);
+            return completeInternal(args.peek().toLowerCase(), src, args, context);
         } catch (ArgumentParseException e) {
-            return completeInternal("", args, context);
+            return completeInternal("", src, args, context);
         }
     }
 
-    List<String> completeInternal(final String name, CommandArgs args, CommandContext context) {
-        List<String> list = Sponge.getServer().getOnlinePlayers().stream().map(User::getName).collect(Collectors.toList());
+    List<String> completeInternal(final String name, CommandSource src, CommandArgs args, CommandContext context) {
+        List<String> list = Sponge.getServer().getOnlinePlayers().stream()
+            .filter(x -> PlayerConsoleArgument.shouldShow(x, src))
+            .map(User::getName).collect(Collectors.toList());
         // Console.
         if (console) {
             list.add("-");
         }
 
-        return list.stream().filter(x -> x.toLowerCase().startsWith(name.toLowerCase())).collect(Collectors.toList());
+        return list.stream()
+            .filter(x -> x.toLowerCase().startsWith(name.toLowerCase())).collect(Collectors.toList());
+    }
+
+    static boolean shouldShow(UUID player, CommandSource cs) {
+        if (!cs.hasPermission(vanishPermission)) {
+            Optional<Player> player1 = Sponge.getServer().getPlayer(player);
+            if (player1.isPresent()) {
+                return !player1.get().get(Keys.VANISH).orElse(false);
+            }
+        }
+
+        return true;
+    }
+
+    static boolean shouldShow(Player player, CommandSource cs) {
+        return cs.hasPermission(vanishPermission) || !player.get(Keys.VANISH).orElse(false);
     }
 }

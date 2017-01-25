@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.tests.TestBase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.entity.living.player.User;
@@ -24,7 +25,7 @@ public class NicknameArgumentTests extends TestBase {
 
     @Test
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseOnlyAnExactMatchIsReturned() throws ArgumentParseException {
-        List<?> list = getParser().accept("test" , new CommandArgs("", new ArrayList<>()));
+        List<?> list = getParser().accept("test", mockSource(), new CommandArgs("", new ArrayList<>()));
 
         Assert.assertEquals(1, list.size());
         Assert.assertEquals("test", ((User)list.get(0)).getName());
@@ -32,20 +33,20 @@ public class NicknameArgumentTests extends TestBase {
 
     @Test
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseWithNoExactMatchReturnsBothIfTheyOtherwiseMatch() throws ArgumentParseException {
-        List<?> list = getParser().accept("tes" , new CommandArgs("", new ArrayList<>()));
+        List<?> list = getParser().accept("tes", mockSource(), new CommandArgs("", new ArrayList<>()));
         Assert.assertEquals(2, list.size());
     }
 
     @Test
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseWithNoExactMatchReturnsOneReturnsIfOnlyOneMatches() throws ArgumentParseException {
-        List<?> list = getParser().accept("testt" , new CommandArgs("", new ArrayList<>()));
+        List<?> list = getParser().accept("testt", mockSource(), new CommandArgs("", new ArrayList<>()));
         Assert.assertEquals(1, list.size());
         Assert.assertEquals("testtest", ((User)list.get(0)).getName());
     }
 
     @Test
     public void testWhenTwoPlayersWithTheSameNameAreInTheUserDatabaseWithNoExactMatchReturnsNoneReturnIfNoneMatch() throws ArgumentParseException {
-        List<?> list = getParser().accept("blah" , new CommandArgs("", new ArrayList<>()));
+        List<?> list = getParser().accept("blah", mockSource(), new CommandArgs("", new ArrayList<>()));
         Assert.assertTrue(list.isEmpty());
     }
 
@@ -76,4 +77,9 @@ public class NicknameArgumentTests extends TestBase {
         return mockUss;
     }
 
+    private CommandSource mockSource() {
+        CommandSource mock = Mockito.mock(CommandSource.class);
+        Mockito.when(mock.hasPermission(Mockito.any())).thenReturn(true);
+        return mock;
+    }
 }

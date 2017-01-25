@@ -58,6 +58,7 @@ public class VanishCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
+        mspi.put("see", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.see"), SuggestedLevel.ADMIN));
         mspi.put("other", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.other"), SuggestedLevel.ADMIN));
         mspi.put("persist", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.persist"), SuggestedLevel.ADMIN));
         return mspi;

@@ -14,10 +14,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 public class HomeOtherArgument extends HomeArgument {
 
@@ -40,7 +41,7 @@ public class HomeOtherArgument extends HomeArgument {
         }
 
         // We know it's an instance of a user.
-        User user = ((List<User>)nickArg.parseInternal(player.toLowerCase(), args)).get(0);
+        User user = ((List<User>)nickArg.parseInternal(player.toLowerCase(), source, args)).get(0);
         LocationData location = this.getHome(user, ohome.get(), args);
         return new HomeData(user, location);
     }
@@ -56,7 +57,7 @@ public class HomeOtherArgument extends HomeArgument {
             Optional<String> arg2 = args.nextIfPresent();
             if (arg2.isPresent()) {
                 // Get the user
-                User user = (User)this.nickArg.parseInternal(arg1, args);
+                User user = (User)this.nickArg.parseInternal(arg1, src, args);
                 return this.complete(user, arg2.get());
             } else {
                 args.setState(saveState);
