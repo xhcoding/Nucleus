@@ -9,6 +9,7 @@ import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.configurate.objectmapper.NucleusObjectMapperFactory;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ConfigurationNodeTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.PatternTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.SetTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -19,6 +20,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class ConfigurateHelper {
 
@@ -54,6 +56,7 @@ public class ConfigurateHelper {
         tsc.registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
         tsc.registerType(TypeToken.of(ItemStackSnapshot.class), new ItemStackSnapshotSerialiser());
         tsc.registerType(TypeToken.of(ConfigurationNode.class), new ConfigurationNodeTypeSerialiser());
+        tsc.registerType(TypeToken.of(Pattern.class), new PatternTypeSerialiser());
         tsc.registerPredicate(
                 typeToken -> Set.class.isAssignableFrom(typeToken.getRawType()),
                 new SetTypeSerialiser()

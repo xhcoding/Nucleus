@@ -137,8 +137,8 @@ public abstract class TestBase {
         }
 
         @Override
-        public void reload() {
-
+        public boolean reload() {
+            return true;
         }
 
         @Override

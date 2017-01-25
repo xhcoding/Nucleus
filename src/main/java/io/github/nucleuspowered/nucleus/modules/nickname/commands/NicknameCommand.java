@@ -138,7 +138,13 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
         // colour and color are the two spellings we support. (RULE BRITANNIA!)
         stripPermissionless(src, name);
 
-        int strippedNameLength = name.replaceAll("&[0-9a-fomlnk]", "").length();
+        String strippedName = name.replaceAll("&[0-9a-fomlnk]", "");
+        Pattern p = nicknameConfigAdapter.getNodeOrDefault().getPattern();
+        if (!p.matcher(strippedName).matches()) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.nopattern", p.pattern()));
+        }
+
+        int strippedNameLength = strippedName.length();
 
         // Do a regex remove to check minimum length requirements.
         if (strippedNameLength < Math.max(nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength(), 1)) {

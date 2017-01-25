@@ -4,11 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.configurate.objectmapper;
 
+import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
 import io.github.nucleuspowered.nucleus.configurate.annotations.DoNotGenerate;
 import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
 import io.github.nucleuspowered.nucleus.configurate.settingprocessor.SettingProcessor;
 import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.Setting;
@@ -64,11 +67,53 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
                     data = new FieldData(field, comment);
                 }
 
+                if (field.isAnnotationPresent(Default.class)) {
+                    data = new DefaultFieldData(field, comment, data, field.getAnnotation(Default.class).value());
+                }
+
                 field.setAccessible(true);
                 if (!cachedFields.containsKey(path)) {
                     cachedFields.put(path, data);
                 }
             }
+        }
+    }
+
+    private static class DefaultFieldData extends FieldData {
+
+        private final String defaultValue;
+        private final FieldData fieldData;
+        private final TypeToken<?> typeToken;
+        private final Field field;
+
+        public DefaultFieldData(Field field, String comment, FieldData data, String defaultValue) throws ObjectMappingException {
+            super(field, comment);
+            this.field = field;
+            this.typeToken = TypeToken.of(field.getGenericType());
+            this.defaultValue = defaultValue;
+            this.fieldData = data;
+        }
+
+        @Override public void deserializeFrom(Object instance, ConfigurationNode node) throws ObjectMappingException {
+            try {
+                this.fieldData.deserializeFrom(instance, node);
+            } catch (Exception e) {
+                // ignored
+            }
+
+            try {
+                if (node.isVirtual() || node.getValue() == null) {
+                    field.setAccessible(true);
+                    field.set(instance, node.getOptions().getSerializers().get(this.typeToken)
+                        .deserialize(this.typeToken, SimpleConfigurationNode.root().setValue(this.defaultValue)));
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override public void serializeTo(Object instance, ConfigurationNode node) throws ObjectMappingException {
+            this.fieldData.serializeTo(instance, node);
         }
     }
 

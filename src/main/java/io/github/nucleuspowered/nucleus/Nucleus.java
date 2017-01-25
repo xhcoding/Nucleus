@@ -47,7 +47,7 @@ public abstract class Nucleus {
 
     public abstract void saveSystemConfig() throws IOException;
 
-    public abstract void reload();
+    public abstract boolean reload();
 
     public abstract WarmupManager getWarmupManager();
 

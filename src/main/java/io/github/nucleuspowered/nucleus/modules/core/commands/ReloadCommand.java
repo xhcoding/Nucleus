@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -23,9 +24,12 @@ public class ReloadCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        plugin.reload();
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.reload.one"));
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.reload.two"));
-        return CommandResult.success();
+        if (plugin.reload()) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.reload.one"));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.reload.two"));
+            return CommandResult.success();
+        }
+
+        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.reload.errorone"));
     }
 }

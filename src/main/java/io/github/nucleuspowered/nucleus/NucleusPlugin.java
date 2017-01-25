@@ -351,7 +351,7 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Override
-    public synchronized void reload() {
+    public synchronized boolean reload() {
         try {
             moduleContainer.reloadSystemConfig();
             reloadMessages();
@@ -363,11 +363,13 @@ public class NucleusPlugin extends Nucleus {
             }
 
             fireReloadables();
+
+            Sponge.getEventManager().post(new NucleusReloadConfigEvent(this));
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-
-        Sponge.getEventManager().post(new NucleusReloadConfigEvent(this));
     }
 
     private void fireReloadables() throws Exception {
