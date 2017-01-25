@@ -4,12 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.util.ThrownBiConsumer;
+import io.github.nucleuspowered.nucleus.util.TriConsumer;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -17,6 +19,8 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.storage.WorldProperties;
+
+import javax.annotation.Nullable;
 
 @Scan
 public class PropertiesWorldCommands {
@@ -28,11 +32,19 @@ public class PropertiesWorldCommands {
 
         private final ThrownBiConsumer<WorldProperties, Boolean, Exception>  setter;
         private final String name;
+        private final TriConsumer<CommandSource, WorldProperties, Boolean> extraLogic;
 
         private AbstractSetCommand(String name, ThrownBiConsumer<WorldProperties, Boolean, Exception> setter) {
+            this(name, setter, null);
+        }
+
+        private AbstractSetCommand(String name, ThrownBiConsumer<WorldProperties, Boolean, Exception> setter, @Nullable
+            TriConsumer<CommandSource, WorldProperties, Boolean> extraLogic) {
+
             super();
             this.name = name;
             this.setter = setter;
+            this.extraLogic = extraLogic;
         }
 
         @Override public CommandElement[] getArguments() {
@@ -47,6 +59,11 @@ public class PropertiesWorldCommands {
             boolean set = args.<Boolean>getOne(valueKey).get();
             setter.accept(worldProperties, set);
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.setproperty.success", name, worldProperties.getWorldName(), String.valueOf(set)));
+
+            if (extraLogic != null) {
+                extraLogic.accept(src, worldProperties, set);
+            }
+
             return CommandResult.success();
         }
     }
@@ -56,7 +73,11 @@ public class PropertiesWorldCommands {
     public static class SetHardcoreCommand extends AbstractSetCommand {
 
         public SetHardcoreCommand() {
-            super("hardcore", WorldProperties::setHardcore);
+            super("hardcore", WorldProperties::setHardcore, (cs, wp, set) -> {
+                if (!set) {
+                    cs.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.sethardcore.diff", wp.getDifficulty().getName()));
+                }
+            });
         }
     }
 
