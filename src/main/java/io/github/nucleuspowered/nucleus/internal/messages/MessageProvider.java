@@ -9,6 +9,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public abstract class MessageProvider {
@@ -16,7 +17,11 @@ public abstract class MessageProvider {
     public abstract Optional<String> getMessageFromKey(String key);
 
     public String getMessageWithFormat(String key, String... substitutions) {
-        return MessageFormat.format(getMessageFromKey(key).get(), (Object[]) substitutions);
+        try {
+            return MessageFormat.format(getMessageFromKey(key).get(), (Object[]) substitutions);
+        } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("The message key " + key + " does not exist!");
+        }
     }
 
     public Text getTextMessageWithFormat(String key, String... substitutions) {
