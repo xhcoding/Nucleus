@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.events.SendToSpawnEvent;
 import io.github.nucleuspowered.nucleus.modules.spawn.helpers.SpawnHelper;
@@ -47,6 +48,7 @@ public class SpawnCommand extends AbstractCommand<Player> {
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("otherworlds", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawn.otherworlds"), SuggestedLevel.ADMIN));
+        m.put("worlds", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawn.worlds"), SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -59,15 +61,17 @@ public class SpawnCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        GlobalSpawnConfig gsc = sca.getNodeOrDefault().getGlobalSpawn();
+        SpawnConfig sc = sca.getNodeOrDefault();
+        GlobalSpawnConfig gsc = sc.getGlobalSpawn();
         WorldProperties wp = args.<WorldProperties>getOne(key)
             .orElseGet(() -> gsc.isOnSpawnCommand() ? gsc.getWorld().orElse(src.getWorld().getProperties()) : src.getWorld().getProperties());
 
         Optional<World> ow = Sponge.getServer().getWorld(wp.getUniqueId());
 
         if (!ow.isPresent()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.noworld"));
-            return CommandResult.empty();
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.noworld"));
+        } else if (sc.isPerWorldPerms() && !permissions.testSuffix(src, "worlds." + ow.get().getName().toLowerCase())) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.nopermsworld", ow.get().getName()));
         }
 
         Transform<World> worldTransform = SpawnHelper.getSpawn(wp, plugin, src);

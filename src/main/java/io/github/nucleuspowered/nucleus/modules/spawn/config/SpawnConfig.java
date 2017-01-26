@@ -22,6 +22,9 @@ public class SpawnConfig {
     @Setting(value = "global-spawn", comment = "loc:config.spawn.global.base")
     private GlobalSpawnConfig globalSpawn = new GlobalSpawnConfig();
 
+    @Setting(value = "per-world-permissions", comment = "loc:config.spawn.worlds")
+    private boolean perWorldPerms = false;
+
     public boolean isSpawnOnLogin() {
         return spawnOnLogin;
     }
@@ -36,5 +39,9 @@ public class SpawnConfig {
 
     public GlobalSpawnConfig getGlobalSpawn() {
         return globalSpawn;
+    }
+
+    public boolean isPerWorldPerms() {
+        return perWorldPerms;
     }
 }
