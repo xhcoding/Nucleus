@@ -5,7 +5,8 @@
 package io.github.nucleuspowered.nucleus.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.api.data.WarpData;
+import io.github.nucleuspowered.nucleus.api.data.Warp;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -20,6 +21,7 @@ import javax.annotation.Nullable;
 /**
  * Gets a service that allows users to warp about using defined warp.
  */
+@NonnullByDefault
 public interface NucleusWarpService {
 
     /**
@@ -28,7 +30,7 @@ public interface NucleusWarpService {
      * @param warpName The name of the warp to check.
      * @return The {@link Location} of the warp, or {@link Optional#empty()} otherwise.
      */
-    Optional<WarpData> getWarp(String warpName);
+    Optional<Warp> getWarp(String warpName);
 
     /**
      * Removes a warp.
@@ -48,13 +50,13 @@ public interface NucleusWarpService {
      */
     boolean setWarp(String warpName, Location<World> location, Vector3d rotation);
 
-    List<WarpData> getUncategorisedWarps();
+    List<Warp> getUncategorisedWarps();
 
-    List<WarpData> getWarpsForCategory(String category);
+    List<Warp> getWarpsForCategory(String category);
 
-    Map<String, List<WarpData>> getCategorisedWarps();
+    Map<String, List<Warp>> getCategorisedWarps();
 
-    Map<String, List<WarpData>> getCategorisedWarps(Predicate<WarpData> warpDataPredicate);
+    Map<String, List<Warp>> getCategorisedWarps(Predicate<Warp> warpDataPredicate);
 
     boolean removeWarpCost(String warpName);
 
@@ -62,10 +64,10 @@ public interface NucleusWarpService {
      * Sets the cost of a warp.
      *
      * @param warpName The name of the warp to change the cost of.
-     * @param cost The cost to use the warp. Set to zero to disable.
+     * @param cost The cost to use the warp. Set to zero (or negative) to disable.
      * @return <code>true</code> if the cost is set, <code>false</code> otherwise.
      */
-    boolean setWarpCost(String warpName, int cost);
+    boolean setWarpCost(String warpName, double cost);
 
     boolean setWarpCategory(String warpName, @Nullable String category);
 

@@ -4,16 +4,21 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
-import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.modules.warp.event.CreateWarpEvent;
+import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 import java.util.regex.Pattern;
@@ -28,6 +33,7 @@ import java.util.regex.Pattern;
 @RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class)
 public class SetWarpCommand extends AbstractCommand<Player> {
 
+    @Inject private WarpHandler qs;
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
 
     @Override
@@ -51,11 +57,17 @@ public class SetWarpCommand extends AbstractCommand<Player> {
         }
 
         // Get the service, does the warp exist?
-        NucleusWarpService qs = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
         if (qs.getWarp(warp).isPresent()) {
             // You have to delete to set the same name
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.nooverwrite"));
             return CommandResult.empty();
+        }
+
+        CreateWarpEvent event = new CreateWarpEvent(Cause.of(NamedCause.owner(src)), warp, src.getLocation());
+        if (Sponge.getEventManager().post(event)) {
+            throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
+                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
+            ));
         }
 
         // OK! Set it.

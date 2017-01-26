@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
+import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
@@ -14,6 +15,7 @@ import org.spongepowered.api.world.World;
 /**
  * Called when Nucleus has been requested to send a {@link User} to spawn, either now, or on their next login.
  */
+@Stable
 @NonnullByDefault
 public interface NucleusSendToSpawnEvent extends TargetUserEvent, Cancellable {
 

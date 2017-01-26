@@ -58,6 +58,14 @@ public class LocationNode {
         this.world = length.getExtent().getUniqueId();
     }
 
+    public Vector3d getPosition() {
+        return new Vector3d(x, y, z);
+    }
+
+    public UUID getWorld() {
+        return world;
+    }
+
     /**
      * Gets a {@link Location} from the node.
      *

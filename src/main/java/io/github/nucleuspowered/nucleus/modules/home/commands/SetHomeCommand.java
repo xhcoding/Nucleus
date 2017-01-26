@@ -5,22 +5,27 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
+import io.github.nucleuspowered.nucleus.modules.home.events.AbstractHomeEvent;
+import io.github.nucleuspowered.nucleus.modules.home.events.CreateHomeEvent;
+import io.github.nucleuspowered.nucleus.modules.home.events.ModifyHomeEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
@@ -32,7 +37,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 @Permissions(prefix = "home", mainOverride = "set", suggestedLevel = SuggestedLevel.USER)
-@RunAsync
 @RegisterCommand({"homeset", "sethome"})
 public class SetHomeCommand extends AbstractCommand<Player> {
 
@@ -65,14 +69,15 @@ public class SetHomeCommand extends AbstractCommand<Player> {
 
         // Get the homes.
         UserService iqsu = udm.get(src).get();
-        Map<String, LocationData> msw = iqsu.getHomes();
+        Map<String, Home> msw = iqsu.getHomes();
 
         if (!warpName.matcher(home).matches()) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.name"));
         }
 
         // Does the home exist? You have to explicitly delete the home first.
-        boolean hasHome = msw.entrySet().stream().anyMatch(k -> k.getKey().equalsIgnoreCase(home));
+        Optional<Home> optionalLocationData = Util.getValueIgnoreCase(msw, home);
+        boolean hasHome = optionalLocationData.isPresent();
         boolean overwrite = hasHome && args.hasAny("o");
         if (hasHome && !overwrite) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home));
@@ -86,6 +91,19 @@ public class SetHomeCommand extends AbstractCommand<Player> {
             if (msw.size() >= c) {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
             }
+        }
+
+        AbstractHomeEvent event;
+        if (overwrite) {
+            event = new ModifyHomeEvent(home, src, Cause.of(NamedCause.owner(src)), optionalLocationData.get().getLocation().orElse(null), src.getLocation());
+        } else {
+            event = new CreateHomeEvent(home, src, Cause.of(NamedCause.owner(src)), src.getLocation());
+        }
+
+        if (Sponge.getEventManager().post(event)) {
+            throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
+                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
+            ));
         }
 
         // Just in case.

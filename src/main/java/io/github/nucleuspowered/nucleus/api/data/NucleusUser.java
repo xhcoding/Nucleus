@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.api.data;
 
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.internal.LocationData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.item.ItemType;
@@ -169,14 +170,14 @@ public interface NucleusUser {
      * @param home The name of the home to get.
      * @return An {@link Optional} containing the {@link LocationData}, if it exists.
      */
-    Optional<LocationData> getHome(String home);
+    Optional<Home> getHome(String home);
 
     /**
      * Gets all of the homes for a player.
      *
      * @return An {@link Map} containing the {@link LocationData}s of the homes, using the name of the homes as a key.
      */
-    Map<String, LocationData> getHomes();
+    Map<String, Home> getHomes();
 
     /**
      * Sets a player's home. Will not overwrite a home that exists. Does not respect limits set in permissions and options.

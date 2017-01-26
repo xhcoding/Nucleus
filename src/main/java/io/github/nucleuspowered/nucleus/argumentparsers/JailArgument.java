@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.NamedLocation;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -15,10 +15,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class JailArgument extends CommandElement {
 
@@ -33,7 +34,7 @@ public class JailArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String a = args.next().toLowerCase();
-        Optional<LocationData> owl = handler.getJail(a);
+        Optional<NamedLocation> owl = handler.getJail(a);
         if (owl.isPresent()) {
             return owl.get();
         }

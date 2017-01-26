@@ -12,8 +12,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.api.data.MuteData;
 import io.github.nucleuspowered.nucleus.api.data.NoteData;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
@@ -25,6 +25,7 @@ import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
+import io.github.nucleuspowered.nucleus.internal.LocationData;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -281,37 +282,28 @@ public class UserService extends Service<UserDataNode>
     }
 
     @Override
-    public Optional<LocationData> getHome(String home) {
+    public Optional<Home> getHome(String home) {
         if (data.getHomeData() == null) {
             return Optional.empty();
         }
 
         LocationNode ln = Util.getValueIgnoreCase(data.getHomeData(), home).orElse(null);
         if (ln != null) {
-            try {
-                return Optional.of(new LocationData(home, ln.getLocation(), ln.getRotation()));
-            } catch (NoSuchWorldException e) {
-                return Optional.of(new LocationData(home, null, null));
-            }
+            return Optional.of(new HomeData(home, ln.getWorld(), ln.getPosition(), ln.getRotation()));
         }
 
         return Optional.empty();
     }
 
     @Override
-    public Map<String, LocationData> getHomes() {
+    public Map<String, Home> getHomes() {
         if (data.getHomeData() == null || data.getHomeData().isEmpty()) {
             return Maps.newHashMap();
         }
 
         return data.getHomeData().entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, x -> {
-                try {
-                    return new LocationData(x.getKey(), x.getValue().getLocation(), x.getValue().getRotation());
-                } catch (NoSuchWorldException e) {
-                    return new LocationData(x.getKey(), null, null);
-                }
-            }));
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                x -> new HomeData(x.getKey(), x.getValue().getWorld(), x.getValue().getPosition(), x.getValue().getRotation())));
     }
 
     @Override
@@ -671,5 +663,16 @@ public class UserService extends Service<UserDataNode>
 
     public void setCommandSpy(boolean set) {
         data.setCommandSpy(set);
+    }
+
+    private class HomeData extends LocationData implements Home {
+
+        private HomeData(String name, UUID world, Vector3d position, Vector3d rotation) {
+            super(name, world, position, rotation);
+        }
+
+        @Override public UUID getUniqueId() {
+            return UserService.this.getUniqueID();
+        }
     }
 }

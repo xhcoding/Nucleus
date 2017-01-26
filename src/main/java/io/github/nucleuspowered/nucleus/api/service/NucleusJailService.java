@@ -6,8 +6,9 @@ package io.github.nucleuspowered.nucleus.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.NamedLocation;
 import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
+import io.github.nucleuspowered.nucleus.internal.LocationData;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -34,7 +35,7 @@ public interface NucleusJailService {
      *
      * @return A {@link Map} of names to {@link LocationData}.
      */
-    Map<String, LocationData> getJails();
+    Map<String, NamedLocation> getJails();
 
     /**
      * Gets the location of a jail, if it exists.
@@ -42,7 +43,7 @@ public interface NucleusJailService {
      * @param name The name of the jail to get. Case in-sensitive.
      * @return An {@link Optional} that potentially contains the {@link LocationData} if the jail exists.
      */
-    Optional<LocationData> getJail(String name);
+    Optional<NamedLocation> getJail(String name);
 
     /**
      * Removes a jail location from the list.

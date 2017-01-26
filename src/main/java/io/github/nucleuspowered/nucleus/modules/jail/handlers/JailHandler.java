@@ -8,7 +8,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.NamedLocation;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
@@ -34,7 +34,7 @@ public class JailHandler implements NucleusJailService {
     }
 
     @Override
-    public Optional<LocationData> getJail(String warpName) {
+    public Optional<NamedLocation> getJail(String warpName) {
         return store.getJailLocation(warpName);
     }
 
@@ -49,7 +49,7 @@ public class JailHandler implements NucleusJailService {
     }
 
     @Override
-    public Map<String, LocationData> getJails() {
+    public Map<String, NamedLocation> getJails() {
         return store.getJails();
     }
 
@@ -83,8 +83,8 @@ public class JailHandler implements NucleusJailService {
         }
 
         // Get the jail.
-        Optional<LocationData> owl = getJail(data.getJailName());
-        LocationData wl = owl.orElseGet(() -> {
+        Optional<NamedLocation> owl = getJail(data.getJailName());
+        NamedLocation wl = owl.orElseGet(() -> {
             if (!getJails().isEmpty()) {
                 return null;
             }
@@ -146,14 +146,14 @@ public class JailHandler implements NucleusJailService {
         return true;
     }
 
-    public Optional<LocationData> getWarpLocation(User user) {
+    public Optional<NamedLocation> getWarpLocation(User user) {
         if (!isPlayerJailed(user)) {
             return Optional.empty();
         }
 
-        Optional<LocationData> owl = getJail(getPlayerJailData(user).get().getJailName());
+        Optional<NamedLocation> owl = getJail(getPlayerJailData(user).get().getJailName());
         if (!owl.isPresent()) {
-            Collection<LocationData> wl = getJails().values();
+            Collection<NamedLocation> wl = getJails().values();
             if (wl.isEmpty()) {
                 return Optional.empty();
             }

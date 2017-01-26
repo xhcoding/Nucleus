@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.NamedLocation;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -43,7 +43,7 @@ public class JailsCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
 
-        Map<String, LocationData> mjs = handler.getJails();
+        Map<String, NamedLocation> mjs = handler.getJails();
         if (mjs.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.nojails"));
             return CommandResult.empty();

@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -13,6 +12,7 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+@NonnullByDefault
 public class HomeOtherArgument extends HomeArgument {
 
     private final NicknameArgument nickArg;
@@ -42,8 +43,7 @@ public class HomeOtherArgument extends HomeArgument {
 
         // We know it's an instance of a user.
         User user = ((List<User>)nickArg.parseInternal(player.toLowerCase(), source, args)).get(0);
-        LocationData location = this.getHome(user, ohome.get(), args);
-        return new HomeData(user, location);
+        return this.getHome(user, ohome.get(), args);
     }
 
     @Override
@@ -78,15 +78,5 @@ public class HomeOtherArgument extends HomeArgument {
     @Override
     public Text getUsage(CommandSource src) {
         return Text.of("<user> <home>");
-    }
-
-    public static class HomeData {
-        public final User user;
-        public final LocationData location;
-
-        public HomeData(User user, LocationData location) {
-            this.user = user;
-            this.location = location;
-        }
     }
 }

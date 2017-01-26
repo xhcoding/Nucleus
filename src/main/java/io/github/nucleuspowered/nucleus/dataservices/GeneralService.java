@@ -7,19 +7,22 @@ package io.github.nucleuspowered.nucleus.dataservices;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
-import io.github.nucleuspowered.nucleus.api.data.WarpData;
+import io.github.nucleuspowered.nucleus.api.data.NamedLocation;
+import io.github.nucleuspowered.nucleus.api.data.Warp;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WarpNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
+import io.github.nucleuspowered.nucleus.internal.LocationData;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -27,33 +30,23 @@ import javax.annotation.Nullable;
 
 public class GeneralService extends Service<GeneralDataNode> {
 
-    private final BiFunction<String, LocationNode, LocationData> getLocationData = (s, l) -> {
-        try {
-            return new LocationData(s, l.getLocation(), l.getRotation());
-        } catch (NoSuchWorldException e) {
-            return null;
-        }
-    };
+    private final BiFunction<String, LocationNode, NamedLocation> getLocationData = (s, l) ->
+        new LocationData(s, l.getWorld(), l.getPosition(), l.getRotation());
 
-    private final BiFunction<String, WarpNode, WarpData> getWarpLocation = (s, l) -> {
-        try {
-            return new WarpData(s, l.getLocation(), l.getRotation(), l.getCost(), l.getCategory().orElse(null));
-        } catch (NoSuchWorldException e) {
-            return new WarpData(s, null, null, l.getCost(), l.getCategory().orElse(null));
-        }
-    };
+    private final BiFunction<String, WarpNode, Warp> getWarpLocation = (s, l) ->
+        new WarpData(s, l.getWorld(), l.getPosition(), l.getRotation(), l.getCost(), l.getCategory().orElse(null));
 
     public GeneralService(DataProvider<GeneralDataNode> provider) throws Exception {
         // This gets set up early, but we don't want to load it until post-init.
         super(provider, false);
     }
 
-    public Optional<LocationData> getJailLocation(String name) {
-        return getLocation(name, data.getJails());
+    public Optional<NamedLocation> getJailLocation(String name) {
+        return get(data.getJails(), getLocationData, name);
     }
 
-    public Map<String, LocationData> getJails() {
-        return getLocations(data.getJails());
+    public Map<String, NamedLocation> getJails() {
+        return convert(data.getJails(), getLocationData);
     }
 
     public boolean addJail(String name, Location<World> loc, Vector3d rot) {
@@ -64,12 +57,12 @@ public class GeneralService extends Service<GeneralDataNode> {
         return removeLocation(name, data.getJails());
     }
 
-    public Optional<WarpData> getWarpLocation(String name) {
-        return getLocation(name, data.getWarps(), getWarpLocation);
+    public Optional<Warp> getWarpLocation(String name) {
+        return get(data.getWarps(), getWarpLocation, name);
     }
 
-    public Map<String, WarpData> getWarps() {
-        return getLocations(data.getWarps(), getWarpLocation);
+    public Map<String, Warp> getWarps() {
+        return convert(data.getWarps(), getWarpLocation);
     }
 
     public boolean addWarp(String name, Location<World> loc, Vector3d rot) {
@@ -82,7 +75,7 @@ public class GeneralService extends Service<GeneralDataNode> {
         return true;
     }
 
-    public boolean setWarpCost(String name, int cost) {
+    public boolean setWarpCost(String name, double cost) {
         Preconditions.checkArgument(cost >= -1);
         Map<String, WarpNode> m = data.getWarps();
         Optional<WarpNode> os = Util.getValueIgnoreCase(m, name);
@@ -142,27 +135,6 @@ public class GeneralService extends Service<GeneralDataNode> {
 
     // Helper methods for warp based systems
 
-    private Optional<LocationData> getLocation(String name, Map<String, LocationNode> m) {
-        return getLocation(name, m, getLocationData);
-    }
-
-    private <T extends LocationData, S extends LocationNode> Optional<T> getLocation(String name, Map<String, S> m, BiFunction<String, S, T> converter) {
-        Optional<S> o = Util.getValueIgnoreCase(m, name);
-        if (!o.isPresent()) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(converter.apply(name, o.get()));
-    }
-
-    private Map<String, LocationData> getLocations(Map<String, LocationNode> msl) {
-        return getLocations(msl, getLocationData);
-    }
-
-    private <T extends LocationData, S extends LocationNode> Map<String, T> getLocations(Map<String, S> m, BiFunction<String, S, T> converter) {
-        return m.entrySet().stream().map(x -> converter.apply(x.getKey(), x.getValue())).filter(x -> x != null).collect(Collectors.toMap(T::getName, x -> x));
-    }
-
     private boolean addLocation(String name, Location<World> loc, Vector3d rot, Map<String, LocationNode> m) {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(loc);
@@ -178,5 +150,44 @@ public class GeneralService extends Service<GeneralDataNode> {
     private boolean removeLocation(String name, Map<String, LocationNode> m) {
         Optional<Map.Entry<String, LocationNode>> o = m.entrySet().stream().filter(k -> k.getKey().equalsIgnoreCase(name)).findFirst();
         return o.isPresent() && m.remove(o.get().getKey()) != null;
+    }
+
+    private <S extends LocationNode, T extends NamedLocation> Optional<T> get(Map<String, S> input, BiFunction<String, S, T> convert, String name) {
+        return Util.getValueIgnoreCase(convert(input, convert), name);
+    }
+
+    private <S extends LocationNode, T extends NamedLocation> Map<String, T> convert(Map<String, S> input, BiFunction<String, S, T> convert) {
+        return input.entrySet().stream()
+            .map(x -> convert.apply(x.getKey(), x.getValue()))
+            .filter(Objects::nonNull).collect(Collectors.toMap(T::getName, x -> x));
+    }
+
+    private static class WarpData extends LocationData implements Warp {
+
+        private final double cost;
+        private final String category;
+
+        private WarpData(String name, UUID world, Vector3d position, Vector3d rotation, double cost, @Nullable String category) {
+            super(name, world, position, rotation);
+            this.cost = Math.max(-1, cost);
+            this.category = category;
+        }
+
+        public Optional<Double> getCost() {
+            if (cost > -1) {
+                return Optional.of(cost);
+            }
+
+            return Optional.empty();
+        }
+
+        public Optional<String> getCategory() {
+            return Optional.ofNullable(category);
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + "category: " + this.category + ", cost: " + this.cost;
+        }
     }
 }

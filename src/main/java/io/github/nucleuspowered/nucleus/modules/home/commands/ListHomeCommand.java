@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -68,7 +68,7 @@ public class ListHomeCommand extends AbstractCommand<CommandSource> {
 
         boolean other = !src.equals(user);
 
-        Map<String, LocationData> msw = plugin.getUserDataManager().get(user).get().getHomes();
+        Map<String, Home> msw = plugin.getUserDataManager().get(user).get().getHomes();
         if (msw.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.nohomes"));
             return CommandResult.empty();

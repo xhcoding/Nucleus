@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarpData;
+import io.github.nucleuspowered.nucleus.api.data.Warp;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -73,12 +73,12 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
 
     private CommandResult categories(final CommandSource src) {
         // Get the warp list.
-        Map<String, List<WarpData>> warps = service.getCategorisedWarps(x -> canView(src, x.getName()));
+        Map<String, List<Warp>> warps = service.getCategorisedWarps(x -> canView(src, x.getName()));
         createMain(src, warps);
         return CommandResult.success();
     }
 
-    private void createMain(final CommandSource src, final Map<String, List<WarpData>> warps) {
+    private void createMain(final CommandSource src, final Map<String, List<Warp>> warps) {
         List<Text> lt = warps.keySet().stream().filter(Objects::nonNull)
                 .sorted(Comparator.comparing(Function.identity()))
                 .map(s -> Text.builder("> " + s).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
@@ -98,12 +98,12 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
             .sendTo(src);
     }
 
-    private void createSub(final CommandSource src, @Nullable final String category, final Map<String, List<WarpData>> warpDataList) {
+    private void createSub(final CommandSource src, @Nullable final String category, final Map<String, List<Warp>> warpDataList) {
         final boolean econExists = plugin.getEconHelper().economyServiceExists();
-        final int defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
+        final double defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
         String name = category == null ? adapter.getNodeOrDefault().getDefaultName() : category;
 
-        List<Text> lt = warpDataList.get(category).stream().sorted(Comparator.comparing(WarpData::getName))
+        List<Text> lt = warpDataList.get(category).stream().sorted(Comparator.comparing(Warp::getName))
             .map(s -> createWarp(s, s.getName(), econExists, defaultCost)).collect(Collectors.toList());
 
         Util.getPaginationBuilder(src)
@@ -118,9 +118,9 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
         // Get the warp list.
         Set<String> ws = service.getWarpNames();
         final boolean econExists = plugin.getEconHelper().economyServiceExists();
-        final int defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
+        final double defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
         List<Text> lt = ws.stream().filter(s -> canView(src, s.toLowerCase())).sorted(String::compareTo).map(s -> {
-            Optional<WarpData> wd = service.getWarp(s);
+            Optional<Warp> wd = service.getWarp(s);
             return createWarp(wd.orElse(null), s, econExists, defaultCost);
         }).collect(Collectors.toList());
 
@@ -132,7 +132,7 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createWarp(@Nullable WarpData data, String name, boolean econExists, int defaultCost) {
+    private Text createWarp(@Nullable Warp data, String name, boolean econExists, double defaultCost) {
         if (data == null || !data.getLocation().isPresent()) {
             return Text.builder(name).color(TextColors.RED).onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.unavailable")))
                 .build();
@@ -148,7 +148,7 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
                     ));
 
         if (econExists) {
-            int cost = data.getCost().orElse(defaultCost);
+            double cost = data.getCost().orElse(defaultCost);
             if (cost > 0) {
                 tb.append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.list.cost", plugin.getEconHelper().getCurrencySymbol(cost)));
             }

@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 public class WarpNode extends LocationNode {
 
     @Setting("cost")
-    private int cost = -1;
+    private double cost = -1;
 
     @Setting("category")
     private String category = null;
@@ -45,11 +45,11 @@ public class WarpNode extends LocationNode {
         this.cost = cost;
     }
 
-    public int getCost() {
+    public double getCost() {
         return cost;
     }
 
-    public void setCost(int cost) {
+    public void setCost(double cost) {
         if (cost < -1) {
             this.cost = -1;
         }

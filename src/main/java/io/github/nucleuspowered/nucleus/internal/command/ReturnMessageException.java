@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.command;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.TextMessageException;
 
@@ -14,5 +15,9 @@ public class ReturnMessageException extends TextMessageException {
 
     public ReturnMessageException(Text text) {
         super(text);
+    }
+
+    public static ReturnMessageException fromKey(String loc, String... arg) {
+        return new ReturnMessageException(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(loc, arg));
     }
 }

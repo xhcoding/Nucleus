@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
+import io.github.nucleuspowered.nucleus.api.data.Warp;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -28,6 +29,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.util.Tuple;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,7 +54,7 @@ public class SetCategoryCommand extends AbstractCommand<CommandSource> {
         return new CommandElement[] {
             GenericArguments.flags().flag("r", "-remove", "-delete").flag("n", "-new").buildWith(
                 GenericArguments.seq(
-                    new WarpArgument(Text.of(warpKey), warpConfigAdapter, false, false, false),
+                    new WarpArgument(Text.of(warpKey), warpConfigAdapter, false, false),
                     GenericArguments.optional(new WarpCategoryArgument(Text.of(categoryKey)))
                 )
             )
@@ -60,7 +62,7 @@ public class SetCategoryCommand extends AbstractCommand<CommandSource> {
     }
 
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        String warpName = args.<WarpArgument.Result>getOne(warpKey).get().warp;
+        String warpName = args.<Warp>getOne(warpKey).get().getName();
         if (args.hasAny("r")) {
             // Remove the category.
             if (handler.setWarpCategory(warpName, null)) {
@@ -107,7 +109,7 @@ public class SetCategoryCommand extends AbstractCommand<CommandSource> {
         }
 
         @Nonnull @Override public List<String> complete(@Nonnull CommandSource src, @Nonnull CommandArgs args, @Nonnull CommandContext context) {
-            return handler.getCategorisedWarps().keySet().stream().filter(x -> x == null).collect(Collectors.toList());
+            return handler.getCategorisedWarps().keySet().stream().filter(Objects::isNull).collect(Collectors.toList());
         }
     }
 }

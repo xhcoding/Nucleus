@@ -4,8 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
+import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.Home;
+import io.github.nucleuspowered.nucleus.api.data.NamedLocation;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -15,13 +17,19 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
+/**
+ * Returns a {@link NamedLocation}
+ */
+@NonnullByDefault
 public class HomeArgument extends CommandElement {
 
     private final NucleusPlugin plugin;
@@ -43,9 +51,9 @@ public class HomeArgument extends CommandElement {
         return getHome((User) source, args.next(), args);
     }
 
-    protected LocationData getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
+    Home getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
         try {
-            Optional<LocationData> owl = plugin.getUserDataManager().get(user).get().getHome(home);
+            Optional<Home> owl = plugin.getUserDataManager().get(user).get().getHome(home);
             if (owl.isPresent()) {
                 return owl.get();
             }
@@ -63,7 +71,7 @@ public class HomeArgument extends CommandElement {
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         if (!(src instanceof User)) {
-            return null;
+            return Lists.newArrayList();
         }
 
         User u = (User) src;
@@ -79,7 +87,7 @@ public class HomeArgument extends CommandElement {
         try {
             s = plugin.getUserDataManager().get(src).get().getHomes().keySet();
         } catch (Exception e) {
-            return null;
+            return Lists.newArrayList();
         }
 
         return s.stream().filter(x -> homeName.toLowerCase().startsWith(x.toLowerCase())).collect(Collectors.toList());

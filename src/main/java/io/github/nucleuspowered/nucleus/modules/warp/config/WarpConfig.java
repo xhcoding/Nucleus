@@ -11,7 +11,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class WarpConfig {
 
     @Setting(value = "default-warp-cost", comment = "loc:config.warps.cost")
-    private int defaultWarpCost = 0;
+    private double defaultWarpCost = 0;
 
     @Setting(value = "separate-permissions", comment = "loc:config.warps.separate")
     private boolean separatePermissions = false;
@@ -29,7 +29,7 @@ public class WarpConfig {
         return separatePermissions;
     }
 
-    public int getDefaultWarpCost() {
+    public double getDefaultWarpCost() {
         return Math.max(0, defaultWarpCost);
     }
 

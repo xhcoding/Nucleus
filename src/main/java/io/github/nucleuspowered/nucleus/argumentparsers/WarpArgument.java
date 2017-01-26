@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.api.data.WarpData;
+import io.github.nucleuspowered.nucleus.api.data.Warp;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -17,20 +17,20 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 /**
- * Returns a {@link Result}
+ * Returns a {@link Warp}
  */
+@NonnullByDefault
 public class WarpArgument extends CommandElement {
 
-    private final boolean includeWarpData;
-    private NucleusWarpService service;
+    @Nullable private NucleusWarpService service;
     private final WarpConfigAdapter configAdapter;
     private final boolean permissionCheck;
     private final boolean requiresLocation;
@@ -39,15 +39,10 @@ public class WarpArgument extends CommandElement {
         this(key, configAdapter, permissionCheck, true);
     }
 
-    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean includeWarpData) {
-        this(key, configAdapter, permissionCheck, includeWarpData, true);
-    }
-
-    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean includeWarpData, boolean requiresLocation) {
+    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean requiresLocation) {
         super(key);
         this.configAdapter = configAdapter;
         this.permissionCheck = permissionCheck;
-        this.includeWarpData = includeWarpData;
         this.requiresLocation = requiresLocation;
     }
 
@@ -66,12 +61,7 @@ public class WarpArgument extends CommandElement {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.noperms"));
         }
 
-        if (includeWarpData) {
-            return new Result(warpName,
-                    service.getWarp(warp).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.notavailable"))));
-        } else {
-            return new Result(warpName, null);
-        }
+        return service.getWarp(warpName).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warps.notavailable")));
     }
 
     @Override
@@ -81,14 +71,8 @@ public class WarpArgument extends CommandElement {
         try {
             String name = args.peek().toLowerCase();
             return service.getWarpNames().stream().filter(s -> s.startsWith(name))
-                .filter(s -> {
-                    if (!includeWarpData) {
-                        return true;
-                    }
-
-                    Optional<WarpData> warpDataOptional = service.getWarp(s);
-                    return (warpDataOptional.isPresent() && (!requiresLocation || warpDataOptional.get().getLocation().isPresent()));
-                }).filter(x -> checkPermission(src, name)).collect(Collectors.toList());
+                .filter(s -> !requiresLocation || service.getWarp(s).get().getLocation().isPresent())
+                .filter(x -> checkPermission(src, name)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Lists.newArrayList();
         }
@@ -106,17 +90,6 @@ public class WarpArgument extends CommandElement {
     private void getService() {
         if (service == null) {
             service = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
-        }
-    }
-
-    public class Result {
-
-        public final String warp;
-        public final WarpData loc;
-
-        private Result(String warp, WarpData loc) {
-            this.warp = warp;
-            this.loc = loc;
         }
     }
 }

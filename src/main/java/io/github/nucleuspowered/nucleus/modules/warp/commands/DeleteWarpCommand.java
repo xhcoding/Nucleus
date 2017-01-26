@@ -5,19 +5,24 @@
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.data.Warp;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.warp.event.DeleteWarpEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 /**
@@ -34,17 +39,24 @@ public class DeleteWarpCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new WarpArgument(Text.of(WarpCommand.warpNameArg), adapter, false, false))};
+        return new CommandElement[] {GenericArguments.onlyOne(new WarpArgument(Text.of(WarpCommand.warpNameArg), adapter, false))};
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        WarpArgument.Result warp = args.<WarpArgument.Result>getOne(WarpCommand.warpNameArg).get();
+        Warp warp = args.<Warp>getOne(WarpCommand.warpNameArg).get();
         NucleusWarpService qs = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
 
-        if (qs.removeWarp(warp.warp)) {
+        DeleteWarpEvent event = new DeleteWarpEvent(Cause.of(NamedCause.owner(src)), warp.getName(), warp.getLocation().orElse(null));
+        if (Sponge.getEventManager().post(event)) {
+            throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
+                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
+            ));
+        }
+
+        if (qs.removeWarp(warp.getName())) {
             // Worked. Tell them.
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.del", warp.warp));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.del", warp.getName()));
             return CommandResult.success();
         }
 

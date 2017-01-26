@@ -5,20 +5,25 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.data.LocationData;
+import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.home.events.UseHomeEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
@@ -40,7 +45,7 @@ public class HomeCommand extends AbstractCommand<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         // Get the home.
-        Optional<LocationData> owl = args.getOne(home);
+        Optional<Home> owl = args.getOne(home);
         if (!owl.isPresent()) {
             owl = plugin.getUserDataManager().get(src).get().getHome(HomeModule.DEFAULT_HOME_NAME);
 
@@ -50,12 +55,18 @@ public class HomeCommand extends AbstractCommand<Player> {
             }
         }
 
-        LocationData wl = owl.get();
+        Home wl = owl.get();
 
         if (!wl.getLocation().isPresent()) {
             // Fail
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.invalid", wl.getName()));
-            return CommandResult.empty();
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.home.invalid", wl.getName()));
+        }
+
+        UseHomeEvent event = new UseHomeEvent(wl.getName(), src, Cause.of(NamedCause.owner(src)), src, wl.getLocation().get());
+        if (Sponge.getEventManager().post(event)) {
+            throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
+                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
+            ));
         }
 
         // Warp to it safely.
