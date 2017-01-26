@@ -62,7 +62,7 @@ public class HomeCommand extends AbstractCommand<Player> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.home.invalid", wl.getName()));
         }
 
-        UseHomeEvent event = new UseHomeEvent(wl.getName(), src, Cause.of(NamedCause.owner(src)), src, wl.getLocation().get());
+        UseHomeEvent event = new UseHomeEvent(Cause.of(NamedCause.owner(src)), src, wl);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
                 plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")

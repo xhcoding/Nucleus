@@ -48,7 +48,7 @@ public class DeleteOtherHomeCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Home wl = args.<Home>getOne(homeKey).get();
 
-        DeleteHomeEvent event = new DeleteHomeEvent(wl.getName(), wl.getUser(), Cause.of(NamedCause.owner(src)), wl.getLocation().orElse(null));
+        DeleteHomeEvent event = new DeleteHomeEvent(Cause.of(NamedCause.owner(src)), wl);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
                 plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")

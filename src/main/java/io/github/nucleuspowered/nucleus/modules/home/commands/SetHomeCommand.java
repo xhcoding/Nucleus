@@ -95,7 +95,7 @@ public class SetHomeCommand extends AbstractCommand<Player> {
 
         AbstractHomeEvent event;
         if (overwrite) {
-            event = new ModifyHomeEvent(home, src, Cause.of(NamedCause.owner(src)), optionalLocationData.get().getLocation().orElse(null), src.getLocation());
+            event = new ModifyHomeEvent(Cause.of(NamedCause.owner(src)), optionalLocationData.get(), src.getLocation());
         } else {
             event = new CreateHomeEvent(home, src, Cause.of(NamedCause.owner(src)), src.getLocation());
         }

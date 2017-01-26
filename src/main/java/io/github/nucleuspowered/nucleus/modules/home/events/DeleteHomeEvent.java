@@ -4,26 +4,20 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.events;
 
+import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.api.events.NucleusHomeEvent;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.world.Location;
-import org.spongepowered.api.world.World;
-
-import java.util.Optional;
-
-import javax.annotation.Nullable;
 
 public class DeleteHomeEvent extends AbstractHomeEvent implements NucleusHomeEvent.Delete {
 
-    @Nullable private final Location<World> location;
+    private final Home home;
 
-    public DeleteHomeEvent(String name, User owner, Cause cause, Location<World> location) {
-        super(name, owner, cause);
-        this.location = location;
+    public DeleteHomeEvent(Cause cause, Home home) {
+        super(home.getName(), home.getUser(), cause, home.getLocation().orElse(null));
+        this.home = home;
     }
 
-    @Override public Optional<Location<World>> getHomeLocation() {
-        return Optional.ofNullable(this.location);
+    @Override public Home getHome() {
+        return home;
     }
 }

@@ -50,7 +50,7 @@ public class HomeOtherCommand extends AbstractCommand<Player> {
             return CommandResult.empty();
         }
 
-        UseHomeEvent event = new UseHomeEvent(wl.getName(), wl.getUser(), Cause.of(NamedCause.owner(src)), src, wl.getLocation().get());
+        UseHomeEvent event = new UseHomeEvent(Cause.of(NamedCause.owner(src)), src, wl);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
                 plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")

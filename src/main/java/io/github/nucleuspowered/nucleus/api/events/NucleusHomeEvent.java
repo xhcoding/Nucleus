@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.data.Home;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.user.TargetUserEvent;
@@ -31,20 +32,19 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage {
      *
      * @return The owner.
      */
-    User getOwner();
+    User getUser();
+
+    /**
+     * Gets the {@link Location} of the home.
+     *
+     * @return The location. It might not exist if the world does not exist any more.
+     */
+    Optional<Location<World>> getLocation();
 
     /**
      * Fired when a home is created.
      */
-    interface Create extends NucleusHomeEvent {
-
-        /**
-         * Gets the proposed {@link Location} of the home.
-         *
-         * @return The location.
-         */
-        Location<World> getNewHomeLocation();
-    }
+    interface Create extends NucleusHomeEvent {}
 
     /**
      * Fired when a home is moved.
@@ -52,11 +52,11 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage {
     interface Modify extends NucleusHomeEvent {
 
         /**
-         * Gets the current {@link Location} of the home.
+         * Gets the existing home.
          *
-         * @return The location. It might not exist if the world does not exist any more.
+         * @return The {@link Home}
          */
-        Optional<Location<World>> getHomeLocation();
+        Home getHome();
 
         /**
          * Gets the proposed {@link Location} of the home.
@@ -72,11 +72,11 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage {
     interface Delete extends NucleusHomeEvent {
 
         /**
-         * Gets the {@link Location} of the home.
+         * Gets the existing home.
          *
-         * @return The location. It might not exist if the world does not exist any more.
+         * @return The {@link Home}
          */
-        Optional<Location<World>> getHomeLocation();
+        Home getHome();
     }
 
     /**
@@ -89,10 +89,10 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage {
     interface Use extends NucleusHomeEvent, TargetUserEvent {
 
         /**
-         * Gets the {@link Location} of the home.
+         * Gets the existing home.
          *
-         * @return The location.
+         * @return The {@link Home}
          */
-        Location<World> getHomeLocation();
+        Home getHome();
     }
 }

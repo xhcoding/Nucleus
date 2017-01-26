@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.data.Warp;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.user.TargetUserEvent;
@@ -45,6 +46,13 @@ public interface NucleusWarpEvent extends Cancellable, CancelMessage {
     interface Delete extends NucleusWarpEvent {
 
         /**
+         * Gets the {@link Warp}
+         *
+         * @return The warp.
+         */
+        Warp getWarp();
+
+        /**
          * Gets the {@link Location} of the warp.
          *
          * @return The location. It might not exist if the world does not exist any more.
@@ -60,6 +68,13 @@ public interface NucleusWarpEvent extends Cancellable, CancelMessage {
      * </p>
      */
     interface Use extends TargetUserEvent, NucleusWarpEvent {
+
+        /**
+         * Gets the {@link Warp}
+         *
+         * @return The warp.
+         */
+        Warp getWarp();
 
         /**
          * Gets the {@link Location} of the warp.

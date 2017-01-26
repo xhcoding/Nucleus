@@ -109,7 +109,7 @@ public class WarpCommand extends AbstractCommand<Player> {
         // Permission checks are done by the parser.
         Warp wd = args.<Warp>getOne(warpNameArg).get();
 
-        UseWarpEvent event = new UseWarpEvent(Cause.of(NamedCause.owner(pl)), wd.getName(), pl, wd.getLocation().get());
+        UseWarpEvent event = new UseWarpEvent(Cause.of(NamedCause.owner(pl)), pl, wd);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
                 plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")

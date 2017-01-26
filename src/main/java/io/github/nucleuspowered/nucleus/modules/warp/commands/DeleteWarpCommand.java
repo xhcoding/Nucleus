@@ -47,7 +47,7 @@ public class DeleteWarpCommand extends AbstractCommand<CommandSource> {
         Warp warp = args.<Warp>getOne(WarpCommand.warpNameArg).get();
         NucleusWarpService qs = Sponge.getServiceManager().provideUnchecked(NucleusWarpService.class);
 
-        DeleteWarpEvent event = new DeleteWarpEvent(Cause.of(NamedCause.owner(src)), warp.getName(), warp.getLocation().orElse(null));
+        DeleteWarpEvent event = new DeleteWarpEvent(Cause.of(NamedCause.owner(src)), warp);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
                 plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")

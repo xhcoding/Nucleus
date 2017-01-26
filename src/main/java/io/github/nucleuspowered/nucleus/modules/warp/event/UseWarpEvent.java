@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warp.event;
 
+import io.github.nucleuspowered.nucleus.api.data.Warp;
 import io.github.nucleuspowered.nucleus.api.events.NucleusWarpEvent;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
@@ -13,16 +14,20 @@ import org.spongepowered.api.world.World;
 public class UseWarpEvent extends AbstractWarpEvent implements NucleusWarpEvent.Use {
 
     private final User user;
-    private final Location<World> location;
+    private final Warp warp;
 
-    public UseWarpEvent(Cause cause, String name, User user, Location<World> worldLocation) {
-        super(cause, name);
+    public UseWarpEvent(Cause cause, User user, Warp warp) {
+        super(cause, warp.getName());
         this.user = user;
-        this.location = worldLocation;
+        this.warp = warp;
+    }
+
+    @Override public Warp getWarp() {
+        return this.warp;
     }
 
     @Override public Location<World> getLocation() {
-        return location;
+        return this.warp.getLocation().get();
     }
 
     @Override public User getTargetUser() {

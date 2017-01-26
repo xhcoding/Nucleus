@@ -5,21 +5,26 @@
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
-import io.github.nucleuspowered.nucleus.internal.LocationData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.home.events.DeleteHomeEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 @Permissions(mainOverride = "home", suggestedLevel = SuggestedLevel.USER)
@@ -40,7 +45,15 @@ public class DeleteHomeCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        LocationData wl = args.<LocationData>getOne(homeKey).get();
+        Home wl = args.<Home>getOne(homeKey).get();
+
+        DeleteHomeEvent event = new DeleteHomeEvent(Cause.of(NamedCause.owner(src)), wl);
+        if (Sponge.getEventManager().post(event)) {
+            throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
+                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
+            ));
+        }
+
         if (plugin.getUserDataManager().get(src).get().deleteHome(wl.getName())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.success", wl.getName()));
             return CommandResult.success();

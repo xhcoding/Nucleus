@@ -30,6 +30,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,7 @@ public class ListHomeCommand extends AbstractCommand<CommandSource> {
             header = plugin.getMessageProvider().getTextMessageWithFormat("home.title.normal");
         }
 
-        List<Text> lt = msw.entrySet().stream().sorted((x, y) -> x.getKey().compareTo(y.getKey())).map(x -> {
+        List<Text> lt = msw.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(x -> {
             Optional<Location<World>> olw = x.getValue().getLocation();
             if (!olw.isPresent()) {
                 return Text.builder().append(
