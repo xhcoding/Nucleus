@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.docgen;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoPermissions;
@@ -22,11 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DocGenCache {
 
     private final List<CommandDoc> commandDocs = Lists.newArrayList();
     private final List<PermissionDoc> permissionDocs = Lists.newArrayList();
+    private final List<TokenDoc> tokenDocs = Lists.newArrayList();
 
     private final org.slf4j.Logger logger;
 
@@ -98,6 +101,12 @@ public class DocGenCache {
         msp.forEach((k, v) -> permissionDocs.add(getPermissionFrom(moduleID, k, v)));
     }
 
+    public void addTokenDocs(Set<String> tokens) {
+        tokens.forEach(x -> Nucleus.getNucleus().getMessageProvider().getMessageFromKey("nucleus.token." + x.toLowerCase()).ifPresent(y ->
+            tokenDocs.add(new TokenDoc().setName(x.toLowerCase()).setDescription(y))
+        ));
+    }
+
     private PermissionDoc getPermissionFrom(String module, String k, PermissionInformation v) {
         PermissionDoc perm = new PermissionDoc();
         perm.setModule(module);
@@ -105,5 +114,9 @@ public class DocGenCache {
         perm.setPermission(k);
         perm.setDefaultLevel(v.level.name());
         return perm;
+    }
+
+    public List<TokenDoc> getTokenDocs() {
+        return tokenDocs;
     }
 }

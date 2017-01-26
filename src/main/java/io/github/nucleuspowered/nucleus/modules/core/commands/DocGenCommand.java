@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.CommandDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.docgen.PermissionDoc;
+import io.github.nucleuspowered.nucleus.internal.docgen.TokenDoc;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
@@ -37,6 +38,7 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
 
     private final TypeToken<List<CommandDoc>> ttlcd = new TypeToken<List<CommandDoc>>() {};
     private final TypeToken<List<PermissionDoc>> ttlpd = new TypeToken<List<PermissionDoc>>() {};
+    private final TypeToken<List<TokenDoc>> ttltd = new TypeToken<List<TokenDoc>>() {};
 
     @Override
     public boolean canLoad() {
@@ -76,6 +78,13 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
         }));
 
         permissionsConfigurationLoader.save(permissionConfigurationNode);
+
+        YAMLConfigurationLoader tokenConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("tokens.yml"))
+            .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
+        ConfigurationNode tokenConfigurationNode = SimpleConfigurationNode.root()
+            .setValue(ttltd, getAndSort(genCache.getTokenDocs(), Comparator.comparing(TokenDoc::getName)));
+
+        tokenConfigurationLoader.save(tokenConfigurationNode);
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.docgen.complete"));
         return CommandResult.success();

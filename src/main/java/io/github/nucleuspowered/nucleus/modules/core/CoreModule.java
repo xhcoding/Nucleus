@@ -33,5 +33,6 @@ public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
         plugin.getTokenHandler().register(nucleusChatService);
         serviceManager.registerService(NucleusTokenServiceImpl.class, nucleusChatService);
         Sponge.getServiceManager().setProvider(plugin, NucleusMessageTokenService.class, nucleusChatService);
+        plugin.getDocGenCache().ifPresent(x -> x.addTokenDocs(nucleusChatService.getNucleusTokenParser().getTokenNames()));
     }
 }

@@ -50,4 +50,8 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
 
         return Nucleus.getNucleus().getChatUtil().getMessageFromTemplateWithVariables(input, source, true, variables);
     }
+
+    public Tokens getNucleusTokenParser() {
+        return ((Tokens)tokenStore.get("nucleus"));
+    }
 }

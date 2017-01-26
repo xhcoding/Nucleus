@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.text;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
@@ -18,10 +19,11 @@ import org.spongepowered.api.world.World;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
-final class Tokens implements NucleusMessageTokenService.TokenParser {
+public final class Tokens implements NucleusMessageTokenService.TokenParser {
 
     private final Map<String, Translator> translatorMap = Maps.newHashMap();
 
@@ -47,6 +49,10 @@ final class Tokens implements NucleusMessageTokenService.TokenParser {
         }
 
         return translatorMap.getOrDefault(split[0].toLowerCase(), (p, v, m) -> Optional.empty()).get(source, var, variables);
+    }
+
+    public Set<String> getTokenNames() {
+        return Sets.newHashSet(translatorMap.keySet());
     }
 
     private static CommandSource getFromVariableIfExists(CommandSource source, String v, Map<String, Object> m) {
