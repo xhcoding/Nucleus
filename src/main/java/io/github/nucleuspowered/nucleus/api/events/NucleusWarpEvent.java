@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.user.TargetUserEvent;
 import org.spongepowered.api.world.Location;
@@ -51,6 +52,13 @@ public interface NucleusWarpEvent extends Cancellable, CancelMessage {
         Optional<Location<World>> getLocation();
     }
 
+    /**
+     * Fired when a {@link User} tries to teleport to a warp.
+     *
+     * <p>
+     *     Note that the user does not necessarily need to be online.
+     * </p>
+     */
     interface Use extends TargetUserEvent, NucleusWarpEvent {
 
         /**

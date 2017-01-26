@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.api.data;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -15,8 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a kit in NucleusPlugin.
+ * Represents a kit in Nucleus.
  */
+@Stable
 public interface Kit {
     /**
      * Gets the stacks that would be given out by this kit.

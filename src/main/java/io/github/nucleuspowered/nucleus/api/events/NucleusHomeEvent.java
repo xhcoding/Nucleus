@@ -79,6 +79,13 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage {
         Optional<Location<World>> getHomeLocation();
     }
 
+    /**
+     * Fired when a {@link User} is warped to a home.
+     *
+     * <p>
+     *     Note that the user does not necessarily need to be online.
+     * </p>
+     */
     interface Use extends NucleusHomeEvent, TargetUserEvent {
 
         /**

@@ -4,12 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.api.data.seen;
 
+import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import javax.annotation.Nonnull;
 
 /**
  * A {@link SeenInformationProvider} object can hook into the {@code seen} command and provide extra information on a player.
@@ -18,6 +20,7 @@ import java.util.Collection;
  *     This must be registered with the {@link io.github.nucleuspowered.nucleus.api.service.NucleusSeenService}
  * </p>
  */
+@Stable
 public interface SeenInformationProvider {
 
     /**

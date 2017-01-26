@@ -4,6 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.api.data.mail;
 
+import io.github.nucleuspowered.nucleus.api.Stable;
+
+@Stable
 public interface MailFilter<T> {
 
     T getSuppliedData();
