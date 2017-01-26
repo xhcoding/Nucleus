@@ -37,7 +37,7 @@ public interface NucleusWarpEvent extends Cancellable, CancelMessage {
          *
          * @return The location.
          */
-        Location<World> getNewLocation();
+        Location<World> getLocation();
     }
 
     /**

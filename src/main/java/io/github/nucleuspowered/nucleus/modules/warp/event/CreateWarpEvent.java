@@ -18,7 +18,7 @@ public class CreateWarpEvent extends AbstractWarpEvent implements NucleusWarpEve
         this.location = location;
     }
 
-    @Override public Location<World> getNewLocation() {
+    @Override public Location<World> getLocation() {
         return location;
     }
 }

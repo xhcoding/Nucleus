@@ -15,7 +15,7 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 /**
- * Events when a player's home changes. Target user is the user being warped.
+ * Events when a player's home changes.
  */
 @Stable
 public interface NucleusHomeEvent extends Cancellable, CancelMessage {
@@ -59,11 +59,12 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage {
         Home getHome();
 
         /**
-         * Gets the proposed {@link Location} of the home.
+         * Gets the original {@link Location} of the home. To get the proposed new
+         * location, see {@link #getLocation()}
          *
-         * @return The location.
+         * @return The location. It might not exist if the world does not exist any more.
          */
-        Location<World> getNewHomeLocation();
+        Optional<Location<World>> getOriginalLocation();
     }
 
     /**
@@ -80,7 +81,7 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage {
     }
 
     /**
-     * Fired when a {@link User} is warped to a home.
+     * Fired when a {@link User} is warped to a home.  Target user is the user being warped.
      *
      * <p>
      *     Note that the user does not necessarily need to be online.

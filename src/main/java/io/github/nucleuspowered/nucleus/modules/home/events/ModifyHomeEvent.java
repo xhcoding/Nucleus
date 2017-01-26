@@ -10,14 +10,14 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Optional;
+
 public class ModifyHomeEvent extends AbstractHomeEvent implements NucleusHomeEvent.Modify {
 
-    private final Location<World> newLocation;
     private final Home home;
 
     public ModifyHomeEvent(Cause cause, Home home, Location<World> newLocation) {
-        super(home.getName(), home.getUser(), cause, home.getLocation().orElse(null));
-        this.newLocation = newLocation;
+        super(home.getName(), home.getUser(), cause, newLocation);
         this.home = home;
     }
 
@@ -25,7 +25,7 @@ public class ModifyHomeEvent extends AbstractHomeEvent implements NucleusHomeEve
         return this.home;
     }
 
-    @Override public Location<World> getNewHomeLocation() {
-        return newLocation;
+    @Override public Optional<Location<World>> getOriginalLocation() {
+        return this.home.getLocation();
     }
 }
