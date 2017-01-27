@@ -671,7 +671,7 @@ public class UserService extends Service<UserDataNode>
             super(name, world, position, rotation);
         }
 
-        @Override public UUID getUniqueId() {
+        @Override public UUID getOwnersUniqueId() {
             return UserService.this.getUniqueID();
         }
     }

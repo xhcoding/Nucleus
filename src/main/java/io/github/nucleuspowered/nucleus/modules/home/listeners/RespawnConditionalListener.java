@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.home.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
@@ -24,7 +25,7 @@ public class RespawnConditionalListener extends ListenerBase {
     @Listener
     public void onRespawn(final RespawnPlayerEvent event, @Getter("getTargetEntity") final Player player) {
         plugin.getUserDataManager().get(player).get()
-            .getHome(HomeModule.DEFAULT_HOME_NAME)
+            .getHome(NucleusHomeService.DEFAULT_HOME_NAME)
             .ifPresent(x -> x.getTransform().ifPresent(event::setToTransform));
     }
 

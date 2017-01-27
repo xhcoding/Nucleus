@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.home.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.data.Home;
+import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -13,9 +14,9 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.events.UseHomeEvent;
+import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -34,6 +35,7 @@ public class HomeCommand extends AbstractCommand<Player> {
 
     private final String home = "home";
 
+    @Inject private HomeHandler homeHandler;
     @Inject private CoreConfigAdapter cca;
     @Inject private HomeConfigAdapter homeConfigAdapter;
 
@@ -46,16 +48,13 @@ public class HomeCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         // Get the home.
         Optional<Home> owl = args.getOne(home);
-        if (!owl.isPresent()) {
-            owl = plugin.getUserDataManager().get(src).get().getHome(HomeModule.DEFAULT_HOME_NAME);
-
-            if (!owl.isPresent()) {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("args.home.nohome", "home"));
-                return CommandResult.empty();
-            }
+        Home wl;
+        if (owl.isPresent()) {
+            wl = owl.get();
+        } else {
+            wl = homeHandler.getHome(src, NucleusHomeService.DEFAULT_HOME_NAME)
+                .orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("args.home.nohome", "home")));
         }
-
-        Home wl = owl.get();
 
         if (!wl.getLocation().isPresent()) {
             // Fail
@@ -71,7 +70,7 @@ public class HomeCommand extends AbstractCommand<Player> {
 
         // Warp to it safely.
         if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault().isSafeTeleport())) {
-            if (!wl.getName().equalsIgnoreCase(HomeModule.DEFAULT_HOME_NAME)) {
+            if (!wl.getName().equalsIgnoreCase(NucleusHomeService.DEFAULT_HOME_NAME)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.success", wl.getName()));
             } else {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.successdefault"));

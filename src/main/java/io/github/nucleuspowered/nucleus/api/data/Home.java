@@ -22,7 +22,7 @@ public interface Home extends NamedLocation {
      *
      * @return The {@link UUID}
      */
-    UUID getUniqueId();
+    UUID getOwnersUniqueId();
 
     /**
      * Gets the {@link User} who owns this home.
@@ -30,6 +30,6 @@ public interface Home extends NamedLocation {
      * @return The {@link User}
      */
     default User getUser() {
-        return Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(getUniqueId()).orElseThrow(() -> new IllegalStateException("user"));
+        return Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(getOwnersUniqueId()).orElseThrow(() -> new IllegalStateException("user"));
     }
 }

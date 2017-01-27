@@ -14,6 +14,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,10 @@ public class WarpHandler implements NucleusWarpService {
     @Override
     public boolean setWarp(String warpName, Location<World> location, Vector3d rotation) {
         return store.addWarp(warpName, location, rotation);
+    }
+
+    @Override public List<Warp> getAllWarps() {
+        return new ArrayList<>(store.getWarps().values());
     }
 
     @Override
@@ -91,11 +96,6 @@ public class WarpHandler implements NucleusWarpService {
     @Override
     public Set<String> getWarpNames() {
         return store.getWarps().keySet();
-    }
-
-    @Override
-    public boolean warpExists(String name) {
-        return getWarpNames().stream().anyMatch(x -> x.equalsIgnoreCase(name));
     }
 
     private List<Warp> getWarpsForCategory(Predicate<Warp> filter) {

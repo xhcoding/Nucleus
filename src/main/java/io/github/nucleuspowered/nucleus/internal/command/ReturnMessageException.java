@@ -17,6 +17,10 @@ public class ReturnMessageException extends TextMessageException {
         super(text);
     }
 
+    public ReturnMessageException(Text text, Throwable inner) {
+        super(text, inner);
+    }
+
     public static ReturnMessageException fromKey(String loc, String... arg) {
         return new ReturnMessageException(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(loc, arg));
     }

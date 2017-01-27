@@ -4,21 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.data.Home;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
+import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
-import io.github.nucleuspowered.nucleus.modules.home.events.AbstractHomeEvent;
-import io.github.nucleuspowered.nucleus.modules.home.events.CreateHomeEvent;
-import io.github.nucleuspowered.nucleus.modules.home.events.ModifyHomeEvent;
-import org.spongepowered.api.Sponge;
+import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -32,7 +27,6 @@ import org.spongepowered.api.text.action.TextActions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -41,10 +35,8 @@ import javax.inject.Inject;
 public class SetHomeCommand extends AbstractCommand<Player> {
 
     private final String homeKey = "home";
-    private final Pattern warpName = Pattern.compile("^[a-zA-Z][a-zA-Z0-9]{1,15}$");
 
-    @Inject
-    private UserDataManager udm;
+    @Inject private HomeHandler homeHandler;
 
     @Override
     public CommandElement[] getArguments() {
@@ -65,75 +57,35 @@ public class SetHomeCommand extends AbstractCommand<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         // Get the home key.
-        String home = args.<String>getOne(homeKey).orElse(HomeModule.DEFAULT_HOME_NAME).toLowerCase();
+        String home = args.<String>getOne(homeKey).orElse(NucleusHomeService.DEFAULT_HOME_NAME).toLowerCase();
 
-        // Get the homes.
-        UserService iqsu = udm.get(src).get();
-        Map<String, Home> msw = iqsu.getHomes();
-
-        if (!warpName.matcher(home).matches()) {
+        if (!NucleusHomeService.HOME_NAME_PATTERN.matcher(home).matches()) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.name"));
         }
 
-        // Does the home exist? You have to explicitly delete the home first.
-        Optional<Home> optionalLocationData = Util.getValueIgnoreCase(msw, home);
-        boolean hasHome = optionalLocationData.isPresent();
-        boolean overwrite = hasHome && args.hasAny("o");
-        if (hasHome && !overwrite) {
+        Optional<Home> currentHome = homeHandler.getHome(src, home);
+        boolean overwrite = currentHome.isPresent() && args.hasAny("o");
+        if (currentHome.isPresent() && !overwrite) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home));
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.tooverwrite", home).toBuilder()
                 .onClick(TextActions.runCommand("/sethome " + home + " -o")).build());
             return CommandResult.empty();
         }
 
-        if (!hasHome) {
-            int c = getCount(src);
-            if (msw.size() >= c) {
-                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.limit", String.valueOf(c)));
+        Cause cause = Cause.of(NamedCause.owner(src));
+        try {
+            if (overwrite) {
+                Home current = currentHome.get();
+                homeHandler.modifyHomeInternal(cause, current, src.getLocation(), src.getRotation());
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.overwrite", home));
+            } else {
+                homeHandler.createHomeInternal(cause, src, home, src.getLocation(), src.getRotation());
             }
-        }
-
-        AbstractHomeEvent event;
-        if (overwrite) {
-            event = new ModifyHomeEvent(Cause.of(NamedCause.owner(src)), optionalLocationData.get(), src.getLocation());
-        } else {
-            event = new CreateHomeEvent(home, src, Cause.of(NamedCause.owner(src)), src.getLocation());
-        }
-
-        if (Sponge.getEventManager().post(event)) {
-            throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
-                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
-            ));
-        }
-
-        // Just in case.
-        if (!iqsu.setHome(home, src.getLocation(), src.getRotation(), overwrite)) {
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home));
-        }
-
-        if (overwrite) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.overwrite", home));
+        } catch (NucleusException e) {
+            throw new ReturnMessageException(e.getText(), e);
         }
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.set", home));
         return CommandResult.success();
-    }
-
-    private int getCount(Player src) {
-        if (permissions.testSuffix(src, "unlimited")) {
-            return Integer.MAX_VALUE;
-        }
-
-        Optional<String> count = Util.getOptionFromSubject(src, "home-count", "homes");
-        int result = 1;
-        if (count.isPresent()) {
-            try {
-                result = Integer.parseInt(count.get());
-            } catch (NumberFormatException e) {
-                //
-            }
-        }
-
-        return Math.max(result, 1);
     }
 }

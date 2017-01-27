@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Inherited
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Stable {}

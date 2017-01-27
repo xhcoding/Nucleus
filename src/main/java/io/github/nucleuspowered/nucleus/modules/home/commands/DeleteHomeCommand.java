@@ -13,11 +13,9 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.home.events.DeleteHomeEvent;
-import org.spongepowered.api.Sponge;
+import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -37,6 +35,7 @@ public class DeleteHomeCommand extends AbstractCommand<Player> {
     private final String homeKey = "home";
 
     @Inject private CoreConfigAdapter cca;
+    @Inject private HomeHandler homeHandler;
 
     @Override
     public CommandElement[] getArguments() {
@@ -47,19 +46,8 @@ public class DeleteHomeCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Home wl = args.<Home>getOne(homeKey).get();
 
-        DeleteHomeEvent event = new DeleteHomeEvent(Cause.of(NamedCause.owner(src)), wl);
-        if (Sponge.getEventManager().post(event)) {
-            throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
-                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
-            ));
-        }
-
-        if (plugin.getUserDataManager().get(src).get().deleteHome(wl.getName())) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.success", wl.getName()));
-            return CommandResult.success();
-        }
-
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.fail", wl.getName()));
-        return CommandResult.empty();
+        homeHandler.removeHomeInternal(Cause.of(NamedCause.owner(src)), wl);
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.success", wl.getName()));
+        return CommandResult.success();
     }
 }
