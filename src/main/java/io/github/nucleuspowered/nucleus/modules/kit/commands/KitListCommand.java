@@ -18,7 +18,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -50,7 +51,7 @@ import java.util.Set;
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitListCommand extends AbstractCommand<CommandSource> {
+public class KitListCommand extends StandardAbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
@@ -59,7 +60,8 @@ public class KitListCommand extends AbstractCommand<CommandSource> {
     private CommandPermissionHandler kitPermissionHandler = null;
 
     @Override
-    public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
+    public CommandResult executeCommand(final SubjectPermissionCache<CommandSource> spc, CommandContext args) throws Exception {
+        final CommandSource src = spc.getSubject();
         Set<String> kits = kitConfig.getKitNames();
         if (kits.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.empty"));
@@ -79,7 +81,7 @@ public class KitListCommand extends AbstractCommand<CommandSource> {
         // Only show kits that the user has permission for, if needed. This is the permission "plugin.kits.<kit>".
         kitConfig.getKitNames().stream()
             .filter(kit -> !kca.getNodeOrDefault().isSeparatePermissions() || src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + kit.toLowerCase()))
-            .forEach(kit -> kitConfig.getKit(kit).ifPresent(k -> kitText.add(createKit(src, user, kit, k))));
+            .forEach(kit -> kitConfig.getKit(kit).ifPresent(k -> kitText.add(createKit(spc, user, kit, k))));
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
                 .title(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
@@ -88,14 +90,12 @@ public class KitListCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createKit(CommandSource source, UserService user, String kitName, Kit kitObj) {
+    private Text createKit(SubjectPermissionCache<CommandSource> source, UserService user, String kitName, Kit kitObj) {
         Text.Builder tb = Text.builder(kitName);
 
         if (user != null && Util.getKeyIgnoreCase(user.getKitLastUsedTime(), kitName).isPresent()) {
-            Player p = (Player)source;
-
             // If one time used...
-            if (kitObj.isOneTime() && !kitPermissionHandler.testSuffix(p, "exempt.onetime")) {
+            if (kitObj.isOneTime() && !kitPermissionHandler.testSuffix(source, "exempt.onetime")) {
                 return tb.color(TextColors.RED)
                         .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.onetime", kitName)))
                         .style(TextStyles.STRIKETHROUGH).build();
@@ -103,7 +103,7 @@ public class KitListCommand extends AbstractCommand<CommandSource> {
 
             // If an intervalOld is used...
             Duration interval = kitObj.getInterval();
-            if (!interval.isZero() && !kitPermissionHandler.testCooldownExempt(p)) {
+            if (!interval.isZero() && !kitPermissionHandler.testCooldownExempt(source)) {
 
                 // Get the next time the kit can be used.
                 Instant next = Util.getValueIgnoreCase(user.getKitLastUsedTime(), kitName).get().plus(interval);
@@ -118,8 +118,14 @@ public class KitListCommand extends AbstractCommand<CommandSource> {
         }
 
         // Can use.
-        return tb.color(TextColors.AQUA).onClick(TextActions.runCommand("/kit " + kitName))
+        Text.Builder builder = tb.color(TextColors.AQUA).onClick(TextActions.runCommand("/kit " + kitName))
                 .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.text", kitName)))
-                .style(TextStyles.UNDERLINE).build();
+                .style(TextStyles.ITALIC);
+        if (kitObj.getCost() > 0 && plugin.getEconHelper().economyServiceExists() && !kitPermissionHandler.testCostExempt(source)) {
+            builder = Text.builder().append(builder.build())
+                .append(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.cost", plugin.getEconHelper().getCurrencySymbol(kitObj.getCost())));
+        }
+
+        return builder.build();
     }
 }
