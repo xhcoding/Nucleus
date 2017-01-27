@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
@@ -25,14 +26,24 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Permissions(prefix = "home", mainOverride = "other", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand("homeother")
 public class HomeOtherCommand extends AbstractCommand<Player> {
 
     private final String home = "home";
+    public static final String OTHER_EXEMPT_PERM_SUFFIX = "exempt.target";
 
     @Inject private CoreConfigAdapter cca;
     @Inject private HomeConfigAdapter homeConfigAdapter;
+
+    @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        return new HashMap<String, PermissionInformation>() {{
+            put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.home.other.exempt.target"), SuggestedLevel.ADMIN));
+        }};
+    }
 
     @Override
     public CommandElement[] getArguments() {

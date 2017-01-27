@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.home.commands.HomeOtherCommand;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -24,10 +25,12 @@ import javax.annotation.Nullable;
 public class HomeOtherArgument extends HomeArgument {
 
     private final NicknameArgument nickArg;
+    private final String exemptperm;
 
     public HomeOtherArgument(@Nullable Text key, NucleusPlugin plugin, CoreConfigAdapter cca) {
         super(key, plugin, cca);
         nickArg = new NicknameArgument(key, plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER);
+        this.exemptperm = plugin.getPermissionRegistry().getService(HomeOtherCommand.class).getPermissionWithSuffix(HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX);
     }
 
     @Nullable
@@ -43,6 +46,10 @@ public class HomeOtherArgument extends HomeArgument {
 
         // We know it's an instance of a user.
         User user = ((List<User>)nickArg.parseInternal(player.toLowerCase(), source, args)).get(0);
+        if (user.hasPermission(this.exemptperm)) {
+            throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.homeother.exempt"));
+        }
+
         return this.getHome(user, ohome.get(), args);
     }
 
