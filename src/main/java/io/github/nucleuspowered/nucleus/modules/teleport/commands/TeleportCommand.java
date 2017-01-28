@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
@@ -72,12 +73,12 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
     }
 
     @Override
-    public ContinueMode preProcessChecks(CommandSource source, CommandContext args) {
+    public ContinueMode preProcessChecks(SubjectPermissionCache<CommandSource> source, CommandContext args) {
         // Do the /tptoggle check now, no need to go through a warmup then...
-        if (source instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
+        if (source instanceof Player && !TeleportHandler.canBypassTpToggle(source.getSubject())) {
             Player to = args.<Player>getOne(playerKey).get();
             if (!userDataManager.get(to).get().isTeleportToggled()) {
-                source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
+                source.getSubject().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return ContinueMode.STOP;
             }
         }

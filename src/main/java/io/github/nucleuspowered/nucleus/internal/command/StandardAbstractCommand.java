@@ -494,7 +494,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
      * @param args The arguments.
      * @return Whether to continue or not.
      */
-    protected ContinueMode preProcessChecks(T source, CommandContext args) {
+    protected ContinueMode preProcessChecks(SubjectPermissionCache<T> source, CommandContext args) {
         return ContinueMode.CONTINUE;
     }
 
@@ -519,7 +519,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         SubjectPermissionCache<T> permissionCache = new SubjectPermissionCache<>(src);
 
         try {
-            ContinueMode mode = preProcessChecks(src, args);
+            ContinueMode mode = preProcessChecks(permissionCache, args);
             if (!mode.cont) {
                 return mode.returnType;
             }

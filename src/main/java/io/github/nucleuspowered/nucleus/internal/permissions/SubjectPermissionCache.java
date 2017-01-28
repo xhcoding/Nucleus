@@ -38,6 +38,10 @@ public class SubjectPermissionCache<S extends Subject> implements Subject {
         return subject;
     }
 
+    public void setPermissionOverride(String permission, Tristate override) {
+        permissionCache.put(permission, override);
+    }
+
     @Override public Optional<CommandSource> getCommandSource() {
         return this.subject.getCommandSource();
     }

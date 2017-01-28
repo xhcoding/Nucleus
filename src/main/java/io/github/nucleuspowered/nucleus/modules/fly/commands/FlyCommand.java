@@ -26,7 +26,7 @@ import org.spongepowered.api.text.Text;
 import java.util.HashMap;
 import java.util.Map;
 
-@Permissions
+@Permissions(supportsSelectors = true)
 @RegisterCommand("fly")
 public class FlyCommand extends AbstractCommand<CommandSource> {
 

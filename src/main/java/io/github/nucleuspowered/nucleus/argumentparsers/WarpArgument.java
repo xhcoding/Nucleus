@@ -28,9 +28,10 @@ import javax.annotation.Nullable;
  * Returns a {@link Warp}
  */
 @NonnullByDefault
+@SuppressWarnings("all")
 public class WarpArgument extends CommandElement {
 
-    @Nullable private NucleusWarpService service;
+    private NucleusWarpService service;
     private final WarpConfigAdapter configAdapter;
     private final boolean permissionCheck;
     private final boolean requiresLocation;
