@@ -59,6 +59,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
     public static final String EXTENDED_PERMISSION = PermissionRegistry.PERMISSIONS_PREFIX + "seen." + EXTENDED_SUFFIX;
 
     private final String playerKey = "player";
+    private final Text notEmpty = Text.of(" ");
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -94,7 +95,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
         messages.add(messageProvider.getTextMessageWithFormat("command.seen.displayname", TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(user))));
 
         if (permissions.testSuffix(src, EXTENDED_SUFFIX)) {
-            messages.add(Text.EMPTY);
+            messages.add(notEmpty);
             messages.add(messageProvider.getTextMessageWithFormat("command.seen.uuid", user.getUniqueId().toString()));
 
             if (user.isOnline()) {
@@ -124,18 +125,15 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
 
                 Optional<Location<World>> olw = iqsu.getLogoutLocation();
 
-                if (olw.isPresent()) {
-                    messages.add(messageProvider.getTextMessageWithFormat("command.seen.lastlocation", getLocationString(olw.get())));
-                }
+                olw.ifPresent(worldLocation -> messages
+                    .add(messageProvider.getTextMessageWithFormat("command.seen.lastlocation", getLocationString(worldLocation))));
 
                 user.get(JoinData.class).ifPresent(x -> {
                     Optional<Instant> oi = x.firstPlayed().getDirect();
-                    if (oi.isPresent()) {
-                        messages.add(messageProvider.getTextMessageWithFormat("command.seen.firstplayed",
-                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-                                        .withLocale(src.getLocale())
-                                        .withZone(ZoneId.systemDefault()).format(oi.get())));
-                    }
+                    oi.ifPresent(instant -> messages.add(messageProvider.getTextMessageWithFormat("command.seen.firstplayed",
+                        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                            .withLocale(src.getLocale())
+                            .withZone(ZoneId.systemDefault()).format(instant))));
                 });
             }
         }
