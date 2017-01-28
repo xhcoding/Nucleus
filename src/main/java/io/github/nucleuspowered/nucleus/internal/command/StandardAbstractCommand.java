@@ -34,6 +34,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandCallable;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -44,8 +45,11 @@ import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -718,11 +722,20 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     }
 
     @Nonnull
+    @SuppressWarnings("unchecked")
     protected final CatalogType getCatalogTypeFromHandOrArgs(CommandSource src, String argument, CommandContext args) throws ReturnMessageException {
         Optional<CatalogType> catalogTypeOptional = args.getOne(argument);
-        CatalogType type;
         if (catalogTypeOptional.isPresent()) {
-            return catalogTypeOptional.get();
+            CatalogType type = catalogTypeOptional.get();
+            if (type instanceof ItemType) {
+                // Try to get the block state, if possible.
+                Optional<BlockState> state = ItemStack.of((ItemType)type, 1).get(Keys.ITEM_BLOCKSTATE);
+                if (state.isPresent()) {
+                    return state.get();
+                }
+            }
+
+            return type;
         } else {
             // If player, get the item in hand, otherwise, we can't continue.
             if (src instanceof Player) {

@@ -18,12 +18,13 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Note that the ItemAlias argument may return either a {@link BlockState} or an {@link ItemType}, depending on what
@@ -58,16 +59,25 @@ public class ItemAliasArgument extends CommandElement {
             modifiedArg = arg;
         }
 
+        if (!modifiedArg.contains("[")) {
+            // First, check to see if there is a variant.
+            Optional<BlockState> obs = Sponge.getRegistry().getAllOf(BlockState.class).stream()
+                .filter(x -> x.getId().equalsIgnoreCase(modifiedArg + "[variant=" + modifiedArg + "]")).findFirst();
+            if (obs.isPresent()) {
+                return obs.get();
+            }
+        }
+
+        // BlockState for no variant, you're up next!
+        Optional<BlockState> obs = Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(modifiedArg)).findFirst();
+        if (obs.isPresent()) {
+            return obs.get();
+        }
+
         // Check for ItemType.
         Optional<ItemType> oit = Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(x -> x.getId().equalsIgnoreCase(modifiedArg)).findFirst();
         if (oit.isPresent()) {
             return oit.get();
-        }
-
-        // BlockState, you're up next!
-        Optional<BlockState> obs = Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(modifiedArg)).findFirst();
-        if (obs.isPresent()) {
-            return obs.get();
         }
 
         throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.itemarg.nomatch", arg));
