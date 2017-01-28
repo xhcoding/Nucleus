@@ -64,6 +64,7 @@ public class NicknameArgument extends CommandElement {
                     .filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(s))
                     .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
                     .map(x -> x.getName().get())
+                    .distinct()
                     .sorted((first, second) -> {
                         boolean firstBool = onlinePlayers.contains(first);
                         boolean secondBool = onlinePlayers.contains(second);
@@ -187,6 +188,11 @@ public class NicknameArgument extends CommandElement {
         public List<?> accept(String s, CommandSource cs, CommandArgs a) throws ArgumentParseException {
             try {
                 UserStorageService uss = userStorageServiceSupplier.get();
+                if (onlyOne) {
+                    return Lists.newArrayList(uss.get(s)
+                        .orElseThrow(() -> a.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.user.toomany", s))));
+                }
+
                 List<User> users = uss.getAll().stream()
                         // Get the players who start with the string.
                         .filter(x -> x.getName().filter(y -> y.toLowerCase().startsWith(s.toLowerCase())).isPresent())
@@ -201,10 +207,6 @@ public class NicknameArgument extends CommandElement {
                     List<User> exactUser = users.stream().filter(x -> x.getName().equalsIgnoreCase(s)).collect(Collectors.toList());
                     if (exactUser.size() == 1) {
                         return exactUser;
-                    }
-
-                    if (users.size() > 1 && this.onlyOne) {
-                        throw a.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.user.toomany", s));
                     }
 
                     return users;
