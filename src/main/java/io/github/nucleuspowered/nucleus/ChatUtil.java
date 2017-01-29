@@ -36,7 +36,7 @@ public class ChatUtil {
     private final NucleusPlugin plugin;
     private final Pattern urlParser =
         Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
-                + "(?<options>\\{[a-z]+?\\})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)",
+                + "(?<options>\\{[a-z]+?\\})?(?<url>(http(s)?://)?([A-Za-z0-9-]+\\.)+[A-Za-z0-9]{2,}\\S*)",
         Pattern.CASE_INSENSITIVE);
 
     private final Pattern tokenParser = Pattern.compile("^\\{\\{(?<capture>[\\S]+)}}", Pattern.CASE_INSENSITIVE);
@@ -44,8 +44,8 @@ public class ChatUtil {
 
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
-                + "((?<options>\\{[a-z]+?\\})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}\\S*)|"
-                + "(?<specialUrl>(\\[(?<msg>.+?)\\](?<optionssurl>\\{[a-z]+\\})?\\((?<sUrl>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
+                + "((?<options>\\{[a-z]+?\\})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9-]{2,}\\S*)|"
+                + "(?<specialUrl>(\\[(?<msg>.+?)\\](?<optionssurl>\\{[a-z]+\\})?\\((?<sUrl>(http(s)?://)?([A-Za-z0-9-]+\\.)+[A-Za-z0-9]{2,}[^\\s)]*)\\)))|"
                 + "(?<specialCmd>(\\[(?<sMsg>.+?)\\](?<optionsscmd>\\{[a-z]+\\})?\\((?<sCmd>/.+?)\\))))",
                 Pattern.CASE_INSENSITIVE);
 
