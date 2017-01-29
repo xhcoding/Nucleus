@@ -48,13 +48,17 @@ To build Nucleus, navigate to the source directory and run either:
 You will find the compiled JAR which will be named like `Nucleus-x.x.x-all.jar` in `builds/libs/`. Make sure you use the
 one ending in `-all`, as this contains shadowed dependencies.
 
-## Building against Nucleus
+## Building against the Nucleus API
 
 Nucleus is available via a Maven repository.
 
 * Repo: `http://repo.drnaylor.co.uk/artifactory/list/minecraft`
 * Group ID: `io.github.nucleuspowered`
-* Artifact Name: `Nucleus`
+* Artifact Name: `nucleus-api`
+
+The versioning follows `version-S(sponge-api)`. Add `-SNAPSHOT` for a snapshot.
+
+You can also get Nucleus as a whole this way, but internals may break at any time. The API is guaranteed to be more stable.
 
 You can also use [JitPack](https://jitpack.io/#NucleusPowered/Nucleus) as a repository, if you prefer.
 
