@@ -25,12 +25,8 @@ public class WorldDataManager extends DataManager<UUID, WorldDataNode, WorldServ
     }
 
     @Override
-    public Optional<WorldService> get(UUID data) {
+    public Optional<WorldService> getNew(UUID data) {
         try {
-            if (dataStore.containsKey(data)) {
-                return Optional.of(dataStore.get(data));
-            }
-
             Optional<World> oworld = Sponge.getServer().getWorld(data);
             if (oworld.isPresent()) {
                 DataProvider<WorldDataNode> d = dataProviderFactory.apply(data);

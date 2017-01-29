@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.internal.command;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -14,9 +16,11 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
+import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoTimings;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -86,6 +90,7 @@ import javax.annotation.Nullable;
 public abstract class StandardAbstractCommand<T extends CommandSource> implements CommandExecutor {
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
+    private Timing commandTimings = TimingsDummy.DUMMY;
 
     // A period separated list of parent commands, starting with the prefix. Period terminateed.
     private final String commandPath;
@@ -260,6 +265,20 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
 
         requiresEconomy = this.getClass().isAnnotationPresent(RequiresEconomy.class);
+
+        // Timings
+        if (!this.getClass().isAnnotationPresent(NoTimings.class)) {
+            try {
+                commandTimings =
+                    Timings.of(Nucleus.getNucleus(), "Command - /" + (this.commandPath == null ? "unknown" : this.commandPath.replace(".", " ")));
+            } catch (Exception e) {
+                if (plugin.isDebugMode()) {
+                    e.printStackTrace();
+                }
+
+                commandTimings = TimingsDummy.DUMMY;
+            }
+        }
 
         afterPostInit();
 
@@ -501,60 +520,67 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     @Override
     @NonnullByDefault
     public final CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
-        // If the implementing class has defined a generic parameter, then check
-        // the source type.
-        if (!checkSourceType(source)) {
-            return CommandResult.empty();
-        }
-
-        // Economy
-        if (requiresEconomy && !plugin.getEconHelper().economyServiceExists()) {
-            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.economyrequired"));
-            return CommandResult.empty();
-        }
-
-        // Cast as required.
-        @SuppressWarnings("unchecked")
-        T src = (T) source;
-        SubjectPermissionCache<T> permissionCache = new SubjectPermissionCache<>(src);
-
         try {
-            ContinueMode mode = preProcessChecks(permissionCache, args);
-            if (!mode.cont) {
-                return mode.returnType;
-            }
-        } catch (Exception e) {
-            // If it doesn't, just tell the user something went wrong.
-            src.sendMessage(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error")).build());
+            commandTimings.startTimingIfSync();
 
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
+            // If the implementing class has defined a generic parameter, then check
+            // the source type.
+            if (!checkSourceType(source)) {
+                return CommandResult.empty();
             }
 
-            return CommandResult.empty();
-        }
+            // Economy
+            if (requiresEconomy && !plugin.getEconHelper().economyServiceExists()) {
+                source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.economyrequired"));
+                return CommandResult.empty();
+            }
 
-        if (src instanceof Player) {
+            // Cast as required.
             @SuppressWarnings("unchecked")
-            ContinueMode cm = runChecks((SubjectPermissionCache<Player>)permissionCache, args);
+            T src = (T) source;
+            SubjectPermissionCache<T> permissionCache = new SubjectPermissionCache<>(src);
 
-            if (!cm.cont) {
-                return cm.returnType;
+            try {
+                ContinueMode mode = preProcessChecks(permissionCache, args);
+                if (!mode.cont) {
+                    return mode.returnType;
+                }
+            } catch (Exception e) {
+                // If it doesn't, just tell the user something went wrong.
+                src.sendMessage(
+                    Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error")).build());
+
+                if (cca.getNodeOrDefault().isDebugmode()) {
+                    e.printStackTrace();
+                }
+
+                return CommandResult.empty();
             }
+
+            if (src instanceof Player) {
+                @SuppressWarnings("unchecked")
+                ContinueMode cm = runChecks((SubjectPermissionCache<Player>) permissionCache, args);
+
+                if (!cm.cont) {
+                    return cm.returnType;
+                }
+            }
+
+            // If we're running async...
+            if (isAsync) {
+                // Create an executor that runs the command async.
+                plugin.getLogger().debug("Running " + this.getClass().getName() + " in async mode.");
+                Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> startExecute(permissionCache, args));
+
+                // Tell Sponge we're done.
+                return CommandResult.success();
+            }
+
+            // Run the command sync.
+            return startExecute(permissionCache, args);
+        } finally {
+            commandTimings.stopTimingIfSync();
         }
-
-        // If we're running async...
-        if (isAsync) {
-            // Create an executor that runs the command async.
-            plugin.getLogger().debug("Running " + this.getClass().getName() + " in async mode.");
-            Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> startExecute(permissionCache, args));
-
-            // Tell Sponge we're done.
-            return CommandResult.success();
-        }
-
-        // Run the command sync.
-        return startExecute(permissionCache, args);
     }
 
     private CommandResult startExecute(SubjectPermissionCache<T> src, CommandContext args) {
@@ -567,12 +593,14 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             cr = executeCommand(src, args);
         } catch (ReturnMessageException e) {
             Text t = e.getText();
-            src.getSubject().sendMessage((t == null) ? NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error") : t);
+            src.getSubject()
+                .sendMessage((t == null) ? NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error") : t);
             cr = CommandResult.empty();
         } catch (TextMessageException e) {
             // If the exception contains a text object, render it like so...
             Text t = e.getText();
-            src.getSubject().sendMessage((t == null) ? NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error") : t);
+            src.getSubject()
+                .sendMessage((t == null) ? NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error") : t);
 
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

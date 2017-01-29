@@ -36,11 +36,7 @@ public class UserDataManager extends DataManager<UUID, UserDataNode, UserService
     }
 
     @Override
-    public Optional<UserService> get(UUID uuid) {
-        if (this.dataStore.containsKey(uuid)) {
-            return Optional.of(this.dataStore.get(uuid));
-        }
-
+    public Optional<UserService> getNew(UUID uuid) {
         // Does the user exist?
         Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(uuid);
         if (!user.isPresent()) {

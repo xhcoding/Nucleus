@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoTimings;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
+@NoTimings
 @RegisterCommand({"stop"})
 public class StopCommand extends AbstractCommand<CommandSource> {
 

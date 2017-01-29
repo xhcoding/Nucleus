@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.tests.util;
 
 import com.google.inject.AbstractModule;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -21,7 +20,6 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,11 +63,11 @@ public class TestModule extends AbstractModule {
         Mockito.when(plugin.getMessageProvider()).thenReturn(new ResourceMessageProvider(ResourceMessageProvider.messagesBundle));
         Mockito.when(plugin.getPermissionRegistry()).thenReturn(pr);
         Mockito.when(plugin.getUserDataManager()).thenReturn(Mockito.mock(UserDataManager.class));
-
+/*
         Field f = Nucleus.class.getDeclaredField("nucleus");
         f.setAccessible(true);
         f.set(null, plugin);
-
+*/
         try {
             Path file = Files.createTempFile("quickstartcmdtest", "conf");
             CommandsConfig cc = new CommandsConfig(file);
