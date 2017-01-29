@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.MuteData;
+import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;

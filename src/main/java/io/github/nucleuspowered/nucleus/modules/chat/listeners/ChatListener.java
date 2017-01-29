@@ -10,7 +10,8 @@ import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.util.NucleusIgnorableChatChannel;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
+import io.github.nucleuspowered.nucleus.iapi.util.NucleusIgnorableChatChannel;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
@@ -43,7 +44,7 @@ import java.util.regex.Pattern;
 
 /**
  * A listener that modifies all chat messages. Uses the
- * {@link io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService}, which
+ * {@link NucleusMessageTokenService}, which
  * should be used if tokens need to be registered.
  */
 @ConditionalListener(ChatListener.Test.class)

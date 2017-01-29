@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarnData;
+import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;

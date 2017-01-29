@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.internal.qsml.event;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.enums.ModuleEnableState;
 import io.github.nucleuspowered.nucleus.api.events.NucleusModuleEvent;
 import io.github.nucleuspowered.nucleus.api.exceptions.ModulesLoadedException;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoModuleException;

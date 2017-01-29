@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.warn.listeners;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.WarnData;
+import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;

@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.events;
 
-import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.api.events.NucleusHomeEvent;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import org.spongepowered.api.event.cause.Cause;
 
 public class DeleteHomeEvent extends AbstractHomeEvent implements NucleusHomeEvent.Delete {

@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
-import io.github.nucleuspowered.nucleus.api.data.mail.MailFilter;
+import io.github.nucleuspowered.nucleus.iapi.data.mail.MailData;
+import io.github.nucleuspowered.nucleus.iapi.data.mail.MailFilter;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandResult;

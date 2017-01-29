@@ -6,11 +6,11 @@ package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
-import io.github.nucleuspowered.nucleus.api.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.WorldService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
+import io.github.nucleuspowered.nucleus.iapi.data.NucleusWorld;
+import io.github.nucleuspowered.nucleus.iapi.service.NucleusWorldLoaderService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
 

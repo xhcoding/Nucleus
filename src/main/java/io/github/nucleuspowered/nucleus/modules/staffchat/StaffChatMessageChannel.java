@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.staffchat;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.util.NucleusIgnorableChatChannel;
+import io.github.nucleuspowered.nucleus.iapi.util.NucleusIgnorableChatChannel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.commands.StaffChatCommand;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfig;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
@@ -21,12 +21,13 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class StaffChatMessageChannel implements NucleusIgnorableChatChannel {
 

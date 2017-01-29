@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.dataservices;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.data.Kit;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitConfigDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;

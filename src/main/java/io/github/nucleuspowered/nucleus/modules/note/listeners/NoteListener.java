@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.note.listeners;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.api.data.NoteData;
+import io.github.nucleuspowered.nucleus.iapi.data.NoteData;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;

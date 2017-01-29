@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.api.data.NamedLocation;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.world.Location;

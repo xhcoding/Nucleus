@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.back;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
+import io.github.nucleuspowered.nucleus.iapi.service.NucleusBackService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.back.config.BackConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;

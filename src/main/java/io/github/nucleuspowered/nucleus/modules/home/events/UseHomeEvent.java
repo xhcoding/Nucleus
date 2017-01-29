@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.events;
 
-import io.github.nucleuspowered.nucleus.api.data.Home;
 import io.github.nucleuspowered.nucleus.api.events.NucleusHomeEvent;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.util.annotation.NonnullByDefault;

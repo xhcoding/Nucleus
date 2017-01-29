@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warp.event;
 
-import io.github.nucleuspowered.nucleus.api.data.Warp;
 import io.github.nucleuspowered.nucleus.api.events.NucleusWarpEvent;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;

@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.note;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
+import io.github.nucleuspowered.nucleus.iapi.service.NucleusNoteService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.note.commands.CheckNotesCommand;
 import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;

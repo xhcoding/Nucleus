@@ -6,11 +6,11 @@ package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.api.data.JailData;
-import io.github.nucleuspowered.nucleus.api.data.MuteData;
-import io.github.nucleuspowered.nucleus.api.data.NoteData;
-import io.github.nucleuspowered.nucleus.api.data.WarnData;
-import io.github.nucleuspowered.nucleus.api.data.mail.MailData;
+import io.github.nucleuspowered.nucleus.iapi.data.JailData;
+import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
+import io.github.nucleuspowered.nucleus.iapi.data.NoteData;
+import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
+import io.github.nucleuspowered.nucleus.iapi.data.mail.MailData;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 

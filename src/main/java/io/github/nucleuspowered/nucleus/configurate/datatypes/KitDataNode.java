@@ -5,15 +5,19 @@
 package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.api.data.Kit;
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ConfigSerializable
 public class KitDataNode implements Kit {
@@ -71,5 +75,19 @@ public class KitDataNode implements Kit {
     public Kit setOneTime(boolean oneTime) {
         this.oneTime = oneTime;
         return this;
+    }
+
+    @Override public Kit updateKitInventory(Inventory inventory) {
+        List<Inventory> slots = Lists.newArrayList(inventory.slots());
+        final List<ItemStackSnapshot> stacks = slots.stream().filter(x -> x.peek().isPresent()).map(x -> x.peek().get().createSnapshot()).collect(
+            Collectors.toList());
+
+        // Add all the stacks into the kit list.
+        setStacks(stacks);
+        return this;
+    }
+
+    @Override public Kit updateKitInventory(Player player) {
+        return updateKitInventory(Util.getStandardInventory(player));
     }
 }

@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.chat.commands;
 
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.api.util.NucleusIgnorableChatChannel;
+import io.github.nucleuspowered.nucleus.iapi.util.NucleusIgnorableChatChannel;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -29,10 +29,11 @@ import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 @RegisterCommand({"me", "action"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)

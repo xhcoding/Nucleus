@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.environment.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
+import io.github.nucleuspowered.nucleus.iapi.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.event.Listener;

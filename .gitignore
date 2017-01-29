@@ -110,3 +110,5 @@ gradle-app.setting
 run/
 classes/
 out/
+
+output/

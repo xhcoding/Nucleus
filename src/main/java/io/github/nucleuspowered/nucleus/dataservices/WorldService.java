@@ -9,10 +9,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.data.NucleusWorld;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
+import io.github.nucleuspowered.nucleus.iapi.data.NucleusWorld;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.world.World;
 

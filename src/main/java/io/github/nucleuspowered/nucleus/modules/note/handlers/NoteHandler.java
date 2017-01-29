@@ -8,10 +8,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.data.NoteData;
-import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.iapi.data.NoteData;
+import io.github.nucleuspowered.nucleus.iapi.service.NucleusNoteService;
 import org.spongepowered.api.entity.living.player.User;
 
 import java.util.List;

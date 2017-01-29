@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.misc.runnables;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.iapi.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;

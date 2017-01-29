@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.note.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.api.data.NoteData;
+import io.github.nucleuspowered.nucleus.iapi.data.NoteData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
