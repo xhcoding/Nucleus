@@ -50,7 +50,7 @@ public class TokenHandler {
         }
 
         try {
-            if (token.startsWith("pl:")) {
+            if (token.startsWith("pl:") || token.startsWith("p:")) {
                 // Plugin identifers are of the form pl:<pluginid>:<identifier>
                 String[] tokSplit = token.split(":", 3);
                 if (tokSplit.length < 3) {
