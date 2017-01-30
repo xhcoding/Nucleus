@@ -65,6 +65,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -167,8 +168,8 @@ public class NucleusPlugin extends Nucleus {
             DataProviders d = new DataProviders(this);
             generalService = new GeneralService(d.getGeneralDataProvider());
             itemDataService = new ItemDataService(d.getItemDataProvider());
-            userDataManager = new UserDataManager(this, d::getUserFileDataProviders);
-            worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider);
+            userDataManager = new UserDataManager(this, d::getUserFileDataProviders, d::doesUserFileExist);
+            worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider, d::doesWorldFileExist);
             kitService = new KitService(d.getKitsDataProvider());
             nameBanService = new NameBanService(d.getNameBanDataProvider());
             warmupManager = new WarmupManager();
@@ -268,6 +269,13 @@ public class NucleusPlugin extends Nucleus {
         game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, userDataManager);
         game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldDataManager);
         logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
+    }
+
+    @Listener
+    public void onGameStarting(GameStartingServerEvent event) {
+        if (isErrored == null) {
+            generalService.resetUniqueUserCount();
+        }
     }
 
     @Listener

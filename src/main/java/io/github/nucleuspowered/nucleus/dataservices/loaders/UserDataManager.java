@@ -23,12 +23,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class UserDataManager extends DataManager<UUID, UserDataNode, UserService> implements NucleusUserLoaderService {
 
-    public UserDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<UserDataNode>> dataProviderFactory) {
-        super(plugin, dataProviderFactory);
+    public UserDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<UserDataNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+        super(plugin, dataProviderFactory, fileExist);
     }
 
     public Optional<UserService> get(User user) {
@@ -36,26 +37,10 @@ public class UserDataManager extends DataManager<UUID, UserDataNode, UserService
     }
 
     @Override
-    public Optional<UserService> getNew(UUID uuid) {
+    public Optional<UserService> getNew(UUID uuid, DataProvider<UserDataNode> dataProvider) throws Exception {
         // Does the user exist?
         Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(uuid);
-        if (!user.isPresent()) {
-            return Optional.empty();
-        }
-
-        DataProvider<UserDataNode> d = this.dataProviderFactory.apply(uuid);
-        if (d == null) {
-            return Optional.empty();
-        }
-
-        try {
-            UserService us = new UserService(plugin, d, user.get());
-            dataStore.put(uuid, us);
-            return Optional.of(us);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
+        return Optional.of(new UserService(plugin, dataProvider, user.get()));
     }
 
     public void removeOfflinePlayers() {

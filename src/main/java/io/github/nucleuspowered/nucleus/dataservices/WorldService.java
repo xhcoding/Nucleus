@@ -14,7 +14,7 @@ import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dType
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.iapi.data.NucleusWorld;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +33,7 @@ public class WorldService extends Service<WorldDataNode> implements NucleusWorld
 
     private final UUID world;
 
-    public WorldService(NucleusPlugin plugin, DataProvider<WorldDataNode> provider, World world) throws Exception {
+    public WorldService(NucleusPlugin plugin, DataProvider<WorldDataNode> provider, WorldProperties world) throws Exception {
         super(provider);
         Preconditions.checkNotNull("world", world);
         Preconditions.checkNotNull("plugin", plugin);

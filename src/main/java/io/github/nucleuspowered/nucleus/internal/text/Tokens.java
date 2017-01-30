@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.RemoteSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -38,6 +39,11 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
         translatorMap.put("onlineplayers", (p, v, m) -> Optional.of(Text.of(Sponge.getServer().getOnlinePlayers().size())));
         translatorMap.put("currentworld", (p, v, m) -> Optional.of(Text.of(getWorld(getFromVariableIfExists(p, v, m)).getName())));
         translatorMap.put("time", (p, v, m) -> Optional.of(Text.of(String.valueOf(Util.getTimeFromTicks(getWorld(getFromVariableIfExists(p, v, m)).getProperties().getWorldTime())))));
+
+        translatorMap.put("uniquecount", (p, v, m) -> Optional.of(Text.of(Nucleus.getNucleus().getGeneralService().getUniqueUserCount())));
+        translatorMap.put("ipaddress", (p, v, m) -> Optional.of(Text.of(p instanceof RemoteSource ?
+            ((RemoteSource)p).getConnection().getAddress().getAddress().toString() :
+            "localhost")));
     }
 
     @Nonnull @Override public Optional<Text> parse(String tokenInput, CommandSource source, Map<String, Object> variables) {

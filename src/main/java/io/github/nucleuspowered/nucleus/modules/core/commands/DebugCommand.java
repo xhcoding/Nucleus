@@ -6,6 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
@@ -66,6 +69,22 @@ public class DebugCommand extends AbstractCommand<CommandSource> {
                         .build()
                     ).collect(Collectors.toList())
                 ).sendTo(src);
+            return CommandResult.success();
+        }
+    }
+
+    @Permissions(prefix = "nucleus.debug")
+    @NoCooldown
+    @NoCost
+    @NoWarmup
+    @RegisterCommand(value = "refreshuniquevisitors", subcommandOf = DebugCommand.class)
+    public static class RefreshUniqueVisitors extends AbstractCommand<CommandSource> {
+
+        @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.debug.refreshuniquevisitors.started",
+                String.valueOf(plugin.getGeneralService().getUniqueUserCount())));
+            plugin.getGeneralService().resetUniqueUserCount(l ->
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.debug.refreshuniquevisitors.done", String.valueOf(l))));
             return CommandResult.success();
         }
     }

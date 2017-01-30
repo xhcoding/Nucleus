@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.dataservices;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
@@ -15,7 +16,12 @@ import io.github.nucleuspowered.nucleus.configurate.datatypes.LocationNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.WarpNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.internal.LocationData;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.entity.Transform;
+import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -24,11 +30,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 public class GeneralService extends Service<GeneralDataNode> {
+
+    // This is a session variable - does not get saved on restart.
+    private long userCount = 0;
+    private boolean userCountIsDirty = false;
 
     private final BiFunction<String, LocationNode, NamedLocation> getLocationData = (s, l) ->
         new LocationData(s, l.getWorld(), l.getPosition(), l.getRotation());
@@ -160,6 +171,40 @@ public class GeneralService extends Service<GeneralDataNode> {
         return input.entrySet().stream()
             .map(x -> convert.apply(x.getKey(), x.getValue()))
             .filter(Objects::nonNull).collect(Collectors.toMap(T::getName, x -> x));
+    }
+
+    public void resetUniqueUserCount() {
+        resetUniqueUserCount(null);
+    }
+
+    public void resetUniqueUserCount(@Nullable Consumer<Long> resultConsumer) {
+        if (!this.userCountIsDirty) {
+            this.userCountIsDirty = true;
+            Task.builder().async().execute(task -> {
+                UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
+
+                // This could be slow...
+                this.userCount = uss.getAll().stream().filter(GameProfile::isFilled)
+                    .map(uss::get).filter(Optional::isPresent)
+                    .filter(x ->
+                        x.get().getPlayer().isPresent() ||
+                            Nucleus.getNucleus().getUserDataManager().has(x.get().getUniqueId()) ||
+                            // Temporary until Data is hooked up properly, I hope.
+                            x.get().get(JoinData.class).map(y -> y.firstPlayed().getDirect().isPresent()).orElse(false)).count();
+                this.userCountIsDirty = false;
+                if (resultConsumer != null) {
+                    resultConsumer.accept(this.userCount);
+                }
+            }).submit(Nucleus.getNucleus());
+        }
+    }
+
+    public long getUniqueUserCount() {
+        if (this.userCountIsDirty) {
+            return this.userCount + 1;
+        }
+
+        return this.userCount;
     }
 
     private static class WarpData extends LocationData implements Warp {

@@ -77,7 +77,12 @@ public class CoreListener extends ListenerBase {
         try {
             UserService qsu = loader.get(player).get();
             qsu.setLastLogin(Instant.now());
-            qsu.setFirstPlay(Util.isFirstPlay(player));
+
+            if (Util.isFirstPlay(player)) {
+                plugin.getGeneralService().resetUniqueUserCount();
+                qsu.setFirstPlay(Util.isFirstPlay(player));
+            }
+
             qsu.setLastIp(player.getConnection().getAddress().getAddress());
         } catch (Exception e) {
             e.printStackTrace();

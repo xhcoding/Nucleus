@@ -17,30 +17,17 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class WorldDataManager extends DataManager<UUID, WorldDataNode, WorldService> implements NucleusWorldLoaderService {
 
-    public WorldDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<WorldDataNode>> dataProviderFactory) {
-        super(plugin, dataProviderFactory);
+    public WorldDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<WorldDataNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+        super(plugin, dataProviderFactory, fileExist);
     }
 
     @Override
-    public Optional<WorldService> getNew(UUID data) {
-        try {
-            Optional<World> oworld = Sponge.getServer().getWorld(data);
-            if (oworld.isPresent()) {
-                DataProvider<WorldDataNode> d = dataProviderFactory.apply(data);
-                if (d != null) {
-                    WorldService us = new WorldService(plugin, d, oworld.get());
-                    dataStore.put(data, us);
-                    return Optional.of(us);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Optional.empty();
+    public Optional<WorldService> getNew(UUID data, DataProvider<WorldDataNode> dataProvider) throws Exception {
+        return Optional.of(new WorldService(plugin, dataProvider, Sponge.getServer().getWorldProperties(data).orElseThrow(() -> new IllegalStateException("world"))));
     }
 
     @Override

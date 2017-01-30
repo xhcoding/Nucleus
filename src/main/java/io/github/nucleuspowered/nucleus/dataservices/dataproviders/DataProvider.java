@@ -6,6 +6,8 @@ package io.github.nucleuspowered.nucleus.dataservices.dataproviders;
 
 public interface DataProvider<T> {
 
+    boolean has();
+
     T load() throws Exception;
 
     void save(T info) throws Exception;

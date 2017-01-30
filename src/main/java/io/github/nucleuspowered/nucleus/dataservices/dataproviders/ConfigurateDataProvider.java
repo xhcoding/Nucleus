@@ -61,6 +61,10 @@ public class ConfigurateDataProvider<T> implements DataProvider<T> {
         this.logger = logger;
     }
 
+    @Override public boolean has() {
+        return Files.exists(file);
+    }
+
     @Override
     public T load() throws Exception {
         try {

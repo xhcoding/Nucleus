@@ -38,6 +38,9 @@ public class DataProviders {
     private final TypeToken<Map<String, String>> ttss = new TypeToken<Map<String, String>>() {};
     private final TypeToken<KitConfigDataNode> ttmk = TypeToken.of(KitConfigDataNode.class);
 
+    private final String userJson = "userdata%1$s%2$s%1$s%3$s.json";
+    private final String worldJson = "worlddata%1$s%2$s%1$s%3$s.json";
+
     public DataProviders(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
@@ -45,20 +48,36 @@ public class DataProviders {
     public DataProvider<UserDataNode> getUserFileDataProviders(UUID uuid) {
         // For now, just the Configurate one.
         try {
-            Path p = getFile("userdata%1$s%2$s%1$s%3$s.json", uuid);
+            Path p = getFile(userJson, uuid);
             return new ConfigurateDataProvider<>(ttu, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
     }
 
+    public boolean doesUserFileExist(UUID uuid) {
+        try {
+            return Files.exists(getFile(userJson, uuid));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public DataProvider<WorldDataNode> getWorldFileDataProvider(UUID uuid) {
         // For now, just the Configurate one.
         try {
-            Path p = getFile("worlddata%1$s%2$s%1$s%3$s.json", uuid);
+            Path p = getFile(worldJson, uuid);
             return new ConfigurateDataProvider<>(ttw, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public boolean doesWorldFileExist(UUID uuid) {
+        try {
+            return Files.exists(getFile(worldJson, uuid));
+        } catch (Exception e) {
+            return false;
         }
     }
 
