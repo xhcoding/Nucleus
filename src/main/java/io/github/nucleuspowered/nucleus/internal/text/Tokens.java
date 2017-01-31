@@ -40,7 +40,7 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
         translatorMap.put("currentworld", (p, v, m) -> Optional.of(Text.of(getWorld(getFromVariableIfExists(p, v, m)).getName())));
         translatorMap.put("time", (p, v, m) -> Optional.of(Text.of(String.valueOf(Util.getTimeFromTicks(getWorld(getFromVariableIfExists(p, v, m)).getProperties().getWorldTime())))));
 
-        translatorMap.put("uniquecount", (p, v, m) -> Optional.of(Text.of(Nucleus.getNucleus().getGeneralService().getUniqueUserCount())));
+        translatorMap.put("uniquevisitor", (p, v, m) -> Optional.of(Text.of(Nucleus.getNucleus().getGeneralService().getUniqueUserCount())));
         translatorMap.put("ipaddress", (p, v, m) -> Optional.of(Text.of(p instanceof RemoteSource ?
             ((RemoteSource)p).getConnection().getAddress().getAddress().toString() :
             "localhost")));
