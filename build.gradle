@@ -14,7 +14,7 @@ allprojects {
     def versionno = '0.21.0'
     def spongeapiversion = '5.1'
     def suffix = '-SNAPSHOT'
-    version = versionno + '-S' + spongeapiversion + suffix
+    version = versionno + suffix + '-S' + spongeapiversion
 
     repositories {
         jcenter()
@@ -149,7 +149,7 @@ shadowJar.dependsOn(':nucleus-api:build')
 
 task cleanJars() {
     project.file('output').listFiles().each {
-        x -> x.delete()
+        x -> if (x.name.endsWith("jar")) { x.delete() }
     }
 }
 
