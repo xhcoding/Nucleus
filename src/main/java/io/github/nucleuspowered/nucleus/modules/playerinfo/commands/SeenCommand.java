@@ -15,11 +15,13 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.SpeedCommand;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
+import io.github.nucleuspowered.nucleus.modules.teleport.commands.TeleportPositionCommand;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -32,6 +34,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
@@ -114,7 +117,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
                 messages.add(messageProvider.getTextMessageWithFormat("command.seen.speed.fly",
                         String.valueOf(Math.round(pl.get(Keys.FLYING_SPEED).orElse(0.05d) * SpeedCommand.multiplier))));
 
-                messages.add(messageProvider.getTextMessageWithFormat("command.seen.currentlocation", getLocationString(pl.getLocation())));
+                messages.add(getLocationString("command.seen.currentlocation", pl.getLocation(), src));
 
                 messages.add(messageProvider.getTextMessageWithFormat("command.seen.canfly", getYesNo(pl.get(Keys.CAN_FLY).orElse(false))));
                 messages.add(messageProvider.getTextMessageWithFormat("command.seen.isflying", getYesNo(pl.get(Keys.IS_FLYING).orElse(false))));
@@ -126,7 +129,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
                 Optional<Location<World>> olw = iqsu.getLogoutLocation();
 
                 olw.ifPresent(worldLocation -> messages
-                    .add(messageProvider.getTextMessageWithFormat("command.seen.lastlocation", getLocationString(worldLocation))));
+                    .add(getLocationString("command.seen.lastlocation", worldLocation, src)));
 
                 user.get(JoinData.class).ifPresent(x -> {
                     Optional<Instant> oi = x.firstPlayed().getDirect();
@@ -147,8 +150,22 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private String getLocationString(Location<World> lw) {
-        return plugin.getMessageProvider().getMessageWithFormat("command.seen.locationtemplate", lw.getExtent().getName(), lw.getBlockPosition().toString());
+    private Text getLocationString(String key, Location<World> lw, CommandSource source) {
+        Text text = plugin.getMessageProvider().getTextMessageWithFormat(key,
+            plugin.getMessageProvider().getMessageWithFormat("command.seen.locationtemplate", lw.getExtent().getName(), lw.getBlockPosition().toString()));
+        if (CommandBuilder.isCommandRegistered(TeleportPositionCommand.class)
+            && plugin.getPermissionRegistry().getPermissionsForNucleusCommand(TeleportPositionCommand.class).testBase(source)) {
+
+            return text.toBuilder().onHover(TextActions.showText(
+                plugin.getMessageProvider().getTextMessageWithFormat("command.seen.teleportposition")
+            )).onClick(TextActions.executeCallback(cs -> {
+                if (cs instanceof Player) {
+                    ((Player) cs).setLocation(lw);
+                }
+            })).build();
+        }
+
+        return text;
     }
 
     private String getYesNo(Boolean bool) {

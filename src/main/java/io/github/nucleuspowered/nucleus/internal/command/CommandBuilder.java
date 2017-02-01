@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.command;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
@@ -23,6 +24,12 @@ public class CommandBuilder {
     private final SimpleCommentedConfigurationNode sn;
     private final String moduleID;
     private final String moduleName;
+
+    private final static Set<Class<? extends StandardAbstractCommand>> registeredCommands = Sets.newHashSet();
+
+    public static boolean isCommandRegistered(Class<? extends StandardAbstractCommand> command) {
+        return registeredCommands.contains(command);
+    }
 
     public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends StandardAbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
         this.plugin = plugin;
@@ -84,6 +91,7 @@ public class CommandBuilder {
                 plugin.registerReloadable(((StandardAbstractCommand.Reloadable) c)::onReload);
             }
 
+            registeredCommands.add(c.getClass());
             return Optional.of(c);
         }
 
