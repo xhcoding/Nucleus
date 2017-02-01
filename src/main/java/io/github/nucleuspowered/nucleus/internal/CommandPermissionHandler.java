@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoDocumentation;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoPermissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -122,31 +123,40 @@ public class CommandPermissionHandler {
             command = String.format("%s %s", co.subcommandOf().getAnnotation(RegisterCommand.class).value()[0], command);
         }
 
-        mssl.put(base, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.base", command), c.suggestedLevel()));
-
-        if (c.supportsSelectors()) {
-            mssl.put(selectors, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
-        }
-
-        if (c.supportsOthers()) {
-            mssl.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", co.value()[0]), SuggestedLevel.ADMIN));
-        }
-
         warmup = prefix + "exempt.warmup";
         cooldown = prefix + "exempt.cooldown";
         cost = prefix + "exempt.cost";
         others = prefix + "others";
 
-        if (!cab.isAnnotationPresent(NoWarmup.class)) {
-            mssl.put(warmup, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.warmup", command), SuggestedLevel.ADMIN));
-        }
+        if (!cab.isAnnotationPresent(NoDocumentation.class)) {
+            mssl.put(base,
+                new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.base", command), c.suggestedLevel()));
 
-        if (!cab.isAnnotationPresent(NoCooldown.class)) {
-            mssl.put(cooldown, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cooldown", command), SuggestedLevel.ADMIN));
-        }
+            if (c.supportsSelectors()) {
+                mssl.put(selectors,
+                    new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
+            }
 
-        if (!cab.isAnnotationPresent(NoCost.class)) {
-            mssl.put(cost, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cost", command), SuggestedLevel.ADMIN));
+            if (c.supportsOthers()) {
+                mssl.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", co.value()[0]),
+                    SuggestedLevel.ADMIN));
+            }
+
+
+            if (!cab.isAnnotationPresent(NoWarmup.class) || cab.getAnnotation(NoWarmup.class).generatePermissionDocs()) {
+                mssl.put(warmup, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.warmup", command),
+                    SuggestedLevel.ADMIN));
+            }
+
+            if (!cab.isAnnotationPresent(NoCooldown.class)) {
+                mssl.put(cooldown, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cooldown", command),
+                    SuggestedLevel.ADMIN));
+            }
+
+            if (!cab.isAnnotationPresent(NoCost.class)) {
+                mssl.put(cost, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cost", command),
+                    SuggestedLevel.ADMIN));
+            }
         }
 
         plugin.getPermissionRegistry().addHandler(cab, this);

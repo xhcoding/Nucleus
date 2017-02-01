@@ -34,7 +34,7 @@ import javax.inject.Inject;
 
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @RunAsync
-@NoWarmup(generateConfigEntry = true)
+@NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
 @RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})
 @NotifyIfAFK(playerKey)
 public class TeleportAskHereCommand extends StandardAbstractCommand<Player> {

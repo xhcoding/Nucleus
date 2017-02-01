@@ -34,7 +34,7 @@ import javax.inject.Inject;
  * Sends a request to a player to teleport to them, using click handlers.
  */
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
-@NoWarmup(generateConfigEntry = true)
+@NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
 @RegisterCommand({"tpa", "teleportask"})
 @RunAsync
 @NotifyIfAFK(TeleportAskCommand.playerKey)

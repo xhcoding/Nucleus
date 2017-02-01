@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoDocumentation;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -28,10 +29,14 @@ import org.yaml.snakeyaml.DumperOptions;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Intended as a local command.
+ */
 @RunAsync
 @NoCost
 @NoWarmup
 @NoCooldown
+@NoDocumentation
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"docgen", "gendocs"}, subcommandOf = NucleusCommand.class)
 public class DocGenCommand extends AbstractCommand<CommandSource> {

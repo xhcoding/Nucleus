@@ -55,7 +55,7 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
-        mspi.put("overridecheck", new PermissionInformation("permissions.kit.give.override", SuggestedLevel.ADMIN));
+        mspi.put("overridecheck", PermissionInformation.getWithTranslation("permission.kit.give.override", SuggestedLevel.ADMIN));
         return mspi;
     }
 

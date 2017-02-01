@@ -18,14 +18,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Inherited
 @Documented
-public @interface NoWarmup {
+public @interface NoDocumentation {
 
-    /**
-     * Whether to generate the Warmup Config entry.
-     *
-     * @return <code>true</code> if so.
-     */
-    boolean generateConfigEntry() default false;
-
-    boolean generatePermissionDocs() default false;
 }

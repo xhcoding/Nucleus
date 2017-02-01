@@ -46,8 +46,8 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation("permission.teleport.others", SuggestedLevel.ADMIN));
-        m.put("quiet", new PermissionInformation("permission.teleport.quiet", SuggestedLevel.ADMIN));
+        m.put("others", PermissionInformation.getWithTranslation("permission.teleport.others", SuggestedLevel.ADMIN));
+        m.put("quiet", PermissionInformation.getWithTranslation("permission.teleport.quiet", SuggestedLevel.ADMIN));
         return m;
     }
 

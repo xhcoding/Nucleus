@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoDocumentation;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoPermissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -46,6 +47,10 @@ public class DocGenCache {
     }
 
     public void addCommand(final String moduleID, final StandardAbstractCommand<?> abstractCommand) {
+        if (abstractCommand.getClass().isAnnotationPresent(NoDocumentation.class)) {
+            return;
+        }
+
         CommandDoc cmd = new CommandDoc();
 
         cmd.setCommandName(abstractCommand.getCommandPath().replaceAll("\\.", " "));

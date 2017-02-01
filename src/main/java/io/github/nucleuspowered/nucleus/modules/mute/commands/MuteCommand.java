@@ -67,8 +67,8 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.ADMIN));
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.MOD));
+        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.ADMIN));
+        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.MOD));
         m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.notify"), SuggestedLevel.MOD));
         m.put("seemutedchat", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.seemutedchat"), SuggestedLevel.ADMIN));
         return m;

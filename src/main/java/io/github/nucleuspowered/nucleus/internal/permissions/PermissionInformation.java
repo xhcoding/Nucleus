@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.permissions;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.text.Text;
 
 public class PermissionInformation {
@@ -12,9 +13,18 @@ public class PermissionInformation {
     public final String plainDescription;
     public final SuggestedLevel level;
 
+    public static PermissionInformation getWithTranslation(String key, SuggestedLevel level) {
+        return new PermissionInformation(
+            Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(key), level);
+    }
+
     public PermissionInformation(String description, SuggestedLevel level) {
-        this.description = Text.of(description);
-        this.plainDescription = description;
+        this(Text.of(description), level);
+    }
+
+    public PermissionInformation(Text description, SuggestedLevel level) {
+        this.description = description;
+        this.plainDescription = description.toPlain();
         this.level = level;
     }
 }
