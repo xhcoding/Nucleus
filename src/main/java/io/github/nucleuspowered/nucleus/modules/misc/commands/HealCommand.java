@@ -26,7 +26,7 @@ import java.util.Map;
 @RegisterCommand("heal")
 public class HealCommand extends AbstractCommand<CommandSource> {
 
-    private static final String player = "player";
+    private static final String player = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

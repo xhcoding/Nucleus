@@ -57,7 +57,7 @@ public class TemplateUtil {
 
         // For each weight...
         for (Map<String, WeightedChatTemplateConfig> templates : cachedTemplates) {
-            // Iterate through all groups the player is in.
+            // Iterate through all groups the subject is in.
             for (Subject group : groups) {
                 if (templates.containsKey(group.getIdentifier())) {
                     return templates.get(group.getIdentifier());

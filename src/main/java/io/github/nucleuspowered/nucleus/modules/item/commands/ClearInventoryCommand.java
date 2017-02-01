@@ -32,7 +32,7 @@ import java.util.Map;
 @Permissions(supportsSelectors = true)
 public class ClearInventoryCommand extends AbstractCommand<CommandSource> {
 
-    private final String player = "player";
+    private final String player = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

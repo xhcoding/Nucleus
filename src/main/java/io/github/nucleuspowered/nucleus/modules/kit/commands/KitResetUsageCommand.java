@@ -27,7 +27,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
 /**
- * Resets a kit usage for player.
+ * Resets a kit usage for subject.
  *
  * Command Usage: /kit list Permission: plugin.kit.list.base
  */
@@ -44,7 +44,7 @@ public class KitResetUsageCommand extends AbstractCommand<CommandSource> {
     @Inject private UserDataManager userConfigLoader;
 
     private final String kit = "kit";
-    private final String user = "player";
+    private final String user = "subject";
 
     @Override
     public CommandElement[] getArguments() {

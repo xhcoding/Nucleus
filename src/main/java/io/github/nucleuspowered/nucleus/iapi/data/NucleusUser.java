@@ -113,7 +113,7 @@ public interface NucleusUser {
     boolean clearNotes();
 
     /**
-     * Gets whether NucleusPlugin thinks the player should be invulnerable. Note, this means the player has been subject to
+     * Gets whether NucleusPlugin thinks the subject should be invulnerable. Note, this means the subject has been subject to
      * the /god command.
      *
      * @return <code>true</code> if so.
@@ -121,7 +121,7 @@ public interface NucleusUser {
     boolean isInvulnerable();
 
     /**
-     * Sets whether NucleusPlugin thinks the player should be invulnerable. Note, this is the same as the player being subject to
+     * Sets whether NucleusPlugin thinks the subject should be invulnerable. Note, this is the same as the subject being subject to
      * the /god command.
      *
      * @param invuln <code>true</code> if so, <code>false</code> otherwise.
@@ -129,7 +129,7 @@ public interface NucleusUser {
     void setInvulnerable(boolean invuln);
 
     /**
-     * Gets whether NucleusPlugin thinks the player should be flying. Note, this means the player has been subject to
+     * Gets whether NucleusPlugin thinks the subject should be flying. Note, this means the subject has been subject to
      * the /fly command.
      *
      * @return <code>true</code> if so.
@@ -137,7 +137,7 @@ public interface NucleusUser {
     boolean isFlying();
 
     /**
-     * Sets whether NucleusPlugin thinks the player should be flying. This does not necessarily mean that the player is
+     * Sets whether NucleusPlugin thinks the subject should be flying. This does not necessarily mean that the subject is
      * actually flying, this is more for across restarts/reconnects/world transfer.
      *
      * @param fly <code>true</code> if so, <code>false</code> otherwise.

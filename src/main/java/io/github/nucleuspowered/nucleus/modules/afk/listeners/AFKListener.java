@@ -56,7 +56,7 @@ public class AFKListener extends ListenerBase {
 
     @Listener
     public void onPlayerCommand(final SendCommandEvent event, @Root Player player) {
-        // Did the player run /afk? Then don't do anything, we'll toggle it
+        // Did the subject run /afk? Then don't do anything, we'll toggle it
         // anyway.
         if (!commands.contains(event.getCommand().toLowerCase())) {
             handler.stageUserActivityUpdate(player);

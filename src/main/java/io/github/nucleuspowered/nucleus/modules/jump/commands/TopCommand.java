@@ -30,7 +30,7 @@ import java.util.Map;
 @RegisterCommand({"top", "tosurface", "totop"})
 public class TopCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
@@ -52,7 +52,7 @@ public class TopCommand extends AbstractCommand<CommandSource> {
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player playerToTeleport = this.getUserFromArgs(Player.class, src, playerKey, args);
 
-        // Get the topmost block for the player.
+        // Get the topmost block for the subject.
         Location<World> location = playerToTeleport.getLocation();
         double x = location.getX();
         double z = location.getZ();

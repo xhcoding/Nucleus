@@ -38,7 +38,7 @@ public class SpeedCommand extends AbstractCommand<CommandSource> {
 
     private final String speedKey = "speed";
     private final String typeKey = "type";
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Inject private MiscConfigAdapter miscConfigAdapter;
 

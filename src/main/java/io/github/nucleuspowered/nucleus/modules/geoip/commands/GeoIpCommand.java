@@ -40,7 +40,7 @@ public class GeoIpCommand extends AbstractCommand<CommandSource> {
     @Inject private GeoIpDatabaseHandler databaseHandler;
     @Inject private UserDataManager userDataManager;
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{

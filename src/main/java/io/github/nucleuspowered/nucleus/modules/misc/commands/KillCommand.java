@@ -23,7 +23,7 @@ import org.spongepowered.api.text.Text;
 @RegisterCommand("kill")
 public class KillCommand extends AbstractCommand<CommandSource> {
 
-    private final String key = "player";
+    private final String key = "subject";
 
     @Override
     public CommandElement[] getArguments() {

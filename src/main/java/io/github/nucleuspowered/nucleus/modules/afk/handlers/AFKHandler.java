@@ -186,7 +186,7 @@ public class AFKHandler {
 
     private void sendAFKMessage(UUID uuid, boolean isAfk) {
         Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
-            // If we have the config set to true, or the player is NOT invisible, send an AFK message
+            // If we have the config set to true, or the subject is NOT invisible, send an AFK message
             if (config.isAfkOnVanish() || !player.get(Keys.INVISIBLE).orElse(false)) {
                 String template = isAfk ? config.getMessages().getAfkMessage().trim() : config.getMessages().getReturnAfkMessage().trim();
                 if (!template.isEmpty()) {

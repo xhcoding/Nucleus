@@ -31,7 +31,7 @@ import javax.inject.Inject;
 public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
 
     private final String world = "world";
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Inject
     private WorldDataManager worldDataManager;

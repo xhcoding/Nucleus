@@ -30,7 +30,7 @@ import java.util.Map;
 @RegisterCommand("fly")
 public class FlyCommand extends AbstractCommand<CommandSource> {
 
-    private static final String player = "player";
+    private static final String player = "subject";
     private static final String toggle = "toggle";
     @Inject private UserDataManager udm;
 

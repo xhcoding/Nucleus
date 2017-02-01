@@ -34,7 +34,7 @@ import java.util.Optional;
 @Permissions(supportsSelectors = true, supportsOthers = true)
 public class HatCommand extends AbstractCommand<Player> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     public CommandElement[] getArguments() {
@@ -69,7 +69,7 @@ public class HatCommand extends AbstractCommand<Player> {
             }
         }
 
-        // If the old item can't be placed back in the player inventory, drop the item.
+        // If the old item can't be placed back in the subject inventory, drop the item.
         helmetOptional.ifPresent(itemStack -> Util.getStandardInventory(pl).offer(itemStack)
             .getRejectedItems().forEach(x -> Util.dropItemOnFloorAtLocation(x, pl.getWorld(), pl.getLocation().getPosition())));
 

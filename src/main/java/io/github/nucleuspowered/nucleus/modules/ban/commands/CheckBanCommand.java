@@ -37,7 +37,7 @@ import java.util.Optional;
 @RunAsync
 public class CheckBanCommand extends AbstractCommand<CommandSource> {
 
-    private final String key = "player";
+    private final String key = "subject";
     private final String key2 = "user";
 
     @Override

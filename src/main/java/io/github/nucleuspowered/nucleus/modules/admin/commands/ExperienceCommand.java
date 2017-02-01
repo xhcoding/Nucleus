@@ -30,7 +30,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 public class ExperienceCommand extends AbstractCommand<CommandSource> {
 
-    public static final String playerKey = "player";
+    public static final String playerKey = "subject";
     public static final String experienceKey = "experience";
 
     @Override

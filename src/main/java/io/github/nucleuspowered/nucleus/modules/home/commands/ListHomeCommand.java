@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 @RegisterCommand({"listhomes", "homes"})
 public class ListHomeCommand extends AbstractCommand<CommandSource> {
 
-    private final String player = "player";
+    private final String player = "subject";
     private final String exempt = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class)
         .getPermissionWithSuffix(HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX);
 
@@ -73,7 +73,7 @@ public class ListHomeCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        User user = this.getUserFromArgs(User.class, src, player, args); // args.getOne(player);
+        User user = this.getUserFromArgs(User.class, src, player, args); // args.getOne(subject);
         Text header;
 
         boolean other = src instanceof User && !((User) src).getUniqueId().equals(user.getUniqueId());

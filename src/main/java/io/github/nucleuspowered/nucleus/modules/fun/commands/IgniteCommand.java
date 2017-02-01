@@ -29,7 +29,7 @@ import java.util.Map;
 @RegisterCommand({"ignite", "burn"})
 public class IgniteCommand extends AbstractCommand<CommandSource> {
 
-    private final String player = "player";
+    private final String player = "subject";
     private final String ticks = "ticks";
 
     @Override

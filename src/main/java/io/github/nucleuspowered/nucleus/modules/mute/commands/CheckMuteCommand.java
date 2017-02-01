@@ -31,7 +31,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 /**
- * Checks the mute status of a player.
+ * Checks the mute status of a subject.
  *
  * Command Usage: /checkmute user Permission: quickstart.checkmute.base
  */
@@ -44,7 +44,7 @@ import java.util.Optional;
 public class CheckMuteCommand extends AbstractCommand<CommandSource> {
 
     @Inject private MuteHandler handler;
-    private final String playerArgument = "player";
+    private final String playerArgument = "subject";
 
     @Override
     public CommandElement[] getArguments() {

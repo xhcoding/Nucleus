@@ -36,7 +36,7 @@ import java.util.Optional;
 public class TeleportCommand extends AbstractCommand<CommandSource> {
 
     private final String playerFromKey = "playerFrom";
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String quietKey = "quiet";
 
     @Inject private TeleportHandler handler;
@@ -60,12 +60,12 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
 
                     // Either we get two arguments, or we get one.
                     GenericArguments.firstParsing(
-                        // <player> <player>
+                        // <subject> <subject>
                         // TODO: Hook up with selectors
                         GenericArguments.requiringPermission(new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey), permissions))),
                                 permissions.getPermissionWithSuffix("others")),
 
-                    // <player>
+                    // <subject>
                     GenericArguments.onlyOne(new SelectorWrapperArgument(
                         new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
                         permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)))

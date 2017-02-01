@@ -10,7 +10,7 @@ import org.spongepowered.api.entity.living.player.User;
 import java.util.List;
 
 /**
- * A service that determines whether a player has notes.
+ * A service that determines whether a subject has notes.
  */
 public interface NucleusNoteService {
 
@@ -23,7 +23,7 @@ public interface NucleusNoteService {
     List<NoteData> getNotes(User user);
 
     /**
-     * Adds a note to a player.
+     * Adds a note to a subject.
      *
      * @param user The {@link User} to add a note to.
      * @param note The {@link NoteData} to add.
@@ -32,7 +32,7 @@ public interface NucleusNoteService {
     boolean addNote(User user, NoteData note);
 
     /**
-     * Removes a note from a player.
+     * Removes a note from a subject.
      *
      * @param user The {@link User} to remove a note from.
      * @param note The {@link NoteData} to remove.
@@ -41,7 +41,7 @@ public interface NucleusNoteService {
     boolean removeNote(User user, NoteData note);
 
     /**
-     * Clears all notes from a player.
+     * Clears all notes from a subject.
      *
      * @param user The {@link User} to remove all notes from.
      * @return <code>true</code> if all notes were removed.

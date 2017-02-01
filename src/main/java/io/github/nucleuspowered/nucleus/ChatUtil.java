@@ -194,7 +194,7 @@ public class ChatUtil {
                 String msg = m.group("sMsg");
                 String optionList = m.group("optionsscmd");
                 if (player != null) {
-                    cmd = cmd.replace("{{player}}", player.getName());
+                    cmd = cmd.replace("{{subject}}", player.getName());
                 }
 
                 Text.Builder textBuilder = Text.builder(msg).color(st.colour).style(st.style).onClick(TextActions.runCommand(cmd))

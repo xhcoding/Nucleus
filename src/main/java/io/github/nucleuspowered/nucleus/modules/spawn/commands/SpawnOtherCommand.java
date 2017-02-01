@@ -44,7 +44,7 @@ import javax.inject.Inject;
 @RegisterCommand(value = "other", subcommandOf = SpawnCommand.class)
 public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
 
-    private final String otherKey = "player";
+    private final String otherKey = "subject";
     private final String worldKey = "world";
     @Inject private SpawnConfigAdapter sca;
 

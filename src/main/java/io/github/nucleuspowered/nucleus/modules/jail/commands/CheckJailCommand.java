@@ -40,7 +40,7 @@ import java.util.Optional;
 @RegisterCommand({"checkjail"})
 public class CheckJailCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     @Inject private JailHandler handler;
 
     @Override

@@ -23,11 +23,12 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 /**
  * Common class for handling teleport related tasks.
@@ -60,7 +61,7 @@ public class NucleusTeleportHandler {
     }
 
     /**
-     * Attempts to teleport a player using the appropriate {@link TeleportMode} strategy.
+     * Attempts to teleport a subject using the appropriate {@link TeleportMode} strategy.
      *
      * @param player The {@link Player}
      * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
@@ -71,11 +72,11 @@ public class NucleusTeleportHandler {
     }
 
     /**
-     * Attempts to teleport a player using the appropriate {@link TeleportMode} strategy.
+     * Attempts to teleport a subject using the appropriate {@link TeleportMode} strategy.
      *
      * @param player The {@link Player}
      * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
-     * @param safe If {@code true}, try to teleport the player safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
+     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
      * @return {@code true} if successful.
      */
     public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, boolean safe) {
@@ -83,12 +84,12 @@ public class NucleusTeleportHandler {
     }
 
     /**
-     * Attempts to teleport a player using a {@link TeleportMode} strategy.
+     * Attempts to teleport a subject using a {@link TeleportMode} strategy.
      *
      * @param player The {@link Player}
      * @param worldLocation The {@link Location} in the {@link World} to teleport to.
      * @param rotation The {@link Vector3d} containing the rotation to port to.
-     * @param safe If {@code true}, try to teleport the player safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
+     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
      * @return {@code true} if successful.
      */
     public boolean teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {

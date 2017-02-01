@@ -31,7 +31,7 @@ import java.util.Map;
 @RegisterCommand({"god", "invuln", "invulnerability"})
 public class GodCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String invulnKey = "invuln";
     public static final String OTHER_SUFFIX = "others";
 

@@ -42,7 +42,7 @@ import java.util.UUID;
 public class NoteCommand extends AbstractCommand<CommandSource> {
     public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "note.notify";
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String noteKey = "note";
 
     @Inject private NoteHandler noteHandler;

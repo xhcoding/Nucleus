@@ -22,7 +22,7 @@ public class MessagesConfig {
     @Setting(value = "on-kick", comment = "loc:config.afk.messagetobroadcastonkick")
     private String onKick = "&f{{displayname}} &7has been kicked for being AFK too long.";
 
-    @Setting(value = "kick-message-to-player", comment = "loc:config.afk.playerkicked")
+    @Setting(value = "kick-message-to-subject", comment = "loc:config.afk.playerkicked")
     private String kickMessage = "You have been kicked for being AFK for too long.";
 
     public String getAfkMessage() {

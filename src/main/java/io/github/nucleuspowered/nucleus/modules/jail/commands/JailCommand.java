@@ -48,7 +48,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
     public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "jail.notify";
 
     @Inject private JailHandler handler;
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String jailKey = "jail";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
@@ -78,7 +78,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        // Get the player.
+        // Get the subject.
         User pl = args.<User>getOne(playerKey).get();
         if (!pl.isOnline() && !permissions.testSuffix(src, "offline")) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.offline.noperms"));

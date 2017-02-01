@@ -52,7 +52,7 @@ public class JailListener extends ListenerBase {
     public void onPlayerLogin(final NucleusOnLoginEvent event, @Getter("getTargetUser") User user, @Getter("getUserService") UserService qs) {
         JailHandler handler = ism.getService(JailHandler.class).get();
 
-        // Jailing the player if we need to.
+        // Jailing the subject if we need to.
         if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
             Optional<NamedLocation> owl = handler.getWarpLocation(user);
             if (!owl.isPresent()) {
@@ -70,7 +70,7 @@ public class JailListener extends ListenerBase {
     }
 
     /**
-     * At the time the player joins, check to see if the player is muted.
+     * At the time the subject joins, check to see if the subject is muted.
      *
      * @param event The event.
      */
@@ -85,7 +85,7 @@ public class JailListener extends ListenerBase {
         UserService qs = oqs.get();
         JailHandler handler = ism.getService(JailHandler.class).get();
 
-        // Jailing the player if we need to.
+        // Jailing the subject if we need to.
         if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
             // It exists.
             NamedLocation owl = handler.getWarpLocation(user).get();

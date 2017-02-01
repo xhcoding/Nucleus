@@ -12,7 +12,7 @@ import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 import java.util.Optional;
 
-@ModuleData(id = "freeze-player", name = "Freeze Player")
+@ModuleData(id = "freeze-subject", name = "Freeze Player")
 public class FreezePlayerModule extends StandardModule {
 
     @Override public void onEnable() {

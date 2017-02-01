@@ -435,7 +435,7 @@ public class Util {
     }
 
     /**
-     * Gets all of the player's parent {@link Subject}s for the given {@link Context}
+     * Gets all of the subject's parent {@link Subject}s for the given {@link Context}
      *
      * @param pl The {@link Subject} to get the parents of
      * @return The {@link List} of {@link Subject}s, or an empty list if there nothing was found.
@@ -486,7 +486,7 @@ public class Util {
     }
 
     public static Optional<CatalogType> getTypeFromItemInHand(Player src) {
-        // If player, get the item in hand, otherwise, we can't continue.
+        // If subject, get the item in hand, otherwise, we can't continue.
         if (src.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
             return Optional.of(getTypeFromItem(src.getItemInHand(HandTypes.MAIN_HAND).get()));
         } else {

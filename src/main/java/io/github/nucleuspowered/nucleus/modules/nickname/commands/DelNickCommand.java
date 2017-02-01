@@ -24,7 +24,7 @@ public class DelNickCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager loader;
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     public CommandElement[] getArguments() {

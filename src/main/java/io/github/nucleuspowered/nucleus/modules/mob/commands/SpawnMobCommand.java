@@ -44,7 +44,7 @@ import java.util.Optional;
 @RegisterCommand({"spawnmob", "spawnentity", "mobspawn"})
 public class SpawnMobCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String amountKey = "amount";
     private final String mobTypeKey = "mob";
 
@@ -102,7 +102,7 @@ public class SpawnMobCommand extends AbstractCommand<CommandSource> {
         // Count the number of entities spawned.
         int i = 0;
 
-        // Sponge requires the root cause to be a SpawnCause. So we don't lose sight of the player causing this,
+        // Sponge requires the root cause to be a SpawnCause. So we don't lose sight of the subject causing this,
         // we make use of Sponge's awesome Cause system, and just make them the second argument.
         Cause cause = Cause.of(
                 NamedCause.owner(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()),

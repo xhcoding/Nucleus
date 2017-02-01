@@ -116,7 +116,7 @@ public class FlyListener extends ListenerBase {
             return;
         }
 
-        // If we have a player, and this happens...
+        // If we have a subject, and this happens...
         boolean isFlying = target.get(Keys.IS_FLYING).orElse(false);
 
         // If we're moving world...
@@ -146,7 +146,7 @@ public class FlyListener extends ListenerBase {
 
     private void safeTeleport(Player pl) {
         if (!pl.isOnGround() && fca.getNodeOrDefault().isFindSafeOnLogin()) {
-            // Try to bring the player down.
+            // Try to bring the subject down.
             plugin.getTeleportHandler().teleportPlayer(pl, pl.getTransform(), NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_DESCEND);
         }
     }

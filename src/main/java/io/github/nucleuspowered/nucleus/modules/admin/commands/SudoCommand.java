@@ -34,7 +34,7 @@ import java.util.Optional;
 @RegisterCommand("sudo")
 public class SudoCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String commandKey = "command";
 
     private final TextTemplate chatTemplate = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),

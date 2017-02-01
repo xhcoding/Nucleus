@@ -31,7 +31,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 /**
- * Sends a request to a player to teleport to them, using click handlers.
+ * Sends a request to a subject to teleport to them, using click handlers.
  */
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
@@ -42,7 +42,7 @@ public class TeleportAskCommand extends StandardAbstractCommand<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
-    static final String playerKey = "player";
+    static final String playerKey = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

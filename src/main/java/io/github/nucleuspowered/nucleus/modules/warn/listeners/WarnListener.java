@@ -37,7 +37,7 @@ public class WarnListener extends ListenerBase {
     private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "warn.showonlogin";
 
     /**
-     * At the time the player joins, check to see if the player has been warned.
+     * At the time the subject joins, check to see if the subject has been warned.
      *
      * @param event The event.
      */
