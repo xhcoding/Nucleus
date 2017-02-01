@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
@@ -15,8 +14,6 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
-import io.github.nucleuspowered.nucleus.modules.world.commands.border.gen.EnhancedGeneration;
-import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
 import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -45,24 +42,13 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
     @Inject
     private WorldHelper worldHelper;
 
-    @Inject
-    private WorldConfigAdapter worldConfigAdapter;
-
     private final TriFunction<World, CommandSource, CommandContext, CommandResult> standardGeneration = (world, source, args) -> {
         // Create the task.
-        this.worldHelper.startPregenningForWorld(world, args.hasAny("a"));
-
-        if (args.hasAny(saveTimeKey)) {
-            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.nosave"));
-        }
-
-        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.standard"));
+        this.worldHelper.startPregenningForWorld(world, args.hasAny("a"), args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L) * 1000L);
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
 
         return CommandResult.success();
     };
-
-    private TriFunction<World, CommandSource, CommandContext, CommandResult> generator;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -75,7 +61,6 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.flags()
-                    .flag("s")
                     .flag("a")
                     .valueFlag(new TimespanArgument(Text.of(saveTimeKey)), "-save").buildWith(
                 GenericArguments.optional(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY))))
@@ -84,7 +69,6 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        setupGenerationClass();
         WorldProperties wp = getWorldFromUserOrArgs(src, worldKey, args);
         if (worldHelper.isPregenRunningForWorld(wp.getUniqueId())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.alreadyrunning", wp.getWorldName()));
@@ -97,22 +81,6 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        if (args.hasAny("s")) {
-            return standardGeneration.accept(w.get(), src, args);
-        } else {
-            return this.generator.accept(w.get(), src, args);
-        }
-    }
-
-    // Lazy load.
-    private void setupGenerationClass() {
-        if (generator == null) {
-            Optional<MixinConfigProxy> mixinConfigProxy = plugin.getMixinConfigIfAvailable();
-            if (mixinConfigProxy.isPresent() && mixinConfigProxy.get().get().config.isWorldgeneration()) {
-                this.generator = new EnhancedGeneration(worldHelper, permissions.getPermissionWithSuffix("notify"), worldConfigAdapter);
-            } else {
-                this.generator = standardGeneration;
-            }
-        }
+        return standardGeneration.accept(w.get(), src, args);
     }
 }

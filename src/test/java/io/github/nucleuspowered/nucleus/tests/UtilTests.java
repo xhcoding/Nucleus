@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
+import org.spongepowered.api.world.ChunkPreGenerate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
@@ -146,7 +147,7 @@ public class UtilTests {
                 }
 
                 @Override
-                public ChunkPreGenerate newChunkPreGenerate(World world) {
+                public ChunkPreGenerate.Builder newChunkPreGenerate(World world) {
                     return null;
                 }
             };

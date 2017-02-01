@@ -4,54 +4,49 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world;
 
+import com.flowpowered.math.GenericMath;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.LoggerWrapper;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.modules.world.commands.border.gen.EnhancedGeneration;
-import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.scheduler.Task;
+import io.github.nucleuspowered.nucleus.modules.world.commands.border.GenerateChunksCommand;
+import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfig;
+import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.spongepowered.api.event.world.ChunkPreGenerationEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.world.Chunk;
+import org.spongepowered.api.world.ChunkPreGenerate;
 import org.spongepowered.api.world.World;
-import org.spongepowered.api.world.WorldBorder;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class WorldHelper {
+    private static final String TIME_FORMAT = "s's 'S'ms'";
+
+    private static final String notifyPermission = Nucleus.getNucleus().getPermissionRegistry()
+        .getPermissionsForNucleusCommand(GenerateChunksCommand.class).getPermissionWithSuffix("notify");
 
     @Inject private NucleusPlugin plugin;
 
-    private final Map<UUID, Task> pregen = Maps.newHashMap();
+    private final Map<UUID, ChunkPreGenerate> pregen = Maps.newHashMap();
 
     public boolean isPregenRunningForWorld(UUID uuid) {
         cleanup();
         return pregen.containsKey(uuid);
     }
 
-    public boolean addPregenForWorld(World world, EnhancedGeneration.NucleusChunkPreGenerator preGenerator, Boolean aggressive) {
-        cleanup();
-        if (!isPregenRunningForWorld(world.getUniqueId())) {
-            if (aggressive) {
-                pregen.put(world.getUniqueId(), Sponge.getScheduler().createTaskBuilder().intervalTicks(3).execute(preGenerator).submit(plugin));
-            } else {
-                pregen.put(world.getUniqueId(), Sponge.getScheduler().createTaskBuilder().intervalTicks(10).execute(preGenerator).submit(plugin));
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean startPregenningForWorld(World world, boolean agressive) {
+    public boolean startPregenningForWorld(World world, boolean aggressive, long saveTime) {
         cleanup();
         if (!isPregenRunningForWorld(world.getUniqueId())) {
             WorldProperties wp = world.getProperties();
-            WorldBorder.ChunkPreGenerate wbcp = world.newChunkPreGenerate(wp.getWorldBorderCenter(), wp.getWorldBorderDiameter())
-                .owner(plugin).logger(new GenerationLogger(plugin.getLogger(), world.getName()));
-            if (agressive) {
+            ChunkPreGenerate.Builder wbcp = world.newChunkPreGenerate(wp.getWorldBorderCenter(), wp.getWorldBorderDiameter())
+                .owner(plugin).addListener(new Listener(aggressive, saveTime));
+            if (aggressive) {
                 wbcp.tickPercentLimit(0.9f).tickInterval(3);
             }
 
@@ -65,7 +60,15 @@ public class WorldHelper {
     public boolean cancelPregenRunningForWorld(UUID uuid) {
         cleanup();
         if (pregen.containsKey(uuid)) {
-            pregen.remove(uuid).cancel();
+            ChunkPreGenerate cpg = pregen.remove(uuid);
+            getChannel().send(
+                NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.cancelled2",
+                    String.valueOf(cpg.getTotalGeneratedChunks()),
+                    String.valueOf(cpg.getTotalSkippedChunks()),
+                    DurationFormatUtils.formatDuration(cpg.getTotalTime().toMillis(), TIME_FORMAT, false)
+                ));
+
+            cpg.cancel();
             return true;
         }
 
@@ -73,37 +76,113 @@ public class WorldHelper {
     }
 
     private synchronized void cleanup() {
-        pregen.entrySet().removeIf(x -> !Sponge.getScheduler().getTaskById(x.getValue().getUniqueId()).isPresent());
+        pregen.entrySet().removeIf(x -> x.getValue().isCancelled());
     }
 
-    /**
-     * This logger allows us to log some of the generation messages, but removes most of the spam.
-     * We use it to just gently remind the user what's going on every couple of seconds.
-     */
-    private static class GenerationLogger extends LoggerWrapper {
-        private final String worldName;
-        private int count = 0;
+    private MessageChannel getChannel() {
+        return MessageChannel.combined(MessageChannel.TO_CONSOLE, MessageChannel.permission(notifyPermission));
+    }
 
-        private boolean sendLog() {
-            if (++count % 20 == 0) {
-                count = 0;
-                wrappedLogger.info(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("command.world.gen.continue", worldName));
-                return true;
+    private class Listener implements Consumer<ChunkPreGenerationEvent> {
+
+        private final boolean aggressive;
+        private final long timeToSave;
+        private boolean highMemTriggered = false;
+        private long time = 0;
+        private long lastSaveTime;
+
+        public Listener(boolean aggressive, long timeToSave) {
+            this.aggressive = aggressive;
+            this.lastSaveTime = System.currentTimeMillis();
+            this.timeToSave = timeToSave;
+        }
+
+        @Override public void accept(ChunkPreGenerationEvent event) {
+            ChunkPreGenerate cpg = event.getChunkPreGenerate();
+            if (event instanceof ChunkPreGenerationEvent.Pre) {
+                if (!this.aggressive) {
+                    long percent = getMemPercent();
+                    if (percent >= 90) {
+                        if (!highMemTriggered) {
+                            event.getTargetWorld().getLoadedChunks().forEach(Chunk::unloadChunk);
+                            save(event.getTargetWorld());
+                            NucleusPlugin.getNucleus().getMessageProvider()
+                                .getTextMessageWithFormat("command.pregen.gen.memory.high", String.valueOf(percent));
+                            highMemTriggered = true;
+                            save(event.getTargetWorld());
+                        }
+
+                        // Try again next tick.
+                        ((ChunkPreGenerationEvent.Pre) event).setSkipStep(true);
+                    } else if (highMemTriggered && percent <= 80) {
+                        // Get the memory usage down to 80% to prevent too much ping pong.
+                        highMemTriggered = false;
+                        NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.memory.low");
+                    }
+                }
+            } else if (event instanceof ChunkPreGenerationEvent.Post) {
+
+                ChunkPreGenerationEvent.Post cpp = ((ChunkPreGenerationEvent.Post) event);
+                Text message;
+                this.time += cpp.getTimeTakenForStep().toMillis();
+                if (cpp.getChunksSkippedThisStep() > 0) {
+                    message = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.notifyskipped",
+                        String.valueOf(cpp.getChunksGeneratedThisStep()),
+                        String.valueOf(cpp.getChunksSkippedThisStep()),
+                        DurationFormatUtils.formatDuration(cpp.getTimeTakenForStep().toMillis(), TIME_FORMAT, false),
+                        DurationFormatUtils.formatDuration(cpp.getChunkPreGenerate().getTotalTime().toMillis(), TIME_FORMAT, false),
+                        String.valueOf(GenericMath.floor((cpg.getTotalGeneratedChunks() * 100) / cpg.getTargetTotalChunks())));
+                } else {
+                    message = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.notify",
+                        String.valueOf(cpp.getChunksGeneratedThisStep()),
+                        DurationFormatUtils.formatDuration(cpp.getTimeTakenForStep().toMillis(), TIME_FORMAT, false),
+                        DurationFormatUtils.formatDuration(cpp.getChunkPreGenerate().getTotalTime().toMillis(), TIME_FORMAT, false),
+                        String.valueOf(GenericMath.floor((cpg.getTotalGeneratedChunks() * 100) / cpg.getTargetTotalChunks())));
+                }
+
+                getChannel().send(message);
+
+                boolean display = Nucleus.getNucleus().getConfigValue(WorldModule.ID, WorldConfigAdapter.class, WorldConfig::isDisplayWarningGeneration).orElse(true);
+                if (this.lastSaveTime + this.timeToSave < System.currentTimeMillis()) {
+                    if (display) {
+                        MessageChannel.TO_ALL.send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.all"));
+                    }
+
+                    save(event.getTargetWorld());
+                }
+            } else if (event instanceof ChunkPreGenerationEvent.Complete) {
+                getChannel().send(
+                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.completed",
+                        String.valueOf(cpg.getTotalGeneratedChunks()),
+                        String.valueOf(cpg.getTotalSkippedChunks()),
+                        DurationFormatUtils.formatDuration(this.time, TIME_FORMAT, false),
+                        DurationFormatUtils.formatDuration(cpg.getTotalTime().toMillis(), TIME_FORMAT, false)
+                    ));
             }
-
-            return false;
         }
 
-        private GenerationLogger(Logger wrappedLogger, String worldName) {
-            super(wrappedLogger);
-            this.worldName = worldName;
+        private long getMemPercent() {
+            // Check system memory
+            long max = Runtime.getRuntime().maxMemory() / 1024 / 1024;
+            long total = Runtime.getRuntime().totalMemory() / 1024 / 1024;
+            long free = Runtime.getRuntime().freeMemory() / 1024 / 1024;
+
+            return ((max - total + free ) * 100)/ max;
         }
 
-        @Override
-        public void info(String format, Object... arguments) {
-            // Ugly, but hey...
-            if (sendLog()) {
-                wrappedLogger.info(format, arguments);
+        private void save(World world) {
+            getChannel().send(
+                NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.saving"));
+            try {
+                world.save();
+                getChannel().send(
+                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.saved"));
+            } catch (Throwable e) {
+                getChannel().send(
+                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.savefailed"));
+                e.printStackTrace();
+            } finally {
+                this.lastSaveTime = System.currentTimeMillis();
             }
         }
     }

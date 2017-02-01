@@ -10,9 +10,10 @@ import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
 import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "world", name = "World")
+@ModuleData(id = WorldModule.ID, name = "World")
 public class WorldModule extends ConfigurableModule<WorldConfigAdapter> {
 
+    public static final String ID = "world";
     @Inject private Logger logger;
 
     @Override public WorldConfigAdapter createAdapter() {
