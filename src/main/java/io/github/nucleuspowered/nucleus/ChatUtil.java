@@ -279,26 +279,18 @@ public class ChatUtil {
 
     public StyleTuple getLastColourAndStyle(Text text, @Nullable StyleTuple current) {
         List<Text> texts = flatten(text);
+        if (texts.isEmpty()) {
+            return current == null ? new StyleTuple(TextColors.NONE, TextStyles.NONE) : current;
+        }
+
         TextColor tc = TextColors.NONE;
-        TextStyle ts = TextStyles.NONE;
+        TextStyle ts =  texts.get(texts.size() - 1).getStyle();
+
         for (int i = texts.size() - 1; i > -1; i--) {
             // If we have both a Text Colour and a Text Style, then break out.
-            if (tc != TextColors.NONE && ts != TextStyles.NONE) {
-                break;
-            }
-
             if (tc == TextColors.NONE) {
                 tc = texts.get(i).getColor();
-
-                // If the text colour is reset, the style requires a reset too.
-                if (tc == TextColors.RESET) {
-                    ts = TextStyles.RESET;
-                    break;
-                }
-            }
-
-            if (ts == TextStyles.NONE) {
-                ts = texts.get(i).getStyle();
+                break;
             }
         }
 
@@ -306,7 +298,7 @@ public class ChatUtil {
             return new StyleTuple(tc, ts);
         }
 
-        return new StyleTuple(tc != TextColors.NONE ? tc : current.colour, ts != TextStyles.NONE ? ts : current.style);
+        return new StyleTuple(tc != TextColors.NONE ? tc : current.colour, ts);
     }
 
     private List<Text> flatten(Text text) {
