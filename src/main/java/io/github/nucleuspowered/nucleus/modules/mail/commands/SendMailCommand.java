@@ -45,7 +45,7 @@ public class SendMailCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = args.<User>getOne(player).orElseThrow(() -> new CommandException(plugin.getMessageProvider().getTextMessageWithFormat("args.user.none")));
-        CommandPermissionHandler permissionHandler = permissionRegistry.getService(MailCommand.class);
+        CommandPermissionHandler permissionHandler = permissionRegistry.getPermissionsForNucleusCommand(MailCommand.class);
 
         // Only send mails to players that can read them.
         if (!permissionHandler.testBase(pl)) {

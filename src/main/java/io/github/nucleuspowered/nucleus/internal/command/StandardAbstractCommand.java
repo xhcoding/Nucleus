@@ -243,7 +243,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         // By default, the permission "nucleus.admin" also gets permission to
         // run and bypass all warmups, cooldowns and costs, but this can be
         // turned off in the annotation.
-        permissions = plugin.getPermissionRegistry().getService(this.getClass());
+        permissions = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(this.getClass());
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         if (this.commandPath == null || this.commandPath.isEmpty() || !this.commandPath.contains(".")) {

@@ -37,7 +37,7 @@ public class GeoIpListener extends ListenerBase {
     @Listener(order = Order.LAST)
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
         if (commandPermissionHandler == null) {
-            commandPermissionHandler = plugin.getPermissionRegistry().getService(GeoIpCommand.class);
+            commandPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(GeoIpCommand.class);
         }
 
         Sponge.getScheduler().createAsyncExecutor(plugin).execute(() -> {

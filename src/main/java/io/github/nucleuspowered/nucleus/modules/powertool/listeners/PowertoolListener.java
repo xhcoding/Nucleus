@@ -32,7 +32,7 @@ public class PowertoolListener extends ListenerBase {
 
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = permissionRegistry.getService(PowertoolCommand.class);
+            s = permissionRegistry.getPermissionsForNucleusCommand(PowertoolCommand.class);
         }
 
         return s;

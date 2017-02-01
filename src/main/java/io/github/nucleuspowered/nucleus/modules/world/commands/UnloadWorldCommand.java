@@ -44,7 +44,7 @@ public class UnloadWorldCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.flags()
-                .permissionFlag(plugin.getPermissionRegistry().getService(DisableWorldCommand.class).getBase(), "d", "-disable")
+                .permissionFlag(plugin.getPermissionRegistry().getPermissionsForNucleusCommand(DisableWorldCommand.class).getBase(), "d", "-disable")
                 .valueFlag(new NucleusWorldPropertiesArgument(Text.of(transferWorldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY), "t", "-transfer")
                 .buildWith(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY)))
         };

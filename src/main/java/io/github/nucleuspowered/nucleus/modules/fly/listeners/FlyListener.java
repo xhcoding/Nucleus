@@ -138,7 +138,7 @@ public class FlyListener extends ListenerBase {
 
     private CommandPermissionHandler getFlyCommandHandler() {
         if (flyCommandHandler == null) {
-            flyCommandHandler = plugin.getPermissionRegistry().getService(FlyCommand.class);
+            flyCommandHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(FlyCommand.class);
         }
 
         return flyCommandHandler;

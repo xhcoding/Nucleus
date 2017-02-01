@@ -90,7 +90,7 @@ public class UserService extends Service<UserDataNode>
         Preconditions.checkNotNull("plugin", plugin);
         this.plugin = plugin;
         this.uuid = uuid;
-        this.ssSocialSpy = plugin.getPermissionRegistry().getService(SocialSpyCommand.class);
+        this.ssSocialSpy = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(SocialSpyCommand.class);
     }
 
     @Override public Optional<Player> getPlayer() {

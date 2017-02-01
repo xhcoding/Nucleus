@@ -39,7 +39,7 @@ public class HomeHandler implements NucleusHomeService {
     @Inject
     public HomeHandler(NucleusPlugin plugin) {
         this.plugin = plugin;
-        this.unlimitedPermission = plugin.getPermissionRegistry().getService(SetHomeCommand.class).getPermissionWithSuffix("unlimited");
+        this.unlimitedPermission = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(SetHomeCommand.class).getPermissionWithSuffix("unlimited");
     }
 
     @Override public List<Home> getHomes(UUID user) {

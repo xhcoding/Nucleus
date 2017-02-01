@@ -285,13 +285,13 @@ public abstract class StandardModule implements Module {
 
     protected final void createSeenModule(@Nullable Class<? extends StandardAbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information.
-        CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getService(permissionClass);
+        CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(permissionClass);
         createSeenModule(permissionHandler == null ? null : permissionHandler.getBase(), function);
     }
 
     protected final void createSeenModule(@Nullable Class<? extends StandardAbstractCommand> permissionClass, String suffix, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information.
-        CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getService(permissionClass);
+        CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(permissionClass);
         createSeenModule(permissionHandler == null ? null : permissionHandler.getPermissionWithSuffix(suffix), function);
     }
 

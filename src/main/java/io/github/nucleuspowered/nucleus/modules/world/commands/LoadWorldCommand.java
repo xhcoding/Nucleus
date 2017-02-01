@@ -37,7 +37,7 @@ public class LoadWorldCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.flags().permissionFlag(plugin.getPermissionRegistry().getService(EnableWorldCommand.class).getBase(), "e", "-enable")
+            GenericArguments.flags().permissionFlag(plugin.getPermissionRegistry().getPermissionsForNucleusCommand(EnableWorldCommand.class).getBase(), "e", "-enable")
                 .buildWith(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY)))
         };
     }
@@ -47,7 +47,7 @@ public class LoadWorldCommand extends AbstractCommand<CommandSource> {
         WorldProperties worldProperties = args.<WorldProperties>getOne(worldKey).get();
         if (!worldProperties.isEnabled() && !args.hasAny("e")) {
             // Not enabled, cannot load.
-            if (plugin.getPermissionRegistry().getService(EnableWorldCommand.class).testBase(src)) {
+            if (plugin.getPermissionRegistry().getPermissionsForNucleusCommand(EnableWorldCommand.class).testBase(src)) {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.load.notenabled.enable", worldProperties.getWorldName()));
             }
 

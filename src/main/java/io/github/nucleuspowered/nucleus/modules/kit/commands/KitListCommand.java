@@ -70,7 +70,7 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
 
         // Get permission handler for the /kit command in question.
         if (kitPermissionHandler == null) {
-            kitPermissionHandler = plugin.getPermissionRegistry().getService(KitCommand.class);
+            kitPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(KitCommand.class);
         }
 
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();

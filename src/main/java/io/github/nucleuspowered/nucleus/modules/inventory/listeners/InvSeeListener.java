@@ -45,7 +45,7 @@ public class InvSeeListener extends ListenerBase {
         }
 
         if (this.invSeePermissionHandler == null) {
-            this.invSeePermissionHandler = plugin.getPermissionRegistry().getService(InvSeeCommand.class);
+            this.invSeePermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(InvSeeCommand.class);
         }
 
         // Ok, so we're interacting with another player's inventory.

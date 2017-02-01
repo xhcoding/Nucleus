@@ -46,7 +46,7 @@ public class CommandSpyListener extends ListenerBase.Reloadable {
     @Listener(order = Order.LAST)
     public void onCommand(SendCommandEvent event, @Root Player player) {
         if (permissionHandler == null) {
-            permissionHandler = plugin.getPermissionRegistry().getService(CommandSpyCommand.class);
+            permissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(CommandSpyCommand.class);
         }
 
         if (!permissionHandler.testSuffix(player, "exempt.target")) {

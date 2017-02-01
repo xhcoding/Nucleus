@@ -20,7 +20,7 @@ public class PermissionRegistry {
     private final Map<Class<? extends StandardAbstractCommand>, CommandPermissionHandler> serviceRegistry = Maps.newHashMap();
     private final Map<String, PermissionInformation> otherPermissions = Maps.newHashMap();
 
-    public CommandPermissionHandler getService(Class<? extends StandardAbstractCommand> command) {
+    public CommandPermissionHandler getPermissionsForNucleusCommand(Class<? extends StandardAbstractCommand> command) {
         return serviceRegistry.getOrDefault(command, new CommandPermissionHandler(command, Nucleus.getNucleus()));
     }
 

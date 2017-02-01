@@ -166,7 +166,7 @@ public class AFKHandler {
      */
     private CommandPermissionHandler getPermissionUtil() {
         if (afkPermissionHandler == null) {
-            afkPermissionHandler = plugin.getPermissionRegistry().getService(AFKCommand.class);
+            afkPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(AFKCommand.class);
         }
 
         return afkPermissionHandler;

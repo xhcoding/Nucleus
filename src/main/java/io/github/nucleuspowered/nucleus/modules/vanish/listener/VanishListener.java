@@ -27,7 +27,7 @@ public class VanishListener extends ListenerBase {
 
     private CommandPermissionHandler getVanishHandler() {
         if (commandPermissionHandler == null) {
-            commandPermissionHandler = plugin.getPermissionRegistry().getService(VanishCommand.class);
+            commandPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(VanishCommand.class);
         }
 
         return commandPermissionHandler;

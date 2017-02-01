@@ -33,7 +33,7 @@ public class PlayerConsoleArgument extends CommandElement {
 
     private final boolean console;
     private final Supplier<Collection<Player>> onlinePlayersSupplier;
-    private static final String vanishPermission = Nucleus.getNucleus().getPermissionRegistry().getService(VanishCommand.class).getPermissionWithSuffix("see");
+    private static final String vanishPermission = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(VanishCommand.class).getPermissionWithSuffix("see");
 
     public PlayerConsoleArgument(@Nullable Text key, boolean console) {
         this(key, console, () -> Sponge.getServer().getOnlinePlayers());

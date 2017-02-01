@@ -84,7 +84,7 @@ public class StaffChatMessageChannel implements NucleusIgnorableChatChannel {
 
     private String getPermission() {
         if (basePerm == null) {
-            basePerm = plugin.getPermissionRegistry().getService(StaffChatCommand.class).getBase();
+            basePerm = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(StaffChatCommand.class).getBase();
         }
 
         return basePerm;

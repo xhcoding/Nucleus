@@ -65,7 +65,7 @@ public class InfoListener extends ListenerBase.Reloadable {
 
     private String getMotdPermission() {
         if (motdPermission == null) {
-            motdPermission = pr.getService(MotdCommand.class).getPermissionWithSuffix("login");
+            motdPermission = pr.getPermissionsForNucleusCommand(MotdCommand.class).getPermissionWithSuffix("login");
         }
 
         return motdPermission;

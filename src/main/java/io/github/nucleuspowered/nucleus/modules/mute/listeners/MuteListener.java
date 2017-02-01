@@ -195,7 +195,7 @@ public class MuteListener extends ListenerBase {
 
     private CommandPermissionHandler getCommandPermission() {
         if (cph == null) {
-            cph = permissionRegistry.getService(VoiceCommand.class);
+            cph = permissionRegistry.getPermissionsForNucleusCommand(VoiceCommand.class);
         }
 
         return cph;

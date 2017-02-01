@@ -30,7 +30,7 @@ public class HomeOtherArgument extends HomeArgument {
     public HomeOtherArgument(@Nullable Text key, NucleusPlugin plugin, CoreConfigAdapter cca) {
         super(key, plugin, cca);
         nickArg = new NicknameArgument(key, plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER);
-        this.exemptperm = plugin.getPermissionRegistry().getService(HomeOtherCommand.class).getPermissionWithSuffix(HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX);
+        this.exemptperm = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class).getPermissionWithSuffix(HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX);
     }
 
     @Nullable

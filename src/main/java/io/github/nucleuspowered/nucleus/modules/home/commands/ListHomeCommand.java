@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 public class ListHomeCommand extends AbstractCommand<CommandSource> {
 
     private final String player = "player";
-    private final String exempt = Nucleus.getNucleus().getPermissionRegistry().getService(HomeOtherCommand.class)
+    private final String exempt = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class)
         .getPermissionWithSuffix(HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX);
 
     @Inject private HomeHandler homeHandler;

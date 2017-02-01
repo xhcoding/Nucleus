@@ -27,7 +27,7 @@ public class InvulnReloadableListener extends ListenerBase {
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join joinEvent, @Getter("getTargetEntity") Player player) {
         if (basePerm == null) {
-            basePerm = plugin.getPermissionRegistry().getService(GodCommand.class).getBase();
+            basePerm = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(GodCommand.class).getBase();
         }
 
         if (!player.hasPermission(basePerm)) {

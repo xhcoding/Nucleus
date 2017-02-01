@@ -33,7 +33,7 @@ public class BackListeners extends ListenerBase {
 
     private CommandPermissionHandler getPermissionUtil() {
         if (s == null) {
-            s = plugin.getPermissionRegistry().getService(BackCommand.class);
+            s = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(BackCommand.class);
         }
 
         return s;
