@@ -43,6 +43,8 @@ public final class TextFileController {
      */
     private final List<String> fileContents = Lists.newArrayList();
 
+    private long fileTimeStamp = 0;
+
     public TextFileController(Path fileLocation) throws IOException {
         this(null, fileLocation);
     }
@@ -64,11 +66,12 @@ public final class TextFileController {
             asset.copyToFile(fileLocation);
         }
 
+        List<String> fileContents = Lists.newArrayList();
+
         // Load the file into the list.
         MalformedInputException exception = null;
         for (Charset charset : characterSetsToTest) {
             try {
-                fileContents.clear();
                 fileContents.addAll(Files.readAllLines(fileLocation, charset));
                 exception = null;
                 break;
@@ -81,6 +84,10 @@ public final class TextFileController {
         if (exception != null) {
             throw exception;
         }
+
+        this.fileTimeStamp = Files.getLastModifiedTime(fileLocation).toMillis();
+        this.fileContents.clear();
+        this.fileContents.addAll(fileContents);
     }
 
     /**
@@ -89,6 +96,17 @@ public final class TextFileController {
      * @return An {@link ImmutableList} that contains the file contents.
      */
     public ImmutableList<String> getFileContents() {
+        checkFileStamp();
         return ImmutableList.copyOf(fileContents);
+    }
+
+    private void checkFileStamp() {
+        try {
+            if (this.fileContents.isEmpty() || Files.getLastModifiedTime(fileLocation).toMillis() > this.fileTimeStamp) {
+                load();
+            }
+        } catch (IOException e) {
+            // ignored
+        }
     }
 }
