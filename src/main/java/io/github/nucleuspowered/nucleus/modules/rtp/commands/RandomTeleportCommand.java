@@ -10,10 +10,6 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoCooldownArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -28,13 +24,10 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
@@ -48,9 +41,7 @@ import java.util.Set;
 
 @Permissions(supportsOthers = true)
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
-public class RandomTeleportCommand extends StandardAbstractCommand<CommandSource> {
-
-    private final String otherKey = "player";
+public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetOtherPlayer {
 
     private Set<BlockType> prohibitedTypes = null;
     // Works around a problem in the Sponge implementation.
@@ -59,22 +50,8 @@ public class RandomTeleportCommand extends StandardAbstractCommand<CommandSource
     private final Random random = new Random();
     @Inject private RTPConfigAdapter rca;
 
-    @Override public CommandElement[] getArguments() {
-        return new CommandElement[] {
-            GenericArguments.optional(
-                GenericArguments.requiringPermission(
-                    new NoCostArgument(new NoWarmupArgument(new NoCooldownArgument(
-                      new NicknameArgument(Text.of(otherKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER)))),
-                        permissions.getOthers())
-            )
-        };
-    }
-
     @Override
-    public CommandResult executeCommand(final SubjectPermissionCache<CommandSource> src, CommandContext args) throws Exception {
-        Player player = this.getUserFromArgs(Player.class, src.getSubject(), otherKey, args);
-
-        boolean self = (src.getSubject() instanceof Player && ((Player) src.getSubject()).getUniqueId().equals(player.getUniqueId()));
+    protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> src, Player player, CommandContext args, boolean self) {
 
         // Get the current world.
         World currentWorld = player.getWorld();

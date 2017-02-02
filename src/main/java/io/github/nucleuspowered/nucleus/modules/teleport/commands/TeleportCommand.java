@@ -6,8 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -62,7 +61,8 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                     GenericArguments.firstParsing(
                         // <subject> <subject>
                         // TODO: Hook up with selectors
-                        GenericArguments.requiringPermission(new NoCostArgument(new NoWarmupArgument(new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey), permissions))),
+                        GenericArguments.requiringPermission(new NoModifiersArgument<Player>(
+                            new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey), permissions), (c, o) -> true),
                                 permissions.getPermissionWithSuffix("others")),
 
                     // <subject>

@@ -8,8 +8,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -87,10 +86,10 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
                                 .flag("y", "a", "-accept")
                                 .flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
             GenericArguments.optionalWeak(GenericArguments.requiringPermission(
-                    new NoCostArgument(new NoWarmupArgument(
-                        new SelectorWrapperArgument(
+                new NoModifiersArgument<>(
+                    new SelectorWrapperArgument(
                         new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER, true),
-                        permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS))), permissions.getOthers())),
+                        permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS), NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE), permissions.getOthers())),
                 GenericArguments.onlyOne(new WarpArgument(Text.of(warpNameArg), adapter, true))
         };
     }

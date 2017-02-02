@@ -9,6 +9,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.TextMessageException;
 
 /**
@@ -38,4 +39,13 @@ public abstract class AbstractCommand<T extends CommandSource> extends StandardA
      *         {@link Exception#getMessage()} will be sent to the user.
      */
     protected abstract CommandResult executeCommand(T src, CommandContext args) throws Exception;
+
+    public abstract static class SimpleTargetOtherPlayer extends StandardAbstractCommand.SimpleTargetOtherPlayer {
+
+        @Override protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> source, Player target, CommandContext args, boolean isSelf) {
+            return executeWithPlayer(source.getSubject(), target, args, isSelf);
+        }
+
+        protected abstract CommandResult executeWithPlayer(CommandSource source, Player target, CommandContext args, boolean isSelf);
+    }
 }
