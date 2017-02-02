@@ -15,7 +15,6 @@ import org.spongepowered.api.text.channel.MessageReceiver;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
@@ -26,8 +25,7 @@ import javax.annotation.Nonnull;
 public interface NucleusMessageTokenService {
 
     /**
-     * Registers a token for the given {@link PluginContainer}. The token will have the format <code>{{pl:pluginid:identifier(:s)}}</code>, the <code>:s</code>
-     * is optional.
+     * Registers a {@link TokenParser} for the specified {@link PluginContainer}. Plugins may only register ONE {@link TokenParser}.
      *
      * @param pluginContainer The {@link PluginContainer} of the plugin.
      * @param parser The {@link TokenParser} that recieves the identifier from the token, along with any contextual variables and
@@ -45,7 +43,7 @@ public interface NucleusMessageTokenService {
     boolean unregister(PluginContainer pluginContainer);
 
     /**
-     * Gets the function applied for the specified {@link PluginContainer}, if it exists.
+     * Gets the {@link TokenParser} for the specified {@link PluginContainer}, if it exists.
      *
      * @param pluginContainer The {@link PluginContainer} of the pluginContainer that registered the token.
      * @return The {@link TokenParser} that is run for the token, if it exists.
@@ -56,7 +54,7 @@ public interface NucleusMessageTokenService {
     }
 
     /**
-     * Gets the function applied for the specified plugin, if it exists.
+     * Gets the {@link TokenParser} for the specified plugin id, if it exists.
      *
      * @param plugin The ID of the plugin that registered the token.
      * @return The {@link TokenParser} that is run for the token, if it exists.
@@ -68,11 +66,11 @@ public interface NucleusMessageTokenService {
     }
 
     /**
-     * Gets the result of a token's registered {@link Function} on a {@link CommandSource}
+     * Gets the result of a token's registered {@link TokenParser} on a {@link CommandSource}
      *
      * @param plugin The ID of the plugin that registered the token.
-     * @param token The ID of the token.
-     * @param source The {@link MessageReceiver} to perform the operation with.
+     * @param token The identifier that is passed to the {@link TokenParser}.
+     * @param source The {@link CommandSource} to perform the operation with.
      * @param variables The variables that could be used in the token.
      * @return The {@link Text}, if any.
      */
@@ -106,6 +104,20 @@ public interface NucleusMessageTokenService {
      */
     Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source, Map<String, Object> variables);
 
+    /**
+     * A parser for tokens directed at a plugin. Plugins can only register ONE of these.
+     *
+     * <p>
+     *     To understand what is returned to the parser, it's worth reminding the implementor what the token that users will use look like:
+     * </p>
+     * <blockquote>
+     *     {{pl:plugin-id:identifier:s}}
+     * </blockquote>
+     * <p>
+     *     Plugins will only <em>ever</em> see the <code>identifier</code> past of the token. This token can take any form, as chosen by the
+     *     plugin, except for the <code>}}</code> sequence.
+     * </p>
+     */
     @FunctionalInterface
     interface TokenParser {
 
