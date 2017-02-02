@@ -114,7 +114,7 @@ public interface NucleusMessageTokenService {
      *     {{pl:plugin-id:identifier:s}}
      * </blockquote>
      * <p>
-     *     Plugins will only <em>ever</em> see the <code>identifier</code> past of the token. This token can take any form, as chosen by the
+     *     Plugins will only <em>ever</em> see the <code>identifier</code> part of the token. This token can take any form, as chosen by the
      *     plugin, except for the <code>}}</code> sequence.
      * </p>
      */

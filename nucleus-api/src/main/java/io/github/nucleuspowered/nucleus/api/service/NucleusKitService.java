@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * A service for getting and settings kits.
+ * A service for getting and setting kits.
  */
 public interface NucleusKitService {
 
