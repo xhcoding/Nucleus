@@ -195,7 +195,7 @@ public class AFKHandler {
             } else {
                 // Tell the user in question about them going AFK
                 player.sendMessage(
-                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(isAfk ? "command.afk.from.vanish" : "command.afk.to.vanish"));
+                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(isAfk ? "command.afk.to.vanish" : "command.afk.from.vanish"));
             }
         });
     }
