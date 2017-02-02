@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Obtains the nearest player to the locatable object.
+ * Obtains the nearest subject to the locatable object.
  */
 public class NearestPlayer implements SelectorParser<Player> {
 
@@ -46,7 +46,7 @@ public class NearestPlayer implements SelectorParser<Player> {
 
         Locatable locatedSource = (Locatable)source;
 
-        // We don't want the executing player.
+        // We don't want the executing subject.
         List<Player> playerCollection = Lists.newArrayList(Sponge.getServer().getOnlinePlayers());
         if (locatedSource instanceof Player) {
             playerCollection.remove(locatedSource);

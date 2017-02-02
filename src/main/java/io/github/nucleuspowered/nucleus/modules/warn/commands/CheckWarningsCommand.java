@@ -38,7 +38,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Checks the warnings of a player.
+ * Checks the warnings of a subject.
  *
  * Command Usage: /checkwarnings user Permission: plugin.checkwarnings.base
  */
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 public class CheckWarningsCommand extends AbstractCommand<CommandSource> {
 
     @Inject private WarnHandler handler;
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     public CommandElement[] getArguments() {

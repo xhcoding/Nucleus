@@ -143,7 +143,21 @@ public interface NucleusHomeService {
      */
     void removeHome(Cause cause, Home home) throws NucleusException;
 
+    /**
+     * Returns the maximum number of homes the player can have.
+     *
+     * @param uuid The {@link UUID} of the player.
+     * @return The number of homes, or {@link Integer#MAX_VALUE} if unlimited.
+     *
+     * @throws IllegalArgumentException if the user cannot be found
+     */
     int getMaximumHomes(UUID uuid) throws IllegalArgumentException;
 
-    int getMaximumHomes(User src);
+    /**
+     * Returns the maximum number of homes the player can have.
+     *
+     * @param user The {@link User}.
+     * @return The number of homes, or {@link Integer#MAX_VALUE} if unlimited.
+     */
+    int getMaximumHomes(User user);
 }

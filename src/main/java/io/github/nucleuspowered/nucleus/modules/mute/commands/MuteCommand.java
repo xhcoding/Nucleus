@@ -38,7 +38,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Mutes or unmutes a player.
+ * Mutes or unmutes a subject.
  *
  * Command Usage: /mute user [time] [reason] Permission: quickstart.mute.base
  * Notify: quickstart.mute.notify
@@ -60,7 +60,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
         return mutedChatPermission;
     }
 
-    private String playerArgument = "player";
+    private String playerArgument = "subject";
     private String timespanArgument = "time";
     private String reason = "reason";
 

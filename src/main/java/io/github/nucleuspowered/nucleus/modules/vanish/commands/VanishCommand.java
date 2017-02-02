@@ -43,7 +43,7 @@ public class VanishCommand extends AbstractCommand<CommandSource> {
     private UserDataManager userDataManager;
 
     private final String b = "toggle";
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     public CommandElement[] getArguments() {

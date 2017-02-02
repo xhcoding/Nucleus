@@ -38,7 +38,7 @@ public class NoteListener extends ListenerBase {
     private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "note.showonlogin";
 
     /**
-     * At the time the player joins, check to see if the player has any notes,
+     * At the time the subject joins, check to see if the subject has any notes,
      * if he does send them to users with the permission plugin.note.showonlogin
      *
      * @param event The event.

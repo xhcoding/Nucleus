@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class LoggerTargetConfig {
 
-    @Setting("player")
+    @Setting("subject")
     private boolean logPlayer = true;
 
     @Setting("command-block")

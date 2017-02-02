@@ -28,7 +28,7 @@ public class FirstSpawnConditionalListener extends ListenerBase {
     @Listener(order = Order.LATE)
     public void onJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
         if (Util.isFirstPlay(player)) {
-            // Try to force a player location.
+            // Try to force a subject location.
             store.getFirstSpawn().ifPresent(player::setTransform);
         }
     }

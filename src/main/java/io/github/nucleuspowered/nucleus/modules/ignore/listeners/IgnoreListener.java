@@ -68,7 +68,7 @@ public class IgnoreListener extends ListenerBase {
      * Checks if we need to cancel messages to people.
      *
      * @param collection The collection to check through.
-     * @param player The player who is sending the message.
+     * @param player The subject who is sending the message.
      * @return {@link Optional} if unchanged, otherwise a {@link Collection} of {@link MessageReceiver}s
      */
     private Optional<Collection<MessageReceiver>> checkCancels(Collection<MessageReceiver> collection, Player player) {

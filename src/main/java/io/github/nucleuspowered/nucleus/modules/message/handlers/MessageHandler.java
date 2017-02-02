@@ -113,7 +113,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         if (isCancelled) {
             sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.cancel"));
 
-            // Only continue to show Social Spy messages if the player is muted.
+            // Only continue to show Social Spy messages if the subject is muted.
             if (!messageConfig.isShowMessagesInSocialSpyWhileMuted()) {
                 return false;
             }
@@ -151,7 +151,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         final int receiverLevel = useLevels ? Util.getPositiveIntOptionFromSubject(receiver, socialSpyOption)
             .orElseGet(() -> receiver instanceof Player ? 0 : serverLevel) : 0;
 
-        // Always if it's a player who does the sending, if player only is disabled in the config, to all.
+        // Always if it's a subject who does the sending, if subject only is disabled in the config, to all.
         if (!messageConfig.isOnlyPlayerSocialSpy() || sender instanceof Player) {
             List<MessageReceiver> lm =
                 ucl.getOnlineUsersInternal().stream()

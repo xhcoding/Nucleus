@@ -74,7 +74,12 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
                 .valueFlag(GenericArguments.onlyOne(GenericArguments.longNum(Text.of(seed))), "s", "-" + seed)
                 .valueFlag(GenericArguments.onlyOne(new ImprovedGameModeArgument(Text.of(gamemode))), "-gm", "-" + gamemode)
                 .valueFlag(GenericArguments.onlyOne(new DifficultyArgument(Text.of(difficulty))), "-di", "-" + difficulty)
+                .flag("n", "-nostructures")
                 .flag("i")
+                .valueFlag(GenericArguments.bool(Text.of("l")), "l", "-loadonstartup")
+                .valueFlag(GenericArguments.bool(Text.of("k")), "k", "-keepspawnloaded")
+                .valueFlag(GenericArguments.bool(Text.of("c")), "c", "-allowcommands")
+                .valueFlag(GenericArguments.bool(Text.of("b")), "b", "-bonuschest")
                 .buildWith(GenericArguments.onlyOne(GenericArguments.string(Text.of(name))))
         };
     }
@@ -88,6 +93,11 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
         Difficulty difficultyInput = args.<Difficulty>getOne(difficulty).orElse(Difficulties.NORMAL);
         Collection<WorldGeneratorModifier> modifiers = args.getAll(modifier);
         Optional<Long> seedInput = args.getOne(seed);
+        boolean genStructures = !args.hasAny("n");
+        boolean loadOnStartup = !args.hasAny("l") || args.<Boolean>getOne("l").orElse(true);
+        boolean keepSpawnLoaded = !args.hasAny("k") || args.<Boolean>getOne("k").orElse(true);
+        boolean allowCommands = !args.hasAny("c") || args.<Boolean>getOne("c").orElse(true);
+        boolean bonusChest = !args.hasAny("b") || args.<Boolean>getOne("b").orElse(true);
 
         if (Sponge.getServer().getAllWorldProperties().stream().anyMatch(x -> x.getWorldName().equalsIgnoreCase(nameInput))) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.exists", nameInput));
@@ -106,9 +116,22 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
             modifierString(modifiers),
             gamemodeInput.getName(),
             difficultyInput.getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.newparams2",
+            String.valueOf(loadOnStartup),
+            String.valueOf(keepSpawnLoaded),
+            String.valueOf(genStructures),
+            String.valueOf(allowCommands),
+            String.valueOf(bonusChest)));
 
-            WorldArchetype.Builder worldSettingsBuilder = WorldArchetype.builder().enabled(true)
-                .loadsOnStartup(true).keepsSpawnLoaded(true).dimension(dimensionInput).generator(generatorInput).gameMode(gamemodeInput);
+        WorldArchetype.Builder worldSettingsBuilder = WorldArchetype.builder().enabled(true)
+            .loadsOnStartup(loadOnStartup)
+            .keepsSpawnLoaded(keepSpawnLoaded)
+            .usesMapFeatures(genStructures)
+            .commandsAllowed(allowCommands)
+            .generateBonusChest(bonusChest)
+            .dimension(dimensionInput)
+            .generator(generatorInput)
+            .gameMode(gamemodeInput);
         if (!modifiers.isEmpty()) {
             worldSettingsBuilder.generatorModifiers(modifiers.toArray(new WorldGeneratorModifier[modifiers.size()]));
         }

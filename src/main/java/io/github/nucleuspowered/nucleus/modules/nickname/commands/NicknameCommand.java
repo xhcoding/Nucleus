@@ -50,7 +50,7 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
     @Inject private UserDataManager loader;
     @Inject private NicknameConfigAdapter nicknameConfigAdapter;
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String nickName = "nickname";
 
     // Order is important here! TODO: Need to de-dup
@@ -134,7 +134,7 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
             // We allow some other nicknames too.
         }
 
-        // Giving player must have the colour permissions and whatnot. Also,
+        // Giving subject must have the colour permissions and whatnot. Also,
         // colour and color are the two spellings we support. (RULE BRITANNIA!)
         stripPermissionless(src, name);
 

@@ -34,6 +34,17 @@ public class SubjectPermissionCache<S extends Subject> implements Subject {
         this.subject = subject;
     }
 
+    public SubjectPermissionCache(S subject, SubjectPermissionCache<? extends Subject> subjectCache) {
+        this(subject);
+        permissionsFrom(subjectCache);
+    }
+
+    public SubjectPermissionCache<S> permissionsFrom(SubjectPermissionCache<? extends Subject> s) {
+        this.permissionCache.putAll(s.permissionCache);
+        this.optionCache.putAll(s.optionCache);
+        return this;
+    }
+
     public S getSubject() {
         return subject;
     }

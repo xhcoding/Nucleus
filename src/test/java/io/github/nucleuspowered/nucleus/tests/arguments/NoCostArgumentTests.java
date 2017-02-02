@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.tests.arguments;
 
-import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
 import io.github.nucleuspowered.nucleus.tests.TestBase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,20 +17,21 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class NoCostArgumentTests extends TestBase {
 
     @Test
     public void testNoCostOk() throws ArgumentParseException {
-        Assert.assertTrue(getNoCostArgument(new OKArgument(), new CommandContext()).<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).get());
+        Assert.assertTrue(getNoCostArgument(new OKArgument(), new CommandContext()).<Boolean>getOne(NoModifiersArgument.NO_COST_ARGUMENT).get());
     }
 
     @Test
     public void testNoCostNull() throws ArgumentParseException {
-        Assert.assertFalse(getNoCostArgument(new NullElement(), new CommandContext()).<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).isPresent());
+        Assert.assertFalse(getNoCostArgument(new NullElement(), new CommandContext()).<Boolean>getOne(NoModifiersArgument.NO_COST_ARGUMENT).isPresent());
     }
 
     @Test
@@ -40,13 +41,13 @@ public class NoCostArgumentTests extends TestBase {
             getNoCostArgument(new ThrowsElement(), cc);
         } catch (ArgumentParseException e) { /* Swallow */ }
 
-        Assert.assertFalse(cc.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).isPresent());
+        Assert.assertFalse(cc.<Boolean>getOne(NoModifiersArgument.NO_COST_ARGUMENT).isPresent());
     }
 
     private CommandContext getNoCostArgument(CommandElement toWrap, CommandContext cc) throws ArgumentParseException {
         CommandSource s = Mockito.mock(Player.class);
         CommandArgs ca = new CommandArgs("", new ArrayList<>());
-        NoCostArgument nca = new NoCostArgument(toWrap);
+        NoModifiersArgument<? extends Object> nca = new NoModifiersArgument<>(toWrap, (c, o) -> true);
         nca.parse(s, ca, cc);
         return cc;
     }

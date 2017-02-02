@@ -30,7 +30,7 @@ import java.util.Map;
 @RegisterCommand({"repair", "mend"})
 public class RepairCommand extends AbstractCommand<CommandSource> {
 
-    private final String player = "player";
+    private final String player = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

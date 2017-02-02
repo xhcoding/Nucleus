@@ -73,17 +73,17 @@ public class PowertoolListener extends ListenerBase {
                 }
 
                 // Run each command.
-                if (interacting == null && x.stream().allMatch(i -> i.contains("{{player}}"))) {
+                if (interacting == null && x.stream().allMatch(i -> i.contains("{{subject}}"))) {
                     player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("powertool.playeronly"));
                     return;
                 }
 
                 x.forEach(s -> {
-                    if (s.contains("{{player}}")) {
+                    if (s.contains("{{subject}}")) {
                         if (interacting != null) {
-                            s = s.replace("{{player}}", interacting.getName());
+                            s = s.replace("{{subject}}", interacting.getName());
                         } else {
-                            // Don't execute when no player is in the way.
+                            // Don't execute when no subject is in the way.
                             return;
                         }
                     }

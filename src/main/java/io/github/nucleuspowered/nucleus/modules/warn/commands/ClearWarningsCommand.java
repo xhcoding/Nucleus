@@ -34,7 +34,7 @@ import java.util.List;
 public class ClearWarningsCommand extends AbstractCommand<CommandSource> {
 
     @Inject private WarnHandler handler;
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     public CommandElement[] getArguments() {

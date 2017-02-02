@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @Permissions
 public class SkullCommand extends AbstractCommand<Player> {
 
-    private final String player = "player";
+    private final String player = "subject";
     private final String amountKey = "amount";
     @Inject private ItemConfigAdapter itemConfigAdapter;
 
@@ -85,7 +85,7 @@ public class SkullCommand extends AbstractCommand<Player> {
         // Create the Skull
         ItemStack skullStack = ItemStack.builder().itemType(ItemTypes.SKULL).quantity(64).build();
 
-        // Set it to player skull type and set the owner to the specified player
+        // Set it to subject skull type and set the owner to the specified subject
         if (skullStack.offer(Keys.SKULL_TYPE, SkullTypes.PLAYER).isSuccessful()
                 && skullStack.offer(Keys.REPRESENTED_PLAYER, user.getProfile()).isSuccessful()) {
             skullStack.toContainer().set(DataQuery.of("SkullOwner"), user.getName());

@@ -47,7 +47,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
 
     public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "warn.notify";
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
 
@@ -142,7 +142,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
                 }
             }
 
-            //Check if the player has action command should be executed
+            //Check if the subject has action command should be executed
             if (wca.getNodeOrDefault().getWarningsBeforeAction() != -1) {
                 if (warnHandler.getWarnings(user, true, false).size() < wca.getNodeOrDefault().getWarningsBeforeAction()) {
                     return CommandResult.success();

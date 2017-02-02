@@ -30,7 +30,7 @@ import java.util.Map;
 @Since(minecraftVersion = "1.10.2", spongeApiVersion = "5.0.0", nucleusVersion = "0.13.0")
 public class EnderChestCommand extends AbstractCommand<Player> {
 
-    private final String player = "player";
+    private final String player = "subject";
     @Inject
     private UserDataManager udm;
 

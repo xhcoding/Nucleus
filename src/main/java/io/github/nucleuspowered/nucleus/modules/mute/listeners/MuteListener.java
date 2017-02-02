@@ -47,7 +47,7 @@ public class MuteListener extends ListenerBase {
     private CommandPermissionHandler cph;
 
     /**
-     * At the time the player joins, check to see if the player is muted.
+     * At the time the subject joins, check to see if the subject is muted.
      *
      * @param event The event.
      */

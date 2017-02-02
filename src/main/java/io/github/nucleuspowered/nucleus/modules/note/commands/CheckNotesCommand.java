@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Checks the notes of a player.
+ * Checks the notes of a subject.
  *
  * Command Usage: /checknotes user Permission: plugin.checknotes.base
  */
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 public class CheckNotesCommand extends AbstractCommand<CommandSource> {
 
     @Inject private NoteHandler handler;
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     public CommandElement[] getArguments() {

@@ -8,8 +8,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoWarmupArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -43,7 +42,7 @@ import java.util.Optional;
 /**
  * Allows a user to warp to the specified warp.
  *
- * Command Usage: /warp [-f] [player] [warp]
+ * Command Usage: /warp [-f] [subject] [warp]
  *
  * <p>
  * If <code>warp.separate-permissions</code> = <code>true</code> in the commands
@@ -61,7 +60,7 @@ import java.util.Optional;
 public class WarpCommand extends AbstractCommand<CommandSource> {
 
     static final String warpNameArg = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("args.name.warpname");
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Inject private WarpConfigAdapter adapter;
 
@@ -87,10 +86,10 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
                                 .flag("y", "a", "-accept")
                                 .flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
             GenericArguments.optionalWeak(GenericArguments.requiringPermission(
-                    new NoCostArgument(new NoWarmupArgument(
-                        new SelectorWrapperArgument(
+                new NoModifiersArgument<>(
+                    new SelectorWrapperArgument(
                         new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER, true),
-                        permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS))), permissions.getOthers())),
+                        permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS), NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE), permissions.getOthers())),
                 GenericArguments.onlyOne(new WarpArgument(Text.of(warpNameArg), adapter, true))
         };
     }
@@ -152,7 +151,7 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
         boolean charge = false;
         if (!isOther && plugin.getEconHelper().economyServiceExists() && !permissions.testCostExempt(source) && cost > 0) {
             if (plugin.getEconHelper().withdrawFromPlayer(player, cost, false)) {
-                charge = true; // only true for a warp by the current player.
+                charge = true; // only true for a warp by the current subject.
             } else {
                 source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.nomoney", wd.getName(), plugin.getEconHelper().getCurrencySymbol(cost)));
                 return CommandResult.empty();

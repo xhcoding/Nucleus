@@ -30,7 +30,7 @@ public class FreezePlayerCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager userConfigLoader;
 
-    private final String player = "player";
+    private final String player = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

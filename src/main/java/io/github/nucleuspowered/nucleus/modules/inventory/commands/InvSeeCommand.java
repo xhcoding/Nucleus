@@ -37,7 +37,7 @@ import java.util.Map;
 @Since(minecraftVersion = "1.10.2", spongeApiVersion = "5.0.0", nucleusVersion = "0.13.0")
 public class InvSeeCommand extends AbstractCommand<Player> {
 
-    private final String player = "player";
+    private final String player = "subject";
     @Inject
     private UserDataManager udm;
 
@@ -73,7 +73,7 @@ public class InvSeeCommand extends AbstractCommand<Player> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.invsee.targetexempt", target.getName()));
         }
 
-        // Just in case, get the player inventory if they are online.
+        // Just in case, get the subject inventory if they are online.
         src.openInventory(target.isOnline() ? target.getPlayer().get().getInventory() : target.getInventory(), Cause.of(NamedCause.of("plugin", plugin), NamedCause.source(src)));
         return CommandResult.success();
     }

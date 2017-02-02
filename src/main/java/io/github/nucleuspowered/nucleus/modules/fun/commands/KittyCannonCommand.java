@@ -50,7 +50,7 @@ import java.util.function.Consumer;
 public class KittyCannonCommand extends AbstractCommand<CommandSource> {
 
     private final Random random = new Random();
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final List<OcelotType> ocelotTypes;
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -92,13 +92,13 @@ public class KittyCannonCommand extends AbstractCommand<CommandSource> {
             }
         }
 
-        // For each player, create a kitten, throw it out in the direction of the player, and make it explode after between 2 and 5 seconds
+        // For each subject, create a kitten, throw it out in the direction of the subject, and make it explode after between 2 and 5 seconds
         playerList.forEach(x -> getACat(src, x, args.hasAny("d"), args.hasAny("b"), args.hasAny("f")));
         return CommandResult.success();
     }
 
     private void getACat(CommandSource source, Player spawnAt, boolean damageEntities, boolean breakBlocks, boolean causeFire) {
-        // Fire it in the direction that the player is facing with a speed of 0.5 to 3.5, plus the player's current velocity.
+        // Fire it in the direction that the subject is facing with a speed of 0.5 to 3.5, plus the subject's current velocity.
         Vector3d headRotation = spawnAt.getHeadRotation();
         Quaterniond rot = Quaterniond.fromAxesAnglesDeg(headRotation.getX(), -headRotation.getY(), headRotation.getZ());
         Vector3d velocity = spawnAt.getVelocity().add(rot.rotate(Vector3d.UNIT_Z).mul(5 * random.nextDouble() + 1));

@@ -12,18 +12,18 @@ import org.spongepowered.api.world.World;
 import java.util.Optional;
 
 /**
- * A service that handles the player's last location before a warp, that is, the location they will warp to if they
+ * A service that handles the subject's last location before a warp, that is, the location they will warp to if they
  * run /back.
  *
  * <p>
- *     A player's last location may not be set. It is not saved across server restarts, and may be discarded at any
+ *     A subject's last location may not be set. It is not saved across server restarts, and may be discarded at any
  *     time the user is not online.
  * </p>
  */
 public interface NucleusBackService {
 
     /**
-     * Gets the location of the player before they executed the last warp that was marked as Returnable.
+     * Gets the location of the subject before they executed the last warp that was marked as Returnable.
      *
      * @param user The {@link User}
      * @return If it exists, an {@link Optional} containing the {@link Transform}
@@ -31,14 +31,14 @@ public interface NucleusBackService {
     Optional<Transform<World>> getLastLocation(User user);
 
     /**
-     * Sets the location that the player will be warped to if they execute /back
+     * Sets the location that the subject will be warped to if they execute /back
      *  @param user The {@link User}
      * @param location The {@link Location} to set as the /back target.
      */
     void setLastLocation(User user, Transform<World> location);
 
     /**
-     * Removes the last location from the player, so that /back will not work for them.
+     * Removes the last location from the subject, so that /back will not work for them.
      *
      * @param user The {@link User}
      */

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
- * Lists all the warps that a player can access.
+ * Lists all the warps that a subject can access.
  */
 @Permissions(prefix = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync

@@ -26,7 +26,7 @@ import java.util.Map;
 @RegisterCommand("getpos")
 public class GetPosCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {

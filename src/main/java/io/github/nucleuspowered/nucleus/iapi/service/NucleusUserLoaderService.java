@@ -34,7 +34,7 @@ public interface NucleusUserLoaderService {
      *     to reload the user from disc.
      * </p>
      *
-     * @param playerUUID The {@link UUID} of the player in question.
+     * @param playerUUID The {@link UUID} of the subject in question.
      * @return The {@link NucleusUser}, wrapped in an {@link Optional}
      */
     Optional<NucleusUser> getUser(UUID playerUUID);
@@ -50,7 +50,7 @@ public interface NucleusUserLoaderService {
      *     to reload the user from disc.
      * </p>
      *
-     * @param user The {@link User} of the player in question.
+     * @param user The {@link User} of the subject in question.
      * @return The {@link NucleusUser}
      */
     Optional<NucleusUser> getUser(User user);

@@ -186,7 +186,7 @@ public class AFKHandler {
 
     private void sendAFKMessage(UUID uuid, boolean isAfk) {
         Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
-            // If we have the config set to true, or the player is NOT invisible, send an AFK message
+            // If we have the config set to true, or the subject is NOT invisible, send an AFK message
             if (config.isAfkOnVanish() || !player.get(Keys.INVISIBLE).orElse(false)) {
                 String template = isAfk ? config.getMessages().getAfkMessage().trim() : config.getMessages().getReturnAfkMessage().trim();
                 if (!template.isEmpty()) {
@@ -195,7 +195,7 @@ public class AFKHandler {
             } else {
                 // Tell the user in question about them going AFK
                 player.sendMessage(
-                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(isAfk ? "command.afk.from.vanish" : "command.afk.to.vanish"));
+                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(isAfk ? "command.afk.to.vanish" : "command.afk.from.vanish"));
             }
         });
     }

@@ -286,7 +286,7 @@ public class TeleportHandler {
             }
 
             if (plugin.getUserDataManager().get(from).get().getJailData().isPresent()) {
-                // Don't teleport a jailed player.
+                // Don't teleport a jailed subject.
                 if (!silentSource) {
                     source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.jailed", from.getName()));
                 }

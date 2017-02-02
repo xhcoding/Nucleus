@@ -31,7 +31,7 @@ public class SendMailCommand extends AbstractCommand<CommandSource> {
     @Inject private MailHandler handler;
     @Inject private PermissionRegistry permissionRegistry;
 
-    private final String player = "player";
+    private final String player = "subject";
     private final String message = "message";
 
     @Override

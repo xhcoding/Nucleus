@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Gives a kit to a player.
+ * Gives a kit to a subject.
  */
 @Permissions(prefix = "kit")
 @RegisterCommand(value = "give", subcommandOf = KitCommand.class)
@@ -50,7 +50,7 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
     @Inject private KitConfigAdapter kitConfigAdapter;
     @Inject private UserDataManager userDataManager;
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String kitKey = "kit";
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {

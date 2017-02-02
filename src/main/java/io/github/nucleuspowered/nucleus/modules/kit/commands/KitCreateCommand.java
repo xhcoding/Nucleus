@@ -94,7 +94,7 @@ public class KitCreateCommand extends AbstractCommand<Player> {
                     player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.alreadyexists", this.kitName));
                 }
 
-                // Now return the items to the player.
+                // Now return the items to the subject.
                 this.inventory.slots().forEach(x -> x.poll().ifPresent(item -> player.getInventory().offer(item)));
             }
         }

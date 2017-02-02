@@ -39,7 +39,7 @@ import java.util.Optional;
 @RegisterCommand({"lightning", "smite", "thor"})
 public class LightningCommand extends AbstractCommand<CommandSource> {
 
-    private final String player = "player";
+    private final String player = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -65,7 +65,7 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         Collection<Player> playerCollection = args.getAll(player);
 
-        // No argument, let's not smite the player.
+        // No argument, let's not smite the subject.
         if (playerCollection.isEmpty()) {
             if (!(src instanceof Player)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.playeronly"));

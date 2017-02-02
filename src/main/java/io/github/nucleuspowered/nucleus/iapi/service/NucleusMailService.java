@@ -38,7 +38,7 @@ public interface NucleusMailService {
     boolean removeMail(User player, MailData mailData);
 
     /**
-     * Sends mail to a player, addressed from another player.
+     * Sends mail to a subject, addressed from another subject.
      *
      * @param playerFrom The {@link User} of the player to send the message from.
      * @param playerTo The {@link User} of the player to send the message to.
@@ -71,7 +71,7 @@ public interface NucleusMailService {
      *
      * @param player The {@link UUID} of the player. Use <code>null</code> for the console.
      * @return The {@link MailFilter}
-     * @throws NoSuchPlayerException Thrown when the player has never player on the server.
+     * @throws NoSuchPlayerException Thrown when the subject has never subject on the server.
      */
     MailFilter<UUID> createPlayerFilter(UUID player) throws NoSuchPlayerException;
 

@@ -21,7 +21,7 @@ public class CoreConfig {
     private WarmupConfig warmupConfig = new WarmupConfig();
 
     @Setting(value = "command-on-name-click", comment = "loc:config.core.commandonname")
-    private String commandOnNameClick = "/msg {{player}}";
+    private String commandOnNameClick = "/msg {{subject}}";
 
     @Setting(value = "kick-on-stop")
     private KickOnStopConfig kickOnStop = new KickOnStopConfig();

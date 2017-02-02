@@ -84,7 +84,7 @@ public class TwoPlayersArgument extends CommandElement {
 
     @Override
     public Text getUsage(CommandSource src) {
-        return Text.of("(<player to teleport> <target>)");
+        return Text.of("(<subject to teleport> <target>)");
     }
 
     private Optional<Player> getPlayerFromPartialName(String name) {

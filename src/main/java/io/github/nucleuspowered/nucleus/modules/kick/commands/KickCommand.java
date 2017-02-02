@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Kicks a player
+ * Kicks a subject
  *
  * Permission: quickstart.kick.base
  */
@@ -38,7 +38,7 @@ import java.util.Map;
 @RegisterCommand("kick")
 public class KickCommand extends AbstractCommand<CommandSource> {
 
-    private final String player = "player";
+    private final String player = "subject";
     private final String reason = "reason";
 
     @Override

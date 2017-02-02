@@ -41,7 +41,7 @@ public class TeleportAskHereCommand extends StandardAbstractCommand<Player> {
 
     @Inject private TeleportHandler tpHandler;
 
-    static final String playerKey = "player";
+    static final String playerKey = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

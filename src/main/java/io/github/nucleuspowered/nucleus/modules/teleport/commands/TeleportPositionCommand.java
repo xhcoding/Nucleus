@@ -32,7 +32,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @RegisterCommand({"tppos"})
 public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
 
-    private final String key = "player";
+    private final String key = "subject";
     private final String location = "world";
     private final String x = "x";
     private final String y = "y";

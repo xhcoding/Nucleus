@@ -61,7 +61,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
     private static final String EXTENDED_SUFFIX = "extended";
     public static final String EXTENDED_PERMISSION = PermissionRegistry.PERMISSIONS_PREFIX + "seen." + EXTENDED_SUFFIX;
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final Text notEmpty = Text.of(" ");
 
     @Override

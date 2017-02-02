@@ -48,7 +48,7 @@ public class InvSeeListener extends ListenerBase {
             this.invSeePermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(InvSeeCommand.class);
         }
 
-        // Ok, so we're interacting with another player's inventory.
+        // Ok, so we're interacting with another subject's inventory.
         if (invSeePermissionHandler.testSuffix(target, "exempt.interact")) {
             event.getCursorTransaction().setValid(false);
             event.setCancelled(true);

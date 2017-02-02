@@ -34,7 +34,7 @@ import java.util.List;
 public class ClearNotesCommand extends AbstractCommand<CommandSource> {
 
     @Inject private NoteHandler handler;
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
 
     @Override
     public CommandElement[] getArguments() {

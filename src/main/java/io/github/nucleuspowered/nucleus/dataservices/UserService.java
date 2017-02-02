@@ -63,7 +63,7 @@ public class UserService extends Service<UserDataNode>
 
     private int previousHungerValue = 20;
 
-    // Use to keep hold of whether this is the first time on the server for a player.
+    // Use to keep hold of whether this is the first time on the server for a subject.
     private boolean firstPlay = false;
 
     // Use for /back.

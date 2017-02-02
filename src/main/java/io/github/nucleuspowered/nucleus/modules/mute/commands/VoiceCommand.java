@@ -5,7 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -32,7 +37,7 @@ import java.util.UUID;
 public class VoiceCommand extends AbstractCommand<CommandSource> {
 
     private final String on = "turn on";
-    private final String player = "player";
+    private final String player = "subject";
 
     @Inject
     private MuteHandler muteHandler;

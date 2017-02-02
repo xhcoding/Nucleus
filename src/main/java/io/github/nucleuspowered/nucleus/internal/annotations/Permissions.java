@@ -65,7 +65,7 @@ public @interface Permissions {
     boolean supportsSelectors() default false;
 
     /**
-     * If {@code true}, specifies that targetting other player permissions should be generated. Purely for documentation.
+     * If {@code true}, specifies that targetting other subject permissions should be generated. Purely for documentation.
      *
      * @return {@code true} if so.
      */

@@ -13,7 +13,8 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoCostArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
@@ -45,6 +46,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.source.CommandBlockSource;
 import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandExecutor;
@@ -619,12 +621,12 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
 
         if (src.getSubject() instanceof Player) {
-            // If the player is subject to cooling down, apply the cooldown.
+            // If the subject is subject to cooling down, apply the cooldown.
             @SuppressWarnings("unchecked")
             final SubjectPermissionCache<Player> p = (SubjectPermissionCache<Player>) src;
 
             if (cr.getSuccessCount().orElse(0) > 0) {
-                setCooldown(p);
+                setCooldown(p, args);
             } else {
                 // For the tests, keep this here so we can skip the hard to test
                 // code below.
@@ -661,7 +663,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     // -------------------------------------
     private ContinueMode runChecks(SubjectPermissionCache<Player> src, CommandContext args) {
         // Cooldown, cost, warmup.
-        ContinueMode m = checkCooldown(src);
+        ContinueMode m = checkCooldown(src, args);
         if (!m.cont) {
             return m;
         }
@@ -712,7 +714,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
     /**
      * Gets a {@link User} from the specified argument, or if one does not exist, attempts to use the
-     * player currently running the command, if there is one.
+     * subject currently running the command, if there is one.
      *
      * @param clazz The {@link Class} of the object we're expecting, which might be a {@link User} or {@link Player}
      * @param src The {@link CommandSource} running the command.
@@ -765,7 +767,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
             return type;
         } else {
-            // If player, get the item in hand, otherwise, we can't continue.
+            // If subject, get the item in hand, otherwise, we can't continue.
             if (src instanceof Player) {
                 return Util.getTypeFromItemInHand((Player)src)
                     .orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.noneinhand")));
@@ -841,13 +843,15 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     // -------------------------------------
     // Cooldowns
     // -------------------------------------
-    private ContinueMode checkCooldown(SubjectPermissionCache<Player> src) {
+    private ContinueMode checkCooldown(SubjectPermissionCache<Player> src, CommandContext args) {
         // Remove any expired cooldowns.
         cleanCooldowns();
 
         // If they are still in there, then tell them they are still cooling
         // down.
-        if (!bypassCooldown && !permissions.testCooldownExempt(src) && cooldownStore.containsKey(src.getSubject().getUniqueId())) {
+        if (!bypassCooldown && !args.hasAny(NoModifiersArgument.NO_COOLDOWN_ARGUMENT) &&
+            !permissions.testCooldownExempt(src) && cooldownStore.containsKey(src.getSubject().getUniqueId())) {
+
             Instant l = cooldownStore.get(src.getSubject().getUniqueId());
             src.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cooldown.message",
                     Util.getTimeStringFromSeconds(l.until(Instant.now(), ChronoUnit.SECONDS))));
@@ -857,8 +861,8 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         return ContinueMode.CONTINUE;
     }
 
-    private void setCooldown(SubjectPermissionCache<Player> src) {
-        if (!permissions.testCooldownExempt(src)) {
+    private void setCooldown(SubjectPermissionCache<Player> src, CommandContext args) {
+        if (!args.hasAny(NoModifiersArgument.NO_COOLDOWN_ARGUMENT) && !permissions.testCooldownExempt(src)) {
             // Get the cooldown time.
             int cooldownTime = Util.getPositiveIntOptionFromSubject(src.getSubject(), cooldownKey)
                 .orElseGet(() -> plugin.getCommandsConfig().getCommandNode(configSection).getNode("cooldown").getInt());
@@ -903,29 +907,33 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     }
 
     /**
-     * Gets the cost for this command, or zero if the player does not have to
+     * Gets the cost for this command, or zero if the subject does not have to
      * pay.
      *
      * @param src The {@link CommandSource}
      * @param args The {@link CommandContext}
      * @return The cost.
      */
-    protected double getCost(SubjectPermissionCache<Player> src, @Nullable CommandContext args) {
-        boolean noCost = args != null && args.<Boolean>getOne(NoCostArgument.NO_COST_ARGUMENT).orElse(false);
+    protected double getCost(SubjectPermissionCache<? extends CommandSource> src, @Nullable CommandContext args) {
+        if (src.getSubject() instanceof Player) {
+            boolean noCost = args != null && args.<Boolean>getOne(NoModifiersArgument.NO_COST_ARGUMENT).orElse(false);
 
-        // If the player or command itself is exempt, return a zero.
-        if (bypassCost || noCost || permissions.testCostExempt(src)) {
-            return 0.;
+            // If the subject or command itself is exempt, return a zero.
+            if (bypassCost || noCost || permissions.testCostExempt(src)) {
+                return 0.;
+            }
+
+            // Return the cost if positive, else, zero.
+            double cost = Util.getDoubleOptionFromSubject(src, costKey)
+                .orElseGet(() -> plugin.getCommandsConfig().getCommandNode(configSection).getNode("cost").getDouble(0.));
+            if (cost <= 0.) {
+                return 0.;
+            }
+
+            return cost;
         }
 
-        // Return the cost if positive, else, zero.
-        double cost = Util.getDoubleOptionFromSubject(src, costKey)
-            .orElseGet(() -> plugin.getCommandsConfig().getCommandNode(configSection).getNode("cost").getDouble(0.));
-        if (cost <= 0.) {
-            return 0.;
-        }
-
-        return cost;
+        return 0.;
     }
 
     // -------------------------------------
@@ -1149,5 +1157,31 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
          * To run on reload.
          */
         void onReload();
+    }
+
+    public abstract static class SimpleTargetOtherPlayer extends StandardAbstractCommand<CommandSource> {
+
+        protected final String playerKey = "player";
+
+        @Override public CommandElement[] getArguments() {
+            return new CommandElement[] {
+                GenericArguments.optional(
+                    GenericArguments.requiringPermission(
+                        new NoModifiersArgument<>(
+                            new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER, true),
+                            NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE
+                        ),
+                        permissions.getOthers()
+                    )
+                )
+            };
+        }
+
+        @Override protected CommandResult executeCommand(SubjectPermissionCache<CommandSource> src, CommandContext args) throws Exception {
+            Player target = this.getUserFromArgs(Player.class, src.getSubject(), playerKey, args);
+            return executeWithPlayer(src, target, args, src.getSubject() instanceof Player && ((Player) src.getSubject()).getUniqueId().equals(target.getUniqueId()));
+        }
+
+        protected abstract CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> source, Player target, CommandContext args, final boolean isSelf);
     }
 }

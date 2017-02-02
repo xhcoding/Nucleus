@@ -35,7 +35,7 @@ import org.spongepowered.api.text.Text;
 @RegisterCommand({"tphere", "tph"})
 public class TeleportHereCommand extends AbstractCommand<Player> {
 
-    private final String playerKey = "player";
+    private final String playerKey = "subject";
     private final String quietKey = "quiet";
 
     @Inject private TeleportHandler handler;

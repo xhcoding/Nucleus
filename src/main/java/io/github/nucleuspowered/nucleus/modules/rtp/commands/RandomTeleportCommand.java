@@ -22,9 +22,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.property.block.MatterProperty;
-import org.spongepowered.api.data.property.block.PassableProperty;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
@@ -38,11 +38,10 @@ import org.spongepowered.api.world.WorldBorder;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Predicate;
 
-@Permissions
+@Permissions(supportsOthers = true)
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
-public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
+public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetOtherPlayer {
 
     private Set<BlockType> prohibitedTypes = null;
     // Works around a problem in the Sponge implementation.
@@ -52,9 +51,10 @@ public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
     @Inject private RTPConfigAdapter rca;
 
     @Override
-    public CommandResult executeCommand(final SubjectPermissionCache<Player> src, CommandContext args) throws Exception {
+    protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> src, Player player, CommandContext args, boolean self) {
+
         // Get the current world.
-        World currentWorld = src.getSubject().getWorld();
+        World currentWorld = player.getWorld();
 
         // World border
         WorldBorder wb = currentWorld.getWorldBorder();
@@ -66,8 +66,16 @@ public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
         int count = Math.max(rc.getNoOfAttempts(), 1);
         src.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
 
-        Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args), src, currentWorld,
-                rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY())).submit(plugin);
+
+        if (self) {
+            SubjectPermissionCache<Player> sp = new SubjectPermissionCache<>(player, src);
+            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args),
+                sp, currentWorld, rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY())).submit(plugin);
+        } else {
+            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args),
+                player, currentWorld, rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY(), src)).submit(plugin);
+        }
+
         return CommandResult.success();
     }
 
@@ -82,16 +90,25 @@ public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
 
         private final int minY;
         private final int maxY;
+        private final SubjectPermissionCache<? extends CommandSource> source;
+        private final Player target;
         private int count;
         private final int maxCount;
         private final int diameter;
         private final Vector3d centre;
         private final World currentWorld;
         private final boolean onSurface;
+        private boolean isSelf = false;
 
-        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, SubjectPermissionCache<Player> src, World currentWorld, boolean onSurface,
-                        int minY, int maxY) {
-            super(plugin, src, cost);
+        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, SubjectPermissionCache<Player> target,
+            World currentWorld, boolean onSurface, int minY, int maxY) {
+            this(plugin, count, diameter, centre, cost, target.getSubject(), currentWorld, onSurface, minY, maxY, target);
+            isSelf = true;
+        }
+
+        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, Player target, World currentWorld, boolean onSurface,
+                        int minY, int maxY, SubjectPermissionCache<? extends CommandSource> source) {
+            super(plugin, source, cost);
             this.count = count;
             this.maxCount = count;
             this.diameter = diameter;
@@ -100,21 +117,22 @@ public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
             this.onSurface = onSurface;
             this.minY = minY;
             this.maxY = maxY;
+            this.target = target;
+            this.source = source;
         }
 
         @Override
         public void accept(Task task) {
             count--;
-            Player p = player.getSubject();
-            if (!p.isOnline()) {
+            if (!target.isOnline()) {
                 onCancel();
                 return;
             }
 
-            Transform<World> transform = p.getTransform();
+            Transform<World> transform = target.getTransform();
             World world = transform.getExtent();
 
-            plugin.getLogger().debug(String.format("RTP of %s, attempt %s of %s", p.getName(), maxCount - count, maxCount));
+            plugin.getLogger().debug(String.format("RTP of %s, attempt %s of %s", target.getName(), maxCount - count, maxCount));
 
             // Generate random co-ords.
             int x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
@@ -155,24 +173,34 @@ public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
             Optional<Location<World>> oSafeLocation = NucleusTeleportHandler.TELEPORT_HELPER.getSafeLocation(test, 10, 5);
 
             // getSafeLocation might have put us out of the world border. Best to check.
-            // We also check to see that it's not in water or lava, and if enabled, we see if the player would end up on the surface.
+            // We also check to see that it's not in water or lava, and if enabled, we see if the subject would end up on the surface.
             try {
                 if (oSafeLocation.isPresent() && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get())
                     && isOnSurface(oSafeLocation.get())) {
+
                     Location<World> tpTarget = oSafeLocation.get();
 
-                    plugin.getLogger().debug(String.format("RTP of %s, found location %s, %s, %s", p.getName(),
+                    plugin.getLogger().debug(String.format("RTP of %s, found location %s, %s, %s", target.getName(),
                             String.valueOf(tpTarget.getBlockX()),
                             String.valueOf(tpTarget.getBlockY()),
                             String.valueOf(tpTarget.getBlockZ())));
-                    if (p.setLocation(tpTarget)) {
-                        p.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.success",
+                    if (target.setLocation(tpTarget)) {
+                        if (!isSelf) {
+                            target.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.other"));
+                            source.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.successother",
+                                target.getName(),
+                                String.valueOf(tpTarget.getBlockX()),
+                                String.valueOf(tpTarget.getBlockY()),
+                                String.valueOf(tpTarget.getBlockZ())));
+                        }
+
+                        target.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.success",
                                 String.valueOf(tpTarget.getBlockX()),
                                 String.valueOf(tpTarget.getBlockY()),
                                 String.valueOf(tpTarget.getBlockZ())));
                         return;
                     } else {
-                        p.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.cancelled"));
+                        source.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.cancelled"));
                         onCancel();
                         return;
                     }
@@ -190,8 +218,8 @@ public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
 
         private void onUnsuccesfulAttempt() {
             if (count <= 0) {
-                plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", player.getSubject().getName()));
-                player.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
+                plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", subject.getSubject().getName()));
+                subject.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
                 onCancel();
             } else {
                 // We're using a scheduler to allow some ticks to go by between attempts to find a
@@ -229,29 +257,8 @@ public class RandomTeleportCommand extends StandardAbstractCommand<Player> {
         @Override
         public void onCancel() {
             super.onCancel();
-            RandomTeleportCommand.this.removeCooldown(player.getSubject().getUniqueId());
-        }
-
-        private class SurfaceCheckPredicate implements Predicate<BlockRayHit<World>> {
-
-            private int count = 0;
-
-            @Override
-            public boolean test(BlockRayHit<World> l) {
-                BlockType type = l.getLocation().getBlockType();
-
-                // If passable - treat it as seeing the sky.
-                if (Boolean.TRUE.equals(type.getProperty(PassableProperty.class).orElse(new PassableProperty(false)).getValue())) {
-                    return true;
-                }
-
-                // If leaves, treat it as on the surface.
-                if (count++ > 1 && type.equals(BlockTypes.LEAVES) || type.equals(BlockTypes.LEAVES2)) {
-                    return true;
-                }
-
-                // Nope, we're not on the surface
-                return false;
+            if (isSelf) {
+                RandomTeleportCommand.this.removeCooldown(target.getUniqueId());
             }
         }
     }
