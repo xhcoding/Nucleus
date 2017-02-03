@@ -665,6 +665,14 @@ public class UserService extends Service<UserDataNode>
         data.setCommandSpy(set);
     }
 
+    public Optional<String> getLastKnownName() {
+        return Optional.ofNullable(data.getLastKnownName());
+    }
+
+    public void setLastKnownName(String lastKnownName) {
+        data.setLastKnownName(lastKnownName);
+    }
+
     private class HomeData extends LocationData implements Home {
 
         private HomeData(String name, UUID world, Vector3d position, Vector3d rotation) {

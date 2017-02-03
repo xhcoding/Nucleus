@@ -31,6 +31,12 @@ public class ConnectionMessagesConfig {
     @Setting(value = "disable-with-permission", comment = "loc:config.connectionmessages.disablepermission")
     private boolean disableWithPermission = false;
 
+    @Setting(value = "display-name-change-if-changed", comment = "loc:config.connectionmessages.displayprior")
+    private boolean displayPriorName = true;
+
+    @Setting(value = "changed-name-message", comment = "loc:config.connectionmessages.displaypriormessage")
+    private String priorNameMessage = "&f{{name}} &ewas previously known by a different name - they were known as &f{{previousname}}";
+
     public boolean isShowFirstTimeMessage() {
         return showFirstTimeMessage;
     }
@@ -57,5 +63,13 @@ public class ConnectionMessagesConfig {
 
     public boolean isDisableWithPermission() {
         return disableWithPermission;
+    }
+
+    public boolean isDisplayPriorName() {
+        return displayPriorName;
+    }
+
+    public String getPriorNameMessage() {
+        return priorNameMessage;
     }
 }

@@ -4,8 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.connectionmessages.listeners;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -18,10 +21,12 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class ConnectionMessagesListener extends ListenerBase {
 
@@ -48,11 +53,19 @@ public class ConnectionMessagesListener extends ListenerBase {
         }
 
         try {
-            if (loader.getUser(pl).get().isFirstPlay()) {
+            UserService nucleusUser = loader.get(pl).get();
+            if (nucleusUser.isFirstPlay()) {
                 // First time player.
                 if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
                     MessageChannel.TO_ALL.send(plugin, chatUtil.getMessageFromTemplate(cmc.getFirstTimeMessage(), pl, true));
                 }
+            } else if (cmc.isDisplayPriorName() &&
+                !cmc.getPriorNameMessage().isEmpty() &&
+                !nucleusUser.getLastKnownName().orElseGet(pl::getName).equalsIgnoreCase(pl.getName())) {
+                    // Name change!
+                    MessageChannel.TO_ALL.send(plugin,
+                        chatUtil.getMessageFromTemplate(cmc.getPriorNameMessage(), pl, true,
+                            ImmutableMap.of("previousname", cs -> Optional.of(Text.of(nucleusUser.getLastKnownName().get()))), Maps.newHashMap()));
             }
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {

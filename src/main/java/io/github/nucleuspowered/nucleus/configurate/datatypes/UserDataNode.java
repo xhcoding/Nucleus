@@ -22,6 +22,10 @@ import javax.annotation.Nullable;
 
 @ConfigSerializable
 public class UserDataNode {
+
+    @Setting
+    private String lastKnownName;
+
     @Setting
     private MuteData muteData;
 
@@ -96,6 +100,14 @@ public class UserDataNode {
 
     @Setting
     private boolean vanish = false;
+
+    public String getLastKnownName() {
+        return lastKnownName;
+    }
+
+    public void setLastKnownName(String lastKnownName) {
+        this.lastKnownName = lastKnownName;
+    }
 
     public MuteData getMuteData() {
         return muteData;

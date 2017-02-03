@@ -24,6 +24,7 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.profile.GameProfile;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -84,6 +85,10 @@ public class CoreListener extends ListenerBase {
             }
 
             qsu.setLastIp(player.getConnection().getAddress().getAddress());
+
+            // We'll do this bit shortly - after the login events have resolved.
+            final String name = player.getName();
+            Task.builder().execute(() -> qsu.setLastKnownName(name)).delayTicks(20L).submit(plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }
