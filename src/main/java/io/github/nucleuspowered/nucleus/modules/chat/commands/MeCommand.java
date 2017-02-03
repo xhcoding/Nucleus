@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.chat.commands;
 
 import io.github.nucleuspowered.nucleus.ChatUtil;
-import io.github.nucleuspowered.nucleus.iapi.util.NucleusIgnorableChatChannel;
+import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -85,7 +85,7 @@ public class MeCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    public class MeChannel implements NucleusIgnorableChatChannel {
+    public class MeChannel implements NucleusChatChannel.ActionMessage {
 
         @Override
         @Nonnull

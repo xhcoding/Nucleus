@@ -10,8 +10,8 @@ import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.chat.NucleusNoFormatChannel;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
-import io.github.nucleuspowered.nucleus.iapi.util.NucleusIgnorableChatChannel;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
@@ -123,8 +123,8 @@ public class ChatListener extends ListenerBase {
     // We do this first so that other plugins can alter it later if needs be.
     @Listener(order = Order.EARLY)
     public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
-        if (event.getChannel().isPresent() && event.getChannel().get() instanceof NucleusIgnorableChatChannel) {
-            // Staff chat. Not interested in applying these transforms.
+        if (event.getChannel().isPresent() && event.getChannel().get() instanceof NucleusNoFormatChannel) {
+            // Not interested in applying these transforms.
             return;
         }
 
