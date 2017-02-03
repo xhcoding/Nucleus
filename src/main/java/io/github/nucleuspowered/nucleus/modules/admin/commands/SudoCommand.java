@@ -38,7 +38,7 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
     private final String commandKey = "command";
 
     private final TextTemplate chatTemplate = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
-            TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER));
+            TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
 
     @Override
     public CommandElement[] getArguments() {
@@ -75,7 +75,7 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
                     Cause.source(pl).named(NamedCause.notifier(src)).build(),
                     pl.getMessageChannel(),
                     Optional.of(pl.getMessageChannel()),
-                    new MessageEvent.MessageFormatter(Text.builder("<" + pl.getName() + "> ")
+                    new MessageEvent.MessageFormatter(Text.builder(pl.getName())
                             .onShiftClick(TextActions.insertText(pl.getName()))
                             .onClick(TextActions.suggestCommand("/msg " + pl.getName()))
                             .build(), rawMessage),
@@ -84,7 +84,8 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
 
             if (!Sponge.getEventManager().post(event)) {
                 MessageEvent.MessageFormatter formatter = event.getFormatter();
-                pl.getMessageChannel().send(pl, chatTemplate.apply(ImmutableMap.of(MessageEvent.PARAM_MESSAGE_HEADER, formatter.getHeader(),
+                pl.getMessageChannel().send(pl, chatTemplate.apply(
+                    ImmutableMap.of(MessageEvent.PARAM_MESSAGE_HEADER, formatter.getHeader(),
                         MessageEvent.PARAM_MESSAGE_BODY, formatter.getBody(),
                         MessageEvent.PARAM_MESSAGE_FOOTER, formatter.getFooter())).build());
                 return CommandResult.success();
