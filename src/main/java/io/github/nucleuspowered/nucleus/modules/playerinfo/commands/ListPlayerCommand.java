@@ -104,7 +104,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
         groups.sort((x, y) -> {
             int res = Util.getPositiveIntOptionFromSubject(x, "nucleus.list.weight").orElse(0)
                 - Util.getPositiveIntOptionFromSubject(y, "nucleus.list.weight").orElse(0);
-            if (res != 0) {
+            if (res == 0) {
                 return y.getParents().size() - x.getParents().size();
             }
 
