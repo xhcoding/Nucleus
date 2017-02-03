@@ -27,6 +27,7 @@ import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -85,30 +86,33 @@ public class VanishCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private CommandResult onPlayer(CommandSource src, CommandContext args, Player playerToVanish) {
+    private CommandResult onPlayer(CommandSource src, CommandContext args, Player playerToVanish) throws Exception {
         // If we don't specify whether to vanish, toggle
         boolean toVanish = args.<Boolean>getOne(b).orElse(!playerToVanish.get(Keys.VANISH).orElse(false));
 
-        DataTransactionResult dtr = playerToVanish.offer(Keys.VANISH, toVanish);
-        playerToVanish.offer(Keys.VANISH_PREVENTS_TARGETING, toVanish);
-        playerToVanish.offer(Keys.VANISH_IGNORES_COLLISION, toVanish);
-        playerToVanish.offer(Keys.IS_SILENT, toVanish);
         userDataManager.get(playerToVanish).get().setVanished(toVanish);
+        if (!playerToVanish.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET).equals(GameModes.SPECTATOR)) {
+            DataTransactionResult dtr = playerToVanish.offer(Keys.VANISH, toVanish);
+            playerToVanish.offer(Keys.VANISH_PREVENTS_TARGETING, toVanish);
+            playerToVanish.offer(Keys.VANISH_IGNORES_COLLISION, toVanish);
+            playerToVanish.offer(Keys.IS_SILENT, toVanish);
 
-        if (dtr.isSuccessful()) {
-            playerToVanish.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.success",
-                toVanish ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") : plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
-
-            if (!(src instanceof Player) || !(((Player)src).getUniqueId().equals(playerToVanish.getUniqueId()))) {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.successplayer",
-                    TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(playerToVanish)),
-                    toVanish ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") : plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
+            if (!dtr.isSuccessful()) {
+                throw ReturnMessageException.fromKey("command.vanish.fail");
             }
-
-            return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.fail"));
-        return CommandResult.empty();
+        playerToVanish.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.success",
+            toVanish ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") :
+                plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
+
+        if (!(src instanceof Player) || !(((Player) src).getUniqueId().equals(playerToVanish.getUniqueId()))) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.successplayer",
+                TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(playerToVanish)),
+                toVanish ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") :
+                    plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
+        }
+
+        return CommandResult.success();
     }
 }
