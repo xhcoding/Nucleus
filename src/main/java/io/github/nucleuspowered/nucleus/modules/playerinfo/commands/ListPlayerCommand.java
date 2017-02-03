@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RunAsync
@@ -48,6 +49,8 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
 
     private Text afk = null;
     private Text hidden = null;
+
+    private final Function<Subject, Integer> weightingFunction = s -> Util.getPositiveIntOptionFromSubject(s, "nucleus.list.weight").orElse(0);
 
     private void init() {
         if (afk == null) {
@@ -101,15 +104,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
 
         // If weights are the same, sort them in reverse order - that way we get the most inherited
         // groups first and display them first.
-        groups.sort((x, y) -> {
-            int res = Util.getPositiveIntOptionFromSubject(x, "nucleus.list.weight").orElse(0)
-                - Util.getPositiveIntOptionFromSubject(y, "nucleus.list.weight").orElse(0);
-            if (res == 0) {
-                return y.getParents().size() - x.getParents().size();
-            }
-
-            return res;
-        });
+        groups.sort((x, y) -> groupComparison(weightingFunction, x, y));
 
         // Keep a copy of the players that we will remove from.
         final List<Player> playersToList = new ArrayList<>(players);
@@ -230,5 +225,18 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
 
     @Override public void onReload() {
         listConfig = configAdapter.getNodeOrDefault().getList();
+    }
+
+    // For testing
+    public static int groupComparison(Function<Subject, Integer> weightingFunction, Subject x, Subject y)  {
+        // If the weight of x is bigger than y, x should go first. We therefore need a large x to provide a negative number.
+        int res = weightingFunction.apply(y) - weightingFunction.apply(x);
+        if (res == 0) {
+            // If x is bigger than y, x should go first. We therefore need a large x to provide a negative number,
+            // so x is above y.
+            return y.getParents().size() - x.getParents().size() ;
+        }
+
+        return res;
     }
 }
