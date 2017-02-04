@@ -32,14 +32,12 @@ import java.util.Optional;
 @RegisterCommand(value = "set", subcommandOf = ExperienceCommand.class)
 public class SetExperience extends AbstractCommand<CommandSource> {
 
-    private final String levelKey = "level";
-
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.player(Text.of(ExperienceCommand.playerKey)))),
                 GenericArguments.firstParsing(
-                        GenericArguments.onlyOne(new ExperienceLevelArgument(Text.of(levelKey))),
+                        GenericArguments.onlyOne(new ExperienceLevelArgument(Text.of(ExperienceCommand.levelKey))),
                         GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
                 )
         };
@@ -52,7 +50,7 @@ public class SetExperience extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        Optional<Integer> l = args.getOne(levelKey);
+        Optional<Integer> l = args.getOne(ExperienceCommand.levelKey);
         DataTransactionResult dtr;
         if (l.isPresent()) {
             dtr = pl.offer(Keys.EXPERIENCE_LEVEL, l.get());

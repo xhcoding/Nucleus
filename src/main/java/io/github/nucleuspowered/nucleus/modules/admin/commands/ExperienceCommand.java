@@ -32,6 +32,7 @@ public class ExperienceCommand extends AbstractCommand<CommandSource> {
 
     public static final String playerKey = "subject";
     public static final String experienceKey = "experience";
+    public static final String levelKey = "level";
 
     @Override
     public CommandElement[] getArguments() {
