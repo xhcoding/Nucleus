@@ -50,7 +50,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
     private Text afk = null;
     private Text hidden = null;
 
-    private final Function<Subject, Integer> weightingFunction = s -> Util.getPositiveIntOptionFromSubject(s, "nucleus.list.weight").orElse(0);
+    public static final Function<Subject, Integer> weightingFunction = s -> Util.getIntOptionFromSubject(s, "nucleus.list.weight").orElse(0);
 
     private void init() {
         if (afk == null) {
