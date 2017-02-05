@@ -53,7 +53,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UserService extends Service<UserDataNode>
+public class UserService extends AbstractService<UserDataNode>
         implements NucleusUser {
 
     private final NucleusPlugin plugin;

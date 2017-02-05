@@ -63,11 +63,11 @@ public class DataProviders {
         }
     }
 
-    public DataProvider<WorldDataNode> getWorldFileDataProvider(UUID uuid) {
+    public DataProvider<ConfigurationNode> getWorldFileDataProvider(UUID uuid) {
         // For now, just the Configurate one.
         try {
             Path p = getFile(worldJson, uuid);
-            return new ConfigurateDataProvider<>(ttw, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
+            return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }

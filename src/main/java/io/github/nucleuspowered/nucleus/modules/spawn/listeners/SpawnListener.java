@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.spawn.datamodule.SpawnWorldDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -102,7 +103,7 @@ public class SpawnListener extends ListenerBase {
                     sca.getNodeOrDefault().isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
             if (safe.isPresent()) {
                 try {
-                    Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().getSpawnRotation();
+                    Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation);
                     if (ov.isPresent()) {
                         loginEvent.setToTransform(new Transform<>(safe.get().getExtent(),
                                 safe.get().getPosition().add(0.5, 0, 0.5),
@@ -124,7 +125,8 @@ public class SpawnListener extends ListenerBase {
             // Are we heading TO a spawn?
             Transform<World> to = event.getToTransform();
             if (to.getLocation().getBlockPosition().equals(to.getExtent().getSpawnLocation().getBlockPosition())) {
-                wcl.getWorld(to.getExtent()).ifPresent(x -> x.getSpawnRotation().ifPresent(y -> event.setToTransform(to.setRotation(y))));
+                wcl.getWorld(to.getExtent()).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
+                    .ifPresent(y -> event.setToTransform(to.setRotation(y))));
             }
         }
     }
@@ -151,6 +153,7 @@ public class SpawnListener extends ListenerBase {
         Transform<World> to = new Transform<>(spawn);
 
         // Compare current transform to spawn.
-        wcl.getWorld(world).ifPresent(x -> x.getSpawnRotation().ifPresent(y -> event.setToTransform(to.setRotation(y))));
+        wcl.getWorld(world).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
+            .ifPresent(y -> event.setToTransform(to.setRotation(y))));
     }
 }

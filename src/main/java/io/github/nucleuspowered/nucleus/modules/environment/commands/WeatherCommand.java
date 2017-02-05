@@ -9,10 +9,11 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WeatherArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusWorld;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -68,8 +69,8 @@ public class WeatherCommand extends AbstractCommand<CommandSource> {
         }
 
         // Get whether we locked the weather.
-        NucleusWorld ew = loader.getWorld(w).get();
-        if (ew.isLockWeather()) {
+        ModularWorldService ew = loader.getWorld(w).get();
+        if (ew.quickGet(EnvironmentWorldDataModule.class, EnvironmentWorldDataModule::isLockWeather)) {
             // Tell the user to unlock first.
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.weather.locked", w.getName()));
             return CommandResult.empty();

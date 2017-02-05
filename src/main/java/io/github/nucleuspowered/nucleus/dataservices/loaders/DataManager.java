@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class DataManager<I, P, S extends Service> {
+public abstract class DataManager<I, P, S extends Service<?>> {
 
     private final Predicate<I> fileExists;
     private final Function<I, DataProvider<P>> dataProviderFactory;

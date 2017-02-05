@@ -27,7 +27,6 @@ import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusUserLoaderService;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusWorldLoaderService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
@@ -267,7 +266,6 @@ public class NucleusPlugin extends Nucleus {
         // Register final services
         Game game = Sponge.getGame();
         game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, userDataManager);
-        game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldDataManager);
         logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
     }
 

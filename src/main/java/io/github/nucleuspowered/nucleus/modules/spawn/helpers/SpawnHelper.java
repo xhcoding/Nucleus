@@ -8,6 +8,7 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.modules.spawn.datamodule.SpawnWorldDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -33,7 +34,7 @@ public final class SpawnHelper {
 
         return new Transform<>(ow.get(),
             wp.getSpawnPosition().toDouble().add(0.5, 0, 0.5),
-            Nucleus.getNucleus().getWorldDataManager().getWorld(wp.getUniqueId()).get().getSpawnRotation()
+            Nucleus.getNucleus().getWorldDataManager().getWorld(wp.getUniqueId()).get().get(SpawnWorldDataModule.class).getSpawnRotation()
                 .orElseGet(() -> player == null ? new Vector3d(0, 0, 0) : player.getRotation()));
     }
 }

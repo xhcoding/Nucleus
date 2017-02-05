@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-public class GeneralService extends Service<GeneralDataNode> {
+public class GeneralService extends AbstractService<GeneralDataNode> {
 
     // This is a session variable - does not get saved on restart.
     private long userCount = 0;

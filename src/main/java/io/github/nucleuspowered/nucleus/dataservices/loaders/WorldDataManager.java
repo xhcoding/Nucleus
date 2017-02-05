@@ -6,11 +6,9 @@ package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
-import io.github.nucleuspowered.nucleus.dataservices.WorldService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusWorld;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusWorldLoaderService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
+import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.World;
 
@@ -19,25 +17,24 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class WorldDataManager extends DataManager<UUID, WorldDataNode, WorldService> implements NucleusWorldLoaderService {
+public class WorldDataManager extends DataManager<UUID, ConfigurationNode, ModularWorldService> {
 
-    public WorldDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<WorldDataNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+    public WorldDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<ConfigurationNode>> dataProviderFactory, Predicate<UUID> fileExist) {
         super(plugin, dataProviderFactory, fileExist);
     }
 
     @Override
-    public Optional<WorldService> getNew(UUID data, DataProvider<WorldDataNode> dataProvider) throws Exception {
-        return Optional.of(new WorldService(plugin, dataProvider, Sponge.getServer().getWorldProperties(data).orElseThrow(() -> new IllegalStateException("world"))));
+    public Optional<ModularWorldService> getNew(UUID data, DataProvider<ConfigurationNode> dataProvider) throws Exception {
+        return Optional.of(new ModularWorldService(dataProvider, plugin,
+            Sponge.getServer().getWorldProperties(data).orElseThrow(() -> new IllegalStateException("world")).getUniqueId()));
     }
 
-    @Override
-    public Optional<NucleusWorld> getWorld(UUID uuid) {
+    public Optional<ModularWorldService> getWorld(UUID uuid) {
         Preconditions.checkNotNull(uuid);
         return Optional.ofNullable(get(uuid).orElse(null));
     }
 
-    @Override
-    public Optional<NucleusWorld> getWorld(World world) {
+    public Optional<ModularWorldService> getWorld(World world) {
         Preconditions.checkNotNull(world);
         return getWorld(world.getUniqueId());
     }

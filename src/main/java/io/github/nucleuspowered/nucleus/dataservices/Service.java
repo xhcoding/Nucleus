@@ -4,68 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
+public interface Service<T> {
 
-public abstract class Service<T> {
+    boolean load();
 
-    T data;
-    private final DataProvider<T> dataProvider;
+    void loadInternal() throws Exception;
 
-    Service(DataProvider<T> dataProvider) throws Exception {
-        this(dataProvider, true);
-    }
+    boolean save();
 
-    Service(DataProvider<T> dataProvider, boolean loadNow) throws Exception {
-        this.dataProvider = dataProvider;
-        if (loadNow) {
-            data = dataProvider.load();
-        }
-    }
-
-    public boolean load() {
-        try {
-            loadInternal();
-            return true;
-        } catch (Exception e) {
-            Nucleus.getNucleus().getLogger().error(e.getMessage());
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-    }
-
-    public void loadInternal() throws Exception {
-        data = dataProvider.load();
-    }
-
-    public boolean save() {
-        try {
-            dataProvider.save(data);
-            return true;
-        } catch (Exception e) {
-            Nucleus.getNucleus().getLogger().error(e.getMessage());
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-    }
-
-    public boolean delete() {
-        try {
-            dataProvider.delete();
-            return true;
-        } catch (Exception e) {
-            Nucleus.getNucleus().getLogger().error(e.getMessage());
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-    }
+    boolean delete();
 }

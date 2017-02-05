@@ -20,6 +20,7 @@ import io.github.nucleuspowered.nucleus.configurate.datatypes.item.BlacklistNode
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.iapi.data.JailData;
 import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
+import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
@@ -181,7 +182,7 @@ public class EssCmdsMigrator extends DataMigrator {
         // Locked Weather Worlds
         for (String world : Utils.getLockedWeatherWorlds()) {
             UUID uniqueId = UUID.fromString(world);
-            getWorld(uniqueId).ifPresent(x -> x.setLockWeather(true));
+            getWorld(uniqueId).ifPresent(x -> x.quickSet(EnvironmentWorldDataModule.class, y -> y.setLockWeather(true)));
         }
 
         src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.weather"));
