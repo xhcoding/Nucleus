@@ -64,6 +64,10 @@ public class TeleportAskCommand extends StandardAbstractCommand<Player> {
         };
     }
 
+    @Override protected ContinueMode preProcessChecks(SubjectPermissionCache<Player> source, CommandContext args) {
+        return TeleportHandler.canTeleportTo(source, args.<Player>getOne(playerKey).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
+    }
+
     @Override
     public CommandResult executeCommand(SubjectPermissionCache<Player> cache, CommandContext args) throws Exception {
         Player src = cache.getSubject();
