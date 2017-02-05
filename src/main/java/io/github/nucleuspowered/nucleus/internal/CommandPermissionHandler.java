@@ -138,7 +138,7 @@ public class CommandPermissionHandler {
             }
 
             if (c.supportsOthers()) {
-                mssl.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", co.value()[0]),
+                mssl.put(others, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", co.value()[0]),
                     SuggestedLevel.ADMIN));
             }
 

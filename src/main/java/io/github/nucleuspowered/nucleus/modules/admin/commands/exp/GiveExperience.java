@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.commands.exp;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.ExperienceLevelArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -32,7 +33,10 @@ public class GiveExperience extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.player(Text.of(ExperienceCommand.playerKey)))),
-            GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
+            GenericArguments.firstParsing(
+                GenericArguments.onlyOne(new ExperienceLevelArgument(Text.of(ExperienceCommand.levelKey))),
+                GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(ExperienceCommand.experienceKey)))
+            )
         };
     }
 
@@ -43,8 +47,19 @@ public class GiveExperience extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
+        int extra;
+        if (args.hasAny(ExperienceCommand.levelKey)) {
+            int lvl = pl.get(Keys.EXPERIENCE_LEVEL).orElse(0) + args.<Integer>getOne(ExperienceCommand.levelKey).get();
+            extra = pl.get(Keys.EXPERIENCE_SINCE_LEVEL).orElse(0);
+
+            // Offer level, then we offer the extra experience.
+            pl.tryOffer(Keys.EXPERIENCE_LEVEL, lvl);
+        } else {
+            extra = args.<Integer>getOne(ExperienceCommand.experienceKey).get();
+        }
+
         int exp = pl.get(Keys.TOTAL_EXPERIENCE).get();
-        exp += args.<Integer>getOne(ExperienceCommand.experienceKey).get();
+        exp += extra;
 
         return ExperienceCommand.tellUserAboutExperience(src, pl, pl.offer(Keys.TOTAL_EXPERIENCE, exp).isSuccessful());
     }

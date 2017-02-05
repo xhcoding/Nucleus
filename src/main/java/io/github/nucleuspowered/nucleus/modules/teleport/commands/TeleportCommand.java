@@ -72,18 +72,8 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
        };
     }
 
-    @Override
-    public ContinueMode preProcessChecks(SubjectPermissionCache<CommandSource> source, CommandContext args) {
-        // Do the /tptoggle check now, no need to go through a warmup then...
-        if (source instanceof Player && !TeleportHandler.canBypassTpToggle(source.getSubject())) {
-            Player to = args.<Player>getOne(playerKey).get();
-            if (!userDataManager.get(to).get().isTeleportToggled()) {
-                source.getSubject().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
-                return ContinueMode.STOP;
-            }
-        }
-
-        return ContinueMode.CONTINUE;
+    @Override protected ContinueMode preProcessChecks(SubjectPermissionCache<CommandSource> source, CommandContext args) {
+        return TeleportHandler.canTeleportTo(source, args.<Player>getOne(playerKey).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
     }
 
     @Override

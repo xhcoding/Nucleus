@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.listeners;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -18,7 +19,6 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
-import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.Slot;
@@ -37,13 +37,11 @@ public class KitListener extends ListenerBase {
     @Inject private KitConfigAdapter kitConfigAdapter;
 
     @Listener
-    public void onPlayerJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+    public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player player) {
         loader.get(player).ifPresent(p -> {
-            if (p.isFirstPlay()) {
-                List<ItemStackSnapshot> l = gds.getFirstKit();
-                if (l != null && !l.isEmpty()) {
-                    Util.addToStandardInventory(player, gds.getFirstKit(), false, kitConfigAdapter.getNodeOrDefault().isProcessTokens());
-                }
+            List<ItemStackSnapshot> l = gds.getFirstKit();
+            if (l != null && !l.isEmpty()) {
+                Util.addToStandardInventory(player, gds.getFirstKit(), false, kitConfigAdapter.getNodeOrDefault().isProcessTokens());
             }
         });
     }

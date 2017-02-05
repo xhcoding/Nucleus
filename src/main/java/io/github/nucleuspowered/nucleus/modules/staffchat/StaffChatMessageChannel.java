@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.staffchat;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.iapi.util.NucleusIgnorableChatChannel;
+import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.commands.StaffChatCommand;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfig;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class StaffChatMessageChannel implements NucleusIgnorableChatChannel {
+public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
 
     static StaffChatMessageChannel INSTANCE = null;
 

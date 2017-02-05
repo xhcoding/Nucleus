@@ -20,10 +20,10 @@ public class ChatTemplateConfig {
     private String namecolour = "";
 
     @Setting(comment = "loc:config.chat.template.prefix")
-    private String prefix = "{{prefix}} {{displayname}}&f: ";
+    private String prefix = "{{prefix}} {{displayname}}{{suffix}}&f: ";
 
     @Setting(comment = "loc:config.chat.template.suffix")
-    private String suffix = " {{suffix}}";
+    private String suffix = "";
 
     public String getPrefix() {
         return prefix;

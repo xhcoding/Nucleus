@@ -15,6 +15,8 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 
 import javax.inject.Inject;
 
@@ -31,10 +33,23 @@ public class ClearCacheCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager ucl;
 
+    @Override public CommandElement[] getArguments() {
+        return new CommandElement[] {
+            GenericArguments.flags().flag("f").buildWith(GenericArguments.none())
+        };
+    }
+
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        ucl.removeOfflinePlayers();
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.clearcache.success"));
+        boolean force = args.hasAny("f");
+        ucl.removeOfflinePlayers(force);
+
+        if (force) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.clearcache.success"));
+        } else {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.clearcache.success2m"));
+        }
+
         return CommandResult.success();
     }
 }

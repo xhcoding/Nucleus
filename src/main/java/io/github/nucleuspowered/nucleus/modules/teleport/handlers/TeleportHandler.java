@@ -5,10 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.handlers;
 
 import com.google.common.base.Preconditions;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
+import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -16,6 +18,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextStyles;
@@ -48,8 +51,19 @@ public class TeleportHandler {
         return new TeleportBuilder(plugin);
     }
 
-    public static boolean canBypassTpToggle(CommandSource from) {
+    public static boolean canBypassTpToggle(Subject from) {
         return from.hasPermission(tptoggleBypassPermission);
+    }
+
+    public static boolean canTeleportTo(SubjectPermissionCache<? extends CommandSource> source, Player to)  {
+        if (source.getSubject() instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
+            if (!Nucleus.getNucleus().getUserDataManager().get(to).map(UserService::isTeleportToggled).orElse(true)) {
+                source.getSubject().sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void addAskQuestion(UUID target, TeleportPrep tp) {
