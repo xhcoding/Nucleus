@@ -6,11 +6,13 @@ package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusOnLoginEvent;
+import io.github.nucleuspowered.nucleus.modules.core.events.OnFirstLoginEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,13 +37,11 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class CoreListener extends ListenerBase {
 
     @Inject private UserDataManager loader;
     @Inject private CoreConfigAdapter cca;
-    private boolean runSync = false;
 
     /* (non-Javadoc)
      * We do this last to avoid interfering with other modules.
@@ -79,9 +79,11 @@ public class CoreListener extends ListenerBase {
             UserService qsu = loader.get(player).get();
             qsu.setLastLogin(Instant.now());
 
-            if (Util.isFirstPlay(player)) {
+            // If in the cache, unset it too.
+            qsu.setFirstPlay(Util.isFirstPlay(player) && !qsu.getLastLogout().isPresent());
+
+            if (qsu.isFirstPlay()) {
                 plugin.getGeneralService().resetUniqueUserCount();
-                qsu.setFirstPlay(Util.isFirstPlay(player));
             }
 
             qsu.setLastIp(player.getConnection().getAddress().getAddress());
@@ -91,6 +93,19 @@ public class CoreListener extends ListenerBase {
             Task.builder().execute(() -> qsu.setLastKnownName(name)).delayTicks(20L).submit(plugin);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Listener
+    public void onPlayerJoinLast(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
+        if (loader.get(player).map(UserService::isFirstPlay).orElse(true)) {
+            NucleusFirstJoinEvent firstJoinEvent = new OnFirstLoginEvent(
+                event.getCause(), player, event.getOriginalChannel(), event.getChannel().orElse(null), event.getOriginalMessage(),
+                    event.isMessageCancelled(), event.getFormatter());
+
+            Sponge.getEventManager().post(firstJoinEvent);
+            event.setChannel(firstJoinEvent.getChannel().get());
+            event.setMessageCancelled(firstJoinEvent.isMessageCancelled());
         }
     }
 
@@ -106,15 +121,7 @@ public class CoreListener extends ListenerBase {
 
         final Location<World> location = player.getLocation();
         final InetAddress address = player.getConnection().getAddress().getAddress();
-        if (runSync) {
-            // Work around things not existing, run quit events sync just as the server draws to a close.
-            onPlayerQuitInner(player, location, address);
-        } else {
-            Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> onPlayerQuitInner(player, location, address), 200, TimeUnit.MILLISECONDS);
-        }
-    }
 
-    private void onPlayerQuitInner(final Player player, final Location<World> location, final InetAddress address) {
         try {
             this.plugin.getUserDataManager().get(player).ifPresent(x -> {
                 x.setOnLogout(location);
@@ -129,7 +136,6 @@ public class CoreListener extends ListenerBase {
 
     @Listener
     public void onServerAboutToStop(final GameStoppingServerEvent event) {
-        runSync = true;
         if (cca.getNodeOrDefault().isKickOnStop()) {
             Iterator<Player> players = Sponge.getServer().getOnlinePlayers().iterator();
             while (players.hasNext()) {
