@@ -283,6 +283,10 @@ public class Util {
         return getTypedObjectFromSubject(Integer::parseUnsignedInt, player, options);
     }
 
+    public static Optional<Integer> getIntOptionFromSubject(Subject player, String... options) {
+        return getTypedObjectFromSubject(Integer::parseInt, player, options);
+    }
+
     public static <T> Optional<T> getTypedObjectFromSubject(ThrownFunction<String, T, Exception> conversion, Subject player, String... options) {
         try {
             Optional<String> optional = getOptionFromSubject(player, options);

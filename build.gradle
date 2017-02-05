@@ -11,9 +11,9 @@ plugins {
 allprojects {
     apply plugin: 'java'
 
-    def versionno = '0.22.0'
+    def versionno = '0.23.0'
     def spongeapiversion = '6.0'
-    def suffix = ''// '-SNAPSHOT'
+    def suffix = '-SNAPSHOT'
 
     version = versionno + suffix + '-S' + spongeapiversion
 
@@ -87,6 +87,7 @@ dependencies {
     testCompile "org.mockito:mockito-all:1.10.19"
     testCompile "org.powermock:powermock-module-junit4:1.6.4"
     testCompile "org.powermock:powermock-api-mockito:1.6.4"
+    testCompile "org.hamcrest:hamcrest-junit:2.0.0.0"
 }
 
 license {
