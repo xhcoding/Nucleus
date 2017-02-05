@@ -184,7 +184,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
      *         <code>empty</code> if the player list is of zero length.
      */
     private Optional<Text> getPlayerList(Collection<Player> playersToList, boolean showVanished) {
-        List<Text> playerList = playersToList.stream().filter(x -> showVanished || !x.get(Keys.INVISIBLE).orElse(false))
+        List<Text> playerList = playersToList.stream().filter(x -> showVanished || !x.get(Keys.VANISH).orElse(false))
                 .sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName())).map(x -> {
                     Text.Builder tb = Text.builder();
                     boolean appendSpace = false;
@@ -193,7 +193,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
                         appendSpace = true;
                     }
 
-                    if (x.get(Keys.INVISIBLE).orElse(false)) {
+                    if (x.get(Keys.VANISH).orElse(false)) {
                         tb.append(hidden);
                         appendSpace = true;
                     }
