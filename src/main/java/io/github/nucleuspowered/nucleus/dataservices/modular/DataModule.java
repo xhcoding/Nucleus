@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -31,10 +32,13 @@ public abstract class DataModule<S extends ModularDataService<S>> {
         data = fieldData.computeIfAbsent((Class<? extends DataModule<?>>) this.getClass(), this::init);
     }
 
-    protected void loadFrom(ConfigurationNode node) {
+    void loadFrom(ConfigurationNode node) {
         for (FieldData d : data) {
             try {
-                d.field.set(this, node.getNode((Object[]) d.path).getValue(d.clazz));
+                Optional<?> value = getValue(d.clazz, d.path, node);
+                if (value.isPresent()) {
+                    d.field.set(this, value.get());
+                }
             } catch (IllegalArgumentException e) {
                 // ignored, we'll stick with the default.
             } catch (Exception e) {
@@ -43,7 +47,16 @@ public abstract class DataModule<S extends ModularDataService<S>> {
         }
     }
 
-    protected void saveTo(ConfigurationNode node) {
+    private <T> Optional<T> getValue(TypeToken<T> token, String[] path, ConfigurationNode node) {
+        try {
+            return Optional.ofNullable(node.getNode((Object[]) path).getValue(token));
+        } catch (ObjectMappingException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    void saveTo(ConfigurationNode node) {
         for (FieldData d : data) {
             try {
                 getObj(d.clazz, d.field, d.path, node);

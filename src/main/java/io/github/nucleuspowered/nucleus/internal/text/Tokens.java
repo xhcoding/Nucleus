@@ -18,11 +18,10 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.annotation.Nonnull;
 
 public final class Tokens implements NucleusMessageTokenService.TokenParser {
 
