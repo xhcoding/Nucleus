@@ -4,8 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.modular;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.dataservices.Service;
+import io.github.nucleuspowered.nucleus.dataservices.AbstractService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -14,22 +13,16 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ModularDataService<S extends ModularDataService<S>> implements Service {
+public class ModularDataService<S extends ModularDataService<S>> extends AbstractService<ConfigurationNode> {
 
     private Map<Class<?>, DataModule<S>> cached = new HashMap<>();
-
-    private ConfigurationNode data;
-    private final DataProvider<ConfigurationNode> dataProvider;
 
     protected ModularDataService(DataProvider<ConfigurationNode> dataProvider) throws Exception {
         this(dataProvider, true);
     }
 
     protected ModularDataService(DataProvider<ConfigurationNode> dataProvider, boolean loadNow) throws Exception {
-        this.dataProvider = dataProvider;
-        if (loadNow) {
-            data = dataProvider.load();
-        }
+        super(dataProvider, loadNow);
     }
 
     public <T extends DataModule<S>, R> R quickGet(Class<T> module, Function<T, R> getter) {
@@ -63,54 +56,13 @@ public class ModularDataService<S extends ModularDataService<S>> implements Serv
         dataModule.saveTo(data);
     }
 
-    public boolean load() {
-        try {
-            cached.clear();
-            loadInternal();
-            return true;
-        } catch (Exception e) {
-            Nucleus.getNucleus().getLogger().error(e.getMessage());
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
+    @Override public void loadInternal() throws Exception {
+        super.loadInternal();
+        cached.clear(); // Only clear if no exception was caught.
     }
 
-    public void loadInternal() throws Exception {
-        data = dataProvider.load();
+    @Override public boolean save() {
+        cached.values().forEach(x -> x.saveTo(data));
+        return super.save();
     }
-
-    public boolean save() {
-        try {
-            // Just in case.
-            cached.values().forEach(x -> x.saveTo(data));
-
-            dataProvider.save(data);
-            return true;
-        } catch (Exception e) {
-            Nucleus.getNucleus().getLogger().error(e.getMessage());
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-    }
-
-    public boolean delete() {
-        try {
-            dataProvider.delete();
-            return true;
-        } catch (Exception e) {
-            Nucleus.getNucleus().getLogger().error(e.getMessage());
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-    }
-
 }

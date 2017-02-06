@@ -9,14 +9,14 @@ import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 
 public abstract class AbstractService<T> implements Service {
 
-    T data;
+    protected T data;
     private final DataProvider<T> dataProvider;
 
     AbstractService(DataProvider<T> dataProvider) throws Exception {
         this(dataProvider, true);
     }
 
-    AbstractService(DataProvider<T> dataProvider, boolean loadNow) throws Exception {
+    protected AbstractService(DataProvider<T> dataProvider, boolean loadNow) throws Exception {
         this.dataProvider = dataProvider;
         if (loadNow) {
             data = dataProvider.load();
