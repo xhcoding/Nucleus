@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices;
 
-public interface Service<T> {
+public interface Service {
 
     boolean load();
 

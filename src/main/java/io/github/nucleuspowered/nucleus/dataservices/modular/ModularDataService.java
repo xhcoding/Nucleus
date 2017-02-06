@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class ModularDataService<S extends ModularDataService<S>> implements Service<S> {
+public class ModularDataService<S extends ModularDataService<S>> implements Service {
 
     private Map<Class<?>, DataModule<S>> cached = new HashMap<>();
 

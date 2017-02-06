@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.dataservices;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 
-public abstract class AbstractService<T> implements Service<T> {
+public abstract class AbstractService<T> implements Service {
 
     T data;
     private final DataProvider<T> dataProvider;
