@@ -7,8 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.misc.runnables;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.modules.misc.datamodules.InvulnerabilityUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
@@ -41,7 +41,9 @@ public class GodRunnable extends TaskBase {
     @Override
     public void accept(Task task) {
         Collection<Player> cp = Sponge.getServer().getOnlinePlayers();
-        List<Player> toFeed = cp.stream().filter(x -> ucl.getUser(x).map(NucleusUser::isInvulnerable).orElse(false)).collect(Collectors.toList());
+        List<Player> toFeed = cp.stream().filter(x -> ucl.getUser(x)
+                .map(y -> y.get(InvulnerabilityUserDataModule.class).isInvulnerable()).orElse(false))
+                .collect(Collectors.toList());
         if (!toFeed.isEmpty()) {
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> toFeed.forEach(p -> p.offer(Keys.FOOD_LEVEL, Integer.MAX_VALUE)));
         }

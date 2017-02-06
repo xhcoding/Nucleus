@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -23,6 +22,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -84,7 +84,7 @@ public class KitCommand extends AbstractCommand<Player> {
     @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
         KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
-        UserService user = userConfigLoader.get(player.getUniqueId()).get();
+        KitUserDataModule user = userConfigLoader.get(player.getUniqueId()).get().get(KitUserDataModule.class);
         Kit kit = kitInfo.kit;
         String kitName = kitInfo.name;
         Instant now = Instant.now();

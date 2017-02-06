@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -18,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.vanish.datamodules.VanishUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -76,7 +76,7 @@ public class VanishCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.noperm", playerToVanish.getName()));
         }
 
-        UserService uss = userDataManager.get(playerToVanish).get();
+        VanishUserDataModule uss = userDataManager.get(playerToVanish).get().get(VanishUserDataModule.class);
         uss.setVanished(args.<Boolean>getOne(b).orElse(!uss.isVanished()));
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.successuser",
@@ -90,7 +90,7 @@ public class VanishCommand extends AbstractCommand<CommandSource> {
         // If we don't specify whether to vanish, toggle
         boolean toVanish = args.<Boolean>getOne(b).orElse(!playerToVanish.get(Keys.VANISH).orElse(false));
 
-        userDataManager.get(playerToVanish).get().setVanished(toVanish);
+        userDataManager.get(playerToVanish).get().get(VanishUserDataModule.class).setVanished(toVanish);
         if (!playerToVanish.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET).equals(GameModes.SPECTATOR)) {
             DataTransactionResult dtr = playerToVanish.offer(Keys.VANISH, toVanish);
             playerToVanish.offer(Keys.VANISH_PREVENTS_TARGETING, toVanish);

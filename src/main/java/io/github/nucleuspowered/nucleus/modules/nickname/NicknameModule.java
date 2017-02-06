@@ -8,8 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "nickname", name = "Nickname")
+@ModuleData(id = NicknameModule.ID, name = "Nickname")
 public class NicknameModule extends ConfigurableModule<NicknameConfigAdapter> {
+
+    public final static String ID = "nickname";
 
     @Override
     public NicknameConfigAdapter createAdapter() {

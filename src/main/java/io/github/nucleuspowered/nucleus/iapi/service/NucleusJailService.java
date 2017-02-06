@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.iapi.service;
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.iapi.data.JailData;
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.internal.LocationData;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
@@ -63,10 +62,6 @@ public interface NucleusJailService {
 
     /**
      * Returns information about why a subject is jailed, if they are indeed jailed.
-     *
-     * <p>
-     *     This is equivalent to {@link NucleusUser#getJailData()}
-     * </p>
      *
      * @param user The {@link User} to check
      * @return An {@link Optional} that will contain {@link JailData} if the subject is jailed.

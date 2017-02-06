@@ -26,7 +26,6 @@ import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusUserLoaderService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
@@ -264,9 +263,6 @@ public class NucleusPlugin extends Nucleus {
         modulesLoaded = true;
         Sponge.getEventManager().post(new BaseModuleEvent.Complete(this));
 
-        // Register final services
-        Game game = Sponge.getGame();
-        game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, userDataManager);
         logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
     }
 
@@ -430,6 +426,14 @@ public class NucleusPlugin extends Nucleus {
         return moduleContainer;
     }
 
+    @Override public boolean isModuleLoaded(String moduleId) {
+        try {
+            return getModuleContainer().isModuleLoaded(moduleId);
+        } catch (NoModuleException e) {
+            return false;
+        }
+    }
+
     @Override
     public <R extends NucleusConfigAdapter<?>> Optional<R> getConfigAdapter(String id, Class<R> configAdapterClass) {
         try {
@@ -529,7 +533,7 @@ public class NucleusPlugin extends Nucleus {
         }
     }
 
-    public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
+    @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
         reloadableList.add(reloadable);
     }
 

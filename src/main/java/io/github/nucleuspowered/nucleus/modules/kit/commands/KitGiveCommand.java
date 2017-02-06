@@ -10,7 +10,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -19,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -78,7 +78,7 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.give.self"));
         }
 
-        UserService user = userDataManager.get(player.getUniqueId()).get();
+        KitUserDataModule user = userDataManager.get(player.getUniqueId()).get().get(KitUserDataModule.class);
         Kit kit = kitInfo.kit;
         String kitName = kitInfo.name;
         Instant now = Instant.now();

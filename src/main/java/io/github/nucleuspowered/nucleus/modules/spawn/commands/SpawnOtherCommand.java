@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.events.SendToSpawnEvent;
@@ -98,7 +99,7 @@ public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.offline.permission"));
         }
 
-        plugin.getUserDataManager().get(user).get().sendToLocationOnLogin(worldTransform.getLocation());
+        plugin.getUserDataManager().get(user).get().get(CoreUserDataModule.class).sendToLocationOnLogin(worldTransform.getLocation());
         source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.offline.sendonlogin", user.getName(), worldTransform.getExtent().getName()));
         return CommandResult.success();
     }

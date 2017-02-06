@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.ignore.commands.IgnoreCommand;
+import io.github.nucleuspowered.nucleus.modules.ignore.datamodules.IgnoreUserDataModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -44,7 +45,9 @@ public class IgnoreListener extends ListenerBase {
     public void onMessage(NucleusMessageEvent event, @Root Player player) {
         if (event.getRecipient() instanceof User) {
             try {
-                event.setCancelled(loader.get((User) event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
+                event.setCancelled(loader.get((User) event.getRecipient()).get()
+                        .get(IgnoreUserDataModule.class)
+                        .getIgnoreList().contains(player.getUniqueId()));
             } catch (Exception e) {
                 if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();
@@ -56,7 +59,9 @@ public class IgnoreListener extends ListenerBase {
     @Listener(order = Order.FIRST)
     public void onMail(NucleusMailEvent event, @Root Player player) {
         try {
-            event.setCancelled(loader.get(event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
+            event.setCancelled(loader.get(event.getRecipient()).get()
+                    .get(IgnoreUserDataModule.class)
+                    .getIgnoreList().contains(player.getUniqueId()));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -83,7 +88,9 @@ public class IgnoreListener extends ListenerBase {
         List<MessageReceiver> list = Lists.newArrayList(collection);
         list.removeIf(x -> {
             try {
-                return x instanceof Player && !x.equals(player) && loader.get((Player) x).get().getIgnoreList().contains(player.getUniqueId());
+                return x instanceof Player && !x.equals(player) && loader.get((Player) x).get()
+                        .get(IgnoreUserDataModule.class)
+                        .getIgnoreList().contains(player.getUniqueId());
             } catch (Exception e) {
                 if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();

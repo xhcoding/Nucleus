@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import ninja.leaping.configurate.ConfigurationNode;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class ModularWorldService extends ModularDataService<ModularWorldService> {
@@ -23,5 +24,13 @@ public class ModularWorldService extends ModularDataService<ModularWorldService>
 
     public UUID getWorldUUID() {
         return this.worldUUID;
+    }
+
+    @Override <T extends TransientModule<ModularWorldService>> Optional<T> tryGetTransient(Class<T> module) {
+        return DataModuleFactory.getTransient(module, this);
+    }
+
+    @Override <T extends DataModule<ModularWorldService>> Optional<T> tryGet(Class<T> module) {
+        return DataModuleFactory.get(module, this);
     }
 }

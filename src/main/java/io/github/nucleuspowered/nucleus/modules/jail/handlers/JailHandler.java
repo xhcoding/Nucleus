@@ -8,12 +8,15 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.data.JailData;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailGeneralDataModule;
+import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -66,7 +69,7 @@ public class JailHandler implements NucleusJailService {
     @Override
     public Optional<JailData> getPlayerJailData(User user) {
         try {
-            return plugin.getUserDataManager().get(user).get().getJailData();
+            return plugin.getUserDataManager().get(user).get().get(JailUserDataModule.class).getJailData();
         } catch (Exception e) {
             e.printStackTrace();
             return Optional.empty();
@@ -75,15 +78,10 @@ public class JailHandler implements NucleusJailService {
 
     @Override
     public boolean jailPlayer(User user, JailData data) {
-        UserService iqsu;
-        try {
-            iqsu = plugin.getUserDataManager().get(user).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        ModularUserService modularUserService = plugin.getUserDataManager().get(user).get();
+        JailUserDataModule jailUserDataModule = modularUserService.get(JailUserDataModule.class);
 
-        if (iqsu.getJailData().isPresent()) {
+        if (jailUserDataModule.getJailData().isPresent()) {
             return false;
         }
 
@@ -101,16 +99,16 @@ public class JailHandler implements NucleusJailService {
             return false;
         }
 
-        iqsu.setJailData(data);
+        jailUserDataModule.setJailData(data);
         if (user.isOnline()) {
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
                 plugin.getTeleportHandler().teleportPlayer(player, owl.get().getLocation().get(), owl.get().getRotation(),
                     NucleusTeleportHandler.TeleportMode.NO_CHECK);
-                iqsu.setFlying(false);
+                modularUserService.get(FlyUserDataModule.class).setFlying(false);
             });
         } else {
-            iqsu.setJailOnNextLogin(true);
+            jailUserDataModule.setJailOnNextLogin(true);
         }
 
         return true;
@@ -118,15 +116,9 @@ public class JailHandler implements NucleusJailService {
 
     @Override
     public boolean unjailPlayer(User user) {
-        final UserService iqsu;
-        try {
-            iqsu = plugin.getUserDataManager().get(user).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        Optional<JailData> ojd = iqsu.getJailData();
+        final ModularUserService modularUserService = plugin.getUserDataManager().get(user).get();
+        final JailUserDataModule jailUserDataModule = modularUserService.get(JailUserDataModule.class);
+        Optional<JailData> ojd = jailUserDataModule.getJailData();
         if (!ojd.isPresent()) {
             return false;
         }
@@ -139,13 +131,13 @@ public class JailHandler implements NucleusJailService {
                 player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("jail.elapsed"));
 
                 // Remove after the teleport for the back data.
-                iqsu.removeJailData();
+                jailUserDataModule.removeJailData();
             });
         } else {
-            iqsu.sendToLocationOnLogin(ow.isPresent() ? ow.get()
+            modularUserService.get(CoreUserDataModule.class).sendToLocationOnLogin(ow.isPresent() ? ow.get()
                     : new Location<>(Sponge.getServer().getWorld(Sponge.getServer().getDefaultWorld().get().getUniqueId()).get(),
                             Sponge.getServer().getDefaultWorld().get().getSpawnPosition()));
-            iqsu.removeJailData();
+            jailUserDataModule.removeJailData();
         }
 
         return true;

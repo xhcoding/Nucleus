@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitConfigDataNode;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -29,8 +28,7 @@ import java.util.function.Supplier;
 public class DataProviders {
 
     private final NucleusPlugin plugin;
-    private final TypeToken<UserDataNode> ttu = TypeToken.of(UserDataNode.class);
-    private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
+        private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
     private final TypeToken<Map<String, String>> ttss = new TypeToken<Map<String, String>>() {};
     private final TypeToken<KitConfigDataNode> ttmk = TypeToken.of(KitConfigDataNode.class);
 
@@ -41,11 +39,11 @@ public class DataProviders {
         this.plugin = plugin;
     }
 
-    public DataProvider<UserDataNode> getUserFileDataProviders(UUID uuid) {
+    public DataProvider<ConfigurationNode> getUserFileDataProviders(UUID uuid) {
         // For now, just the Configurate one.
         try {
             Path p = getFile(userJson, uuid);
-            return new ConfigurateDataProvider<>(ttu, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
+            return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }

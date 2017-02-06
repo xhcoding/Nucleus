@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -14,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -53,7 +53,7 @@ public class ListPowertoolCommand extends AbstractCommand<Player> {
             paginationService = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         }
 
-        UserService inu = loader.get(src).get();
+        PowertoolUserDataModule inu = loader.get(src).get().get(PowertoolUserDataModule.class);
 
         boolean toggle = inu.isPowertoolToggled();
         Map<String, List<String>> powertools = inu.getPowertools();
@@ -74,7 +74,7 @@ public class ListPowertoolCommand extends AbstractCommand<Player> {
         return CommandResult.success();
     }
 
-    private Text from(final UserService inu, Player src, String powertool, List<String> commands) {
+    private Text from(final PowertoolUserDataModule inu, Player src, String powertool, List<String> commands) {
         Optional<ItemType> oit = Sponge.getRegistry().getType(ItemType.class, powertool);
 
         // Create the click actions.

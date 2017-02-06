@@ -5,9 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.back.handlers;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusBackService;
+import io.github.nucleuspowered.nucleus.modules.back.datamodules.BackUserTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.User;
@@ -23,9 +24,9 @@ public class BackHandler implements NucleusBackService {
 
     @Override
     public Optional<Transform<World>> getLastLocation(User user) {
-        Optional<UserService> oi = getUser(user);
+        Optional<ModularUserService> oi = getUser(user);
         if (oi.isPresent()) {
-            return oi.get().getLastLocation();
+            return oi.get().getTransient(BackUserTransientModule.class).getLastLocation();
         }
 
         return Optional.empty();
@@ -33,26 +34,26 @@ public class BackHandler implements NucleusBackService {
 
     @Override
     public void setLastLocation(User user, Transform<World> location) {
-        getUser(user).ifPresent(x -> x.setLastLocation(location));
+        getUser(user).ifPresent(x -> x.getTransient(BackUserTransientModule.class).setLastLocation(location));
     }
 
     @Override
     public void removeLastLocation(User user) {
-        getUser(user).ifPresent(x -> x.setLastLocation(null));
+        getUser(user).ifPresent(x -> x.getTransient(BackUserTransientModule.class).setLastLocation(null));
     }
 
     @Override
     public boolean getLogBack(User user) {
-        Optional<UserService> oi = getUser(user);
-        return oi.isPresent() && oi.get().isLogLastLocation();
+        Optional<ModularUserService> oi = getUser(user);
+        return oi.isPresent() && oi.get().getTransient(BackUserTransientModule.class).isLogLastLocation();
     }
 
     @Override
     public void setLogBack(User user, boolean log) {
-        getUser(user).ifPresent(x -> x.setLogLastLocation(log));
+        getUser(user).ifPresent(x -> x.getTransient(BackUserTransientModule.class).setLogLastLocation(log));
     }
 
-    private Optional<UserService> getUser(User user) {
+    private Optional<ModularUserService> getUser(User user) {
         try {
             return Optional.ofNullable(loader.get(user.getUniqueId()).orElse(null));
         } catch (Exception e) {

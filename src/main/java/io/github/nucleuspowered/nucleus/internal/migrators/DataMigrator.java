@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.migrators;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandSource;
@@ -35,7 +35,7 @@ public abstract class DataMigrator {
      */
     public abstract void migrate(CommandSource src) throws Exception;
 
-    protected final Optional<UserService> getUser(UUID uuid) {
+    protected final Optional<ModularUserService> getUser(UUID uuid) {
         try {
             return plugin.getUserDataManager().get(uuid);
         } catch (Exception e) {

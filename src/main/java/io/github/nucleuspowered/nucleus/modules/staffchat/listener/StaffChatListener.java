@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
+import io.github.nucleuspowered.nucleus.modules.staffchat.datamodules.StaffChatTransientModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -28,7 +29,7 @@ public class StaffChatListener extends ListenerBase {
 
     private boolean inAdminChat(Player player) {
         try {
-            return loader.get(player).get().isInStaffChat();
+            return loader.get(player).get().getTransient(StaffChatTransientModule.class).isInStaffChat();
         } catch (Exception e) {
             return false;
         }

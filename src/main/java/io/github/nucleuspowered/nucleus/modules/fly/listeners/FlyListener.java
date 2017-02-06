@@ -5,14 +5,15 @@
 package io.github.nucleuspowered.nucleus.modules.fly.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.fly.commands.FlyCommand;
 import io.github.nucleuspowered.nucleus.modules.fly.config.FlyConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
@@ -49,10 +50,10 @@ public class FlyListener extends ListenerBase {
             return;
         }
 
-        Optional<UserService> serviceOptional = ucl.get(pl);
+        Optional<ModularUserService> serviceOptional = ucl.get(pl);
         if (serviceOptional.isPresent()) {
             // Let's just reset these...
-            if (serviceOptional.get().isFlyingSafe()) {
+            if (serviceOptional.get().quickGet(FlyUserDataModule.class, FlyUserDataModule::isFlyingSafe)) {
                 pl.offer(Keys.CAN_FLY, true);
 
                 // If in the air, flying!
@@ -78,7 +79,7 @@ public class FlyListener extends ListenerBase {
         }
 
         try {
-            ucl.getUser(pl).get().setFlying(pl.get(Keys.CAN_FLY).orElse(false));
+            ucl.getUser(pl).get().quickSet(FlyUserDataModule.class, x -> x.setFlying(pl.get(Keys.CAN_FLY).orElse(false)));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -102,10 +103,10 @@ public class FlyListener extends ListenerBase {
             return;
         }
 
-        UserService uc;
+        ModularUserService uc;
         try {
             uc = ucl.get(pl).get();
-            if (!uc.isFlying()) {
+            if (!uc.quickGet(FlyUserDataModule.class, FlyUserDataModule::isFlying)) {
                 return;
             }
         } catch (Exception e) {

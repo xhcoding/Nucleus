@@ -5,13 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.listener;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.vanish.commands.VanishCommand;
 import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfig;
 import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.vanish.datamodules.VanishUserDataModule;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -35,7 +35,7 @@ public class VanishListener extends ListenerBase {
 
     @Listener
     public void onLogin(ClientConnectionEvent.Join event, @Root Player player) {
-        UserService service = userDataManager.get(player).get();
+        VanishUserDataModule service = userDataManager.get(player).get().get(VanishUserDataModule.class);
         if (service.isVanished()) {
             VanishConfig vanishConfig = configAdapter.getNodeOrDefault();
             if (!getVanishHandler().testSuffix(player, "persist")) {
@@ -57,7 +57,7 @@ public class VanishListener extends ListenerBase {
     public void onQuit(ClientConnectionEvent.Disconnect event, @Root Player player) {
         player.get(Keys.VANISH).ifPresent(x -> {
             if (x) {
-                userDataManager.get(player).get().setVanished(true);
+                userDataManager.get(player).get().get(VanishUserDataModule.class).setVanished(true);
                 if (configAdapter.getNodeOrDefault().isSuppressMessagesOnVanish()) {
                     event.setMessageCancelled(true);
                 }

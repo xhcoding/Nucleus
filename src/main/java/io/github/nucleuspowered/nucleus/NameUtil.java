@@ -7,9 +7,11 @@ package io.github.nucleuspowered.nucleus;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
+import io.github.nucleuspowered.nucleus.modules.nickname.NicknameModule;
+import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.User;
@@ -106,10 +108,10 @@ public class NameUtil {
         }
 
         Text.Builder tb = null;
-        if (plugin != null) {
-            Optional<UserService> userService = plugin.getUserDataManager().get(player);
+        if (plugin != null && plugin.isModuleLoaded(NicknameModule.ID)) {
+            Optional<ModularUserService> userService = plugin.getUserDataManager().get(player);
             if (userService.isPresent()) {
-                Optional<Text> n = userService.get().getNicknameWithPrefix();
+                Optional<Text> n = userService.get().get(NicknameUserDataModule.class).getNicknameWithPrefix();
                 if (n.isPresent()) {
                     tb = n.get().toBuilder();
                 }

@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -33,7 +34,7 @@ public class RideEntityFlyListener extends ListenerBase {
         }
 
         try {
-            ucl.get(player).ifPresent(x -> player.offer(Keys.CAN_FLY, x.isFlyingSafe()));
+            ucl.get(player).ifPresent(x -> player.offer(Keys.CAN_FLY, x.get(FlyUserDataModule.class).isFlyingSafe()));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

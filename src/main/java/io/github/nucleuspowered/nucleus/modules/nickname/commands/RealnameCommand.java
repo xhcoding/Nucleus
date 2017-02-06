@@ -4,12 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -54,9 +55,9 @@ public class RealnameCommand extends AbstractCommand<CommandSource> {
 
         List<Text> realNames = players.stream().map(x -> {
             // I can't get display name to work!
-            Optional<UserService> ous = udm.get(x);
+            Optional<ModularUserService> ous = udm.get(x);
             if (ous.isPresent()) {
-                Optional<Text> ot = ous.get().getNicknameAsText();
+                Optional<Text> ot = ous.get().get(NicknameUserDataModule.class).getNicknameAsText();
                 if (ot.isPresent()) {
                     return new NameTuple(ot.get().toPlain().toLowerCase(), x);
                 }

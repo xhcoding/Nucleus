@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -14,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -44,7 +44,7 @@ public class TogglePowertoolCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        UserService user = loader.get(src).get();
+        PowertoolUserDataModule user = loader.get(src).get().get(PowertoolUserDataModule.class);
 
         // If specified - get the key. Else, the inverse of what we have now.
         boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!user.isPowertoolToggled());

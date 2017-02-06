@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.staffchat.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -16,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
+import io.github.nucleuspowered.nucleus.modules.staffchat.datamodules.StaffChatTransientModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -61,7 +61,7 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
         }
 
         boolean result;
-        UserService user = loader.get((Player)src).get();
+        StaffChatTransientModule user = loader.get((Player)src).get().getTransient(StaffChatTransientModule.class);
         result = !user.isInStaffChat();
         user.setInStaffChat(result);
 

@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.modules.commandspy.CommandSpyModule;
 import io.github.nucleuspowered.nucleus.modules.commandspy.commands.CommandSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.commandspy.config.CommandSpyConfig;
 import io.github.nucleuspowered.nucleus.modules.commandspy.config.CommandSpyConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.commandspy.datamodules.CommandSpyUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.living.player.Player;
@@ -68,7 +69,7 @@ public class CommandSpyListener extends ListenerBase.Reloadable {
                     .stream()
                     .filter(x -> !x.getUniqueId().equals(player.getUniqueId()))
                     .filter(x -> permissionHandler.testBase(x))
-                    .filter(x -> dataManager.get(x).get().isCommandSpy())
+                    .filter(x -> dataManager.get(x).get().quickGet(CommandSpyUserDataModule.class, CommandSpyUserDataModule::isCommandSpy))
                     .collect(Collectors.toList());
 
                 if (!playerList.isEmpty()) {

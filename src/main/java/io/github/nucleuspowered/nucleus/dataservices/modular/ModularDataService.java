@@ -4,19 +4,28 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.modular;
 
+import co.aikar.timings.Timing;
+import co.aikar.timings.Timings;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.AbstractService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import ninja.leaping.configurate.ConfigurationNode;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class ModularDataService<S extends ModularDataService<S>> extends AbstractService<ConfigurationNode> {
+public abstract class ModularDataService<S extends ModularDataService<S>> extends AbstractService<ConfigurationNode> {
 
     private Map<Class<?>, DataModule<S>> cached = new HashMap<>();
     private Map<Class<?>, TransientModule<S>> transientCache = new HashMap<>();
+    private final Timing saveTimings = Timings.of(Nucleus.getNucleus(), "Data Modules - Saving");
+    private final Timing loadTimings = Timings.of(Nucleus.getNucleus(), "Data Modules - Loading");
+    private final Timing loadTransientTimings = Timings.of(Nucleus.getNucleus(), "Transient Modules - Loading");
 
     ModularDataService(DataProvider<ConfigurationNode> dataProvider) throws Exception {
         this(dataProvider, true);
@@ -36,54 +45,80 @@ public class ModularDataService<S extends ModularDataService<S>> extends Abstrac
         set(m);
     }
 
-    public <T extends TransientModule<S>, R> R quickGetTransient(Class<T> module, Function<T, R> getter) {
-        return getter.apply(getTransient(module));
-    }
-
-    public <T extends TransientModule<S>> void quickSetTransient(Class<T> module, Consumer<T> setter) {
-        T m = getTransient(module);
-        setter.accept(m);
-        setTransient(m);
-    }
-
     @SuppressWarnings("unchecked")
-    public <T extends TransientModule<S>> T getTransient(Class<T> module) {
+    public final <T extends TransientModule<S>> T getTransient(Class<T> module) {
         if (transientCache.containsKey(module)) {
             return (T)transientCache.get(module);
         }
 
         try {
-            T dm = module.newInstance();
+            loadTransientTimings.startTimingIfSync();
+
+            T dm;
+            Optional<T> m = tryGetTransient(module);
+            if (m.isPresent()) {
+                dm = m.get();
+            } else {
+                Nucleus.getNucleus().getLogger()
+                        .warn("Attempting to construct " + module.getSimpleName() + " by reflection. Please add this to the factory.");
+                dm = module.newInstance();
+            }
+
             setTransient(dm);
             return dm;
         } catch (IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        } finally {
+            loadTransientTimings.stopTimingIfSync();
         }
     }
 
+    abstract <T extends TransientModule<S>> Optional<T> tryGetTransient(Class<T> module);
+
     @SuppressWarnings("unchecked")
-    public <T extends DataModule<S>> T get(Class<T> module) {
+    public final <T extends DataModule<S>> T get(Class<T> module) {
         if (cached.containsKey(module)) {
             return (T)cached.get(module);
         }
 
         try {
-            T dm = module.newInstance();
+            loadTimings.startTimingIfSync();
+            Optional<T> m = tryGet(module);
+            T dm;
+            if (m.isPresent()) {
+                dm = m.get();
+            } else {
+                Nucleus.getNucleus().getLogger()
+                        .warn("Attempting to construct " + module.getSimpleName() + " by reflection. Please add this to the factory.");
+
+                if (DataModule.ReferenceService.class.isAssignableFrom(module)) {
+                    Constructor s = module.getDeclaredConstructor(this.getClass());
+                    s.setAccessible(true);
+                    dm = (T)s.newInstance(this);
+                } else {
+                    dm = module.newInstance();
+                }
+            }
+
             dm.loadFrom(data);
             set(dm);
             return dm;
-        } catch (IllegalAccessException | InstantiationException e) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        } finally {
+            loadTimings.stopTimingIfSync();
         }
     }
+
+    abstract <T extends DataModule<S>> Optional<T> tryGet(Class<T> module);
 
     public <T extends DataModule<S>> void set(T dataModule) {
         cached.put(dataModule.getClass(), dataModule);
     }
 
-    public <T extends TransientModule<S>> void setTransient(T dataModule) {
+    private <T extends TransientModule<S>> void setTransient(T dataModule) {
         transientCache.put(dataModule.getClass(), dataModule);
     }
 
@@ -93,7 +128,12 @@ public class ModularDataService<S extends ModularDataService<S>> extends Abstrac
     }
 
     @Override public boolean save() {
-        cached.values().forEach(x -> x.saveTo(data));
-        return super.save();
+        try {
+            saveTimings.startTimingIfSync();
+            cached.values().forEach(x -> x.saveTo(data));
+            return super.save();
+        } finally {
+            saveTimings.stopTimingIfSync();
+        }
     }
 }

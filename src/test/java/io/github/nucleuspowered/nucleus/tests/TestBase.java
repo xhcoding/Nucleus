@@ -20,6 +20,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvide
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.spongepowered.api.text.Text;
@@ -161,6 +162,10 @@ public abstract class TestBase {
             return null;
         }
 
+        @Override public boolean isModuleLoaded(String moduleId) {
+            return true;
+        }
+
         @Override public <T extends NucleusConfigAdapter<?>> Optional<T> getConfigAdapter(String id, Class<T> configAdapterClass) {
             return Optional.empty();
         }
@@ -198,6 +203,10 @@ public abstract class TestBase {
         @Override
         public MessageProvider getCommandMessageProvider() {
             return null;
+        }
+
+        @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
+
         }
 
         @Override

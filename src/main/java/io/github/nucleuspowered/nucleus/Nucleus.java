@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
@@ -57,6 +58,8 @@ public abstract class Nucleus {
 
     public abstract DiscoveryModuleContainer getModuleContainer();
 
+    public abstract boolean isModuleLoaded(String moduleId);
+
     public abstract <T extends NucleusConfigAdapter<?>> Optional<T> getConfigAdapter(String id, Class<T> configAdapterClass);
 
     public <R, C, T extends NucleusConfigAdapter<C>> Optional<R> getConfigValue(String id, Class<T> configAdapterClass, Function<C, R> fnToGetValue) {
@@ -81,6 +84,8 @@ public abstract class Nucleus {
     public abstract MessageProvider getMessageProvider();
 
     public abstract MessageProvider getCommandMessageProvider();
+
+    public abstract void registerReloadable(ThrowableAction<? extends Exception> reloadable);
 
     public abstract Optional<MixinConfigProxy> getMixinConfigIfAvailable();
 

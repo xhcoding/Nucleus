@@ -4,17 +4,21 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.modular;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /**
  * THIS MUST HAVE A NO-ARGS CONSTRUCTOR.
@@ -86,6 +90,25 @@ public abstract class DataModule<S extends ModularDataService<S>> {
 
         fields.forEach(x -> x.setAccessible(true));
         return fields.stream().map(x -> new FieldData(x.getAnnotation(DataKey.class).value(), TypeToken.of(x.getGenericType()), x)).collect(Collectors.toList());
+    }
+
+    /**
+     * THE CONSTRUCTOR OF THE SUBCLASS MUST HAVE THE SAME FORM AS THIS!
+     *
+     * @param <T> The {@link ModularDataService} class that this will reference.
+     */
+    public static abstract class ReferenceService<T extends ModularDataService<T>> extends DataModule<T> {
+
+        private final WeakReference<T> modularDataService;
+
+        @Nonnull
+        protected T getService() {
+            return Preconditions.checkNotNull(modularDataService.get());
+        }
+
+        public ReferenceService(T modularDataService) {
+            this.modularDataService = new WeakReference<>(modularDataService);
+        }
     }
 
     private static class FieldData {

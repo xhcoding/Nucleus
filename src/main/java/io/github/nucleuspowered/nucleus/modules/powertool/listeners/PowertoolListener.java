@@ -5,13 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.powertool.commands.PowertoolCommand;
+import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -47,9 +47,9 @@ public class PowertoolListener extends ListenerBase {
 
         // Get the item and the user.
         ItemType item = player.getItemInHand(HandTypes.MAIN_HAND).get().getItem();
-        UserService user;
+        PowertoolUserDataModule user;
         try {
-            user = loader.get(player).get();
+            user = loader.get(player).get().get(PowertoolUserDataModule.class);
         } catch (Exception e) {
             if (config.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

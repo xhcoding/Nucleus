@@ -5,14 +5,15 @@
 package io.github.nucleuspowered.nucleus.modules.commandspy.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.commandspy.datamodules.CommandSpyUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -43,9 +44,10 @@ public class CommandSpyCommand extends AbstractCommand<Player> {
     }
 
     @Override public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        UserService service = userDataManager.get(src).get();
-        boolean to = args.<Boolean>getOne(truefalse).orElseGet(() -> !service.isCommandSpy());
-        service.setCommandSpy(to);
+        ModularUserService service = userDataManager.get(src).get();
+        CommandSpyUserDataModule c = service.get(CommandSpyUserDataModule.class);
+        boolean to = args.<Boolean>getOne(truefalse).orElseGet(() -> !c.isCommandSpy());
+        c.setCommandSpy(to);
 
         MessageProvider mp = plugin.getMessageProvider();
         src.sendMessage(mp.getTextMessageWithFormat("command.commandspy.success", mp.getMessageWithFormat(to ? "standard.enabled" : "standard.disabled")));

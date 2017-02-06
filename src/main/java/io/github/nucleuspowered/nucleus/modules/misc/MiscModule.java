@@ -5,10 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.misc;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.GodCommand;
 import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.misc.datamodules.InvulnerabilityUserDataModule;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 import java.util.Optional;
@@ -27,8 +28,8 @@ public class MiscModule extends ConfigurableModule<MiscConfigAdapter> {
         super.onEnable();
 
         createSeenModule(GodCommand.class, GodCommand.OTHER_SUFFIX, (cs, user) -> {
-            Optional<UserService> userServiceOptional = plugin.getUserDataManager().get(user);
-            boolean godMode = userServiceOptional.isPresent() && userServiceOptional.get().isInvulnerable();
+            Optional<ModularUserService> userServiceOptional = plugin.getUserDataManager().get(user);
+            boolean godMode = userServiceOptional.isPresent() && userServiceOptional.get().get(InvulnerabilityUserDataModule.class).isInvulnerable();
             return Lists.newArrayList(
                 plugin.getMessageProvider().getTextMessageWithFormat("seen.godmode",
                     plugin.getMessageProvider().getMessageWithFormat("standard.yesno." + Boolean.toString(godMode).toLowerCase())));

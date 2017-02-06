@@ -5,9 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.freezeplayer;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import io.github.nucleuspowered.nucleus.modules.freezeplayer.commands.FreezePlayerCommand;
+import io.github.nucleuspowered.nucleus.modules.freezeplayer.datamodules.FreezePlayerUserDataModule;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 import java.util.Optional;
@@ -19,8 +20,8 @@ public class FreezePlayerModule extends StandardModule {
         super.onEnable();
 
         createSeenModule(FreezePlayerCommand.class, (c, u) -> {
-            Optional<UserService> us = plugin.getUserDataManager().get(u);
-            if (us.isPresent() && us.get().isFrozen()) {
+            Optional<ModularUserService> us = plugin.getUserDataManager().get(u);
+            if (us.isPresent() && us.get().get(FreezePlayerUserDataModule.class).isFrozen()) {
                 return Lists.newArrayList(plugin.getMessageProvider().getTextMessageWithFormat("seen.frozen"));
             }
 

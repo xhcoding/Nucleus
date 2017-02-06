@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -18,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.events.ChangeNicknameEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -165,9 +165,9 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        UserService nucleusUser = loader.get(pl).get();
-        nucleusUser.setNickname(name);
-        Text set = nucleusUser.getNicknameAsText().get();
+        NicknameUserDataModule nicknameUserDataModule = loader.get(pl).get().get(NicknameUserDataModule.class);
+        nicknameUserDataModule.setNickname(name);
+        Text set = nicknameUserDataModule.getNicknameAsText().get();
 
         if (!src.equals(pl)) {
             src.sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.success.other", pl.getName()))

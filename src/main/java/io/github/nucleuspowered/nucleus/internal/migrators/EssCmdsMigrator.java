@@ -21,9 +21,11 @@ import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.iapi.data.JailData;
 import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
+import io.github.nucleuspowered.nucleus.modules.home.datamodules.HomeUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
+import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -100,7 +102,8 @@ public class EssCmdsMigrator extends DataMigrator {
                 if (homeLocation == null) {
                     logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("command.nucleus.migrate.homefailiure", homeName, uuid.toString()));
                 } else {
-                    getUser(uniqueId).ifPresent(x -> x.setHome(homeName, homeLocation.getLocation(), homeLocation.getRotation()));
+                    getUser(uniqueId).ifPresent(x -> x.get(HomeUserDataModule.class)
+                            .setHome(homeName, homeLocation.getLocation(), homeLocation.getRotation()));
                 }
             }
         }
@@ -160,7 +163,7 @@ public class EssCmdsMigrator extends DataMigrator {
             String uniqueId = String.valueOf(uuid);
             String nick = node.getNode(uniqueId).getString();
 
-            getUser(UUID.fromString(uniqueId)).ifPresent(x -> x.setNickname(nick));
+            getUser(UUID.fromString(uniqueId)).ifPresent(x -> x.get(NicknameUserDataModule.class).setNickname(nick));
         }
 
         src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.nicks"));

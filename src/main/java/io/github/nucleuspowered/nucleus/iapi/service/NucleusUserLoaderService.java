@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.iapi.service;
 
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusUser;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import org.spongepowered.api.entity.living.player.User;
 
 import java.util.List;
@@ -12,16 +12,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * A service that retrieves {@link NucleusUser}s.
+ * A service that retrieves {@link ModularUserService}s.
  */
 public interface NucleusUserLoaderService {
 
     /**
-     * Gets a list of {@link NucleusUser}s that represents the online.
+     * Gets a list of {@link ModularUserService}s that represents the online players.
      *
-     * @return A {@link List} of {@link NucleusUser}s.
+     * @return A {@link List} of {@link ModularUserService}s.
      */
-    List<NucleusUser> getOnlineUsers();
+    List<ModularUserService> getOnlineUsers();
 
     /**
      * Gets the user data file from their UUID.
@@ -35,9 +35,9 @@ public interface NucleusUserLoaderService {
      * </p>
      *
      * @param playerUUID The {@link UUID} of the subject in question.
-     * @return The {@link NucleusUser}, wrapped in an {@link Optional}
+     * @return The {@link ModularUserService}, wrapped in an {@link Optional}
      */
-    Optional<NucleusUser> getUser(UUID playerUUID);
+    Optional<ModularUserService> getUser(UUID playerUUID);
 
     /**
      * Gets the user data file from the {@link User}.
@@ -51,7 +51,7 @@ public interface NucleusUserLoaderService {
      * </p>
      *
      * @param user The {@link User} of the subject in question.
-     * @return The {@link NucleusUser}
+     * @return The {@link ModularUserService}
      */
-    Optional<NucleusUser> getUser(User user);
+    Optional<ModularUserService> getUser(User user);
 }

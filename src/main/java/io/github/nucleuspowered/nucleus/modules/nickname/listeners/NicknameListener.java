@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.nickname.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -23,7 +24,7 @@ public class NicknameListener extends ListenerBase {
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player) {
         ucl.get(player).ifPresent(x -> {
-            Optional<Text> d = x.getNicknameAsText();
+            Optional<Text> d = x.get(NicknameUserDataModule.class).getNicknameAsText();
             if (d.isPresent()) {
                 player.offer(Keys.DISPLAY_NAME, d.get());
             } else {

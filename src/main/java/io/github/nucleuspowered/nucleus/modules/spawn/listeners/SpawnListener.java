@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
@@ -58,7 +59,7 @@ public class SpawnListener extends ListenerBase {
     @Listener
     public void onJoin(ClientConnectionEvent.Login loginEvent) {
         UUID pl = loginEvent.getProfile().getUniqueId();
-        boolean first = !loader.getUser(pl).isPresent() || !loader.getUser(pl).get().getLastLogin().isPresent();
+        boolean first = !loader.getUser(pl).isPresent() || !loader.getUser(pl).get().get(CoreUserDataModule.class).getLastLogin().isPresent();
 
         try {
             if (first) {

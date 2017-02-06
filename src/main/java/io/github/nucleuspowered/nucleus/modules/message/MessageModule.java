@@ -7,12 +7,13 @@ package io.github.nucleuspowered.nucleus.modules.message;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.text.Text;
@@ -47,8 +48,8 @@ public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
         super.onEnable();
 
         createSeenModule(SocialSpyCommand.class, (cs, user) -> {
-            Optional<UserService> userServiceOptional = plugin.getUserDataManager().get(user);
-            boolean socialSpy = userServiceOptional.isPresent() && userServiceOptional.get().isSocialSpy();
+            Optional<ModularUserService> userServiceOptional = plugin.getUserDataManager().get(user);
+            boolean socialSpy = userServiceOptional.isPresent() && userServiceOptional.get().get(MessageUserDataModule.class).isSocialSpy();
             MessageProvider mp = plugin.getMessageProvider();
             List<Text> lt = Lists.newArrayList(
                 mp.getTextMessageWithFormat("seen.socialspy",

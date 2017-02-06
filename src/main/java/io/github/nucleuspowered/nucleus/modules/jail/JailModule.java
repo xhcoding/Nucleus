@@ -21,8 +21,10 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "jail", name = "Jail")
+@ModuleData(id = JailModule.ID, name = "Jail")
 public class JailModule extends ConfigurableModule<JailConfigAdapter> {
+
+    public static final String ID = "jail";
 
     @Inject private NucleusPlugin nucleus;
     @Inject private Logger logger;

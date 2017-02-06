@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -22,6 +21,7 @@ import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -76,11 +76,13 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
         PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
         ArrayList<Text> kitText = Lists.newArrayList();
 
-        final UserService user = src instanceof Player ? userConfigLoader.get(((Player)src).getUniqueId()).orElse(null) : null;
+        final KitUserDataModule user =
+                src instanceof Player ? userConfigLoader.get(((Player)src).getUniqueId()).get().get(KitUserDataModule.class) : null;
 
         // Only show kits that the user has permission for, if needed. This is the permission "plugin.kits.<kit>".
         kitConfig.getKitNames().stream()
-            .filter(kit -> !kca.getNodeOrDefault().isSeparatePermissions() || src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + kit.toLowerCase()))
+            .filter(kit -> !kca.getNodeOrDefault().isSeparatePermissions() ||
+                    src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + kit.toLowerCase()))
             .forEach(kit -> kitConfig.getKit(kit).ifPresent(k -> kitText.add(createKit(spc, user, kit, k))));
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
@@ -90,7 +92,7 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createKit(SubjectPermissionCache<CommandSource> source, UserService user, String kitName, Kit kitObj) {
+    private Text createKit(SubjectPermissionCache<CommandSource> source, KitUserDataModule user, String kitName, Kit kitObj) {
         Text.Builder tb = Text.builder(kitName);
 
         if (user != null && Util.getKeyIgnoreCase(user.getKitLastUsedTime(), kitName).isPresent()) {

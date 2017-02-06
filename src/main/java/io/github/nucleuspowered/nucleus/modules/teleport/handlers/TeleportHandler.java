@@ -7,12 +7,15 @@ package io.github.nucleuspowered.nucleus.modules.teleport.handlers;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.jail.JailModule;
+import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.teleport.datamodules.TeleportUserDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -57,7 +60,7 @@ public class TeleportHandler {
 
     public static boolean canTeleportTo(SubjectPermissionCache<? extends CommandSource> source, Player to)  {
         if (source.getSubject() instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
-            if (!Nucleus.getNucleus().getUserDataManager().get(to).map(UserService::isTeleportToggled).orElse(true)) {
+            if (!Nucleus.getNucleus().getUserDataManager().get(to).map(x -> x.get(TeleportUserDataModule.class).isTeleportToggled()).orElse(true)) {
                 source.getSubject().sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return false;
             }
@@ -293,13 +296,14 @@ public class TeleportHandler {
                 return false;
             }
 
-            UserService toPlayer = plugin.getUserDataManager().get(to).get();
-            if (!bypassToggle && !toPlayer.isTeleportToggled() && !canBypassTpToggle(source)) {
+            ModularUserService toPlayer = plugin.getUserDataManager().get(to).get();
+            if (!bypassToggle && !toPlayer.get(TeleportUserDataModule.class).isTeleportToggled() && !canBypassTpToggle(source)) {
                 source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return false;
             }
 
-            if (plugin.getUserDataManager().get(from).get().getJailData().isPresent()) {
+            if (plugin.isModuleLoaded(JailModule.ID) &&
+                    plugin.getUserDataManager().get(from).get().get(JailUserDataModule.class).getJailData().isPresent()) {
                 // Don't teleport a jailed subject.
                 if (!silentSource) {
                     source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.jailed", from.getName()));

@@ -5,11 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -36,8 +37,8 @@ public class DelNickCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = this.getUserFromArgs(User.class, src, playerKey, args);
-        UserService userService = loader.get(pl).get();
-        userService.removeNickname();
+        ModularUserService userService = loader.get(pl).get();
+        userService.get(NicknameUserDataModule.class).removeNickname();
 
         if (!src.equals(pl)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.delnick.success.other", pl.getName()));

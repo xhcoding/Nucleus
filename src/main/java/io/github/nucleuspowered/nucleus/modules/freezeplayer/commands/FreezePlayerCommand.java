@@ -6,12 +6,12 @@ package io.github.nucleuspowered.nucleus.modules.freezeplayer.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.freezeplayer.datamodules.FreezePlayerUserDataModule;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -50,9 +50,9 @@ public class FreezePlayerCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = this.getUserFromArgs(Player.class, src, player, args);
-        NucleusUser nu;
+        FreezePlayerUserDataModule nu;
         try {
-            nu = userConfigLoader.getUser(pl).get();
+            nu = userConfigLoader.getUser(pl).get().get(FreezePlayerUserDataModule.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new CommandException(plugin.getMessageProvider().getTextMessageWithFormat("command.file.load"), e);
