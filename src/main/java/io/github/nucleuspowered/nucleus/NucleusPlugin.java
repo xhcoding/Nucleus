@@ -19,13 +19,13 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.NameBanService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusUserLoaderService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
@@ -51,6 +51,7 @@ import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler
 import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
 import io.github.nucleuspowered.nucleus.logging.DebugLogger;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -100,7 +101,7 @@ public class NucleusPlugin extends Nucleus {
     private boolean modulesLoaded = false;
     private Throwable isErrored = null;
     private CommandsConfig commandsConfig;
-    private GeneralService generalService;
+    private ModularGeneralService generalService;
     private ItemDataService itemDataService;
     private UserDataManager userDataManager;
     private WorldDataManager worldDataManager;
@@ -165,7 +166,7 @@ public class NucleusPlugin extends Nucleus {
             commandsConfig = new CommandsConfig(Paths.get(configDir.toString(), "commands.conf"));
 
             DataProviders d = new DataProviders(this);
-            generalService = new GeneralService(d.getGeneralDataProvider());
+            generalService = new ModularGeneralService(d.getGeneralDataProvider());
             itemDataService = new ItemDataService(d.getItemDataProvider());
             userDataManager = new UserDataManager(this, d::getUserFileDataProviders, d::doesUserFileExist);
             worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider, d::doesWorldFileExist);
@@ -272,7 +273,7 @@ public class NucleusPlugin extends Nucleus {
     @Listener
     public void onGameStarting(GameStartingServerEvent event) {
         if (isErrored == null) {
-            generalService.resetUniqueUserCount();
+            generalService.getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
         }
     }
 
@@ -448,7 +449,7 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Override
-    public GeneralService getGeneralService() {
+    public ModularGeneralService getGeneralService() {
         return generalService;
     }
 

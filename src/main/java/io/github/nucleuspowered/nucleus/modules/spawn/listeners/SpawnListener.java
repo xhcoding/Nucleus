@@ -7,9 +7,9 @@ package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -18,7 +18,8 @@ import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.spawn.datamodule.SpawnWorldDataModule;
+import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
+import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnWorldDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
@@ -39,7 +40,7 @@ import java.util.UUID;
 
 public class SpawnListener extends ListenerBase {
 
-    @Inject private GeneralService store;
+    @Inject private ModularGeneralService store;
     @Inject private UserDataManager loader;
     @Inject private WorldDataManager wcl;
     @Inject private CoreConfigAdapter cca;
@@ -62,7 +63,7 @@ public class SpawnListener extends ListenerBase {
         try {
             if (first) {
                 // first spawn.
-                Optional<Transform<World>> ofs = store.getFirstSpawn();
+                Optional<Transform<World>> ofs = store.get(SpawnGeneralDataModule.class).getFirstSpawn();
 
                 // Bit of an odd line, but what what is going on here is checking for first spawn, and if it exists, then
                 // setting the location the player safely. If this cannot be done in either case, send them to world spawn.

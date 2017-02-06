@@ -7,11 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.spawn.SpawnModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -23,12 +24,13 @@ import java.util.function.Predicate;
 @ConditionalListener(FirstSpawnConditionalListener.Condition.class)
 public class FirstSpawnConditionalListener extends ListenerBase {
 
-    @Inject private GeneralService store;
+    @Inject private ModularGeneralService store;
 
     @Listener(order = Order.LATE)
     public void onJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player player) {
         // Try to force a subject location in a tick.
-        Task.builder().execute(() -> store.getFirstSpawn().ifPresent(player::setTransform)).delayTicks(1).submit(plugin);
+        Task.builder().execute(() -> store.get(SpawnGeneralDataModule.class).getFirstSpawn().ifPresent(player::setTransform)).delayTicks(1)
+                .submit(plugin);
     }
 
     public static class Condition implements Predicate<Nucleus> {

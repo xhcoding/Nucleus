@@ -8,11 +8,12 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.iapi.data.JailData;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailGeneralDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -25,7 +26,11 @@ import java.util.Optional;
 
 public class JailHandler implements NucleusJailService {
 
-    @Inject private GeneralService store;
+    @Inject private ModularGeneralService store;
+
+    private JailGeneralDataModule getModule() {
+        return store.get(JailGeneralDataModule.class);
+    }
 
     private final NucleusPlugin plugin;
 
@@ -35,22 +40,22 @@ public class JailHandler implements NucleusJailService {
 
     @Override
     public Optional<NamedLocation> getJail(String warpName) {
-        return store.getJailLocation(warpName);
+        return getModule().getJailLocation(warpName);
     }
 
     @Override
     public boolean removeJail(String warpName) {
-        return store.removeJail(warpName);
+        return getModule().removeJail(warpName);
     }
 
     @Override
     public boolean setJail(String warpName, Location<World> location, Vector3d rotation) {
-        return store.addJail(warpName, location, rotation);
+        return getModule().addJail(warpName, location, rotation);
     }
 
     @Override
     public Map<String, NamedLocation> getJails() {
-        return store.getJails();
+        return getModule().getJails();
     }
 
     @Override

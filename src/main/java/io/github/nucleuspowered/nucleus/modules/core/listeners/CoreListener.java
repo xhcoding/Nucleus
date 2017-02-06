@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusOnLoginEvent;
 import io.github.nucleuspowered.nucleus.modules.core.events.OnFirstLoginEvent;
 import org.spongepowered.api.Sponge;
@@ -83,7 +84,7 @@ public class CoreListener extends ListenerBase {
             qsu.setFirstPlay(Util.isFirstPlay(player) && !qsu.getLastLogout().isPresent());
 
             if (qsu.isFirstPlay()) {
-                plugin.getGeneralService().resetUniqueUserCount();
+                plugin.getGeneralService().getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
             }
 
             qsu.setLastIp(player.getConnection().getAddress().getAddress());

@@ -9,7 +9,8 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
+import io.github.nucleuspowered.nucleus.modules.warp.datamodules.WarpGeneralDataModule;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -27,25 +28,29 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 public class WarpHandler implements NucleusWarpService {
 
-    @Inject private GeneralService store;
+    @Inject private ModularGeneralService store;
+
+    private WarpGeneralDataModule getModule() {
+        return store.get(WarpGeneralDataModule.class);
+    }
 
     @Override
     public Optional<Warp> getWarp(String warpName) {
-        return store.getWarpLocation(warpName);
+        return getModule().getWarpLocation(warpName);
     }
 
     @Override
     public boolean removeWarp(String warpName) {
-        return store.removeWarp(warpName);
+        return getModule().removeWarp(warpName);
     }
 
     @Override
     public boolean setWarp(String warpName, Location<World> location, Vector3d rotation) {
-        return store.addWarp(warpName, location, rotation);
+        return getModule().addWarp(warpName, location, rotation);
     }
 
     @Override public List<Warp> getAllWarps() {
-        return new ArrayList<>(store.getWarps().values());
+        return new ArrayList<>(getModule().getWarps().values());
     }
 
     @Override
@@ -66,7 +71,7 @@ public class WarpHandler implements NucleusWarpService {
     @Override
     public Map<String, List<Warp>> getCategorisedWarps(Predicate<Warp> warpDataPredicate) {
         Preconditions.checkNotNull(warpDataPredicate);
-        Map<String, List<Warp>> map = store.getWarps().values().stream()
+        Map<String, List<Warp>> map = getModule().getWarps().values().stream()
             .filter(warpDataPredicate)
             .collect(Collectors.groupingBy(x -> x.getCategory().orElse("")));
         if (map.containsKey("")) {
@@ -80,25 +85,25 @@ public class WarpHandler implements NucleusWarpService {
 
     @Override
     public boolean removeWarpCost(String warpName) {
-        return store.setWarpCost(warpName, -1);
+        return getModule().setWarpCost(warpName, -1);
     }
 
     @Override
     public boolean setWarpCost(String warpName, double cost) {
-        return store.setWarpCost(warpName, cost);
+        return getModule().setWarpCost(warpName, cost);
     }
 
     @Override
     public boolean setWarpCategory(String warpName, @Nullable String category) {
-        return store.setWarpCategory(warpName, category);
+        return getModule().setWarpCategory(warpName, category);
     }
 
     @Override
     public Set<String> getWarpNames() {
-        return store.getWarps().keySet();
+        return getModule().getWarps().keySet();
     }
 
     private List<Warp> getWarpsForCategory(Predicate<Warp> filter) {
-        return store.getWarps().values().stream().filter(filter).collect(Collectors.toList());
+        return getModule().getWarps().values().stream().filter(filter).collect(Collectors.toList());
     }
 }

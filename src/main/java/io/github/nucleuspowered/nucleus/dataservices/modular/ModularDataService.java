@@ -16,12 +16,13 @@ import java.util.function.Function;
 public class ModularDataService<S extends ModularDataService<S>> extends AbstractService<ConfigurationNode> {
 
     private Map<Class<?>, DataModule<S>> cached = new HashMap<>();
+    private Map<Class<?>, TransientModule<S>> transientCache = new HashMap<>();
 
-    protected ModularDataService(DataProvider<ConfigurationNode> dataProvider) throws Exception {
+    ModularDataService(DataProvider<ConfigurationNode> dataProvider) throws Exception {
         this(dataProvider, true);
     }
 
-    protected ModularDataService(DataProvider<ConfigurationNode> dataProvider, boolean loadNow) throws Exception {
+    ModularDataService(DataProvider<ConfigurationNode> dataProvider, boolean loadNow) throws Exception {
         super(dataProvider, loadNow);
     }
 
@@ -35,6 +36,32 @@ public class ModularDataService<S extends ModularDataService<S>> extends Abstrac
         set(m);
     }
 
+    public <T extends TransientModule<S>, R> R quickGetTransient(Class<T> module, Function<T, R> getter) {
+        return getter.apply(getTransient(module));
+    }
+
+    public <T extends TransientModule<S>> void quickSetTransient(Class<T> module, Consumer<T> setter) {
+        T m = getTransient(module);
+        setter.accept(m);
+        setTransient(m);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends TransientModule<S>> T getTransient(Class<T> module) {
+        if (transientCache.containsKey(module)) {
+            return (T)transientCache.get(module);
+        }
+
+        try {
+            T dm = module.newInstance();
+            setTransient(dm);
+            return dm;
+        } catch (IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends DataModule<S>> T get(Class<T> module) {
         if (cached.containsKey(module)) {
@@ -44,6 +71,7 @@ public class ModularDataService<S extends ModularDataService<S>> extends Abstrac
         try {
             T dm = module.newInstance();
             dm.loadFrom(data);
+            set(dm);
             return dm;
         } catch (IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
@@ -52,8 +80,11 @@ public class ModularDataService<S extends ModularDataService<S>> extends Abstrac
     }
 
     public <T extends DataModule<S>> void set(T dataModule) {
-        cached.put(data.getClass(), dataModule);
-        dataModule.saveTo(data);
+        cached.put(dataModule.getClass(), dataModule);
+    }
+
+    public <T extends TransientModule<S>> void setTransient(T dataModule) {
+        transientCache.put(dataModule.getClass(), dataModule);
     }
 
     @Override public void loadInternal() throws Exception {

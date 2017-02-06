@@ -4,10 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus;
 
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
@@ -70,7 +70,7 @@ public abstract class Nucleus {
 
     public abstract InternalServiceManager getInternalServiceManager();
 
-    public abstract GeneralService getGeneralService();
+    public abstract ModularGeneralService getGeneralService();
 
     public abstract ItemDataService getItemDataService();
 
