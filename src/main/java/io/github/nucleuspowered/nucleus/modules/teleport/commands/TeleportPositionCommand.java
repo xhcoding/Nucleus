@@ -4,8 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
+import com.flowpowered.math.vector.Vector3i;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NoDescriptionArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -13,6 +16,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -41,12 +46,20 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
+                // "Flags", otherwise putting -1 wouldn't work.
+                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "-f")),
+                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "--force")),
+                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("c"), "-c")),
+                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("c"), "--chunk")),
+                new NoDescriptionArgument(GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "-f"))),
+                new NoDescriptionArgument(GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "--force"))),
+
+                // Actual arguments
                 GenericArguments.onlyOne(new SelectorWrapperArgument(GenericArguments.playerOrSource(Text.of(key)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),
-                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(z), Integer.MIN_VALUE, Integer.MAX_VALUE)),
-                GenericArguments.flags().flag("f").buildWith(GenericArguments.none())
+                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(z), Integer.MIN_VALUE, Integer.MAX_VALUE))
         };
     }
 
@@ -56,14 +69,34 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
         WorldProperties wp = args.<WorldProperties>getOne(location).orElse(pl.getWorld().getProperties());
         World world = Sponge.getServer().getWorld(wp.getUniqueId()).get();
 
+        int xx = args.<Integer>getOne(x).get();
+        int zz = args.<Integer>getOne(x).get();
         int yy = args.<Integer>getOne(y).get();
         if (yy < 0) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.ysmall"));
             return CommandResult.empty();
         }
 
+        // Chunks are 16 in size, chunk 0 is from 0 - 15, -1 from -1 to -16.
+        if (args.hasAny("c")) {
+            xx = xx * 16 + 8;
+            yy = yy * 16 + 8;
+            zz = zz * 16 + 8;
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.fromchunk",
+                    String.valueOf(xx), String.valueOf(yy), String.valueOf(zz)));
+        }
+
+        Vector3i max = world.getBlockMax();
+        Vector3i min = world.getBlockMin();
+        if (!(isBetween(xx, max.getX(), min.getX()) && isBetween(yy, max.getY(), min.getY()) && isBetween(zz, max.getZ(), min.getZ()))) {
+            throw ReturnMessageException.fromKey("command.tppos.invalid");
+        }
+
         // Create the location
-        Location<World> loc = new Location<>(world, args.<Integer>getOne(x).get(), yy, args.<Integer>getOne(z).get());
+        Location<World> loc = new Location<>(world, xx, yy, zz);
+        if (!Util.isLocationInWorldBorder(loc)) {
+            throw ReturnMessageException.fromKey("command.tppos.worldborder");
+        }
 
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
@@ -76,7 +109,14 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         }
 
-        if (Nucleus.getNucleus().getTeleportHandler().teleportPlayer(pl, loc)) {
+        // If we have a chunk, scan the whole chunk.
+        NucleusTeleportHandler teleportHandler = Nucleus.getNucleus().getTeleportHandler();
+        NucleusTeleportHandler.TeleportMode mode = teleportHandler.getTeleportModeForPlayer(pl);
+        if (args.hasAny("c") && mode == NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE) {
+            mode = NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE_CHUNK;
+        }
+
+        if (teleportHandler.teleportPlayer(pl, loc, mode)) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -87,5 +127,9 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.nosafe"));
             return CommandResult.empty();
         }
+    }
+
+    private boolean isBetween(int toCheck, int max, int min) {
+        return toCheck >= min && toCheck <= max;
     }
 }

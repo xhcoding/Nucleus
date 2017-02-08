@@ -178,6 +178,22 @@ public class NucleusTeleportHandler {
         },
 
         /**
+         * Teleport to a safe location for someone who is flying, but otherwise check the chunk.
+         */
+        FLYING_THEN_SAFE_CHUNK {
+            @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
+                if (player.get(Keys.IS_FLYING).orElse(false)) {
+                    // If flying, we just need to check they don't end up in a wall or will enter an unsafe block.
+                    if (isPassable(location, true) && isPassable(location.add(0, 1, 0), true)) {
+                        return Optional.of(location);
+                    }
+                }
+
+                return SAFE_TELEPORT_CHUNK.apply(player, location);
+            }
+        },
+
+        /**
          * Teleport simply checking the walls, and falling back to the full blown safe teleport.
          */
         WALL_CHECK {
@@ -235,6 +251,15 @@ public class NucleusTeleportHandler {
                 }
 
                 return TELEPORT_HELPER.getSafeLocation(location, stc.getHeight(), stc.getWidth());
+            }
+        },
+
+        /**
+         * Teleport using the Sponge Safe Teleport routine, but using a chunk radius.
+         */
+        SAFE_TELEPORT_CHUNK {
+            @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
+                return TELEPORT_HELPER.getSafeLocation(location, 8, 8);
             }
         },
 
