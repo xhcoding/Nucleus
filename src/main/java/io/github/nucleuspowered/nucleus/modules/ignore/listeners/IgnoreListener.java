@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.ignore.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.chat.NucleusNoIgnoreChannel;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -15,13 +16,13 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.ignore.commands.IgnoreCommand;
 import io.github.nucleuspowered.nucleus.modules.ignore.datamodules.IgnoreUserDataModule;
+import io.github.nucleuspowered.nucleus.util.MessageChannelWrapper;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 
 import java.util.Collection;
@@ -37,8 +38,13 @@ public class IgnoreListener extends ListenerBase {
 
     @Listener(order = Order.FIRST)
     public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
+        if (event.getChannel().orElseGet(event::getOriginalChannel) instanceof NucleusNoIgnoreChannel) {
+            return;
+        }
+
         // Reset the channel - but only if we have to.
-        checkCancels(event.getChannel().orElse(event.getOriginalChannel()).getMembers(), player).ifPresent(x -> event.setChannel(MessageChannel.fixed(x)));
+        checkCancels(event.getChannel().orElseGet(event::getOriginalChannel).getMembers(), player).ifPresent(x ->
+                event.setChannel(new MessageChannelWrapper(event.getChannel().orElseGet(event::getOriginalChannel), x)));
     }
 
     @Listener(order = Order.FIRST)

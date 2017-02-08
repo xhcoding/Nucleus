@@ -123,7 +123,12 @@ public class ChatListener extends ListenerBase {
     // We do this first so that other plugins can alter it later if needs be.
     @Listener(order = Order.EARLY)
     public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
-        if (event.getChannel().isPresent() && event.getChannel().get() instanceof NucleusNoFormatChannel) {
+        if (event.getChannel().isPresent() && event.getChannel().get() instanceof NucleusNoFormatChannel
+                && !((NucleusNoFormatChannel) event.getChannel().get()).formatMessages()) {
+            if (((NucleusNoFormatChannel) event.getChannel().get()).removePrefix()) {
+                event.getFormatter().setHeader(Text.EMPTY);
+            }
+
             // Not interested in applying these transforms.
             return;
         }

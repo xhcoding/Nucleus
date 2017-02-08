@@ -6,16 +6,21 @@ package io.github.nucleuspowered.nucleus.modules.staffchat.datamodules;
 
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.TransientModule;
+import org.spongepowered.api.text.channel.MessageChannel;
+
+import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 public class StaffChatTransientModule extends TransientModule<ModularUserService> {
 
-    private boolean inStaffChat;
+    @Nullable private MessageChannel previousMessageChannel;
 
-    public boolean isInStaffChat() {
-        return inStaffChat;
+    public Optional<MessageChannel> getPreviousMessageChannel() {
+        return Optional.ofNullable(previousMessageChannel);
     }
 
-    public void setInStaffChat(boolean inStaffChat) {
-        this.inStaffChat = inStaffChat;
+    public void setPreviousMessageChannel(@Nullable MessageChannel previousMessageChannel) {
+        this.previousMessageChannel = previousMessageChannel;
     }
 }

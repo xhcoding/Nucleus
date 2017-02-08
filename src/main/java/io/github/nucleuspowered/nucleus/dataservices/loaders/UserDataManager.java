@@ -30,6 +30,14 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
         super(plugin, dataProviderFactory, fileExist);
     }
 
+    public ModularUserService getUnchecked(UUID user) {
+        return get(user).orElseThrow(NullPointerException::new);
+    }
+
+    public ModularUserService getUnchecked(User user) {
+        return get(user).orElseThrow(NullPointerException::new);
+    }
+
     public Optional<ModularUserService> get(User user) {
         return get(user.getUniqueId());
     }

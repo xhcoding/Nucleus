@@ -8,10 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = StaffChatModule.moduleID, name = "Staff Chat")
+@ModuleData(id = StaffChatModule.ID, name = "Staff Chat")
 public class StaffChatModule extends ConfigurableModule<StaffChatConfigAdapter> {
 
-    static final String moduleID = "staff-chat";
+    public static final String ID = "staff-chat";
 
     @Override
     public StaffChatConfigAdapter createAdapter() {
@@ -22,6 +22,7 @@ public class StaffChatModule extends ConfigurableModule<StaffChatConfigAdapter> 
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        StaffChatMessageChannel.INSTANCE = new StaffChatMessageChannel(plugin);
+        // Registers itself.
+        new StaffChatMessageChannel(plugin);
     }
 }

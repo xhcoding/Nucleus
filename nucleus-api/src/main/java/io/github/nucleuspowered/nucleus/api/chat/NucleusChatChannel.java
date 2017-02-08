@@ -14,7 +14,7 @@ public interface NucleusChatChannel extends MessageChannel {
     /**
      * Indicates that the channel is Staff Chat.
      */
-    interface StaffChat extends NucleusChatChannel, NucleusNoFormatChannel {}
+    interface StaffChat extends NucleusChatChannel, NucleusNoFormatChannel, NucleusNoIgnoreChannel {}
 
     /**
      * Indicates that the channel is a /me message.
