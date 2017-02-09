@@ -22,7 +22,7 @@ import org.spongepowered.api.entity.living.player.Player;
 @RegisterCommand("ping")
 public class PingCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
-    @Override protected CommandResult executeWithPlayer(CommandSource source, Player target, CommandContext args, boolean isSelf) {
+    @Override protected CommandResult executeWithPlayer(CommandSource source, Player target, CommandContext args, boolean isSelf) throws Exception {
         if (isSelf) {
             source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ping.current.self",
                 String.valueOf(target.getConnection().getLatency())));

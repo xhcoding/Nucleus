@@ -4,20 +4,25 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
+
+import java.util.Collection;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand("kill")
@@ -28,23 +33,41 @@ public class KillCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            new SelectorWrapperArgument(GenericArguments.player(Text.of(key)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
+            SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER, false, Entity.class)
         };
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Player pl = args.<Player>getOne(key).get();
-        GameMode gm = pl.gameMode().getDirect().orElse(pl.gameMode().getDefault());
-        if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.wronggm", pl.getName()));
-            return CommandResult.empty();
+        Collection<Entity> entities = args.getAll(key);
+
+        int entityKillCount = 0;
+        int playerKillCount = 0;
+        for (Entity x : entities) {
+            if (x instanceof Player) {
+                Player pl = (Player)x;
+                GameMode gm = pl.gameMode().getDirect().orElseGet(() -> pl.gameMode().getDefault());
+                if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
+                    throw ReturnMessageException.fromKey("command.kill.wronggm", pl.getName());
+                }
+            }
+
+            x.offer(Keys.HEALTH, 0d);
+            entityKillCount++;
+
+            if (x instanceof Player) {
+                playerKillCount++;
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.killed",
+                        Nucleus.getNucleus().getNameUtil().getSerialisedName((Player)x)));
+                ((Player)x).sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.killedby", src.getName()));
+            }
         }
 
-        pl.offer(Keys.HEALTH, 0d);
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.killed", pl.getName()));
-        pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.killedby", src.getName()));
+        if (entityKillCount > playerKillCount) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kill.overall", String.valueOf(entityKillCount),
+                    String.valueOf(playerKillCount)));
+        }
 
         return CommandResult.success();
     }

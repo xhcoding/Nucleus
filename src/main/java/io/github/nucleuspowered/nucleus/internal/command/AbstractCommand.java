@@ -42,10 +42,11 @@ public abstract class AbstractCommand<T extends CommandSource> extends StandardA
 
     public abstract static class SimpleTargetOtherPlayer extends StandardAbstractCommand.SimpleTargetOtherPlayer {
 
-        @Override protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> source, Player target, CommandContext args, boolean isSelf) {
+        @Override protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> source, Player target, CommandContext args, boolean isSelf)
+                throws Exception {
             return executeWithPlayer(source.getSubject(), target, args, isSelf);
         }
 
-        protected abstract CommandResult executeWithPlayer(CommandSource source, Player target, CommandContext args, boolean isSelf);
+        protected abstract CommandResult executeWithPlayer(CommandSource source, Player target, CommandContext args, boolean isSelf) throws Exception;
     }
 }

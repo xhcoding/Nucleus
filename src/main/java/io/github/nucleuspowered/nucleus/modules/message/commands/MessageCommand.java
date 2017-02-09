@@ -58,10 +58,7 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            new SelectorWrapperArgument(
-                new NicknameArgument(Text.of(to), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER_CONSOLE),
-                permissions,
-                SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS),
+            SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE),
             GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };
     }

@@ -25,6 +25,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@NonnullByDefault
 public class NicknameArgument extends CommandElement {
 
     private final UserDataManager userDataManager;
@@ -45,8 +47,16 @@ public class NicknameArgument extends CommandElement {
     private final boolean onlyOne;
     private final UnderlyingType type;
 
+    public NicknameArgument(@Nullable Text key, UnderlyingType type) {
+        this(key, Nucleus.getNucleus().getUserDataManager(), type);
+    }
+
     public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type) {
         this(key, userDataManager, type, true);
+    }
+
+    public NicknameArgument(@Nullable Text key, UnderlyingType type, boolean onlyOne) {
+        this(key, Nucleus.getNucleus().getUserDataManager(), type, onlyOne);
     }
 
     public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type, boolean onlyOne) {

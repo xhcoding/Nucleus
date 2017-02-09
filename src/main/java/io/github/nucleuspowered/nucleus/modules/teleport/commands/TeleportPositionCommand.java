@@ -8,6 +8,7 @@ import com.flowpowered.math.vector.Vector3i;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoDescriptionArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
@@ -55,7 +56,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
                 new NoDescriptionArgument(GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "--force"))),
 
                 // Actual arguments
-                GenericArguments.onlyOne(new SelectorWrapperArgument(GenericArguments.playerOrSource(Text.of(key)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
+                GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER)),
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),

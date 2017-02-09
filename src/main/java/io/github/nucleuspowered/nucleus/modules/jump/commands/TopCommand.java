@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jump.commands;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -44,8 +45,8 @@ public class TopCommand extends AbstractCommand<CommandSource> {
                 GenericArguments.optional(
                 GenericArguments.requiringPermission(
                     GenericArguments.onlyOne(
-                        new SelectorWrapperArgument(GenericArguments.player(Text.of(playerKey)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)),
-                    permissions.getPermissionWithSuffix("others"))))
+                        SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER)),
+                    permissions.getOthers())))
         };
     }
 

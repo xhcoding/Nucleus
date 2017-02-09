@@ -54,7 +54,7 @@ import java.util.Optional;
  *     NoCost is applied, as this is handled via the main config file.
  * </p>
  */
-@Permissions(suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
+@Permissions(suggestedLevel = SuggestedLevel.USER, supportsOthers = true)
 @RegisterCommand(value = "warp")
 @NoCost
 public class WarpCommand extends AbstractCommand<CommandSource> {
@@ -72,12 +72,6 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
         return m;
     }
 
-    @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
-        return new HashMap<String, PermissionInformation>() {{
-            put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permissions.warp.other"), SuggestedLevel.ADMIN));
-        }};
-    }
-
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
@@ -87,9 +81,8 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
                                 .flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
             GenericArguments.optionalWeak(GenericArguments.requiringPermission(
                 new NoModifiersArgument<>(
-                    new SelectorWrapperArgument(
-                        new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER, true),
-                        permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS), NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE), permissions.getOthers())),
+                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER),
+                        NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE), permissions.getOthers())),
                 GenericArguments.onlyOne(new WarpArgument(Text.of(warpNameArg), adapter, true))
         };
     }

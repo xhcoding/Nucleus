@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -26,19 +25,18 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Map;
 
-@Permissions
+@Permissions(supportsOthers = true)
 @NoCooldown
 @NoCost
 @NoWarmup
 @RegisterCommand({"vanish", "v"})
-public class VanishCommand extends AbstractCommand<CommandSource> {
+public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     @Inject
     private UserDataManager userDataManager;
@@ -46,12 +44,8 @@ public class VanishCommand extends AbstractCommand<CommandSource> {
     private final String b = "toggle";
     private final String playerKey = "subject";
 
-    @Override
-    public CommandElement[] getArguments() {
+    @Override public CommandElement[] additionalArguments() {
         return new CommandElement[] {
-            GenericArguments.optionalWeak(GenericArguments.requiringPermission(
-                    GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), userDataManager, NicknameArgument.UnderlyingType.USER)),
-                    permissions.getPermissionWithSuffix("other"))),
             GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))
         };
     }
@@ -60,14 +54,12 @@ public class VanishCommand extends AbstractCommand<CommandSource> {
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
         mspi.put("see", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.see"), SuggestedLevel.ADMIN));
-        mspi.put("other", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.other"), SuggestedLevel.ADMIN));
         mspi.put("persist", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.persist"), SuggestedLevel.ADMIN));
         return mspi;
     }
 
     @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        User playerToVanish = this.getUserFromArgs(User.class, src, playerKey, args);
+    public CommandResult executeWithPlayer(CommandSource src, Player playerToVanish, CommandContext args, boolean isSelf) throws Exception {
         if (playerToVanish.getPlayer().isPresent()) {
             return onPlayer(src, args, playerToVanish.getPlayer().get());
         }
