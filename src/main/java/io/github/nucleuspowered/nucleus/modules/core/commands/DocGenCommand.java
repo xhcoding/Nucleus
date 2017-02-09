@@ -48,7 +48,7 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
     @Override
     public boolean canLoad() {
         // Only create the command
-        return plugin.getDocGenCache().isPresent();
+        return super.canLoad() && plugin.getDocGenCache().isPresent();
     }
 
     @Override

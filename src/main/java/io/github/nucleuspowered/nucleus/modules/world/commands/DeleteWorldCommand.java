@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
@@ -43,6 +44,7 @@ import javax.annotation.Nullable;
 @NoCooldown
 @NoCost
 @RunAsync
+@RequiresPlatform
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"delete", "del"}, subcommandOf = WorldCommand.class)
 public class DeleteWorldCommand extends AbstractCommand<CommandSource> {
