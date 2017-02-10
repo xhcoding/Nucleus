@@ -4,63 +4,66 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import org.spongepowered.api.CatalogType;
+import org.spongepowered.api.GameRegistry;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.args.parsing.SingleArg;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@NonnullByDefault
 public class ImprovedCatalogTypeArgument extends CommandElement {
 
-    private final CommandElement wrapped;
+    private final Class<? extends CatalogType> type;
 
     public ImprovedCatalogTypeArgument(@Nonnull Text key, Class<? extends CatalogType> type) {
         super(key);
-        wrapped = GenericArguments.catalogedElement(key, type);
+        this.type = type;
     }
 
     @Nullable
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
-        return null;
-    }
+        String arg = args.next().toLowerCase();
 
-    @Override
-    public void parse(CommandSource source, CommandArgs args, CommandContext context) throws ArgumentParseException {
-        String arg = args.peek();
-        try {
-            wrapped.parse(source, args, context);
-        } catch (ArgumentParseException e) {
-            try {
-                if (!arg.contains(":")) {
-                    args.next();
-                    String newArg = "minecraft:" + arg;
-                    String raw = args.getRaw().replace(arg, newArg);
-                    int startindex = raw.indexOf(newArg);
-                    CommandArgs newArgs =
-                        new CommandArgs(raw, Lists.newArrayList(new SingleArg(newArg, startindex, startindex + newArg.length() - 1)));
-                    wrapped.parse(source, newArgs, context);
-
-                    return;
-                }
-            } catch (ArgumentParseException ignored) {}
-
-            throw e;
+        // Try
+        GameRegistry registry = Sponge.getRegistry();
+        Optional<? extends CatalogType> catalogType = registry.getType(type, arg);
+        if (!catalogType.isPresent() && !arg.contains(":")) {
+            catalogType = registry.getType(type, "minecraft:" + arg);
+            if (!catalogType.isPresent()) {
+                catalogType = registry.getType(type, "sponge:" + arg);
+            }
         }
+
+        if (catalogType.isPresent()) {
+            return catalogType.get();
+        }
+
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.catalogtype.nomatch", arg));
     }
 
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        return wrapped.complete(src, args, context);
+        try {
+            String arg = args.peek().toLowerCase();
+            return Sponge.getRegistry().getAllOf(type).stream()
+                    .filter(x -> x.getId().startsWith(arg) || x.getId().startsWith("minecraft:" + arg) || x.getId().startsWith("sponge:" + arg))
+                    .map(CatalogType::getId).collect(Collectors.toList());
+        } catch (ArgumentParseException e) {
+            return Sponge.getRegistry().getAllOf(type).stream().map(CatalogType::getId).collect(Collectors.toList());
+        }
     }
 }
