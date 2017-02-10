@@ -31,7 +31,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-@Permissions(prefix = "teleport", supportsSelectors = true)
+@Permissions(prefix = "teleport", supportsOthers = true)
 @NoWarmup
 @NoCooldown
 @NoCost
@@ -56,7 +56,10 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
                 new NoDescriptionArgument(GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "--force"))),
 
                 // Actual arguments
-                GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER)),
+                GenericArguments.optionalWeak(
+                    GenericArguments.onlyOne(
+                        GenericArguments.requiringPermission(
+                        SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER), permissions.getOthers()))),
                 GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),
@@ -66,7 +69,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Player pl = args.<Player>getOne(key).get();
+        Player pl = this.getUserFromArgs(Player.class, src, key, args);
         WorldProperties wp = args.<WorldProperties>getOne(location).orElse(pl.getWorld().getProperties());
         World world = Sponge.getServer().getWorld(wp.getUniqueId()).get();
 
