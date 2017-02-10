@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
 import io.github.nucleuspowered.nucleus.modules.nickname.NicknameModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
@@ -17,6 +18,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextElement;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
@@ -30,6 +32,7 @@ import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -100,6 +103,7 @@ public class NameUtil {
         Preconditions.checkNotNull(player);
 
         TextColor tc = getNameColour(player);
+        TextStyle ts = getNameStyle(player);
         Optional<Text> dname;
         if (player.isOnline()) {
             dname = player.getPlayer().get().get(Keys.DISPLAY_NAME);
@@ -125,7 +129,7 @@ public class NameUtil {
         }
 
         tb.onHover(TextActions.showText(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("name.hover.ign", player.getName()))).build();
-        return tb.color(tc).build();
+        return tb.color(tc).style(ts).build();
     }
 
     public String getSerialisedName(User player) {
@@ -176,6 +180,17 @@ public class NameUtil {
     }
 
     private TextColor getNameColour(User player) {
+        return getStyle(player, this::getColourFromString, x -> getColourFromString(x.getNamecolour()), TextColors.NONE,
+                "namecolor", "namecolour");
+    }
+
+    private TextStyle getNameStyle(User player) {
+        return getStyle(player, this::getTextStyleFromString, x -> getTextStyleFromString(x.getNamestyle()), TextStyles.NONE,
+                "namestyle");
+    }
+
+    private <T extends TextElement> T getStyle(User player, Function<String, T> returnIfAvailable,
+            Function<ChatTemplateConfig, T> fromTemplate, T def, String... options) {
         if (chatConfigAdapterOptional == null) {
             try {
                 chatConfigAdapterOptional = Optional.of(plugin.getModuleContainer().getConfigAdapterForModule("chat", ChatConfigAdapter.class));
@@ -184,17 +199,13 @@ public class NameUtil {
             }
         }
 
-        Optional<String> os = Util.getOptionFromSubject(player, "namecolor", "namecolour");
+        Optional<String> os = Util.getOptionFromSubject(player, options);
         if (os.isPresent()) {
-            String s = os.get();
-            return getColourFromString(s);
+            return returnIfAvailable.apply(os.get());
         }
 
         Optional<TemplateUtil> optionalTemplateUtil = plugin.getInternalServiceManager().getService(TemplateUtil.class);
-        if (optionalTemplateUtil.isPresent()) {
-            return getColourFromString(optionalTemplateUtil.get().getTemplate(player).getNamecolour());
-        }
+        return optionalTemplateUtil.map(templateUtil -> fromTemplate.apply(templateUtil.getTemplate(player))).orElse(def);
 
-        return TextColors.NONE;
     }
 }
