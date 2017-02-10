@@ -4,7 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.staffchat.commands;
 
-import com.google.common.collect.ImmutableMap;
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -29,7 +30,6 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -46,14 +46,10 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
 
     private final String message = "message";
 
-    // TODO: sudo and this, better place.
-    private final TextTemplate chatTemplate = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
-            TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
-
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of(message)))
+            GenericArguments.optional(new RemainingStringsArgument(Text.of(message)))
         };
     }
 
@@ -77,11 +73,7 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
                     false);
 
                 if (!Sponge.getEventManager().post(event)) {
-                    MessageEvent.MessageFormatter formatter = event.getFormatter();
-                    scmc.send(pl, chatTemplate.apply(
-                            ImmutableMap.of(MessageEvent.PARAM_MESSAGE_HEADER, formatter.getHeader(),
-                                    MessageEvent.PARAM_MESSAGE_BODY, formatter.getBody(),
-                                    MessageEvent.PARAM_MESSAGE_FOOTER, formatter.getFooter())).build());
+                    scmc.send(pl, Util.applyChatTemplate(event.getFormatter()));
                     return CommandResult.success();
                 }
 

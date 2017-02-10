@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus;
 import com.flowpowered.math.TrigMath;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.iapi.data.interfaces.EndTimestamp;
@@ -25,6 +26,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -40,6 +42,8 @@ import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextRepresentable;
+import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.text.translation.Translatable;
 import org.spongepowered.api.util.Identifiable;
@@ -75,6 +79,9 @@ public class Util {
     private Util() {
     }
 
+    public static final TextTemplate CHAT_TEMPLATE = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
+            TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
+
     public static final String usernameRegexPattern = "[0-9a-zA-Z_]{3,16}";
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
@@ -84,6 +91,18 @@ public class Util {
     }
 
     private static final Pattern inventory = Pattern.compile("\\{\\{.+?}}");
+
+    public static Text applyChatTemplate(MessageEvent.MessageFormatter formatter) {
+        return applyChatTemplate(formatter.getHeader(), formatter.getBody(), formatter.getFooter());
+    }
+
+    public static Text applyChatTemplate(TextRepresentable header, TextRepresentable body, TextRepresentable footer) {
+        return CHAT_TEMPLATE.apply(
+                ImmutableMap.of(
+                MessageEvent.PARAM_MESSAGE_HEADER, header,
+                MessageEvent.PARAM_MESSAGE_BODY, body,
+                MessageEvent.PARAM_MESSAGE_FOOTER, footer)).build();
+    }
 
     /**
      * Adds items to a {@link Player}s {@link Inventory}

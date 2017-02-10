@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
-import com.google.common.collect.ImmutableMap;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -23,7 +23,6 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.action.TextActions;
 
 import java.util.HashMap;
@@ -36,9 +35,6 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "subject";
     private final String commandKey = "command";
-
-    private final TextTemplate chatTemplate = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
-            TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
 
     @Override
     public CommandElement[] getArguments() {
@@ -83,11 +79,7 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
                     false);
 
             if (!Sponge.getEventManager().post(event)) {
-                MessageEvent.MessageFormatter formatter = event.getFormatter();
-                pl.getMessageChannel().send(pl, chatTemplate.apply(
-                    ImmutableMap.of(MessageEvent.PARAM_MESSAGE_HEADER, formatter.getHeader(),
-                        MessageEvent.PARAM_MESSAGE_BODY, formatter.getBody(),
-                        MessageEvent.PARAM_MESSAGE_FOOTER, formatter.getFooter())).build());
+                pl.getMessageChannel().send(pl, Util.applyChatTemplate(event.getFormatter()));
                 return CommandResult.success();
             }
 
