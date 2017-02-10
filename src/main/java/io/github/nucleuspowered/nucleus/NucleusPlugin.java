@@ -15,6 +15,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.typesafe.config.ConfigException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
@@ -77,6 +78,7 @@ import uk.co.drnaylor.quickstart.enums.ConstructionPhase;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleDiscoveryException;
+import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
 import java.io.IOException;
@@ -618,15 +620,31 @@ public class NucleusPlugin extends Nucleus {
         if (isErrored == null) {
             messages.add(Text.of(TextColors.YELLOW, "No exception was saved."));
         } else {
+            Throwable exception = isErrored;
+            if (exception.getCause() != null &&
+                    (exception instanceof QuickStartModuleLoaderException || exception instanceof QuickStartModuleDiscoveryException)) {
+                exception = exception.getCause();
+            }
+
+            // Blegh, relocations
+            if (exception instanceof IOException && exception.getCause().getClass().getName().contains(ConfigException.class.getSimpleName())) {
+                exception = exception.getCause();
+                messages.add(Text.of(TextColors.RED, "It appears that there is an error in your configuration file! The error is: "));
+                messages.add(Text.of(TextColors.RED, exception.getMessage()));
+                messages.add(Text.of(TextColors.RED, "Please correct this and restart your server."));
+                messages.add(Text.of(TextColors.YELLOW, "----------------------------"));
+                messages.add(Text.of(TextColors.YELLOW, "(The error that was thrown is shown below)"));
+            }
+
             try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-                isErrored.printStackTrace(pw);
+                exception.printStackTrace(pw);
                 pw.flush();
                 String[] stackTrace = sw.toString().split("(\r)?\n");
                 for (String s : stackTrace) {
                     messages.add(Text.of(TextColors.YELLOW, s));
                 }
             } catch (IOException e) {
-                isErrored.printStackTrace();
+                exception.printStackTrace();
             }
         }
 
@@ -640,8 +658,10 @@ public class NucleusPlugin extends Nucleus {
 
         Platform platform = Sponge.getPlatform();
         messages.add(Text.of(TextColors.YELLOW, "Minecraft version: " + platform.getMinecraftVersion().getName()));
-        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge Version: %s %s", platform.getImplementation().getName(), platform.getImplementation().getVersion().orElse("unknown"))));
-        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge API Version: %s %s", platform.getApi().getName(), platform.getApi().getVersion().orElse("unknown"))));
+        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge Version: %s %s", platform.getContainer(Platform.Component.IMPLEMENTATION).getName(),
+                platform.getContainer(Platform.Component.IMPLEMENTATION).getVersion().orElse("unknown"))));
+        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge API Version: %s %s", platform.getContainer(Platform.Component.API).getName(),
+                platform.getContainer(Platform.Component.API).getVersion().orElse("unknown"))));
 
         messages.add(Text.EMPTY);
         messages.add(Text.of(TextColors.YELLOW, "----------------------------"));
