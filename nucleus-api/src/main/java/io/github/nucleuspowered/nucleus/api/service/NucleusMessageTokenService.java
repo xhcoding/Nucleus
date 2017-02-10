@@ -61,6 +61,14 @@ public interface NucleusMessageTokenService {
      */
     Optional<TokenParser> getTokenParser(String plugin);
 
+    /**
+     * Gets the result of a token's registered {@link TokenParser} on a {@link CommandSource}
+     *
+     * @param plugin The ID of the plugin that registered the token.
+     * @param token The identifier that is passed to the {@link TokenParser}.
+     * @param source The {@link CommandSource} to perform the operation with.
+     * @return The {@link Text}, if any.
+     */
     default Optional<Text> applyToken(String plugin, String token, CommandSource source) {
         return applyToken(plugin, token, source, Maps.newHashMap());
     }
