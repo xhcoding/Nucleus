@@ -131,6 +131,16 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
                     messages.add(messageProvider.getTextMessageWithFormat("command.seen.lastipaddress", x))
                 );
 
+                Optional<Instant> i = user.get(Keys.FIRST_DATE_PLAYED);
+                if (!i.isPresent()) {
+                    i = coreUserDataModule.getFirstJoin();
+                }
+
+                i.ifPresent(x -> messages.add(messageProvider.getTextMessageWithFormat("command.seen.firstplayed",
+                        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                                .withLocale(src.getLocale())
+                                .withZone(ZoneId.systemDefault()).format(x))));
+
                 Optional<Location<World>> olw = coreUserDataModule.getLogoutLocation();
 
                 olw.ifPresent(worldLocation -> messages

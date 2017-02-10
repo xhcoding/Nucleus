@@ -90,6 +90,7 @@ public class CoreListener extends ListenerBase {
                 plugin.getGeneralService().getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
             }
 
+            c.setFirstJoin(player.getJoinData().firstPlayed().get());
             c.setLastIp(player.getConnection().getAddress().getAddress());
 
             // We'll do this bit shortly - after the login events have resolved.
