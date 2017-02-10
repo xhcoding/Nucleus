@@ -12,6 +12,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
+import org.spongepowered.api.util.Tuple;
 
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,38 @@ public interface NucleusMessageTokenService {
      * @return <code>true</code> if successful.
      */
     boolean unregister(PluginContainer pluginContainer);
+
+    /**
+     * A primary token is a token that does not have a plugin identifier - such as <code>{{prefix}}</code>. Plugins can register their
+     * own tokens on a first come first served basis. There are some notes:
+     *
+     * <ul>
+     *     <li>
+     *         If the token you wish to register has already been registered, then you cannot register over it.
+     *     </li>
+     *     <li>
+     *         Tokens are case insensitive.
+     *     </li>
+     *     <li>
+     *         Tokens cannot have space, colon, pipe or brace characters in them.
+     *     </li>
+     *     <li>
+     *         The token is simply an alias for {{pl:plugin:identifier}}. The primary identifier does NOT have to be the same as the token's
+     *         identifier.
+     *     </li>
+     * </ul>
+     *
+     * Primary tokens <em>can</em> have extra data, <strong>but</strong> extra data must appear after a pipe character ("|"). So, a token "bacon"
+     * that has the extra data "eggs" would be {{bacon|eggs}}. You only need to register the "bacon" part.
+     *
+     * @param primaryIdentifier The identifier that you wish to be able to use, without {} marks. So, if you want to register {{clan}}, the input
+     * should be "clan".
+     * @param registeringPlugin The {@link PluginContainer} of the plugin that will control this token.
+     * @param identiferToMapTo The identifier that this token will map to - so if {{clan}} should map to {{pl:clans:clanname}}, this should be
+     * clanname.
+     * @return <code>true</code> if the mapping was registered.
+     */
+    boolean registerPrimaryToken(String primaryIdentifier, PluginContainer registeringPlugin, String identiferToMapTo);
 
     /**
      * Gets the {@link TokenParser} for the specified {@link PluginContainer}, if it exists.
@@ -74,6 +107,14 @@ public interface NucleusMessageTokenService {
     }
 
     /**
+     * Gets the {@link TokenParser} and specific token identifier for a primary token.
+     *
+     * @param primaryToken The primary token, without { and } characters.
+     * @return A {@link Tuple} with the {@link TokenParser} and specific identifier to pass to the parser.
+     */
+    Optional<Tuple<TokenParser, String>> getPrimaryTokenParserAndIdentifier(String primaryToken);
+
+    /**
      * Gets the result of a token's registered {@link TokenParser} on a {@link CommandSource}
      *
      * @param plugin The ID of the plugin that registered the token.
@@ -89,6 +130,34 @@ public interface NucleusMessageTokenService {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Gets the result of a primary token's registered {@link TokenParser} on a {@link CommandSource}
+     *
+     * @param primaryToken The primary identifier that parsed.
+     * @param source The {@link CommandSource} to perform the operation with.
+     * @return The {@link Text}, if any.
+     */
+    default Optional<Text> applyPrimaryToken(String primaryToken, CommandSource source) {
+        return applyPrimaryToken(primaryToken, source, Maps.newHashMap());
+    }
+
+    /**
+     * Gets the result of a primary token's registered {@link TokenParser} on a {@link CommandSource}
+     *
+     * @param primaryToken The primary identifier that parsed.
+     * @param source The {@link CommandSource} to perform the operation with.
+     * @param variables The variables that could be used in the token.
+     * @return The {@link Text}, if any.
+     */
+    default Optional<Text> applyPrimaryToken(String primaryToken, CommandSource source, Map<String, Object> variables) {
+        Preconditions.checkArgument(primaryToken != null && !primaryToken.isEmpty());
+        String[] tokenData = primaryToken.split("\\|", 2);
+        return getPrimaryTokenParserAndIdentifier(tokenData[0].toLowerCase())
+                .map(x -> x.getFirst().parse(
+                    tokenData.length == 2 ? x.getSecond() + "|" + tokenData[1] : x.getSecond(),
+                source, variables)).orElseGet(Optional::empty);
     }
 
     /**
