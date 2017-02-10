@@ -65,7 +65,7 @@ public class InvSeeCommand extends AbstractCommand<Player> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.invsee.self"));
         }
 
-        if (permissions.testSuffix(target, "exempt.target")) {
+        if (permissions.testSuffix(target, "exempt.target", src, false)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.invsee.targetexempt", target.getName()));
         }
 

@@ -95,7 +95,7 @@ public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
         }
 
         int maxSpeed = miscConfigAdapter.getNodeOrDefault().getMaxSpeed();
-        if (!permissions.testSuffix(src, "exempt.max") && maxSpeed < speed) {
+        if (!permissions.testSuffix(src, "exempt.max", src, true) && maxSpeed < speed) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.max", String.valueOf(maxSpeed)));
             return CommandResult.empty();
         }

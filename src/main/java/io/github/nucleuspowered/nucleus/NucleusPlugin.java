@@ -27,6 +27,7 @@ import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
+import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
@@ -259,6 +260,10 @@ public class NucleusPlugin extends Nucleus {
             isErrored = construction;
             return;
         }
+
+        // Register a reloadable.
+        CommandPermissionHandler.onReload();
+        registerReloadable(CommandPermissionHandler::onReload);
 
         logger.info(messageProvider.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
         registerPermissions();

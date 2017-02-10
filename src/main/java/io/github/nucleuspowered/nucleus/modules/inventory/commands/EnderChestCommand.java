@@ -58,7 +58,7 @@ public class EnderChestCommand extends AbstractCommand<Player> {
         Player target = args.<Player>getOne(player).orElse(src);
 
         if (!target.getUniqueId().equals(src.getUniqueId())) {
-            if (permissions.testSuffix(target, "exempt.target")) {
+            if (permissions.testSuffix(target, "exempt.target", src, false)) {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.enderchest.targetexempt", target.getName()));
             }
         }

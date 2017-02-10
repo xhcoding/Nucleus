@@ -73,7 +73,7 @@ public class TempBanCommand extends AbstractCommand<CommandSource> {
         Long time = args.<Long>getOne(duration).get();
         String reason = args.<String>getOne(reasonKey).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
 
-        if (permissions.testSuffix(u, "exempt.target")) {
+        if (permissions.testSuffix(u, "exempt.target", src, false)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.exempt", u.getName()));
         }
 

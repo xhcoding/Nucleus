@@ -82,7 +82,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
         Optional<Long> optDuration = args.getOne(durationKey);
         String reason = args.<String>getOne(reasonKey).get();
 
-        if (permissions.testSuffix(user, "exempt.target")) {
+        if (permissions.testSuffix(user, "exempt.target", src, false)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warn.exempt", user.getName()));
             return CommandResult.success();
         }

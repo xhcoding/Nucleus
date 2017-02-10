@@ -94,7 +94,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.offline.noperms"));
             }
 
-            if (optionalUser.isPresent() && permissions.testSuffix(optionalUser.get(), "exempt.target")) {
+            if (optionalUser.isPresent() && permissions.testSuffix(optionalUser.get(), "exempt.target", src, false)) {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.exempt", optionalUser.get().getName()));
             }
 

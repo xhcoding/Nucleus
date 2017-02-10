@@ -99,7 +99,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
         Optional<MuteData> omd = handler.getPlayerMuteData(user);
         Optional<String> reas = args.getOne(reason);
 
-        if (permissions.testSuffix(user, "exempt.target")) {
+        if (permissions.testSuffix(user, "exempt.target", src, false)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.exempt", user.getName()));
             return CommandResult.success();
         }

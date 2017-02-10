@@ -61,7 +61,7 @@ public class KickCommand extends AbstractCommand<CommandSource> {
         Player pl = args.<Player>getOne(player).get();
         String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("command.kick.defaultreason"));
 
-        if (permissions.testSuffix(pl, "exempt.target")) {
+        if (permissions.testSuffix(pl, "exempt.target", src, false)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kick.exempt", pl.getName()));
         }
 

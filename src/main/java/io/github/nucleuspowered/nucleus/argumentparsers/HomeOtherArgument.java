@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.commands.HomeOtherCommand;
 import org.spongepowered.api.command.CommandSource;
@@ -25,12 +26,12 @@ import javax.annotation.Nullable;
 public class HomeOtherArgument extends HomeArgument {
 
     private final NicknameArgument nickArg;
-    private final String exemptperm;
+    private final CommandPermissionHandler reg;
 
     public HomeOtherArgument(@Nullable Text key, NucleusPlugin plugin, CoreConfigAdapter cca) {
         super(key, plugin, cca);
         nickArg = new NicknameArgument(key, plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER);
-        this.exemptperm = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class).getPermissionWithSuffix(HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX);
+        this.reg = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class);
     }
 
     @Nullable
@@ -46,7 +47,7 @@ public class HomeOtherArgument extends HomeArgument {
 
         // We know it's an instance of a user.
         User user = ((List<User>)nickArg.parseInternal(player.toLowerCase(), source, args)).get(0);
-        if (user.hasPermission(this.exemptperm)) {
+        if (reg.testSuffix(user, HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX, source, false)) {
             throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.homeother.exempt"));
         }
 

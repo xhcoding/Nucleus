@@ -49,7 +49,7 @@ public class InvSeeListener extends ListenerBase {
         }
 
         // Ok, so we're interacting with another subject's inventory.
-        if (invSeePermissionHandler.testSuffix(target, "exempt.interact")) {
+        if (invSeePermissionHandler.testSuffix(target, "exempt.interact", player, false)) {
             event.getCursorTransaction().setValid(false);
             event.setCancelled(true);
         }

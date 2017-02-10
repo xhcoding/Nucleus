@@ -37,6 +37,9 @@ public class CoreConfig {
     @Setting(value = "safe-teleport-check", comment = "loc:config.core.safeteleport")
     private SafeTeleportConfig safeTeleportConfig = new SafeTeleportConfig();
 
+    @Setting(value = "console-overrides-exemptions", comment = "loc:config.core.consoleoverrides")
+    private boolean consoleOverride = true;
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -71,5 +74,9 @@ public class CoreConfig {
 
     public SafeTeleportConfig getSafeTeleportConfig() {
         return safeTeleportConfig;
+    }
+
+    public boolean isConsoleOverride() {
+        return consoleOverride;
     }
 }
