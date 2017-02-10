@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -17,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -55,7 +55,7 @@ public class SocialSpyCommand extends AbstractCommand<Player> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.socialspy.forced"));
         }
 
-        UserService qs = userConfigLoader.get(src).get();
+        MessageUserDataModule qs = userConfigLoader.get(src).get().get(MessageUserDataModule.class);
         boolean spy = args.<Boolean>getOne(arg).orElse(!qs.isSocialSpy());
         if (qs.setSocialSpy(spy)) {
             Text message = plugin.getMessageProvider().getTextMessageWithFormat(spy ? "command.socialspy.on" : "command.socialspy.off");

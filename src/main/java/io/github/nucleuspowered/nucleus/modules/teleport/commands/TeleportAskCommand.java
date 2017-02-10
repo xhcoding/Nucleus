@@ -55,10 +55,7 @@ public class TeleportAskCommand extends StandardAbstractCommand<Player> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.onlyOne(
-                    new SelectorWrapperArgument(
-                        new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
-                        permissions,
-                        SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
+                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER)
                 ),
                 GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("force"), "f").buildWith(GenericArguments.none())
         };

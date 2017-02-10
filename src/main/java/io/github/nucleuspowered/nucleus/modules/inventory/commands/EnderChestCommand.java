@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.inventory.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -25,7 +26,7 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Map;
 
-@Permissions
+@Permissions(supportsOthers = true)
 @RegisterCommand({"enderchest", "ec", "echest"})
 @Since(minecraftVersion = "1.10.2", spongeApiVersion = "5.0.0", nucleusVersion = "0.13.0")
 public class EnderChestCommand extends AbstractCommand<Player> {
@@ -37,7 +38,6 @@ public class EnderChestCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = super.permissionSuffixesToRegister();
-        mspi.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.enderchest.others"), SuggestedLevel.ADMIN));
         mspi.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.enderchest.exempt.inspect"), SuggestedLevel.ADMIN));
         return mspi;
     }
@@ -47,7 +47,7 @@ public class EnderChestCommand extends AbstractCommand<Player> {
         return new CommandElement[] {
                 GenericArguments.optional(
                     GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(new NicknameArgument(Text.of(player), udm, NicknameArgument.UnderlyingType.PLAYER)),
+                        SelectorWrapperArgument.nicknameSelector(Text.of(player), NicknameArgument.UnderlyingType.PLAYER),
                         permissions.getPermissionWithSuffix("others")
                     ))
         };

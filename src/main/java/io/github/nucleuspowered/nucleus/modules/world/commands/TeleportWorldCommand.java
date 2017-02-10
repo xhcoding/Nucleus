@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnWorldDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -66,7 +67,8 @@ public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
         }
 
         // Rotate.
-        worldDataManager.getWorld(worldProperties.getUniqueId()).ifPresent(x -> x.getSpawnRotation().ifPresent(player::setRotation));
+        worldDataManager.getWorld(worldProperties.getUniqueId()).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
+            .ifPresent(player::setRotation));
         if (src instanceof Player && ((Player) src).getUniqueId().equals(player.getUniqueId())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", worldProperties.getWorldName()));
         } else {

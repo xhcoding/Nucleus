@@ -5,12 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.Transform;
@@ -23,13 +24,13 @@ import java.util.Optional;
 @RegisterCommand("firstspawn")
 public class FirstSpawnCommand extends AbstractCommand<Player> {
 
-    @Inject private GeneralService data;
+    @Inject private ModularGeneralService data;
     @Inject private SpawnConfigAdapter spawnConfigAdapter;
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
 
-        Optional<Transform<World>> olwr = data.getFirstSpawn();
+        Optional<Transform<World>> olwr = data.get(SpawnGeneralDataModule.class).getFirstSpawn();
         if (!olwr.isPresent()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstspawn.notset"));
             return CommandResult.empty();

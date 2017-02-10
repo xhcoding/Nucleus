@@ -5,7 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.chat.commands;
 
 import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
+import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -18,7 +20,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -47,7 +48,7 @@ public class MeCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.remainingJoinedStrings(Text.of(messageKey))
+            new RemainingStringsArgument(Text.of(messageKey))
         };
     }
 
@@ -81,7 +82,7 @@ public class MeCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.me.cancel"));
         }
 
-        event.getChannel().orElse(channel).send(src, event.getFormatter().format(), ChatTypes.CHAT);
+        event.getChannel().orElse(channel).send(src, Util.applyChatTemplate(event.getFormatter()), ChatTypes.CHAT);
         return CommandResult.success();
     }
 
@@ -91,6 +92,10 @@ public class MeCommand extends AbstractCommand<CommandSource> {
         @Nonnull
         public Collection<MessageReceiver> getMembers() {
             return MessageChannel.TO_ALL.getMembers();
+        }
+
+        @Override public boolean removePrefix() {
+            return false;
         }
     }
 }

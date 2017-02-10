@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.ignore.commands;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -17,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.ignore.datamodules.IgnoreUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -63,7 +63,7 @@ public class IgnoreCommand extends AbstractCommand<Player> {
             return CommandResult.empty();
         }
 
-        UserService inu = loader.get(src).get();
+        IgnoreUserDataModule inu = loader.get(src).get().get(IgnoreUserDataModule.class);
 
         if (permissions.testSuffix(target, "exempt.chat")) {
             // Make sure they are removed.

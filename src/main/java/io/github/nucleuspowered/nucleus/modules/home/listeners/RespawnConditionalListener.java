@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.home.datamodules.HomeUserDataModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
@@ -25,6 +26,7 @@ public class RespawnConditionalListener extends ListenerBase {
     @Listener
     public void onRespawn(final RespawnPlayerEvent event, @Getter("getTargetEntity") final Player player) {
         plugin.getUserDataManager().get(player).get()
+            .get(HomeUserDataModule.class)
             .getHome(NucleusHomeService.DEFAULT_HOME_NAME)
             .ifPresent(x -> x.getTransform().ifPresent(event::setToTransform));
     }

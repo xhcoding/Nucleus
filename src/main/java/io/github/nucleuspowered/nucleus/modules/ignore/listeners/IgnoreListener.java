@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.ignore.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.chat.NucleusNoIgnoreChannel;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -14,13 +15,14 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.ignore.commands.IgnoreCommand;
+import io.github.nucleuspowered.nucleus.modules.ignore.datamodules.IgnoreUserDataModule;
+import io.github.nucleuspowered.nucleus.util.MessageChannelWrapper;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 
 import java.util.Collection;
@@ -36,15 +38,22 @@ public class IgnoreListener extends ListenerBase {
 
     @Listener(order = Order.FIRST)
     public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
+        if (event.getChannel().orElseGet(event::getOriginalChannel) instanceof NucleusNoIgnoreChannel) {
+            return;
+        }
+
         // Reset the channel - but only if we have to.
-        checkCancels(event.getChannel().orElse(event.getOriginalChannel()).getMembers(), player).ifPresent(x -> event.setChannel(MessageChannel.fixed(x)));
+        checkCancels(event.getChannel().orElseGet(event::getOriginalChannel).getMembers(), player).ifPresent(x ->
+                event.setChannel(new MessageChannelWrapper(event.getChannel().orElseGet(event::getOriginalChannel), x)));
     }
 
     @Listener(order = Order.FIRST)
     public void onMessage(NucleusMessageEvent event, @Root Player player) {
         if (event.getRecipient() instanceof User) {
             try {
-                event.setCancelled(loader.get((User) event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
+                event.setCancelled(loader.get((User) event.getRecipient()).get()
+                        .get(IgnoreUserDataModule.class)
+                        .getIgnoreList().contains(player.getUniqueId()));
             } catch (Exception e) {
                 if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();
@@ -56,7 +65,9 @@ public class IgnoreListener extends ListenerBase {
     @Listener(order = Order.FIRST)
     public void onMail(NucleusMailEvent event, @Root Player player) {
         try {
-            event.setCancelled(loader.get(event.getRecipient()).get().getIgnoreList().contains(player.getUniqueId()));
+            event.setCancelled(loader.get(event.getRecipient()).get()
+                    .get(IgnoreUserDataModule.class)
+                    .getIgnoreList().contains(player.getUniqueId()));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -83,7 +94,9 @@ public class IgnoreListener extends ListenerBase {
         List<MessageReceiver> list = Lists.newArrayList(collection);
         list.removeIf(x -> {
             try {
-                return x instanceof Player && !x.equals(player) && loader.get((Player) x).get().getIgnoreList().contains(player.getUniqueId());
+                return x instanceof Player && !x.equals(player) && loader.get((Player) x).get()
+                        .get(IgnoreUserDataModule.class)
+                        .getIgnoreList().contains(player.getUniqueId());
             } catch (Exception e) {
                 if (cca.getNodeOrDefault().isDebugmode()) {
                     e.printStackTrace();

@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.RemoteSource;
@@ -38,9 +39,12 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
         translatorMap.put("maxplayers", (p, v, m) -> Optional.of(Text.of(Sponge.getServer().getMaxPlayers())));
         translatorMap.put("onlineplayers", (p, v, m) -> Optional.of(Text.of(Sponge.getServer().getOnlinePlayers().size())));
         translatorMap.put("currentworld", (p, v, m) -> Optional.of(Text.of(getWorld(getFromVariableIfExists(p, v, m)).getName())));
-        translatorMap.put("time", (p, v, m) -> Optional.of(Text.of(String.valueOf(Util.getTimeFromTicks(getWorld(getFromVariableIfExists(p, v, m)).getProperties().getWorldTime())))));
+        translatorMap.put("time", (p, v, m) -> Optional.of(Text.of(String.valueOf(Util
+                .getTimeFromTicks(getWorld(getFromVariableIfExists(p, v, m)).getProperties().getWorldTime())))));
 
-        translatorMap.put("uniquevisitor", (p, v, m) -> Optional.of(Text.of(Nucleus.getNucleus().getGeneralService().getUniqueUserCount())));
+        translatorMap.put("uniquevisitor", (p, v, m) -> Optional.of(Text.of(Nucleus.getNucleus()
+                .getGeneralService().getTransient(UniqueUserCountTransientModule.class).getUniqueUserCount())));
+
         translatorMap.put("ipaddress", (p, v, m) -> Optional.of(Text.of(p instanceof RemoteSource ?
             ((RemoteSource)p).getConnection().getAddress().getAddress().toString() :
             "localhost")));

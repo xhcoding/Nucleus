@@ -5,8 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -15,9 +13,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
@@ -32,25 +29,9 @@ import java.util.Optional;
 @NoWarmup
 @NoCost
 @Permissions(supportsSelectors = true, supportsOthers = true)
-public class HatCommand extends AbstractCommand<Player> {
+public class HatCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
-    private final String playerKey = "subject";
-
-    @Override
-    public CommandElement[] getArguments() {
-        return new CommandElement[] {
-                GenericArguments.optional(GenericArguments.requiringPermission(
-                        GenericArguments.onlyOne(new SelectorWrapperArgument(
-                                new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
-                                permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
-                            ),
-                        permissions.getPermissionWithSuffix("others")))
-        };
-    }
-
-    @Override
-    public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
-        Player pl = this.getUserFromArgs(Player.class, player, playerKey, args);
+    @Override protected CommandResult executeWithPlayer(CommandSource player, Player pl, CommandContext args, boolean isSelf) throws Exception {
         Optional<ItemStack> helmetOptional = pl.getHelmet();
 
         ItemStack stack = pl.getItemInHand(HandTypes.MAIN_HAND).orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.generalerror.handempty")));
@@ -71,9 +52,9 @@ public class HatCommand extends AbstractCommand<Player> {
 
         // If the old item can't be placed back in the subject inventory, drop the item.
         helmetOptional.ifPresent(itemStack -> Util.getStandardInventory(pl).offer(itemStack)
-            .getRejectedItems().forEach(x -> Util.dropItemOnFloorAtLocation(x, pl.getWorld(), pl.getLocation().getPosition())));
+                .getRejectedItems().forEach(x -> Util.dropItemOnFloorAtLocation(x, pl.getWorld(), pl.getLocation().getPosition())));
 
-        if (!pl.getUniqueId().equals(player.getUniqueId())) {
+        if (!isSelf) {
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.hat.success", plugin.getNameUtil().getName(pl), itemName));
         }
 

@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener
 import io.github.nucleuspowered.nucleus.modules.misc.MiscModule;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.GodCommand;
 import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.misc.datamodules.InvulnerabilityUserDataModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
@@ -31,7 +32,7 @@ public class InvulnReloadableListener extends ListenerBase {
         }
 
         if (!player.hasPermission(basePerm)) {
-            plugin.getUserDataManager().get(player).ifPresent(x -> x.setInvulnerable(false));
+            plugin.getUserDataManager().get(player).ifPresent(x -> x.get(InvulnerabilityUserDataModule.class).setInvulnerable(false));
         }
     }
 

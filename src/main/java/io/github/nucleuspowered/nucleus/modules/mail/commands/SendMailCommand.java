@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -37,7 +38,7 @@ public class SendMailCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER)),
+            SelectorWrapperArgument.nicknameSelector(Text.of(player), NicknameArgument.UnderlyingType.USER),
             GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };
     }

@@ -8,6 +8,7 @@ import com.flowpowered.math.imaginary.Quaterniond;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -45,7 +46,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@Permissions(supportsSelectors = true, supportsOthers = true)
+@Permissions(supportsOthers = true)
 @RegisterCommand({"kittycannon", "kc"})
 public class KittyCannonCommand extends AbstractCommand<CommandSource> {
 
@@ -76,7 +77,7 @@ public class KittyCannonCommand extends AbstractCommand<CommandSource> {
                 .buildWith(
                     GenericArguments.optional(
                         GenericArguments.requiringPermission(
-                            new SelectorWrapperArgument(GenericArguments.player(Text.of(playerKey)), permissions, SelectorWrapperArgument.ALL_SELECTORS),
+                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER, false, Player.class),
                             permissions.getOthers())))
         };
     }

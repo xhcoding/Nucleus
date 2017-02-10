@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
@@ -37,6 +38,7 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
+import org.apache.commons.lang3.ArrayUtils;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
@@ -1163,18 +1165,22 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
         protected final String playerKey = "player";
 
-        @Override public CommandElement[] getArguments() {
-            return new CommandElement[] {
+        public CommandElement[] additionalArguments() {
+            return new CommandElement[] {};
+        }
+
+        @Override public final CommandElement[] getArguments() {
+            return ArrayUtils.addAll(new CommandElement[] {
                 GenericArguments.optional(
                     GenericArguments.requiringPermission(
                         new NoModifiersArgument<>(
-                            new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER, true),
+                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER),
                             NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE
                         ),
                         permissions.getOthers()
                     )
                 )
-            };
+            }, additionalArguments());
         }
 
         @Override protected CommandResult executeCommand(SubjectPermissionCache<CommandSource> src, CommandContext args) throws Exception {
@@ -1182,6 +1188,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             return executeWithPlayer(src, target, args, src.getSubject() instanceof Player && ((Player) src.getSubject()).getUniqueId().equals(target.getUniqueId()));
         }
 
-        protected abstract CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> source, Player target, CommandContext args, final boolean isSelf);
+        protected abstract CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> source, Player target, CommandContext args, final boolean isSelf)
+                throws Exception;
     }
 }

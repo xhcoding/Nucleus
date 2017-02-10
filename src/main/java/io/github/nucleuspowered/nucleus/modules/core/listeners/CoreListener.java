@@ -7,10 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.core.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusOnLoginEvent;
 import io.github.nucleuspowered.nucleus.modules.core.events.OnFirstLoginEvent;
 import org.spongepowered.api.Sponge;
@@ -52,19 +54,20 @@ public class CoreListener extends ListenerBase {
 
         loader.get(profile.getUniqueId()).ifPresent(qsu -> {
             if (event.getFromTransform().equals(event.getToTransform())) {
+                CoreUserDataModule c = qsu.get(CoreUserDataModule.class);
                 NucleusOnLoginEvent onLoginEvent = new NucleusOnLoginEvent(Cause.of(NamedCause.source(profile)), user, qsu, event.getFromTransform());
                 Sponge.getEventManager().post(onLoginEvent);
                 if (onLoginEvent.getTo().isPresent()) {
                     event.setToTransform(onLoginEvent.getTo().get());
-                    qsu.removeLocationOnLogin();
+                    c.removeLocationOnLogin();
                     return;
                 }
 
                 // If we have a location to send them to in the config, send them there now!
-                Optional<Location<World>> olw = qsu.getLocationOnLogin();
+                Optional<Location<World>> olw = c.getLocationOnLogin();
                 if (olw.isPresent()) {
                     event.setToTransform(event.getFromTransform().setLocation(olw.get()));
-                    qsu.removeLocationOnLogin();
+                    c.removeLocationOnLogin();
                 }
             }
         });
@@ -76,21 +79,22 @@ public class CoreListener extends ListenerBase {
     @Listener(order = Order.FIRST)
     public void onPlayerJoinFirst(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
         try {
-            UserService qsu = loader.get(player).get();
-            qsu.setLastLogin(Instant.now());
+            ModularUserService qsu = loader.get(player).get();
+            CoreUserDataModule c = qsu.get(CoreUserDataModule.class);
+            c.setLastLogin(Instant.now());
 
             // If in the cache, unset it too.
-            qsu.setFirstPlay(Util.isFirstPlay(player) && !qsu.getLastLogout().isPresent());
+            c.setFirstPlay(Util.isFirstPlay(player) && !c.getLastLogout().isPresent());
 
-            if (qsu.isFirstPlay()) {
-                plugin.getGeneralService().resetUniqueUserCount();
+            if (c.isFirstPlay()) {
+                plugin.getGeneralService().getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
             }
 
-            qsu.setLastIp(player.getConnection().getAddress().getAddress());
+            c.setLastIp(player.getConnection().getAddress().getAddress());
 
             // We'll do this bit shortly - after the login events have resolved.
             final String name = player.getName();
-            Task.builder().execute(() -> qsu.setLastKnownName(name)).delayTicks(20L).submit(plugin);
+            Task.builder().execute(() -> c.setLastKnownName(name)).delayTicks(20L).submit(plugin);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,7 +102,7 @@ public class CoreListener extends ListenerBase {
 
     @Listener
     public void onPlayerJoinLast(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
-        if (loader.get(player).map(UserService::isFirstPlay).orElse(true)) {
+        if (loader.get(player).map(x -> x.get(CoreUserDataModule.class).isFirstPlay()).orElse(true)) {
             NucleusFirstJoinEvent firstJoinEvent = new OnFirstLoginEvent(
                 event.getCause(), player, event.getOriginalChannel(), event.getChannel().orElse(null), event.getOriginalMessage(),
                     event.isMessageCancelled(), event.getFormatter());
@@ -124,8 +128,10 @@ public class CoreListener extends ListenerBase {
 
         try {
             this.plugin.getUserDataManager().get(player).ifPresent(x -> {
-                x.setOnLogout(location);
-                x.setLastIp(address);
+                x.quickSet(CoreUserDataModule.class, y -> {
+                    y.setLastLogout(location);
+                    y.setLastIp(address);
+                });
             });
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {

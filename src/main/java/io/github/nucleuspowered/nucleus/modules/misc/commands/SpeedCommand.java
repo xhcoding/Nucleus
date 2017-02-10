@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -33,12 +32,11 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 @RegisterCommand("speed")
-@Permissions(supportsSelectors = true)
-public class SpeedCommand extends AbstractCommand<CommandSource> {
+@Permissions(supportsOthers = true)
+public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private final String speedKey = "speed";
     private final String typeKey = "type";
-    private final String playerKey = "subject";
 
     @Inject private MiscConfigAdapter miscConfigAdapter;
 
@@ -56,8 +54,7 @@ public class SpeedCommand extends AbstractCommand<CommandSource> {
         return mspi;
     }
 
-    @Override
-    public CommandElement[] getArguments() {
+    @Override public CommandElement[] additionalArguments() {
         Map<String, SpeedType> keysMap = new HashMap<>();
         keysMap.put("fly", SpeedType.FLYING);
         keysMap.put("flying", SpeedType.FLYING);
@@ -66,18 +63,14 @@ public class SpeedCommand extends AbstractCommand<CommandSource> {
         keysMap.put("walk", SpeedType.WALKING);
         keysMap.put("w", SpeedType.WALKING);
 
-        return new CommandElement[] {GenericArguments.optional(GenericArguments.seq(
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(
-                        GenericArguments.requiringPermission(
-                            new SelectorWrapperArgument(GenericArguments.player(Text.of(playerKey)), permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)
-                            , permissions.getPermissionWithSuffix("others")))),
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
-                GenericArguments.integer(Text.of(speedKey))))};
+        return new CommandElement[] {
+            GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.choices(Text.of(typeKey), keysMap, true))),
+            GenericArguments.optional(GenericArguments.integer(Text.of(speedKey)))
+        };
     }
 
     @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Player pl = this.getUserFromArgs(Player.class, src, playerKey, args);
+    public CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {
         Optional<Integer> ospeed = args.getOne(speedKey);
         if (!ospeed.isPresent()) {
             Text t = Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.walk")).append(Text.of(" "))
@@ -112,7 +105,7 @@ public class SpeedCommand extends AbstractCommand<CommandSource> {
         if (dtr.isSuccessful()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.success.base", key.name, String.valueOf(speed)));
 
-            if (!pl.equals(src)) {
+            if (!isSelf) {
                 src.sendMessages(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.success.other", pl.getName(), key.name, String.valueOf(speed)));
             }
 

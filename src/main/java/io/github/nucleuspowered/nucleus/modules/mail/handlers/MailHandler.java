@@ -9,11 +9,11 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.iapi.data.mail.BetweenInstantsData;
 import io.github.nucleuspowered.nucleus.iapi.data.mail.MailData;
 import io.github.nucleuspowered.nucleus.iapi.data.mail.MailFilter;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusMailService;
+import io.github.nucleuspowered.nucleus.modules.mail.datamodules.MailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mail.events.InternalNucleusMailEvent;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -41,13 +41,7 @@ public class MailHandler implements NucleusMailService {
 
     @Override
     public List<MailData> getMail(User player, MailFilter... filters) {
-        UserService iqsu;
-        try {
-            iqsu = plugin.getUserDataManager().get(player).get();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        MailUserDataModule iqsu = plugin.getUserDataManager().get(player).get().get(MailUserDataModule.class);
 
         List<MailData> lmd = iqsu.getMail();
         if (filters.length == 0 || lmd.isEmpty()) {
@@ -65,7 +59,7 @@ public class MailHandler implements NucleusMailService {
         // Get players.
         List<UUID> pf =
                 lmf.stream().filter(x -> x instanceof PlayerFilter).map(d -> ((PlayerFilter) d).getSuppliedData()).collect(Collectors.toList());
-        if (lmf.stream().filter(x -> x instanceof ConsoleFilter).findFirst().isPresent()) {
+        if (lmf.stream().anyMatch(x -> x instanceof ConsoleFilter)) {
             pf.add(Util.consoleFakeUUID);
         }
 
@@ -91,7 +85,7 @@ public class MailHandler implements NucleusMailService {
     @Override
     public boolean removeMail(User player, MailData mailData) {
         try {
-            return plugin.getUserDataManager().get(player).get().removeMail(mailData);
+            return plugin.getUserDataManager().get(player).get().get(MailUserDataModule.class).removeMail(mailData);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -100,9 +94,9 @@ public class MailHandler implements NucleusMailService {
 
     @Override
     public void sendMail(User playerFrom, User playerTo, String message) {
-        UserService iqsu;
+        MailUserDataModule iqsu;
         try {
-            iqsu = plugin.getUserDataManager().get(playerTo).get();
+            iqsu = plugin.getUserDataManager().get(playerTo).get().get(MailUserDataModule.class);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -132,9 +126,9 @@ public class MailHandler implements NucleusMailService {
 
     @Override
     public boolean clearUserMail(User player) {
-        UserService iqsu;
+        MailUserDataModule iqsu;
         try {
-            iqsu = plugin.getUserDataManager().get(player).get();
+            iqsu = plugin.getUserDataManager().get(player).get().get(MailUserDataModule.class);
         } catch (Exception e) {
             e.printStackTrace();
             return false;

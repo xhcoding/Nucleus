@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -15,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -59,12 +59,12 @@ public class PowertoolCommand extends AbstractCommand<Player> {
         }
 
         Optional<String> command = args.getOne(commandKey);
-        UserService inu = loader.get(src).get();
+        PowertoolUserDataModule inu = loader.get(src).get().get(PowertoolUserDataModule.class);
         return command.isPresent() ? setPowertool(src, inu, itemStack.get().getItem(), command.get())
                 : viewPowertool(src, inu, itemStack.get().getItem());
     }
 
-    private CommandResult viewPowertool(Player src, UserService user, ItemType item) {
+    private CommandResult viewPowertool(Player src, PowertoolUserDataModule user, ItemType item) {
         Optional<List<String>> cmds = user.getPowertoolForItem(item);
         if (cmds.isPresent() && !cmds.get().isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.viewcmds", item.getId()));
@@ -76,7 +76,7 @@ public class PowertoolCommand extends AbstractCommand<Player> {
         return CommandResult.success();
     }
 
-    private CommandResult setPowertool(Player src, UserService user, ItemType item, String command) {
+    private CommandResult setPowertool(Player src, PowertoolUserDataModule user, ItemType item, String command) {
         // For consistency, if a command starts with "/", remove it, but just
         // once. WorldEdit commands can be input using "//"
         if (command.startsWith("/")) {

@@ -5,18 +5,19 @@
 package io.github.nucleuspowered.nucleus.internal.migrators;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
-import io.github.nucleuspowered.nucleus.dataservices.WorldService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
 import org.slf4j.Logger;
 import org.spongepowered.api.command.CommandSource;
 
-import javax.inject.Inject;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 /**
  * Defines the migrator method.
@@ -34,7 +35,7 @@ public abstract class DataMigrator {
      */
     public abstract void migrate(CommandSource src) throws Exception;
 
-    protected final Optional<UserService> getUser(UUID uuid) {
+    protected final Optional<ModularUserService> getUser(UUID uuid) {
         try {
             return plugin.getUserDataManager().get(uuid);
         } catch (Exception e) {
@@ -43,7 +44,7 @@ public abstract class DataMigrator {
         }
     }
 
-    protected final Optional<WorldService> getWorld(UUID uuid) {
+    protected final Optional<ModularWorldService> getWorld(UUID uuid) {
         try {
             return plugin.getWorldDataManager().get(uuid);
         } catch (Exception e) {

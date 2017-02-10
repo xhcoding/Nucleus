@@ -51,7 +51,8 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
     @Inject private RTPConfigAdapter rca;
 
     @Override
-    protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> src, Player player, CommandContext args, boolean self) {
+    protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> src, Player player, CommandContext args, boolean self)
+            throws Exception {
 
         // Get the current world.
         World currentWorld = player.getWorld();

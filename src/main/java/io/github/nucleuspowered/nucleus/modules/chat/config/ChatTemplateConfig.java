@@ -19,6 +19,9 @@ public class ChatTemplateConfig {
     @Setting(value = "default-namecolour", comment = "loc:config.chat.template.namecolour")
     private String namecolour = "";
 
+    @Setting(value = "default-namestyle", comment = "loc:config.chat.template.namestyle")
+    private String namestyle = "";
+
     @Setting(comment = "loc:config.chat.template.prefix")
     private String prefix = "{{prefix}} {{displayname}}{{suffix}}&f: ";
 
@@ -43,5 +46,9 @@ public class ChatTemplateConfig {
 
     public String getNamecolour() {
         return namecolour;
+    }
+
+    public String getNamestyle() {
+        return namestyle;
     }
 }

@@ -9,8 +9,8 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
@@ -54,14 +55,15 @@ public class ConnectionMessagesListener extends ListenerBase {
         }
 
         try {
-            UserService nucleusUser = loader.get(pl).get();
+            ModularUserService nucleusUser = loader.get(pl).get();
+            Optional<String> lastKnown = nucleusUser.quickGet(CoreUserDataModule.class, CoreUserDataModule::getLastKnownName);
             if (cmc.isDisplayPriorName() &&
                 !cmc.getPriorNameMessage().isEmpty() &&
-                !nucleusUser.getLastKnownName().orElseGet(pl::getName).equalsIgnoreCase(pl.getName())) {
+                !lastKnown.orElseGet(pl::getName).equalsIgnoreCase(pl.getName())) {
                     // Name change!
                     MessageChannel.TO_ALL.send(plugin,
                         chatUtil.getMessageFromTemplate(cmc.getPriorNameMessage(), pl, true,
-                            ImmutableMap.of("previousname", cs -> Optional.of(Text.of(nucleusUser.getLastKnownName().get()))), Maps.newHashMap()));
+                            ImmutableMap.of("previousname", cs -> Optional.of(Text.of(lastKnown.get()))), Maps.newHashMap()));
             }
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {

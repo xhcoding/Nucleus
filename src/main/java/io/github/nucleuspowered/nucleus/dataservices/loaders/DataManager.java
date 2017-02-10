@@ -60,7 +60,7 @@ public abstract class DataManager<I, P, S extends Service> {
             }
 
             try {
-                S us = getNew(data, d).get(); // new UserService(plugin, d, user.get());
+                S us = getNew(data, d).get();
                 dataStore.put(data, us);
                 return Optional.of(us);
             } catch (Exception e) {

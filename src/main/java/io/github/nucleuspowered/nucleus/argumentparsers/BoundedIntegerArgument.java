@@ -13,8 +13,9 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * Takes an integer argument between "min" and "max".
@@ -52,6 +53,6 @@ public class BoundedIntegerArgument extends CommandElement {
 
     @Override
     public Text getUsage(CommandSource src) {
-        return Text.of(this.getKey(), String.format("(%s-%s)", min, max));
+        return Text.of(this.getKey(), String.format("(%s to %s)", min, max));
     }
 }

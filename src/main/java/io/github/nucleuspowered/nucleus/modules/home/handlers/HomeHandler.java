@@ -13,8 +13,9 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.modules.home.commands.SetHomeCommand;
+import io.github.nucleuspowered.nucleus.modules.home.datamodules.HomeUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.home.events.AbstractHomeEvent;
 import io.github.nucleuspowered.nucleus.modules.home.events.CreateHomeEvent;
 import io.github.nucleuspowered.nucleus.modules.home.events.DeleteHomeEvent;
@@ -43,18 +44,18 @@ public class HomeHandler implements NucleusHomeService {
     }
 
     @Override public List<Home> getHomes(UUID user) {
-        Optional<UserService> service = plugin.getUserDataManager().get(user); //.get().getHome;
+        Optional<ModularUserService> service = plugin.getUserDataManager().get(user); //.get().getHome;
         if (service.isPresent()) {
-            return Lists.newArrayList(service.get().getHomes().values());
+            return Lists.newArrayList(service.get().get(HomeUserDataModule.class).getHomes().values());
         }
 
         return Lists.newArrayList();
     }
 
     @Override public Optional<Home> getHome(UUID user, String name) {
-        Optional<UserService> service = plugin.getUserDataManager().get(user);
+        Optional<ModularUserService> service = plugin.getUserDataManager().get(user);
         if (service.isPresent()) {
-            return service.get().getHome(name);
+            return service.get().get(HomeUserDataModule.class).getHome(name);
         }
 
         return Optional.empty();
@@ -83,7 +84,7 @@ public class HomeHandler implements NucleusHomeService {
         postEvent(event);
 
         // Just in case.
-        if (!plugin.getUserDataManager().get(user).get().setHome(name, location, rotation, false)) {
+        if (!plugin.getUserDataManager().get(user).get().get(HomeUserDataModule.class).setHome(name, location, rotation, false)) {
             throw new NucleusException(
                 plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", name),
                 NucleusException.ExceptionType.UNKNOWN_ERROR);
@@ -100,7 +101,7 @@ public class HomeHandler implements NucleusHomeService {
         postEvent(event);
 
         // Just in case.
-        if (!plugin.getUserDataManager().get(home.getUser()).get().setHome(home.getName(), location, rotation, true)) {
+        if (!plugin.getUserDataManager().get(home.getUser()).get().get(HomeUserDataModule.class).setHome(home.getName(), location, rotation, true)) {
             throw new NucleusException(
                 plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home.getName()),
                 NucleusException.ExceptionType.UNKNOWN_ERROR);
@@ -116,7 +117,7 @@ public class HomeHandler implements NucleusHomeService {
         DeleteHomeEvent event = new DeleteHomeEvent(cause, home);
         postEvent(event);
 
-        if (!plugin.getUserDataManager().get(home.getOwnersUniqueId()).get().deleteHome(home.getName())) {
+        if (!plugin.getUserDataManager().get(home.getOwnersUniqueId()).get().get(HomeUserDataModule.class).deleteHome(home.getName())) {
             throw new NucleusException(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.fail", home.getName()), NucleusException.ExceptionType.UNKNOWN_ERROR);
         }
     }

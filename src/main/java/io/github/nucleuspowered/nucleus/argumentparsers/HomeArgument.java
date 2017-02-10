@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.home.datamodules.HomeUserDataModule;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -53,7 +54,7 @@ public class HomeArgument extends CommandElement {
 
     Home getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
         try {
-            Optional<Home> owl = plugin.getUserDataManager().get(user).get().getHome(home);
+            Optional<Home> owl = plugin.getUserDataManager().get(user).get().quickGet(HomeUserDataModule.class, x -> x.getHome(home));
             if (owl.isPresent()) {
                 return owl.get();
             }
@@ -85,7 +86,7 @@ public class HomeArgument extends CommandElement {
     protected List<String> complete(User src, String homeName) {
         Set<String> s;
         try {
-            s = plugin.getUserDataManager().get(src).get().getHomes().keySet();
+            s = plugin.getUserDataManager().get(src).get().quickGet(HomeUserDataModule.class, HomeUserDataModule::getHomes).keySet();
         } catch (Exception e) {
             return Lists.newArrayList();
         }

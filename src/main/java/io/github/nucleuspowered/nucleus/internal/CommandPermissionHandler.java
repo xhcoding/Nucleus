@@ -32,7 +32,6 @@ public class CommandPermissionHandler {
     private final String warmup;
     private final String cooldown;
     private final String cost;
-    private final String selectors;
     private final String others;
 
     private final boolean justReturnTrue;
@@ -47,7 +46,6 @@ public class CommandPermissionHandler {
             warmup = "";
             cooldown = "";
             cost = "";
-            selectors = "";
             others = "";
             return;
         }
@@ -117,7 +115,6 @@ public class CommandPermissionHandler {
         prefix = sb.toString();
 
         base = prefix + "base";
-        selectors = prefix + "selectors";
 
         if (co.subcommandOf() != StandardAbstractCommand.class) {
             command = String.format("%s %s", co.subcommandOf().getAnnotation(RegisterCommand.class).value()[0], command);
@@ -131,11 +128,6 @@ public class CommandPermissionHandler {
         if (!cab.isAnnotationPresent(NoDocumentation.class)) {
             mssl.put(base,
                 new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.base", command), c.suggestedLevel()));
-
-            if (c.supportsSelectors()) {
-                mssl.put(selectors,
-                    new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.selector", command), c.suggestedLevel()));
-            }
 
             if (c.supportsOthers()) {
                 mssl.put(others, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", co.value()[0]),
@@ -188,10 +180,6 @@ public class CommandPermissionHandler {
 
     public boolean testCostExempt(Subject src) {
         return test(src, cost);
-    }
-
-    public boolean testSelectors(Subject src) {
-        return test(src, selectors);
     }
 
     public boolean testOthers(Subject src) {

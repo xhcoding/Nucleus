@@ -4,9 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.inventory.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -20,7 +19,6 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
@@ -38,8 +36,6 @@ import java.util.Map;
 public class InvSeeCommand extends AbstractCommand<Player> {
 
     private final String player = "subject";
-    @Inject
-    private UserDataManager udm;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -53,7 +49,7 @@ public class InvSeeCommand extends AbstractCommand<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new NicknameArgument(Text.of(player), udm, NicknameArgument.UnderlyingType.USER))
+            SelectorWrapperArgument.nicknameSelector(Text.of(player), NicknameArgument.UnderlyingType.USER)
         };
     }
 

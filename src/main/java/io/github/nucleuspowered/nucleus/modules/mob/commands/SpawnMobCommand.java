@@ -6,9 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mob.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -40,26 +38,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions(supportsSelectors = true)
+@Permissions(supportsOthers = true)
 @RegisterCommand({"spawnmob", "spawnentity", "mobspawn"})
-public class SpawnMobCommand extends AbstractCommand<CommandSource> {
+public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
-    private final String playerKey = "subject";
     private final String amountKey = "amount";
     private final String mobTypeKey = "mob";
 
     @Inject private MobConfigAdapter mobConfigAdapter;
 
-    @Override
-    public CommandElement[] getArguments() {
+    @Override public CommandElement[] additionalArguments() {
         return new CommandElement[] {
-                GenericArguments.optionalWeak(
-                    GenericArguments.requiringPermission(
-                        new SelectorWrapperArgument(
-                            new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
-                            permissions,
-                            SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS),
-                        permissions.getPermissionWithSuffix("others"))),
                 new ImprovedCatalogTypeArgument(Text.of(mobTypeKey), CatalogTypes.ENTITY_TYPE),
                 GenericArguments.optional(new PositiveIntegerArgument(Text.of(amountKey)), 1)
         };
@@ -68,15 +57,12 @@ public class SpawnMobCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawnmob.other"), SuggestedLevel.ADMIN));
         m.put("mob", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawnmob.mob"), SuggestedLevel.ADMIN));
         return m;
     }
 
     @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Player pl = this.getUserFromArgs(Player.class, src, playerKey, args);
-
+    public CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {
         // Get the amount
         int amount = args.<Integer>getOne(amountKey).get();
         EntityType et = args.<EntityType>getOne(mobTypeKey).get();

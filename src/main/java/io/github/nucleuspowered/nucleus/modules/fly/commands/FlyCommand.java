@@ -5,15 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.fly.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -28,9 +26,8 @@ import java.util.Map;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand("fly")
-public class FlyCommand extends AbstractCommand<CommandSource> {
+public class FlyCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
-    private static final String player = "subject";
     private static final String toggle = "toggle";
     @Inject private UserDataManager udm;
 
@@ -41,23 +38,14 @@ public class FlyCommand extends AbstractCommand<CommandSource> {
         return m;
     }
 
-    @Override
-    public CommandElement[] getArguments() {
+    @Override public CommandElement[] additionalArguments() {
         return new CommandElement[] {
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.requiringPermission(
-                        new SelectorWrapperArgument(
-                            new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
-                            permissions,
-                            SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS),
-                        permissions.getPermissionWithSuffix("others")))),
-                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
+            GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
         };
     }
 
-    @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        Player pl = this.getUserFromArgs(Player.class, src, player, args);
-        UserService uc = udm.get(pl).get();
+    @Override protected CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {
+        FlyUserDataModule uc = udm.get(pl).get().get(FlyUserDataModule.class);
         boolean fly = args.<Boolean>getOne(toggle).orElse(!pl.get(Keys.CAN_FLY).orElse(false));
 
         if (!setFlying(pl, fly)) {

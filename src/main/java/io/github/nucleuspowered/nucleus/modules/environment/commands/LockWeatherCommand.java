@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.environment.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusWorld;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -59,15 +60,17 @@ public class LockWeatherCommand extends AbstractCommand<CommandSource> {
         }
 
         WorldProperties wp = world.get();
-        Optional<NucleusWorld> ws = loader.getWorld(wp.getUniqueId());
+        Optional<ModularWorldService> ws = loader.getWorld(wp.getUniqueId());
         if (!ws.isPresent()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.noworld", wp.getWorldName()));
             return CommandResult.empty();
         }
 
-        boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!ws.get().isLockWeather());
+        EnvironmentWorldDataModule environmentWorldDataModule = ws.get().get(EnvironmentWorldDataModule.class);
+        boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!environmentWorldDataModule.isLockWeather());
 
-        ws.get().setLockWeather(toggle);
+        environmentWorldDataModule.setLockWeather(toggle);
+        ws.get().set(environmentWorldDataModule);
         if (toggle) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.lockweather.locked", wp.getWorldName()));
         } else {

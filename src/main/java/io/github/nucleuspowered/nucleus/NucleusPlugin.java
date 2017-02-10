@@ -15,19 +15,18 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.typesafe.config.ConfigException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
-import io.github.nucleuspowered.nucleus.dataservices.GeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.NameBanService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusUserLoaderService;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusWorldLoaderService;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
@@ -52,6 +51,7 @@ import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler
 import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
 import io.github.nucleuspowered.nucleus.logging.DebugLogger;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
@@ -78,6 +78,7 @@ import uk.co.drnaylor.quickstart.enums.ConstructionPhase;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleDiscoveryException;
+import uk.co.drnaylor.quickstart.exceptions.QuickStartModuleLoaderException;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 
 import java.io.IOException;
@@ -101,7 +102,7 @@ public class NucleusPlugin extends Nucleus {
     private boolean modulesLoaded = false;
     private Throwable isErrored = null;
     private CommandsConfig commandsConfig;
-    private GeneralService generalService;
+    private ModularGeneralService generalService;
     private ItemDataService itemDataService;
     private UserDataManager userDataManager;
     private WorldDataManager worldDataManager;
@@ -166,7 +167,7 @@ public class NucleusPlugin extends Nucleus {
             commandsConfig = new CommandsConfig(Paths.get(configDir.toString(), "commands.conf"));
 
             DataProviders d = new DataProviders(this);
-            generalService = new GeneralService(d.getGeneralDataProvider());
+            generalService = new ModularGeneralService(d.getGeneralDataProvider());
             itemDataService = new ItemDataService(d.getItemDataProvider());
             userDataManager = new UserDataManager(this, d::getUserFileDataProviders, d::doesUserFileExist);
             worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider, d::doesWorldFileExist);
@@ -264,17 +265,13 @@ public class NucleusPlugin extends Nucleus {
         modulesLoaded = true;
         Sponge.getEventManager().post(new BaseModuleEvent.Complete(this));
 
-        // Register final services
-        Game game = Sponge.getGame();
-        game.getServiceManager().setProvider(this, NucleusUserLoaderService.class, userDataManager);
-        game.getServiceManager().setProvider(this, NucleusWorldLoaderService.class, worldDataManager);
         logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
     }
 
     @Listener
     public void onGameStarting(GameStartingServerEvent event) {
         if (isErrored == null) {
-            generalService.resetUniqueUserCount();
+            generalService.getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
         }
     }
 
@@ -431,6 +428,14 @@ public class NucleusPlugin extends Nucleus {
         return moduleContainer;
     }
 
+    @Override public boolean isModuleLoaded(String moduleId) {
+        try {
+            return getModuleContainer().isModuleLoaded(moduleId);
+        } catch (NoModuleException e) {
+            return false;
+        }
+    }
+
     @Override
     public <R extends NucleusConfigAdapter<?>> Optional<R> getConfigAdapter(String id, Class<R> configAdapterClass) {
         try {
@@ -450,7 +455,7 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Override
-    public GeneralService getGeneralService() {
+    public ModularGeneralService getGeneralService() {
         return generalService;
     }
 
@@ -530,7 +535,7 @@ public class NucleusPlugin extends Nucleus {
         }
     }
 
-    public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
+    @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
         reloadableList.add(reloadable);
     }
 
@@ -615,15 +620,31 @@ public class NucleusPlugin extends Nucleus {
         if (isErrored == null) {
             messages.add(Text.of(TextColors.YELLOW, "No exception was saved."));
         } else {
+            Throwable exception = isErrored;
+            if (exception.getCause() != null &&
+                    (exception instanceof QuickStartModuleLoaderException || exception instanceof QuickStartModuleDiscoveryException)) {
+                exception = exception.getCause();
+            }
+
+            // Blegh, relocations
+            if (exception instanceof IOException && exception.getCause().getClass().getName().contains(ConfigException.class.getSimpleName())) {
+                exception = exception.getCause();
+                messages.add(Text.of(TextColors.RED, "It appears that there is an error in your configuration file! The error is: "));
+                messages.add(Text.of(TextColors.RED, exception.getMessage()));
+                messages.add(Text.of(TextColors.RED, "Please correct this and restart your server."));
+                messages.add(Text.of(TextColors.YELLOW, "----------------------------"));
+                messages.add(Text.of(TextColors.YELLOW, "(The error that was thrown is shown below)"));
+            }
+
             try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-                isErrored.printStackTrace(pw);
+                exception.printStackTrace(pw);
                 pw.flush();
                 String[] stackTrace = sw.toString().split("(\r)?\n");
                 for (String s : stackTrace) {
                     messages.add(Text.of(TextColors.YELLOW, s));
                 }
             } catch (IOException e) {
-                isErrored.printStackTrace();
+                exception.printStackTrace();
             }
         }
 
@@ -637,8 +658,10 @@ public class NucleusPlugin extends Nucleus {
 
         Platform platform = Sponge.getPlatform();
         messages.add(Text.of(TextColors.YELLOW, "Minecraft version: " + platform.getMinecraftVersion().getName()));
-        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge Version: %s %s", platform.getImplementation().getName(), platform.getImplementation().getVersion().orElse("unknown"))));
-        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge API Version: %s %s", platform.getApi().getName(), platform.getApi().getVersion().orElse("unknown"))));
+        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge Version: %s %s", platform.getContainer(Platform.Component.IMPLEMENTATION).getName(),
+                platform.getContainer(Platform.Component.IMPLEMENTATION).getVersion().orElse("unknown"))));
+        messages.add(Text.of(TextColors.YELLOW, String.format("Sponge API Version: %s %s", platform.getContainer(Platform.Component.API).getName(),
+                platform.getContainer(Platform.Component.API).getVersion().orElse("unknown"))));
 
         messages.add(Text.EMPTY);
         messages.add(Text.of(TextColors.YELLOW, "----------------------------"));

@@ -8,11 +8,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.GeneralDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitConfigDataNode;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.UserDataNode;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.WorldDataNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -31,10 +28,7 @@ import java.util.function.Supplier;
 public class DataProviders {
 
     private final NucleusPlugin plugin;
-    private final TypeToken<UserDataNode> ttu = TypeToken.of(UserDataNode.class);
-    private final TypeToken<WorldDataNode> ttw = TypeToken.of(WorldDataNode.class);
-    private final TypeToken<GeneralDataNode> ttg = TypeToken.of(GeneralDataNode.class);
-    private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
+        private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
     private final TypeToken<Map<String, String>> ttss = new TypeToken<Map<String, String>>() {};
     private final TypeToken<KitConfigDataNode> ttmk = TypeToken.of(KitConfigDataNode.class);
 
@@ -45,11 +39,11 @@ public class DataProviders {
         this.plugin = plugin;
     }
 
-    public DataProvider<UserDataNode> getUserFileDataProviders(UUID uuid) {
+    public DataProvider<ConfigurationNode> getUserFileDataProviders(UUID uuid) {
         // For now, just the Configurate one.
         try {
             Path p = getFile(userJson, uuid);
-            return new ConfigurateDataProvider<>(ttu, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
+            return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -63,11 +57,11 @@ public class DataProviders {
         }
     }
 
-    public DataProvider<WorldDataNode> getWorldFileDataProvider(UUID uuid) {
+    public DataProvider<ConfigurationNode> getWorldFileDataProvider(UUID uuid) {
         // For now, just the Configurate one.
         try {
             Path p = getFile(worldJson, uuid);
-            return new ConfigurateDataProvider<>(ttw, path -> getGsonBuilder().setPath(path).build(), p, plugin.getLogger());
+            return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -91,11 +85,12 @@ public class DataProviders {
         }
     }
 
-    public DataProvider<GeneralDataNode> getGeneralDataProvider() {
+    public DataProvider<ConfigurationNode> getGeneralDataProvider() {
         // For now, just the Configurate one.
         try {
             Path p = plugin.getDataPath().resolve("general.json");
-            return new ConfigurateDataProvider<>(ttg, path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p, plugin.getLogger());
+            return new SimpleConfigurateDataProvider(path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p,
+                    false, plugin.getLogger());
         } catch (Exception e) {
             return null;
         }

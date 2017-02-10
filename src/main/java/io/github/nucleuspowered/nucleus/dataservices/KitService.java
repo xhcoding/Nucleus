@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-public class KitService extends Service<KitConfigDataNode> {
+public class KitService extends AbstractService<KitConfigDataNode> {
 
     public KitService(DataProvider<KitConfigDataNode> dataProvider) throws Exception {
         super(dataProvider, false);

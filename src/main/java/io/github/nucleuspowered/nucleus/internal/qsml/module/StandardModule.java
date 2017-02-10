@@ -17,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
 import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
@@ -25,6 +26,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
@@ -211,6 +213,7 @@ public abstract class StandardModule implements Module {
                 .filter(assignableClass::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(packageName))
                 .filter(x -> !Modifier.isAbstract(x.getModifiers()) && !Modifier.isInterface(x.getModifiers()))
+                .filter(this::checkPlatform)
                 .map(x -> (Class<? extends T>)x);
     }
 
@@ -229,6 +232,19 @@ public abstract class StandardModule implements Module {
 
             throw e;
         }
+    }
+
+    private <T extends Class<?>> boolean checkPlatform(T clazz) {
+        if (clazz.isAnnotationPresent(RequiresPlatform.class)) {
+            String platformId = Sponge.getPlatform().getContainer(Platform.Component.GAME).getId();
+            boolean loadable = Arrays.stream(clazz.getAnnotation(RequiresPlatform.class).value()).anyMatch(platformId::equalsIgnoreCase);
+            if (!loadable) {
+                plugin.getLogger().warn("Not loading /" + clazz.getSimpleName() + ": platform " + platformId + " is not supported.");
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private <T extends Class<?>> Predicate<T> checkMixin(String x) {

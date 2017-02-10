@@ -9,13 +9,14 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.modules.message.MessageModule;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -74,7 +75,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     @Override
     public boolean isSocialSpy(User user) {
         try {
-            return ucl.get(user).get().isSocialSpy();
+            return ucl.get(user).get().get(MessageUserDataModule.class).isSocialSpy();
         } catch (Exception e) {
             if (Nucleus.getNucleus().isDebugMode()) {
                 e.printStackTrace();
@@ -87,7 +88,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     @Override
     public boolean setSocialSpy(User user, boolean isSocialSpy) {
         try {
-            return ucl.get(user).get().setSocialSpy(isSocialSpy);
+            return ucl.get(user).get().get(MessageUserDataModule.class).setSocialSpy(isSocialSpy);
         } catch (Exception e) {
             if (Nucleus.getNucleus().isDebugMode()) {
                 e.printStackTrace();
@@ -155,9 +156,9 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         if (!messageConfig.isOnlyPlayerSocialSpy() || sender instanceof Player) {
             List<MessageReceiver> lm =
                 ucl.getOnlineUsersInternal().stream()
-                    .filter(x -> !uuidSender.equals(x.getUniqueID()) && !uuidReceiver.equals(x.getUniqueID()))
-                    .filter(UserService::isSocialSpy)
-                    .map(UserService::getPlayer)
+                    .filter(x -> !uuidSender.equals(x.getUniqueId()) && !uuidReceiver.equals(x.getUniqueId()))
+                    .filter(x -> x.get(MessageUserDataModule.class).isSocialSpy())
+                    .map(ModularUserService::getPlayer)
                     .filter(x -> {
                         if (!x.isPresent()) {
                             return false;

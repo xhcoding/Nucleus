@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ItemDataService extends Service<Map<String, ItemDataNode>> {
+public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> {
 
     private Map<String, String> aliasToItemIdCache = null;
     private Map<String, BlacklistNode> blacklistCache = null;

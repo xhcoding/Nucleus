@@ -16,6 +16,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.selector.Selector;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,16 +56,14 @@ public class TwoPlayersArgument extends CommandElement {
         String sp2 = osp2.get();
 
         if (sp1.startsWith("@")) {
-            context.putArg(key.toPlain(),
-                SelectorWrapperArgument.parseValue(source, args, handler, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS, sp1));
+            context.putArg(key.toPlain(), Selector.parse(sp1).resolve(source));
         } else {
             context.putArg(key.toPlain(),
                 getPlayerFromPartialName(sp1).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.twoplayer.noexist", sp1))));
         }
 
         if (sp2.startsWith("@")) {
-            context.putArg(key2.toPlain(),
-                SelectorWrapperArgument.parseValue(source, args, handler, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS, sp2));
+            context.putArg(key2.toPlain(), Selector.parse(sp1).resolve(source));
         } else {
             context.putArg(key2.toPlain(),
                 getPlayerFromPartialName(sp2).orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.twoplayer.noexist", sp1))));

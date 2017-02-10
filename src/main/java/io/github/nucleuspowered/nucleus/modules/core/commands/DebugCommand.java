@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -82,8 +83,8 @@ public class DebugCommand extends AbstractCommand<CommandSource> {
 
         @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.debug.refreshuniquevisitors.started",
-                String.valueOf(plugin.getGeneralService().getUniqueUserCount())));
-            plugin.getGeneralService().resetUniqueUserCount(l ->
+                String.valueOf(plugin.getGeneralService().getTransient(UniqueUserCountTransientModule.class).getUniqueUserCount())));
+            plugin.getGeneralService().getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount(l ->
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.debug.refreshuniquevisitors.done", String.valueOf(l))));
             return CommandResult.success();
         }

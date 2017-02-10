@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Permissions(prefix = "teleport", mainOverride = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
+@Permissions(prefix = "teleport", mainOverride = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsOthers = true)
 @RegisterCommand(value = "teleport", rootAliasRegister = "tp")
 public class TeleportCommand extends AbstractCommand<CommandSource> {
 
@@ -63,12 +63,10 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                         // TODO: Hook up with selectors
                         GenericArguments.requiringPermission(new NoModifiersArgument<Player>(
                             new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey), permissions), (c, o) -> true),
-                                permissions.getPermissionWithSuffix("others")),
+                                permissions.getOthers()),
 
                     // <subject>
-                    GenericArguments.onlyOne(new SelectorWrapperArgument(
-                        new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER),
-                        permissions, SelectorWrapperArgument.SINGLE_PLAYER_SELECTORS)))
+                    GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER)))
        };
     }
 

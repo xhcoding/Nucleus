@@ -7,9 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.freezeplayer.listeners;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.iapi.data.NucleusUser;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.freezeplayer.datamodules.FreezePlayerUserDataModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.action.InteractEvent;
@@ -25,7 +24,6 @@ import java.util.UUID;
 public class FreezePlayerListener extends ListenerBase {
 
     @Inject private UserDataManager ucl;
-    @Inject private CoreConfigAdapter cca;
 
     private final Map<UUID, Instant> lastFreezeNotification = Maps.newHashMap();
 
@@ -45,18 +43,7 @@ public class FreezePlayerListener extends ListenerBase {
     }
 
     private boolean checkForFrozen(Player player, String message) {
-        NucleusUser nu;
-        try {
-            nu = ucl.getUser(player).get();
-        } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-
-        if (nu.isFrozen()) {
+        if (ucl.getUser(player).get().quickGet(FreezePlayerUserDataModule.class, FreezePlayerUserDataModule::isFrozen)) {
             Instant now = Instant.now();
             if (lastFreezeNotification.getOrDefault(player.getUniqueId(), now).isBefore(now)) {
                 player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(message));

@@ -8,8 +8,9 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
+import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -19,6 +20,7 @@ import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.SpeedCommand;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import io.github.nucleuspowered.nucleus.modules.teleport.commands.TeleportPositionCommand;
@@ -74,14 +76,15 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new NicknameArgument(Text.of(playerKey), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER))
+            GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER))
         };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
-        UserService iqsu = udm.get(user).get();
+        ModularUserService iqsu = udm.get(user).get();
+        CoreUserDataModule coreUserDataModule = iqsu.get(CoreUserDataModule.class);
 
         List<Text> messages = new ArrayList<>();
         final MessageProvider messageProvider = plugin.getMessageProvider();
@@ -89,10 +92,12 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
         // Everyone gets the last online time.
         if (user.isOnline()) {
             messages.add(messageProvider.getTextMessageWithFormat("command.seen.iscurrently.online", user.getName()));
-            iqsu.getLastLogin().ifPresent(x -> messages.add(messageProvider.getTextMessageWithFormat("command.seen.loggedon", Util.getTimeToNow(x))));
+            coreUserDataModule.getLastLogin().ifPresent(x -> messages.add(
+                    messageProvider.getTextMessageWithFormat("command.seen.loggedon", Util.getTimeToNow(x))));
         } else {
             messages.add(messageProvider.getTextMessageWithFormat("command.seen.iscurrently.offline", user.getName()));
-            iqsu.getLastLogout().ifPresent(x -> messages.add(messageProvider.getTextMessageWithFormat("command.seen.loggedoff", Util.getTimeToNow(x))));
+            coreUserDataModule.getLastLogout().ifPresent(x -> messages.add(
+                    messageProvider.getTextMessageWithFormat("command.seen.loggedoff", Util.getTimeToNow(x))));
         }
 
         messages.add(messageProvider.getTextMessageWithFormat("command.seen.displayname", TextSerializers.FORMATTING_CODE.serialize(plugin.getNameUtil().getName(user))));
@@ -122,11 +127,11 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
                 messages.add(messageProvider.getTextMessageWithFormat("command.seen.canfly", getYesNo(pl.get(Keys.CAN_FLY).orElse(false))));
                 messages.add(messageProvider.getTextMessageWithFormat("command.seen.isflying", getYesNo(pl.get(Keys.IS_FLYING).orElse(false))));
             } else {
-                iqsu.getLastIp().ifPresent(x ->
+                coreUserDataModule.getLastIp().ifPresent(x ->
                     messages.add(messageProvider.getTextMessageWithFormat("command.seen.lastipaddress", x))
                 );
 
-                Optional<Location<World>> olw = iqsu.getLogoutLocation();
+                Optional<Location<World>> olw = coreUserDataModule.getLogoutLocation();
 
                 olw.ifPresent(worldLocation -> messages
                     .add(getLocationString("command.seen.lastlocation", worldLocation, src)));

@@ -6,9 +6,12 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.dataservices.UserService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
+import io.github.nucleuspowered.nucleus.modules.nickname.NicknameModule;
+import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.util.QuadFunction;
 import io.github.nucleuspowered.nucleus.util.ThrownTriFunction;
 import org.spongepowered.api.Sponge;
@@ -22,6 +25,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -34,6 +38,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@NonnullByDefault
 public class NicknameArgument extends CommandElement {
 
     private final UserDataManager userDataManager;
@@ -42,8 +47,16 @@ public class NicknameArgument extends CommandElement {
     private final boolean onlyOne;
     private final UnderlyingType type;
 
+    public NicknameArgument(@Nullable Text key, UnderlyingType type) {
+        this(key, Nucleus.getNucleus().getUserDataManager(), type);
+    }
+
     public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type) {
         this(key, userDataManager, type, true);
+    }
+
+    public NicknameArgument(@Nullable Text key, UnderlyingType type, boolean onlyOne) {
+        this(key, Nucleus.getNucleus().getUserDataManager(), type, onlyOne);
     }
 
     public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type, boolean onlyOne) {
@@ -115,9 +128,17 @@ public class NicknameArgument extends CommandElement {
         }
 
         // Now check user names
-        Map<String, UserService> allPlayers = userDataManager.getOnlineUsersInternal().stream()
-                .filter(x -> x.getUser().isOnline() && x.getNicknameAsString().isPresent())
-                .collect(Collectors.toMap(s -> TextSerializers.FORMATTING_CODE.stripCodes(s.getNicknameAsString().get().toLowerCase()), s -> s));
+        // TODO: Display name
+        Map<String, ModularUserService> allPlayers;
+        if (Nucleus.getNucleus().isModuleLoaded(NicknameModule.ID)) {
+            allPlayers = userDataManager.getOnlineUsersInternal().stream()
+                    .filter(x -> x.getUser().isOnline() && x.get(NicknameUserDataModule.class).getNicknameAsString().isPresent())
+                    .collect(Collectors.toMap(s -> TextSerializers.FORMATTING_CODE.stripCodes(s.get(NicknameUserDataModule.class)
+                    .getNicknameAsString().get().toLowerCase()), s -> s));
+        } else {
+            allPlayers = Maps.newHashMap();
+        }
+
         if (allPlayers.containsKey(fName.toLowerCase())) {
             return Lists.newArrayList(allPlayers.get(fName.toLowerCase()).getUser().getPlayer().get());
         }
@@ -159,13 +180,16 @@ public class NicknameArgument extends CommandElement {
         List<String> original = completer.accept(fName, src, args, context);
         if (playerOnly) {
             return original.stream().map(x -> "p:" + x).collect(Collectors.toList());
-        } else {
+        } else if (Nucleus.getNucleus().isModuleLoaded(NicknameModule.ID)) {
             original.addAll(userDataManager.getOnlineUsersInternal().stream()
-                    .filter(x -> x.getUser().isOnline() && x.getNicknameAsString().isPresent() &&
-                            TextSerializers.FORMATTING_CODE.stripCodes(x.getNicknameAsString().get()).toLowerCase().startsWith(fName))
-                    .map(x -> TextSerializers.FORMATTING_CODE.stripCodes(x.getNicknameAsString().get())).collect(Collectors.toList()));
-            return original;
+                    .filter(x -> x.getUser().isOnline() && x.get(NicknameUserDataModule.class).getNicknameAsString().isPresent() &&
+                            TextSerializers.FORMATTING_CODE.stripCodes(x.get(NicknameUserDataModule.class).getNicknameAsString().get())
+                                    .toLowerCase().startsWith(fName))
+                    .map(x -> TextSerializers.FORMATTING_CODE.stripCodes(x.get(NicknameUserDataModule.class).getNicknameAsString().get()))
+                    .collect(Collectors.toList()));
         }
+
+        return original;
     }
 
     public enum UnderlyingType {

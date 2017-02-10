@@ -54,6 +54,7 @@ import javax.inject.Inject;
 @RegisterCommand(value = {"create"}, subcommandOf = WorldCommand.class)
 public class CreateWorldCommand extends AbstractCommand<CommandSource> {
 
+    private final String preset = "preset";
     private final String name = "name";
     private final String dimension = "dimension";
     private final String generator = "generator";
@@ -68,6 +69,7 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.flags()
+                .valueFlag(GenericArguments.onlyOne(new ImprovedCatalogTypeArgument(Text.of(preset), WorldArchetype.class)), "p", "-" + preset)
                 .valueFlag(GenericArguments.onlyOne(new ExtendedDimensionArgument(Text.of(dimension))), "d", "-" + dimension)
                 .valueFlag(GenericArguments.onlyOne(new ImprovedCatalogTypeArgument(Text.of(generator), CatalogTypes.GENERATOR_TYPE)), "g", "-" + generator)
                 .valueFlag(new ImprovedCatalogTypeArgument(Text.of(modifier), CatalogTypes.WORLD_GENERATOR_MODIFIER), "m", "-" + modifier)
@@ -87,10 +89,10 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         String nameInput = args.<String>getOne(name).get();
-        DimensionType dimensionInput = args.<DimensionType>getOne(dimension).orElse(DimensionTypes.OVERWORLD);
-        GeneratorType generatorInput = args.<GeneratorType>getOne(generator).orElse(GeneratorTypes.DEFAULT);
-        GameMode gamemodeInput = args.<GameMode>getOne(gamemode).orElse(GameModes.SURVIVAL);
-        Difficulty difficultyInput = args.<Difficulty>getOne(difficulty).orElse(Difficulties.NORMAL);
+        Optional<DimensionType> dimensionInput = args.getOne(dimension);
+        Optional<GeneratorType> generatorInput = args.getOne(generator);
+        Optional<GameMode> gamemodeInput = args.getOne(gamemode);
+        Optional<Difficulty> difficultyInput = args.getOne(difficulty);
         Collection<WorldGeneratorModifier> modifiers = args.getAll(modifier);
         Optional<Long> seedInput = args.getOne(seed);
         boolean genStructures = !args.hasAny("n");
@@ -109,46 +111,65 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.import.noexist", nameInput));
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.begin", nameInput));
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.newparams",
-            dimensionInput.getName(),
-            generatorInput.getName(),
-            modifierString(modifiers),
-            gamemodeInput.getName(),
-            difficultyInput.getName()));
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.newparams2",
-            String.valueOf(loadOnStartup),
-            String.valueOf(keepSpawnLoaded),
-            String.valueOf(genStructures),
-            String.valueOf(allowCommands),
-            String.valueOf(bonusChest)));
+        WorldArchetype.Builder worldSettingsBuilder = WorldArchetype.builder()
+            .enabled(true);
 
-        WorldArchetype.Builder worldSettingsBuilder = WorldArchetype.builder().enabled(true)
-            .loadsOnStartup(loadOnStartup)
-            .keepsSpawnLoaded(keepSpawnLoaded)
-            .usesMapFeatures(genStructures)
-            .commandsAllowed(allowCommands)
-            .generateBonusChest(bonusChest)
-            .dimension(dimensionInput)
-            .generator(generatorInput)
-            .gameMode(gamemodeInput);
-        if (!modifiers.isEmpty()) {
-            worldSettingsBuilder.generatorModifiers(modifiers.toArray(new WorldGeneratorModifier[modifiers.size()]));
+        if (args.hasAny(preset)) {
+            WorldArchetype preset1 = args.<WorldArchetype>getOne(preset).get();
+            worldSettingsBuilder.from(preset1);
+            dimensionInput.ifPresent(worldSettingsBuilder::dimension);
+            generatorInput.ifPresent(worldSettingsBuilder::generator);
+            gamemodeInput.ifPresent(worldSettingsBuilder::gameMode);
+            difficultyInput.ifPresent(worldSettingsBuilder::difficulty);
+            if (!modifiers.isEmpty()) {
+                modifiers.addAll(preset1.getGeneratorModifiers());
+                worldSettingsBuilder.generatorModifiers(modifiers.toArray(new WorldGeneratorModifier[modifiers.size()]));
+            }
+        } else {
+            worldSettingsBuilder
+                .dimension(dimensionInput.orElse(DimensionTypes.OVERWORLD))
+                .generator(generatorInput.orElse(GeneratorTypes.DEFAULT))
+                .gameMode(gamemodeInput.orElse(GameModes.SURVIVAL))
+                .difficulty(difficultyInput.orElse(Difficulties.NORMAL));
+
+                if (!modifiers.isEmpty()) {
+                    worldSettingsBuilder.generatorModifiers(modifiers.toArray(new WorldGeneratorModifier[modifiers.size()]));
+                }
         }
 
-        seedInput.ifPresent(worldSettingsBuilder::seed);
+        worldSettingsBuilder.loadsOnStartup(loadOnStartup)
+        .keepsSpawnLoaded(keepSpawnLoaded)
+        .usesMapFeatures(genStructures)
+        .commandsAllowed(allowCommands)
+        .generateBonusChest(bonusChest);
 
         WorldArchetype wa = worldSettingsBuilder.build(nameInput.toLowerCase(), nameInput);
+        seedInput.ifPresent(worldSettingsBuilder::seed);
+
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.begin", nameInput));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.newparams",
+                wa.getDimensionType().getName(),
+                wa.getGeneratorType().getName(),
+                modifierString(modifiers),
+                wa.getGameMode().getName(),
+                wa.getDifficulty().getName()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.newparams2",
+                String.valueOf(loadOnStartup),
+                String.valueOf(keepSpawnLoaded),
+                String.valueOf(genStructures),
+                String.valueOf(allowCommands),
+                String.valueOf(bonusChest)));
+
         WorldProperties worldProperties = Sponge.getGame().getServer().createWorldProperties(nameInput, wa);
 
         worldConfigAdapter.getNodeOrDefault().getWorldBorderDefault().ifPresent(worldProperties::setWorldBorderDiameter);
-        worldProperties.setDifficulty(difficultyInput);
+        worldProperties.setDifficulty(wa.getDifficulty());
 
         Sponge.getServer().saveWorldProperties(worldProperties);
         Optional<World> world = Sponge.getGame().getServer().loadWorld(worldProperties);
 
         if (world.isPresent()) {
-            world.get().getProperties().setDifficulty(difficultyInput);
+            world.get().getProperties().setDifficulty(wa.getDifficulty());
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.success", nameInput));
             return CommandResult.success();
         } else {

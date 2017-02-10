@@ -27,7 +27,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -86,8 +85,7 @@ public class SpawnCommand extends AbstractCommand<Player> {
         }
 
         // If we don't have a rotation, then use the current rotation
-        if (plugin.getTeleportHandler().teleportPlayer(src, new Location<>(ow.get(), wp.getSpawnPosition()),
-                wcl.getWorld(wp.getUniqueId()).get().getSpawnRotation().orElse(src.getRotation()), sca.getNodeOrDefault().isSafeTeleport())) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, SpawnHelper.getSpawn(ow.get().getProperties(), plugin, src), sca.getNodeOrDefault().isSafeTeleport())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
             return CommandResult.success();
         }

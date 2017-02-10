@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -19,6 +20,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
+import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -53,17 +55,14 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
         return new CommandElement[]{
                 GenericArguments.optional(
                     GenericArguments.requiringPermission(
-                            new SelectorWrapperArgument(
-                                new NicknameArgument(Text.of(player), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.PLAYER, false),
-                                permissions,
-                                SelectorWrapperArgument.ALL_SELECTORS)
-                        , permissions.getPermissionWithSuffix("others")))
+                        SelectorWrapperArgument.nicknameSelector(Text.of(player), NicknameArgument.UnderlyingType.PLAYER, false, Living.class),
+                            permissions.getPermissionWithSuffix("others")))
         };
     }
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
-        Collection<Player> playerCollection = args.getAll(player);
+        Collection<Living> playerCollection = args.getAll(player);
 
         // No argument, let's not smite the subject.
         if (playerCollection.isEmpty()) {
@@ -78,19 +77,20 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
             BlockRay<World> playerBlockRay = BlockRay.from(pl).distanceLimit(100).stopFilter(BlockRay.continueAfterFilter(BlockRay.onlyAirFilter(), 1)).build();
             Optional<BlockRayHit<World>> obh = playerBlockRay.end();
             Location<World> lightningLocation;
-            if (obh.isPresent()) {
-                lightningLocation = obh.get().getLocation();
-            } else {
-                // Smite above, but not on.
-                lightningLocation = pl.getLocation().add(0, 3, 0);
-            }
+            // Smite above, but not on.
+            lightningLocation = obh.map(BlockRayHit::getLocation).orElseGet(() -> pl.getLocation().add(0, 3, 0));
 
             return this.spawnLightning(lightningLocation, src, null, "command.lightning.error");
         }
 
         int successCount = 0;
-        for (Player pl : playerCollection) {
-            CommandResult cr = this.spawnLightning(pl.getLocation(), src, "command.lightning.success.other", "command.lightning.errorplayer", plugin.getNameUtil().getSerialisedName(pl));
+        for (Living pl : playerCollection) {
+            CommandResult cr = this.spawnLightning(
+                    pl.getLocation(),
+                    src,
+                    "command.lightning.success.other",
+                    "command.lightning.errorplayer",
+                    pl instanceof Player ? plugin.getNameUtil().getSerialisedName((Player)pl) : Util.getTranslatableIfPresentOnCatalogType(pl.getType()));
             successCount += cr.getSuccessCount().orElse(0);
         }
 
