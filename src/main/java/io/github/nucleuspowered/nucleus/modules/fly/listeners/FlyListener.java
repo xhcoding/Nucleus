@@ -123,9 +123,15 @@ public class FlyListener extends ListenerBase {
         if (!twfrom.getExtent().getUniqueId().equals(twto.getExtent().getUniqueId())) {
             // Next tick, they can fly...
             Sponge.getScheduler().createTaskBuilder().execute(() -> {
-                target.offer(Keys.CAN_FLY, true);
-                if (isFlying) {
-                    target.offer(Keys.IS_FLYING, true);
+                if (getFlyCommandHandler().testBase(pl)) {
+                    target.offer(Keys.CAN_FLY, true);
+                    if (isFlying) {
+                        target.offer(Keys.IS_FLYING, true);
+                    }
+                } else {
+                    uc.setFlying(false);
+                    target.offer(Keys.CAN_FLY, false);
+                    target.offer(Keys.IS_FLYING, false);
                 }
             }).submit(plugin);
         }
