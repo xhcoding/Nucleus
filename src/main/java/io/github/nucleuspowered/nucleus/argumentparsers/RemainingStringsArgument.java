@@ -27,6 +27,8 @@ public class RemainingStringsArgument extends CommandElement {
     }
 
     @Nullable @Override protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
+        // ignored.
+        args.nextIfPresent();
         return args.getRaw().substring(args.getRawPosition()).trim();
     }
 

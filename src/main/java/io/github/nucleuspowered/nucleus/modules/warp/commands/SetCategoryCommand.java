@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -16,7 +17,6 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
-import io.github.nucleuspowered.nucleus.util.Tuples;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -55,7 +55,7 @@ public class SetCategoryCommand extends AbstractCommand<CommandSource> {
             GenericArguments.flags().flag("r", "-remove", "-delete").flag("n", "-new").buildWith(
                 GenericArguments.seq(
                     new WarpArgument(Text.of(warpKey), warpConfigAdapter, false, false),
-                    GenericArguments.optional(new WarpCategoryArgument(Text.of(categoryKey)))
+                    GenericArguments.optional(new SetCategoryWarpCategoryArgument (Text.of(categoryKey)))
                 )
             )
         };
@@ -88,28 +88,30 @@ public class SetCategoryCommand extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        // Remove the category.
+        // Add the category.
         if (handler.setWarpCategory(warpName, category.getFirst())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.category.added", category.getFirst(), warpName));
             return CommandResult.success();
         }
 
-        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.category.couldnotadd", category.getFirst(), warpName));
+        WarpCategory c = handler.getWarpCategoryOrDefault(category.getFirst());
+        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithTextFormat("command.warp.category.couldnotadd",
+                c.getDisplayName(), Text.of(warpName)));
     }
 
-    private class WarpCategoryArgument extends CommandElement {
+    private class SetCategoryWarpCategoryArgument extends CommandElement {
 
-        private WarpCategoryArgument(@Nullable Text key) {
+        public SetCategoryWarpCategoryArgument (@Nullable Text key) {
             super(key);
         }
 
         @Nullable @Override protected Object parseValue(@Nonnull CommandSource source, @Nonnull CommandArgs args) throws ArgumentParseException {
             String arg = args.next();
-            return Tuples.of(arg, handler.getCategorisedWarps().keySet().contains(arg));
+            return Tuple.of(arg, handler.getWarpsWithCategories().keySet().stream().filter(Objects::nonNull).anyMatch(x -> x.getId().equals(arg)));
         }
 
         @Nonnull @Override public List<String> complete(@Nonnull CommandSource src, @Nonnull CommandArgs args, @Nonnull CommandContext context) {
-            return handler.getCategorisedWarps().keySet().stream().filter(Objects::isNull).collect(Collectors.toList());
+            return handler.getWarpsWithCategories().keySet().stream().filter(Objects::isNull).map(WarpCategory::getId).collect(Collectors.toList());
         }
     }
 }

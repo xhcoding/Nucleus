@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -34,7 +35,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -73,16 +73,22 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
 
     private CommandResult categories(final CommandSource src) {
         // Get the warp list.
-        Map<String, List<Warp>> warps = service.getCategorisedWarps(x -> canView(src, x.getName()));
+        Map<WarpCategory, List<Warp>> warps = service.getWarpsWithCategories(x -> canView(src, x.getName()));
         createMain(src, warps);
         return CommandResult.success();
     }
 
-    private void createMain(final CommandSource src, final Map<String, List<Warp>> warps) {
+    private void createMain(final CommandSource src, final Map<WarpCategory, List<Warp>> warps) {
         List<Text> lt = warps.keySet().stream().filter(Objects::nonNull)
-                .sorted(Comparator.comparing(Function.identity()))
-                .map(s -> Text.builder("> " + s).color(TextColors.GREEN).style(TextStyles.ITALIC)
-                .onClick(TextActions.executeCallback(source -> createSub(source, s, warps))).build()).collect(Collectors.toList());
+                .sorted(Comparator.comparing(WarpCategory::getId))
+                .map(s -> {
+                    Text.Builder t = Text.builder("> ").color(TextColors.GREEN).style(TextStyles.ITALIC)
+                            .append(s.getDisplayName())
+                            .onClick(TextActions.executeCallback(source -> createSub(source, s, warps)));
+                    s.getDescription().ifPresent(x -> t.append(Text.of(" - ")).append(Text.of(TextColors.RESET, TextStyles.NONE, x)));
+                    return t.build();
+                })
+                .collect(Collectors.toList());
 
         // Uncategorised
         if (warps.containsKey(null)) {
@@ -98,16 +104,16 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
             .sendTo(src);
     }
 
-    private void createSub(final CommandSource src, @Nullable final String category, final Map<String, List<Warp>> warpDataList) {
+    private void createSub(final CommandSource src, @Nullable final WarpCategory category, final Map<WarpCategory, List<Warp>> warpDataList) {
         final boolean econExists = plugin.getEconHelper().economyServiceExists();
         final double defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
-        String name = category == null ? adapter.getNodeOrDefault().getDefaultName() : category;
+        Text name = category == null ? Text.of(adapter.getNodeOrDefault().getDefaultName()) : category.getDisplayName();
 
         List<Text> lt = warpDataList.get(category).stream().sorted(Comparator.comparing(Warp::getName))
             .map(s -> createWarp(s, s.getName(), econExists, defaultCost)).collect(Collectors.toList());
 
         Util.getPaginationBuilder(src)
-            .title(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.list.category", name)).padding(Text.of(TextColors.GREEN, "-"))
+            .title(plugin.getMessageProvider().getTextMessageWithTextFormat("command.warps.list.category", name)).padding(Text.of(TextColors.GREEN, "-"))
             .contents(lt)
             .footer(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.list.back").toBuilder()
                 .onClick(TextActions.executeCallback(s -> createMain(s, warpDataList))).build())
@@ -134,15 +140,29 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
 
     private Text createWarp(@Nullable Warp data, String name, boolean econExists, double defaultCost) {
         if (data == null || !data.getLocation().isPresent()) {
-            return Text.builder(name).color(TextColors.RED).onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.unavailable")))
-                .build();
+            return Text.builder(name).color(TextColors.RED).onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat
+                    ("command.warps.unavailable"))).build();
         }
 
         Location<World> world = data.getLocation().get();
 
+        Text.Builder inner = Text.builder(name).color(TextColors.GREEN).style(TextStyles.ITALIC)
+                .onClick(TextActions.runCommand("/warp " + name));
+
+        Optional<Text> description = data.getDescription();
+        if (description.isPresent()) {
+            inner.onHover(TextActions.showText(
+                    Text.of(
+                        plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name),
+                        Text.NEW_LINE,
+                        description.get()
+                    )));
+        } else {
+            inner.onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name)));
+        }
+
         Text.Builder tb =
-            Text.builder().append(Text.builder(name).color(TextColors.GREEN).style(TextStyles.ITALIC).onClick(TextActions.runCommand("/warp " + name))
-                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name))).build())
+            Text.builder().append(inner.build())
                 .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warploc",
                         world.getExtent().getName(), world.getBlockPosition().toString()
                     ));

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.nucleusdata;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
@@ -27,4 +28,11 @@ public interface Warp extends NamedLocation {
      * @return The cost.
      */
     Optional<Double> getCost();
+
+    /**
+     * Gets the description for the warp.
+     *
+     * @return The {@link Text} description, if available.
+     */
+    Optional<Text> getDescription();
 }

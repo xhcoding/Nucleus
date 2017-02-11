@@ -8,9 +8,11 @@ import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.modules.warp.datamodules.WarpGeneralDataModule;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -64,12 +66,7 @@ public class WarpHandler implements NucleusWarpService {
     }
 
     @Override
-    public Map<String, List<Warp>> getCategorisedWarps() {
-        return getCategorisedWarps(x -> true);
-    }
-
-    @Override
-    public Map<String, List<Warp>> getCategorisedWarps(Predicate<Warp> warpDataPredicate) {
+    public Map<WarpCategory, List<Warp>> getWarpsWithCategories(Predicate<Warp> warpDataPredicate) {
         Preconditions.checkNotNull(warpDataPredicate);
         Map<String, List<Warp>> map = getModule().getWarps().values().stream()
             .filter(warpDataPredicate)
@@ -79,7 +76,8 @@ public class WarpHandler implements NucleusWarpService {
             map.remove("");
         }
 
-        return map;
+        return map.entrySet().stream().collect(Collectors.toMap(x -> x.getKey() == null ? null :
+                        getModule().getWarpCategoryOrDefault(x.getKey()), Map.Entry::getValue));
     }
 
 
@@ -95,12 +93,45 @@ public class WarpHandler implements NucleusWarpService {
 
     @Override
     public boolean setWarpCategory(String warpName, @Nullable String category) {
-        return getModule().setWarpCategory(warpName, category);
+        return getModule().setWarpsWarpCategory(warpName, category);
+    }
+
+    @Override
+    public boolean setWarpDescription(String warpName, @Nullable Text description) {
+        return getModule().setWarpDescription(warpName, description);
     }
 
     @Override
     public Set<String> getWarpNames() {
         return getModule().getWarps().keySet();
+    }
+
+    public WarpCategory getWarpCategoryOrDefault(String category) {
+        return getModule().getWarpCategoryOrDefault(category);
+    }
+
+    @Override public Optional<WarpCategory> getWarpCategory(String category) {
+        return getModule().getWarpCategory(category);
+    }
+
+    @Override public boolean setWarpCategoryDisplayName(String category, @Nullable Text displayName) {
+        Optional<WarpCategory> cat = getWarpCategory(category);
+        if (!cat.isPresent()) {
+            return false;
+        }
+
+        getModule().updateOrSetWarpCategory(category, displayName, cat.get().getDescription().orElse(null));
+        return true;
+    }
+
+    @Override public boolean setWarpCategoryDescription(String category, @Nullable Text description) {
+        Optional<WarpCategory> cat = getWarpCategory(category);
+        if (!cat.isPresent()) {
+            return false;
+        }
+
+        getModule().updateOrSetWarpCategory(category, cat.get().getDisplayName(), description);
+        return true;
     }
 
     private List<Warp> getWarpsForCategory(Predicate<Warp> filter) {
