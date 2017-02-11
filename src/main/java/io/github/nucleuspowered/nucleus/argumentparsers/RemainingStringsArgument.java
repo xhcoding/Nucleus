@@ -4,16 +4,18 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import com.google.common.collect.Lists;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -36,6 +38,10 @@ public class RemainingStringsArgument extends CommandElement {
     }
 
     @Override public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        return Lists.newArrayList();
+        String[] l = args.getRaw().substring(args.getRawPosition()).split(" ");
+        String check = l[l.length - 1];
+        return Sponge.getServer().getOnlinePlayers().stream()
+                .map(User::getName)
+                .filter(x -> x.toLowerCase().startsWith(check.toLowerCase())).collect(Collectors.toList());
     }
 }
