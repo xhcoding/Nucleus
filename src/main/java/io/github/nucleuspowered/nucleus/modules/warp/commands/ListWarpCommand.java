@@ -81,12 +81,12 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
     private void createMain(final CommandSource src, final Map<String, List<Warp>> warps) {
         List<Text> lt = warps.keySet().stream().filter(Objects::nonNull)
                 .sorted(Comparator.comparing(Function.identity()))
-                .map(s -> Text.builder("> " + s).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+                .map(s -> Text.builder("> " + s).color(TextColors.GREEN).style(TextStyles.ITALIC)
                 .onClick(TextActions.executeCallback(source -> createSub(source, s, warps))).build()).collect(Collectors.toList());
 
         // Uncategorised
         if (warps.containsKey(null)) {
-            lt.add(Text.builder("> " + adapter.getNodeOrDefault().getDefaultName()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
+            lt.add(Text.builder("> " + adapter.getNodeOrDefault().getDefaultName()).color(TextColors.GREEN).style(TextStyles.ITALIC)
                 .onClick(TextActions.executeCallback(source -> createSub(source, null, warps))).build());
         }
 
@@ -141,7 +141,7 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
         Location<World> world = data.getLocation().get();
 
         Text.Builder tb =
-            Text.builder().append(Text.builder(name).color(TextColors.GREEN).style(TextStyles.UNDERLINE).onClick(TextActions.runCommand("/warp " + name))
+            Text.builder().append(Text.builder(name).color(TextColors.GREEN).style(TextStyles.ITALIC).onClick(TextActions.runCommand("/warp " + name))
                 .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name))).build())
                 .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warploc",
                         world.getExtent().getName(), world.getBlockPosition().toString()
