@@ -13,7 +13,7 @@ allprojects {
 
     def versionno = '0.23.0'
     def spongeapiversion = '6.0'
-    def suffix = '-PR2'
+    def suffix = '-SNAPSHOT'
 
     version = versionno + suffix + '-S' + spongeapiversion
 
