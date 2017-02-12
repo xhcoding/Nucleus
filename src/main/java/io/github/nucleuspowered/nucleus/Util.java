@@ -79,6 +79,8 @@ public class Util {
     private Util() {
     }
 
+    public static final Text NOT_EMPTY = Text.of(" ");
+
     public static final TextTemplate CHAT_TEMPLATE = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
             TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
 
