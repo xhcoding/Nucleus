@@ -62,7 +62,7 @@ public class ImprovedCatalogTypeArgument extends CommandElement {
             return Sponge.getRegistry().getAllOf(type).stream()
                     .filter(x -> x.getId().startsWith(arg) || x.getId().startsWith("minecraft:" + arg) || x.getId().startsWith("sponge:" + arg))
                     .map(CatalogType::getId).collect(Collectors.toList());
-        } catch (ArgumentParseException e) {
+        } catch (Exception e) {
             return Sponge.getRegistry().getAllOf(type).stream().map(CatalogType::getId).collect(Collectors.toList());
         }
     }
