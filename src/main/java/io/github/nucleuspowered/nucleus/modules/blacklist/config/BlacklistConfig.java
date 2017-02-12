@@ -19,25 +19,25 @@ import java.util.Optional;
 @ConfigSerializable
 public class BlacklistConfig {
 
-    @Setting(value = "use-replacement", comment = "loc:config.blacklist.use-replacement")
+    @Setting(value = "use-replacement", comment = "config.blacklist.use-replacement")
     private boolean useReplacement = false;
 
-    @Setting(comment = "loc:config.blacklist.replacement")
+    @Setting(comment = "config.blacklist.replacement")
     private String replacement = ItemTypes.DIRT.getId();
 
-    @Setting(value = "blocked-actions", comment = "loc:config.blacklist.blockedactions")
+    @Setting(value = "blocked-actions", comment = "config.blacklist.blockedactions")
     private Types blockedActions = new Types();
 
     @ConfigSerializable
     public static class Types {
 
-        @Setting(value = "possession", comment = "loc:config.blacklist.possession")
+        @Setting(value = "possession", comment = "config.blacklist.possession")
         private boolean possession = true;
 
-        @Setting(value = "environment", comment = "loc:config.blacklist.environment")
+        @Setting(value = "environment", comment = "config.blacklist.environment")
         private boolean environment = true;
 
-        @Setting(value = "use", comment = "loc:config.blacklist.use")
+        @Setting(value = "use", comment = "config.blacklist.use")
         private boolean use = true;
     }
 

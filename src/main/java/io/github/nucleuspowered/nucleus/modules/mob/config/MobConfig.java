@@ -16,17 +16,17 @@ import java.util.Optional;
 @ConfigSerializable
 public class MobConfig {
 
-    @Setting(value = "max-mobs-to-spawn", comment = "loc:config.mobspawn.maxamt")
+    @Setting(value = "max-mobs-to-spawn", comment = "config.mobspawn.maxamt")
     private int maxMobsToSpawn = 20;
 
-    @Setting(value = "spawning-blocks", comment = "loc:config.blockspawn.category")
+    @Setting(value = "spawning-blocks", comment = "config.blockspawn.category")
     private Map<String, BlockSpawnsConfig> blockSpawnsConfig = new HashMap<String, BlockSpawnsConfig>() {{
         put("world", new BlockSpawnsConfig());
         put("DIM-1", new BlockSpawnsConfig());
         put("DIM1", new BlockSpawnsConfig());
     }};
 
-    @Setting(value = "separate-mob-spawning-permissions", comment = "loc:config.mobspawn.permob")
+    @Setting(value = "separate-mob-spawning-permissions", comment = "config.mobspawn.permob")
     private boolean perMobPermission = false;
 
     public int getMaxMobsToSpawn() {

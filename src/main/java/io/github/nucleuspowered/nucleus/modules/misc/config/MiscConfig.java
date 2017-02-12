@@ -10,10 +10,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class MiscConfig {
 
-    @Setting(value = "max-speed", comment = "loc:config.misc.speed.max")
+    @Setting(value = "max-speed", comment = "config.misc.speed.max")
     private int maxSpeed = 5;
 
-    @Setting(value = "require-god-permission-on-login", comment = "loc:config.god.permissiononlogin")
+    @Setting(value = "require-god-permission-on-login", comment = "config.god.permissiononlogin")
     private boolean godPermissionOnLogin = false;
 
     public int getMaxSpeed() {

@@ -13,7 +13,7 @@ import java.util.List;
 @ConfigSerializable
 public class RulesConfig {
 
-    @Setting(value = "rules", comment = "loc:config.rules.ruleset")
+    @Setting(value = "rules", comment = "config.rules.ruleset")
     private List<String> ruleSet = Lists.newArrayList("Be respectful.", "Be ethical.", "Use common sense.");
 
     public List<String> getRuleSet() {

@@ -10,13 +10,13 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class BackConfig {
 
-    @Setting(value = "on-death", comment = "loc:config.back.ondeath")
+    @Setting(value = "on-death", comment = "config.back.ondeath")
     private boolean onDeath = true;
 
-    @Setting(value = "on-teleport", comment = "loc:config.back.onteleport")
+    @Setting(value = "on-teleport", comment = "config.back.onteleport")
     private boolean onTeleport = true;
 
-    @Setting(value = "on-portal", comment = "loc:config.back.onportal")
+    @Setting(value = "on-portal", comment = "config.back.onportal")
     private boolean onPortal = false;
 
     public boolean isOnDeath() {

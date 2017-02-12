@@ -15,15 +15,15 @@ import java.util.List;
 @ConfigSerializable
 public class CommandSpyConfig {
 
-    @Setting(comment = "loc:config.commandspy.template")
+    @Setting(comment = "config.commandspy.template")
     private String prefix = "&7[CS: {{name}}]: ";
 
-    @Setting(value = "use-whitelist", comment = "loc:config.commandspy.usewhitelist")
+    @Setting(value = "use-whitelist", comment = "config.commandspy.usewhitelist")
     private boolean useWhitelist = true;
 
     // Removes the first "/" if it exists.
     @ProcessSetting(RemoveFirstSlashIfExistsSettingProcessor.class)
-    @Setting(value = "whitelisted-commands-to-spy-on")
+    @Setting(value = "whitelisted-commands-to-spy-on", comment = "config.commandspy.whitelist")
     private List<String> commands = new ArrayList<>();
 
     public String getTemplate() {

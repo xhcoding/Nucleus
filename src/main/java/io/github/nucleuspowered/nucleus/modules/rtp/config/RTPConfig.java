@@ -11,19 +11,19 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class RTPConfig {
 
-    @Setting(value = "attempts", comment = "loc:config.rtp.attempts")
+    @Setting(value = "attempts", comment = "config.rtp.attempts")
     private int noOfAttempts = 10;
 
-    @Setting(value = "radius", comment = "loc:config.rtp.radius")
+    @Setting(value = "radius", comment = "config.rtp.radius")
     private int radius = 30000;
 
-    @Setting(value = "minimum-y", comment = "loc:config.rtp.min-y")
+    @Setting(value = "minimum-y", comment = "config.rtp.min-y")
     private int minY = 0;
 
-    @Setting(value = "maximum-y", comment = "loc:config.rtp.max-y")
+    @Setting(value = "maximum-y", comment = "config.rtp.max-y")
     private int maxY = 255;
 
-    @Setting(value = "surface-only", comment = "loc:config.rtp.surface")
+    @Setting(value = "surface-only", comment = "config.rtp.surface")
     private boolean mustSeeSky = false;
 
     public int getNoOfAttempts() {

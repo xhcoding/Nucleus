@@ -10,13 +10,13 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class MessageConfig {
 
-    @Setting(value = "helpop-prefix", comment = "loc:config.message.helpop.prefix")
+    @Setting(value = "helpop-prefix", comment = "config.message.helpop.prefix")
     private String helpOpPrefix = "&7HelpOp: {{name}} &7> &r";
 
-    @Setting(value = "msg-receiver-prefix", comment = "loc:config.message.receiver.prefix")
+    @Setting(value = "msg-receiver-prefix", comment = "config.message.receiver.prefix")
     private String messageReceiverPrefix = "&7[{{fromDisplay}}&7 -> me]: &r";
 
-    @Setting(value = "msg-sender-prefix", comment = "loc:config.message.sender.prefix")
+    @Setting(value = "msg-sender-prefix", comment = "config.message.sender.prefix")
     private String messageSenderPrefix = "&7[me -> {{toDisplay}}&7]: &r";
 
     @Setting(value = "socialspy")
@@ -64,25 +64,25 @@ public class MessageConfig {
 
     @ConfigSerializable
     public static class SocialSpy {
-        @Setting(value = "msg-prefix", comment = "loc:config.message.socialspy.prefix")
+        @Setting(value = "msg-prefix", comment = "config.message.socialspy.prefix")
         private String messageSocialSpyPrefix = "&7[SocialSpy] [{{fromDisplay}}&7 -> {{toDisplay}}&7]: &r";
 
-        @Setting(value = "use-levels", comment = "loc:config.message.socialspy.levels")
+        @Setting(value = "use-levels", comment = "config.message.socialspy.levels")
         private boolean socialSpyLevels = false;
 
-        @Setting(value = "same-levels-can-see-each-other", comment = "loc:config.message.socialspy.samelevel")
+        @Setting(value = "same-levels-can-see-each-other", comment = "config.message.socialspy.samelevel")
         private boolean socialSpySameLevel = true;
 
-        @Setting(value = "server-level", comment = "loc:config.message.socialspy.serverlevel")
+        @Setting(value = "server-level", comment = "config.message.socialspy.serverlevel")
         private int serverLevel = Integer.MAX_VALUE;
 
-        @Setting(value = "show-cancelled-messages", comment = "loc:config.message.socialspy.mutedshow")
+        @Setting(value = "show-cancelled-messages", comment = "config.message.socialspy.mutedshow")
         private boolean showMessagesInSocialSpyWhileMuted = false;
 
-        @Setting(value = "cancelled-messages-tag", comment = "loc:config.message.socialspy.mutedtag")
+        @Setting(value = "cancelled-messages-tag", comment = "config.message.socialspy.mutedtag")
         private String mutedTag = "&c[cancelled] ";
 
-        @Setting(value = "show-only-players", comment = "loc:config.message.socialspy.playeronly")
+        @Setting(value = "show-only-players", comment = "config.message.socialspy.playeronly")
         private boolean onlyPlayerSocialSpy = false;
     }
 }

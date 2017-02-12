@@ -10,16 +10,16 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class ChatLoggingConfig {
 
-    @Setting(value = "enable-logging", comment = "loc:config.chatlog.enable")
+    @Setting(value = "enable-logging", comment = "config.chatlog.enable")
     private boolean enableLog = false;
 
-    @Setting(value = "log-chat", comment = "loc:config.chatlog.chat")
+    @Setting(value = "log-chat", comment = "config.chatlog.chat")
     private boolean logChat = true;
 
-    @Setting(value = "log-messages", comment = "loc:config.chatlog.message")
+    @Setting(value = "log-messages", comment = "config.chatlog.message")
     private boolean logMessages = true;
 
-    @Setting(value = "log-mail", comment = "loc:config.chatlog.mail")
+    @Setting(value = "log-mail", comment = "config.chatlog.mail")
     private boolean logMail = false;
 
     public boolean isEnableLog() {

@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class WeightedChatTemplateConfig extends ChatTemplateConfig {
 
-    @Setting(comment = "loc:config.chat.weight")
+    @Setting(comment = "config.chat.weight")
     private int weight = 1;
 
     public int getWeight() {

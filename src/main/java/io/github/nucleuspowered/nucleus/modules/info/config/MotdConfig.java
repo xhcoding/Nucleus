@@ -11,16 +11,16 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class MotdConfig {
 
-    @Setting(value = "show-motd-on-join", comment = "loc:config.motd.onjoin")
+    @Setting(value = "show-motd-on-join", comment = "config.motd.onjoin")
     private boolean showMotdOnJoin = true;
 
-    @Setting(value = "motd-login-delay", comment = "loc:config.motd.delay")
+    @Setting(value = "motd-login-delay", comment = "config.motd.delay")
     private float delay = 0.5f;
 
-    @Setting(value = "motd-title", comment = "loc:config.motd.title")
+    @Setting(value = "motd-title", comment = "config.motd.title")
     private String motdTitle = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("motd.title");
 
-    @Setting(value = "use-pagination", comment = "loc:config.motd.pagination")
+    @Setting(value = "use-pagination", comment = "config.motd.pagination")
     private boolean usePagination = true;
 
     public boolean isShowMotdOnJoin() {

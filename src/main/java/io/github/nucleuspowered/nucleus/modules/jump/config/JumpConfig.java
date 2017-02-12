@@ -10,10 +10,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class JumpConfig {
 
-    @Setting(value = "max-jump-distance", comment = "loc:config.jump.maxdist")
+    @Setting(value = "max-jump-distance", comment = "config.jump.maxdist")
     private int maxjump = 350;
 
-    @Setting(value = "max-thru-distance", comment = "loc:config.thru.maxdist")
+    @Setting(value = "max-thru-distance", comment = "config.thru.maxdist")
     private int maxthru = 25;
 
     public int getMaxJump() {

@@ -16,13 +16,13 @@ import java.util.List;
 @ConfigSerializable
 public class ProtectionConfig {
 
-    @Setting(value = "disable-crop-trample", comment = "loc:config.protection.disablecrop")
+    @Setting(value = "disable-crop-trample", comment = "config.protection.disablecrop")
     private CropTrample disableCropTrample = new CropTrample();
 
     @Setting(value = "mob-griefing")
     private BlockBreaking blockBreaking = new BlockBreaking();
 
-    @Setting(value = "disable-player-collisions", comment = "loc:config.protection.disableplayercollisions")
+    @Setting(value = "disable-player-collisions", comment = "config.protection.disableplayercollisions")
     private boolean disablePlayerCollisions = false;
 
     public boolean isDisableAnyCropTrample() {
@@ -62,7 +62,7 @@ public class ProtectionConfig {
     @ConfigSerializable
     public static class BlockBreaking {
 
-        @Setting(value = "enable-protection", comment = "loc:config.protection.mobgriefing.flag")
+        @Setting(value = "enable-protection", comment = "config.protection.mobgriefing.flag")
         private boolean enableProtection = false;
 
         @Setting(value = "whitelist")

@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class ServerShopConfig {
 
-    @Setting(value = "max-purchasable-at-once", comment = "loc:config.servershop.maxpurchasable")
+    @Setting(value = "max-purchasable-at-once", comment = "config.servershop.maxpurchasable")
     private int maxPurchasableAtOnce = 64;
 
     public int getMaxPurchasableAtOnce() {

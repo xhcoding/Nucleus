@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class SkullConfig {
 
-    @Setting(value = "use-minecraft-command", comment = "loc:config.item.skullcompat")
+    @Setting(value = "use-minecraft-command", comment = "config.item.skullcompat")
     private boolean useMinecraftCommand = false;
 
     public boolean isUseMinecraftCommand() {

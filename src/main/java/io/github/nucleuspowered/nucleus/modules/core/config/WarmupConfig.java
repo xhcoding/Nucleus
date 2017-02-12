@@ -10,10 +10,10 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class WarmupConfig {
 
-    @Setting(value = "cancel-on-move", comment = "loc:config.core.warmup.move")
+    @Setting(value = "cancel-on-move", comment = "config.core.warmup.move")
     private boolean onMove = true;
 
-    @Setting(value = "cancel-on-command", comment = "loc:config.core.warmup.command")
+    @Setting(value = "cancel-on-command", comment = "config.core.warmup.command")
     private boolean onCommand = true;
 
     public boolean isOnMove() {
