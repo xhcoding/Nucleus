@@ -117,6 +117,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     private CommandSpec cs = null;
     private final List<String> afkArgs = Lists.newArrayList();
     private final boolean isRoot;
+    @Nullable private Map<List<String>, CommandCallable> children;
 
     private final UsageCommand usageCommand = new UsageCommand();
 
@@ -409,6 +410,29 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         return "/" + getCommandPath().replaceAll("\\.", " ") + " " + getSpec().getUsage(source).toPlain().replaceAll("\\?\\|", "");
     }
 
+    public final String getSimpleUsage(CommandSource source) {
+        return "/" + getCommandPath().replaceAll("\\.", " ") + " " + CommandSpec.builder().arguments(getArguments()).executor(this).build()
+                .getUsage(Sponge.getServer().getConsole()).toPlain();
+    }
+
+    public final Optional<String> getChildrenUsage(CommandSource source) {
+        if (this.children == null || this.children.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String s = this.children.entrySet().stream()
+                .filter(x -> x.getValue().testPermission(source))
+                .map(x -> x.getKey().get(0))
+                .filter(x -> !x.equalsIgnoreCase("?") && !x.equalsIgnoreCase("help"))
+                .collect(Collectors.joining(" "));
+
+        if (s.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(s);
+    }
+
     String getCommandConfigAlias() {
         if (configSection == null) {
             return getAliases()[0];
@@ -454,9 +478,12 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             cb.description(Text.of(extended));
         }
 
-        Map<List<String>, CommandCallable> m = createChildCommands();
-        if (!m.isEmpty()) {
-            cb.children(m);
+        if (this.children == null) {
+            this.children = createChildCommands();
+        }
+
+        if (!children.isEmpty()) {
+            cb.children(children);
         }
 
         cs = cb.build();
@@ -1090,14 +1117,14 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
             String desc = getDescription();
             if (!desc.isEmpty()) {
-                textMessages.add(Text.EMPTY);
+                textMessages.add(Util.NOT_EMPTY);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.summary"));
                 textMessages.add(Text.of(desc));
             }
 
             String ext = getExtendedDescription();
             if (!ext.isEmpty()) {
-                textMessages.add(Text.EMPTY);
+                textMessages.add(Util.NOT_EMPTY);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.description"));
                 String[] split = ext.split("(\\r|\\n|\\r\\n)");
                 for (String s : split) {
@@ -1105,9 +1132,15 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
                 }
             }
 
-            textMessages.add(Text.EMPTY);
+            textMessages.add(Util.NOT_EMPTY);
             textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.usage"));
-            textMessages.add(Text.of(TextColors.WHITE, StandardAbstractCommand.this.getUsage(source)));
+            textMessages.add(Text.of(TextColors.WHITE, StandardAbstractCommand.this.getSimpleUsage(source)));
+
+            getChildrenUsage(source).ifPresent(x -> {
+                textMessages.add(Util.NOT_EMPTY);
+                textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.subcommand"));
+                textMessages.add(Text.of(TextColors.WHITE, x));
+            });
 
             PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
             PaginationList.Builder builder = ps.builder().title(header).contents(textMessages);

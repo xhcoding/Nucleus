@@ -65,6 +65,10 @@ public class CommandDoc {
     @Setting
     private List<PermissionDoc> permissions;
 
+    @Setting private String simpleUsage;
+
+    @Setting private String subcommands;
+
     public String getCommandName() {
         return commandName;
     }
@@ -213,5 +217,21 @@ public class CommandDoc {
         nucleusVersion = since.nucleusVersion().isEmpty() ? null : since.nucleusVersion();
         minecraftVersion = since.minecraftVersion().isEmpty() ? null : since.minecraftVersion();
         spongeVersion = since.spongeApiVersion().isEmpty() ? null : since.spongeApiVersion();
+    }
+
+    public String getSimpleUsage() {
+        return simpleUsage;
+    }
+
+    public void setSimpleUsage(String simpleUsage) {
+        this.simpleUsage = simpleUsage;
+    }
+
+    public String getSubcommands() {
+        return subcommands;
+    }
+
+    public void setSubcommands(String subcommands) {
+        this.subcommands = subcommands;
     }
 }

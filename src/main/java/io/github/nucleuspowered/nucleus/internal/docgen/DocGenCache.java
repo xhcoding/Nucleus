@@ -96,8 +96,11 @@ public class DocGenCache {
             PermissionInformation pi = new PermissionInformation(MessageFormat.format(v.plainDescription, cmd.getCommandName()), v.level);
             lp.add(getPermissionFrom(moduleID, k, pi));
         });
+
         cmd.setPermissions(lp);
         cmd.setUsageString(abstractCommand.getUsage(Sponge.getServer().getConsole()));
+        cmd.setSubcommands(abstractCommand.getChildrenUsage(Sponge.getServer().getConsole()).orElse(""));
+        cmd.setSimpleUsage(abstractCommand.getSimpleUsage(Sponge.getServer().getConsole()));
         permissionDocs.addAll(lp);
         commandDocs.add(cmd);
     }
