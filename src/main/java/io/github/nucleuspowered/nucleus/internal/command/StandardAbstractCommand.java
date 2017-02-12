@@ -62,6 +62,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.TextMessageException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -124,6 +125,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     @Inject protected NucleusPlugin plugin;
     @Inject private CoreConfigAdapter cca;
     @Inject private WarmupManager warmupService;
+    private final boolean hasExecutor;
 
     @SuppressWarnings("all")
     private Optional<AFKHandler> afkHandler = null;
@@ -174,6 +176,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         this.commandPath = getSubcommandOf();
         RegisterCommand rc = this.getClass().getAnnotation(RegisterCommand.class);
         this.isRoot = rc != null && rc.subcommandOf().equals(StandardAbstractCommand.class);
+        this.hasExecutor = rc != null && rc.hasExecutor();
     }
 
     /**
@@ -415,22 +418,30 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
                 .getUsage(Sponge.getServer().getConsole()).toPlain();
     }
 
-    public final Optional<String> getChildrenUsage(CommandSource source) {
+    public final Optional<Text> getChildrenUsage(CommandSource source) {
         if (this.children == null || this.children.isEmpty()) {
             return Optional.empty();
         }
 
-        String s = this.children.entrySet().stream()
+        List<Text> s = this.children.entrySet().stream()
                 .filter(x -> x.getValue().testPermission(source))
                 .map(x -> x.getKey().get(0))
                 .filter(x -> !x.equalsIgnoreCase("?") && !x.equalsIgnoreCase("help"))
-                .collect(Collectors.joining(" "));
+                .map(x -> {
+                    String toSuggest = "/" + getCommandPath().replaceAll("\\.", " ") + " " + x;
+                    return Text.builder(x)
+                            .onClick(TextActions.suggestCommand(toSuggest))
+                            .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.suggest", toSuggest)))
+                            .onShiftClick(TextActions.insertText(toSuggest + " ?"))
+                            .color(TextColors.AQUA)
+                            .build();
+                }).collect(Collectors.toList());
 
         if (s.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.of(s);
+        return Optional.of(Text.joinWith(Text.of(", "), s));
     }
 
     String getCommandConfigAlias() {
@@ -462,6 +473,9 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         CommandSpec.Builder cb = CommandSpec.builder();
         if (rc == null || rc.hasExecutor()) {
             cb.executor(this).arguments(getArguments());
+        } else {
+            // Usage
+            cb.executor(new UsageCommand());
         }
 
         if (!permissions.isPassthrough()) {
@@ -1085,10 +1099,15 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
     }
 
-    private class UsageCommand implements CommandCallable {
+    @NonnullByDefault
+    private class UsageCommand implements CommandCallable, CommandExecutor {
 
         @Override
-        @NonnullByDefault
+        public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+            return process(src, "");
+        }
+
+        @Override
         public CommandResult process(CommandSource source, String arguments) throws CommandException {
             if (!testPermission(source)) {
                 source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.nopermission"));
@@ -1132,9 +1151,11 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
                 }
             }
 
-            textMessages.add(Util.NOT_EMPTY);
-            textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.usage"));
-            textMessages.add(Text.of(TextColors.WHITE, StandardAbstractCommand.this.getSimpleUsage(source)));
+            if (hasExecutor) {
+                textMessages.add(Util.NOT_EMPTY);
+                textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.usage"));
+                textMessages.add(Text.of(TextColors.WHITE, StandardAbstractCommand.this.getSimpleUsage(source)));
+            }
 
             getChildrenUsage(source).ifPresent(x -> {
                 textMessages.add(Util.NOT_EMPTY);
@@ -1153,34 +1174,30 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
 
         @Override
-        @NonnullByDefault
         public List<String> getSuggestions(CommandSource source, String arguments, @Nullable Location<World> targetPosition) throws CommandException {
             return Lists.newArrayList();
         }
 
         @Override
-        @NonnullByDefault
         public boolean testPermission(CommandSource source) {
             return StandardAbstractCommand.this.permissions.testBase(source);
         }
 
         @Override
-        @NonnullByDefault
         public Optional<Text> getShortDescription(CommandSource source) {
             return Optional.empty();
         }
 
         @Override
-        @NonnullByDefault
         public Optional<Text> getHelp(CommandSource source) {
             return Optional.empty();
         }
 
         @Override
-        @NonnullByDefault
         public Text getUsage(CommandSource source) {
             return Text.EMPTY;
         }
+
     }
 
     /**
