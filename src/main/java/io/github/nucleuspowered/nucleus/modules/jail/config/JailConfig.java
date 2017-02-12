@@ -13,10 +13,10 @@ import java.util.List;
 @ConfigSerializable
 public class JailConfig {
 
-    @Setting(value = "allowed-commands", comment = "loc:config.jail.commands")
+    @Setting(value = "allowed-commands", comment = "config.jail.commands")
     private List<String> allowedCommands = Lists.newArrayList("m", "msg", "r", "mail", "rules", "info");
 
-    @Setting(value = "mute-when-jailed",comment = "loc:config.jail.muteWhenJailed")
+    @Setting(value = "mute-when-jailed",comment = "config.jail.muteWhenJailed")
     private boolean muteOnJail = false;
 
     public List<String> getAllowedCommands() {

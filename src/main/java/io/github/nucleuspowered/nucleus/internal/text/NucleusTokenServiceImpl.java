@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Tuple;
 
 import java.util.Map;
 import java.util.Optional;
@@ -20,13 +21,14 @@ import java.util.Optional;
 public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
 
     private final Map<String, TokenParser> tokenStore = Maps.newHashMap();
+    private final Map<String, Tuple<TokenParser, String>> primaryTokenStore = Maps.newHashMap();
 
     @Override public void register(PluginContainer pluginContainer, TokenParser textFunction) throws PluginAlreadyRegisteredException {
         Preconditions.checkNotNull(pluginContainer);
         Preconditions.checkNotNull(textFunction);
 
         if (tokenStore.containsKey(pluginContainer.getId())) {
-            throw new PluginAlreadyRegisteredException("Could not register PluginContainer, already registered.", pluginContainer);
+            throw new PluginAlreadyRegisteredException(pluginContainer);
         }
 
         tokenStore.put(pluginContainer.getId(), textFunction);
@@ -35,7 +37,25 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
     @Override public boolean unregister(PluginContainer pluginContainer) {
         Preconditions.checkNotNull(pluginContainer, "pluginContainer");
         Preconditions.checkState(!pluginContainer.getId().equalsIgnoreCase(PluginInfo.ID), "Cannot remove Nucleus tokens");
-        return tokenStore.remove(pluginContainer.getId()) != null;
+        TokenParser parser = tokenStore.remove(pluginContainer.getId());
+        if (parser != null) {
+            primaryTokenStore.entrySet().removeIf(x -> x.getValue().getFirst().equals(parser));
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override public boolean registerPrimaryToken(String primaryIdentifier, PluginContainer registeringPlugin, String identiferToMapTo) {
+        Preconditions.checkArgument(!primaryIdentifier.matches("^.*[\\s|{}:].*$"), "Token cannot contain spaces or \":|{}\"");
+        if (tokenStore.containsKey(registeringPlugin.getId()) && !primaryTokenStore.containsKey(primaryIdentifier.toLowerCase())) {
+            // Register!
+            primaryTokenStore.put(primaryIdentifier.toLowerCase(), Tuple.of(tokenStore.get(registeringPlugin.getId()),
+                    identiferToMapTo.toLowerCase()));
+            return true;
+        }
+
+        return false;
     }
 
     @Override public Optional<TokenParser> getTokenParser(String plugin) {
@@ -43,12 +63,16 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         return Optional.ofNullable(tokenStore.get(plugin.toLowerCase()));
     }
 
+    @Override public Optional<Tuple<TokenParser, String>> getPrimaryTokenParserAndIdentifier(String primaryToken) {
+        return Optional.ofNullable(primaryTokenStore.get(primaryToken.toLowerCase()));
+    }
+
     @Override public Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source, Map<String, Object> variables) {
         if (variables == null) {
             variables = Maps.newHashMap();
         }
 
-        return Nucleus.getNucleus().getChatUtil().getMessageFromTemplateWithVariables(input, source, true, variables);
+        return Nucleus.getNucleus().getChatUtil().getMessageFromTemplateWithVariables(input, source, variables);
     }
 
     public Tokens getNucleusTokenParser() {

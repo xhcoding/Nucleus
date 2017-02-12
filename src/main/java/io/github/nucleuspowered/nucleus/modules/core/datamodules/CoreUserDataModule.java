@@ -46,6 +46,9 @@ public class CoreUserDataModule extends DataModule<ModularUserService> {
     @Nullable
     private String ipaddress;
 
+    @DataKey("firstJoin")
+    private long firstJoin = 0;
+
     public Optional<Instant> getLastLogin() {
         if (login == 0) {
             return Optional.empty();
@@ -126,5 +129,17 @@ public class CoreUserDataModule extends DataModule<ModularUserService> {
 
     public void setFirstPlay(boolean firstPlay) {
         this.firstPlay = firstPlay;
+    }
+
+    public Optional<Instant> getFirstJoin() {
+        if (firstJoin > 0) {
+            return Optional.of(Instant.ofEpochMilli(firstJoin));
+        }
+
+        return Optional.empty();
+    }
+
+    public void setFirstJoin(Instant firstJoin) {
+        this.firstJoin = firstJoin.toEpochMilli();
     }
 }

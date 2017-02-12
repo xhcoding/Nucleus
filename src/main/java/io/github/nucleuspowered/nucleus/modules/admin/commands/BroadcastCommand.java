@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.admin.commands;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -39,7 +40,7 @@ public class BroadcastCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] { GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message))) };
+        return new CommandElement[] { GenericArguments.onlyOne(new RemainingStringsArgument(Text.of(message))) };
     }
 
     @Override

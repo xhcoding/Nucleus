@@ -81,7 +81,7 @@ public class TeleportHandler {
                 .forEach(x -> cancel(ask.remove(x)));
     }
 
-    public boolean getAndExecute(UUID uuid) throws Exception {
+    public boolean getAndExecute(UUID uuid) {
         Optional<TeleportPrep> otp = get(uuid);
         return otp.isPresent() && otp.get().tpbuilder.startTeleport();
 
@@ -208,6 +208,7 @@ public class TeleportHandler {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     public static class TeleportBuilder {
 
         private CommandSource source;

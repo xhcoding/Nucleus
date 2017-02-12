@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RunAsync
 @NoCost
 @NoCooldown

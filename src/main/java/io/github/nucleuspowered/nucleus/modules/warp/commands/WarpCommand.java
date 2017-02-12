@@ -68,7 +68,7 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
     protected Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put(PermissionRegistry.PERMISSIONS_PREFIX + "warps",
-                new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permissions.warps"), SuggestedLevel.ADMIN));
+                PermissionInformation.getWithTranslation("permissions.warps", SuggestedLevel.ADMIN));
         return m;
     }
 

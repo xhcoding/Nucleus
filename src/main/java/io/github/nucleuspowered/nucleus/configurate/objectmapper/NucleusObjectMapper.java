@@ -20,8 +20,13 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NucleusObjectMapper<T> extends ObjectMapper<T> {
+
+    private static final Pattern commentPattern = Pattern.compile("^(loc:)?(?<key>([a-zA-Z0-9_-]+\\.?)+)$");
+
     /**
      * Create a new object mapper of a given type
      *
@@ -33,6 +38,7 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
     }
 
     protected void collectFields(Map<String, FieldData> cachedFields, Class<? super T> clazz) throws ObjectMappingException {
+        Matcher matcher = commentPattern.matcher("");
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(Setting.class)) {
                 Setting setting = field.getAnnotation(Setting.class);
@@ -42,8 +48,10 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
                 }
 
                 String comment = setting.comment();
-                if (comment.startsWith("loc:")) {
-                    comment = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat(setting.comment().split(":", 2)[1]);
+                matcher.reset(comment);
+
+                if (matcher.matches()) {
+                    comment = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat(matcher.group("key"));
                 }
 
                 FieldData data;

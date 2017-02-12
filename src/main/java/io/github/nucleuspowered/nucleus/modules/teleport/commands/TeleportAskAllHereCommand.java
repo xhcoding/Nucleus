@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "teleport")
 @NoWarmup
 @NoCost

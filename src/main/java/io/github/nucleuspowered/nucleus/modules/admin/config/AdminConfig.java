@@ -10,11 +10,11 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class AdminConfig {
 
-    @Setting(value = "broadcast-message-template", comment = "loc:config.broadcast.template")
+    @Setting(value = "broadcast-message-template", comment = "config.broadcast.template")
     private BroadcastConfig broadcastMessage = new BroadcastConfig();
 
     // TODO: Make the default true in future versions?
-    @Setting(value = "separate-gamemode-permissions", comment = "loc:config.gamemode.separate")
+    @Setting(value = "separate-gamemode-permissions", comment = "config.gamemode.separate")
     private boolean separateGamemodePermission = false;
 
     public BroadcastConfig getBroadcastMessage() {

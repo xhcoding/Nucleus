@@ -19,10 +19,12 @@ import org.spongepowered.api.event.filter.type.Exclude;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Predicate;
 
+import javax.inject.Inject;
+
+@SuppressWarnings("ALL")
 @ConditionalListener(MobProtectionListener.Condition.class)
 public class MobProtectionListener extends ListenerBase.Reloadable {
 

@@ -21,6 +21,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.Tristate;
 
+@SuppressWarnings("ALL")
 public class CommandBaseTests extends TestBase {
 
     /**

@@ -40,22 +40,22 @@ final class DataModuleFactory {
 
     private DataModuleFactory() {}
 
-    private static Map<Class<? extends DataModule<ModularGeneralService>>,
+    private static final Map<Class<? extends DataModule<ModularGeneralService>>,
             Function<ModularGeneralService, ? extends DataModule<ModularGeneralService>>> general = Maps.newHashMap();
 
-    private static Map<Class<? extends TransientModule<ModularGeneralService>>,
+    private static final Map<Class<? extends TransientModule<ModularGeneralService>>,
             Function<ModularGeneralService, ? extends TransientModule<ModularGeneralService>>> generalt = Maps.newHashMap();
 
-    private static Map<Class<? extends DataModule<ModularUserService>>,
+    private static final Map<Class<? extends DataModule<ModularUserService>>,
             Function<ModularUserService, ? extends DataModule<ModularUserService>>> user = Maps.newHashMap();
 
-    private static Map<Class<? extends TransientModule<ModularUserService>>,
+    private static final Map<Class<? extends TransientModule<ModularUserService>>,
             Function<ModularUserService, ? extends TransientModule<ModularUserService>>> usert = Maps.newHashMap();
 
-    private static Map<Class<? extends DataModule<ModularWorldService>>,
+    private static final Map<Class<? extends DataModule<ModularWorldService>>,
             Function<ModularWorldService, ? extends DataModule<ModularWorldService>>> world = Maps.newHashMap();
 
-    private static Map<Class<? extends TransientModule<ModularWorldService>>,
+    private static final Map<Class<? extends TransientModule<ModularWorldService>>,
             Function<ModularWorldService, ? extends TransientModule<ModularWorldService>>> worldt = Maps.newHashMap();
 
     static {

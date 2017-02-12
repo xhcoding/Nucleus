@@ -26,9 +26,9 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @RegisterCommand(value = { "set" }, subcommandOf = GameruleCommand.class)
 public class SetGameruleCommand extends AbstractCommand<CommandSource> {
 
-    private static String worldKey = "world";
-    private static String gameRuleKey = "gamerule";
-    private static String valueKey = "value";
+    private static final String worldKey = "world";
+    private static final String gameRuleKey = "gamerule";
+    private static final String valueKey = "value";
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

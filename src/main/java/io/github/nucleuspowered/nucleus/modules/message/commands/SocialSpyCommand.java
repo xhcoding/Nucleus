@@ -40,7 +40,7 @@ public class SocialSpyCommand extends AbstractCommand<Player> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
-            put("force", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.socialspy.force"), SuggestedLevel.NONE));
+            put("force", PermissionInformation.getWithTranslation("permission.socialspy.force", SuggestedLevel.NONE));
         }};
     }
 

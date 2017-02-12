@@ -13,28 +13,28 @@ import java.util.Map;
 @ConfigSerializable
 public class ChatConfig {
 
-    @Setting(value = "modify-chat", comment = "loc:config.chat.modify")
+    @Setting(value = "modify-chat", comment = "config.chat.modify")
     private boolean modifychat = true;
 
-    @Setting(value = "use-group-templates", comment = "loc:config.chat.useGroupTemplates")
+    @Setting(value = "use-group-templates", comment = "config.chat.useGroupTemplates")
     private boolean useGroupTemplates = true;
 
     @Setting(value = "templates")
     private TemplateConfig templates = new TemplateConfig();
 
-    @Setting(value = "modify-main-message", comment = "loc:config.chat.main")
+    @Setting(value = "modify-main-message", comment = "config.chat.main")
     private boolean modifyMainMessage = true;
 
-    @Setting(value = "overwrite-early-prefixes", comment = "loc:config.chat.includeprefix")
+    @Setting(value = "overwrite-early-prefixes", comment = "config.chat.includeprefix")
     private boolean overwriteEarlyPrefixes = false;
 
-    @Setting(value = "overwrite-early-suffixes", comment = "loc:config.chat.includesuffix")
+    @Setting(value = "overwrite-early-suffixes", comment = "config.chat.includesuffix")
     private boolean overwriteEarlySuffixes = false;
 
-    @Setting(value = "check-body-for-minecraft-prefix", comment = "loc:config.chat.checkbody")
+    @Setting(value = "check-body-for-minecraft-prefix", comment = "config.chat.checkbody")
     private boolean checkBody = false;
 
-    @Setting(value = "me-prefix", comment = "loc:config.chat.meprefix")
+    @Setting(value = "me-prefix", comment = "config.chat.meprefix")
     private String mePrefix = "&7* {{displayName}} ";
 
     public String getMePrefix() {

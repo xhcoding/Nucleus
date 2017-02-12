@@ -28,7 +28,7 @@ public class GeoIpUpdateCommand extends AbstractCommand<CommandSource> {
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.geoip.update.start"));
         try {
             plugin.getInternalServiceManager().getService(GeoIpDatabaseHandler.class).get().load(
-                GeoIpDatabaseHandler.LoadType.DOWNLOAD, false);
+                GeoIpDatabaseHandler.LoadType.DOWNLOAD);
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.geoip.update.complete"));
         } catch (IllegalStateException e) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.geoip.update.licence"));

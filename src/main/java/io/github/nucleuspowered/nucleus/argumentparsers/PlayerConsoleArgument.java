@@ -105,7 +105,7 @@ public class PlayerConsoleArgument extends CommandElement {
         return true;
     }
 
-    static boolean shouldShow(Player player, CommandSource cs) {
+    private static boolean shouldShow(Player player, CommandSource cs) {
         return cs.hasPermission(vanishPermission) || !player.get(Keys.VANISH).orElse(false);
     }
 }

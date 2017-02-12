@@ -27,7 +27,7 @@ public class ResortUserArgumentParser extends CommandElement {
 
     private final CommandElement userArgument;
 
-    public ResortUserArgumentParser(@Nullable Text key) {
+    public ResortUserArgumentParser(Text key) {
         super(key);
         this.userArgument = GenericArguments.user(key);
     }

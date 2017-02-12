@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class NoteConfig {
 
-    @Setting(value = "show-login", comment = "loc:config.note.showonlogin")
+    @Setting(value = "show-login", comment = "config.note.showonlogin")
     private boolean showOnLogin = true;
 
     public boolean isShowOnLogin() {

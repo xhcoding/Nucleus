@@ -37,9 +37,7 @@ public class WarnData extends EndTimestamp {
     public WarnData() { }
 
     public WarnData(Instant date, UUID warner, String reason) {
-        this.warner = warner;
-        this.reason = reason;
-        this.date = date.toEpochMilli();
+        this(date, warner, reason, false);
     }
 
     public WarnData(Instant date, UUID warner, String reason, boolean expired) {

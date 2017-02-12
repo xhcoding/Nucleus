@@ -15,10 +15,10 @@ import java.util.List;
 @ConfigSerializable
 public class BlockSpawnsConfig {
 
-    @Setting(value = "block-vanilla-mobs", comment = "loc:config.blockspawn.vanilla")
+    @Setting(value = "block-vanilla-mobs", comment = "config.blockspawn.vanilla")
     private boolean blockVanillaMobs = false;
 
-    @Setting(value = "block-mobs-with-ids", comment = "loc:config.blockspawn.ids")
+    @Setting(value = "block-mobs-with-ids", comment = "config.blockspawn.ids")
     @ProcessSetting(LowercaseListSettingProcessor.class)
     private List<String> idsToBlock = Lists.newArrayList();
 

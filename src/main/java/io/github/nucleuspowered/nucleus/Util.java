@@ -240,6 +240,7 @@ public class Util {
         }
     }
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T extends EndTimestamp> Optional<T> testForEndTimestamp(Optional<T> omd, Action function) {
         if (omd.isPresent()) {
             T md = omd.get();

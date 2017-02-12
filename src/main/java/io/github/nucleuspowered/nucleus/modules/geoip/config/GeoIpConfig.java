@@ -15,7 +15,7 @@ public class GeoIpConfig {
     @Setting(value = "accept-licences", comment = "By setting this to true, you agree to the licences for the MaxMind GeoLite 2 databases, and the information as displayed at http://nucleuspowered.org/thirdparty/geoip.html \nor in the geoip.txt file in the plugin JAR (you can open the Nucleus JAR with any zip program)")
     private boolean acceptLicence = false;
 
-    @Setting(value = "alert-on-login", comment = "loc:config.geoip.onlogin")
+    @Setting(value = "alert-on-login", comment = "config.geoip.onlogin")
     private boolean alertOnLogin = false;
 
     // Not generated, only should be added if there is a problem to redress.

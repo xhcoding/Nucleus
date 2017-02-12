@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 
 public class NoteArgument extends CommandElement {
 
-    private NucleusPlugin plugin;
-    private NoteHandler handler;
+    private final NucleusPlugin plugin;
+    private final NoteHandler handler;
 
     public NoteArgument(@Nullable Text key, NucleusPlugin plugin, NoteHandler handler) {
         super(key);

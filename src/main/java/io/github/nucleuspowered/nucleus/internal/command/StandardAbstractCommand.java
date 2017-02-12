@@ -286,8 +286,8 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
         afterPostInit();
 
-        permissionsToRegister().forEach((k, v) -> permissions.registerPermssion(k, v));
-        permissionSuffixesToRegister().forEach((k, v) -> permissions.registerPermssionSuffix(k, v));
+        permissionsToRegister().forEach((k, v) -> permissions.registerPermission(k, v));
+        permissionSuffixesToRegister().forEach((k, v) -> permissions.registerPermissionSuffix(k, v));
     }
 
     protected void afterPostInit() {

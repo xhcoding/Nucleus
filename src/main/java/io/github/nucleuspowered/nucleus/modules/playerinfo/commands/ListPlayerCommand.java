@@ -63,7 +63,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("seevanished", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.list.seevanished"), SuggestedLevel.ADMIN));
+        m.put("seevanished", PermissionInformation.getWithTranslation("permission.list.seevanished", SuggestedLevel.ADMIN));
         return m;
     }
 

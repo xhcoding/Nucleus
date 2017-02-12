@@ -63,7 +63,7 @@ public class ItemInfoCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("extended", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.iteminfo.extended"), SuggestedLevel.ADMIN));
+        m.put("extended", PermissionInformation.getWithTranslation("permission.iteminfo.extended", SuggestedLevel.ADMIN));
         return m;
     }
 

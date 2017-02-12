@@ -56,7 +56,7 @@ public class UseListener extends BlacklistListener {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = super.getPermissions();
-        mp.put(use, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.blacklist.bypassuse"), SuggestedLevel.ADMIN));
+        mp.put(use, PermissionInformation.getWithTranslation("permission.blacklist.bypassuse", SuggestedLevel.ADMIN));
         return mp;
     }
 

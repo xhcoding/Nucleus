@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 
 public class WarningArgument extends CommandElement {
 
-    private NucleusPlugin plugin;
-    private WarnHandler handler;
+    private final NucleusPlugin plugin;
+    private final WarnHandler handler;
 
     public WarningArgument(@Nullable Text key, NucleusPlugin plugin, WarnHandler handler) {
         super(key);

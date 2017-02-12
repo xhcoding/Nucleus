@@ -8,12 +8,14 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collection;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+@NonnullByDefault
 public class MessageChannelWrapper implements MessageChannel {
 
     private final MessageChannel toWrap;

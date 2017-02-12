@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RunAsync
 @NoCost
 @NoCooldown

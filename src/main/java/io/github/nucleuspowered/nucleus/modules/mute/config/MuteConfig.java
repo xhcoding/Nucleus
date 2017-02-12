@@ -13,16 +13,16 @@ import java.util.List;
 @ConfigSerializable
 public class MuteConfig {
 
-    @Setting(value = "blocked-commands", comment = "loc:config.mute.blocked")
+    @Setting(value = "blocked-commands", comment = "config.mute.blocked")
     private List<String> blockedCommands = Lists.newArrayList("minecraft:me", "say");
 
-    @Setting(value = "maximum-mute-length", comment = "loc:config.mute.maxmutelength")
+    @Setting(value = "maximum-mute-length", comment = "config.mute.maxmutelength")
     private long maxMuteLength = 604800;
 
-    @Setting(value = "see-muted-chat", comment = "loc:config.mute.seemutedchat")
+    @Setting(value = "see-muted-chat", comment = "config.mute.seemutedchat")
     private boolean showMutedChat = false;
 
-    @Setting(value = "muted-chat-tag", comment = "loc:config.mute.seemutedchattag")
+    @Setting(value = "muted-chat-tag", comment = "config.mute.seemutedchattag")
     private String cancelledTag = "&c[cancelled] ";
 
     public List<String> getBlockedCommands() {

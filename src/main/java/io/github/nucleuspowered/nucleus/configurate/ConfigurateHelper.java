@@ -41,10 +41,6 @@ public class ConfigurateHelper {
         return options.setSerializers(tsc).setObjectMapperFactory(NucleusObjectMapperFactory.getInstance());
     }
 
-    public static TypeSerializerCollection getNucleusTypeSerialiserCollection() {
-        return getNucleusTypeSerialiserCollection(ConfigurationOptions.defaults());
-    }
-
     public static TypeSerializerCollection getNucleusTypeSerialiserCollection(ConfigurationOptions options) {
         if (typeSerializerCollection != null) {
             return typeSerializerCollection;

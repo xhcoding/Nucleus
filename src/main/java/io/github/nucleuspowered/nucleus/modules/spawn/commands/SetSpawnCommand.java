@@ -19,6 +19,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RegisterCommand({"setspawn"})
 @Permissions
 @NoWarmup

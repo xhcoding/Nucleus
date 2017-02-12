@@ -149,7 +149,7 @@ public class PossessionListener extends BlacklistListener {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(possess, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.blacklist.bypasspossess"), SuggestedLevel.ADMIN));
+        mp.put(possess, PermissionInformation.getWithTranslation("permission.blacklist.bypasspossess", SuggestedLevel.ADMIN));
         return mp;
     }
 

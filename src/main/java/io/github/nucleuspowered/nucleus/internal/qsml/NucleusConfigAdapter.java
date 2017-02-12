@@ -7,10 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.qsml;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.quickstart.config.AbstractAdaptableConfig;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
@@ -86,6 +83,7 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         protected R getDefaultObject() {
             try {
                 return (R) typeToken.getRawType().newInstance();

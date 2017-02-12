@@ -45,8 +45,8 @@ public class VoiceCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = super.permissionSuffixesToRegister();
-        m.put("auto", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.voice.auto"), SuggestedLevel.ADMIN));
-        m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.voice.notify"), SuggestedLevel.ADMIN));
+        m.put("auto", PermissionInformation.getWithTranslation("permission.voice.auto", SuggestedLevel.ADMIN));
+        m.put("notify", PermissionInformation.getWithTranslation("permission.voice.notify", SuggestedLevel.ADMIN));
         return m;
     }
 

@@ -90,6 +90,7 @@ public class CoreListener extends ListenerBase {
                 plugin.getGeneralService().getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
             }
 
+            c.setFirstJoin(player.getJoinData().firstPlayed().get());
             c.setLastIp(player.getConnection().getAddress().getAddress());
 
             // We'll do this bit shortly - after the login events have resolved.
@@ -127,12 +128,10 @@ public class CoreListener extends ListenerBase {
         final InetAddress address = player.getConnection().getAddress().getAddress();
 
         try {
-            this.plugin.getUserDataManager().get(player).ifPresent(x -> {
-                x.quickSet(CoreUserDataModule.class, y -> {
-                    y.setLastLogout(location);
-                    y.setLastIp(address);
-                });
-            });
+            this.plugin.getUserDataManager().get(player).ifPresent(x -> x.quickSet(CoreUserDataModule.class, y -> {
+                y.setLastLogout(location);
+                y.setLastIp(address);
+            }));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

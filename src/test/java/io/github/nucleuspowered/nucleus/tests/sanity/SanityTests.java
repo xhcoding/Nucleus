@@ -9,11 +9,18 @@ import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import org.junit.Assert;
 import org.junit.Test;
+import org.spongepowered.api.util.Tuple;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SanityTests {
@@ -71,11 +78,11 @@ public class SanityTests {
         }
 
         Map<String, List<String>> filter = s.parallelStream()
-                .map(x -> new DoubleTuple<>(x.toLowerCase(),
+                .map(x -> Tuple.of(x.toLowerCase(),
                         s.stream().filter(y -> x.toLowerCase().startsWith(y.toLowerCase() + ".") && !x.equalsIgnoreCase(y)).collect(Collectors.toList())))
-                .filter(x -> !x.value.isEmpty())
+                .filter(x -> !x.getSecond().isEmpty())
                 .sorted()
-                .collect(Collectors.toMap(k -> k.key, v -> v.value));
+                .collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
         if (!filter.isEmpty()) {
             StringBuilder sb = new StringBuilder("Some keys are parents of others!").append(System.lineSeparator());
             filter.forEach((x, y) -> sb.append(x).append("->").append(y).append(System.lineSeparator()));
@@ -83,18 +90,4 @@ public class SanityTests {
         }
     }
 
-    private class DoubleTuple<A extends Comparable<A>, B> implements Comparable<DoubleTuple<A, B>> {
-        A key;
-        B value;
-
-        private DoubleTuple(A a, B b) {
-            this.key = a;
-            this.value = b;
-        }
-
-        @Override
-        public int compareTo(DoubleTuple<A, B> o) {
-            return key.compareTo(o.key);
-        }
-    }
 }

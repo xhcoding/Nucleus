@@ -68,7 +68,7 @@ public abstract class BlacklistListener extends ListenerBase.Reloadable {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(bypass, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.blacklist.bypass"), SuggestedLevel.ADMIN));
+        mp.put(bypass, PermissionInformation.getWithTranslation("permission.blacklist.bypass", SuggestedLevel.ADMIN));
         return mp;
     }
 
@@ -81,7 +81,7 @@ public abstract class BlacklistListener extends ListenerBase.Reloadable {
             ids = itemDataService.getAllBlacklistedItems().entrySet()
                 .stream().filter(predicate)
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());;
+                .collect(Collectors.toSet());
         }
 
         return ids;

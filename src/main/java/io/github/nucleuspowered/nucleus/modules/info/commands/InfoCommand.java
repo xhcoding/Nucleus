@@ -60,7 +60,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> map = new HashMap<>();
-        map.put("list", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.info.list"), SuggestedLevel.ADMIN));
+        map.put("list", PermissionInformation.getWithTranslation("permission.info.list", SuggestedLevel.ADMIN));
         return map;
     }
 

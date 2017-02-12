@@ -47,7 +47,7 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.sudo.exempt"), SuggestedLevel.ADMIN));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.sudo.exempt", SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -55,7 +55,7 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = args.<Player>getOne(playerKey).get();
         String cmd = args.<String>getOne(commandKey).get();
-        if (pl.equals(src) || permissions.testSuffix(pl, "exempt.target")) {
+        if (pl.equals(src) || permissions.testSuffix(pl, "exempt.target", src, false)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.noperms"));
             return CommandResult.empty();
         }

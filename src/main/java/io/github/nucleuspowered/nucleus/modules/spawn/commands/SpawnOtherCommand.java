@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @NoCooldown
 @NoCost
 @NoWarmup
@@ -58,7 +59,7 @@ public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
-            put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawnother.offline"), SuggestedLevel.ADMIN));
+            put("offline", PermissionInformation.getWithTranslation("permission.spawnother.offline", SuggestedLevel.ADMIN));
         }};
     }
 

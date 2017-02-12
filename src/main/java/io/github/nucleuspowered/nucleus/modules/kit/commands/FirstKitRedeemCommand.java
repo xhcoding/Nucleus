@@ -20,6 +20,7 @@ import org.spongepowered.api.util.Tristate;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "firstjoinkit")
 @NoCost
 @NoCooldown

@@ -22,10 +22,11 @@ import javax.inject.Inject;
 /**
  * Defines the migrator method.
  */
+@SuppressWarnings("ALL")
 public abstract class DataMigrator {
 
-    @Inject protected NucleusPlugin plugin;
-    @Inject protected Logger logger;
+    @Inject NucleusPlugin plugin;
+    @Inject Logger logger;
 
     /**
      * Migrates data to NucleusPlugin from a data source.
@@ -35,7 +36,7 @@ public abstract class DataMigrator {
      */
     public abstract void migrate(CommandSource src) throws Exception;
 
-    protected final Optional<ModularUserService> getUser(UUID uuid) {
+    final Optional<ModularUserService> getUser(UUID uuid) {
         try {
             return plugin.getUserDataManager().get(uuid);
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public abstract class DataMigrator {
         }
     }
 
-    protected final Optional<ModularWorldService> getWorld(UUID uuid) {
+    final Optional<ModularWorldService> getWorld(UUID uuid) {
         try {
             return plugin.getWorldDataManager().get(uuid);
         } catch (Exception e) {

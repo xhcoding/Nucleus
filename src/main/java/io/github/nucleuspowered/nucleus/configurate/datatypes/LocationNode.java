@@ -21,26 +21,19 @@ import java.util.UUID;
 @ConfigSerializable
 public class LocationNode {
 
-    @Setting
-    double x;
+    @Setting private double x;
 
-    @Setting
-    double y;
+    @Setting private double y;
 
-    @Setting
-    double z;
+    @Setting private double z;
 
-    @Setting
-    double rotx;
+    @Setting private double rotx;
 
-    @Setting
-    double roty;
+    @Setting private double roty;
 
-    @Setting
-    double rotz;
+    @Setting private double rotz;
 
-    @Setting
-    UUID world;
+    @Setting private UUID world;
 
     public LocationNode() { }
 

@@ -7,19 +7,16 @@ package io.github.nucleuspowered.nucleus.config;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.config.bases.AbstractStandardNodeConfig;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +25,7 @@ import javax.annotation.Nonnull;
 
 public class MessageConfig extends AbstractStandardNodeConfig<CommentedConfigurationNode, HoconConfigurationLoader> {
 
-    private static final Pattern keys = Pattern.compile("\\{(\\d+)\\}");
+    private static final Pattern keys = Pattern.compile("\\{(\\d+)}");
     private final ResourceMessageProvider fallback;
 
     public MessageConfig(Path file, ResourceMessageProvider fallback) throws Exception {
@@ -47,7 +44,7 @@ public class MessageConfig extends AbstractStandardNodeConfig<CommentedConfigura
     }
 
     @Override
-    protected HoconConfigurationLoader getLoader(Path file, Map<TypeToken<?>, TypeSerializer<?>> typeSerializerList) {
+    protected HoconConfigurationLoader getLoader(Path file) {
         return HoconConfigurationLoader.builder().setPath(file).build();
     }
 
@@ -78,10 +75,8 @@ public class MessageConfig extends AbstractStandardNodeConfig<CommentedConfigura
             Optional<String> msgKey = getKey(x);
 
             Object[] nodeKey = x.split("\\.");
-            CommentedConfigurationNode cn = node.getNode(nodeKey).setValue(resKey);;
-            if (msgKey.isPresent()) {
-                cn.setComment(msgKey.get());
-            }
+            CommentedConfigurationNode cn = node.getNode(nodeKey).setValue(resKey);
+            msgKey.ifPresent(cn::setComment);
         });
 
         save();

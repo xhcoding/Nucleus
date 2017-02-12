@@ -21,7 +21,7 @@ public abstract class AbstractHomeEvent extends AbstractCancelMessageEvent imple
     private final User owner;
 
     private boolean isCancelled = false;
-    private Location<World> location;
+    private final Location<World> location;
 
     AbstractHomeEvent(String name, User owner, Cause cause, @Nullable Location<World> location) {
         super(cause);

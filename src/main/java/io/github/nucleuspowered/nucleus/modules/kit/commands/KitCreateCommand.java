@@ -87,7 +87,7 @@ public class KitCreateCommand extends AbstractCommand<Player> {
                 this.run = true;
                 Sponge.getEventManager().unregisterListeners(this);
 
-                if (!kitConfig.getKitNames().stream().anyMatch(kitName::equalsIgnoreCase)) {
+                if (kitConfig.getKitNames().stream().noneMatch(kitName::equalsIgnoreCase)) {
                     kitConfig.saveKit(kitName, kitConfig.createKit().updateKitInventory(this.inventory));
                     player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.success", this.kitName));
                 } else {

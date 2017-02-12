@@ -21,9 +21,7 @@ public class BlacklistConfigAdapter extends NucleusConfigAdapter.StandardWithSim
                 valueAtPath.setValue(null);
                 return null;
             }),
-            new Transformation(new Object[]{"useReplacement"}, (inputPath, valueAtPath) -> {
-                return new Object[] { "use-replacement" };
-            })
+            new Transformation(new Object[]{"useReplacement"}, (inputPath, valueAtPath) -> new Object[] { "use-replacement" })
         );
     }
 

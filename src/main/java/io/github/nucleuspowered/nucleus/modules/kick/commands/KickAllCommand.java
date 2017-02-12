@@ -52,7 +52,7 @@ public class KickAllCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("whitelist", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kickall.whitelist"), SuggestedLevel.ADMIN));
+        m.put("whitelist", PermissionInformation.getWithTranslation("permission.kickall.whitelist", SuggestedLevel.ADMIN));
         return m;
     }
 

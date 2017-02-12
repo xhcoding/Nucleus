@@ -42,7 +42,6 @@ public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
     private UserDataManager userDataManager;
 
     private final String b = "toggle";
-    private final String playerKey = "subject";
 
     @Override public CommandElement[] additionalArguments() {
         return new CommandElement[] {
@@ -53,8 +52,8 @@ public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
-        mspi.put("see", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.see"), SuggestedLevel.ADMIN));
-        mspi.put("persist", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.persist"), SuggestedLevel.ADMIN));
+        mspi.put("see", PermissionInformation.getWithTranslation("permission.vanish.see", SuggestedLevel.ADMIN));
+        mspi.put("persist", PermissionInformation.getWithTranslation("permission.vanish.persist", SuggestedLevel.ADMIN));
         return mspi;
     }
 

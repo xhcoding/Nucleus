@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 public class JailTask extends TaskBase {
     @Inject private NucleusPlugin plugin;
     @Inject private JailHandler jailHandler;

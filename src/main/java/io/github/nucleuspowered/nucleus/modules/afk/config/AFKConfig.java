@@ -10,22 +10,22 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class AFKConfig {
 
-    @Setting(value = "afktime", comment = "loc:config.afk.time")
+    @Setting(value = "afktime", comment = "config.afk.time")
     private long afkTime = 300;
 
-    @Setting(value = "afktimetokick", comment = "loc:config.afk.timetokick")
+    @Setting(value = "afktimetokick", comment = "config.afk.timetokick")
     private long afkTimeToKick = 0;
 
-    @Setting(value = "afk-when-vanished", comment = "loc:config.afk.whenvanished")
+    @Setting(value = "afk-when-vanished", comment = "config.afk.whenvanished")
     private boolean afkOnVanish = false;
 
-    @Setting(value = "alert-on-command-send", comment = "loc:config.afk.oncommandsend")
+    @Setting(value = "alert-on-command-send", comment = "config.afk.oncommandsend")
     private boolean alertSenderOnAfk = true;
 
-    @Setting(value = "broadcast-to-all-on-kick", comment = "loc:config.afk.broadcastonkick")
+    @Setting(value = "broadcast-to-all-on-kick", comment = "config.afk.broadcastonkick")
     private boolean broadcastOnKick = true;
 
-    @Setting(value = "messages", comment = "loc:config.afk.messages.base")
+    @Setting(value = "messages", comment = "config.afk.messages.base")
     private MessagesConfig messages = new MessagesConfig();
 
     public long getAfkTime() {

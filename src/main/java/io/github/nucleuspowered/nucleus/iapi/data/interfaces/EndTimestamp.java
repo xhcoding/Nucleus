@@ -4,7 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.iapi.data.interfaces;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import ninja.leaping.configurate.objectmapping.Setting;
+import org.spongepowered.api.util.Tuple;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -45,5 +48,18 @@ public abstract class EndTimestamp {
             endtimestamp = Instant.now().plus(timeFromNextLogin, ChronoUnit.SECONDS).getEpochSecond();
             timeFromNextLogin = null;
         }
+    }
+
+    // This HAS to be temporary.
+    public Tuple<String, String> getForString() {
+        if (getEndTimestamp().isPresent()) {
+            return Tuple.of(Util.getTimeStringFromSeconds(Instant.now().until(getEndTimestamp().get(), ChronoUnit.SECONDS)),
+                " " + Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.for") + " ");
+        } else if (getTimeFromNextLogin().isPresent()) {
+            return Tuple.of(Util.getTimeStringFromSeconds(getTimeFromNextLogin().get().getSeconds()),
+                " " + Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.for") + " ");
+        }
+
+        return Tuple.of("", "");
     }
 }

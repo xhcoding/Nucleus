@@ -7,6 +7,8 @@ package io.github.nucleuspowered.nucleus.api.service;
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -16,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -82,10 +85,38 @@ public interface NucleusWarpService {
     /**
      * Gets all warps that have categories.
      *
+     * @deprecated Use {@link #getWarpsWithCategories()} instead.
      * @return The warps.
      */
     @Stable
-    Map<String, List<Warp>> getCategorisedWarps();
+    @Deprecated
+    default Map<String, List<Warp>> getCategorisedWarps() {
+        return getWarpsWithCategories(x -> true).entrySet().stream().collect(Collectors.toMap(k -> k.getKey().getId(), Map.Entry::getValue));
+    }
+
+    /**
+     * Gets all warps that have categories.
+     *
+     * @param warpDataPredicate The filtering predicate to return the subset of warps required.
+     * @return The warps.
+     * @deprecated Use {@link #getWarpsWithCategories()} instead.
+     */
+
+    @Stable
+    @Deprecated
+    default Map<String, List<Warp>> getCategorisedWarps(Predicate<Warp> warpDataPredicate) {
+        return getWarpsWithCategories(warpDataPredicate).entrySet().stream().collect(Collectors.toMap(k -> k.getKey().getId(), Map.Entry::getValue));
+    }
+
+    /**
+     * Gets all warps that have categories.
+     *
+     * @return The warps.
+     */
+    @Stable
+    default Map<WarpCategory, List<Warp>> getWarpsWithCategories() {
+        return getWarpsWithCategories(x -> true);
+    }
 
     /**
      * Gets all warps that have categories.
@@ -93,10 +124,15 @@ public interface NucleusWarpService {
      * @param warpDataPredicate The filtering predicate to return the subset of warps required.
      * @return The warps.
      */
-
     @Stable
-    Map<String, List<Warp>> getCategorisedWarps(Predicate<Warp> warpDataPredicate);
+    Map<WarpCategory, List<Warp>> getWarpsWithCategories(Predicate<Warp> warpDataPredicate);
 
+    /**
+     * Removes the cost of a warp.
+     *
+     * @param warpName The name of the warp to remove the cost from.
+     * @return <code>true</code> if the cost removal succeeds.
+     */
     boolean removeWarpCost(String warpName);
 
     /**
@@ -117,6 +153,16 @@ public interface NucleusWarpService {
      */
     boolean setWarpCategory(String warpName, @Nullable String category);
 
+
+    /**
+     * Sets a warp's description.
+     *
+     * @param warpName The name of the warp.
+     * @param description The description, or <code>null</code> to clear.
+     * @return {@code true} if successful
+     */
+    boolean setWarpDescription(String warpName, @Nullable Text description);
+
     /**
      * Gets the names of all the warp that are available.
      *
@@ -135,4 +181,30 @@ public interface NucleusWarpService {
     default boolean warpExists(String name) {
         return getWarp(name).isPresent();
     }
+
+    /**
+     * Gets the data associated with a warp category.
+     *
+     * @param category The name of the category to get.
+     * @return An {@link Optional} containing the category, if it exists.
+     */
+    Optional<WarpCategory> getWarpCategory(String category);
+
+    /**
+     * Sets the display name of a warp category.
+     *
+     * @param category The name of the category.
+     * @param displayName The display name. Set to null to revert to the category name.
+     * @return <code>true</code> if the category exists and this is successful.
+     */
+    boolean setWarpCategoryDisplayName(String category, @Nullable Text displayName);
+
+    /**
+     * Sets the description of a warp category.
+     *
+     * @param category The name of the category.
+     * @param description The description. Set to null to remove the description.
+     * @return <code>true</code> if the category exists and this is successful.
+     */
+    boolean setWarpCategoryDescription(String category, @Nullable Text description);
 }

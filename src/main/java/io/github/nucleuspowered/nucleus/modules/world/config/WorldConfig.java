@@ -12,10 +12,10 @@ import java.util.Optional;
 @ConfigSerializable
 public class WorldConfig {
 
-    @Setting(value = "default-world-border-diameter", comment = "loc:config.world.defaultborder")
+    @Setting(value = "default-world-border-diameter", comment = "config.world.defaultborder")
     private long worldBorderDefault = 0;
 
-    @Setting(value = "display-generation-warning", comment = "loc:config.world.gen.warning")
+    @Setting(value = "display-generation-warning", comment = "config.world.gen.warning")
     private boolean displayWarningGeneration = true;
 
     public boolean isDisplayWarningGeneration() {

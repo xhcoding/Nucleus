@@ -10,22 +10,22 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class ChatTemplateConfig {
 
-    @Setting(value = "default-chatcolour", comment = "loc:config.chat.template.chatcolour")
+    @Setting(value = "default-chatcolour", comment = "config.chat.template.chatcolour")
     private String chatcolour = "";
 
-    @Setting(value = "default-chatstyle", comment = "loc:config.chat.template.chatstyle")
+    @Setting(value = "default-chatstyle", comment = "config.chat.template.chatstyle")
     private String chatstyle = "";
 
-    @Setting(value = "default-namecolour", comment = "loc:config.chat.template.namecolour")
+    @Setting(value = "default-namecolour", comment = "config.chat.template.namecolour")
     private String namecolour = "";
 
-    @Setting(value = "default-namestyle", comment = "loc:config.chat.template.namestyle")
+    @Setting(value = "default-namestyle", comment = "config.chat.template.namestyle")
     private String namestyle = "";
 
-    @Setting(comment = "loc:config.chat.template.prefix")
+    @Setting(comment = "config.chat.template.prefix")
     private String prefix = "{{prefix}} {{displayname}}{{suffix}}&f: ";
 
-    @Setting(comment = "loc:config.chat.template.suffix")
+    @Setting(comment = "config.chat.template.suffix")
     private String suffix = "";
 
     public String getPrefix() {

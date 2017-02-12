@@ -40,7 +40,7 @@ public class TeleportToggleCommand extends AbstractCommand<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tptoggle.exempt"), SuggestedLevel.ADMIN));
+        m.put("exempt", PermissionInformation.getWithTranslation("permission.tptoggle.exempt", SuggestedLevel.ADMIN));
         return m;
     }
 

@@ -12,13 +12,13 @@ import org.spongepowered.api.text.format.TextColor;
 @ConfigSerializable
 public class StaffChatConfig {
 
-    @Setting(value = "include-standard-chat-formatting", comment = "loc:config.staffchat.includestd")
+    @Setting(value = "include-standard-chat-formatting", comment = "config.staffchat.includestd")
     private boolean includeStandardChatFormatting = false;
 
-    @Setting(value = "message-template", comment = "loc:config.staffchat.template")
+    @Setting(value = "message-template", comment = "config.staffchat.template")
     private String messageTemplate = "&b[STAFF] &r{{displayname}}&b: ";
 
-    @Setting(value = "message-colour", comment = "loc:config.staffchat.colour")
+    @Setting(value = "message-colour", comment = "config.staffchat.colour")
     private String messageColour = "b";
 
     public String getMessageTemplate() {

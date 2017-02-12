@@ -40,6 +40,7 @@ public class ChatUtilTests extends TestBase {
     /**
      * Tests that the specified permissions are in the permission list.
      */
+    @SuppressWarnings("CanBeFinal")
     @RunWith(Parameterized.class)
     public static class URLtests {
         @BeforeClass
@@ -64,7 +65,7 @@ public class ChatUtilTests extends TestBase {
             });
         }
 
-        @Parameterized.Parameter(0)
+        @Parameterized.Parameter()
         public String message;
 
         @Parameterized.Parameter(1)

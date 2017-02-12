@@ -10,16 +10,16 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class WarpConfig {
 
-    @Setting(value = "default-warp-cost", comment = "loc:config.warps.cost")
+    @Setting(value = "default-warp-cost", comment = "config.warps.cost")
     private double defaultWarpCost = 0;
 
-    @Setting(value = "separate-permissions", comment = "loc:config.warps.separate")
+    @Setting(value = "separate-permissions", comment = "config.warps.separate")
     private boolean separatePermissions = false;
 
-    @Setting(value = "use-safe-warp", comment = "loc:config.warps.safe")
+    @Setting(value = "use-safe-warp", comment = "config.warps.safe")
     private boolean safeTeleport = true;
 
-    @Setting(value = "list-warps-by-category", comment = "loc:config.warps.categories")
+    @Setting(value = "list-warps-by-category", comment = "config.warps.categories")
     private boolean categoriseWarps = false;
 
     @Setting(value = "default-category-name")

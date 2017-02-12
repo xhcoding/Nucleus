@@ -25,9 +25,8 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Tuple;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 /**
@@ -72,17 +71,8 @@ public class CheckMuteCommand extends AbstractCommand<CommandSource> {
             name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
-        String time = "";
-        String forString = "";
-        if (md.getEndTimestamp().isPresent()) {
-            time = Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS));
-            forString = " " + plugin.getMessageProvider().getMessageWithFormat("standard.for") + " ";
-        } else if (md.getTimeFromNextLogin().isPresent()) {
-            time = Util.getTimeStringFromSeconds(md.getTimeFromNextLogin().get().getSeconds());
-            forString = " " + plugin.getMessageProvider().getMessageWithFormat("standard.for") + " ";
-        }
-
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.mute", user.getName(), name, forString, time));
+        Tuple<String, String> a = md.getForString();
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.mute", user.getName(), name, a.getSecond(), a.getFirst()));
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", md.getReason()));
         return CommandResult.success();
     }

@@ -30,9 +30,9 @@ public class BackCommand extends AbstractCommand<Player> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = Maps.newHashMap();
-        m.put(BackListeners.onDeath, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.back.ondeath"), SuggestedLevel.USER));
-        m.put(BackListeners.onTeleport, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.back.onteleport"), SuggestedLevel.USER));
-        m.put(BackListeners.onPortal, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.back.onportal"), SuggestedLevel.USER));
+        m.put(BackListeners.onDeath, PermissionInformation.getWithTranslation("permission.back.ondeath", SuggestedLevel.USER));
+        m.put(BackListeners.onTeleport, PermissionInformation.getWithTranslation("permission.back.onteleport", SuggestedLevel.USER));
+        m.put(BackListeners.onPortal, PermissionInformation.getWithTranslation("permission.back.onportal", SuggestedLevel.USER));
         return m;
     }
 

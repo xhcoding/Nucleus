@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 public class UtilTests {
 
+    @SuppressWarnings("CanBeFinal")
     @RunWith(Parameterized.class)
     public static class WorldBorderTests {
         @Parameterized.Parameters(name = "{index}: Co-ords ({0}, {1}, {2}), border centre ({3}, {4}, {5}), diameter: {6}, expecting {7}")
@@ -40,7 +41,7 @@ public class UtilTests {
             });
         }
 
-        @Parameterized.Parameter(0)
+        @Parameterized.Parameter()
         public double x;
 
         @Parameterized.Parameter(1)

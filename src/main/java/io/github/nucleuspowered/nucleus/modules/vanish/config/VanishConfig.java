@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class VanishConfig {
 
-    @Setting(value = "hide-connection-messages-on-vanish", comment = "loc:config.vanish.connectionmessages")
+    @Setting(value = "hide-connection-messages-on-vanish", comment = "config.vanish.connectionmessages")
     private boolean suppressMessagesOnVanish = false;
 
     public boolean isSuppressMessagesOnVanish() {

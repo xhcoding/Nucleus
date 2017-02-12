@@ -13,7 +13,7 @@ import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyComman
 
 public class MessageUserDataModule extends DataModule.ReferenceService<ModularUserService> {
 
-    private static CommandPermissionHandler ssSocialSpy
+    private static final CommandPermissionHandler ssSocialSpy
         = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(SocialSpyCommand.class);
 
     @DataKey("socialspy")

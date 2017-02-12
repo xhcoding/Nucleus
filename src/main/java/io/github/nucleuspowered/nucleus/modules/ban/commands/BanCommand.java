@@ -61,15 +61,15 @@ public class BanCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> ps = Maps.newHashMap();
-        ps.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.ban.notify"), SuggestedLevel.MOD));
+        ps.put(notifyPermission, PermissionInformation.getWithTranslation("permission.ban.notify", SuggestedLevel.MOD));
         return ps;
     }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.ban.offline"), SuggestedLevel.MOD));
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.target"), SuggestedLevel.MOD));
+        m.put("offline", PermissionInformation.getWithTranslation("permission.ban.offline", SuggestedLevel.MOD));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.tempban.exempt.target", SuggestedLevel.MOD));
         return m;
     }
 
@@ -94,7 +94,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.offline.noperms"));
             }
 
-            if (optionalUser.isPresent() && permissions.testSuffix(optionalUser.get(), "exempt.target")) {
+            if (optionalUser.isPresent() && permissions.testSuffix(optionalUser.get(), "exempt.target", src, false)) {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.exempt", optionalUser.get().getName()));
             }
 

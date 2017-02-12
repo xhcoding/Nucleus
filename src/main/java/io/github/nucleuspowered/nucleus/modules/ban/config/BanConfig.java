@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class BanConfig {
 
-    @Setting(value = "maximum-tempban-length", comment = "loc:config.tempban.maxtempbanlength")
+    @Setting(value = "maximum-tempban-length", comment = "config.tempban.maxtempbanlength")
     private long maxTempBanLength = 604800;
 
     public long getMaximumTempBanLength() {

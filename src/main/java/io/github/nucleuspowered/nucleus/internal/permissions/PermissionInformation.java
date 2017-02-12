@@ -22,7 +22,7 @@ public class PermissionInformation {
         this(Text.of(description), level);
     }
 
-    public PermissionInformation(Text description, SuggestedLevel level) {
+    private PermissionInformation(Text description, SuggestedLevel level) {
         this.description = description;
         this.plainDescription = description.toPlain();
         this.level = level;

@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @RegisterCommand(value = { "gamerule" }, subcommandOf = WorldCommand.class)
 public class GameruleCommand extends AbstractCommand<CommandSource> {
 
-    private static String worldKey = "world";
+    private static final String worldKey = "world";
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

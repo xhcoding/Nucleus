@@ -17,6 +17,11 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.core.CoreModule;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.Subject;
@@ -25,6 +30,12 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 public class CommandPermissionHandler {
+
+    private static boolean consoleCanBypass = true;
+
+    public static void onReload() {
+        consoleCanBypass = Nucleus.getNucleus().getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::isConsoleOverride).orElse(true);
+    }
 
     private final Map<String, PermissionInformation> mssl = Maps.newHashMap();
     private final String prefix;
@@ -186,11 +197,11 @@ public class CommandPermissionHandler {
         return test(src, others);
     }
 
-    public void registerPermssionSuffix(String suffix, PermissionInformation pi) {
+    public void registerPermissionSuffix(String suffix, PermissionInformation pi) {
         this.mssl.put(prefix + suffix, pi);
     }
 
-    public void registerPermssion(String permission, PermissionInformation pi) {
+    public void registerPermission(String permission, PermissionInformation pi) {
         this.mssl.put(permission, pi);
     }
 
@@ -200,6 +211,23 @@ public class CommandPermissionHandler {
         }
 
         return test(src, prefix + suffix);
+    }
+
+    /**
+     * Tests a permission with the {@link #prefix} as a root, unless the actor is the console, then the resultIfOverriden is returned.
+     *
+     * @param src The subject to check the permission on.
+     * @param suffix The suffix to add to the prefix.
+     * @param actor The actor that might affect the outcome of this check.
+     * @param resultIfOverriden If the actor is the console, returns this result if the console can bypass this permission.
+     * @return The result of the check.
+     */
+    public boolean testSuffix(Subject src, String suffix, CommandSource actor, boolean resultIfOverriden) {
+        if (consoleCanBypass && actor instanceof ConsoleSource) {
+            return resultIfOverriden;
+        }
+
+        return testSuffix(src, suffix);
     }
 
     public String getPermissionWithSuffix(String suffix) {

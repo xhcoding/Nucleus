@@ -52,7 +52,7 @@ public class EntityInfoCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("extended", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.entityinfo.extended"), SuggestedLevel.ADMIN));
+        m.put("extended", PermissionInformation.getWithTranslation("permission.entityinfo.extended", SuggestedLevel.ADMIN));
         return m;
     }
 

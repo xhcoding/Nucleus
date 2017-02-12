@@ -27,12 +27,11 @@ import javax.annotation.Nonnull;
  */
 public abstract class DataModule<S extends ModularDataService<S>> {
 
-    private static Map<Class<? extends DataModule<?>>, List<FieldData>> fieldData = Maps.newHashMap();
+    private static final Map<Class<? extends DataModule<?>>, List<FieldData>> fieldData = Maps.newHashMap();
 
     private final List<FieldData> data;
 
-    @SuppressWarnings("unchecked")
-    public DataModule() {
+    @SuppressWarnings("unchecked") protected DataModule() {
         data = fieldData.computeIfAbsent((Class<? extends DataModule<?>>) this.getClass(), this::init);
     }
 

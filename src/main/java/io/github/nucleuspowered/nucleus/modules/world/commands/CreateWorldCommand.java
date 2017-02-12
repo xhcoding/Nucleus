@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"create"}, subcommandOf = WorldCommand.class)
 public class CreateWorldCommand extends AbstractCommand<CommandSource> {

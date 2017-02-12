@@ -33,7 +33,7 @@ public class CommandSpyCommand extends AbstractCommand<Player> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = super.permissionSuffixesToRegister();
-        mspi.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.commandspy.exempt.target"), SuggestedLevel.ADMIN));
+        mspi.put("exempt.target", PermissionInformation.getWithTranslation("permission.commandspy.exempt.target", SuggestedLevel.ADMIN));
         return mspi;
     }
 

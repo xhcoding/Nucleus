@@ -20,7 +20,6 @@ import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -57,7 +56,7 @@ public class TestModule extends AbstractModule {
         }
     }
 
-    private NucleusPlugin getMockPlugin() throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    private NucleusPlugin getMockPlugin() {
         NucleusPlugin plugin = Mockito.mock(NucleusPlugin.class);
         PermissionRegistry pr = new PermissionRegistry();
         Mockito.when(plugin.getMessageProvider()).thenReturn(new ResourceMessageProvider(ResourceMessageProvider.messagesBundle));

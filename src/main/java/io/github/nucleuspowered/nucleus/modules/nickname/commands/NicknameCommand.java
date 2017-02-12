@@ -92,11 +92,11 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.others"), SuggestedLevel.ADMIN));
-        m.put("colour", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
-        m.put("color", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.colour"), SuggestedLevel.ADMIN));
-        m.put("style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.style"), SuggestedLevel.ADMIN));
-        m.put("magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.nick.magic"), SuggestedLevel.ADMIN));
+        m.put("others", PermissionInformation.getWithTranslation("permission.nick.others", SuggestedLevel.ADMIN));
+        m.put("colour", PermissionInformation.getWithTranslation("permission.nick.colour", SuggestedLevel.ADMIN));
+        m.put("color", PermissionInformation.getWithTranslation("permission.nick.colour", SuggestedLevel.ADMIN));
+        m.put("style", PermissionInformation.getWithTranslation("permission.nick.style", SuggestedLevel.ADMIN));
+        m.put("magic", PermissionInformation.getWithTranslation("permission.nick.magic", SuggestedLevel.ADMIN));
         return m;
     }
 

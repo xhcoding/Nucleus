@@ -53,9 +53,9 @@ public class TempBanCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.offline"), SuggestedLevel.MOD));
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.target"), SuggestedLevel.MOD));
-        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.length"), SuggestedLevel.MOD));
+        m.put("offline", PermissionInformation.getWithTranslation("permission.tempban.offline", SuggestedLevel.MOD));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.tempban.exempt.target", SuggestedLevel.MOD));
+        m.put("exempt.length", PermissionInformation.getWithTranslation("permission.tempban.exempt.length", SuggestedLevel.MOD));
         return m;
     }
 
@@ -73,7 +73,7 @@ public class TempBanCommand extends AbstractCommand<CommandSource> {
         Long time = args.<Long>getOne(duration).get();
         String reason = args.<String>getOne(reasonKey).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
 
-        if (permissions.testSuffix(u, "exempt.target")) {
+        if (permissions.testSuffix(u, "exempt.target", src, false)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.exempt", u.getName()));
         }
 

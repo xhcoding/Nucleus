@@ -57,7 +57,7 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("mob", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawnmob.mob"), SuggestedLevel.ADMIN));
+        m.put("mob", PermissionInformation.getWithTranslation("permission.spawnmob.mob", SuggestedLevel.ADMIN));
         return m;
     }
 

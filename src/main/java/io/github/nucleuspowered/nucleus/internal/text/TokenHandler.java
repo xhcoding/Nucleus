@@ -10,11 +10,14 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredException;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Map;
 import java.util.Optional;
+
+import javax.annotation.Nullable;
 
 public class TokenHandler {
 
@@ -34,7 +37,10 @@ public class TokenHandler {
         Preconditions.checkState(!registered);
         this.service = service;
         try {
-            service.register(plugin.getPluginContainer(), new Tokens());
+            Tokens tokens = new Tokens();
+            PluginContainer pluginContainer = plugin.getPluginContainer();
+            service.register(pluginContainer, tokens);
+            tokens.getTokenNames().forEach(x -> service.registerPrimaryToken(x.toLowerCase(), pluginContainer, x.toLowerCase()));
         } catch (PluginAlreadyRegisteredException e) {
             e.printStackTrace();
         }
@@ -62,7 +68,7 @@ public class TokenHandler {
                 return getTextFromOption(source, token.substring(2), addSpace);
             } else {
                 // Standard.
-                return getTextFromPluginToken(plugin.getPluginContainer().getId(), token, source, addSpace, variables);
+                return getTextFromPluginToken(null, token, source, addSpace, variables);
             }
         } catch (Exception e) {
             if (plugin.isDebugMode()) {
@@ -73,9 +79,12 @@ public class TokenHandler {
         }
     }
 
-    private Optional<Text> getTextFromPluginToken(String pluginId, String token, CommandSource source, boolean addSpace, Map<String, Object> variables) {
+    private Optional<Text> getTextFromPluginToken(@Nullable String pluginId, String token, CommandSource source, boolean addSpace, Map<String, Object>
+            variables) {
         if (service != null) {
-            Optional<Text> opt = service.applyToken(pluginId, token, source, variables);
+            Optional<Text> opt =
+                pluginId == null ?
+                    service.applyPrimaryToken(token, source, variables) : service.applyToken(pluginId, token, source, variables);
             if (opt.isPresent() && addSpace) {
                 return Optional.of(opt.get().toBuilder().append(SPACE).build());
             }

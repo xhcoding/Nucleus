@@ -19,7 +19,11 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +49,7 @@ import java.util.stream.Collectors;
 public final class DataScanner {
 
     private static DataScanner instance = null;
-    private static NumberFormat nf = new DecimalFormat("0.000");
+    private static final NumberFormat nf = new DecimalFormat("0.000");
 
     public static DataScanner getInstance() {
         if (instance == null) {
@@ -101,7 +105,7 @@ public final class DataScanner {
         }
     }
 
-    public ImmutableMap<String, Key<? extends BaseValue<?>>> getKeys() {
+    private ImmutableMap<String, Key<? extends BaseValue<?>>> getKeys() {
         return ImmutableMap.copyOf(reportableKeys);
     }
 

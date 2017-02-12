@@ -20,7 +20,7 @@ public class ListConfig {
     @Setting("list-grouping-by-permission")
     private GroupConfig groupByPermissionGroup = new GroupConfig();
 
-    @Setting(value = "multicraft-compatibility", comment = "loc:config.playerinfo.list.multicraft")
+    @Setting(value = "multicraft-compatibility", comment = "config.playerinfo.list.multicraft")
     private boolean multicraftCompatibility = false;
 
     public boolean isGroupByPermissionGroup() {
@@ -54,22 +54,22 @@ public class ListConfig {
     @ConfigSerializable
     public static class GroupConfig {
 
-        @Setting(value = "enabled", comment = "loc:config.playerinfo.list.groups")
+        @Setting(value = "enabled", comment = "config.playerinfo.list.groups")
         private boolean enabled = false;
 
-        @Setting(value = "use-aliases-only", comment = "loc:config.playerinfo.list.aliasonly")
+        @Setting(value = "use-aliases-only", comment = "config.playerinfo.list.aliasonly")
         private boolean useAliasOnly = false;
 
-        @Setting(value = "group-aliases", comment = "loc:config.playerinfo.list.groupaliases")
+        @Setting(value = "group-aliases", comment = "config.playerinfo.list.groupaliases")
         private Map<String, String> groupAliasing = new HashMap<String, String>() {{
             put("example-default-group", "Default Group");
             put("example-default-group-2", "Default Group");
         }};
 
-        @Setting(value = "group-order", comment = "loc:config.playerinfo.list.grouporder")
+        @Setting(value = "group-order", comment = "config.playerinfo.list.grouporder")
         private List<String> groupPriority = Lists.newArrayList();
 
-        @Setting(value = "default-group-name", comment = "loc:config.playerinfo.list.defaultname")
+        @Setting(value = "default-group-name", comment = "config.playerinfo.list.defaultname")
         private String defaultGroupName = "Default";
     }
 }

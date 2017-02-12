@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
 public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
@@ -40,7 +41,7 @@ public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
-            put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.world.teleport.other"), SuggestedLevel.ADMIN));
+            put("others", PermissionInformation.getWithTranslation("permission.world.teleport.other", SuggestedLevel.ADMIN));
         }};
     }
 

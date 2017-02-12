@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.logging;
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Util;
 
-import javax.annotation.Nonnull;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.IOException;
@@ -22,7 +21,6 @@ class LogFile implements Closeable {
     private final BufferedWriter outputStream;
     private boolean isClosed = false;
 
-    @Nonnull
     LogFile(final Path location, Function<String, String> stringFormatter) throws IOException {
         Preconditions.checkNotNull(location);
         Preconditions.checkNotNull(stringFormatter);
@@ -32,7 +30,6 @@ class LogFile implements Closeable {
         this.formatter = stringFormatter;
     }
 
-    @Nonnull
     void writeLine(String line) throws IOException {
         try {
             outputStream.write(formatter.apply(line));

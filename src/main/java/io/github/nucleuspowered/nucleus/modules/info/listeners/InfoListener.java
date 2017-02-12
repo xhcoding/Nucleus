@@ -59,7 +59,7 @@ public class InfoListener extends ListenerBase.Reloadable {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> msp = Maps.newHashMap();
-        msp.put(getMotdPermission(), new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.motd.join"), SuggestedLevel.USER));
+        msp.put(getMotdPermission(), PermissionInformation.getWithTranslation("permission.motd.join", SuggestedLevel.USER));
         return msp;
     }
 

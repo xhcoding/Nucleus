@@ -10,7 +10,7 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class ConnectionConfig {
 
-    @Setting(value = "reserved-slots", comment = "loc:config.connection.reservedslots")
+    @Setting(value = "reserved-slots", comment = "config.connection.reservedslots")
     private int reservedSlots = -1;
 
     public int getReservedSlots() {

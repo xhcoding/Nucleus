@@ -11,16 +11,16 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class CoreConfig {
 
-    @Setting(value = "debug-mode", comment = "loc:config.debugmode")
+    @Setting(value = "debug-mode", comment = "config.debugmode")
     private boolean debugmode = false;
 
-    @Setting(value = "use-custom-message-file", comment = "loc:config.custommessages")
+    @Setting(value = "use-custom-message-file", comment = "config.custommessages")
     private boolean custommessages = false;
 
-    @Setting(value = "warmup-canceling", comment = "loc:config.core.warmup.info")
+    @Setting(value = "warmup-canceling", comment = "config.core.warmup.info")
     private WarmupConfig warmupConfig = new WarmupConfig();
 
-    @Setting(value = "command-on-name-click", comment = "loc:config.core.commandonname")
+    @Setting(value = "command-on-name-click", comment = "config.core.commandonname")
     private String commandOnNameClick = "/msg {{subject}}";
 
     @Setting(value = "kick-on-stop")
@@ -34,8 +34,11 @@ public class CoreConfig {
     @Setting(value = "simulate-error-on-startup")
     private boolean errorOnStartup = false;
 
-    @Setting(value = "safe-teleport-check", comment = "loc:config.core.safeteleport")
+    @Setting(value = "safe-teleport-check", comment = "config.core.safeteleport")
     private SafeTeleportConfig safeTeleportConfig = new SafeTeleportConfig();
+
+    @Setting(value = "console-overrides-exemptions", comment = "config.core.consoleoverrides")
+    private boolean consoleOverride = true;
 
     public boolean isDebugmode() {
         return debugmode;
@@ -71,5 +74,9 @@ public class CoreConfig {
 
     public SafeTeleportConfig getSafeTeleportConfig() {
         return safeTeleportConfig;
+    }
+
+    public boolean isConsoleOverride() {
+        return consoleOverride;
     }
 }

@@ -20,6 +20,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.function.Function;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class AbstractConfigurateDataProvider<T> implements DataProvider<T> {
 
     private final Function<Path, ConfigurationLoader<?>> provider;
@@ -56,7 +57,7 @@ public abstract class AbstractConfigurateDataProvider<T> implements DataProvider
 
     protected abstract ConfigurationNode transformOnSave(T info) throws Exception;
 
-    private Optional<T> loadBackup() throws Exception {
+    private Optional<T> loadBackup() {
         try {
             if (Files.exists(backupFile)) {
                 logger.warn("Could not load " + file.toAbsolutePath().toString() + ", attempting to load backup.");

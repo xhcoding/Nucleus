@@ -52,7 +52,7 @@ public class SpawnListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mpi = Maps.newHashMap();
-        mpi.put(spawnExempt, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawn.exempt.login"), SuggestedLevel.ADMIN));
+        mpi.put(spawnExempt, PermissionInformation.getWithTranslation("permission.spawn.exempt.login", SuggestedLevel.ADMIN));
         return mpi;
     }
 

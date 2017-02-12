@@ -11,8 +11,10 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "core", name = "Core", isRequired = true)
+@ModuleData(id = CoreModule.ID, name = "Core", isRequired = true)
 public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
+
+    public static final String ID = "core";
 
     @Override
     public CoreConfigAdapter createAdapter() {

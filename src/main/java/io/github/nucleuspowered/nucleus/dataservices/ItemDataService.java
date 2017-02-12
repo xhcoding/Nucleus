@@ -84,7 +84,7 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
         resetDataForItem(getIdFromSnapshot(itemStackSnapshot));
     }
 
-    public void resetDataForItem(String id) {
+    private void resetDataForItem(String id) {
         Preconditions.checkNotNull(id);
         data.remove(id);
         save();

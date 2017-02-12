@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.configurate.datatypes;
 import com.flowpowered.math.vector.Vector3d;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -22,6 +23,9 @@ public class WarpNode extends LocationNode {
 
     @Setting("category")
     private String category = null;
+
+    @Setting("description")
+    private Text description = null;
 
     public WarpNode() {
         super();
@@ -63,5 +67,13 @@ public class WarpNode extends LocationNode {
 
     public void setCategory(@Nullable String category) {
         this.category = category;
+    }
+
+    public Text getDescription() {
+        return description;
+    }
+
+    public void setDescription(@Nullable Text description) {
+        this.description = description;
     }
 }

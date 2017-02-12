@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "world.border")
 @RegisterCommand(value = {"gen", "genchunks", "generatechunks", "chunkgen"}, subcommandOf = BorderCommand.class)
 @SkipOnError
@@ -53,7 +54,7 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
-            put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.world.border.gen.notify"), SuggestedLevel.ADMIN));
+            put("notify", PermissionInformation.getWithTranslation("permission.world.border.gen.notify", SuggestedLevel.ADMIN));
         }};
     }
 

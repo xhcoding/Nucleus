@@ -4,15 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fun.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -33,22 +29,15 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-@Permissions(supportsSelectors = true)
+import javax.annotation.Nullable;
+
+@Permissions(supportsOthers = true)
 @RegisterCommand({"lightning", "smite", "thor"})
 public class LightningCommand extends AbstractCommand<CommandSource> {
 
     private final String player = "subject";
-
-    @Override
-    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
-        Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
-        return m;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -80,7 +69,7 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
             // Smite above, but not on.
             lightningLocation = obh.map(BlockRayHit::getLocation).orElseGet(() -> pl.getLocation().add(0, 3, 0));
 
-            return this.spawnLightning(lightningLocation, src, null, "command.lightning.error");
+            return this.spawnLightning(lightningLocation, src, null);
         }
 
         int successCount = 0;
@@ -88,16 +77,14 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
             CommandResult cr = this.spawnLightning(
                     pl.getLocation(),
                     src,
-                    "command.lightning.success.other",
-                    "command.lightning.errorplayer",
-                    pl instanceof Player ? plugin.getNameUtil().getSerialisedName((Player)pl) : Util.getTranslatableIfPresentOnCatalogType(pl.getType()));
+                    pl instanceof Player ? (Player)pl : null);
             successCount += cr.getSuccessCount().orElse(0);
         }
 
         return CommandResult.builder().successCount(successCount).build();
     }
 
-    private CommandResult spawnLightning(Location<World> location, CommandSource src, String successKey, String errorKey, String... replacements) throws ReturnMessageException {
+    private CommandResult spawnLightning(Location<World> location, CommandSource src, @Nullable Player target) {
         World world = location.getExtent();
         Entity bolt = world.createEntity(EntityTypes.LIGHTNING, location.getPosition());
 
@@ -106,14 +93,21 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
                 NamedCause.source(src));
 
         if (world.spawnEntity(bolt, cause)) {
-            if (successKey != null) {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(successKey, replacements));
+            if (target != null) {
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.lightning.success.other", plugin.getNameUtil()
+                        .getName(target)));
             }
 
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(errorKey, replacements));
+        if (target != null) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.lightning.errorplayer", plugin.getNameUtil()
+                    .getName(target)));
+        } else {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.lightning.error"));
+        }
+
         return CommandResult.empty();
     }
 }

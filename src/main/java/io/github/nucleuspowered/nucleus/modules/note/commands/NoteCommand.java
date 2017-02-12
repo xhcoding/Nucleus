@@ -51,7 +51,7 @@ public class NoteCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.note.notify"), SuggestedLevel.MOD));
+        m.put(notifyPermission, PermissionInformation.getWithTranslation("permission.note.notify", SuggestedLevel.MOD));
         return m;
     }
 

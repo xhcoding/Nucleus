@@ -36,9 +36,9 @@ public class AFKCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.toggle", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.afk.exempt.toggle"), SuggestedLevel.NONE));
-        m.put("exempt.kick", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.afk.exempt.kick"), SuggestedLevel.ADMIN));
-        m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.afk.notify"), SuggestedLevel.ADMIN));
+        m.put("exempt.toggle", PermissionInformation.getWithTranslation("permission.afk.exempt.toggle", SuggestedLevel.NONE));
+        m.put("exempt.kick", PermissionInformation.getWithTranslation("permission.afk.exempt.kick", SuggestedLevel.ADMIN));
+        m.put("notify", PermissionInformation.getWithTranslation("permission.afk.notify", SuggestedLevel.ADMIN));
         return m;
     }
 

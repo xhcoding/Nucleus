@@ -50,7 +50,7 @@ public class BlockInfoCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("extended", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.blockinfo.extended"), SuggestedLevel.ADMIN));
+        m.put("extended", PermissionInformation.getWithTranslation("permission.blockinfo.extended", SuggestedLevel.ADMIN));
         return m;
     }
 

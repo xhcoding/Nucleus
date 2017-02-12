@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "home", mainOverride = "set", suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"homeset", "sethome"})
 public class SetHomeCommand extends AbstractCommand<Player> {
@@ -50,7 +51,7 @@ public class SetHomeCommand extends AbstractCommand<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("unlimited", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.homes.unlimited"), SuggestedLevel.ADMIN));
+        m.put("unlimited", PermissionInformation.getWithTranslation("permission.homes.unlimited", SuggestedLevel.ADMIN));
         return m;
     }
 
