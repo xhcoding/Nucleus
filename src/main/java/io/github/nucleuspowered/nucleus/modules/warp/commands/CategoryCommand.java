@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 @RegisterCommand(value = {"category"}, subcommandOf = WarpCommand.class, hasExecutor = false)
 public class CategoryCommand extends AbstractCommand<CommandSource> {
 
-    private static String key = "category";
-    private static String displayname = "displayname";
-    private static String description = "displayname";
+    private static final String key = "category";
+    private static final String displayname = "displayname";
+    private static final String description = "displayname";
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         return null;

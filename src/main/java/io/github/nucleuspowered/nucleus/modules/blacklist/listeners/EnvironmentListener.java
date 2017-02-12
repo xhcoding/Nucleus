@@ -59,7 +59,7 @@ public class EnvironmentListener extends BlacklistListener {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(environment, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.blacklist.bypassenvironment"), SuggestedLevel.ADMIN));
+        mp.put(environment, PermissionInformation.getWithTranslation("permission.blacklist.bypassenvironment", SuggestedLevel.ADMIN));
         return mp;
     }
 

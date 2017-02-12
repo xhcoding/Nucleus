@@ -44,7 +44,7 @@ public class HelpOpCommand extends AbstractCommand<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("receive", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.helpop.receive"), SuggestedLevel.MOD));
+        m.put("receive", PermissionInformation.getWithTranslation("permission.helpop.receive", SuggestedLevel.MOD));
         return m;
     }
 

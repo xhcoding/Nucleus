@@ -19,9 +19,9 @@ public abstract class AbstractCancelMessageEvent extends AbstractEvent implement
 
     private final Cause cause;
     @Nullable private Text cancelMessage = null;
-    public boolean cancelled = false;
+    private boolean cancelled = false;
 
-    public AbstractCancelMessageEvent(Cause cause) {
+    protected AbstractCancelMessageEvent(Cause cause) {
         this.cause = cause;
     }
 

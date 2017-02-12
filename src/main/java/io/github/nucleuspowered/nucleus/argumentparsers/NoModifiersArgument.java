@@ -36,6 +36,7 @@ public class NoModifiersArgument<T> extends CommandElement {
         this(element, test, true, true, true);
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected NoModifiersArgument(CommandElement element, @Nullable BiPredicate<CommandSource, T> test, boolean isNoCost, boolean isNoWarmup, boolean isNoCooldown) {
         super(element.getKey());
         this.element = element;

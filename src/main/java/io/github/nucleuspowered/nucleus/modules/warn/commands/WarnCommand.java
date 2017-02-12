@@ -57,15 +57,15 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.warn.exempt.length"), SuggestedLevel.MOD));
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.warn.exempt.target"), SuggestedLevel.MOD));
+        m.put("exempt.length", PermissionInformation.getWithTranslation("permission.warn.exempt.length", SuggestedLevel.MOD));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.warn.exempt.target", SuggestedLevel.MOD));
         return m;
     }
 
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.warn.notify"), SuggestedLevel.MOD));
+        m.put(notifyPermission, PermissionInformation.getWithTranslation("permission.warn.notify", SuggestedLevel.MOD));
         return m;
     }
 
@@ -152,7 +152,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
                 warnHandler.clearWarnings(user, false, false);
 
                 //Get and run the action command
-                String command = wca.getNodeOrDefault().getActionCommand().replaceAll("\\{\\{name\\}\\}", user.getName());
+                String command = wca.getNodeOrDefault().getActionCommand().replaceAll("\\{\\{name}}", user.getName());
                 Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
                 return CommandResult.success();
             }

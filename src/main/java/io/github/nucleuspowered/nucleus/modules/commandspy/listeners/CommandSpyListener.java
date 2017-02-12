@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @ConditionalListener(CommandSpyListener.Test.class)
 public class CommandSpyListener extends ListenerBase.Reloadable {
 

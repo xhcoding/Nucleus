@@ -113,26 +113,26 @@ public class NucleusPlugin extends Nucleus {
     private NameUtil nameUtil;
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
-    private List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
+    private final List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
     private DocGenCache docGenCache = null;
-    private NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
+    private final NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
     private final TokenHandler tokenHandler = new TokenHandler(this);
 
-    private InternalServiceManager serviceManager = new InternalServiceManager(this);
+    private final InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
     private MessageProvider commandMessageProvider = new ResourceMessageProvider(ResourceMessageProvider.commandMessagesBundle);
 
     private WarmupManager warmupManager;
-    private EconHelper econHelper = new EconHelper(this);
-    private PermissionRegistry permissionRegistry = new PermissionRegistry();
+    private final EconHelper econHelper = new EconHelper(this);
+    private final PermissionRegistry permissionRegistry = new PermissionRegistry();
 
     private DiscoveryModuleContainer moduleContainer;
 
     private final Map<String, TextFileController> textFileControllers = Maps.newHashMap();
 
     private final Logger logger;
-    private Path configDir;
-    private Path dataDir;
+    private final Path configDir;
+    private final Path dataDir;
     @Nullable private MixinConfigProxy mixinConfigProxy = null;
 
     // We inject this into the constructor so we can build the config path ourselves.
@@ -560,14 +560,13 @@ public class NucleusPlugin extends Nucleus {
         return pluginContainer;
     }
 
-    private Injector runInjectorUpdate() {
+    private void runInjectorUpdate() {
         if (subInjectorModule.isEmpty()) {
-            return injector;
+            return;
         }
 
         injector = injector.createChildInjector(subInjectorModule);
         subInjectorModule = new SubInjectorModule();
-        return injector;
     }
 
     private void initDocGenIfApplicable() {

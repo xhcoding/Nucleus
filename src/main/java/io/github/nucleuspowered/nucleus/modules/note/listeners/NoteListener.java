@@ -62,7 +62,7 @@ public class NoteListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(showOnLogin, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.note.showonlogin"), SuggestedLevel.MOD));
+        mp.put(showOnLogin, PermissionInformation.getWithTranslation("permission.note.showonlogin", SuggestedLevel.MOD));
         return mp;
     }
 

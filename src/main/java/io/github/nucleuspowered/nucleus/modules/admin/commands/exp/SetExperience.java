@@ -52,11 +52,8 @@ public class SetExperience extends AbstractCommand<CommandSource> {
 
         Optional<Integer> l = args.getOne(ExperienceCommand.levelKey);
         DataTransactionResult dtr;
-        if (l.isPresent()) {
-            dtr = pl.offer(Keys.EXPERIENCE_LEVEL, l.get());
-        } else {
-            dtr = pl.offer(Keys.TOTAL_EXPERIENCE, args.<Integer>getOne(ExperienceCommand.experienceKey).get());
-        }
+        dtr = l.map(integer -> pl.offer(Keys.EXPERIENCE_LEVEL, integer))
+                .orElseGet(() -> pl.offer(Keys.TOTAL_EXPERIENCE, args.<Integer>getOne(ExperienceCommand.experienceKey).get()));
 
         return ExperienceCommand.tellUserAboutExperience(src, pl, dtr.isSuccessful());
     }

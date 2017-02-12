@@ -46,8 +46,8 @@ public class SpawnCommand extends AbstractCommand<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("otherworlds", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawn.otherworlds"), SuggestedLevel.ADMIN));
-        m.put("worlds", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.spawn.worlds"), SuggestedLevel.ADMIN));
+        m.put("otherworlds", PermissionInformation.getWithTranslation("permission.spawn.otherworlds", SuggestedLevel.ADMIN));
+        m.put("worlds", PermissionInformation.getWithTranslation("permission.spawn.worlds", SuggestedLevel.ADMIN));
         return m;
     }
 

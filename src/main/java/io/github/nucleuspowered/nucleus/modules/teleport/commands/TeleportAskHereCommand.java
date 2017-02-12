@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @RunAsync
 @NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
@@ -46,7 +47,7 @@ public class TeleportAskHereCommand extends StandardAbstractCommand<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("force", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.teleport.force"), SuggestedLevel.ADMIN));
+        m.put("force", PermissionInformation.getWithTranslation("permission.teleport.force", SuggestedLevel.ADMIN));
         return m;
     }
 

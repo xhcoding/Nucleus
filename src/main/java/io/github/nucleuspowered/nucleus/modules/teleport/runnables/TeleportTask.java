@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 public class TeleportTask extends TaskBase {
 
     @Inject private TeleportHandler handler;

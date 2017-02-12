@@ -61,7 +61,7 @@ public class ListHomeCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others"), SuggestedLevel.ADMIN));
+        m.put("others", PermissionInformation.getWithTranslation("permission.others", SuggestedLevel.ADMIN));
         return m;
     }
 

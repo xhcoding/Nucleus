@@ -18,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 public class CommandLoggerRunnable extends TaskBase {
 
     @Inject private CommandLoggerConfigAdapter clca;

@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "blacklist", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"set"}, subcommandOf = BlacklistCommand.class)
 public class BlacklistSetCommand extends AbstractCommand<CommandSource> {

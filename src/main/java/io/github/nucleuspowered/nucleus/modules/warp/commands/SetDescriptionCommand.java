@@ -27,6 +27,7 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RunAsync
 @NoCost
 @NoCooldown

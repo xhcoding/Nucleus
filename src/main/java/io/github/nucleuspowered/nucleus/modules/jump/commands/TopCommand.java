@@ -35,7 +35,7 @@ public class TopCommand extends AbstractCommand<CommandSource> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
-            put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.top.others"), SuggestedLevel.ADMIN));
+            put("others", PermissionInformation.getWithTranslation("permission.top.others", SuggestedLevel.ADMIN));
         }};
     }
 

@@ -44,7 +44,7 @@ public class GeoIpCommand extends AbstractCommand<CommandSource> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
-            put("login", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.geoip.login"), SuggestedLevel.ADMIN));
+            put("login", PermissionInformation.getWithTranslation("permission.geoip.login", SuggestedLevel.ADMIN));
         }};
     }
 

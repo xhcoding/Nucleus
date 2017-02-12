@@ -7,11 +7,13 @@ package io.github.nucleuspowered.nucleus.internal;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.internal.annotations.EntryPoint;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 
 import java.util.Map;
 
+@EntryPoint
 public abstract class ListenerBase {
     @Inject
     protected NucleusPlugin plugin;

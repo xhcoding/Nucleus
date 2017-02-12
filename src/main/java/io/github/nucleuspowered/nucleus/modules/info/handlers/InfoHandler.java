@@ -26,7 +26,7 @@ public class InfoHandler {
 
     private final Map<String, TextFileController> infoFiles = Maps.newHashMap();
     private final NucleusPlugin plugin;
-    private final Pattern validFile = Pattern.compile("[a-zA-Z0-9_\\.\\-]+\\.txt", Pattern.CASE_INSENSITIVE);
+    private final Pattern validFile = Pattern.compile("[a-zA-Z0-9_.\\-]+\\.txt", Pattern.CASE_INSENSITIVE);
 
     public InfoHandler(NucleusPlugin plugin) {
         this.plugin = plugin;

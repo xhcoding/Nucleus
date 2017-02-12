@@ -47,11 +47,11 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mp = new HashMap<>();
-        mp.put("color", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.color"), SuggestedLevel.ADMIN));
-        mp.put("colour", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.colour"), SuggestedLevel.ADMIN));
-        mp.put("style", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.style"), SuggestedLevel.ADMIN));
-        mp.put("magic", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.magic"), SuggestedLevel.ADMIN));
-        mp.put("url", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.message.urls"), SuggestedLevel.ADMIN));
+        mp.put("color", PermissionInformation.getWithTranslation("permission.message.color", SuggestedLevel.ADMIN));
+        mp.put("colour", PermissionInformation.getWithTranslation("permission.message.colour", SuggestedLevel.ADMIN));
+        mp.put("style", PermissionInformation.getWithTranslation("permission.message.style", SuggestedLevel.ADMIN));
+        mp.put("magic", PermissionInformation.getWithTranslation("permission.message.magic", SuggestedLevel.ADMIN));
+        mp.put("url", PermissionInformation.getWithTranslation("permission.message.urls", SuggestedLevel.ADMIN));
         return mp;
     }
 

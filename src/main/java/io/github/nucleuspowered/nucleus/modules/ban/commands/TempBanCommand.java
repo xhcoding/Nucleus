@@ -53,9 +53,9 @@ public class TempBanCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.offline"), SuggestedLevel.MOD));
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.target"), SuggestedLevel.MOD));
-        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.tempban.exempt.length"), SuggestedLevel.MOD));
+        m.put("offline", PermissionInformation.getWithTranslation("permission.tempban.offline", SuggestedLevel.MOD));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.tempban.exempt.target", SuggestedLevel.MOD));
+        m.put("exempt.length", PermissionInformation.getWithTranslation("permission.tempban.exempt.length", SuggestedLevel.MOD));
         return m;
     }
 

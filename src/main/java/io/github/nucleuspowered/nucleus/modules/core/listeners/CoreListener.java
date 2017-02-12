@@ -128,12 +128,10 @@ public class CoreListener extends ListenerBase {
         final InetAddress address = player.getConnection().getAddress().getAddress();
 
         try {
-            this.plugin.getUserDataManager().get(player).ifPresent(x -> {
-                x.quickSet(CoreUserDataModule.class, y -> {
-                    y.setLastLogout(location);
-                    y.setLastIp(address);
-                });
-            });
+            this.plugin.getUserDataManager().get(player).ifPresent(x -> x.quickSet(CoreUserDataModule.class, y -> {
+                y.setLastLogout(location);
+                y.setLastIp(address);
+            }));
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();

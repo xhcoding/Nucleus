@@ -45,7 +45,7 @@ public class KitAddCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
         String kitName = args.<String>getOne(name).get();
 
-        if (!kitConfig.getKitNames().stream().anyMatch(kitName::equalsIgnoreCase)) {
+        if (kitConfig.getKitNames().stream().noneMatch(kitName::equalsIgnoreCase)) {
             kitConfig.saveKit(kitName, kitConfig.createKit().updateKitInventory(player));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.success", kitName));
             return CommandResult.success();

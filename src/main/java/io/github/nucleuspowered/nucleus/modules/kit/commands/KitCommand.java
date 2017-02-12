@@ -69,15 +69,15 @@ public class KitCommand extends AbstractCommand<Player> {
     protected Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> pi = Maps.newHashMap();
         pi.put(PermissionRegistry.PERMISSIONS_PREFIX + "kits",
-                new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kits"), SuggestedLevel.ADMIN));
+                PermissionInformation.getWithTranslation("permission.kits", SuggestedLevel.ADMIN));
         return pi;
     }
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> pi = Maps.newHashMap();
-        pi.put("exempt.cooldown", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kit.exempt.cooldown"), SuggestedLevel.ADMIN));
-        pi.put("exempt.onetime", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kit.exempt.onetime"), SuggestedLevel.ADMIN));
+        pi.put("exempt.cooldown", PermissionInformation.getWithTranslation("permission.kit.exempt.cooldown", SuggestedLevel.ADMIN));
+        pi.put("exempt.onetime", PermissionInformation.getWithTranslation("permission.kit.exempt.onetime", SuggestedLevel.ADMIN));
         return pi;
     }
 

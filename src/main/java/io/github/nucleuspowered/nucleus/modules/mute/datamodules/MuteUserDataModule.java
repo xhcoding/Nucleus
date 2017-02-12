@@ -24,7 +24,7 @@ public class MuteUserDataModule extends DataModule<ModularUserService> {
     }
 
     public void setMuteData(@Nullable MuteData mData) {
-        this.muteData = muteData;
+        this.muteData = mData;
     }
 
     public void removeMuteData() {

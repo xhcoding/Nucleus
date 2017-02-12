@@ -40,7 +40,7 @@ public class EnchantCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> msp = Maps.newHashMap();
-        msp.put("unsafe", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.enchant.unsafe"), SuggestedLevel.ADMIN));
+        msp.put("unsafe", PermissionInformation.getWithTranslation("permission.enchant.unsafe", SuggestedLevel.ADMIN));
         return msp;
     }
 

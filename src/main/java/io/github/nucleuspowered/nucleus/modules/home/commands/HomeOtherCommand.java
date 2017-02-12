@@ -41,7 +41,7 @@ public class HomeOtherCommand extends AbstractCommand<Player> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
-            put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.home.other.exempt.target"), SuggestedLevel.ADMIN));
+            put("exempt.target", PermissionInformation.getWithTranslation("permission.home.other.exempt.target", SuggestedLevel.ADMIN));
         }};
     }
 

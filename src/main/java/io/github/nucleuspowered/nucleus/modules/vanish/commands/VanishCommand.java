@@ -53,8 +53,8 @@ public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
-        mspi.put("see", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.see"), SuggestedLevel.ADMIN));
-        mspi.put("persist", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.vanish.persist"), SuggestedLevel.ADMIN));
+        mspi.put("see", PermissionInformation.getWithTranslation("permission.vanish.see", SuggestedLevel.ADMIN));
+        mspi.put("persist", PermissionInformation.getWithTranslation("permission.vanish.persist", SuggestedLevel.ADMIN));
         return mspi;
     }
 

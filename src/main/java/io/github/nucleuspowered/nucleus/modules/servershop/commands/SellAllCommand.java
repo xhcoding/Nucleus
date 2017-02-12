@@ -40,6 +40,7 @@ import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RunAsync
 @NoCost
 @NoCooldown

@@ -57,14 +57,14 @@ public class JailCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.jail.notify"), SuggestedLevel.MOD));
+        m.put(notifyPermission, PermissionInformation.getWithTranslation("permission.jail.notify", SuggestedLevel.MOD));
         return m;
     }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("offline", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.jail.offline"), SuggestedLevel.MOD));
+        m.put("offline", PermissionInformation.getWithTranslation("permission.jail.offline", SuggestedLevel.MOD));
         return m;
     }
 

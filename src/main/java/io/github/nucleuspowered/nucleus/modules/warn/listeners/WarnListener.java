@@ -82,7 +82,7 @@ public class WarnListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(showOnLogin, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.warn.showonlogin"), SuggestedLevel.MOD));
+        mp.put(showOnLogin, PermissionInformation.getWithTranslation("permission.warn.showonlogin", SuggestedLevel.MOD));
         return mp;
     }
 }

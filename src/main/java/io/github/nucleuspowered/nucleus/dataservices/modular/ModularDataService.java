@@ -21,8 +21,8 @@ import java.util.function.Function;
 
 public abstract class ModularDataService<S extends ModularDataService<S>> extends AbstractService<ConfigurationNode> {
 
-    private Map<Class<?>, DataModule<S>> cached = new HashMap<>();
-    private Map<Class<?>, TransientModule<S>> transientCache = new HashMap<>();
+    private final Map<Class<?>, DataModule<S>> cached = new HashMap<>();
+    private final Map<Class<?>, TransientModule<S>> transientCache = new HashMap<>();
     private final Timing saveTimings = Timings.of(Nucleus.getNucleus(), "Data Modules - Saving");
     private final Timing loadTimings = Timings.of(Nucleus.getNucleus(), "Data Modules - Loading");
     private final Timing loadTransientTimings = Timings.of(Nucleus.getNucleus(), "Transient Modules - Loading");

@@ -20,11 +20,8 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
     private final TypeToken<T> typeToken;
     private final Supplier<T> defaultSupplier;
 
+    @SuppressWarnings("unchecked")
     public ConfigurateDataProvider(TypeToken<T> type, Function<Path, ConfigurationLoader<?>>  loaderProvider, Path file, Logger logger) {
-        this(type, loaderProvider, file, true, logger);
-    }
-
-    public ConfigurateDataProvider(TypeToken<T> type, Function<Path, ConfigurationLoader<?>>  loaderProvider, Path file, boolean requiresChildren, Logger logger) {
         this(type, loaderProvider, () -> {
             try {
                 return (T)type.getRawType().newInstance();
@@ -32,7 +29,7 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
                 e.printStackTrace();
                 return null;
             }
-        }, file, requiresChildren, logger);
+        }, file, true, logger);
     }
 
     public ConfigurateDataProvider(TypeToken<T> type, Function<Path, ConfigurationLoader<?>>  loaderProvider, Supplier<T> defaultSupplier, Path file, boolean requiresChildren, Logger logger) {

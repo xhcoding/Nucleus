@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings("ALL")
 public class NoCostArgumentTests extends TestBase {
 
     @Test
@@ -47,7 +48,7 @@ public class NoCostArgumentTests extends TestBase {
     private CommandContext getNoCostArgument(CommandElement toWrap, CommandContext cc) throws ArgumentParseException {
         CommandSource s = Mockito.mock(Player.class);
         CommandArgs ca = new CommandArgs("", new ArrayList<>());
-        NoModifiersArgument<? extends Object> nca = new NoModifiersArgument<>(toWrap, (c, o) -> true);
+        NoModifiersArgument<?> nca = new NoModifiersArgument<>(toWrap, (c, o) -> true);
         nca.parse(s, ca, cc);
         return cc;
     }

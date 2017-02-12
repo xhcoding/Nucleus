@@ -24,6 +24,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,7 +57,7 @@ public class MailReadBase {
             return CommandResult.success();
         }
 
-        List<Text> mails = lmd.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(x -> createMessage(x, target)).collect(Collectors.toList());
+        List<Text> mails = lmd.stream().sorted(Comparator.comparing(MailData::getDate)).map(x -> createMessage(x, target)).collect(Collectors.toList());
 
         // Paginate the mail.
         PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);

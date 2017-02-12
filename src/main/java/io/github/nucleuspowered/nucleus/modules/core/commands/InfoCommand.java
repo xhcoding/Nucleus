@@ -58,9 +58,13 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         information.add(sep);
 
         Platform platform = Sponge.getPlatform();
-        information.add("Minecraft Version: " + platform.getMinecraftVersion().getName());
-        information.add(String.format("Sponge Version: %s %s", platform.getImplementation().getName(), platform.getImplementation().getVersion().orElse("unknown")));
-        information.add(String.format("Sponge API Version: %s %s", platform.getApi().getName(), platform.getApi().getVersion().orElse("unknown")));
+        PluginContainer game = platform.getContainer(Platform.Component.GAME);
+        PluginContainer implementation = platform.getContainer(Platform.Component.IMPLEMENTATION);
+        PluginContainer api = platform.getContainer(Platform.Component.API);
+
+        information.add(String.format("Minecraft Version: %s %s", game.getName(), game.getVersion()));
+        information.add(String.format("Sponge Version: %s %s", implementation.getName(), implementation.getVersion().orElse("unknown")));
+        information.add(String.format("Sponge API Version: %s %s", api.getName(), api.getVersion().orElse("unknown")));
         information.add("Nucleus Version: " + PluginInfo.VERSION + " (Git: " + PluginInfo.GIT_HASH + ")");
 
         plugin.getMixinConfigIfAvailable().ifPresent(x -> {

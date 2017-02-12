@@ -50,7 +50,7 @@ public class ConnectionListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(joinFullServer, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.connection.joinfullserver"), SuggestedLevel.MOD));
+        mp.put(joinFullServer, PermissionInformation.getWithTranslation("permission.connection.joinfullserver", SuggestedLevel.MOD));
         return mp;
     }
 }

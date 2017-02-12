@@ -36,7 +36,6 @@ import org.spongepowered.api.text.Text;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RegisterCommand({"skull"})
 @Permissions
@@ -114,7 +113,7 @@ public class SkullCommand extends AbstractCommand<Player> {
             for (ItemStack itemStack : itemStackList) {
                 int stackSize = itemStack.getQuantity();
                 InventoryTransactionResult itr = inventoryToOfferTo.offer(itemStack);
-                int currentFail = itr.getRejectedItems().stream().collect(Collectors.summingInt(ItemStackSnapshot::getCount));
+                int currentFail = itr.getRejectedItems().stream().mapToInt(ItemStackSnapshot::getCount).sum();
                 failed += currentFail;
                 accepted += stackSize - currentFail;
             }

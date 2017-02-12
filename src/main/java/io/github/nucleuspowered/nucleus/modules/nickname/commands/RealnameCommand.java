@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RegisterCommand({"realname"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 public class RealnameCommand extends AbstractCommand<CommandSource> {

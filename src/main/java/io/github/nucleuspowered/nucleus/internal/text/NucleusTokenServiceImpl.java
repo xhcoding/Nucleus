@@ -28,7 +28,7 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         Preconditions.checkNotNull(textFunction);
 
         if (tokenStore.containsKey(pluginContainer.getId())) {
-            throw new PluginAlreadyRegisteredException("Could not register PluginContainer, already registered.", pluginContainer);
+            throw new PluginAlreadyRegisteredException(pluginContainer);
         }
 
         tokenStore.put(pluginContainer.getId(), textFunction);
@@ -72,7 +72,7 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
             variables = Maps.newHashMap();
         }
 
-        return Nucleus.getNucleus().getChatUtil().getMessageFromTemplateWithVariables(input, source, true, variables);
+        return Nucleus.getNucleus().getChatUtil().getMessageFromTemplateWithVariables(input, source, variables);
     }
 
     public Tokens getNucleusTokenParser() {

@@ -60,17 +60,17 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
         return mutedChatPermission;
     }
 
-    private String playerArgument = "subject";
-    private String timespanArgument = "time";
-    private String reason = "reason";
+    private final String playerArgument = "subject";
+    private final String timespanArgument = "time";
+    private final String reason = "reason";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.length", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.length"), SuggestedLevel.ADMIN));
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.exempt.target"), SuggestedLevel.MOD));
-        m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.notify"), SuggestedLevel.MOD));
-        m.put("seemutedchat", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.mute.seemutedchat"), SuggestedLevel.ADMIN));
+        m.put("exempt.length", PermissionInformation.getWithTranslation("permission.mute.exempt.length", SuggestedLevel.ADMIN));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.mute.exempt.target", SuggestedLevel.MOD));
+        m.put("notify", PermissionInformation.getWithTranslation("permission.mute.notify", SuggestedLevel.MOD));
+        m.put("seemutedchat", PermissionInformation.getWithTranslation("permission.mute.seemutedchat", SuggestedLevel.ADMIN));
         return m;
     }
 

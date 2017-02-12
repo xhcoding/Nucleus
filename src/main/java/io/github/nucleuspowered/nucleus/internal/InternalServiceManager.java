@@ -13,7 +13,7 @@ import java.util.Optional;
 public final class InternalServiceManager {
 
     private final NucleusPlugin plugin;
-    private Map<Class<?>, Object> serviceMap = Maps.newConcurrentMap();
+    private final Map<Class<?>, Object> serviceMap = Maps.newConcurrentMap();
 
     public InternalServiceManager(NucleusPlugin plugin) {
         this.plugin = plugin;

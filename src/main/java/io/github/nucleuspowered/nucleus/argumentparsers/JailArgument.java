@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 public class JailArgument extends CommandElement {
 
-    private JailHandler handler;
+    private final JailHandler handler;
 
     public JailArgument(@Nullable Text key, JailHandler handler) {
         super(key);

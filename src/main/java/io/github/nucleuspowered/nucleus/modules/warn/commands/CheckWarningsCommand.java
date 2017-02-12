@@ -33,6 +33,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,7 +80,7 @@ public class CheckWarningsCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         }
 
-        List<Text> messages = warnings.stream().sorted((a, b) -> a.getDate().compareTo(b.getDate())).map(x -> createMessage(allWarnings, x, user)).collect(Collectors.toList());
+        List<Text> messages = warnings.stream().sorted(Comparator.comparing(WarnData::getDate)).map(x -> createMessage(allWarnings, x, user)).collect(Collectors.toList());
         messages.add(0, plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.info"));
 
         PaginationService paginationService = Sponge.getGame().getServiceManager().provideUnchecked(PaginationService.class);

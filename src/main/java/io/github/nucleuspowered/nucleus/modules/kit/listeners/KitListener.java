@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 public class KitListener extends ListenerBase {
 
     @Inject private UserDataManager loader;

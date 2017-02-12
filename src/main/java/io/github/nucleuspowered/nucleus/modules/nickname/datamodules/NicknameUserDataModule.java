@@ -90,6 +90,10 @@ public class NicknameUserDataModule extends DataModule.ReferenceService<ModularU
     }
 
     private static Optional<String> getNickPrefix() {
-        return prefix != null ? prefix : Nucleus.getNucleus().getConfigValue(NicknameModule.ID, NicknameConfigAdapter.class, NicknameConfig::getPrefix);
+        if (prefix == null) {
+            prefix = Nucleus.getNucleus().getConfigValue(NicknameModule.ID, NicknameConfigAdapter.class, NicknameConfig::getPrefix);
+        }
+
+        return prefix;
     }
 }

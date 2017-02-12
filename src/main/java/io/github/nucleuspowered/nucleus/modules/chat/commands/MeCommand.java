@@ -36,6 +36,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RegisterCommand({"me", "action"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 public class MeCommand extends AbstractCommand<CommandSource> {

@@ -26,7 +26,7 @@ public class MuteHandler implements NucleusMuteService {
     @Inject private UserDataManager ucl;
 
     private boolean globalMuteEnabled = false;
-    private List<UUID> voicedUsers = Lists.newArrayList();
+    private final List<UUID> voicedUsers = Lists.newArrayList();
 
     public MuteHandler(NucleusPlugin nucleus) {
         this.nucleus = nucleus;

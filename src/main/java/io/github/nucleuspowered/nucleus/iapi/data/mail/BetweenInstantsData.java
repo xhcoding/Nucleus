@@ -16,8 +16,8 @@ import javax.annotation.Nullable;
 @ConfigSerializable
 public final class BetweenInstantsData {
 
-    private Long from;
-    private Long to;
+    private final Long from;
+    private final Long to;
 
     public BetweenInstantsData(@Nullable Instant from, @Nullable Instant to) {
         if (from != null && to != null && from.isAfter(to)) {

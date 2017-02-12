@@ -33,6 +33,7 @@ import javax.inject.Inject;
 /**
  * Sends a request to a subject to teleport to them, using click handlers.
  */
+@SuppressWarnings("ALL")
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
 @RegisterCommand({"tpa", "teleportask"})
@@ -47,7 +48,7 @@ public class TeleportAskCommand extends StandardAbstractCommand<Player> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("force", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.teleport.force"), SuggestedLevel.ADMIN));
+        m.put("force", PermissionInformation.getWithTranslation("permission.teleport.force", SuggestedLevel.ADMIN));
         return m;
     }
 

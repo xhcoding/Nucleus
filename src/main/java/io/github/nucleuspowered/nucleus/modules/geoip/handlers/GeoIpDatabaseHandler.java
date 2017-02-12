@@ -62,10 +62,9 @@ public class GeoIpDatabaseHandler implements Closeable {
      * </ul>
      *
      * @param type The {@link LoadType}
-     * @param runAsync If true, will run the loading routines on a different thread.
      * @throws Exception If there is a problem. {@link IllegalStateException} is thrown if the licence has not been accepted.
      */
-    public void load(LoadType type, boolean runAsync) throws Exception {
+    public void load(LoadType type) throws Exception {
         if (isLoading) {
             return;
         }
@@ -77,11 +76,7 @@ public class GeoIpDatabaseHandler implements Closeable {
             return;
         }
 
-        if (runAsync) {
-            Sponge.getScheduler().createAsyncExecutor(Nucleus.getNucleus()).execute(() -> onRun(type));
-        } else {
-            onRun(type);
-        }
+        onRun(type);
     }
 
     private void onRun(LoadType type) {
@@ -111,7 +106,7 @@ public class GeoIpDatabaseHandler implements Closeable {
 
         Sponge.getScheduler().createAsyncExecutor(Nucleus.getNucleus()).execute(() -> {
             try {
-                load(LoadType.IF_REQUIRED, false);
+                load(LoadType.IF_REQUIRED);
                 int counter = 0;
 
                 // Load check.

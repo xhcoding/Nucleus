@@ -12,6 +12,7 @@ import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @ModuleData(id = "mail", name = "Mail")
 public class MailModule extends StandardModule {
 

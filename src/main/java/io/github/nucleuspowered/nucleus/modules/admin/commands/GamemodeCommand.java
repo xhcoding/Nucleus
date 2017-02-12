@@ -48,11 +48,11 @@ public class GamemodeCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mpi = Maps.newHashMap();
-        mpi.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.other"), SuggestedLevel.ADMIN));
-        mpi.put("modes.survival", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.survival"), SuggestedLevel.ADMIN));
-        mpi.put("modes.creative", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.creative"), SuggestedLevel.ADMIN));
-        mpi.put("modes.adventure", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.adventure"), SuggestedLevel.ADMIN));
-        mpi.put("modes.spectator", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.gamemode.modes.spectator"), SuggestedLevel.ADMIN));
+        mpi.put("others", PermissionInformation.getWithTranslation("permission.gamemode.other", SuggestedLevel.ADMIN));
+        mpi.put("modes.survival", PermissionInformation.getWithTranslation("permission.gamemode.modes.survival", SuggestedLevel.ADMIN));
+        mpi.put("modes.creative", PermissionInformation.getWithTranslation("permission.gamemode.modes.creative", SuggestedLevel.ADMIN));
+        mpi.put("modes.adventure", PermissionInformation.getWithTranslation("permission.gamemode.modes.adventure", SuggestedLevel.ADMIN));
+        mpi.put("modes.spectator", PermissionInformation.getWithTranslation("permission.gamemode.modes.spectator", SuggestedLevel.ADMIN));
         return mpi;
     }
 

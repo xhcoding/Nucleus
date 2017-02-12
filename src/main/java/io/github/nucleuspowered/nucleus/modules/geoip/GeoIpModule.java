@@ -26,7 +26,4 @@ public class GeoIpModule extends ConfigurableModule<GeoIpConfigAdapter> {
         plugin.getInternalServiceManager().registerService(GeoIpDatabaseHandler.class, databaseHandler);
     }
 
-    @Override public void onEnable() {
-        super.onEnable();
-    }
 }

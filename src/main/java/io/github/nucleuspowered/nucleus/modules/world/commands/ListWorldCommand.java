@@ -34,7 +34,7 @@ public class ListWorldCommand extends AbstractCommand<CommandSource> {
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = super.permissionSuffixesToRegister();
-        m.put("seed", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.world.seed"), SuggestedLevel.ADMIN));
+        m.put("seed", PermissionInformation.getWithTranslation("permission.world.seed", SuggestedLevel.ADMIN));
         return m;
     }
 

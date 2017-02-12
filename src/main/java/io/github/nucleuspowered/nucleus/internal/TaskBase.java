@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal;
 
+import io.github.nucleuspowered.nucleus.internal.annotations.EntryPoint;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@EntryPoint
 @NonnullByDefault
 public abstract class TaskBase implements Consumer<Task> {
 

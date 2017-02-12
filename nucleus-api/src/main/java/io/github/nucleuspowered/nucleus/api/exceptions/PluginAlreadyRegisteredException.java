@@ -10,8 +10,8 @@ public class PluginAlreadyRegisteredException extends Exception {
 
     private final PluginContainer container;
 
-    public PluginAlreadyRegisteredException(String message, PluginContainer container) {
-        super(message);
+    public PluginAlreadyRegisteredException(PluginContainer container) {
+        super("Could not register PluginContainer, already registered.");
         this.container = container;
     }
 

@@ -37,6 +37,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RunAsync
 @NoCost
 @NoCooldown

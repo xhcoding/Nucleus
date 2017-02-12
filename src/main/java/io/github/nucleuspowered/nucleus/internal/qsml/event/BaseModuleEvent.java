@@ -13,14 +13,16 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.impl.AbstractEvent;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.quickstart.enums.LoadingStatus;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@NonnullByDefault
 public abstract class BaseModuleEvent extends AbstractEvent implements NucleusModuleEvent {
 
-    final NucleusPlugin plugin;
+    private final NucleusPlugin plugin;
     private final Cause cause;
     private final Map<String, ModuleEnableState> state;
 

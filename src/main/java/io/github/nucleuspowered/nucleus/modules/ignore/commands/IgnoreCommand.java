@@ -43,7 +43,7 @@ public class IgnoreCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = Maps.newHashMap();
-        m.put("exempt.chat", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.ignore.chat"), SuggestedLevel.MOD));
+        m.put("exempt.chat", PermissionInformation.getWithTranslation("permission.ignore.chat", SuggestedLevel.MOD));
         return m;
     }
 

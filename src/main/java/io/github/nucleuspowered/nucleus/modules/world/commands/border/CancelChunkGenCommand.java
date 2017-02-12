@@ -22,6 +22,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @NoCooldown
 @NoCost
 @NoWarmup

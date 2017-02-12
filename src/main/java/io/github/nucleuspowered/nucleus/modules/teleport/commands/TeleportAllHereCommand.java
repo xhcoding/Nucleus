@@ -21,6 +21,7 @@ import org.spongepowered.api.text.channel.MessageChannel;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "teleport")
 @NoWarmup
 @NoCost

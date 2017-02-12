@@ -69,7 +69,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(EXTENDED_SUFFIX, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.seen.extended"), SuggestedLevel.ADMIN));
+        m.put(EXTENDED_SUFFIX, PermissionInformation.getWithTranslation("permission.seen.extended", SuggestedLevel.ADMIN));
         return m;
     }
 

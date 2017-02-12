@@ -51,8 +51,8 @@ public class KickCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("exempt.target", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kick.exempt.target"), SuggestedLevel.MOD));
-        m.put("notify", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.kick.notify"), SuggestedLevel.MOD));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.kick.exempt.target", SuggestedLevel.MOD));
+        m.put("notify", PermissionInformation.getWithTranslation("permission.kick.notify", SuggestedLevel.MOD));
         return m;
     }
 

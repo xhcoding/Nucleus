@@ -18,6 +18,7 @@ import org.spongepowered.api.command.args.CommandContext;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @Permissions(prefix = "firstjoinkit")
 @NoCost
 @NoCooldown

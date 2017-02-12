@@ -34,6 +34,7 @@ public class PermissionsTest extends TestBase {
     /**
      * Tests that the specified permissions are in the permission list.
      */
+    @SuppressWarnings("CanBeFinal")
     @RunWith(Parameterized.class)
     public static class ValidTest {
 
@@ -54,7 +55,7 @@ public class PermissionsTest extends TestBase {
             });
         }
 
-        @Parameterized.Parameter(0)
+        @Parameterized.Parameter()
         public String permission;
 
         @Parameterized.Parameter(1)
@@ -77,6 +78,7 @@ public class PermissionsTest extends TestBase {
     /**
      * Tests that the specified permissions are not in the permission list.
      */
+    @SuppressWarnings("CanBeFinal")
     @RunWith(Parameterized.class)
     public static class InvalidTest {
 
@@ -97,7 +99,7 @@ public class PermissionsTest extends TestBase {
             });
         }
 
-        @Parameterized.Parameter(0)
+        @Parameterized.Parameter()
         public String permission;
 
         @Parameterized.Parameter(1)

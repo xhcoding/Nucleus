@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("ALL")
 @RegisterCommand("speed")
 @Permissions(supportsOthers = true)
 public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
@@ -50,7 +51,7 @@ public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
-        mspi.put("exempt.max", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.speed.exempt.max"), SuggestedLevel.NONE));
+        mspi.put("exempt.max", PermissionInformation.getWithTranslation("permission.speed.exempt.max", SuggestedLevel.NONE));
         return mspi;
     }
 

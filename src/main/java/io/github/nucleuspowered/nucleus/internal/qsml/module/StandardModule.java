@@ -25,7 +25,6 @@ import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -36,7 +35,6 @@ import uk.co.drnaylor.quickstart.Module;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
-import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
@@ -129,7 +127,7 @@ public abstract class StandardModule implements Module {
         try {
             commandsConfig.mergeDefaults(builder.getNodeToMerge());
             commandsConfig.save();
-        } catch (IOException | ObjectMappingException e) {
+        } catch (Exception e) {
             plugin.getLogger().error("Could not save defaults.");
             e.printStackTrace();
         }
@@ -311,7 +309,7 @@ public abstract class StandardModule implements Module {
         createSeenModule(permissionHandler == null ? null : permissionHandler.getPermissionWithSuffix(suffix), function);
     }
 
-    private final void createSeenModule(@Nullable String permission, BiFunction<CommandSource, User, Collection<Text>> function) {
+    private void createSeenModule(@Nullable String permission, BiFunction<CommandSource, User, Collection<Text>> function) {
         plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(),
             new BasicSeenInformationProvider(permission == null ? null : permission, function)));
     }
