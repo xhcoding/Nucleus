@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -20,7 +21,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
@@ -37,14 +37,14 @@ import java.util.Optional;
 @RunAsync
 public class CheckBanCommand extends AbstractCommand<CommandSource> {
 
-    private final String key = "subject";
+    private final String key = "uuid";
     private final String key2 = "user";
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.firstParsing(
-                    // GenericArguments.onlyOne(GenericArguments.user(Text.of(key))),
+                    GenericArguments.onlyOne(UUIDArgument.gameProfile(Text.of(key))),
                     GenericArguments.onlyOne(new GameProfileArgument(Text.of(key2)))
                 )
         };
@@ -53,8 +53,8 @@ public class CheckBanCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         GameProfile gp;
-        if (args.<User>getOne(key).isPresent()) {
-            gp = args.<User>getOne(key).get().getProfile();
+        if (args.hasAny(key)) {
+            gp = args.<GameProfile>getOne(key).get();
         } else {
             gp = args.<GameProfile>getOne(key2).get();
         }

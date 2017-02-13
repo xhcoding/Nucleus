@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.ban.commands;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -52,6 +53,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
     private Logger logger;
 
     static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "ban.notify";
+    private final String uuid = "uuid";
     private final String user = "user";
     private final String name = "name";
     private final String reason = "reason";
@@ -77,6 +79,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.firstParsing(
+                        GenericArguments.onlyOne(UUIDArgument.gameProfile(Text.of(uuid))),
                         GenericArguments.onlyOne(new GameProfileArgument(Text.of(user))),
                         GenericArguments.onlyOne(GenericArguments.string(Text.of(name)))
                 ),
@@ -87,7 +90,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         final String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("ban.defaultreason"));
-        Optional<GameProfile> ou = args.getOne(user);
+        Optional<GameProfile> ou = Optional.ofNullable(args.<GameProfile>getOne(uuid).orElseGet(() -> args.<GameProfile>getOne(user).orElse(null)));
         if (ou.isPresent()) {
             Optional<User> optionalUser = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(ou.get());
             if ((!optionalUser.isPresent() || !optionalUser.get().isOnline()) && !permissions.testSuffix(src, "offline")) {
