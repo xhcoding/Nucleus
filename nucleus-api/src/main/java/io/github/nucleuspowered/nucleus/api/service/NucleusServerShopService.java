@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.api.service;
 
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -37,8 +38,9 @@ public interface NucleusServerShopService {
      *
      * @param type The item to check.
      * @return The price, or {@link Optional} if not being sold.
+     * @throws NucleusException if the {@link BlockState} does not map to an item.
      */
-    Optional<Double> getBuyPrice(BlockState type);
+    Optional<Double> getBuyPrice(BlockState type) throws NucleusException;
 
 
     /**
@@ -76,8 +78,9 @@ public interface NucleusServerShopService {
      *
      * @param type The item to check.
      * @return The price, or {@link Optional} if not being bought.
+     * @throws NucleusException if the {@link BlockState} does not map to an item.
      */
-    Optional<Double> getSellPrice(BlockState type);
+    Optional<Double> getSellPrice(BlockState type) throws NucleusException;
 
     /**
      * Gets the sell price of an item (that is, how much a server will buy an item from a player for).
