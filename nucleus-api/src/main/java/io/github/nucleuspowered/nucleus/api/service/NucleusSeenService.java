@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 public interface NucleusSeenService {
 
     /**
-     * Registers a {@link SeenInformationProvider} with NucleusPlugin.
+     * Registers a {@link SeenInformationProvider} with Nucleus.
      *
      * @param plugin The plugin registering the service.
      * @param seenInformationProvider The {@link SeenInformationProvider}
@@ -47,7 +47,7 @@ public interface NucleusSeenService {
     void register(Object plugin, SeenInformationProvider seenInformationProvider) throws IllegalArgumentException;
 
     /**
-     * Registers a {@link SeenInformationProvider} with NucleusPlugin that can be constructed using.
+     * Registers a {@link SeenInformationProvider} with Nucleus that can be constructed using a functional programming style.
      *
      * @param plugin The plugin registering the service.
      * @param permissionCheck A {@link Predicate} that checks that the {@link CommandSource} has permission to view the information provided.
