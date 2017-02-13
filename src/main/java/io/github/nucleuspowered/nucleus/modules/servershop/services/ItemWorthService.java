@@ -11,11 +11,13 @@ import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 @NonnullByDefault
 public class ItemWorthService implements NucleusServerShopService {
@@ -26,6 +28,11 @@ public class ItemWorthService implements NucleusServerShopService {
         this.plugin = plugin;
     }
 
+    @Override public Optional<Double> getBuyPrice(BlockState type) {
+        Preconditions.checkNotNull(type);
+        return getFromBlockState(type, x -> getBuyPrice(x.createSnapshot()));
+    }
+
     @Override public Optional<Double> getBuyPrice(ItemStackSnapshot itemStackSnapshot) {
         Preconditions.checkNotNull(itemStackSnapshot);
         double price = plugin.getItemDataService().getDataForItem(itemStackSnapshot).getServerBuyPrice();
@@ -34,6 +41,11 @@ public class ItemWorthService implements NucleusServerShopService {
         }
 
         return Optional.of(price);
+    }
+
+    @Override public Optional<Double> getSellPrice(BlockState type) {
+        Preconditions.checkNotNull(type);
+        return getFromBlockState(type, x -> getSellPrice(x.createSnapshot()));
     }
 
     @Override public Optional<Double> getSellPrice(ItemStackSnapshot itemStackSnapshot) {
@@ -48,5 +60,16 @@ public class ItemWorthService implements NucleusServerShopService {
 
     private Tuple<Optional<BlockState>, ItemType> getType(DataHolder stack, ItemType type) {
         return Tuple.of(stack.get(Keys.ITEM_BLOCKSTATE), type);
+    }
+
+    private Optional<Double> getFromBlockState(BlockState type, Function<ItemStack, Optional<Double>> transform) {
+        return type.getType().getItem().map(x -> {
+            ItemStack stack = ItemStack.of(x, 1);
+            if (stack.offer(Keys.ITEM_BLOCKSTATE, type).isSuccessful()) {
+                return stack;
+            }
+
+            return null;
+        }).map(transform).orElse(Optional.empty());
     }
 }
