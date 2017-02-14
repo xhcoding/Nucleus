@@ -47,9 +47,9 @@ public class InfoListener extends ListenerBase.Reloadable {
                 if (player.hasPermission(getMotdPermission())) {
                     plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> {
                         if (ica.getNodeOrDefault().isMotdUsePagination()) {
-                            InfoHelper.sendInfo(x, player, chatUtil, ica.getNodeOrDefault().getMotdTitle());
+                            InfoHelper.sendInfo(x, player, ica.getNodeOrDefault().getMotdTitle());
                         } else {
-                            InfoHelper.getTextFromStrings(x.getFileContents(), player, chatUtil).forEach(player::sendMessage);
+                            InfoHelper.getTextFromNucleusTextTemplates(x.getFileContentsAsText(), player).forEach(player::sendMessage);
                         }
                     });
                 }

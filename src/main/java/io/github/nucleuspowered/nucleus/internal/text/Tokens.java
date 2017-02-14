@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.source.RemoteSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
@@ -48,6 +49,8 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
         translatorMap.put("ipaddress", (p, v, m) -> Optional.of(Text.of(p instanceof RemoteSource ?
             ((RemoteSource)p).getConnection().getAddress().getAddress().toString() :
             "localhost")));
+
+        translatorMap.put("subject", (p, v, m) -> Optional.of(Text.of((p instanceof ConsoleSource ? "-" : p.getName()))));
     }
 
     @Nonnull @Override public Optional<Text> parse(String tokenInput, CommandSource source, Map<String, Object> variables) {

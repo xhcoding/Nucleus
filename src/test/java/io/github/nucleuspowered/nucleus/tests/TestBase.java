@@ -20,6 +20,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvide
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
@@ -216,6 +217,10 @@ public abstract class TestBase {
 
         @Override
         public NucleusTeleportHandler getTeleportHandler() {
+            return null;
+        }
+
+        @Override public TokenHandler getTokenHandler() {
             return null;
         }
 

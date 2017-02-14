@@ -15,8 +15,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
@@ -79,7 +81,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         if (infoConfig.isUseDefaultFile() && !oir.isPresent() && !args.hasAny("l")) {
             // Do we have a default?
             String def = infoConfig.getDefaultInfoSection();
-            Optional<List<String>> list = infoHandler.getSection(def);
+            Optional<List<NucleusTextTemplate>> list = infoHandler.getSection(def);
             if (list.isPresent()) {
                 oir = Optional.of(new InfoArgument.Result(infoHandler.getInfoSections().stream().filter(def::equalsIgnoreCase).findFirst().get(), list.get()));
             }
@@ -87,7 +89,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
 
         if (oir.isPresent()) {
             // Get the list.
-            List<String> info = oir.get().text;
+            List<NucleusTextTemplate> info = oir.get().text;
             Optional<String> os = getTitle(info);
             String title;
             if (os.isPresent()) {
@@ -98,9 +100,9 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
                 info.remove(0);
 
                 // Remove blank lines.
-                Iterator<String> i = info.iterator();
+                Iterator<NucleusTextTemplate> i = info.iterator();
                 while (i.hasNext()) {
-                    String n = i.next();
+                    String n = i.next().getRepresentation();
                     if (n.isEmpty() || n.matches("^\\s+$")) {
                         i.remove();
                     } else {
@@ -111,15 +113,14 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
                 title = plugin.getMessageProvider().getMessageWithFormat("command.info.title.section", oir.get().name);
             }
 
-            InfoHelper.sendInfo(info, src, chatUtil, title);
+            InfoHelper.sendInfoNT(info, src, title);
             return CommandResult.success();
         }
 
         // Create a list of pages to load.
         Set<String> sections = infoHandler.getInfoSections();
         if (sections.isEmpty()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.info.none"));
-            return CommandResult.empty();
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.info.none"));
         }
 
         // Create the text.
@@ -152,9 +153,9 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Optional<String> getTitle(List<String> info) {
+    private Optional<String> getTitle(List<NucleusTextTemplate> info) {
         if (!info.isEmpty()) {
-            String sec1 = info.get(0);
+            String sec1 = info.get(0).getRepresentation();
             if (sec1.startsWith("#")) {
                 // Get rid of the # and spaces, then limit to 50 characters.
                 sec1 = sec1.replaceFirst("#\\s*", "");

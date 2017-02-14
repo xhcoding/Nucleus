@@ -505,7 +505,7 @@ public class NucleusPlugin extends Nucleus {
         return teleportHandler;
     }
 
-    public TokenHandler getTokenHandler() {
+    @Override public TokenHandler getTokenHandler() {
         return tokenHandler;
     }
 

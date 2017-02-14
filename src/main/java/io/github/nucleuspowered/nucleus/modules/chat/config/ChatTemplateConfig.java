@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat.config;
 
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -23,16 +25,17 @@ public class ChatTemplateConfig {
     private String namestyle = "";
 
     @Setting(comment = "config.chat.template.prefix")
-    private String prefix = "{{prefix}} {{displayname}}{{suffix}}&f: ";
+    @Default(value = "{{prefix}} {{displayname}}{{suffix}}&f: ", saveDefaultIfNull = true)
+    private NucleusTextTemplate prefix;
 
     @Setting(comment = "config.chat.template.suffix")
-    private String suffix = "";
+    private NucleusTextTemplate suffix = NucleusTextTemplate.Empty.INSTANCE;
 
-    public String getPrefix() {
+    public NucleusTextTemplate getPrefix() {
         return prefix;
     }
 
-    public String getSuffix() {
+    public NucleusTextTemplate getSuffix() {
         return suffix;
     }
 

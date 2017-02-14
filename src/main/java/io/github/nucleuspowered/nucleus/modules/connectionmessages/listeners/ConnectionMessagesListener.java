@@ -30,11 +30,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class ConnectionMessagesListener extends ListenerBase {
+public class ConnectionMessagesListener extends ListenerBase.Reloadable {
 
     @Inject private ChatUtil chatUtil;
     @Inject private CoreConfigAdapter cca;
     @Inject private ConnectionMessagesConfigAdapter cma;
+    private ConnectionMessagesConfig cmc = null;
     @Inject private UserDataManager loader;
     private final String disablePermission = PermissionRegistry.PERMISSIONS_PREFIX + "connectionmessages.disable";
 
@@ -48,7 +49,6 @@ public class ConnectionMessagesListener extends ListenerBase {
 
     @Listener
     public void onPlayerLogin(ClientConnectionEvent.Join joinEvent, @Getter("getTargetEntity") Player pl) {
-        ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
         if (cmc.isDisableWithPermission() && pl.hasPermission(this.disablePermission)) {
             joinEvent.setMessageCancelled(true);
             return;
@@ -62,7 +62,7 @@ public class ConnectionMessagesListener extends ListenerBase {
                 !lastKnown.orElseGet(pl::getName).equalsIgnoreCase(pl.getName())) {
                     // Name change!
                     MessageChannel.TO_ALL.send(plugin,
-                        chatUtil.getMessageFromTemplate(cmc.getPriorNameMessage(), pl, true,
+                        cmc.getPriorNameMessage().getForCommandSource(pl,
                             ImmutableMap.of("previousname", cs -> Optional.of(Text.of(lastKnown.get()))), Maps.newHashMap()));
             }
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public class ConnectionMessagesListener extends ListenerBase {
             if (cmc.getLoginMessage().isEmpty()) {
                 joinEvent.setMessageCancelled(true);
             } else {
-                joinEvent.setMessage(chatUtil.getMessageFromTemplate(cma.getNodeOrDefault().getLoginMessage(), pl, true));
+                cmc.getLoginMessage().getForCommandSource(pl);
             }
         }
     }
@@ -84,7 +84,7 @@ public class ConnectionMessagesListener extends ListenerBase {
     public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player pl) {
         ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
         if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
-            MessageChannel.TO_ALL.send(plugin, chatUtil.getMessageFromTemplate(cmc.getFirstTimeMessage(), pl, true));
+            MessageChannel.TO_ALL.send(plugin, cmc.getFirstTimeMessage().getForCommandSource(pl));
         }
     }
 
@@ -100,8 +100,12 @@ public class ConnectionMessagesListener extends ListenerBase {
             if (cmc.getLogoutMessage().isEmpty()) {
                 leaveEvent.setMessageCancelled(true);
             } else {
-                leaveEvent.setMessage(chatUtil.getMessageFromTemplate(cma.getNodeOrDefault().getLogoutMessage(), pl, true));
+                leaveEvent.setMessage(cmc.getLogoutMessage().getForCommandSource(pl));
             }
         }
+    }
+
+    @Override public void onReload() throws Exception {
+        cmc = cma.getNodeOrDefault();
     }
 }

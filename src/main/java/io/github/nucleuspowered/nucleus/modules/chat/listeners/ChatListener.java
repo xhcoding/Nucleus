@@ -98,7 +98,7 @@ public class ChatListener extends ListenerBase.Reloadable {
 
     // --- Listener Proper
     private final ChatConfigAdapter cca;
-    private ChatConfig chatConfig;
+    private ChatConfig chatConfig = null;
     private final ChatUtil chatUtil;
     private final TemplateUtil templateUtil;
 
@@ -154,9 +154,9 @@ public class ChatListener extends ListenerBase.Reloadable {
         }
 
         event.setMessage(
-                Text.join(prefix, chatUtil.getMessageFromTemplate(ctc.getPrefix(), player, true)),
-                chatConfig.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
-                Text.join(footer, chatUtil.getMessageFromTemplate(ctc.getSuffix(), player, false)));
+            Text.join(prefix, ctc.getPrefix().getForCommandSource(player)),
+            chatConfig.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
+            Text.join(footer, ctc.getSuffix().getForCommandSource(player)));
     }
 
     private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {

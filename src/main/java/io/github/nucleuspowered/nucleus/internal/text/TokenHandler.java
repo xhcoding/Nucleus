@@ -79,8 +79,8 @@ public class TokenHandler {
         }
     }
 
-    private Optional<Text> getTextFromPluginToken(@Nullable String pluginId, String token, CommandSource source, boolean addSpace, Map<String, Object>
-            variables) {
+    private Optional<Text> getTextFromPluginToken(@Nullable String pluginId, String token, CommandSource source, boolean addSpace,
+            Map<String, Object> variables) {
         if (service != null) {
             Optional<Text> opt =
                 pluginId == null ?

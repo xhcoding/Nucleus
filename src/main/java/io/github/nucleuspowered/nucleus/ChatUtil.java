@@ -8,10 +8,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.util.Tuples;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextRepresentable;
+import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.action.HoverAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
@@ -22,9 +25,13 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -222,6 +229,107 @@ public class ChatUtil {
         return Text.join(texts);
     }
 
+    public Tuples.NullableTuple<List<TextRepresentable>, Map<String, Function<CommandSource, Text>>> createTextTemplateFragmentWithLinks(String message) {
+        Preconditions.checkNotNull(message, "message");
+        if (message.isEmpty()) {
+            return new Tuples.NullableTuple<>(Lists.newArrayList(Text.EMPTY), null);
+        }
+
+        Matcher m = enhancedUrlParser.matcher(message);
+        if (!m.find()) {
+            return new Tuples.NullableTuple<>(Lists.newArrayList(TextSerializers.FORMATTING_CODE.deserialize(message)), null);
+        }
+
+        Map<String, Function<CommandSource, Text>> args = Maps.newHashMap();
+        List<TextRepresentable> texts = Lists.newArrayList();
+        String remaining = message;
+        StyleTuple st = ChatUtil.EMPTY;
+        do {
+            // We found a URL. We split on the URL that we have.
+            String[] textArray = remaining.split(enhancedUrlParser.pattern(), 2);
+            TextRepresentable first = Text.builder().color(st.colour).style(st.style)
+                    .append(TextSerializers.FORMATTING_CODE.deserialize(textArray[0])).build();
+
+            // Add this text to the list regardless.
+            texts.add(first);
+
+            // If we have more to do, shove it into the "remaining" variable.
+            if (textArray.length == 2) {
+                remaining = textArray[1];
+            } else {
+                remaining = null;
+            }
+
+            // Get the last colour & styles
+            String colourMatch = m.group("colour");
+            if (colourMatch != null && !colourMatch.isEmpty()) {
+
+                // If there is a reset, explicitly do it.
+                TextStyle reset = TextStyles.NONE;
+                if (m.group("reset") != null) {
+                    reset = TextStyles.RESET;
+                }
+
+                first = Text.of(reset, TextSerializers.FORMATTING_CODE.deserialize(m.group("colour") + " "));
+            }
+
+            st = getLastColourAndStyle(first, st);
+
+            // Build the URL
+            String whiteSpace = m.group("first");
+            if (m.group("url") != null) {
+                String url = m.group("url");
+                texts.add(getTextForUrl(url, url, whiteSpace, st, m.group("options")));
+            } else if (m.group("specialUrl") != null) {
+                String url = m.group("sUrl");
+                String msg = m.group("msg");
+                texts.add(getTextForUrl(url, msg, whiteSpace, st, m.group("optionssurl")));
+            } else {
+                // Must be commands.
+                String cmd = m.group("sCmd");
+                String msg = m.group("sMsg");
+                String optionList = m.group("optionsscmd");
+
+                if (cmd.contains("{{subject}}")) {
+                    String arg = UUID.randomUUID().toString();
+                    args.put(arg, cs -> {
+                        String command = cmd.replace("{{subject}}", cs.getName());
+                        return getCmd(msg, command, optionList, whiteSpace);
+                    });
+
+                    texts.add(TextTemplate.arg(arg).color(st.colour).style(st.style).build());
+                } else {
+                    texts.add(Text.of(st.colour, st.style, getCmd(msg, cmd, optionList, whiteSpace)));
+                }
+            }
+        } while (remaining != null && m.find());
+
+        // Add the last bit.
+        if (remaining != null) {
+            texts.add(Text.builder().color(st.colour).style(st.style)
+                    .append(TextSerializers.FORMATTING_CODE.deserialize(remaining)).build());
+        }
+
+        // Return the list.
+        return new Tuples.NullableTuple<>(texts, args);
+    }
+
+    private Text getCmd(String msg, String cmd, String optionList, String whiteSpace) {
+        Text.Builder textBuilder = Text.builder(msg)
+                .onClick(TextActions.runCommand(cmd))
+                .onHover(setupHoverOnCmd(cmd, optionList));
+        if (optionList != null && optionList.contains("s")) {
+            textBuilder.onClick(TextActions.suggestCommand(cmd));
+        }
+
+        Text toAdd = textBuilder.build();
+        if (!whiteSpace.isEmpty()) {
+            toAdd = Text.join(Text.of(whiteSpace), toAdd);
+        }
+
+        return toAdd;
+    }
+
     @Nullable
     private HoverAction<?> setupHoverOnCmd(String cmd, @Nullable String optionList) {
         if (optionList != null) {
@@ -276,8 +384,38 @@ public class ChatUtil {
         }
     }
 
-    public StyleTuple getLastColourAndStyle(Text text, @Nullable StyleTuple current) {
-        List<Text> texts = flatten(text);
+    public Text joinTextsWithColoursFlowing(Text... texts) {
+        return joinTextsWithColoursFlowing("", texts);
+    }
+
+    public Text joinTextsWithColoursFlowing(String joining, Text... texts) {
+        return joinTextsWithColoursFlowing(joining, Arrays.asList(texts));
+    }
+
+    public Text joinTextsWithColoursFlowing(Iterable<Text> texts) {
+        return joinTextsWithColoursFlowing("", texts);
+    }
+
+    public Text joinTextsWithColoursFlowing(String joining, Iterable<Text> texts) {
+        List<Text> result = Lists.newArrayList();
+        Iterator<Text> t = texts.iterator();
+        Text last = null;
+        while (t.hasNext()) {
+            Text n = t.next();
+            if (last != null) {
+                getLastColourAndStyle(last, null).applyTo(x -> result.add(Text.of(x.colour, x.style, joining, n)));
+            } else {
+                result.add(n);
+            }
+
+            last = n;
+        }
+
+        return Text.join(result);
+    }
+
+    public StyleTuple getLastColourAndStyle(TextRepresentable text, @Nullable StyleTuple current) {
+        List<Text> texts = flatten(text.toText());
         if (texts.isEmpty()) {
             return current == null ? new StyleTuple(TextColors.NONE, TextStyles.NONE) : current;
         }
@@ -382,6 +520,10 @@ public class ChatUtil {
         StyleTuple(TextColor colour, TextStyle style) {
             this.colour = colour;
             this.style = style;
+        }
+
+        public void applyTo(Consumer<StyleTuple> consumer) {
+            consumer.accept(this);
         }
     }
 }

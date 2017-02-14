@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
 import io.github.nucleuspowered.nucleus.modules.message.MessageModule;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -142,9 +143,9 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             receiver.sendMessage(constructMessage(sender, tm, messageConfig.getMessageReceiverPrefix(), tokens, variables));
         }
 
-        String prefix = messageConfig.getMessageSocialSpyPrefix();
+        NucleusTextTemplate prefix = messageConfig.getMessageSocialSpyPrefix();
         if (isCancelled) {
-            prefix = messageConfig.getMutedTag() + prefix;
+            prefix = NucleusTextTemplate.createFromAmpersandString(messageConfig.getMutedTag() + prefix.getRepresentation());
         }
 
         final int senderLevel = useLevels ? Util.getPositiveIntOptionFromSubject(sender, socialSpyOption)
@@ -215,8 +216,9 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     }
 
     @SuppressWarnings("unchecked")
-    private Text constructMessage(CommandSource sender, Text message, String template, Map<String, Function<CommandSource, Optional<Text>>> tokens, Map<String, Object> variables) {
-        return Text.of(chatUtil.getMessageFromTemplate(template, sender, false, tokens, variables), message);
+    private Text constructMessage(CommandSource sender, Text message, NucleusTextTemplate template, Map<String, Function<CommandSource,
+            Optional<Text>>> tokens, Map<String, Object> variables) {
+        return Text.of(template.getForCommandSource(sender, tokens, variables), message);
     }
 
     private Map<String[], Function<String, String>> createReplacements() {

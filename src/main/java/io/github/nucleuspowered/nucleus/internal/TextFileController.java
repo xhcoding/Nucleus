@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
 import org.spongepowered.api.asset.Asset;
 
 import java.io.IOException;
@@ -42,6 +43,11 @@ public final class TextFileController {
      * Holds the file information.
      */
     private final List<String> fileContents = Lists.newArrayList();
+
+    /**
+     * Holds the {@link NucleusTextTemplate} information.
+     */
+    private final List<NucleusTextTemplate> textTemplates = Lists.newArrayList();
 
     private long fileTimeStamp = 0;
 
@@ -88,6 +94,7 @@ public final class TextFileController {
         this.fileTimeStamp = Files.getLastModifiedTime(fileLocation).toMillis();
         this.fileContents.clear();
         this.fileContents.addAll(fileContents);
+        this.textTemplates.clear();
     }
 
     /**
@@ -95,9 +102,13 @@ public final class TextFileController {
      *
      * @return An {@link ImmutableList} that contains the file contents.
      */
-    public ImmutableList<String> getFileContents() {
+    public ImmutableList<NucleusTextTemplate> getFileContentsAsText() {
         checkFileStamp();
-        return ImmutableList.copyOf(fileContents);
+        if (textTemplates.isEmpty()) {
+            fileContents.forEach(x -> textTemplates.add(NucleusTextTemplate.createFromAmpersandString(x)));
+        }
+
+        return ImmutableList.copyOf(textTemplates);
     }
 
     private void checkFileStamp() {

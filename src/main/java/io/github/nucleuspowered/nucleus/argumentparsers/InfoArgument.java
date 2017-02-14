@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -34,7 +35,7 @@ public class InfoArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         String a = args.next();
-        Optional<List<String>> list = handler.getSection(a);
+        Optional<List<NucleusTextTemplate>> list = handler.getSection(a);
         if (list.isPresent()) {
             return new Result(handler.getInfoSections().stream().filter(a::equalsIgnoreCase).findFirst().get(), list.get());
         }
@@ -54,9 +55,9 @@ public class InfoArgument extends CommandElement {
 
     public static class Result {
         public final String name;
-        public final List<String> text;
+        public final List<NucleusTextTemplate> text;
 
-        public Result(String name, List<String> text) {
+        public Result(String name, List<NucleusTextTemplate> text) {
             this.name = name;
             this.text = text;
         }

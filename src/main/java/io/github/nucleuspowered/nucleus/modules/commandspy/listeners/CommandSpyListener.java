@@ -74,7 +74,7 @@ public class CommandSpyListener extends ListenerBase.Reloadable {
                     .collect(Collectors.toList());
 
                 if (!playerList.isEmpty()) {
-                    Text prefix = chatUtil.getMessageFromTemplate(config.getTemplate(), player, true);
+                    Text prefix = config.getTemplate().getForCommandSource(player);
                     ChatUtil.StyleTuple st = chatUtil.getLastColourAndStyle(prefix, null);
                     Text messageToSend = prefix
                         .toBuilder().append(Text.of(st.colour, st.style, "/" + event.getCommand() + " " + event.getArguments())).build();

@@ -44,9 +44,9 @@ public class MotdCommand extends AbstractCommand<CommandSource> {
         }
 
         if (infoConfigAdapter.getNodeOrDefault().isMotdUsePagination()) {
-            InfoHelper.sendInfo(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
+            InfoHelper.sendInfo(otfc.get(), src, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
         } else {
-            InfoHelper.getTextFromStrings(otfc.get().getFileContents(), src, chatUtil).forEach(src::sendMessage);
+            InfoHelper.getTextFromNucleusTextTemplates(otfc.get().getFileContentsAsText(), src).forEach(src::sendMessage);
         }
 
         return CommandResult.success();

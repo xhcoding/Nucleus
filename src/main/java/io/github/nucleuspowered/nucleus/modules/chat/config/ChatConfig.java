@@ -5,6 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.chat.config;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -38,9 +40,10 @@ public class ChatConfig {
     private boolean removeBlueUnderline = true;
 
     @Setting(value = "me-prefix", comment = "config.chat.meprefix")
-    private String mePrefix = "&7* {{displayName}} ";
+    @Default(value = "&7* {{displayName}} ", saveDefaultIfNull = true)
+    private NucleusTextTemplate mePrefix;
 
-    public String getMePrefix() {
+    public NucleusTextTemplate getMePrefix() {
         return mePrefix;
     }
 

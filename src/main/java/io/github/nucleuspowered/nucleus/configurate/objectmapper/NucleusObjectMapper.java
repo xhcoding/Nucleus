@@ -76,7 +76,8 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
                 }
 
                 if (field.isAnnotationPresent(Default.class)) {
-                    data = new DefaultFieldData(field, comment, data, field.getAnnotation(Default.class).value());
+                    Default de = field.getAnnotation(Default.class);
+                    data = new DefaultFieldData(field, comment, data, de.value(), de.saveDefaultIfNull(), de.useDefaultIfEmpty());
                 }
 
                 field.setAccessible(true);
@@ -89,17 +90,22 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
 
     private static class DefaultFieldData extends FieldData {
 
+        private final boolean useIfNullWhenSaving;
         private final String defaultValue;
         private final FieldData fieldData;
         private final TypeToken<?> typeToken;
         private final Field field;
+        private final boolean useIfEmpty;
 
-        public DefaultFieldData(Field field, String comment, FieldData data, String defaultValue) throws ObjectMappingException {
+        public DefaultFieldData(Field field, String comment, FieldData data, String defaultValue, boolean useIfNullWhenSaving, boolean useIfEmpty)
+                throws ObjectMappingException {
             super(field, comment);
             this.field = field;
             this.typeToken = TypeToken.of(field.getGenericType());
             this.defaultValue = defaultValue;
             this.fieldData = data;
+            this.useIfNullWhenSaving = useIfNullWhenSaving;
+            this.useIfEmpty = useIfEmpty;
         }
 
         @Override public void deserializeFrom(Object instance, ConfigurationNode node) throws ObjectMappingException {
@@ -110,7 +116,7 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
             }
 
             try {
-                if (node.isVirtual() || node.getValue() == null) {
+                if (node.isVirtual() || node.getValue() == null || (this.useIfEmpty && node.getString().isEmpty())) {
                     field.setAccessible(true);
                     field.set(instance, node.getOptions().getSerializers().get(this.typeToken)
                         .deserialize(this.typeToken, SimpleConfigurationNode.root().setValue(this.defaultValue)));
@@ -121,7 +127,11 @@ public class NucleusObjectMapper<T> extends ObjectMapper<T> {
         }
 
         @Override public void serializeTo(Object instance, ConfigurationNode node) throws ObjectMappingException {
-            this.fieldData.serializeTo(instance, node);
+            if (this.useIfNullWhenSaving && instance == null) {
+                node.setValue(this.defaultValue);
+            } else {
+                this.fieldData.serializeTo(instance, node);
+            }
         }
     }
 

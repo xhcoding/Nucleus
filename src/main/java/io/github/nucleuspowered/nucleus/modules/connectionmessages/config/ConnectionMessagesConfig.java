@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.connectionmessages.config;
 
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -14,7 +16,8 @@ public class ConnectionMessagesConfig {
     private boolean showFirstTimeMessage = true;
 
     @Setting(value = "first-login-message", comment = "config.connectionmessages.firsttime")
-    private String firstTimeMessage = "&dWelcome &f{{name}} &dto the server!";
+    @Default(value = "&dWelcome &f{{name}} &dto the server!",  saveDefaultIfNull = true)
+    private NucleusTextTemplate firstTimeMessage;
 
     @Setting(value = "modify-login-message", comment = "config.connectionmessages.enablelogin")
     private boolean modifyLoginMessage = false;
@@ -23,10 +26,12 @@ public class ConnectionMessagesConfig {
     private boolean modifyLogoutMessage = false;
 
     @Setting(value = "login-message", comment = "config.connectionmessages.loginmessage")
-    private String loginMessage = "&8[&a+&8] &f{{name}}";
+    @Default(value = "&8[&a+&8] &f{{name}}", saveDefaultIfNull = true)
+    private NucleusTextTemplate loginMessage;
 
     @Setting(value = "logout-message", comment = "config.connectionmessages.logoutmessage")
-    private String logoutMessage = "&8[&c-&8] &f{{name}}";
+    @Default(value = "&8[&c-&8] &f{{name}}", saveDefaultIfNull = true)
+    private NucleusTextTemplate logoutMessage;
 
     @Setting(value = "disable-with-permission", comment = "config.connectionmessages.disablepermission")
     private boolean disableWithPermission = false;
@@ -35,13 +40,14 @@ public class ConnectionMessagesConfig {
     private boolean displayPriorName = true;
 
     @Setting(value = "changed-name-message", comment = "config.connectionmessages.displaypriormessage")
-    private String priorNameMessage = "&f{{name}} &ewas previously known by a different name - they were known as &f{{previousname}}";
+    @Default(value = "&f{{name}} &ewas previously known by a different name - they were known as &f{{previousname}}", saveDefaultIfNull = true)
+    private NucleusTextTemplate priorNameMessage;
 
     public boolean isShowFirstTimeMessage() {
         return showFirstTimeMessage;
     }
 
-    public String getFirstTimeMessage() {
+    public NucleusTextTemplate getFirstTimeMessage() {
         return firstTimeMessage;
     }
 
@@ -53,11 +59,11 @@ public class ConnectionMessagesConfig {
         return modifyLogoutMessage;
     }
 
-    public String getLoginMessage() {
+    public NucleusTextTemplate getLoginMessage() {
         return loginMessage;
     }
 
-    public String getLogoutMessage() {
+    public NucleusTextTemplate getLogoutMessage() {
         return logoutMessage;
     }
 
@@ -69,7 +75,7 @@ public class ConnectionMessagesConfig {
         return displayPriorName;
     }
 
-    public String getPriorNameMessage() {
+    public NucleusTextTemplate getPriorNameMessage() {
         return priorNameMessage;
     }
 }

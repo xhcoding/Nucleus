@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
@@ -90,6 +91,8 @@ public abstract class Nucleus {
     public abstract Optional<MixinConfigProxy> getMixinConfigIfAvailable();
 
     public abstract NucleusTeleportHandler getTeleportHandler();
+
+    public abstract TokenHandler getTokenHandler();
 
     public abstract boolean isDebugMode();
 }

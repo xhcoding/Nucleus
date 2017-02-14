@@ -12,7 +12,9 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.listeners.ChatListener;
 import org.spongepowered.api.Sponge;
@@ -39,9 +41,10 @@ import javax.inject.Inject;
 @SuppressWarnings("ALL")
 @RegisterCommand({"me", "action"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
-public class MeCommand extends AbstractCommand<CommandSource> {
+public class MeCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
 
     @Inject private ChatConfigAdapter chatConfigAdapter;
+    private ChatConfig config = null;
     private final MeChannel channel = new MeChannel();
 
     private final String messageKey = "message";
@@ -56,9 +59,7 @@ public class MeCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(@Nonnull CommandSource src, CommandContext args) throws Exception {
         String message = ChatListener.stripPermissionless(src, args.<String>getOne(messageKey).get());
-
-        Text header = plugin.getChatUtil()
-                .getMessageFromTemplate(chatConfigAdapter.getNodeOrDefault().getMePrefix(), src, false);
+        Text header = config.getMePrefix().getForCommandSource(src);
         ChatUtil.StyleTuple t = plugin.getChatUtil().getLastColourAndStyle(header, null);
         MessageEvent.MessageFormatter formatter = new MessageEvent.MessageFormatter(
             Text.builder().color(t.colour).style(t.style)
@@ -85,6 +86,10 @@ public class MeCommand extends AbstractCommand<CommandSource> {
 
         event.getChannel().orElse(channel).send(src, Util.applyChatTemplate(event.getFormatter()), ChatTypes.CHAT);
         return CommandResult.success();
+    }
+
+    @Override public void onReload() {
+        config = chatConfigAdapter.getNodeOrDefault();
     }
 
     public class MeChannel implements NucleusChatChannel.ActionMessage {

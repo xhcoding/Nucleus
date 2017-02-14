@@ -13,6 +13,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.iapi.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.util.Action;
+import io.github.nucleuspowered.nucleus.util.PaginationBuilderWrapper;
 import io.github.nucleuspowered.nucleus.util.ThrownFunction;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.Sponge;
@@ -504,7 +505,7 @@ public class Util {
             plb.linesPerPage(-1);
         }
 
-        return plb;
+        return new PaginationBuilderWrapper(plb);
     }
 
     public static Inventory.Builder getKitInventoryBuilder() {
