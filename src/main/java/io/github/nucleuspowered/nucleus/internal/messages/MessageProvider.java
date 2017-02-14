@@ -58,7 +58,7 @@ public abstract class MessageProvider {
         objects.add(TextSerializers.FORMATTING_CODE.deserialize(s[0]));
         map.forEach(x -> {
             objects.add(TextTemplate.arg(x.toString()));
-            if (objects.size() > x + 1) {
+            if (s.length > x + 1) {
                 objects.add(TextSerializers.FORMATTING_CODE.deserialize(s[x + 1]));
             }
         });
