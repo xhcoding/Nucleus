@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -63,6 +64,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
     private static final String EXTENDED_SUFFIX = "extended";
     public static final String EXTENDED_PERMISSION = PermissionRegistry.PERMISSIONS_PREFIX + "seen." + EXTENDED_SUFFIX;
 
+    private final String uuid = "uuid";
     private final String playerKey = "subject";
     private final Text notEmpty = Text.of(" ");
 
@@ -76,13 +78,15 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER))
+            GenericArguments.firstParsing(
+                GenericArguments.onlyOne(UUIDArgument.user(Text.of(uuid))),
+                GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER)))
         };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        User user = args.<User>getOne(playerKey).get();
+        User user = args.<User>getOne(uuid).isPresent() ? args.<User>getOne(uuid).get() : args.<User>getOne(playerKey).get();
         ModularUserService iqsu = udm.get(user).get();
         CoreUserDataModule coreUserDataModule = iqsu.get(CoreUserDataModule.class);
 

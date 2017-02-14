@@ -4,29 +4,39 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.handlers;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.afk.events.AFKEvents;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.concurrent.GuardedBy;
 
-public class AFKHandler {
+public class AFKHandler implements NucleusAFKService {
 
     private final Map<UUID, AFKData> data = Maps.newConcurrentMap();
     private final AFKConfigAdapter afkConfigAdapter;
@@ -92,6 +102,11 @@ public class AFKHandler {
                 final String messageToGetAroundJavaRestrictions = message;
 
                 Sponge.getServer().getPlayer(e.getKey()).ifPresent(player -> {
+                    if (Sponge.getEventManager().post(new AFKEvents.Kick(player, Cause.of(NamedCause.owner(plugin))))) {
+                        // Cancelled.
+                        return;
+                    }
+
                     Sponge.getScheduler().createSyncExecutor(plugin)
                         .execute(() -> player.kick(TextSerializers.FORMATTING_CODE.deserialize(messageToGetAroundJavaRestrictions)));
                     if (!messageToServer.isEmpty()) {
@@ -111,9 +126,7 @@ public class AFKHandler {
         // Check AFK status.
         entries.stream().filter(x -> !x.getValue().isKnownAfk && x.getValue().timeToAfk > 0).forEach(e -> {
             if (now - e.getValue().lastActivityTime  > e.getValue().timeToAfk) {
-                // Set AFK, message
-                e.getValue().isKnownAfk = true;
-                sendAFKMessage(e.getKey(), true);
+                Sponge.getServer().getPlayer(e.getKey()).ifPresent(this::setAfk);
             }
         });
     }
@@ -131,6 +144,10 @@ public class AFKHandler {
     }
 
     public boolean setAfk(Player player) {
+        return setAfk(player, Cause.of(NamedCause.owner(player)));
+    }
+
+    public boolean setAfk(Player player, Cause cause) {
         if (!player.isOnline()) {
             return false;
         }
@@ -146,6 +163,8 @@ public class AFKHandler {
             synchronized (lock) {
                 activity.remove(uuid);
             }
+
+            Sponge.getEventManager().post(new AFKEvents.To(player, cause));
 
             a.isKnownAfk = true;
             sendAFKMessage(uuid, true);
@@ -173,9 +192,15 @@ public class AFKHandler {
     }
 
     private AFKData updateActivity(UUID uuid, AFKData data) {
+        return updateActivity(uuid, data, Cause.of(NamedCause.source(Sponge.getServer().getPlayer(uuid).map(x -> (Object)x).orElse(plugin))));
+    }
+
+    private AFKData updateActivity(UUID uuid, AFKData data, Cause cause) {
         data.lastActivityTime = System.currentTimeMillis();
         if (data.isKnownAfk) {
             data.isKnownAfk = false;
+            data.willKick = false;
+            Sponge.getServer().getPlayer(uuid).ifPresent(x -> Sponge.getEventManager().post(new AFKEvents.From(x, cause)));
 
             // Send message.
             sendAFKMessage(uuid, false);
@@ -200,6 +225,69 @@ public class AFKHandler {
         });
     }
 
+    @Override public boolean canGoAFK(User user) {
+        return getData(user.getUniqueId()).canGoAfk();
+    }
+
+    @Override public boolean isAFK(Player player) {
+        return this.data.putIfAbsent(player.getUniqueId(), new AFKData(player.getUniqueId())).isKnownAfk;
+    }
+
+    @Override public boolean setAFK(Cause cause, Player player, boolean isAfk) {
+        Preconditions.checkArgument(cause.root() instanceof PluginContainer, "The root object MUST be a plugin container.");
+        AFKData data = this.data.computeIfAbsent(player.getUniqueId(), AFKData::new);
+        if (data.isKnownAfk == isAfk) {
+            // Already AFK
+            return false;
+        }
+
+        if (isAfk) {
+            return setAfk(player, cause);
+        } else {
+            return !updateActivity(player.getUniqueId(), data, cause).isKnownAfk;
+        }
+    }
+
+    @Override public boolean canBeKicked(User user) {
+        return getData(user.getUniqueId()).canBeKicked();
+    }
+
+    @Override public Instant lastActivity(Player player) {
+        return Instant.ofEpochMilli(this.data.computeIfAbsent(player.getUniqueId(), AFKData::new).lastActivityTime);
+    }
+
+    @Override public Optional<Duration> timeForInactivity(User user) {
+        AFKData data = getData(user.getUniqueId());
+        if (data.canGoAfk()) {
+            return Optional.of(Duration.ofMillis(data.timeToAfk));
+        }
+
+        return Optional.empty();
+    }
+
+    @Override public Optional<Duration> timeForKick(User user) {
+        AFKData data = getData(user.getUniqueId());
+        if (data.canBeKicked()) {
+            return Optional.of(Duration.ofMillis(data.timeToKick));
+        }
+
+        return Optional.empty();
+    }
+
+    @Override public void invalidateCachedPermissions() {
+        invalidateAfkCache();
+    }
+
+    private AFKData getData(UUID uuid) {
+        AFKData data = this.data.get(uuid);
+        if (data == null) {
+            // Prevent more checks
+            data = new AFKData(uuid, false);
+        }
+
+        return data;
+    }
+
     private class AFKData {
 
         private final UUID uuid;
@@ -213,12 +301,26 @@ public class AFKHandler {
         private long timeToKick = -1;
 
         private AFKData(UUID uuid) {
+            this(uuid, true);
+        }
+
+        private AFKData(UUID uuid, boolean permCheck) {
             this.uuid = uuid;
-            updateFromPermissions();
+            if (permCheck) {
+                updateFromPermissions();
+            }
         }
 
         private boolean canGoAfk() {
+            cacheValid = false;
+            updateFromPermissions();
             return timeToAfk > 0;
+        }
+
+        private boolean canBeKicked() {
+            cacheValid = false;
+            updateFromPermissions();
+            return timeToKick > 0;
         }
 
         private void updateFromPermissions() {

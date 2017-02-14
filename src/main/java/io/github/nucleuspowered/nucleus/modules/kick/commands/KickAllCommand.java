@@ -44,7 +44,7 @@ public class KickAllCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.requiringPermission(GenericArguments.flags().flag("f").buildWith(GenericArguments.none()),
+                GenericArguments.requiringPermission(GenericArguments.flags().flag("w", "f").buildWith(GenericArguments.none()),
                         permissions.getPermissionWithSuffix("whitelist")),
                 GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(reason))))};
     }
@@ -59,7 +59,7 @@ public class KickAllCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String r = args.<String>getOne(reason).orElse(plugin.getMessageProvider().getMessageWithFormat("command.kick.defaultreason"));
-        Boolean f = args.<Boolean>getOne("f").orElse(false);
+        Boolean f = args.<Boolean>getOne("w").orElse(false);
 
         if (f) {
             Sponge.getServer().setHasWhitelist(true);

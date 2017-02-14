@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.text.Text;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -96,8 +97,11 @@ public class DocGenCache {
             PermissionInformation pi = new PermissionInformation(MessageFormat.format(v.plainDescription, cmd.getCommandName()), v.level);
             lp.add(getPermissionFrom(moduleID, k, pi));
         });
+
         cmd.setPermissions(lp);
         cmd.setUsageString(abstractCommand.getUsage(Sponge.getServer().getConsole()));
+        cmd.setSubcommands(abstractCommand.getChildrenUsage(Sponge.getServer().getConsole()).map(Text::toPlain).orElse(""));
+        cmd.setSimpleUsage(abstractCommand.getSimpleUsage(Sponge.getServer().getConsole()));
         permissionDocs.addAll(lp);
         commandDocs.add(cmd);
     }
