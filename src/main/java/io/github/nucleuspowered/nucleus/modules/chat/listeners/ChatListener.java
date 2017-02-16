@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  * should be used if tokens need to be registered.
  */
 @ConditionalListener(ChatListener.Test.class)
-public class ChatListener extends ListenerBase {
+public class ChatListener extends ListenerBase.Reloadable {
 
     private static final Pattern prefixPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*$");
     private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
@@ -98,6 +98,7 @@ public class ChatListener extends ListenerBase {
 
     // --- Listener Proper
     private final ChatConfigAdapter cca;
+    private ChatConfig chatConfig;
     private final ChatUtil chatUtil;
     private final TemplateUtil templateUtil;
 
@@ -134,33 +135,35 @@ public class ChatListener extends ListenerBase {
         }
 
         MessageEvent.MessageFormatter eventFormatter = event.getFormatter();
-        ChatConfig config = cca.getNodeOrDefault();
         Text rawMessage = eventFormatter.getBody().isEmpty() ? event.getRawMessage() : eventFormatter.getBody().toText();
 
         Text prefix = Text.EMPTY;
 
         // Avoid adding <name>.
-        if (!config.isOverwriteEarlyPrefixes() && !prefixPattern.matcher(eventFormatter.getHeader().toText().toPlain()).matches()) {
+        if (!chatConfig.isOverwriteEarlyPrefixes() && !prefixPattern.matcher(eventFormatter.getHeader().toText().toPlain()).matches()) {
             prefix = eventFormatter.getHeader().toText();
         }
 
-        Text footer = config.isOverwriteEarlySuffixes() ? Text.EMPTY : event.getFormatter().getFooter().toText();
+        Text footer = chatConfig.isOverwriteEarlySuffixes() ? Text.EMPTY : event.getFormatter().getFooter().toText();
 
         final ChatTemplateConfig ctc;
-        if (config.isUseGroupTemplates()) {
+        if (chatConfig.isUseGroupTemplates()) {
             ctc = templateUtil.getTemplate(player);
         } else {
-            ctc = config.getDefaultTemplate();
+            ctc = chatConfig.getDefaultTemplate();
         }
 
         event.setMessage(
                 Text.join(prefix, chatUtil.getMessageFromTemplate(ctc.getPrefix(), player, true)),
-                config.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
+                chatConfig.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
                 Text.join(footer, chatUtil.getMessageFromTemplate(ctc.getSuffix(), player, false)));
     }
 
     private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {
         String m = stripPermissionless(player, TextSerializers.FORMATTING_CODE.serialize(rawMessage));
+        if (chatConfig.isRemoveBlueUnderline()) {
+            m = m.replaceAll("&9&n([A-Za-z0-9-.]+)", "$1");
+        }
 
         Text result;
         if (player.hasPermission(prefix + "url")) {
@@ -174,6 +177,10 @@ public class ChatListener extends ListenerBase {
 
         NameUtil nu = plugin.getNameUtil();
         return Text.of(nu.getColourFromString(chatcol), nu.getTextStyleFromString(chatstyle), result);
+    }
+
+    @Override public void onReload() throws Exception {
+        chatConfig = cca.getNodeOrDefault();
     }
 
     public static class Test implements Predicate<Nucleus> {
