@@ -11,9 +11,9 @@ plugins {
 allprojects {
     apply plugin: 'java'
 
-    def versionno = '0.23.2'
+    def versionno = '0.23.3'
     def spongeapiversion = '5.1'
-    def suffix = ''
+    def suffix = '-SNAPSHOT'
 
     version = versionno + suffix + '-S' + spongeapiversion
 
