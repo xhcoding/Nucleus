@@ -484,7 +484,7 @@ public class ChatUtil {
             cmd = cmd + " ";
         }
 
-        final String commandToRun = cmd.replaceAll("\\{\\{player}}", user.getName());
+        final String commandToRun = cmd.replace("{{subject}}", user.getName()).replace("{{player}}", user.getName());
         Optional<HoverAction<?>> ha = name.getHoverAction();
         Text.Builder hoverAction;
         if (ha.isPresent() && (ha.get() instanceof HoverAction.ShowText)) {

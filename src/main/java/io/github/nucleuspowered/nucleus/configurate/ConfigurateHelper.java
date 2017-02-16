@@ -13,7 +13,7 @@ import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusTextT
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.PatternTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.SetTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
@@ -55,7 +55,7 @@ public class ConfigurateHelper {
         tsc.registerType(TypeToken.of(ItemStackSnapshot.class), new ItemStackSnapshotSerialiser());
         tsc.registerType(TypeToken.of(ConfigurationNode.class), new ConfigurationNodeTypeSerialiser());
         tsc.registerType(TypeToken.of(Pattern.class), new PatternTypeSerialiser());
-        tsc.registerType(TypeToken.of(NucleusTextTemplate.class), new NucleusTextTemplateTypeSerialiser());
+        tsc.registerType(TypeToken.of(NucleusTextTemplateImpl.class), new NucleusTextTemplateTypeSerialiser());
         tsc.registerPredicate(
                 typeToken -> Set.class.isAssignableFrom(typeToken.getRawType()),
                 new SetTypeSerialiser()

@@ -18,6 +18,12 @@ public class NucleusException extends TextMessageException {
         this.exceptionType = exceptionType;
     }
 
+    public NucleusException(Text message, Throwable inner, ExceptionType exceptionType) {
+        super(message, inner);
+        Preconditions.checkNotNull(exceptionType);
+        this.exceptionType = exceptionType;
+    }
+
     /**
      * Gets the basic reason for the issue.
      *

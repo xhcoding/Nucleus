@@ -13,7 +13,8 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.message.MessageModule;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -143,9 +144,9 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             receiver.sendMessage(constructMessage(sender, tm, messageConfig.getMessageReceiverPrefix(), tokens, variables));
         }
 
-        NucleusTextTemplate prefix = messageConfig.getMessageSocialSpyPrefix();
+        NucleusTextTemplateImpl prefix = messageConfig.getMessageSocialSpyPrefix();
         if (isCancelled) {
-            prefix = NucleusTextTemplate.createFromAmpersandString(messageConfig.getMutedTag() + prefix.getRepresentation());
+            prefix = NucleusTextTemplateFactory.createFromAmpersandString(messageConfig.getMutedTag() + prefix.getRepresentation());
         }
 
         final int senderLevel = useLevels ? Util.getPositiveIntOptionFromSubject(sender, socialSpyOption)
@@ -216,7 +217,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     }
 
     @SuppressWarnings("unchecked")
-    private Text constructMessage(CommandSource sender, Text message, NucleusTextTemplate template, Map<String, Function<CommandSource,
+    private Text constructMessage(CommandSource sender, Text message, NucleusTextTemplateImpl template, Map<String, Function<CommandSource,
             Optional<Text>>> tokens, Map<String, Object> variables) {
         return Text.of(template.getForCommandSource(sender, tokens, variables), message);
     }

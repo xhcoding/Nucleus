@@ -10,6 +10,7 @@ import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -32,7 +33,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 @NonnullByDefault
-public abstract class NucleusTextTemplate implements TextRepresentable {
+public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
 
     private static final Map<String, Object> emptyVariables = Maps.newHashMap();
 
@@ -40,7 +41,7 @@ public abstract class NucleusTextTemplate implements TextRepresentable {
     private final TextTemplate textTemplate;
     private static final Map<String, Function<CommandSource, Text>> tokenMap = Maps.newHashMap();
 
-    public NucleusTextTemplate(String representation) {
+    public NucleusTextTemplateImpl(String representation) {
         this.representation = representation;
         Tuple<TextTemplate, Map<String, Function<CommandSource, Text>>> t = parse(representation);
         this.textTemplate = t.getFirst();
@@ -48,7 +49,7 @@ public abstract class NucleusTextTemplate implements TextRepresentable {
         tokenMap.putAll(t.getSecond());
     }
 
-    public boolean isEmpty() {
+    @Override public boolean isEmpty() {
         return false;
     }
 
@@ -56,41 +57,13 @@ public abstract class NucleusTextTemplate implements TextRepresentable {
         return representation;
     }
 
-    public TextTemplate getTextTemplate() {
+    @Override public TextTemplate getTextTemplate() {
         return textTemplate;
     }
 
     abstract Tuple<TextTemplate, Map<String, Function<CommandSource, Text>>> parse(String parser) ;
 
-    public static NucleusTextTemplate createFromString(String string) throws Throwable {
-        if (string.isEmpty()) {
-            return Empty.INSTANCE;
-        }
-
-        try {
-            return new Json(string);
-        } catch (NullPointerException e) {
-            return new Ampersand(string);
-        } catch (RuntimeException e) {
-            if (e.getCause() != null && e.getCause() instanceof ObjectMappingException) {
-                return new Ampersand(string);
-            } else if (e.getCause() != null) {
-                throw e.getCause();
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    public static NucleusTextTemplate createFromAmpersandString(String string) {
-        return new Ampersand(string);
-    }
-
-    public Text getForCommandSource(CommandSource source) {
-        return getForCommandSource(source, null, null);
-    }
-
-    @SuppressWarnings("SameParameterValue")
+    @Override @SuppressWarnings("SameParameterValue")
     public Text getForCommandSource(CommandSource source, @Nullable Map<String, Function<CommandSource, Optional<Text>>> tokensArray,
             @Nullable Map<String, Object> variables) {
         final Map<String, Object> variables2 = variables == null ? emptyVariables : variables;
@@ -134,7 +107,7 @@ public abstract class NucleusTextTemplate implements TextRepresentable {
     /**
      * Creates a {@link TextTemplate} from an Ampersand encoded string.
      */
-    public static class Ampersand extends NucleusTextTemplate {
+    static class Ampersand extends NucleusTextTemplateImpl {
 
         private static final Pattern pattern = Pattern.compile("(?!\\[[.]+\\]\\(/[^\\)]*?)\\{\\{(?!subject)([^\\s\\{\\}]+)}}(?![^\\(]*?\\))");
 
@@ -142,8 +115,9 @@ public abstract class NucleusTextTemplate implements TextRepresentable {
             super(representation);
         }
 
-        @Override Tuple<TextTemplate, Map<String, Function<CommandSource, Text>>> parse(String string) {
+        @Override Tuple<TextTemplate, Map<String, Function<CommandSource, Text>>> parse(String input) {
             // regex!
+            final String string = NucleusTextTemplateFactory.INSTANCE.performReplacements(input);
             Matcher mat = pattern.matcher(string);
             List<String> map = Lists.newArrayList();
 
@@ -177,7 +151,7 @@ public abstract class NucleusTextTemplate implements TextRepresentable {
         }
     }
 
-    public static class Json extends NucleusTextTemplate {
+    static class Json extends NucleusTextTemplateImpl {
 
         @Nullable private static TypeSerializer<TextTemplate> textTemplateTypeSerializer = null;
 
@@ -199,9 +173,9 @@ public abstract class NucleusTextTemplate implements TextRepresentable {
         }
     }
 
-    public static class Empty extends NucleusTextTemplate {
+    public static class Empty extends NucleusTextTemplateImpl {
 
-        public static final NucleusTextTemplate INSTANCE = new Empty();
+        public static final NucleusTextTemplateImpl INSTANCE = new Empty();
 
         private Empty() {
             super("");

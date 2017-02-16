@@ -11,7 +11,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
@@ -95,7 +95,7 @@ public class AFKHandler implements NucleusAFKService {
             if (now - e.getValue().lastActivityTime > e.getValue().timeToKick) {
                 // Kick them
                 e.getValue().willKick = true;
-                NucleusTextTemplate message = config.getMessages().getKickMessage();
+                NucleusTextTemplateImpl message = config.getMessages().getKickMessage();
                 TextRepresentable t;
                 if (message.isEmpty()) {
                     t = plugin.getMessageProvider().getTextMessageWithTextFormat("afk.kickreason");
@@ -103,7 +103,7 @@ public class AFKHandler implements NucleusAFKService {
                     t = message;
                 }
 
-                final NucleusTextTemplate messageToServer = config.getMessages().getOnKick();
+                final NucleusTextTemplateImpl messageToServer = config.getMessages().getOnKick();
 
                 Sponge.getServer().getPlayer(e.getKey()).ifPresent(player -> {
                     if (Sponge.getEventManager().post(new AFKEvents.Kick(player, Cause.of(NamedCause.owner(plugin))))) {
@@ -111,7 +111,7 @@ public class AFKHandler implements NucleusAFKService {
                         return;
                     }
 
-                    Text toSend = t instanceof NucleusTextTemplate ? ((NucleusTextTemplate) t).getForCommandSource(player) : t.toText();
+                    Text toSend = t instanceof NucleusTextTemplateImpl ? ((NucleusTextTemplateImpl) t).getForCommandSource(player) : t.toText();
                     Sponge.getScheduler().createSyncExecutor(plugin)
                         .execute(() -> player.kick(toSend));
                     if (!messageToServer.isEmpty()) {
@@ -218,7 +218,7 @@ public class AFKHandler implements NucleusAFKService {
         Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
             // If we have the config set to true, or the subject is NOT invisible, send an AFK message
             if (config.isAfkOnVanish() || !player.get(Keys.VANISH).orElse(false)) {
-                NucleusTextTemplate template = isAfk ? config.getMessages().getAfkMessage() : config.getMessages().getReturnAfkMessage();
+                NucleusTextTemplateImpl template = isAfk ? config.getMessages().getAfkMessage() : config.getMessages().getReturnAfkMessage();
                 if (!template.isEmpty()) {
                     MessageChannel.TO_ALL.send(template.getForCommandSource(player));
                 }

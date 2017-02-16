@@ -18,7 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
@@ -81,7 +81,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         if (infoConfig.isUseDefaultFile() && !oir.isPresent() && !args.hasAny("l")) {
             // Do we have a default?
             String def = infoConfig.getDefaultInfoSection();
-            Optional<List<NucleusTextTemplate>> list = infoHandler.getSection(def);
+            Optional<List<NucleusTextTemplateImpl>> list = infoHandler.getSection(def);
             if (list.isPresent()) {
                 oir = Optional.of(new InfoArgument.Result(infoHandler.getInfoSections().stream().filter(def::equalsIgnoreCase).findFirst().get(), list.get()));
             }
@@ -89,7 +89,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
 
         if (oir.isPresent()) {
             // Get the list.
-            List<NucleusTextTemplate> info = oir.get().text;
+            List<NucleusTextTemplateImpl> info = oir.get().text;
             Optional<String> os = getTitle(info);
             String title;
             if (os.isPresent()) {
@@ -100,7 +100,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
                 info.remove(0);
 
                 // Remove blank lines.
-                Iterator<NucleusTextTemplate> i = info.iterator();
+                Iterator<NucleusTextTemplateImpl> i = info.iterator();
                 while (i.hasNext()) {
                     String n = i.next().getRepresentation();
                     if (n.isEmpty() || n.matches("^\\s+$")) {
@@ -153,7 +153,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Optional<String> getTitle(List<NucleusTextTemplate> info) {
+    private Optional<String> getTitle(List<NucleusTextTemplateImpl> info) {
         if (!info.isEmpty()) {
             String sec1 = info.get(0).getRepresentation();
             if (sec1.startsWith("#")) {

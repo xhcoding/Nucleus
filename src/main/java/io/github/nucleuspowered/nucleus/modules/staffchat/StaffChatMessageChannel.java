@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.staffchat.commands.StaffChatCommand;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -40,7 +40,7 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
     private final NucleusPlugin plugin;
     private final ChatUtil chatUtil;
     private final String basePerm;
-    private NucleusTextTemplate template;
+    private NucleusTextTemplateImpl template;
     private TextColor colour;
 
     StaffChatMessageChannel(NucleusPlugin plugin) {

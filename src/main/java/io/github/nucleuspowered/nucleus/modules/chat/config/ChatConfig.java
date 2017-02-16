@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.chat.config;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -41,9 +41,9 @@ public class ChatConfig {
 
     @Setting(value = "me-prefix", comment = "config.chat.meprefix")
     @Default(value = "&7* {{displayName}} ", saveDefaultIfNull = true)
-    private NucleusTextTemplate mePrefix;
+    private NucleusTextTemplateImpl mePrefix;
 
-    public NucleusTextTemplate getMePrefix() {
+    public NucleusTextTemplateImpl getMePrefix() {
         return mePrefix;
     }
 

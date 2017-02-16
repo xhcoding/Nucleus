@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.admin.config;
 
 import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -14,17 +14,17 @@ public class BroadcastConfig {
 
     @Setting
     @Default(value = "&a[Broadcast] ", saveDefaultIfNull = true)
-    private NucleusTextTemplate prefix;
+    private NucleusTextTemplateImpl prefix;
 
     @Setting
     @Default(value = "", saveDefaultIfNull = true)
-    private NucleusTextTemplate suffix;
+    private NucleusTextTemplateImpl suffix;
 
-    public NucleusTextTemplate getPrefix() {
+    public NucleusTextTemplateImpl getPrefix() {
         return prefix;
     }
 
-    public NucleusTextTemplate getSuffix() {
+    public NucleusTextTemplateImpl getSuffix() {
         return suffix;
     }
 }

@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.info.handlers;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.service.pagination.PaginationList;
@@ -27,11 +27,11 @@ public class InfoHelper {
         sendInfoNT(tfc.getFileContentsAsText(), src, motdTitle);
     }
 
-    public static List<Text> getTextFromNucleusTextTemplates(List<NucleusTextTemplate> textTemplates, CommandSource source) {
+    public static List<Text> getTextFromNucleusTextTemplates(List<NucleusTextTemplateImpl> textTemplates, CommandSource source) {
         return textTemplates.stream().map(x -> x.getForCommandSource(source)).collect(Collectors.toList());
     }
 
-    public static void sendInfoNT(List<NucleusTextTemplate> tfc, CommandSource src, String motdTitle) {
+    public static void sendInfoNT(List<NucleusTextTemplateImpl> tfc, CommandSource src, String motdTitle) {
         sendInfo(getTextFromNucleusTextTemplates(tfc, src), src, motdTitle);
     }
 

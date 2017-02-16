@@ -32,7 +32,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.afk.AFKModule;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.config.MessagesConfig;
@@ -1038,7 +1038,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
                 messagesConfig = a.getNodeOrDefault().getMessages();
             }
 
-            NucleusTextTemplate onCommand = messagesConfig.getOnCommand();
+            NucleusTextTemplateImpl onCommand = messagesConfig.getOnCommand();
             if (!onCommand.isEmpty()) {
                 src.sendMessage(onCommand.getForCommandSource(player));
             }

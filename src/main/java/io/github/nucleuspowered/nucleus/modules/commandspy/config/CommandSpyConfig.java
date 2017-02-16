@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.commandspy.config;
 import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
 import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
 import io.github.nucleuspowered.nucleus.configurate.settingprocessor.RemoveFirstSlashIfExistsSettingProcessor;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -19,7 +19,7 @@ public class CommandSpyConfig {
 
     @Setting(comment = "config.commandspy.template")
     @Default(value = "&7[CS: {{name}}]: ", saveDefaultIfNull = true)
-    private NucleusTextTemplate prefix;
+    private NucleusTextTemplateImpl prefix;
 
     @Setting(value = "use-whitelist", comment = "config.commandspy.usewhitelist")
     private boolean useWhitelist = true;
@@ -29,7 +29,7 @@ public class CommandSpyConfig {
     @Setting(value = "whitelisted-commands-to-spy-on", comment = "config.commandspy.whitelist")
     private List<String> commands = new ArrayList<>();
 
-    public NucleusTextTemplate getTemplate() {
+    public NucleusTextTemplateImpl getTemplate() {
         return prefix;
     }
 

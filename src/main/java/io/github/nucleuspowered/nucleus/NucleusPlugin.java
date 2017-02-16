@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.typesafe.config.ConfigException;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
@@ -49,6 +50,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructo
 import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTokenServiceImpl;
 import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
 import io.github.nucleuspowered.nucleus.logging.DebugLogger;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -118,6 +120,7 @@ public class NucleusPlugin extends Nucleus {
     private DocGenCache docGenCache = null;
     private final NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
     private final TokenHandler tokenHandler = new TokenHandler(this);
+    private NucleusTokenServiceImpl nucleusChatService;
 
     private final InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
@@ -193,6 +196,12 @@ public class NucleusPlugin extends Nucleus {
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
         serviceManager.registerService(WarmupManager.class, warmupManager);
 
+
+        nucleusChatService = new NucleusTokenServiceImpl();
+        getTokenHandler().register(nucleusChatService);
+        serviceManager.registerService(NucleusTokenServiceImpl.class, nucleusChatService);
+        Sponge.getServiceManager().setProvider(this, NucleusMessageTokenService.class, nucleusChatService);
+
         try {
             HoconConfigurationLoader.Builder builder = HoconConfigurationLoader.builder();
             moduleContainer = DiscoveryModuleContainer.builder()
@@ -265,6 +274,7 @@ public class NucleusPlugin extends Nucleus {
         // Register a reloadable.
         CommandPermissionHandler.onReload();
         registerReloadable(CommandPermissionHandler::onReload);
+        getDocGenCache().ifPresent(x -> x.addTokenDocs(nucleusChatService.getNucleusTokenParser().getTokenNames()));
 
         logger.info(messageProvider.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
         registerPermissions();

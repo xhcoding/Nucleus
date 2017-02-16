@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.connectionmessages.config;
 
 import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -17,7 +17,7 @@ public class ConnectionMessagesConfig {
 
     @Setting(value = "first-login-message", comment = "config.connectionmessages.firsttime")
     @Default(value = "&dWelcome &f{{name}} &dto the server!",  saveDefaultIfNull = true)
-    private NucleusTextTemplate firstTimeMessage;
+    private NucleusTextTemplateImpl firstTimeMessage;
 
     @Setting(value = "modify-login-message", comment = "config.connectionmessages.enablelogin")
     private boolean modifyLoginMessage = false;
@@ -27,11 +27,11 @@ public class ConnectionMessagesConfig {
 
     @Setting(value = "login-message", comment = "config.connectionmessages.loginmessage")
     @Default(value = "&8[&a+&8] &f{{name}}", saveDefaultIfNull = true)
-    private NucleusTextTemplate loginMessage;
+    private NucleusTextTemplateImpl loginMessage;
 
     @Setting(value = "logout-message", comment = "config.connectionmessages.logoutmessage")
     @Default(value = "&8[&c-&8] &f{{name}}", saveDefaultIfNull = true)
-    private NucleusTextTemplate logoutMessage;
+    private NucleusTextTemplateImpl logoutMessage;
 
     @Setting(value = "disable-with-permission", comment = "config.connectionmessages.disablepermission")
     private boolean disableWithPermission = false;
@@ -41,13 +41,13 @@ public class ConnectionMessagesConfig {
 
     @Setting(value = "changed-name-message", comment = "config.connectionmessages.displaypriormessage")
     @Default(value = "&f{{name}} &ewas previously known by a different name - they were known as &f{{previousname}}", saveDefaultIfNull = true)
-    private NucleusTextTemplate priorNameMessage;
+    private NucleusTextTemplateImpl priorNameMessage;
 
     public boolean isShowFirstTimeMessage() {
         return showFirstTimeMessage;
     }
 
-    public NucleusTextTemplate getFirstTimeMessage() {
+    public NucleusTextTemplateImpl getFirstTimeMessage() {
         return firstTimeMessage;
     }
 
@@ -59,11 +59,11 @@ public class ConnectionMessagesConfig {
         return modifyLogoutMessage;
     }
 
-    public NucleusTextTemplate getLoginMessage() {
+    public NucleusTextTemplateImpl getLoginMessage() {
         return loginMessage;
     }
 
-    public NucleusTextTemplate getLogoutMessage() {
+    public NucleusTextTemplateImpl getLogoutMessage() {
         return logoutMessage;
     }
 
@@ -75,7 +75,7 @@ public class ConnectionMessagesConfig {
         return displayPriorName;
     }
 
-    public NucleusTextTemplate getPriorNameMessage() {
+    public NucleusTextTemplateImpl getPriorNameMessage() {
         return priorNameMessage;
     }
 }

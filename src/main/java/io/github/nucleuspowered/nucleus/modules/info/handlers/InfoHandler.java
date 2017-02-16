@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.AssetManager;
 
@@ -49,7 +49,7 @@ public class InfoHandler {
      * @return An {@link Optional} potentially containing the list of strings.
      *
      */
-    public Optional<List<NucleusTextTemplate>> getSection(String name) {
+    public Optional<List<NucleusTextTemplateImpl>> getSection(String name) {
         Optional<String> os = infoFiles.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
         if (os.isPresent()) {
             return Optional.of(infoFiles.get(name).getFileContentsAsText());

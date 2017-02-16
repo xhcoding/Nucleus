@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.message.config;
 
 import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -14,32 +14,32 @@ public class MessageConfig {
 
     @Setting(value = "helpop-prefix", comment = "config.message.helpop.prefix")
     @Default(value = "&7HelpOp: {{name}} &7> &r", saveDefaultIfNull = true)
-    private NucleusTextTemplate helpOpPrefix;
+    private NucleusTextTemplateImpl helpOpPrefix;
 
     @Setting(value = "msg-receiver-prefix", comment = "config.message.receiver.prefix")
     @Default(value = "&7[{{fromDisplay}}&7 -> me]: &r", saveDefaultIfNull = true)
-    private NucleusTextTemplate messageReceiverPrefix;
+    private NucleusTextTemplateImpl messageReceiverPrefix;
 
     @Setting(value = "msg-sender-prefix", comment = "config.message.sender.prefix")
     @Default(value = "&7[me -> {{toDisplay}}&7]: &r", saveDefaultIfNull = true)
-    private NucleusTextTemplate messageSenderPrefix;
+    private NucleusTextTemplateImpl messageSenderPrefix;
 
     @Setting(value = "socialspy")
     private SocialSpy socialSpy = new SocialSpy();
 
-    public NucleusTextTemplate getHelpOpPrefix() {
+    public NucleusTextTemplateImpl getHelpOpPrefix() {
         return helpOpPrefix;
     }
 
-    public NucleusTextTemplate getMessageReceiverPrefix() {
+    public NucleusTextTemplateImpl getMessageReceiverPrefix() {
         return messageReceiverPrefix;
     }
 
-    public NucleusTextTemplate getMessageSenderPrefix() {
+    public NucleusTextTemplateImpl getMessageSenderPrefix() {
         return messageSenderPrefix;
     }
 
-    public NucleusTextTemplate getMessageSocialSpyPrefix() {
+    public NucleusTextTemplateImpl getMessageSocialSpyPrefix() {
         return socialSpy.messageSocialSpyPrefix;
     }
 
@@ -71,7 +71,7 @@ public class MessageConfig {
     public static class SocialSpy {
         @Setting(value = "msg-prefix", comment = "config.message.socialspy.prefix")
         @Default(value = "&7[SocialSpy] [{{fromDisplay}}&7 -> {{toDisplay}}&7]: &r", saveDefaultIfNull = true)
-        private NucleusTextTemplate messageSocialSpyPrefix;
+        private NucleusTextTemplateImpl messageSocialSpyPrefix;
 
         @Setting(value = "use-levels", comment = "config.message.socialspy.levels")
         private boolean socialSpyLevels = false;

@@ -6,11 +6,11 @@ package io.github.nucleuspowered.nucleus.internal.text;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.PluginInfo;
+import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
-import org.spongepowered.api.command.CommandSource;
+import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tuple;
@@ -67,12 +67,16 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         return Optional.ofNullable(primaryTokenStore.get(primaryToken.toLowerCase()));
     }
 
-    @Override public Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source, Map<String, Object> variables) {
-        if (variables == null) {
-            variables = Maps.newHashMap();
-        }
+    @Override public boolean registerTokenFormat(String tokenStart, String tokenEnd, String replacement) throws IllegalArgumentException {
+        return NucleusTextTemplateFactory.INSTANCE.registerTokenTranslator(tokenStart, tokenEnd, replacement);
+    }
 
-        return Nucleus.getNucleus().getChatUtil().getMessageFromTemplateWithVariables(input, source, variables);
+    @Override public NucleusTextTemplate createFromString(String string) throws NucleusException {
+        try {
+            return NucleusTextTemplateFactory.INSTANCE.create(string);
+        } catch (Throwable throwable) {
+            throw new NucleusException(Text.of("Error creating template."), throwable, NucleusException.ExceptionType.UNKNOWN_ERROR);
+        }
     }
 
     public Tokens getNucleusTokenParser() {
