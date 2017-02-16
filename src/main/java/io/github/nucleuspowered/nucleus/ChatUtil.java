@@ -276,7 +276,6 @@ public class ChatUtil {
         }
     }
 
-
     public StyleTuple getLastColourAndStyle(Text text, @Nullable StyleTuple current) {
         List<Text> texts = flatten(text);
         if (texts.isEmpty()) {

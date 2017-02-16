@@ -34,6 +34,9 @@ public class ChatConfig {
     @Setting(value = "check-body-for-minecraft-prefix", comment = "config.chat.checkbody")
     private boolean checkBody = false;
 
+    @Setting(value = "remove-link-underlines", comment = "config.chat.removeunderlines")
+    private boolean removeBlueUnderline = true;
+
     @Setting(value = "me-prefix", comment = "config.chat.meprefix")
     private String mePrefix = "&7* {{displayName}} ";
 
@@ -71,5 +74,9 @@ public class ChatConfig {
 
     public boolean isOverwriteEarlySuffixes() {
         return overwriteEarlySuffixes;
+    }
+
+    public boolean isRemoveBlueUnderline() {
+        return removeBlueUnderline;
     }
 }
