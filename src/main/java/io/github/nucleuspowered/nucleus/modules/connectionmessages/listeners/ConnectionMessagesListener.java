@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.connectionmessages.listeners;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
@@ -15,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.connectionmessages.config.ConnectionMessagesConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -32,7 +32,7 @@ import java.util.Optional;
 
 public class ConnectionMessagesListener extends ListenerBase.Reloadable {
 
-    @Inject private ChatUtil chatUtil;
+    @Inject private TextParsingUtils textParsingUtils;
     @Inject private CoreConfigAdapter cca;
     @Inject private ConnectionMessagesConfigAdapter cma;
     private ConnectionMessagesConfig cmc = null;

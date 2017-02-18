@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.message.handlers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -15,6 +14,7 @@ import io.github.nucleuspowered.nucleus.iapi.service.NucleusPrivateMessagingServ
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.message.MessageModule;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -43,7 +43,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     private final MessageConfigAdapter mca;
     private final UserDataManager ucl;
-    private final ChatUtil chatUtil;
+    private final TextParsingUtils textParsingUtils;
     private MessageConfig messageConfig;
     private boolean useLevels = false;
     private boolean sameLevel = false;
@@ -55,7 +55,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     public static final String socialSpyOption = "nucleus.socialspy.level";
 
     public MessageHandler(Nucleus nucleus) throws Exception {
-        chatUtil = nucleus.getChatUtil();
+        textParsingUtils = nucleus.getTextParsingUtils();
         ucl = nucleus.getUserDataManager();
         mca = nucleus.getModuleContainer().getConfigAdapterForModule(MessageModule.ID, MessageConfigAdapter.class);
         onReload();
@@ -132,10 +132,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
         // Create the tokens.
         Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
-        tokens.put("from", cs -> Optional.of(chatUtil.addCommandToName(sender)));
-        tokens.put("to", cs -> Optional.of(chatUtil.addCommandToName(receiver)));
-        tokens.put("fromdisplay", cs -> Optional.of(chatUtil.addCommandToDisplayName(sender)));
-        tokens.put("todisplay", cs -> Optional.of(chatUtil.addCommandToDisplayName(receiver)));
+        tokens.put("from", cs -> Optional.of(textParsingUtils.addCommandToName(sender)));
+        tokens.put("to", cs -> Optional.of(textParsingUtils.addCommandToName(receiver)));
+        tokens.put("fromdisplay", cs -> Optional.of(textParsingUtils.addCommandToDisplayName(sender)));
+        tokens.put("todisplay", cs -> Optional.of(textParsingUtils.addCommandToDisplayName(receiver)));
 
         Text tm = useMessage(sender, message);
 
@@ -219,7 +219,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     @SuppressWarnings("unchecked")
     private Text constructMessage(CommandSource sender, Text message, NucleusTextTemplateImpl template, Map<String, Function<CommandSource,
             Optional<Text>>> tokens, Map<String, Object> variables) {
-        return Text.of(template.getForCommandSource(sender, tokens, variables), message);
+        return TextParsingUtils.joinTextsWithColoursFlowing(template.getForCommandSource(sender, tokens, variables), message);
     }
 
     private Map<String[], Function<String, String>> createReplacements() {
@@ -247,7 +247,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
         Text result;
         if (cph.get().testSuffix(player, "url")) {
-            result = chatUtil.addUrlsToAmpersandFormattedString(m);
+            result = TextParsingUtils.addUrls(m);
         } else {
             result = TextSerializers.FORMATTING_CODE.deserialize(m);
         }

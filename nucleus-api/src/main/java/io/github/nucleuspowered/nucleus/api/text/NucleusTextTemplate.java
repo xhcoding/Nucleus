@@ -47,6 +47,13 @@ public interface NucleusTextTemplate extends TextRepresentable {
     }
 
     /**
+     * Returns whether there are tokens to parse.
+     *
+     * @return <code>true</code> if there are tokens.
+     */
+    boolean containsTokens();
+
+    /**
      * Gets the {@link Text} where the tokens have been parsed from the viewpoint of the supplied {@link CommandSource}.
      *
      * <p>

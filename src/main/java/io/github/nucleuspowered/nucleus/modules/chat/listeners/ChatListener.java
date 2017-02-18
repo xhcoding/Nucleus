@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -18,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.chat.ChatModule;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
@@ -99,12 +99,12 @@ public class ChatListener extends ListenerBase.Reloadable {
     // --- Listener Proper
     private final ChatConfigAdapter cca;
     private ChatConfig chatConfig = null;
-    private final ChatUtil chatUtil;
+    private final TextParsingUtils textParsingUtils;
     private final TemplateUtil templateUtil;
 
     @Inject
-    public ChatListener(ChatUtil chatUtil, ChatConfigAdapter cca, TemplateUtil templateUtil) {
-        this.chatUtil = chatUtil;
+    public ChatListener(TextParsingUtils textParsingUtils, ChatConfigAdapter cca, TemplateUtil templateUtil) {
+        this.textParsingUtils = textParsingUtils;
         this.cca = cca;
         this.templateUtil = templateUtil;
     }
@@ -167,7 +167,7 @@ public class ChatListener extends ListenerBase.Reloadable {
 
         Text result;
         if (player.hasPermission(prefix + "url")) {
-            result = chatUtil.addUrlsToAmpersandFormattedString(m);
+            result = TextParsingUtils.addUrls(m);
         } else {
             result = TextSerializers.FORMATTING_CODE.deserialize(m);
         }

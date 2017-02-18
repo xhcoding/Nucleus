@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -13,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHelpOpEvent;
@@ -37,7 +37,7 @@ public class HelpOpCommand extends AbstractCommand<Player> implements StandardAb
 
     @Inject private MessageConfigAdapter mca;
     private MessageConfig messageConfig;
-    @Inject private ChatUtil chatUtil;
+    @Inject private TextParsingUtils textParsingUtils;
 
     @Override
     public CommandElement[] getArguments() {
@@ -65,7 +65,7 @@ public class HelpOpCommand extends AbstractCommand<Player> implements StandardAb
         Text prefix = messageConfig.getHelpOpPrefix().getForCommandSource(src);
 
         MessageChannel.permission(permissions.getPermissionWithSuffix("receive"))
-                .send(src, chatUtil.joinTextsWithColoursFlowing(prefix, Text.of(message)));
+                .send(src, textParsingUtils.joinTextsWithColoursFlowing(prefix, Text.of(message)));
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.helpop.success"));
 

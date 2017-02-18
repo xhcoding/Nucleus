@@ -5,10 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.staffchat;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.staffchat.commands.StaffChatCommand;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -38,14 +38,14 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
     }
 
     private final NucleusPlugin plugin;
-    private final ChatUtil chatUtil;
+    private final TextParsingUtils textParsingUtils;
     private final String basePerm;
     private NucleusTextTemplateImpl template;
     private TextColor colour;
 
     StaffChatMessageChannel(NucleusPlugin plugin) {
         this.plugin = plugin;
-        chatUtil = plugin.getChatUtil();
+        textParsingUtils = plugin.getTextParsingUtils();
         plugin.registerReloadable(this::onReload);
         this.onReload();
         this.basePerm = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(StaffChatCommand.class).getBase();

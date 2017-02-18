@@ -5,12 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.commandspy.listeners;
 
 import com.google.common.collect.Sets;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.commandspy.CommandSpyModule;
 import io.github.nucleuspowered.nucleus.modules.commandspy.commands.CommandSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.commandspy.config.CommandSpyConfig;
@@ -43,7 +43,7 @@ public class CommandSpyListener extends ListenerBase.Reloadable {
 
     private CommandSpyConfig config;
     @Inject private UserDataManager dataManager;
-    @Inject private ChatUtil chatUtil;
+    @Inject private TextParsingUtils textParsingUtils;
 
     @Listener(order = Order.LAST)
     public void onCommand(SendCommandEvent event, @Root Player player) {
@@ -75,7 +75,7 @@ public class CommandSpyListener extends ListenerBase.Reloadable {
 
                 if (!playerList.isEmpty()) {
                     Text prefix = config.getTemplate().getForCommandSource(player);
-                    ChatUtil.StyleTuple st = chatUtil.getLastColourAndStyle(prefix, null);
+                    TextParsingUtils.StyleTuple st = textParsingUtils.getLastColourAndStyle(prefix, null);
                     Text messageToSend = prefix
                         .toBuilder().append(Text.of(st.colour, st.style, "/" + event.getCommand() + " " + event.getArguments())).build();
                     playerList.forEach(x -> x.sendMessage(messageToSend));

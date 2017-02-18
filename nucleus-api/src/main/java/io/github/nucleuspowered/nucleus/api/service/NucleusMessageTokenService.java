@@ -16,10 +16,12 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.util.Tuple;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Allows plugins to register their own tokens for use in templated messages, and to obtain {@link NucleusTextTemplate} instances.
@@ -117,6 +119,13 @@ public interface NucleusMessageTokenService {
     Optional<Tuple<TokenParser, String>> getPrimaryTokenParserAndIdentifier(String primaryToken);
 
     /**
+     * Gets the currently registered primary tokens.
+     *
+     * @return The primary tokens.
+     */
+    List<String> getPrimaryTokens();
+
+    /**
      * Gets the result of a token's registered {@link TokenParser} on a {@link CommandSource}
      *
      * @param plugin The ID of the plugin that registered the token.
@@ -161,6 +170,27 @@ public interface NucleusMessageTokenService {
                     tokenData.length == 2 ? x.getSecond() + "|" + tokenData[1] : x.getSecond(),
                 source, variables)).orElseGet(Optional::empty);
     }
+
+    /**
+     * Parses a token that might be either a primary token or a standard token.
+     *
+     * @param token The token, without the delimiters.
+     * @param source The source to apply the tokens with.
+     * @return The token result, if it exists.
+     */
+    default Optional<Text> parseToken(String token, CommandSource source) {
+        return parseToken(token, source, null);
+    }
+
+    /**
+     * Parses a token that might be either a primary token or a standard token.
+     *
+     * @param token The token, without the delimiters.
+     * @param source The source to apply the tokens with.
+     * @param variables The variables to pass to the parser.
+     * @return The token result, if it exists.
+     */
+    Optional<Text> parseToken(String token, CommandSource source, @Nullable Map<String, Object> variables);
 
     /**
      * Uses Nucleus' parser to format a string that uses Minecraft colour codes.

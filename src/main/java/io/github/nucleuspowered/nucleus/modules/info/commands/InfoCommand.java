@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.info.commands;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.argumentparsers.InfoArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -18,7 +17,9 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
@@ -55,7 +56,7 @@ import java.util.stream.Collectors;
 public class InfoCommand extends AbstractCommand<CommandSource> {
 
     @Inject private InfoHandler infoHandler;
-    @Inject private ChatUtil chatUtil;
+    @Inject private TextParsingUtils textParsingUtils;
     @Inject private InfoConfigAdapter infoConfigAdapter;
 
     private final String key = "section";
@@ -133,7 +134,9 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
 
             // If there is a title, then add it.
             getTitle(infoHandler.getSection(x).get()).ifPresent(sub ->
-                    tb.append(Text.of(TextColors.GOLD, " - ")).append(chatUtil.getMessageFromTemplate(sub, src, true)));
+                    tb.append(Text.of(TextColors.GOLD, " - ")).append(
+                            NucleusTextTemplateFactory.createFromAmpersandString(sub).getForCommandSource(src))
+            );
 
             s.add(tb.build());
         });

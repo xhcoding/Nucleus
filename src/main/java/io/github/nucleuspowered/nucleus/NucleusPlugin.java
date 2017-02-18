@@ -52,7 +52,7 @@ import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTokenServiceImpl;
-import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.logging.DebugLogger;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
@@ -113,14 +113,13 @@ public class NucleusPlugin extends Nucleus {
     private WorldDataManager worldDataManager;
     private NameBanService nameBanService;
     private KitService kitService;
-    private ChatUtil chatUtil;
+    private TextParsingUtils textParsingUtils;
     private NameUtil nameUtil;
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
     private final List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
     private DocGenCache docGenCache = null;
     private final NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
-    private final TokenHandler tokenHandler = new TokenHandler(this);
     private NucleusTokenServiceImpl nucleusChatService;
 
     private final InternalServiceManager serviceManager = new InternalServiceManager(this);
@@ -181,7 +180,7 @@ public class NucleusPlugin extends Nucleus {
             kitService = new KitService(d.getKitsDataProvider());
             nameBanService = new NameBanService(d.getNameBanDataProvider());
             warmupManager = new WarmupManager();
-            chatUtil = new ChatUtil(this);
+            textParsingUtils = new TextParsingUtils(this);
             nameUtil = new NameUtil(this);
         } catch (Exception e) {
             isErrored = e;
@@ -198,9 +197,7 @@ public class NucleusPlugin extends Nucleus {
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
         serviceManager.registerService(WarmupManager.class, warmupManager);
 
-
-        nucleusChatService = new NucleusTokenServiceImpl();
-        getTokenHandler().register(nucleusChatService);
+        nucleusChatService = new NucleusTokenServiceImpl(this);
         serviceManager.registerService(NucleusTokenServiceImpl.class, nucleusChatService);
         Sponge.getServiceManager().setProvider(this, NucleusMessageTokenService.class, nucleusChatService);
 
@@ -497,9 +494,8 @@ public class NucleusPlugin extends Nucleus {
         return nameUtil;
     }
 
-    @Override
-    public ChatUtil getChatUtil() {
-        return chatUtil;
+    public TextParsingUtils getTextParsingUtils() {
+        return textParsingUtils;
     }
 
     @Override
@@ -517,8 +513,8 @@ public class NucleusPlugin extends Nucleus {
         return teleportHandler;
     }
 
-    @Override public TokenHandler getTokenHandler() {
-        return tokenHandler;
+    @Override public NucleusMessageTokenService getMessageTokenService() {
+        return nucleusChatService;
     }
 
     @Override public boolean isDebugMode() {

@@ -4,9 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.tests;
 
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -20,7 +20,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvide
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
-import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
@@ -191,8 +191,7 @@ public abstract class TestBase {
             return null;
         }
 
-        @Override
-        public ChatUtil getChatUtil() {
+        public TextParsingUtils getTextParsingUtils() {
             return null;
         }
 
@@ -220,7 +219,7 @@ public abstract class TestBase {
             return null;
         }
 
-        @Override public TokenHandler getTokenHandler() {
+        @Override public NucleusMessageTokenService getMessageTokenService() {
             return null;
         }
 

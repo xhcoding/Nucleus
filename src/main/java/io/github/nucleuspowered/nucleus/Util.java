@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.iapi.data.interfaces.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.util.Action;
 import io.github.nucleuspowered.nucleus.util.PaginationBuilderWrapper;
 import io.github.nucleuspowered.nucleus.util.ThrownFunction;
@@ -133,16 +134,18 @@ public class Util {
                     if (replaceTokensInLore) {
                         itemStack.get(Keys.DISPLAY_NAME).ifPresent(x -> {
                             if (m.reset(x.toPlain()).find()) {
-                                itemStack.offer(Keys.DISPLAY_NAME, Nucleus.getNucleus().getChatUtil()
-                                    .getMessageFromTemplate(TextSerializers.FORMATTING_CODE.serialize(x), player, true));
+                                itemStack.offer(Keys.DISPLAY_NAME,
+                                    NucleusTextTemplateFactory.createFromAmpersandString(TextSerializers.FORMATTING_CODE.serialize(x))
+                                            .getForCommandSource(player, null, null));
                             }
                         });
 
                         itemStack.get(Keys.ITEM_LORE).ifPresent(x -> {
                             if (x.stream().map(Text::toPlain).anyMatch(y -> m.reset(y).find())) {
-                                itemStack.offer(Keys.ITEM_LORE, Nucleus.getNucleus().getChatUtil()
-                                    .getMessageFromTemplate(x.stream().map(TextSerializers.FORMATTING_CODE::serialize).collect(Collectors.toList()),
-                                        player, true));
+                                itemStack.offer(Keys.ITEM_LORE,
+                                        x.stream().map(y ->
+                                            NucleusTextTemplateFactory.createFromAmpersandString(TextSerializers.FORMATTING_CODE.serialize(y))
+                                        .getForCommandSource(player, null, null)).collect(Collectors.toList()));
                             }
                         });
                     }

@@ -31,11 +31,15 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
     private final Map<String, Translator> translatorMap = Maps.newHashMap();
 
     Tokens() {
-        translatorMap.put("name", (p, v, m) -> Optional.of(Nucleus.getNucleus().getChatUtil().addCommandToName(getFromVariableIfExists(p, v, m))));
+        translatorMap.put("name", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToName(getFromVariableIfExists(p, v, m))));
+        translatorMap.put("player", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
+        translatorMap.put("playername", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
 
         translatorMap.put("prefix", (p, v, m) -> Optional.of(getTextFromOption(getFromVariableIfExists(p, v, m), "prefix")));
         translatorMap.put("suffix", (p, v, m) -> Optional.of(getTextFromOption(getFromVariableIfExists(p, v, m), "suffix")));
-        translatorMap.put("displayname", (p, v, m) -> Optional.of(Nucleus.getNucleus().getChatUtil().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
+
+        translatorMap.put("playerdisplayname", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
+        translatorMap.put("displayname", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
 
         translatorMap.put("maxplayers", (p, v, m) -> Optional.of(Text.of(Sponge.getServer().getMaxPlayers())));
         translatorMap.put("onlineplayers", (p, v, m) -> Optional.of(Text.of(Sponge.getServer().getOnlinePlayers().size())));

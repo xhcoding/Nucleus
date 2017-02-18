@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.internal.text;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
@@ -61,7 +60,11 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
         return textTemplate;
     }
 
-    abstract Tuple<TextTemplate, Map<String, Function<CommandSource, Text>>> parse(String parser) ;
+    abstract Tuple<TextTemplate, Map<String, Function<CommandSource, Text>>> parse(String parser);
+
+    @Override public boolean containsTokens() {
+        return !tokenMap.isEmpty();
+    }
 
     @Override @SuppressWarnings("SameParameterValue")
     public Text getForCommandSource(CommandSource source, @Nullable Map<String, Function<CommandSource, Optional<Text>>> tokensArray,
@@ -85,7 +88,7 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
             } else if (tokensArray != null && tokensArray.containsKey(key)) {
                 t = tokensArray.get(key).apply(source).orElse(null);
             } else {
-                t = Nucleus.getNucleus().getTokenHandler().getTextFromToken(key, source, variables2).orElse(null);
+                t = Nucleus.getNucleus().getMessageTokenService().parseToken(key, source, variables2).orElse(null);
             }
 
             if (t != null) {
@@ -131,14 +134,19 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
             ArrayDeque<TextRepresentable> texts = new ArrayDeque<>();
             Map<String, Function<CommandSource, Text>> tokens = Maps.newHashMap();
 
-            // ChatUtil URL parsing needed here.
-            ChatUtil cu = Nucleus.getNucleus().getChatUtil();
-            cu.createTextTemplateFragmentWithLinks(s[0]).mapIfPresent(texts::addAll, tokens::putAll);
+            // TextParsingUtils URL parsing needed here.
+            TextParsingUtils cu = Nucleus.getNucleus().getTextParsingUtils();
+
+            // This condition only occurs if you _just_ use the token. Otherwise, you get a part either side - so it's either 0 or 2.
+            if (s.length > 0) {
+                cu.createTextTemplateFragmentWithLinks(s[0]).mapIfPresent(texts::addAll, tokens::putAll);
+            }
+
             for (int i = 0; i < map.size(); i++) {
                 TextTemplate.Arg.Builder arg = TextTemplate.arg(map.get(i)).optional();
                 TextRepresentable r = texts.peekLast();
                 if (r != null) {
-                    cu.getLastColourAndStyle(r, null).applyTo(st -> arg.color(st.colour).style(st.style));
+                    TextParsingUtils.getLastColourAndStyle(r, null).applyTo(st -> arg.color(st.colour).style(st.style));
                 }
 
                 texts.add(arg.build());

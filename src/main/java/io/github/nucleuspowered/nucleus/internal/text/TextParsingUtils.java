@@ -2,11 +2,14 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus;
+package io.github.nucleuspowered.nucleus.internal.text;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.modules.core.CoreModule;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.util.Tuples;
 import org.spongepowered.api.command.CommandSource;
@@ -38,16 +41,9 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-public class ChatUtil {
+public class TextParsingUtils {
 
     private final NucleusPlugin plugin;
-    private final Pattern urlParser =
-        Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
-                + "(?<options>\\{[a-z]+?})?(?<url>(http(s)?://)?([A-Za-z0-9-]+\\.)+[A-Za-z0-9]{2,}\\S*)",
-        Pattern.CASE_INSENSITIVE);
-
-    private final Pattern tokenParser = Pattern.compile("^\\{\\{(?<capture>[\\S]+)}}", Pattern.CASE_INSENSITIVE);
-    private final Pattern tokenParserLookAhead = Pattern.compile("(?=\\{\\{(?<capture>[\\S]+)}})", Pattern.CASE_INSENSITIVE);
 
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
@@ -58,106 +54,32 @@ public class ChatUtil {
 
     private CoreConfigAdapter cca = null;
 
+    private static final Pattern urlParser =
+            Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
+                            + "(?<options>\\{[a-z]+?})?(?<url>(http(s)?://)?([A-Za-z0-9-]+\\.)+[A-Za-z0-9]{2,}\\S*)",
+                    Pattern.CASE_INSENSITIVE);
     public static final StyleTuple EMPTY = new StyleTuple(TextColors.NONE, TextStyles.NONE);
 
-    public ChatUtil(NucleusPlugin plugin) {
+    public TextParsingUtils(NucleusPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public final Text getMessageFromTemplate(String templates, CommandSource cs, final boolean trimTrailingSpace) {
-        return getMessageFromTemplate(Lists.newArrayList(templates), cs, trimTrailingSpace, Maps.newHashMap(), Maps.newHashMap()).get(0);
-    }
-
-    public final Text getMessageFromTemplateWithVariables(String templates, CommandSource cs, Map<String, Object> variables) {
-        return getMessageFromTemplate(Lists.newArrayList(templates), cs, true, Maps.newHashMap(), variables).get(0);
-    }
-
-    public final List<Text> getMessageFromTemplate(List<String> templates, CommandSource cs, final boolean trimTrailingSpace) {
-        return getMessageFromTemplate(templates, cs, trimTrailingSpace, Maps.newHashMap(), Maps.newHashMap());
-    }
-
-    public final Text getMessageFromTemplate(String templates, CommandSource cs, final boolean trimTrailingSpace,
-        Map<String, Function<CommandSource, Optional<Text>>> tokensArray, Map<String, Object> variables) {
-        return getMessageFromTemplate(Lists.newArrayList(templates), cs, trimTrailingSpace, tokensArray, variables).get(0);
-    }
-
-    public final List<Text> getMessageFromTemplate(List<String> templates, CommandSource cs, final boolean trimTrailingSpace,
-            Map<String, Function<CommandSource, Optional<Text>>> tokensArray, Map<String, Object> variables) {
-
-        List<Text> texts = Lists.newArrayList();
-        templates.forEach(template -> {
-            StyleTuple st = new StyleTuple(TextColors.WHITE, TextStyles.NONE);
-            boolean trimNext = trimTrailingSpace;
-
-            Text.Builder tb = Text.builder();
-            String[] items = tokenParserLookAhead.split(template);
-            Matcher tokenCheck = tokenParser.matcher("");
-            for (String textElement : items) {
-                if (tokenCheck.reset(textElement).find(0)) {
-                    textElement = textElement.replace(tokenCheck.group(), "");
-                    String tokenName = tokenCheck.group("capture");
-
-                    // Token processing here.
-                    Optional<Text> tokenResult;
-                    if (tokensArray.containsKey(tokenName.toLowerCase())) {
-                        tokenResult = tokensArray.get(tokenName.toLowerCase()).apply(cs);
-                    } else {
-                        tokenResult = plugin.getTokenHandler().getTextFromToken(tokenName, cs, variables);
-                    }
-
-                    if (tokenResult.isPresent()) {
-                        tb.append(Text.builder().color(st.colour).style(st.style).append(tokenResult.get()).build());
-                    } else {
-                        tb.append(Text.EMPTY);
-                    }
-
-                    trimNext = false;
-                }
-
-                if (trimNext) {
-                    textElement = textElement.replaceAll("^\\s+", "");
-                }
-
-                if (!textElement.isEmpty()) {
-                    // Just convert the colour codes, but that's it.
-                    Text r = TextSerializers.FORMATTING_CODE.deserialize(textElement);
-                    tb.append(Text.of(st.colour, st.style, r));
-                    st = getLastColourAndStyle(r, st);
-                    trimNext = false;
-                }
-            }
-
-            texts.add(tb.build());
-        });
-
-        return texts;
-    }
-
-    public Text addLinksToText(Text message, @Nullable Player player) {
-        return addLinksToAmpersandFormattedString(TextSerializers.FORMATTING_CODE.serialize(message), player, enhancedUrlParser);
-    }
-
-    public Text addUrlsToAmpersandFormattedString(String message) {
-        return addLinksToAmpersandFormattedString(message, null, urlParser);
-    }
-
-    public Text addLinksToAmpersandFormattedString(String message, @Nullable Player player, Pattern parser) {
-        Preconditions.checkNotNull(message, "message");
-        if (message.isEmpty()) {
+    public static Text addUrls(String message) {
+        if (message == null || message.isEmpty()) {
             return Text.EMPTY;
         }
 
-        Matcher m = parser.matcher(message);
+        Matcher m = urlParser.matcher(message);
         if (!m.find()) {
             return TextSerializers.FORMATTING_CODE.deserialize(message);
         }
 
         List<Text> texts = Lists.newArrayList();
         String remaining = message;
-        StyleTuple st = ChatUtil.EMPTY;
+        TextParsingUtils.StyleTuple st = TextParsingUtils.EMPTY;
         do {
             // We found a URL. We split on the URL that we have.
-            String[] textArray = remaining.split(parser.pattern(), 2);
+            String[] textArray = remaining.split(urlParser.pattern(), 2);
             Text first = Text.builder().color(st.colour).style(st.style)
                     .append(TextSerializers.FORMATTING_CODE.deserialize(textArray[0])).build();
 
@@ -184,39 +106,12 @@ public class ChatUtil {
                 first = Text.of(reset, TextSerializers.FORMATTING_CODE.deserialize(m.group("colour") + " "));
             }
 
-            st = getLastColourAndStyle(first, st);
+            st = TextParsingUtils.getLastColourAndStyle(first, st);
 
             // Build the URL
             String whiteSpace = m.group("first");
-            if (m.group("url") != null) {
-                String url = m.group("url");
-                texts.add(getTextForUrl(url, url, whiteSpace, st, m.group("options")));
-            } else if (m.group("specialUrl") != null) {
-                String url = m.group("sUrl");
-                String msg = m.group("msg");
-                texts.add(getTextForUrl(url, msg, whiteSpace, st, m.group("optionssurl")));
-            } else {
-                // Must be commands.
-                String cmd = m.group("sCmd");
-                String msg = m.group("sMsg");
-                String optionList = m.group("optionsscmd");
-                if (player != null) {
-                    cmd = cmd.replace("{{subject}}", player.getName());
-                }
-
-                Text.Builder textBuilder = Text.builder(msg).color(st.colour).style(st.style).onClick(TextActions.runCommand(cmd))
-                        .onHover(setupHoverOnCmd(cmd, optionList));
-                if (optionList != null && optionList.contains("s")) {
-                    textBuilder.onClick(TextActions.suggestCommand(cmd));
-                }
-
-                Text toAdd = textBuilder.build();
-                if (!whiteSpace.isEmpty()) {
-                    toAdd = Text.join(Text.of(whiteSpace), toAdd);
-                }
-
-                texts.add(toAdd);
-            }
+            String url = m.group("url");
+            texts.add(TextParsingUtils.getTextForUrl(url, url, whiteSpace, st, m.group("options")));
         } while (remaining != null && m.find());
 
         // Add the last bit.
@@ -243,7 +138,7 @@ public class ChatUtil {
         Map<String, Function<CommandSource, Text>> args = Maps.newHashMap();
         List<TextRepresentable> texts = Lists.newArrayList();
         String remaining = message;
-        StyleTuple st = ChatUtil.EMPTY;
+        StyleTuple st = TextParsingUtils.EMPTY;
         do {
             // We found a URL. We split on the URL that we have.
             String[] textArray = remaining.split(enhancedUrlParser.pattern(), 2);
@@ -345,8 +240,9 @@ public class ChatUtil {
         return TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.command.click", cmd));
     }
 
-    private Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st, @Nullable String optionString) {
+    public static Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st, @Nullable String optionString) {
         String toParse = TextSerializers.FORMATTING_CODE.stripCodes(url);
+        Nucleus plugin = Nucleus.getNucleus();
 
         try {
             URL urlObj;
@@ -368,10 +264,8 @@ public class ChatUtil {
             return textBuilder.build();
         } catch (MalformedURLException e) {
             // URL parsing failed, just put the original text in here.
-            initCoreConfigAdapter();
-
             plugin.getLogger().warn(plugin.getMessageProvider().getMessageWithFormat("chat.url.malformed", url));
-            if (this.cca.getNodeOrDefault().isDebugmode()) {
+            if (Nucleus.getNucleus().isDebugMode()) {
                 e.printStackTrace();
             }
 
@@ -384,19 +278,11 @@ public class ChatUtil {
         }
     }
 
-    public Text joinTextsWithColoursFlowing(Text... texts) {
-        return joinTextsWithColoursFlowing("", texts);
+    public static Text joinTextsWithColoursFlowing(Text... texts) {
+        return joinTextsWithColoursFlowing("", Arrays.asList(texts));
     }
 
-    public Text joinTextsWithColoursFlowing(String joining, Text... texts) {
-        return joinTextsWithColoursFlowing(joining, Arrays.asList(texts));
-    }
-
-    public Text joinTextsWithColoursFlowing(Iterable<Text> texts) {
-        return joinTextsWithColoursFlowing("", texts);
-    }
-
-    public Text joinTextsWithColoursFlowing(String joining, Iterable<Text> texts) {
+    public static Text joinTextsWithColoursFlowing(String joining, Iterable<Text> texts) {
         List<Text> result = Lists.newArrayList();
         Iterator<Text> t = texts.iterator();
         Text last = null;
@@ -414,7 +300,7 @@ public class ChatUtil {
         return Text.join(result);
     }
 
-    public StyleTuple getLastColourAndStyle(TextRepresentable text, @Nullable StyleTuple current) {
+    public static StyleTuple getLastColourAndStyle(TextRepresentable text, @Nullable StyleTuple current) {
         List<Text> texts = flatten(text.toText());
         if (texts.isEmpty()) {
             return current == null ? new StyleTuple(TextColors.NONE, TextStyles.NONE) : current;
@@ -438,7 +324,7 @@ public class ChatUtil {
         return new StyleTuple(tc != TextColors.NONE ? tc : current.colour, ts);
     }
 
-    private List<Text> flatten(Text text) {
+    private static List<Text> flatten(Text text) {
         List<Text> texts = Lists.newArrayList(text);
         if (!text.getChildren().isEmpty()) {
             text.getChildren().forEach(x -> texts.addAll(flatten(x)));
@@ -509,7 +395,7 @@ public class ChatUtil {
 
     private void initCoreConfigAdapter() {
         if (this.cca == null) {
-            this.cca = plugin.getInjector().getInstance(CoreConfigAdapter.class);
+            this.cca = plugin.getConfigAdapter(CoreModule.ID, CoreConfigAdapter.class).get();
         }
     }
 

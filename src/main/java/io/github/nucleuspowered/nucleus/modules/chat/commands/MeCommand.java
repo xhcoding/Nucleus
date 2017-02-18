@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat.commands;
 
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
 import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
@@ -14,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.listeners.ChatListener;
@@ -60,7 +60,7 @@ public class MeCommand extends AbstractCommand<CommandSource> implements Standar
     public CommandResult executeCommand(@Nonnull CommandSource src, CommandContext args) throws Exception {
         String message = ChatListener.stripPermissionless(src, args.<String>getOne(messageKey).get());
         Text header = config.getMePrefix().getForCommandSource(src);
-        ChatUtil.StyleTuple t = plugin.getChatUtil().getLastColourAndStyle(header, null);
+        TextParsingUtils.StyleTuple t = plugin.getTextParsingUtils().getLastColourAndStyle(header, null);
         MessageEvent.MessageFormatter formatter = new MessageEvent.MessageFormatter(
             Text.builder().color(t.colour).style(t.style)
                 .append(TextSerializers.FORMATTING_CODE.deserialize(message)).toText()
