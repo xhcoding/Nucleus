@@ -10,7 +10,7 @@ plugins {
 
 project.ext.versionno = '0.24.0'
 project.ext.spongeapiversion = '5.1'
-project.ext.suffix = '-SNAPSHOT'
+project.ext.suffix = '-PR1'
 
 allprojects {
     apply plugin: 'java'
