@@ -4,11 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
+import io.github.nucleuspowered.nucleus.argumentparsers.AdditionalCompletionsArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.RequiredArgumentsArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -29,6 +32,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
@@ -38,6 +42,7 @@ import org.spongepowered.api.util.Tristate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Allows a user to warp to the specified warp.
@@ -79,11 +84,17 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
                         .optionalWeak(GenericArguments.flags()
                                 .flag("y", "a", "-accept")
                                 .flag("f", "-force").setAnchorFlags(false).buildWith(GenericArguments.none()))),
-            GenericArguments.optionalWeak(GenericArguments.requiringPermission(
+            GenericArguments.optionalWeak(RequiredArgumentsArgument.r2(GenericArguments.requiringPermission(
                 new NoModifiersArgument<>(
                     SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER),
-                        NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE), permissions.getOthers())),
-                GenericArguments.onlyOne(new WarpArgument(Text.of(warpNameArg), adapter, true))
+                        NoModifiersArgument.PLAYER_NOT_CALLER_PREDICATE), permissions.getOthers()))),
+
+                GenericArguments.onlyOne(
+                    new AdditionalCompletionsArgument(
+                        new WarpArgument(Text.of(warpNameArg), adapter, true), 0, 1,
+                            (c, s) -> permissions.testOthers(c) ?
+                                Sponge.getServer().getOnlinePlayers().stream().map(User::getName).collect(Collectors.toList()) : Lists.newArrayList()
+                ))
         };
     }
 
