@@ -5,6 +5,7 @@ plugins {
     id 'maven'
 }
 
+apply plugin: 'ninja.miserable.blossom'
 apply plugin: 'com.github.hierynomus.license'
 
 description = 'The Ultimate Essentials Plugin API.'
@@ -59,4 +60,13 @@ jar {
 artifacts {
     archives javadocJar
     archives jar
+}
+
+blossom {
+    def location = 'src/main/java/io/github/nucleuspowered/nucleus/api/NucleusAPI.java'
+
+    replaceToken '@version@', rootProject.version, location
+    replaceToken '@semver@', versionno, location
+    replaceToken '@release@', suffix, location
+    replaceToken '@description@', description, location
 }

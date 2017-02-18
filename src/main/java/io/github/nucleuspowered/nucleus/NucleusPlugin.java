@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.typesafe.config.ConfigException;
+import io.github.nucleuspowered.nucleus.api.NucleusAPI;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
@@ -153,6 +154,7 @@ public class NucleusPlugin extends Nucleus {
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
         Game game = Sponge.getGame();
+        NucleusAPI.onPreInit(this);
 
         try {
             Class.forName("io.github.nucleuspowered.nucleus.mixins.NucleusMixinSpongePlugin");
