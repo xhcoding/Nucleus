@@ -8,11 +8,13 @@ import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.spec.CommandSpec;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -75,9 +77,15 @@ public class CommandBuilder {
         }
 
         if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("enabled").getBoolean(true)) {
+            ConfigurationNode node = plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("aliases");
+
             // Register the commands.
             if (rootCmd) {
-                Sponge.getCommandManager().register(plugin, spec, c.getAliases());
+                // This will return true for the first anyway
+                String first = c.getAliases()[0];
+                String[] aliases = Arrays.stream(c.getAliases()).filter(x -> x.equals(first) || node.getNode(x).getBoolean(true))
+                        .toArray(String[]::new);
+                Sponge.getCommandManager().register(plugin, spec, aliases);
             }
 
             // Register as another full blown command.
