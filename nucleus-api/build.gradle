@@ -46,6 +46,11 @@ license {
     }
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
 jar {
     manifest {
         attributes  'Implementation-Title': project.name,
@@ -60,6 +65,7 @@ jar {
 artifacts {
     archives javadocJar
     archives jar
+    archives sourcesJar
 }
 
 blossom {
