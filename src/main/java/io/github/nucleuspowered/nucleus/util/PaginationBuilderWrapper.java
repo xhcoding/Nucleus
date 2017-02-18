@@ -37,23 +37,28 @@ public class PaginationBuilderWrapper implements PaginationList.Builder {
     }
 
     @Override public PaginationList.Builder title(Text title) {
-        return this.builder.title(title);
+        this.builder.title(title);
+        return this;
     }
 
     @Override public PaginationList.Builder header(@Nullable Text header) {
-        return this.builder.header(header);
+        this.builder.header(header);
+        return this;
     }
 
     @Override public PaginationList.Builder footer(@Nullable Text footer) {
-        return this.builder.footer(footer);
+        this.builder.footer(footer);
+        return this;
     }
 
     @Override public PaginationList.Builder padding(Text padding) {
-        return this.builder.padding(padding);
+        this.builder.padding(padding);
+        return this;
     }
 
     @Override public PaginationList.Builder linesPerPage(int linesPerPage) {
-        return this.builder.linesPerPage(linesPerPage);
+        this.builder.linesPerPage(linesPerPage);
+        return this;
     }
 
     @Override public PaginationList build() {
@@ -70,10 +75,12 @@ public class PaginationBuilderWrapper implements PaginationList.Builder {
     }
 
     @Override public PaginationList.Builder from(PaginationList value) {
-        return this.builder.from(value);
+        return new PaginationBuilderWrapper(this.builder.from(value));
     }
 
     @Override public PaginationList.Builder reset() {
-        return this.builder.reset();
+        this.builder.reset();
+        texts = null;
+        return this;
     }
 }
