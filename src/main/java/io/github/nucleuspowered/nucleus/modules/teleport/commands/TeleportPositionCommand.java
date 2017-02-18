@@ -74,7 +74,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
         World world = Sponge.getServer().getWorld(wp.getUniqueId()).get();
 
         int xx = args.<Integer>getOne(x).get();
-        int zz = args.<Integer>getOne(x).get();
+        int zz = args.<Integer>getOne(z).get();
         int yy = args.<Integer>getOne(y).get();
         if (yy < 0) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.ysmall"));

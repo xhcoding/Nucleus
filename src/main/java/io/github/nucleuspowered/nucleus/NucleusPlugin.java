@@ -16,6 +16,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.typesafe.config.ConfigException;
+import io.github.nucleuspowered.nucleus.api.NucleusAPI;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
@@ -49,7 +51,8 @@ import io.github.nucleuspowered.nucleus.internal.qsml.QuickStartModuleConstructo
 import io.github.nucleuspowered.nucleus.internal.qsml.event.BaseModuleEvent;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
-import io.github.nucleuspowered.nucleus.internal.text.TokenHandler;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTokenServiceImpl;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.logging.DebugLogger;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
@@ -110,14 +113,14 @@ public class NucleusPlugin extends Nucleus {
     private WorldDataManager worldDataManager;
     private NameBanService nameBanService;
     private KitService kitService;
-    private ChatUtil chatUtil;
+    private TextParsingUtils textParsingUtils;
     private NameUtil nameUtil;
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
     private final List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
     private DocGenCache docGenCache = null;
     private final NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
-    private final TokenHandler tokenHandler = new TokenHandler(this);
+    private NucleusTokenServiceImpl nucleusChatService;
 
     private final InternalServiceManager serviceManager = new InternalServiceManager(this);
     private MessageProvider messageProvider = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
@@ -150,6 +153,7 @@ public class NucleusPlugin extends Nucleus {
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
         Game game = Sponge.getGame();
+        NucleusAPI.onPreInit(this);
 
         try {
             Class.forName("io.github.nucleuspowered.nucleus.mixins.NucleusMixinSpongePlugin");
@@ -176,7 +180,7 @@ public class NucleusPlugin extends Nucleus {
             kitService = new KitService(d.getKitsDataProvider());
             nameBanService = new NameBanService(d.getNameBanDataProvider());
             warmupManager = new WarmupManager();
-            chatUtil = new ChatUtil(this);
+            textParsingUtils = new TextParsingUtils(this);
             nameUtil = new NameUtil(this);
         } catch (Exception e) {
             isErrored = e;
@@ -192,6 +196,10 @@ public class NucleusPlugin extends Nucleus {
         game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
         this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
         serviceManager.registerService(WarmupManager.class, warmupManager);
+
+        nucleusChatService = new NucleusTokenServiceImpl(this);
+        serviceManager.registerService(NucleusTokenServiceImpl.class, nucleusChatService);
+        Sponge.getServiceManager().setProvider(this, NucleusMessageTokenService.class, nucleusChatService);
 
         try {
             HoconConfigurationLoader.Builder builder = HoconConfigurationLoader.builder();
@@ -265,6 +273,7 @@ public class NucleusPlugin extends Nucleus {
         // Register a reloadable.
         CommandPermissionHandler.onReload();
         registerReloadable(CommandPermissionHandler::onReload);
+        getDocGenCache().ifPresent(x -> x.addTokenDocs(nucleusChatService.getNucleusTokenParser().getTokenNames()));
 
         logger.info(messageProvider.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
         registerPermissions();
@@ -485,9 +494,8 @@ public class NucleusPlugin extends Nucleus {
         return nameUtil;
     }
 
-    @Override
-    public ChatUtil getChatUtil() {
-        return chatUtil;
+    public TextParsingUtils getTextParsingUtils() {
+        return textParsingUtils;
     }
 
     @Override
@@ -505,8 +513,8 @@ public class NucleusPlugin extends Nucleus {
         return teleportHandler;
     }
 
-    public TokenHandler getTokenHandler() {
-        return tokenHandler;
+    @Override public NucleusMessageTokenService getMessageTokenService() {
+        return nucleusChatService;
     }
 
     @Override public boolean isDebugMode() {

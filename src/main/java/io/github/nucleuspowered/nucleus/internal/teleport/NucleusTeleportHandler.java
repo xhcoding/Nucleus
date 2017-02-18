@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.teleport;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.ImmutableList;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.SafeTeleportConfig;
 import org.spongepowered.api.Sponge;
@@ -118,7 +119,8 @@ public class NucleusTeleportHandler {
         Optional<Location<World>> targetLocation = getSafeLocation(player, locationToTeleportTo, teleportMode);
 
         // Do it, tell the routine if it worked.
-        return targetLocation.isPresent() && player.setLocationAndRotation(targetLocation.get(), rotation);
+        return targetLocation.isPresent() && Util.isLocationInWorldBorder(targetLocation.get()) &&
+                player.setLocationAndRotation(targetLocation.get(), rotation);
     }
 
     public Optional<Location<World>> getSafeLocation(@Nullable Player player, Location<World> locationToTeleportTo, TeleportMode teleportMode) {

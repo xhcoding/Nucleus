@@ -9,9 +9,11 @@ import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.configurate.objectmapper.NucleusObjectMapperFactory;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ConfigurationNodeTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusTextTemplateTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.PatternTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.SetTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
@@ -41,18 +43,19 @@ public class ConfigurateHelper {
         return options.setSerializers(tsc).setObjectMapperFactory(NucleusObjectMapperFactory.getInstance());
     }
 
-    public static TypeSerializerCollection getNucleusTypeSerialiserCollection(ConfigurationOptions options) {
+    private static TypeSerializerCollection getNucleusTypeSerialiserCollection(ConfigurationOptions options) {
         if (typeSerializerCollection != null) {
             return typeSerializerCollection;
         }
 
         TypeSerializerCollection tsc = options.getSerializers();
 
-        // Custom type serialisers for NucleusPlugin
+        // Custom type serialisers for Nucleus
         tsc.registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
         tsc.registerType(TypeToken.of(ItemStackSnapshot.class), new ItemStackSnapshotSerialiser());
         tsc.registerType(TypeToken.of(ConfigurationNode.class), new ConfigurationNodeTypeSerialiser());
         tsc.registerType(TypeToken.of(Pattern.class), new PatternTypeSerialiser());
+        tsc.registerType(TypeToken.of(NucleusTextTemplateImpl.class), new NucleusTextTemplateTypeSerialiser());
         tsc.registerPredicate(
                 typeToken -> Set.class.isAssignableFrom(typeToken.getRawType()),
                 new SetTypeSerialiser()

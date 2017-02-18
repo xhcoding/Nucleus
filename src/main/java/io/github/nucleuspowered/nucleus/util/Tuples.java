@@ -6,6 +6,11 @@ package io.github.nucleuspowered.nucleus.util;
 
 import org.spongepowered.api.util.Tuple;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
+
 public final class Tuples {
 
     private Tuples() {}
@@ -14,12 +19,40 @@ public final class Tuples {
         return new Tuple<>(a, b);
     }
 
+    public static <A, B> NullableTuple<A, B> ofNullable(A a, B b) {
+        return new NullableTuple<>(a, b);
+    }
+
     public static <A, B, C> Tri<A, B, C> of(A a, B b, C c) {
         return new Tri<>(a, b, c);
     }
 
     public static <A, B, C, D> Quad<A, B, C, D> of(A a, B b, C c, D d) {
         return new Quad<>(a, b, c, d);
+    }
+
+    public static class NullableTuple<A, B> {
+
+        public NullableTuple(@Nullable A first, @Nullable B second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Nullable private final A first;
+        @Nullable private final B second;
+
+        public Optional<A> getFirst() {
+            return Optional.ofNullable(first);
+        }
+
+        public Optional<B> getSecond() {
+            return Optional.ofNullable(second);
+        }
+
+        public void mapIfPresent(Consumer<A> firstConsumer, Consumer<B> secondConsumer) {
+            getFirst().ifPresent(firstConsumer);
+            getSecond().ifPresent(secondConsumer);
+        }
     }
 
     public static class Tri<A, B, C> {

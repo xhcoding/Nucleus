@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.message.config;
 
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -11,30 +13,33 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class MessageConfig {
 
     @Setting(value = "helpop-prefix", comment = "config.message.helpop.prefix")
-    private String helpOpPrefix = "&7HelpOp: {{name}} &7> &r";
+    @Default(value = "&7HelpOp: {{name}} &7> &r", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl helpOpPrefix;
 
     @Setting(value = "msg-receiver-prefix", comment = "config.message.receiver.prefix")
-    private String messageReceiverPrefix = "&7[{{fromDisplay}}&7 -> me]: &r";
+    @Default(value = "&7[{{fromDisplay}}&7 -> me]: &r", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl messageReceiverPrefix;
 
     @Setting(value = "msg-sender-prefix", comment = "config.message.sender.prefix")
-    private String messageSenderPrefix = "&7[me -> {{toDisplay}}&7]: &r";
+    @Default(value = "&7[me -> {{toDisplay}}&7]: &r", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl messageSenderPrefix;
 
     @Setting(value = "socialspy")
     private SocialSpy socialSpy = new SocialSpy();
 
-    public String getHelpOpPrefix() {
+    public NucleusTextTemplateImpl getHelpOpPrefix() {
         return helpOpPrefix;
     }
 
-    public String getMessageReceiverPrefix() {
+    public NucleusTextTemplateImpl getMessageReceiverPrefix() {
         return messageReceiverPrefix;
     }
 
-    public String getMessageSenderPrefix() {
+    public NucleusTextTemplateImpl getMessageSenderPrefix() {
         return messageSenderPrefix;
     }
 
-    public String getMessageSocialSpyPrefix() {
+    public NucleusTextTemplateImpl getMessageSocialSpyPrefix() {
         return socialSpy.messageSocialSpyPrefix;
     }
 
@@ -65,7 +70,8 @@ public class MessageConfig {
     @ConfigSerializable
     public static class SocialSpy {
         @Setting(value = "msg-prefix", comment = "config.message.socialspy.prefix")
-        private String messageSocialSpyPrefix = "&7[SocialSpy] [{{fromDisplay}}&7 -> {{toDisplay}}&7]: &r";
+        @Default(value = "&7[SocialSpy] [{{fromDisplay}}&7 -> {{toDisplay}}&7]: &r", saveDefaultIfNull = true)
+        private NucleusTextTemplateImpl messageSocialSpyPrefix;
 
         @Setting(value = "use-levels", comment = "config.message.socialspy.levels")
         private boolean socialSpyLevels = false;

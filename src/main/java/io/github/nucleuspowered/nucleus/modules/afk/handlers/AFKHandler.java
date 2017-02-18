@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
@@ -22,8 +23,9 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.TextRepresentable;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -93,13 +95,15 @@ public class AFKHandler implements NucleusAFKService {
             if (now - e.getValue().lastActivityTime > e.getValue().timeToKick) {
                 // Kick them
                 e.getValue().willKick = true;
-                String message = config.getMessages().getKickMessage().trim();
+                NucleusTextTemplateImpl message = config.getMessages().getKickMessage();
+                TextRepresentable t;
                 if (message.isEmpty()) {
-                    message = plugin.getMessageProvider().getMessageWithFormat("afk.kickreason");
+                    t = plugin.getMessageProvider().getTextMessageWithTextFormat("afk.kickreason");
+                } else {
+                    t = message;
                 }
 
-                final String messageToServer = config.getMessages().getOnKick().trim();
-                final String messageToGetAroundJavaRestrictions = message;
+                final NucleusTextTemplateImpl messageToServer = config.getMessages().getOnKick();
 
                 Sponge.getServer().getPlayer(e.getKey()).ifPresent(player -> {
                     if (Sponge.getEventManager().post(new AFKEvents.Kick(player, Cause.of(NamedCause.owner(plugin))))) {
@@ -107,8 +111,9 @@ public class AFKHandler implements NucleusAFKService {
                         return;
                     }
 
+                    Text toSend = t instanceof NucleusTextTemplateImpl ? ((NucleusTextTemplateImpl) t).getForCommandSource(player) : t.toText();
                     Sponge.getScheduler().createSyncExecutor(plugin)
-                        .execute(() -> player.kick(TextSerializers.FORMATTING_CODE.deserialize(messageToGetAroundJavaRestrictions)));
+                        .execute(() -> player.kick(toSend));
                     if (!messageToServer.isEmpty()) {
                         MessageChannel mc;
                         if (config.isBroadcastOnKick()) {
@@ -117,7 +122,7 @@ public class AFKHandler implements NucleusAFKService {
                             mc = MessageChannel.permission(getPermissionUtil().getPermissionWithSuffix("notify"));
                         }
 
-                        mc.send(plugin.getChatUtil().getMessageFromTemplate(messageToServer, player, true));
+                        mc.send(messageToServer.getForCommandSource(player));
                     }
                 });
             }
@@ -213,9 +218,9 @@ public class AFKHandler implements NucleusAFKService {
         Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
             // If we have the config set to true, or the subject is NOT invisible, send an AFK message
             if (config.isAfkOnVanish() || !player.get(Keys.VANISH).orElse(false)) {
-                String template = isAfk ? config.getMessages().getAfkMessage().trim() : config.getMessages().getReturnAfkMessage().trim();
+                NucleusTextTemplateImpl template = isAfk ? config.getMessages().getAfkMessage() : config.getMessages().getReturnAfkMessage();
                 if (!template.isEmpty()) {
-                    MessageChannel.TO_ALL.send(plugin.getChatUtil().getMessageFromTemplate(template, player, true));
+                    MessageChannel.TO_ALL.send(template.getForCommandSource(player));
                 }
             } else {
                 // Tell the user in question about them going AFK

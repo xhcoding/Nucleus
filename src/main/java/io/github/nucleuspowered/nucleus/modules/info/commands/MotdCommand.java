@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.info.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -15,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHelper;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @RegisterCommand("motd")
 public class MotdCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private ChatUtil chatUtil;
+    @Inject private TextParsingUtils textParsingUtils;
     @Inject private InfoConfigAdapter infoConfigAdapter;
 
     @Override
@@ -44,9 +44,9 @@ public class MotdCommand extends AbstractCommand<CommandSource> {
         }
 
         if (infoConfigAdapter.getNodeOrDefault().isMotdUsePagination()) {
-            InfoHelper.sendInfo(otfc.get(), src, chatUtil, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
+            InfoHelper.sendInfo(otfc.get(), src, infoConfigAdapter.getNodeOrDefault().getMotdTitle());
         } else {
-            InfoHelper.getTextFromStrings(otfc.get().getFileContents(), src, chatUtil).forEach(src::sendMessage);
+            InfoHelper.getTextFromNucleusTextTemplates(otfc.get().getFileContentsAsText(), src).forEach(src::sendMessage);
         }
 
         return CommandResult.success();

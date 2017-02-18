@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.internal.guice;
 
 import com.google.inject.AbstractModule;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
@@ -17,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -43,7 +43,7 @@ public class QuickStartInjectorModule extends AbstractModule {
         bind(ModuleContainer.class).toProvider(plugin::getModuleContainer);
         bind(InternalServiceManager.class).toProvider(plugin::getInternalServiceManager);
         bind(ModularGeneralService.class).toProvider(plugin::getGeneralService);
-        bind(ChatUtil.class).toProvider(plugin::getChatUtil);
+        bind(TextParsingUtils.class).toProvider(plugin::getTextParsingUtils);
         bind(MessageProvider.class).toProvider(plugin::getMessageProvider);
         bind(ItemDataService.class).toProvider(plugin::getItemDataService);
         bind(KitService.class).toProvider(plugin::getKitService);

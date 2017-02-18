@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -24,6 +25,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +36,7 @@ import java.util.stream.Collectors;
 @NoCost
 @NoWarmup
 @RunAsync
-@RegisterCommand("jails")
+@RegisterCommand(value = "jails")
 @Permissions(prefix = "jail", mainOverride = "list", suggestedLevel = SuggestedLevel.MOD)
 public class JailsCommand extends AbstractCommand<CommandSource> {
 
@@ -50,12 +53,29 @@ public class JailsCommand extends AbstractCommand<CommandSource> {
         }
 
         List<Text> lt = mjs.entrySet().stream()
-                .map(x -> Text.builder(x.getKey().toLowerCase()).color(TextColors.GREEN).style(TextStyles.UNDERLINE)
-                        .onClick(TextActions.runCommand("/jails info " + x.getKey().toLowerCase()))
-                        .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.jailprompt", x.getKey().toLowerCase()))).build())
+                .map(x -> createJail(x.getValue(), x.getKey()))
                 .collect(Collectors.toList());
 
-        ps.builder().title(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.list.header")).padding(Text.of(TextColors.GREEN, "-")).contents(lt).sendTo(src);
+        Util.getPaginationBuilder(src)
+            .title(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.list.header")).padding(Text.of(TextColors.GREEN, "-"))
+            .contents(lt).sendTo(src);
         return CommandResult.success();
+    }
+
+    private Text createJail(NamedLocation data, String name) {
+        if (data == null || !data.getLocation().isPresent()) {
+            return Text.builder(name).color(TextColors.RED).onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat
+                    ("command.jails.unavailable"))).build();
+        }
+
+        Location<World> world = data.getLocation().get();
+        Text.Builder inner = Text.builder(name).color(TextColors.GREEN).style(TextStyles.ITALIC)
+                .onClick(TextActions.runCommand("/jails tp " + name))
+                .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.warpprompt", name)));
+
+        return Text.builder().append(inner.build())
+                .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warploc",
+                        world.getExtent().getName(), world.getBlockPosition().toString()
+                )).build();
     }
 }

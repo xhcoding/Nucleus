@@ -149,28 +149,49 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
         Text.Builder inner = Text.builder(name).color(TextColors.GREEN).style(TextStyles.ITALIC)
                 .onClick(TextActions.runCommand("/warp " + name));
 
+        Text.Builder tb;
         Optional<Text> description = data.getDescription();
-        if (description.isPresent()) {
-            inner.onHover(TextActions.showText(
-                    Text.of(
-                        plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name),
-                        Text.NEW_LINE,
-                        description.get()
-                    )));
+        if (adapter.getNodeOrDefault().isDescriptionInList()) {
+            Text.Builder hoverBuilder = Text.builder()
+                    .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name))
+                    .append(Text.NEW_LINE)
+                    .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warplochover", world.getExtent().getName(),
+                            world.getBlockPosition().toString()));
+
+            if (econExists) {
+                double cost = data.getCost().orElse(defaultCost);
+                if (cost > 0) {
+                    hoverBuilder
+                        .append(Text.NEW_LINE)
+                        .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.list.costhover", plugin.getEconHelper()
+                        .getCurrencySymbol(cost)));
+                }
+            }
+
+            tb = Text.builder().append(inner.onHover(TextActions.showText(hoverBuilder.build())).build());
+            description.ifPresent(text -> tb.append(Text.of(TextColors.WHITE, " - ")).append(text));
         } else {
-            inner.onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name)));
-        }
+            if (description.isPresent()) {
+                inner.onHover(TextActions.showText(
+                        Text.of(
+                                plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name),
+                                Text.NEW_LINE,
+                                description.get()
+                        )));
+            } else {
+                inner.onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name)));
+            }
 
-        Text.Builder tb =
-            Text.builder().append(inner.build())
-                .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warploc",
-                        world.getExtent().getName(), world.getBlockPosition().toString()
-                    ));
+            tb = Text.builder().append(inner.build())
+                            .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warploc",
+                                    world.getExtent().getName(), world.getBlockPosition().toString()
+                            ));
 
-        if (econExists) {
-            double cost = data.getCost().orElse(defaultCost);
-            if (cost > 0) {
-                tb.append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.list.cost", plugin.getEconHelper().getCurrencySymbol(cost)));
+            if (econExists) {
+                double cost = data.getCost().orElse(defaultCost);
+                if (cost > 0) {
+                    tb.append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.list.cost", plugin.getEconHelper().getCurrencySymbol(cost)));
+                }
             }
         }
 

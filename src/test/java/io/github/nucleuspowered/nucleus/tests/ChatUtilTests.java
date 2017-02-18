@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.tests;
 
 import com.google.inject.Guice;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Tests elements of the {@link io.github.nucleuspowered.nucleus.ChatUtil}
+ * Tests elements of the {@link TextParsingUtils}
  */
 public class ChatUtilTests extends TestBase {
 
@@ -32,9 +32,9 @@ public class ChatUtilTests extends TestBase {
 
         NucleusPlugin plugin = Guice.createInjector(new TestModule()).getInstance(NucleusPlugin.class);
 
-        Field parserToTest = ChatUtil.class.getDeclaredField("urlParser");
+        Field parserToTest = TextParsingUtils.class.getDeclaredField("urlParser");
         parserToTest.setAccessible(true);
-        patternToTest = (Pattern)parserToTest.get(new ChatUtil(plugin));
+        patternToTest = (Pattern)parserToTest.get(new TextParsingUtils(plugin));
     }
 
     /**

@@ -5,13 +5,15 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
+import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHelpOpEvent;
 import org.spongepowered.api.Sponge;
@@ -29,12 +31,13 @@ import java.util.Map;
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"helpop"})
-public class HelpOpCommand extends AbstractCommand<Player> {
+public class HelpOpCommand extends AbstractCommand<Player> implements StandardAbstractCommand.Reloadable {
 
     private final String messageKey = "message";
 
     @Inject private MessageConfigAdapter mca;
-    @Inject private ChatUtil chatUtil;
+    private MessageConfig messageConfig;
+    @Inject private TextParsingUtils textParsingUtils;
 
     @Override
     public CommandElement[] getArguments() {
@@ -59,11 +62,17 @@ public class HelpOpCommand extends AbstractCommand<Player> {
             return CommandResult.empty();
         }
 
-        Text prefix = chatUtil.getMessageFromTemplate(mca.getNodeOrDefault().getHelpOpPrefix(), src, false);
+        Text prefix = messageConfig.getHelpOpPrefix().getForCommandSource(src);
 
-        MessageChannel.permission(permissions.getPermissionWithSuffix("receive")).send(src, prefix.concat(Text.of(message)));
+        MessageChannel.permission(permissions.getPermissionWithSuffix("receive"))
+                .send(src, textParsingUtils.joinTextsWithColoursFlowing(prefix, Text.of(message)));
+
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.helpop.success"));
 
         return CommandResult.success();
+    }
+
+    @Override public void onReload() {
+        messageConfig = mca.getNodeOrDefault();
     }
 }

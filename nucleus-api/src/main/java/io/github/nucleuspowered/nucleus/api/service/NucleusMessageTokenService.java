@@ -7,20 +7,24 @@ package io.github.nucleuspowered.nucleus.api.service;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredException;
+import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.util.Tuple;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * Allows plugins to register their own tokens for use in templated messages.
+ * Allows plugins to register their own tokens for use in templated messages, and to obtain {@link NucleusTextTemplate} instances.
  */
 @Stable
 public interface NucleusMessageTokenService {
@@ -115,6 +119,13 @@ public interface NucleusMessageTokenService {
     Optional<Tuple<TokenParser, String>> getPrimaryTokenParserAndIdentifier(String primaryToken);
 
     /**
+     * Gets the currently registered primary tokens.
+     *
+     * @return The primary tokens.
+     */
+    List<String> getPrimaryTokens();
+
+    /**
      * Gets the result of a token's registered {@link TokenParser} on a {@link CommandSource}
      *
      * @param plugin The ID of the plugin that registered the token.
@@ -161,25 +172,95 @@ public interface NucleusMessageTokenService {
     }
 
     /**
+     * Parses a token that might be either a primary token or a standard token.
+     *
+     * @param token The token, without the delimiters.
+     * @param source The source to apply the tokens with.
+     * @return The token result, if it exists.
+     */
+    default Optional<Text> parseToken(String token, CommandSource source) {
+        return parseToken(token, source, null);
+    }
+
+    /**
+     * Parses a token that might be either a primary token or a standard token.
+     *
+     * @param token The token, without the delimiters.
+     * @param source The source to apply the tokens with.
+     * @param variables The variables to pass to the parser.
+     * @return The token result, if it exists.
+     */
+    Optional<Text> parseToken(String token, CommandSource source, @Nullable Map<String, Object> variables);
+
+    /**
      * Uses Nucleus' parser to format a string that uses Minecraft colour codes.
+     *
+     * @deprecated Use {@link #createFromString(String)} instead to create a {@link NucleusTextTemplate}.
      *
      * @param input The input.
      * @param source The {@link CommandSource} that will view the message.
-     * @return The {@link Text} that represents the output.
+     * @return The {@link Text} that represents the output, or {@link Text#EMPTY} if an error is caught.
+     *
+     * @see #createFromString(String)
      */
+    @Deprecated
     default Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source) {
-        return formatAmpersandEncodedStringWithTokens(input, source, Maps.newHashMap());
+        try {
+            return createFromString(input).getForCommandSource(source, null, null);
+        } catch (NucleusException e) {
+            return Text.EMPTY;
+        }
     }
 
     /**
      * Uses Nucleus' parser to format a string that uses Minecraft colour codes.
+     *
+     * @deprecated Use {@link #createFromString(String)} instead to create a {@link NucleusTextTemplate}.
      *
      * @param input The input.
      * @param source The {@link CommandSource} that will view the message.
      * @param variables Any variables to be provided to the text.
      * @return The {@link Text} that represents the output.
      */
-    Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source, Map<String, Object> variables);
+    @Deprecated
+    default Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source, Map<String, Object> variables) {
+        try {
+            return createFromString(input).getForCommandSource(source, null, variables);
+        } catch (NucleusException e) {
+            return Text.EMPTY;
+        }
+    }
+
+    /**
+     * Allows users to register additional token delimiter formats. For example, if a token wanted to register {%id%} to run
+     * {{pl:blah:id}}, then they would need to run:
+     *
+     * <pre>
+     *     registerTokenFormat("{%", "%}", "pl:blah:$1")
+     * </pre>
+     * <p>
+     *     Note that the third argument contains $1. This method will replace $1 with the ID.
+     * </p>
+     * <p>
+     *     This will only apply to Ampersand formatted strings.
+     * </p>
+     *
+     * @param tokenStart The start delimiter of a token to register.
+     * @param tokenEnd The end delimiter of a token to register.
+     * @param replacement The form of the token identifier to use (without the {{,}} delimiters).
+     * @return <code>true</code> if successful.
+     * @throws IllegalArgumentException thrown if the delimiters are illegal.
+     */
+    boolean registerTokenFormat(String tokenStart, String tokenEnd, String replacement) throws IllegalArgumentException;
+
+    /**
+     * Creates a {@link NucleusTextTemplate} from a string, which could be either Json or Ampersand formatted.
+     *
+     * @param string The string to register.
+     * @return The {@link NucleusTextTemplate} that can be parsed.
+     * @throws NucleusException thrown if the string could not be parsed.
+     */
+    NucleusTextTemplate createFromString(String string) throws NucleusException;
 
     /**
      * A parser for tokens directed at a plugin. Plugins can only register ONE of these.

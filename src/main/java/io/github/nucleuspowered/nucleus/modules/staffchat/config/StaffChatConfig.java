@@ -5,6 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.staffchat.config;
 
 import io.github.nucleuspowered.nucleus.NameUtil;
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.text.format.TextColor;
@@ -16,12 +18,13 @@ public class StaffChatConfig {
     private boolean includeStandardChatFormatting = false;
 
     @Setting(value = "message-template", comment = "config.staffchat.template")
-    private String messageTemplate = "&b[STAFF] &r{{displayname}}&b: ";
+    @Default(value = "&b[STAFF] &r{{displayname}}&b: ", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl messageTemplate;
 
     @Setting(value = "message-colour", comment = "config.staffchat.colour")
     private String messageColour = "b";
 
-    public String getMessageTemplate() {
+    public NucleusTextTemplateImpl getMessageTemplate() {
         return messageTemplate;
     }
 

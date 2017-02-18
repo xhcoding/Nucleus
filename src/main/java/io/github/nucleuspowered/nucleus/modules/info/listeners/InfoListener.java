@@ -6,13 +6,13 @@ package io.github.nucleuspowered.nucleus.modules.info.listeners;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
 import io.github.nucleuspowered.nucleus.modules.info.commands.MotdCommand;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 @ConditionalListener(InfoListener.Test.class)
 public class InfoListener extends ListenerBase.Reloadable {
 
-    @Inject private ChatUtil chatUtil;
+    @Inject private TextParsingUtils textParsingUtils;
     @Inject private PermissionRegistry pr;
     @Inject private InfoConfigAdapter ica;
 
@@ -47,9 +47,9 @@ public class InfoListener extends ListenerBase.Reloadable {
                 if (player.hasPermission(getMotdPermission())) {
                     plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> {
                         if (ica.getNodeOrDefault().isMotdUsePagination()) {
-                            InfoHelper.sendInfo(x, player, chatUtil, ica.getNodeOrDefault().getMotdTitle());
+                            InfoHelper.sendInfo(x, player, ica.getNodeOrDefault().getMotdTitle());
                         } else {
-                            InfoHelper.getTextFromStrings(x.getFileContents(), player, chatUtil).forEach(player::sendMessage);
+                            InfoHelper.getTextFromNucleusTextTemplates(x.getFileContentsAsText(), player).forEach(player::sendMessage);
                         }
                     });
                 }

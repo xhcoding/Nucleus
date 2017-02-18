@@ -4,12 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.info.handlers;
 
-import io.github.nucleuspowered.nucleus.ChatUtil;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
@@ -24,30 +23,27 @@ public class InfoHelper {
     private static final Text padding = Text.of(TextColors.GOLD, "-");
     private static final Text emptyPadding = Text.of(" ");
 
-    public static void sendInfo(TextFileController tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
-        sendInfo(tfc.getFileContents(), src, chatUtil, motdTitle);
+    public static void sendInfo(TextFileController tfc, CommandSource src, String motdTitle) {
+        sendInfoNT(tfc.getFileContentsAsText(), src, motdTitle);
     }
 
-    public static List<Text> getTextFromStrings(List<String> tfc, CommandSource src, ChatUtil chatUtil) {
-        return chatUtil.getMessageFromTemplate(tfc, src, false).stream()
-            .map(x -> chatUtil.addLinksToText(x, src instanceof Player ? (Player)src : null)).collect(Collectors.toList());
+    public static List<Text> getTextFromNucleusTextTemplates(List<NucleusTextTemplateImpl> textTemplates, CommandSource source) {
+        return textTemplates.stream().map(x -> x.getForCommandSource(source)).collect(Collectors.toList());
     }
 
-    public static void sendInfo(List<String> tfc, CommandSource src, ChatUtil chatUtil, String motdTitle) {
-        // Get the text.
-        List<Text> textList = getTextFromStrings(tfc, src, chatUtil);
+    public static void sendInfoNT(List<NucleusTextTemplateImpl> tfc, CommandSource src, String motdTitle) {
+        sendInfo(getTextFromNucleusTextTemplates(tfc, src), src, motdTitle);
+    }
+
+    private static void sendInfo(List<Text> texts, CommandSource src, String motdTitle) {
 
         PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        PaginationList.Builder pb = ps.builder().contents(textList);
+        PaginationList.Builder pb = Util.getPaginationBuilder(src).contents(texts);
 
         if (!motdTitle.isEmpty()) {
             pb.title(TextSerializers.FORMATTING_CODE.deserialize(motdTitle)).padding(padding);
         } else {
             pb.padding(emptyPadding);
-        }
-
-        if (src instanceof ConsoleSource) {
-            pb.linesPerPage(-1);
         }
 
         pb.sendTo(src);

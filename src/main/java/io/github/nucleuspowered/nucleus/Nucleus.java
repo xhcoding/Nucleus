@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus;
 
+import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -16,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
@@ -79,7 +81,7 @@ public abstract class Nucleus {
 
     public abstract NameUtil getNameUtil();
 
-    public abstract ChatUtil getChatUtil();
+    public abstract TextParsingUtils getTextParsingUtils();
 
     public abstract MessageProvider getMessageProvider();
 
@@ -90,6 +92,8 @@ public abstract class Nucleus {
     public abstract Optional<MixinConfigProxy> getMixinConfigIfAvailable();
 
     public abstract NucleusTeleportHandler getTeleportHandler();
+
+    public abstract NucleusMessageTokenService getMessageTokenService();
 
     public abstract boolean isDebugMode();
 }

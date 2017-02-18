@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.config;
 
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -11,16 +13,18 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class BroadcastConfig {
 
     @Setting
-    private String prefix = "&a[Broadcast]";
+    @Default(value = "&a[Broadcast] ", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl prefix;
 
     @Setting
-    private String suffix = "";
+    @Default(value = "", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl suffix;
 
-    public String getPrefix() {
+    public NucleusTextTemplateImpl getPrefix() {
         return prefix;
     }
 
-    public String getSuffix() {
+    public NucleusTextTemplateImpl getSuffix() {
         return suffix;
     }
 }

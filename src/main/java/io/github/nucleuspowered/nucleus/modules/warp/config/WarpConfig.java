@@ -25,6 +25,9 @@ public class WarpConfig {
     @Setting(value = "default-category-name")
     private String defaultName = "Uncategorised";
 
+    @Setting(value = "show-warp-description-in-list", comment = "config.warps.descinlist")
+    private boolean descriptionInList = false;
+
     public boolean isSeparatePermissions() {
         return separatePermissions;
     }
@@ -43,5 +46,9 @@ public class WarpConfig {
 
     public String getDefaultName() {
         return defaultName == null || defaultName.isEmpty() ? "Uncategorised" : defaultName;
+    }
+
+    public boolean isDescriptionInList() {
+        return descriptionInList;
     }
 }

@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.config;
 
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -11,37 +13,42 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 public class MessagesConfig {
 
     @Setting("on-afk")
-    private String afkMessage = "&7*&f{{displayname}} &7has gone AFK.";
+    @Default(value = "&7*&f{{displayname}} &7has gone AFK.", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl afkMessage;
 
     @Setting("on-return")
-    private String returnAfkMessage = "&7*&f{{displayname}} &7is no longer AFK.";
+    @Default(value = "&7*&f{{displayname}} &7is no longer AFK.", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl returnAfkMessage;
 
     @Setting("on-command")
-    private String onCommand = "&f{{displayname}} &7is currently AFK and may not respond quickly.";
+    @Default(value = "&f{{displayname}} &7is currently AFK and may not respond quickly.", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl onCommand;
 
     @Setting(value = "on-kick", comment = "config.afk.messagetobroadcastonkick")
-    private String onKick = "&f{{displayname}} &7has been kicked for being AFK too long.";
+    @Default(value = "&f{{displayname}} &7has been kicked for being AFK too long.", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl onKick;
 
     @Setting(value = "kick-message-to-subject", comment = "config.afk.playerkicked")
-    private String kickMessage = "You have been kicked for being AFK for too long.";
+    @Default(value = "You have been kicked for being AFK for too long.", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl kickMessage;
 
-    public String getAfkMessage() {
+    public NucleusTextTemplateImpl getAfkMessage() {
         return afkMessage;
     }
 
-    public String getReturnAfkMessage() {
+    public NucleusTextTemplateImpl getReturnAfkMessage() {
         return returnAfkMessage;
     }
 
-    public String getOnCommand() {
+    public NucleusTextTemplateImpl getOnCommand() {
         return onCommand;
     }
 
-    public String getOnKick() {
+    public NucleusTextTemplateImpl getOnKick() {
         return onKick;
     }
 
-    public String getKickMessage() {
+    public NucleusTextTemplateImpl getKickMessage() {
         return kickMessage;
     }
 }

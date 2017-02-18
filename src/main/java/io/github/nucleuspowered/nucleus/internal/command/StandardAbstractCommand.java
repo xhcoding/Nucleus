@@ -32,7 +32,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
+import io.github.nucleuspowered.nucleus.modules.afk.AFKModule;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.afk.config.MessagesConfig;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
@@ -131,7 +134,9 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     private Optional<AFKHandler> afkHandler = null;
 
     @SuppressWarnings("all")
-    private Optional<AFKConfigAdapter> aca = null;
+    private static Optional<AFKConfigAdapter> aca = null;
+    @Nullable private static MessagesConfig messagesConfig = null;
+
     private CommandBuilder builder;
     private String module;
     private String moduleId;
@@ -207,12 +212,12 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
     }
 
-    public final void setModuleCommands(Set<Class<? extends StandardAbstractCommand<?>>> moduleCommands) {
+    final void setModuleCommands(Set<Class<? extends StandardAbstractCommand<?>>> moduleCommands) {
         Preconditions.checkState(this.moduleCommands == null);
         this.moduleCommands = moduleCommands;
     }
 
-    public final void setCommandBuilder(CommandBuilder builder) {
+    final void setCommandBuilder(CommandBuilder builder) {
         this.builder = builder;
     }
 
@@ -522,9 +527,17 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
+        String aliasComment = NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.aliases");
+        n.getNode("aliases").setComment(aliasComment);
 
         if (this.isRoot) {
             n.getNode("enabled").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.enabled")).setValue(true);
+
+            String[] al = this.getAliases();
+            for (int i = 1; i < al.length; i++) {
+                // All but the first command are aliases.
+                n.getNode("aliases").getNode(al[i]).setValue(true);
+            }
         }
 
         if (!bypassCooldown) {
@@ -563,8 +576,8 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     }
 
     @Override
-    @NonnullByDefault
-    public final CommandResult execute(CommandSource source, CommandContext args) throws CommandException {
+    @Nonnull
+    public final CommandResult execute(@Nonnull CommandSource source, @Nonnull CommandContext args) throws CommandException {
         try {
             commandTimings.startTimingIfSync();
 
@@ -1014,9 +1027,10 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
     }
 
-    private void getAfkConfigAdapter() throws NoModuleException, IncorrectAdapterTypeException {
+    private static synchronized void getAfkConfigAdapter() throws NoModuleException, IncorrectAdapterTypeException {
         if (aca == null) {
-            aca = Optional.of(plugin.getModuleContainer().getConfigAdapterForModule("afk", AFKConfigAdapter.class));
+            aca = Optional.of(Nucleus.getNucleus().getModuleContainer().getConfigAdapterForModule(AFKModule.ID, AFKConfigAdapter.class));
+            aca.ifPresent(afkConfigAdapter -> Nucleus.getNucleus().registerReloadable(() -> messagesConfig = null));
         }
     }
 
@@ -1028,9 +1042,13 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
 
         aca.ifPresent(a -> {
-            String onCommand = a.getNodeOrDefault().getMessages().getOnCommand();
-            if (!onCommand.trim().isEmpty()) {
-                src.sendMessage(plugin.getChatUtil().getMessageFromTemplate(onCommand, player, true));
+            if (messagesConfig == null) {
+                messagesConfig = a.getNodeOrDefault().getMessages();
+            }
+
+            NucleusTextTemplateImpl onCommand = messagesConfig.getOnCommand();
+            if (!onCommand.isEmpty()) {
+                src.sendMessage(onCommand.getForCommandSource(player));
             }
         });
     }

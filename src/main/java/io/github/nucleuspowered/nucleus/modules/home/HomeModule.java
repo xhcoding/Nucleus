@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home;
 
+import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
@@ -25,6 +26,6 @@ public class HomeModule extends ConfigurableModule<HomeConfigAdapter> {
 
         HomeHandler homeHandler = new HomeHandler(plugin);
         plugin.getInternalServiceManager().registerService(HomeHandler.class, homeHandler);
-        Sponge.getServiceManager().setProvider(plugin, HomeHandler.class, homeHandler);
+        Sponge.getServiceManager().setProvider(plugin, NucleusHomeService.class, homeHandler);
     }
 }

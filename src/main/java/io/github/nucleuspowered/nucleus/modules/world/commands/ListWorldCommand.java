@@ -51,6 +51,7 @@ public class ListWorldCommand extends AbstractCommand<CommandSource> {
         x.getAdditionalProperties().getInt(DataQuery.of("SpongeData", "dimensionId")).ifPresent(i ->
             listContent.add(plugin.getMessageProvider().getTextMessageWithFormat("command.world.list.dimensionid", String.valueOf(i))));
 
+        listContent.add(plugin.getMessageProvider().getTextMessageWithFormat("command.world.list.uuid", x.getUniqueId().toString()));
         if (x.isEnabled()) {
             boolean worldLoaded = Sponge.getServer().getWorld(x.getUniqueId()).isPresent();
             String message =

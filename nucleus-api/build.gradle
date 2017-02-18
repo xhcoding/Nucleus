@@ -5,6 +5,7 @@ plugins {
     id 'maven'
 }
 
+apply plugin: 'ninja.miserable.blossom'
 apply plugin: 'com.github.hierynomus.license'
 
 description = 'The Ultimate Essentials Plugin API.'
@@ -45,6 +46,11 @@ license {
     }
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
 jar {
     manifest {
         attributes  'Implementation-Title': project.name,
@@ -59,4 +65,14 @@ jar {
 artifacts {
     archives javadocJar
     archives jar
+    archives sourcesJar
+}
+
+blossom {
+    def location = 'src/main/java/io/github/nucleuspowered/nucleus/api/NucleusAPI.java'
+
+    replaceToken '@version@', rootProject.version, location
+    replaceToken '@semver@', versionno, location
+    replaceToken '@release@', suffix, location
+    replaceToken '@description@', description, location
 }

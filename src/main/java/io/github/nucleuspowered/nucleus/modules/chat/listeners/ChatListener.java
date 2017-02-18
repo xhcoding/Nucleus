@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.ChatUtil;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -18,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.chat.ChatModule;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  * should be used if tokens need to be registered.
  */
 @ConditionalListener(ChatListener.Test.class)
-public class ChatListener extends ListenerBase {
+public class ChatListener extends ListenerBase.Reloadable {
 
     private static final Pattern prefixPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*$");
     private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
@@ -98,12 +98,13 @@ public class ChatListener extends ListenerBase {
 
     // --- Listener Proper
     private final ChatConfigAdapter cca;
-    private final ChatUtil chatUtil;
+    private ChatConfig chatConfig = null;
+    private final TextParsingUtils textParsingUtils;
     private final TemplateUtil templateUtil;
 
     @Inject
-    public ChatListener(ChatUtil chatUtil, ChatConfigAdapter cca, TemplateUtil templateUtil) {
-        this.chatUtil = chatUtil;
+    public ChatListener(TextParsingUtils textParsingUtils, ChatConfigAdapter cca, TemplateUtil templateUtil) {
+        this.textParsingUtils = textParsingUtils;
         this.cca = cca;
         this.templateUtil = templateUtil;
     }
@@ -134,37 +135,39 @@ public class ChatListener extends ListenerBase {
         }
 
         MessageEvent.MessageFormatter eventFormatter = event.getFormatter();
-        ChatConfig config = cca.getNodeOrDefault();
         Text rawMessage = eventFormatter.getBody().isEmpty() ? event.getRawMessage() : eventFormatter.getBody().toText();
 
         Text prefix = Text.EMPTY;
 
         // Avoid adding <name>.
-        if (!config.isOverwriteEarlyPrefixes() && !prefixPattern.matcher(eventFormatter.getHeader().toText().toPlain()).matches()) {
+        if (!chatConfig.isOverwriteEarlyPrefixes() && !prefixPattern.matcher(eventFormatter.getHeader().toText().toPlain()).matches()) {
             prefix = eventFormatter.getHeader().toText();
         }
 
-        Text footer = config.isOverwriteEarlySuffixes() ? Text.EMPTY : event.getFormatter().getFooter().toText();
+        Text footer = chatConfig.isOverwriteEarlySuffixes() ? Text.EMPTY : event.getFormatter().getFooter().toText();
 
         final ChatTemplateConfig ctc;
-        if (config.isUseGroupTemplates()) {
+        if (chatConfig.isUseGroupTemplates()) {
             ctc = templateUtil.getTemplate(player);
         } else {
-            ctc = config.getDefaultTemplate();
+            ctc = chatConfig.getDefaultTemplate();
         }
 
         event.setMessage(
-                Text.join(prefix, chatUtil.getMessageFromTemplate(ctc.getPrefix(), player, true)),
-                config.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
-                Text.join(footer, chatUtil.getMessageFromTemplate(ctc.getSuffix(), player, false)));
+            Text.join(prefix, ctc.getPrefix().getForCommandSource(player)),
+            chatConfig.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
+            Text.join(footer, ctc.getSuffix().getForCommandSource(player)));
     }
 
     private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {
         String m = stripPermissionless(player, TextSerializers.FORMATTING_CODE.serialize(rawMessage));
+        if (chatConfig.isRemoveBlueUnderline()) {
+            m = m.replaceAll("&9&n([A-Za-z0-9-.]+)", "$1");
+        }
 
         Text result;
         if (player.hasPermission(prefix + "url")) {
-            result = chatUtil.addUrlsToAmpersandFormattedString(m);
+            result = TextParsingUtils.addUrls(m);
         } else {
             result = TextSerializers.FORMATTING_CODE.deserialize(m);
         }
@@ -174,6 +177,10 @@ public class ChatListener extends ListenerBase {
 
         NameUtil nu = plugin.getNameUtil();
         return Text.of(nu.getColourFromString(chatcol), nu.getTextStyleFromString(chatstyle), result);
+    }
+
+    @Override public void onReload() throws Exception {
+        chatConfig = cca.getNodeOrDefault();
     }
 
     public static class Test implements Predicate<Nucleus> {

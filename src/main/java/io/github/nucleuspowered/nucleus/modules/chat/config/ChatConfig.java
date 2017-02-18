@@ -5,6 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.chat.config;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -34,10 +36,14 @@ public class ChatConfig {
     @Setting(value = "check-body-for-minecraft-prefix", comment = "config.chat.checkbody")
     private boolean checkBody = false;
 
-    @Setting(value = "me-prefix", comment = "config.chat.meprefix")
-    private String mePrefix = "&7* {{displayName}} ";
+    @Setting(value = "remove-link-underlines", comment = "config.chat.removeunderlines")
+    private boolean removeBlueUnderline = true;
 
-    public String getMePrefix() {
+    @Setting(value = "me-prefix", comment = "config.chat.meprefix")
+    @Default(value = "&7* {{displayName}} ", saveDefaultIfNull = true)
+    private NucleusTextTemplateImpl mePrefix;
+
+    public NucleusTextTemplateImpl getMePrefix() {
         return mePrefix;
     }
 
@@ -71,5 +77,9 @@ public class ChatConfig {
 
     public boolean isOverwriteEarlySuffixes() {
         return overwriteEarlySuffixes;
+    }
+
+    public boolean isRemoveBlueUnderline() {
+        return removeBlueUnderline;
     }
 }
