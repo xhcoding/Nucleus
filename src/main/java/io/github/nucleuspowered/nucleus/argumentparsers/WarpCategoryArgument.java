@@ -38,6 +38,6 @@ public class WarpCategoryArgument extends CommandElement {
     }
 
     @Nonnull @Override public List<String> complete(@Nonnull CommandSource src, @Nonnull CommandArgs args, @Nonnull CommandContext context) {
-        return handler.getWarpsWithCategories().keySet().stream().filter(Objects::isNull).map(WarpCategory::getId).collect(Collectors.toList());
+        return handler.getWarpsWithCategories().keySet().stream().filter(Objects::nonNull).map(WarpCategory::getId).collect(Collectors.toList());
     }
 }
