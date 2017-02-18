@@ -5,32 +5,32 @@
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
-import io.github.nucleuspowered.nucleus.internal.LocationData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.entity.Transform;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.World;
 
 @NoCooldown
 @NoCost
 @NoWarmup
-@Permissions(prefix = "jail", suggestedLevel = SuggestedLevel.MOD)
-@RunAsync
-@RegisterCommand(value = "info", subcommandOf = JailsCommand.class)
-public class JailInfoCommand extends AbstractCommand<CommandSource> {
+@RegisterCommand(value = "tp", subcommandOf = JailsCommand.class)
+@Permissions(prefix = "jail", mainOverride = "list", suggestedLevel = SuggestedLevel.MOD)
+public class JailTeleportCommand extends AbstractCommand<Player> {
 
     private final String jailKey = "jail";
     @Inject private JailHandler handler;
@@ -40,13 +40,14 @@ public class JailInfoCommand extends AbstractCommand<CommandSource> {
         return new CommandElement[] {GenericArguments.onlyOne(new JailArgument(Text.of(jailKey), handler))};
     }
 
-    @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        LocationData wl = args.<LocationData>getOne(jailKey).get();
-        src.sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.info.name"))
-                .append(Text.of(": ", TextColors.GREEN, wl.getName())).build());
-        src.sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.info.location"))
-                .append(Text.of(": ", TextColors.GREEN, wl.toLocationString())).build());
+    @Override protected CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+        NamedLocation location = args.<NamedLocation>getOne(jailKey).get();
+        Transform<World> location1 = location.getTransform().orElseThrow(
+                () -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.tp.noworld", location.getName()))
+        );
+
+        src.setTransform(location1);
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.tp.success", location.getName()));
         return CommandResult.success();
     }
 }
