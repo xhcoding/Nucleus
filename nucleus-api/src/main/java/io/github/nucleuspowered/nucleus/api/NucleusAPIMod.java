@@ -11,7 +11,7 @@ import org.spongepowered.api.plugin.Plugin;
 
 import javax.inject.Inject;
 
-@Plugin(id = NucleusAPI.ID, name = NucleusAPI.NAME, version = NucleusAPI.VERSION)
+@Plugin(id = NucleusAPI.ID, name = NucleusAPI.NAME, version = NucleusAPI.VERSION, description = NucleusAPI.DESCRIPTION)
 public final class NucleusAPIMod {
 
     private final Logger logger;
