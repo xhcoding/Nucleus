@@ -5,7 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.jail.handlers;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
@@ -22,25 +24,34 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.service.context.Context;
+import org.spongepowered.api.service.context.ContextCalculator;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
-public class JailHandler implements NucleusJailService {
+public class JailHandler implements NucleusJailService, ContextCalculator<Subject> {
 
     @Inject private ModularGeneralService store;
 
-    private JailGeneralDataModule getModule() {
-        return store.get(JailGeneralDataModule.class);
-    }
-
     private final NucleusPlugin plugin;
+
+    // Used for the context canclulator
+    private final Map<UUID, Context> jailDataCache = Maps.newHashMap();
+    private final static Context jailContext = new Context("nucleus_jailed", "true");
 
     public JailHandler(NucleusPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    private JailGeneralDataModule getModule() {
+        return store.get(JailGeneralDataModule.class);
     }
 
     @Override
@@ -71,9 +82,19 @@ public class JailHandler implements NucleusJailService {
     @Override
     public Optional<JailData> getPlayerJailData(User user) {
         try {
-            return plugin.getUserDataManager().get(user).get().get(JailUserDataModule.class).getJailData();
+            Optional<JailData> data = plugin.getUserDataManager().get(user).get().get(JailUserDataModule.class).getJailData();
+            if (data.isPresent()) {
+                jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.get().getJailName()));
+            } else {
+                jailDataCache.put(user.getUniqueId(), null);
+            }
+
+            return data;
         } catch (Exception e) {
-            e.printStackTrace();
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
+
             return Optional.empty();
         }
     }
@@ -102,6 +123,7 @@ public class JailHandler implements NucleusJailService {
         }
 
         jailUserDataModule.setJailData(data);
+        jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.getJailName()));
         if (user.isOnline()) {
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
@@ -126,6 +148,7 @@ public class JailHandler implements NucleusJailService {
         }
 
         Optional<Location<World>> ow = ojd.get().getPreviousLocation();
+        jailDataCache.put(user.getUniqueId(), null);
         if (user.isOnline()) {
             Player player = user.getPlayer().get();
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
@@ -161,5 +184,36 @@ public class JailHandler implements NucleusJailService {
         }
 
         return owl;
+    }
+
+    @Override public void accumulateContexts(Subject calculable, Set<Context> accumulator) {
+        if (calculable instanceof User) {
+            UUID c = ((User) calculable).getUniqueId();
+            if (!jailDataCache.containsKey(c)) {
+                getPlayerJailData((User) calculable);
+            }
+
+            Context co = jailDataCache.get(c);
+            if (co != null) {
+                accumulator.add(co);
+                accumulator.add(jailContext);
+            }
+        }
+    }
+
+    @Override public boolean matches(Context context, Subject subject) {
+        if (context.getKey().equals("nucleus_jail")) {
+            if (subject instanceof User) {
+                UUID u = ((User) subject).getUniqueId();
+                return context.equals(jailDataCache.get(u));
+            }
+        } else if (context.getKey().equals("nucleus_jailed")) {
+            if (subject instanceof User) {
+                UUID u = ((User) subject).getUniqueId();
+                return jailDataCache.get(u) != null;
+            }
+        }
+
+        return false;
     }
 }
