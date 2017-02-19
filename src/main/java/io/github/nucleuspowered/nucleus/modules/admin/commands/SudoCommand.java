@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.event.NucleusMessageChannelEvent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -17,17 +18,14 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions
 @RegisterCommand("sudo")
@@ -67,16 +65,15 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
             }
 
             Text rawMessage = Text.of(cmd.split(":", 2)[1]);
-            MessageChannelEvent.Chat event = SpongeEventFactory.createMessageChannelEventChat(
+            MessageChannelEvent.Chat event = new NucleusMessageChannelEvent(
                     Cause.source(pl).named(NamedCause.notifier(src)).build(),
                     pl.getMessageChannel(),
-                    Optional.of(pl.getMessageChannel()),
-                    new MessageEvent.MessageFormatter(Text.builder(pl.getName())
+                    rawMessage,
+                    new NucleusMessageChannelEvent.MessageFormatter(Text.builder(pl.getName())
                             .onShiftClick(TextActions.insertText(pl.getName()))
                             .onClick(TextActions.suggestCommand("/msg " + pl.getName()))
-                            .build(), rawMessage),
-                    rawMessage,
-                    false);
+                            .build(), rawMessage)
+                    );
 
             if (!Sponge.getEventManager().post(event)) {
                 pl.getMessageChannel().send(pl, Util.applyChatTemplate(event.getFormatter()));
@@ -91,4 +88,5 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
         Sponge.getCommandManager().process(pl, cmd);
         return CommandResult.success();
     }
+
 }
