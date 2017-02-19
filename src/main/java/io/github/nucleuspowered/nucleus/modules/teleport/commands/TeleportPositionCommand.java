@@ -26,6 +26,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -102,25 +104,29 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
             throw ReturnMessageException.fromKey("command.tppos.worldborder");
         }
 
+        NucleusTeleportHandler teleportHandler = Nucleus.getNucleus().getTeleportHandler();
+
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
-            pl.setLocation(loc);
-            pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
-            if (!src.equals(pl)) {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
+            if (teleportHandler.teleportPlayer(pl, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK, Cause.of(NamedCause.owner(src)))) {
+                pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
+                if (!src.equals(pl)) {
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
+                }
+
+                return CommandResult.success();
             }
 
-            return CommandResult.success();
+            throw ReturnMessageException.fromKey("command.tppos.cancelledevent");
         }
 
         // If we have a chunk, scan the whole chunk.
-        NucleusTeleportHandler teleportHandler = Nucleus.getNucleus().getTeleportHandler();
         NucleusTeleportHandler.TeleportMode mode = teleportHandler.getTeleportModeForPlayer(pl);
         if (args.hasAny("c") && mode == NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE) {
             mode = NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE_CHUNK;
         }
 
-        if (teleportHandler.teleportPlayer(pl, loc, mode)) {
+        if (teleportHandler.teleportPlayer(pl, loc, mode, Cause.of(NamedCause.owner(src)))) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));

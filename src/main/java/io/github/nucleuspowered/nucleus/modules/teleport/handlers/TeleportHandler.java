@@ -20,6 +20,8 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
@@ -165,7 +167,7 @@ public class TeleportHandler {
                 NucleusTeleportHandler.TeleportMode mode = safe ? tpHandler.getTeleportModeForPlayer(playerToTeleport) :
                     NucleusTeleportHandler.TeleportMode.NO_CHECK;
 
-                if (!tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode)) {
+                if (!tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode, Cause.of(NamedCause.owner(this.source)))) {
                     if (!silentSource) {
                         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.nosafe"));
                     }

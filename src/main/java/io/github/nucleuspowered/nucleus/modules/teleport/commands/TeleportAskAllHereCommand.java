@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
+import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -11,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.modules.teleport.events.RequestEvent;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -18,9 +20,13 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -42,8 +48,17 @@ public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+        Cause cause = Cause.of(NamedCause.owner(src));
+        List<Player> cancelled = Lists.newArrayList();
         Sponge.getServer().getOnlinePlayers().forEach(x -> {
             if (x.equals(src)) {
+                return;
+            }
+
+            // Before we do all this, check the event.
+            RequestEvent.PlayerToCause event = new RequestEvent.PlayerToCause(cause, x);
+            if (Sponge.getEventManager().post(event)) {
+                cancelled.add(x);
                 return;
             }
 
@@ -57,6 +72,11 @@ public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
         });
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpaall.success"));
+        if (!cancelled.isEmpty()) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpall.cancelled",
+                cancelled.stream().map(x -> x.getName()).collect(Collectors.joining(", "))));
+        }
+
         return CommandResult.success();
     }
 }

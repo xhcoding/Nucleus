@@ -20,6 +20,8 @@ import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataMod
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -104,7 +106,7 @@ public class JailHandler implements NucleusJailService {
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
                 plugin.getTeleportHandler().teleportPlayer(player, owl.get().getLocation().get(), owl.get().getRotation(),
-                    NucleusTeleportHandler.TeleportMode.NO_CHECK);
+                    NucleusTeleportHandler.TeleportMode.NO_CHECK, Cause.of(NamedCause.owner(plugin)));
                 modularUserService.get(FlyUserDataModule.class).setFlying(false);
             });
         } else {

@@ -13,16 +13,21 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.teleport.events.RequestEvent;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 import java.time.Instant;
@@ -72,6 +77,13 @@ public class TeleportAskHereCommand extends StandardAbstractCommand<Player> {
         if (src.equals(target)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.teleport.self"));
             return CommandResult.empty();
+        }
+
+        // Before we do all this, check the event.
+        RequestEvent.PlayerToCause event = new RequestEvent.PlayerToCause(Cause.of(NamedCause.owner(cache.getSubject())), target);
+        if (Sponge.getEventManager().post(event)) {
+            throw new ReturnMessageException(
+                    event.getCancelMessage().orElseGet(() -> plugin.getMessageProvider().getTextMessageWithFormat("command.tpa.eventfailed")));
         }
 
         SubjectPermissionCache<Player> targetCache = new SubjectPermissionCache<>(target);

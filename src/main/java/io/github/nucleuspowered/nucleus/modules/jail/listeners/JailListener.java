@@ -6,8 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusSendToSpawnEvent;
+import io.github.nucleuspowered.nucleus.api.events.NucleusTeleportEvent;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
@@ -21,6 +23,7 @@ import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -49,6 +52,16 @@ public class JailListener extends ListenerBase {
     @Inject private InternalServiceManager ism;
     @Inject private JailConfigAdapter jailConfigAdapter;
     @Inject private JailHandler handler;
+    private final String notify;
+    private final String teleport;
+    private final String teleportto;
+
+    @Inject
+    public JailListener(NucleusPlugin plugin) {
+        notify = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("notify");
+        teleport = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleportjailed");
+        teleportto = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleporttojailed");
+    }
 
     @Listener
     public void onPlayerLogin(final NucleusOnLoginEvent event, @Getter("getTargetUser") User user, @Getter("getUserService") ModularUserService qs) {
@@ -59,7 +72,7 @@ public class JailListener extends ListenerBase {
         if (userDataModule.jailOnNextLogin() && userDataModule.getJailData().isPresent()) {
             Optional<NamedLocation> owl = handler.getWarpLocation(user);
             if (!owl.isPresent()) {
-                MessageChannel.permission(JailCommand.notifyPermission)
+                MessageChannel.permission(notify)
                     .send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
                 handler.unjailPlayer(user);
                 return;
@@ -123,6 +136,31 @@ public class JailListener extends ListenerBase {
                 }
             }
         }).submit(plugin);
+    }
+
+    @Listener
+    public void onRequestSent(NucleusTeleportEvent.Request event, @Root Player cause, @Getter("getTargetEntity") Player player) {
+        if (handler.isPlayerJailed(cause)) {
+            event.setCancelled(true);
+            event.setCancelMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.teleportcause.isjailed"));
+        } else if (handler.isPlayerJailed(player)) {
+            event.setCancelled(true);
+            event.setCancelMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.teleporttarget.isjailed", player.getName()));
+        }
+    }
+
+    @Listener
+    public void onAboutToTeleport(NucleusTeleportEvent.AboutToTeleport event, @Root CommandSource cause, @Getter("getTargetEntity") Player player) {
+        if (handler.isPlayerJailed(player)) {
+            if (!cause.hasPermission(teleport)) {
+                event.setCancelled(true);
+                event.setCancelMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.abouttoteleporttarget.isjailed", player.getName()));
+            } else if (!player.hasPermission(teleportto)) {
+                event.setCancelled(true);
+                event.setCancelMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.abouttoteleportcause.targetisjailed",
+                        player.getName()));
+            }
+        }
     }
 
     @Listener
