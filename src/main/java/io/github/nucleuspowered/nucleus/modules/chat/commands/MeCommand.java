@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.event.NucleusMessageChannelEvent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
@@ -22,18 +23,17 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -71,14 +71,14 @@ public class MeCommand extends AbstractCommand<CommandSource> implements Standar
 
         // We create an event so that other plugins can provide transforms, such as Boop, and that we
         // can catch it in ignore and mutes, and so can other plugins.
-        MessageChannelEvent.Chat event = SpongeEventFactory.createMessageChannelEventChat(
-            Cause.source(src).build(),
-            channel,
-            Optional.of(channel),
-            formatter,
-            Text.of(message),
-            false
-        );
+        MessageChannelEvent.Chat event = new NucleusMessageChannelEvent(
+                Cause.source(src).build(),
+                channel,
+                Text.of(message),
+                new MessageEvent.MessageFormatter(Text.builder(src.getName())
+                        .onShiftClick(TextActions.insertText(src.getName()))
+                        .onClick(TextActions.suggestCommand("/msg " + src.getName()))
+                        .build()));
 
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.me.cancel"));
