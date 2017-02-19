@@ -75,7 +75,7 @@ public class ConnectionMessagesListener extends ListenerBase.Reloadable {
             if (cmc.getLoginMessage().isEmpty()) {
                 joinEvent.setMessageCancelled(true);
             } else {
-                cmc.getLoginMessage().getForCommandSource(pl);
+                joinEvent.setMessage(cmc.getLoginMessage().getForCommandSource(pl));
             }
         }
     }
