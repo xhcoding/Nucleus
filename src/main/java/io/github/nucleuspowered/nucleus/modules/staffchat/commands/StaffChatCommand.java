@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.event.NucleusMessageChannelEvent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.datamodules.StaffChatTransientModule;
@@ -24,7 +25,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
@@ -61,16 +61,14 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
             Text rawMessage = TextSerializers.FORMATTING_CODE.deserialize(toSend.get());
             if (src instanceof Player) {
                 Player pl = (Player)src;
-                MessageChannelEvent.Chat event = SpongeEventFactory.createMessageChannelEventChat(
+                MessageChannelEvent.Chat event = new NucleusMessageChannelEvent(
                     Cause.source(pl).named(NamedCause.notifier(src)).build(),
                     scmc,
-                    Optional.of(scmc),
-                    new MessageEvent.MessageFormatter(Text.builder(pl.getName())
-                            .onShiftClick(TextActions.insertText(pl.getName()))
-                            .onClick(TextActions.suggestCommand("/msg " + pl.getName()))
-                            .build(), rawMessage),
                     rawMessage,
-                    false);
+                    new MessageEvent.MessageFormatter(Text.builder(pl.getName())
+                        .onShiftClick(TextActions.insertText(pl.getName()))
+                        .onClick(TextActions.suggestCommand("/msg " + pl.getName()))
+                        .build(), rawMessage));
 
                 if (!Sponge.getEventManager().post(event)) {
                     scmc.send(pl, Util.applyChatTemplate(event.getFormatter()));
