@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
+import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
@@ -14,6 +15,7 @@ import org.spongepowered.api.world.World;
 /**
  * These events are fired <em>before</em> teleportation actually happens.
  */
+@Stable
 @NonnullByDefault
 public interface NucleusTeleportEvent extends TargetPlayerEvent, CancelMessage {
 
