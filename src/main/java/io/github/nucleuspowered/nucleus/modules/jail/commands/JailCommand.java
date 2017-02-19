@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.iapi.data.JailData;
 import io.github.nucleuspowered.nucleus.internal.LocationData;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -46,8 +45,6 @@ import java.util.Optional;
 @RegisterCommand({"jail", "unjail", "togglejail"})
 public class JailCommand extends AbstractCommand<CommandSource> {
 
-    public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "jail.notify";
-
     @Inject private JailHandler handler;
     private final String playerKey = "subject";
     private final String jailKey = "jail";
@@ -55,16 +52,12 @@ public class JailCommand extends AbstractCommand<CommandSource> {
     private final String reasonKey = "reason";
 
     @Override
-    public Map<String, PermissionInformation> permissionsToRegister() {
-        Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, PermissionInformation.getWithTranslation("permission.jail.notify", SuggestedLevel.MOD));
-        return m;
-    }
-
-    @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("notify", PermissionInformation.getWithTranslation("permission.jail.notify", SuggestedLevel.MOD));
         m.put("offline", PermissionInformation.getWithTranslation("permission.jail.offline", SuggestedLevel.MOD));
+        m.put("teleportjailed", PermissionInformation.getWithTranslation("permission.jail.teleportjailed", SuggestedLevel.ADMIN));
+        m.put("teleporttojailed", PermissionInformation.getWithTranslation("permission.jail.teleporttojailed", SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -135,7 +128,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         }
 
         if (handler.jailPlayer(user, jd)) {
-            MutableMessageChannel mc = MessageChannel.permission(notifyPermission).asMutable();
+            MutableMessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify")).asMutable();
             mc.addMember(src);
             mc.send(message);
             mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));

@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.SafeTeleportConfig;
+import io.github.nucleuspowered.nucleus.modules.teleport.events.AboutToTeleportEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -20,6 +21,9 @@ import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
@@ -36,7 +40,6 @@ import javax.annotation.Nullable;
  */
 public class NucleusTeleportHandler {
 
-    // Note that for 1.10.2, use the Sponge TeleportHelper
     public static final TeleportHelper TELEPORT_HELPER = Sponge.getGame().getTeleportHelper();
 
     private static final List<BlockType> unsafeBody = ImmutableList.of(
@@ -69,7 +72,7 @@ public class NucleusTeleportHandler {
      * @return {@code true} if successful.
      */
     public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo) {
-        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), getTeleportModeForPlayer(player));
+        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), getTeleportModeForPlayer(player), Cause.of(NamedCause.owner(player)));
     }
 
     /**
@@ -95,32 +98,59 @@ public class NucleusTeleportHandler {
      */
     public boolean teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {
         TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
-        return teleportPlayer(player, worldLocation, rotation, mode);
+        return teleportPlayer(player, worldLocation, rotation, mode, Cause.of(NamedCause.owner(player)));
     }
 
     public boolean teleportPlayer(Player player, Transform<World> worldTransform) {
-        return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), getTeleportModeForPlayer(player));
+        return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), getTeleportModeForPlayer(player), Cause.of(NamedCause.owner(player)));
     }
 
     public boolean teleportPlayer(Player player, Transform<World> worldTransform, boolean safe) {
         TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
-        return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), mode);
+        return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), mode, Cause.of(NamedCause.owner(player)));
     }
 
     public boolean teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode) {
-        return teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode);
+        return teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, Cause.of(NamedCause.owner(player)));
+    }
+
+    public boolean teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode, Cause cause) {
+        return teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, cause);
     }
 
     public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, TeleportMode teleportMode) {
-        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), teleportMode);
+        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), teleportMode, Cause.of(NamedCause.owner(player)));
     }
 
-    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode) {
+    public boolean teleportPlayer(Player pl, Location<World> loc, TeleportMode mode, Cause of) {
+        return teleportPlayer(pl, loc, pl.getRotation(), mode, of);
+    }
+
+    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode, Cause cause) {
         Optional<Location<World>> targetLocation = getSafeLocation(player, locationToTeleportTo, teleportMode);
 
-        // Do it, tell the routine if it worked.
-        return targetLocation.isPresent() && Util.isLocationInWorldBorder(targetLocation.get()) &&
-                player.setLocationAndRotation(targetLocation.get(), rotation);
+        if (targetLocation.isPresent() && Util.isLocationInWorldBorder(targetLocation.get())) {
+            AboutToTeleportEvent event = new AboutToTeleportEvent(
+                    cause,
+                    new Transform<>(targetLocation.get().getExtent(), targetLocation.get().getPosition(), rotation),
+                    player
+            );
+
+            if (Sponge.getEventManager().post(event)) {
+                event.getCancelMessage().ifPresent(x -> {
+                    Object o = cause.root();
+                    if (o instanceof MessageReceiver) {
+                        ((MessageReceiver) o).sendMessage(x);
+                    }
+                });
+                return false;
+            }
+
+            // Do it, tell the routine if it worked.
+            return player.setLocationAndRotation(targetLocation.get(), rotation);
+        }
+
+        return false;
     }
 
     public Optional<Location<World>> getSafeLocation(@Nullable Player player, Location<World> locationToTeleportTo, TeleportMode teleportMode) {

@@ -257,7 +257,7 @@ public class NucleusPlugin extends Nucleus {
         try {
             Sponge.getEventManager().post(new BaseModuleEvent.AboutToConstructEvent(this));
             logger.info(messageProvider.getMessageWithFormat("startup.moduleloading", PluginInfo.NAME));
-            moduleContainer.loadModules(false);
+            moduleContainer.loadModules(true);
 
             if (moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isErrorOnStartup()) {
                 throw new IllegalStateException("In main.conf, core.simulate-error-on-startup is set to TRUE. Remove this config entry to allow Nucleus to start. Simulating error and disabling Nucleus.");

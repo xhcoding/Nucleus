@@ -17,6 +17,8 @@ import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
@@ -43,6 +45,11 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
             nucleus.getInjector().injectMembers(jh);
             game.getServiceManager().setProvider(nucleus, NucleusJailService.class, jh);
             serviceManager.registerService(JailHandler.class, jh);
+
+            // Context
+            Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> {
+                x.registerContextCalculator(jh);
+            });
         } catch (Exception ex) {
             logger.warn("Could not load the jail module for the reason below.");
             ex.printStackTrace();
