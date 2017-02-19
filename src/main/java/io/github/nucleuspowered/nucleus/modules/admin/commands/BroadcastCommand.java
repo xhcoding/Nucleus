@@ -52,7 +52,7 @@ public class BroadcastCommand extends AbstractCommand<CommandSource> implements 
         Text p = bc.getPrefix().getForCommandSource(src);
         Text s = bc.getSuffix().getForCommandSource(src);
 
-        new NucleusTextTemplateMessageSender(textTemplate, src, t -> textParsingUtils.joinTextsWithColoursFlowing(p, t, s)).send();
+        new NucleusTextTemplateMessageSender(textTemplate, src, t -> TextParsingUtils.joinTextsWithColoursFlowing(p, t, s)).send();
         return CommandResult.success();
     }
 

@@ -38,7 +38,7 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
 
     private final String representation;
     private final TextTemplate textTemplate;
-    private static final Map<String, Function<CommandSource, Text>> tokenMap = Maps.newHashMap();
+    private final Map<String, Function<CommandSource, Text>> tokenMap = Maps.newHashMap();
 
     public NucleusTextTemplateImpl(String representation) {
         this.representation = representation;
@@ -63,7 +63,7 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
     abstract Tuple<TextTemplate, Map<String, Function<CommandSource, Text>>> parse(String parser);
 
     @Override public boolean containsTokens() {
-        return !tokenMap.isEmpty();
+        return !textTemplate.getArguments().isEmpty();
     }
 
     @Override @SuppressWarnings("SameParameterValue")
