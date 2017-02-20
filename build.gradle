@@ -8,9 +8,9 @@ plugins {
     // id "com.qixalite.spongestart" version "1.4.3"
 }
 
-project.ext.versionno = '0.24.2'
+project.ext.versionno = '0.24.3'
 project.ext.spongeapiversion = '6.0'
-project.ext.suffix = ''
+project.ext.suffix = '-SNAPSHOT'
 
 allprojects {
     apply plugin: 'java'
