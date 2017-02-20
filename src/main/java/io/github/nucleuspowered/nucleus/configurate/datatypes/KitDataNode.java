@@ -7,8 +7,7 @@ package io.github.nucleuspowered.nucleus.configurate.datatypes;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
-import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
-import ninja.leaping.configurate.ConfigurationNode;
+import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSnapshot;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.entity.living.player.Player;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 @ConfigSerializable
 public class KitDataNode implements Kit {
 
-    @Setting private List<ConfigurationNode> stacks = Lists.newArrayList();
+    @Setting private List<NucleusItemStackSnapshot> stacks = Lists.newArrayList();
 
     /**
      * This is in seconds to be consistent with the rest of the plugin.
@@ -35,12 +34,12 @@ public class KitDataNode implements Kit {
 
     @Override
     public List<ItemStackSnapshot> getStacks() {
-        return ItemStackSnapshotSerialiser.INSTANCE.deserializeList(stacks);
+        return stacks.stream().map(NucleusItemStackSnapshot::getSnapshot).collect(Collectors.toList());
     }
 
     @Override
     public Kit setStacks(List<ItemStackSnapshot> stacks) {
-        this.stacks = ItemStackSnapshotSerialiser.INSTANCE.serializeList(stacks);
+        this.stacks = stacks == null ? Lists.newArrayList() : stacks.stream().map(NucleusItemStackSnapshot::new).collect(Collectors.toList());
         return this;
     }
 

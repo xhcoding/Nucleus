@@ -6,8 +6,7 @@ package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.configurate.typeserialisers.ItemStackSnapshotSerialiser;
-import ninja.leaping.configurate.ConfigurationNode;
+import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSnapshot;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -23,7 +22,7 @@ public class KitConfigDataNode {
     private Map<String, KitDataNode> kits = Maps.newHashMap();
 
     @Setting
-    private List<ConfigurationNode> firstKit = Lists.newArrayList();
+    private List<NucleusItemStackSnapshot> firstKit = Lists.newArrayList();
 
     private boolean kitFix = false;
     private final Object locking = new Object();
@@ -64,20 +63,15 @@ public class KitConfigDataNode {
         return kits;
     }
 
-
     public List<ItemStackSnapshot> getFirstKit() {
         if (firstKit == null) {
             firstKit = Lists.newArrayList();
         }
 
-        return ItemStackSnapshotSerialiser.INSTANCE.deserializeList(firstKit);
+        return firstKit.stream().map(NucleusItemStackSnapshot::getSnapshot).collect(Collectors.toList());
     }
 
     public void setFirstKit(List<ItemStackSnapshot> stacks) {
-        if (stacks.isEmpty()) {
-            firstKit = Lists.newArrayList();
-        }
-
-        this.firstKit = ItemStackSnapshotSerialiser.INSTANCE.serializeList(stacks);
+        this.firstKit = stacks != null ? stacks.stream().map(NucleusItemStackSnapshot::new).collect(Collectors.toList()) : Lists.newArrayList();
     }
 }
