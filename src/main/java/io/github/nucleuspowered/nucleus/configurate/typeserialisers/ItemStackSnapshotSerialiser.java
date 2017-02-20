@@ -13,8 +13,8 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.DataTranslators;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
@@ -68,8 +68,8 @@ public class ItemStackSnapshotSerialiser implements TypeSerializer<ItemStackSnap
             } else {
                 enchantments.forEach(x -> {
                     try {
-                        short id = Short.parseShort(x.getNode("id").getString());
-                        short lvl = Short.parseShort(x.getNode("lvl").getString());
+                        int id = Integer.parseInt(x.getNode("id").getString());
+                        int lvl = Integer.parseInt(x.getNode("lvl").getString());
 
                         x.getNode("id").setValue(id);
                         x.getNode("lvl").setValue(lvl);
