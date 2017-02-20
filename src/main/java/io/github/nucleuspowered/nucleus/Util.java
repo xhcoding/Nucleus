@@ -21,6 +21,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
@@ -288,13 +289,17 @@ public class Util {
         }
     }
 
-    public static boolean isFirstPlay(Player player) {
-        Instant firstPlayed = player.getJoinData().firstPlayed().get();
-        Instant lastPlayed = player.getJoinData().lastPlayed().get();
+    public static boolean isFirstPlay(User player) {
+        try {
+            Instant firstPlayed = player.get(JoinData.class).get().firstPlayed().get();
+            Instant lastPlayed = player.get(JoinData.class).get().lastPlayed().get();
 
-        // lastPlayed is always ticking - give three seconds.
-        // TODO: Better way of doing this.
-        return firstPlayed.isAfter(lastPlayed.minus(10, ChronoUnit.SECONDS));
+            // lastPlayed is always ticking - give three seconds.
+            // TODO: Better way of doing this.
+            return firstPlayed.isAfter(lastPlayed.minus(10, ChronoUnit.SECONDS));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static Optional<Double> getDoubleOptionFromSubject(Subject player, String... options) {
