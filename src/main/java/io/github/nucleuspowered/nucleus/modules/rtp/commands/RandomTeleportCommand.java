@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.rtp.commands;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
@@ -140,7 +139,9 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             int z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
 
             // Load the chunk before continuing with /rtp. Sponge issue means we have to load the chunk first.
-            currentWorld.loadChunk(new Vector3i(x, 0, z), true);
+            // currentWorld.loadChunk(new Vector3i(x / 16, 0, z / 16), true);
+            // Of course, the above line doesn't work. So, let's just inspect the location instead using a method we KNOW will work.
+            NucleusTeleportHandler.TELEPORT_HELPER.getSafeLocation(new Location<>(transform.getExtent(), x, 0, z), 1, 1);
 
             int y;
             if (onSurface) {
@@ -156,7 +157,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
                     .from(new Location<>(currentWorld, new Vector3d(x, Math.min(world.getBlockMax().getY() - 11, maxY), z)))
                     .direction(direction)
                     .distanceLimit(distance)
-                    .stopFilter(BlockRay.onlyAirFilter()).build();
+                    .stopFilter(bl -> bl.getExtent().getBlock(bl.getBlockPosition()).getType().equals(BlockTypes.AIR)).build();
                 Optional<BlockRayHit<World>> blockRayHitOptional = blockRay.end();
                 if (blockRayHitOptional.isPresent()) {
                     y = blockRayHitOptional.get().getBlockY();
@@ -176,7 +177,10 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             // getSafeLocation might have put us out of the world border. Best to check.
             // We also check to see that it's not in water or lava, and if enabled, we see if the subject would end up on the surface.
             try {
-                if (oSafeLocation.isPresent() && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get())
+                if (oSafeLocation.isPresent()
+                    && oSafeLocation.get().getPosition().getY() >= minY
+                    && oSafeLocation.get().getPosition().getY() <= maxY
+                    && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get())
                     && isOnSurface(oSafeLocation.get())) {
 
                     Location<World> tpTarget = oSafeLocation.get();
