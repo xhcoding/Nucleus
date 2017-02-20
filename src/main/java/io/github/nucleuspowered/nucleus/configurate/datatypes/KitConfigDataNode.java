@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSnapshot;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.List;
@@ -68,10 +69,14 @@ public class KitConfigDataNode {
             firstKit = Lists.newArrayList();
         }
 
-        return firstKit.stream().map(NucleusItemStackSnapshot::getSnapshot).collect(Collectors.toList());
+        return firstKit.stream().map(NucleusItemStackSnapshot::getSnapshot)
+                .filter(x -> x.getType() != ItemTypes.NONE)
+                .collect(Collectors.toList());
     }
 
     public void setFirstKit(List<ItemStackSnapshot> stacks) {
-        this.firstKit = stacks != null ? stacks.stream().map(NucleusItemStackSnapshot::new).collect(Collectors.toList()) : Lists.newArrayList();
+        this.firstKit = stacks != null ? stacks.stream()
+                .filter(x -> x.getType() != ItemTypes.NONE)
+                .map(NucleusItemStackSnapshot::new).collect(Collectors.toList()) : Lists.newArrayList();
     }
 }

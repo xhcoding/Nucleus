@@ -64,7 +64,13 @@ public class NucleusItemStackSnapshotSerialiser implements TypeSerializer<Nucleu
             }
         }
 
-        ItemStackSnapshot snapshot = value.getValue(iss);
+        ItemStackSnapshot snapshot;
+        try {
+            snapshot = value.getValue(iss);
+        } catch (Exception e) {
+            return NucleusItemStackSnapshot.NONE;
+        }
+
         if (emptyEnchant) {
             ItemStack is = snapshot.createStack();
             is.offer(Keys.ITEM_ENCHANTMENTS, Lists.newArrayList());

@@ -8,6 +8,8 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 public class NucleusItemStackSnapshot {
 
+    public static final NucleusItemStackSnapshot NONE = new NucleusItemStackSnapshot(ItemStackSnapshot.NONE);
+
     private ItemStackSnapshot snapshot;
 
     public NucleusItemStackSnapshot(ItemStackSnapshot snapshot) {
