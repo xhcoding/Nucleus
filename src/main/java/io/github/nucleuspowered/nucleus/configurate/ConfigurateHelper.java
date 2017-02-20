@@ -57,7 +57,6 @@ public class ConfigurateHelper {
         // Custom type serialisers for Nucleus
         tsc.registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
         tsc.registerType(TypeToken.of(NucleusItemStackSnapshot.class), new NucleusItemStackSnapshotSerialiser());
-        // tsc.registerType(TypeToken.of(ConfigurationNode.class), new ConfigurationNodeTypeSerialiser());
         tsc.registerType(TypeToken.of(Pattern.class), new PatternTypeSerialiser());
         tsc.registerType(TypeToken.of(NucleusTextTemplateImpl.class), new NucleusTextTemplateTypeSerialiser());
         tsc.registerPredicate(
