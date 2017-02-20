@@ -47,9 +47,7 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
             return node.getValue(typeToken, defaultSupplier);
         }
 
-        ConfigurationOptions options = node.getOptions().setAcceptedTypes(
-                ImmutableSet.of(Map.class, List.class, Double.class, Float.class, Long.class, Integer.class, Boolean.class, String.class, Short.class));
-        return SimpleCommentedConfigurationNode.root(options).setValue(node).getValue(typeToken, defaultSupplier);
+        return fixNode(node).getValue(typeToken, defaultSupplier);
     }
 
     @Override protected ConfigurationNode transformOnSave(T info) throws Exception {
@@ -61,8 +59,13 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
         }
 
         // Allow short datatypes again.
+        return fixNode(node).setValue(typeToken, info);
+    }
+
+    private ConfigurationNode fixNode(ConfigurationNode node) {
         ConfigurationOptions options = node.getOptions().setAcceptedTypes(
-            ImmutableSet.of(Map.class, List.class, Double.class, Float.class, Long.class, Integer.class, Boolean.class, String.class, Short.class));
-        return SimpleCommentedConfigurationNode.root(options).setValue(typeToken, info);
+                ImmutableSet.of(Map.class, List.class, Double.class, Float.class, Long.class, Integer.class, Boolean.class, String.class,
+                        Short.class, Byte.class, Number.class));
+        return SimpleCommentedConfigurationNode.root(options);
     }
 }
