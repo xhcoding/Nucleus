@@ -140,7 +140,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             int z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
 
             // Load the chunk before continuing with /rtp. Sponge issue means we have to load the chunk first.
-            currentWorld.loadChunk(new Vector3i(x, 0, z), true);
+            currentWorld.loadChunk(new Vector3i(x / 16, 0, z / 16), true);
 
             int y;
             if (onSurface) {
