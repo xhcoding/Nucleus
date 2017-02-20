@@ -4,14 +4,18 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.dataproviders;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -39,11 +43,26 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
     }
 
     @Override protected T transformOnLoad(ConfigurationNode node) throws Exception {
-        return node.getValue(typeToken, defaultSupplier);
+        if (node.getOptions().acceptsType(Short.class)) {
+            return node.getValue(typeToken, defaultSupplier);
+        }
+
+        ConfigurationOptions options = node.getOptions().setAcceptedTypes(
+                ImmutableSet.of(Map.class, List.class, Double.class, Float.class, Long.class, Integer.class, Boolean.class, String.class, Short.class));
+        return SimpleCommentedConfigurationNode.root(options).setValue(node).getValue(typeToken, defaultSupplier);
     }
 
     @Override protected ConfigurationNode transformOnSave(T info) throws Exception {
         ConfigurationOptions configurateOptions = ConfigurateHelper.setOptions(loader.getDefaultOptions());
-        return loader.createEmptyNode(configurateOptions).setValue(typeToken, info);
+        ConfigurationNode node = loader.createEmptyNode(configurateOptions);
+
+        if (node.getOptions().acceptsType(Short.class)) {
+            return node.setValue(typeToken, info);
+        }
+
+        // Allow short datatypes again.
+        ConfigurationOptions options = node.getOptions().setAcceptedTypes(
+            ImmutableSet.of(Map.class, List.class, Double.class, Float.class, Long.class, Integer.class, Boolean.class, String.class, Short.class));
+        return SimpleCommentedConfigurationNode.root(options).setValue(typeToken, info);
     }
 }

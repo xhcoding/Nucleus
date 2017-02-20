@@ -24,6 +24,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -32,6 +33,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -44,6 +46,15 @@ public class CoreListener extends ListenerBase {
 
     @Inject private UserDataManager loader;
     @Inject private CoreConfigAdapter cca;
+
+    @IsCancelled(Tristate.UNDEFINED)
+    @Listener(order = Order.FIRST)
+    public void onPlayerLoginFirst(final ClientConnectionEvent.Login event, @Getter("getTargetUser") User user) {
+        // This works here. Not complaining.
+        if (Util.isFirstPlay(user)) {
+            loader.get(user).ifPresent(qsu -> qsu.get(CoreUserDataModule.class).setStartedFirstJoin(true));
+        }
+    }
 
     /* (non-Javadoc)
      * We do this last to avoid interfering with other modules.
@@ -84,7 +95,7 @@ public class CoreListener extends ListenerBase {
             c.setLastLogin(Instant.now());
 
             // If in the cache, unset it too.
-            c.setFirstPlay(Util.isFirstPlay(player) && !c.getLastLogout().isPresent());
+            c.setFirstPlay(c.isStartedFirstJoin() && !c.getLastLogout().isPresent());
 
             if (c.isFirstPlay()) {
                 plugin.getGeneralService().getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
@@ -111,6 +122,7 @@ public class CoreListener extends ListenerBase {
             Sponge.getEventManager().post(firstJoinEvent);
             event.setChannel(firstJoinEvent.getChannel().get());
             event.setMessageCancelled(firstJoinEvent.isMessageCancelled());
+            loader.getUnchecked(player).get(CoreUserDataModule.class).setStartedFirstJoin(false);
         }
     }
 

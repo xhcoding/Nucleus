@@ -49,6 +49,13 @@ public class CoreUserDataModule extends DataModule<ModularUserService> {
     @DataKey("firstJoin")
     private long firstJoin = 0;
 
+    // This is required as if a player joins during whitelist, Sponge logs it as a first join.
+    // This means they lose out on all first join stuff, like first join kits.
+    // We log a first join during a Login event that is cancelled, and then read if this
+    // is true later (along with the last logout).
+    @DataKey("startedFirstJoin")
+    private boolean startedFirstJoin = false;
+
     public Optional<Instant> getLastLogin() {
         if (login == 0) {
             return Optional.empty();
@@ -141,5 +148,13 @@ public class CoreUserDataModule extends DataModule<ModularUserService> {
 
     public void setFirstJoin(Instant firstJoin) {
         this.firstJoin = firstJoin.toEpochMilli();
+    }
+
+    public boolean isStartedFirstJoin() {
+        return startedFirstJoin;
+    }
+
+    public void setStartedFirstJoin(boolean startedFirstJoin) {
+        this.startedFirstJoin = startedFirstJoin;
     }
 }
