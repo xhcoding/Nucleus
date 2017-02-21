@@ -33,6 +33,7 @@ import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
+import org.spongepowered.api.world.biome.BiomeTypes;
 
 import java.util.Optional;
 import java.util.Random;
@@ -43,6 +44,10 @@ import java.util.Set;
 public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetOtherPlayer {
 
     private Set<BlockType> prohibitedTypes = null;
+    private Set<String> prohibitedBiomeTypes = Sets.newHashSet(
+        BiomeTypes.OCEAN.getId(), BiomeTypes.DEEP_OCEAN.getId(), BiomeTypes.FROZEN_OCEAN.getId()
+    );
+
     // Works around a problem in the Sponge implementation.
     private final Vector3d direction = new Vector3d(0.00001, -1, 0.000001);
 
@@ -135,13 +140,25 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             plugin.getLogger().debug(String.format("RTP of %s, attempt %s of %s", target.getName(), maxCount - count, maxCount));
 
             // Generate random co-ords.
-            int x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
-            int z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
+            int x;
+            int z;
 
-            // Load the chunk before continuing with /rtp. Sponge issue means we have to load the chunk first.
-            // currentWorld.loadChunk(new Vector3i(x / 16, 0, z / 16), true);
-            // Of course, the above line doesn't work. So, let's just inspect the location instead using a method we KNOW will work.
-            NucleusTeleportHandler.TELEPORT_HELPER.getSafeLocation(new Location<>(transform.getExtent(), x, 0, z), 1, 1);
+            int counter = 0;
+            do {
+                x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
+                z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
+
+                // Load the chunk before continuing with /rtp. Sponge issue means we have to load the chunk first.
+                // currentWorld.loadChunk(new Vector3i(x / 16, 0, z / 16), true);
+                // Of course, the above line doesn't work. So, let's just inspect the location instead using a method we KNOW will work.
+                NucleusTeleportHandler.TELEPORT_HELPER.getSafeLocation(new Location<>(transform.getExtent(), x, 0, z), 1, 1);
+                if (counter++ == 5) {
+                    onUnsuccesfulAttempt();
+                    return;
+                }
+
+                // If this is a prohibited type, loop again.
+            } while (prohibitedBiomeTypes.contains(transform.getExtent().getBiome(x, 1, z).getId()));
 
             int y;
             if (onSurface) {
