@@ -66,6 +66,6 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
         ConfigurationOptions options = node.getOptions().setAcceptedTypes(
                 ImmutableSet.of(Map.class, List.class, Double.class, Float.class, Long.class, Integer.class, Boolean.class, String.class,
                         Short.class, Byte.class, Number.class));
-        return SimpleCommentedConfigurationNode.root(options);
+        return SimpleCommentedConfigurationNode.root(options).setValue(node);
     }
 }
