@@ -47,7 +47,7 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
             return node.getValue(typeToken, defaultSupplier);
         }
 
-        return fixNode(node).getValue(typeToken, defaultSupplier);
+        return fixNode(node, true).getValue(typeToken, defaultSupplier);
     }
 
     @Override protected ConfigurationNode transformOnSave(T info) throws Exception {
@@ -59,13 +59,18 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
         }
 
         // Allow short datatypes again.
-        return fixNode(node).setValue(typeToken, info);
+        return fixNode(node, false).setValue(typeToken, info);
     }
 
-    private ConfigurationNode fixNode(ConfigurationNode node) {
+    private ConfigurationNode fixNode(ConfigurationNode node, boolean setNode) {
         ConfigurationOptions options = node.getOptions().setAcceptedTypes(
                 ImmutableSet.of(Map.class, List.class, Double.class, Float.class, Long.class, Integer.class, Boolean.class, String.class,
                         Short.class, Byte.class, Number.class));
-        return SimpleCommentedConfigurationNode.root(options).setValue(node);
+
+        if (setNode) {
+            return SimpleCommentedConfigurationNode.root(options).setValue(node);
+        }
+
+        return SimpleCommentedConfigurationNode.root(options);
     }
 }
