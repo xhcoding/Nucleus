@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -18,8 +19,9 @@ import org.spongepowered.api.world.World;
 
 import java.util.Map;
 
-@Permissions(suggestedLevel = SuggestedLevel.MOD)
-@RegisterCommand("getpos")
+@Permissions(suggestedLevel = SuggestedLevel.USER, supportsOthers = true)
+@RegisterCommand({"getpos", "coords", "position", "whereami", "getlocation", "getloc"})
+@EssentialsEquivalent({"getpos", "coords", "position", "whereami", "getlocation", "getloc"})
 public class GetPosCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private final String playerKey = "subject";

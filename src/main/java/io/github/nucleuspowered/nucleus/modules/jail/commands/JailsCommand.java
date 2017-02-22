@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @RegisterCommand(value = "jails")
 @Permissions(prefix = "jail", mainOverride = "list", suggestedLevel = SuggestedLevel.MOD)
+@EssentialsEquivalent("jails")
 public class JailsCommand extends AbstractCommand<CommandSource> {
 
     @Inject private JailHandler handler;

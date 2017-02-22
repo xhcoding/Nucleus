@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserDataModule;
@@ -33,6 +34,7 @@ import java.util.Map;
 @NoCooldown
 @NoCost
 @RegisterCommand("socialspy")
+@EssentialsEquivalent("socialspy")
 public class SocialSpyCommand extends AbstractCommand<Player> {
 
     private final String arg = "Social Spy";

@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -24,11 +25,12 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-@RegisterCommand({"hat"})
+@RegisterCommand({"hat", "head"})
 @NoCooldown
 @NoWarmup
 @NoCost
 @Permissions(supportsSelectors = true, supportsOthers = true)
+@EssentialsEquivalent({"hat", "head"})
 public class HatCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     @Override protected CommandResult executeWithPlayer(CommandSource player, Player pl, CommandContext args, boolean isSelf) throws Exception {

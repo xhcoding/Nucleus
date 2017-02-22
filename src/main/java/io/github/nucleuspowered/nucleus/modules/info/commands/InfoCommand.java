@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
@@ -53,6 +54,7 @@ import java.util.stream.Collectors;
 @NoCost
 @NoWarmup
 @RegisterCommand({"info", "einfo"})
+@EssentialsEquivalent({"info", "ifo", "news", "about", "inform"})
 public class InfoCommand extends AbstractCommand<CommandSource> {
 
     @Inject private InfoHandler infoHandler;

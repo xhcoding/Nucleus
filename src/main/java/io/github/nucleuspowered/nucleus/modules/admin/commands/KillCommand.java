@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.misc.commands;
+package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,6 +27,8 @@ import java.util.Collection;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand("kill")
+@EssentialsEquivalent(value = { "kill", "remove", "butcher", "killall", "mobkill" },
+        isExact = false, notes = "Nucleus supports killing entities using the Minecraft selectors.")
 public class KillCommand extends AbstractCommand<CommandSource> {
 
     private final String key = "subject";

@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -43,6 +44,7 @@ import javax.inject.Inject;
 @NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
 @RegisterCommand({"tpahere", "tpaskhere", "teleportaskhere"})
 @NotifyIfAFK(playerKey)
+@EssentialsEquivalent("tpahere")
 public class TeleportAskHereCommand extends StandardAbstractCommand<Player> {
 
     @Inject private TeleportHandler tpHandler;

@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.CommandResult;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itemsell", "sell"})
+@EssentialsEquivalent("sell")
 public class SellCommand extends AbstractCommand<Player> {
 
     @Inject private ItemDataService itemDataService;

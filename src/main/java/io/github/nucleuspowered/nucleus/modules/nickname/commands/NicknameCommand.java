@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -45,6 +46,8 @@ import java.util.stream.Collectors;
 
 @RegisterCommand({"nick", "nickname"})
 @Permissions
+@EssentialsEquivalent(value = {"nick", "nickname"}, isExact = false,
+        notes = "To remove a nickname, use '/delnick'")
 public class NicknameCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager loader;

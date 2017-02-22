@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.event.NucleusMessageChannelEvent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 @Permissions
 @RegisterCommand("sudo")
+@EssentialsEquivalent("sudo")
 public class SudoCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "subject";

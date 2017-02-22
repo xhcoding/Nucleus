@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -28,6 +29,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoWarmup
 @NoCost
+@EssentialsEquivalent({"exp", "xp"})
 public class ExperienceCommand extends AbstractCommand<CommandSource> {
 
     public static final String playerKey = "subject";

@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -29,6 +30,7 @@ import java.util.Map;
 @Permissions(supportsOthers = true)
 @RegisterCommand({"enderchest", "ec", "echest"})
 @Since(minecraftVersion = "1.10.2", spongeApiVersion = "5.0.0", nucleusVersion = "0.13.0")
+@EssentialsEquivalent({"enderchest", "echest", "endersee", "ec"})
 public class EnderChestCommand extends AbstractCommand<Player> {
 
     private final String player = "subject";

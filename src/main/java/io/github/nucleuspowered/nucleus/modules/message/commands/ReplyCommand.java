@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -28,6 +29,7 @@ import org.spongepowered.api.text.Text;
 @RunAsync
 @ConfigCommandAlias(value = "message", generate = false)
 @RegisterCommand({"reply", "r"})
+@EssentialsEquivalent({"r", "reply"})
 public class ReplyCommand extends AbstractCommand<CommandSource> {
 
     private final String message = "message";

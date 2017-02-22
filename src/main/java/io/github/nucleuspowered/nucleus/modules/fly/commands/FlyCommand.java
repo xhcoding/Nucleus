@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand("fly")
+@EssentialsEquivalent("fly")
 public class FlyCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private static final String toggle = "toggle";

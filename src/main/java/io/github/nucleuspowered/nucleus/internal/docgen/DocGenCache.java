@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -26,12 +27,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DocGenCache {
 
     private final List<CommandDoc> commandDocs = Lists.newArrayList();
     private final List<PermissionDoc> permissionDocs = Lists.newArrayList();
     private final List<TokenDoc> tokenDocs = Lists.newArrayList();
+    private final List<EssentialsDoc> essentialsDocs = Lists.newArrayList();
 
     private final org.slf4j.Logger logger;
 
@@ -47,6 +50,14 @@ public class DocGenCache {
         return permissionDocs;
     }
 
+    public List<TokenDoc> getTokenDocs() {
+        return tokenDocs;
+    }
+
+    public List<EssentialsDoc> getEssentialsDocs() {
+        return essentialsDocs;
+    }
+
     public void addCommand(final String moduleID, final StandardAbstractCommand<?> abstractCommand) {
         if (abstractCommand.getClass().isAnnotationPresent(NoDocumentation.class)) {
             return;
@@ -54,7 +65,8 @@ public class DocGenCache {
 
         CommandDoc cmd = new CommandDoc();
 
-        cmd.setCommandName(abstractCommand.getCommandPath().replaceAll("\\.", " "));
+        String cmdPath = abstractCommand.getCommandPath().replaceAll("\\.", " ");
+        cmd.setCommandName(cmdPath);
 
         cmd.setAliases(String.join(", ", Lists.newArrayList(abstractCommand.getAliases())));
 
@@ -102,6 +114,37 @@ public class DocGenCache {
         cmd.setUsageString(abstractCommand.getUsage(Sponge.getServer().getConsole()));
         cmd.setSubcommands(abstractCommand.getChildrenUsage(Sponge.getServer().getConsole()).map(Text::toPlain).orElse(""));
         cmd.setSimpleUsage(abstractCommand.getSimpleUsage(Sponge.getServer().getConsole()));
+
+        // Essentials
+        EssentialsEquivalent ee = abstractCommand.getClass().getAnnotation(EssentialsEquivalent.class);
+        if (ee != null) {
+            List<String> ss = Arrays.asList(ee.value());
+            cmd.setEssentialsEquivalents(ss);
+            cmd.setEssNotes(ee.notes());
+            cmd.setExactEssEquiv(ee.isExact());
+
+            EssentialsDoc doc = new EssentialsDoc();
+            doc.setEssentialsCommands(ss);
+
+            int i = cmdPath.lastIndexOf(" ");
+            String c;
+            if (i > -1) {
+                c = cmdPath.substring(0, i) + " ";
+            } else {
+                c = "";
+            }
+
+            List<String> a = Lists.newArrayList(abstractCommand.getAliases()).stream().map(x -> c + x).collect(Collectors.toList());
+            if (abstractCommand.getRootCommandAliases().length > 0) {
+                a.addAll(Arrays.asList(abstractCommand.getRootCommandAliases()));
+            }
+
+            doc.setNucleusEquiv(a);
+            doc.setExact(ee.isExact());
+            doc.setNotes(ee.notes());
+            essentialsDocs.add(doc);
+        }
+
         permissionDocs.addAll(lp);
         commandDocs.add(cmd);
     }
@@ -123,9 +166,5 @@ public class DocGenCache {
         perm.setPermission(k);
         perm.setDefaultLevel(v.level.name());
         return perm;
-    }
-
-    public List<TokenDoc> getTokenDocs() {
-        return tokenDocs;
     }
 }

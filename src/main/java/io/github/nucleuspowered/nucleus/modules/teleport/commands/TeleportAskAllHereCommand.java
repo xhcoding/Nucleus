@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.teleport.events.RequestEvent;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.Sponge;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 @NoCooldown
 @RegisterCommand({"tpaall", "tpaskall"})
 @RunAsync
+@EssentialsEquivalent({"tpaall"})
 public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
 
     @Inject private TeleportHandler tpHandler;

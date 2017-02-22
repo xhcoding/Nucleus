@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
@@ -36,6 +37,7 @@ import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("spawn")
+@EssentialsEquivalent("spawn")
 public class SpawnCommand extends AbstractCommand<Player> {
 
     @Inject private WorldDataManager wcl;

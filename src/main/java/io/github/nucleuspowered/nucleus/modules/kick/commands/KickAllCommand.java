@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
@@ -30,13 +31,14 @@ import java.util.stream.Collectors;
 /**
  * Kicks all players
  *
- * Permission: quickstart.kickall.base
+ * Permission: nucleus.kickall.base
  */
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoWarmup
 @NoCooldown
 @NoCost
 @RegisterCommand("kickall")
+@EssentialsEquivalent("kickall")
 public class KickAllCommand extends AbstractCommand<CommandSource> {
 
     private final String reason = "reason";

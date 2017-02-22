@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.CommandDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
+import io.github.nucleuspowered.nucleus.internal.docgen.EssentialsDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.PermissionDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.TokenDoc;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -44,6 +45,7 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
     private final TypeToken<List<CommandDoc>> ttlcd = new TypeToken<List<CommandDoc>>() {};
     private final TypeToken<List<PermissionDoc>> ttlpd = new TypeToken<List<PermissionDoc>>() {};
     private final TypeToken<List<TokenDoc>> ttltd = new TypeToken<List<TokenDoc>>() {};
+    private final TypeToken<List<EssentialsDoc>> tted = new TypeToken<List<EssentialsDoc>>() {};
 
     @Override
     public boolean canLoad() {
@@ -90,6 +92,13 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
             .setValue(ttltd, getAndSort(genCache.getTokenDocs(), Comparator.comparing(TokenDoc::getName)));
 
         tokenConfigurationLoader.save(tokenConfigurationNode);
+
+        YAMLConfigurationLoader essentialsConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("ess.yml"))
+                .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
+        ConfigurationNode essentialsConfigurationNode = SimpleConfigurationNode.root()
+                .setValue(tted, getAndSort(genCache.getEssentialsDocs(), Comparator.comparing(x -> x.getEssentialsCommands().get(0))));
+
+        essentialsConfigurationLoader.save(essentialsConfigurationNode);
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.docgen.complete"));
         return CommandResult.success();

@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mob.config.BlockSpawnsConfig;
@@ -40,6 +41,7 @@ import java.util.Optional;
 
 @Permissions(supportsOthers = true)
 @RegisterCommand({"spawnmob", "spawnentity", "mobspawn"})
+@EssentialsEquivalent({"spawnmob", "mob"})
 public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private final String amountKey = "amount";

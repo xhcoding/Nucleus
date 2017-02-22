@@ -11,16 +11,18 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 
-@RegisterCommand({"clear", "clearinv", "clearinventory", "ci"})
+@RegisterCommand({"clear", "clearinv", "clearinventory", "ci", "clearinvent"})
 @NoCooldown
 @NoWarmup
 @NoCost
 @Permissions(supportsOthers = true)
+@EssentialsEquivalent({"clearinventory", "ci", "clean", "clearinvent"})
 public class ClearInventoryCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private final String player = "subject";

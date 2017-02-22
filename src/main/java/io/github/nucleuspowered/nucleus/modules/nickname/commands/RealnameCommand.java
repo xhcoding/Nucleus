@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import org.spongepowered.api.Sponge;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 @SuppressWarnings("ALL")
 @RegisterCommand({"realname"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
+@EssentialsEquivalent("realname")
 public class RealnameCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "name";

@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.item.config.ItemConfigAdapter;
@@ -39,6 +40,7 @@ import java.util.Map;
 
 @RegisterCommand({"skull"})
 @Permissions
+@EssentialsEquivalent({"skull", "playerskull", "head"})
 public class SkullCommand extends AbstractCommand<Player> {
 
     private final String player = "subject";

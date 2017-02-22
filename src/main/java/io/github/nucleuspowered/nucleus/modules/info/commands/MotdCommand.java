@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
@@ -30,6 +31,7 @@ import java.util.Optional;
 @NoCost
 @NoWarmup
 @RegisterCommand("motd")
+@EssentialsEquivalent("motd")
 public class MotdCommand extends AbstractCommand<CommandSource> {
 
     @Inject private TextParsingUtils textParsingUtils;

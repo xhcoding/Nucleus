@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.servershop.config.ServerShopConfigAdapter;
 import org.spongepowered.api.CatalogType;
@@ -49,6 +50,7 @@ import javax.inject.Inject;
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itembuy", "buy"})
+@EssentialsEquivalent("buy")
 public class BuyCommand extends AbstractCommand<Player> {
 
     @Inject private ServerShopConfigAdapter ssca;

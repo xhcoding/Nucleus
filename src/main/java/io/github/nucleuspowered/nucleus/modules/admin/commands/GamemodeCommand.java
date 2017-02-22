@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
@@ -32,6 +33,8 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"gamemode", "gm"})
+@EssentialsEquivalent(value = {"gamemode", "gm", "creative", "survival", "adventure", "gmc", "gma", "gms", "gmt"}, isExact = false,
+    notes = "Currently no way to simply give '/creative' or '/gmc', for example, with no arguments, gamemode is required.")
 public class GamemodeCommand extends AbstractCommand<CommandSource> {
 
     private final String userKey = "user";

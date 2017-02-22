@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -38,6 +39,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tppos"})
+@EssentialsEquivalent("tppos")
 public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
 
     private final String key = "subject";

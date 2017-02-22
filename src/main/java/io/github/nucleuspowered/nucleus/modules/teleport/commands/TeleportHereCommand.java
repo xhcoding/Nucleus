@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
@@ -33,6 +34,8 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand({"tphere", "tph"})
+@EssentialsEquivalent(value = {"tphere", "s", "tpohere"}, isExact = false,
+        notes = "If you have permission, this will override '/tptoggle' automatically.")
 public class TeleportHereCommand extends AbstractCommand<Player> {
 
     private final String playerKey = "subject";

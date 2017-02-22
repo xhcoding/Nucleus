@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.event.DeleteWarpEvent;
 import org.spongepowered.api.Sponge;
@@ -33,6 +34,7 @@ import org.spongepowered.api.text.Text;
 @Permissions(prefix = "warp")
 @RunAsync
 @RegisterCommand(value = {"delete", "del"}, subcommandOf = WarpCommand.class)
+@EssentialsEquivalent({"delwarp", "remwarp", "rmwarp"})
 public class DeleteWarpCommand extends AbstractCommand<CommandSource> {
 
     @Inject private WarpConfigAdapter adapter;

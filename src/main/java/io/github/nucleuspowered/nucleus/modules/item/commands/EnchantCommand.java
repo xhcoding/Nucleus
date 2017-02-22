@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.ImprovedCatalogTypeArgum
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Permissions
 @RegisterCommand("enchant")
+@EssentialsEquivalent({"enchant", "enchantment"})
 public class EnchantCommand extends AbstractCommand<Player> {
 
     private final String enchantmentKey = "enchantment";

@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -56,6 +57,7 @@ import java.util.Optional;
 @Permissions
 @RunAsync
 @RegisterCommand({"seen", "seenplayer", "lookup"})
+@EssentialsEquivalent("seen")
 public class SeenCommand extends AbstractCommand<CommandSource> {
 
     @Inject private UserDataManager udm;

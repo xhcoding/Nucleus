@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.warp.event.CreateWarpEvent;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.Sponge;
@@ -27,10 +28,11 @@ import java.util.regex.Pattern;
  * Creates a warp where the player is currently standing. The warp must not
  * exist.
  *
- * Command Usage: /warp set [warp] Permission: quickstart.warp.set.base
+ * Command Usage: /warp set [warp] Permission: nucleus.warp.set.base
  */
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class)
+@EssentialsEquivalent({"setwarp", "createwarp"})
 public class SetWarpCommand extends AbstractCommand<Player> {
 
     @Inject private WarpHandler qs;

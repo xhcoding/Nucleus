@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,6 +27,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @RegisterCommand(value = "set", subcommandOf = JailsCommand.class)
+@EssentialsEquivalent({"setjail", "createjail"})
 public class SetJailCommand extends AbstractCommand<Player> {
 
     private final String jailName = "jail";
