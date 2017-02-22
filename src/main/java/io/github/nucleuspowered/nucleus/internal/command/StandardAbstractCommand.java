@@ -528,7 +528,6 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     public CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
         String aliasComment = NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.aliases");
-        n.getNode("aliases").setComment(aliasComment);
 
         if (this.isRoot) {
             n.getNode("enabled").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.enabled")).setValue(true);
@@ -554,6 +553,12 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
         for (String alias : this.getRootCommandAliases()) {
             n.getNode("aliases").getNode(alias).setValue(true);
+        }
+
+        if (n.getNode("aliases").getValue() == null) {
+            n.removeChild("aliases");
+        } else {
+            n.getNode("aliases").setComment(aliasComment);
         }
 
         return n;
