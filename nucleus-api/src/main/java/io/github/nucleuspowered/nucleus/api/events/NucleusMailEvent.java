@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
@@ -15,6 +16,7 @@ import java.util.Optional;
  * An event that is posted when a player uses /mail in NucleusPlugin
  */
 @Stable
+@MightOccurAsync
 public interface NucleusMailEvent extends Event, Cancellable {
     /**
      * The sender of the mail. If {@link Optional#empty()}, this means it was some server process.

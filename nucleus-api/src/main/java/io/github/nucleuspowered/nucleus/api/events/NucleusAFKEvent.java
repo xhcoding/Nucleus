@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
+import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
 
@@ -16,6 +17,7 @@ public interface NucleusAFKEvent extends TargetPlayerEvent {
      *     <strong>This event might fire async!</strong>
      * </p>
      */
+    @MightOccurAsync
     interface GoingAFK extends NucleusAFKEvent {}
 
     /**
@@ -25,6 +27,7 @@ public interface NucleusAFKEvent extends TargetPlayerEvent {
      *     <strong>This event might fire async!</strong>
      * </p>
      */
+    @MightOccurAsync
     interface ReturningFromAFK extends NucleusAFKEvent {}
 
     /**
@@ -37,5 +40,6 @@ public interface NucleusAFKEvent extends TargetPlayerEvent {
      *     <strong>This event might fire async!</strong>
      * </p>
      */
+    @MightOccurAsync
     interface Kick extends NucleusAFKEvent, Cancellable {}
 }

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
@@ -22,6 +23,7 @@ public interface NucleusTeleportEvent extends TargetPlayerEvent, CancelMessage {
     /**
      * Indicates that a teleport request (such as through <code>/tpa</code>) is being sent.
      */
+    @MightOccurAsync
     interface Request extends NucleusTeleportEvent {
 
         /**

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
@@ -45,11 +46,13 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage, Event {
     /**
      * Fired when a home is created.
      */
+    @MightOccurAsync
     interface Create extends NucleusHomeEvent {}
 
     /**
      * Fired when a home is moved.
      */
+    @MightOccurAsync
     interface Modify extends NucleusHomeEvent {
 
         /**
@@ -71,6 +74,7 @@ public interface NucleusHomeEvent extends Cancellable, CancelMessage, Event {
     /**
      * Fired when a home is deleted.
      */
+    @MightOccurAsync
     interface Delete extends NucleusHomeEvent {
 
         /**
