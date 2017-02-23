@@ -4,18 +4,22 @@
  */
 package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSnapshot;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,8 @@ public class KitDataNode implements Kit {
     @Setting private double cost = 0;
 
     @Setting private boolean oneTime = false;
+
+    @Setting private List<String> commands = Lists.newArrayList();
 
     @Override
     public List<ItemStackSnapshot> getStacks() {
@@ -81,6 +87,15 @@ public class KitDataNode implements Kit {
         return this;
     }
 
+    @Override public List<String> getCommands() {
+        return new ArrayList<>(this.commands);
+    }
+
+    @Override public Kit setCommands(List<String> commands) {
+        this.commands = Preconditions.checkNotNull(commands);
+        return this;
+    }
+
     @Override public Kit updateKitInventory(Inventory inventory) {
         List<Inventory> slots = Lists.newArrayList(inventory.slots());
         final List<ItemStackSnapshot> stacks = slots.stream()
@@ -94,5 +109,11 @@ public class KitDataNode implements Kit {
 
     @Override public Kit updateKitInventory(Player player) {
         return updateKitInventory(Util.getStandardInventory(player));
+    }
+
+    @Override public void redeemKitCommands(Player player) {
+        ConsoleSource source = Sponge.getServer().getConsole();
+        String playerName = player.getName();
+        getCommands().forEach(x -> Sponge.getCommandManager().process(source, x.replace("{{player}}", playerName)));
     }
 }

@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 public class KitHandler implements NucleusKitService {
 
     private final Map<Container, Tuple<KitArgument.KitInfo, Inventory>> inventoryKitMap = Maps.newHashMap();
+    private final Map<Container, Tuple<KitArgument.KitInfo, Inventory>> inventoryKitCommandMap = Maps.newHashMap();
     private Tuple<Container, Inventory> firstJoinKitInventory = null;
     @Inject private KitService store;
 
@@ -57,6 +58,10 @@ public class KitHandler implements NucleusKitService {
         store.save();
     }
 
+    public synchronized void saveKit(KitArgument.KitInfo kitInfo) {
+        saveKit(kitInfo.name, kitInfo.kit);
+    }
+
     @Override
     public Kit createKit() {
         return new KitDataNode();
@@ -77,6 +82,23 @@ public class KitHandler implements NucleusKitService {
 
     public void removeKitInventoryFromListener(Container inventory) {
         inventoryKitMap.remove(inventory);
+    }
+
+    public Optional<Tuple<KitArgument.KitInfo, Inventory>> getCurrentlyOpenInventoryCommandKit(Container inventory) {
+        return Optional.ofNullable(inventoryKitCommandMap.get(inventory));
+    }
+
+    public boolean isCommandOpen(String kitName) {
+        return inventoryKitCommandMap.values().stream().anyMatch(x -> x.getFirst().name.equalsIgnoreCase(kitName));
+    }
+
+    public void addKitCommandInventoryToListener(Tuple<KitArgument.KitInfo, Inventory> kit, Container inventory) {
+        Preconditions.checkState(!inventoryKitCommandMap.containsKey(inventory));
+        inventoryKitCommandMap.put(inventory, kit);
+    }
+
+    public void removeKitCommandInventoryFromListener(Container inventory) {
+        inventoryKitCommandMap.remove(inventory);
     }
 
     public Optional<Tuple<Container, Inventory>> getFirstJoinKitInventory() {

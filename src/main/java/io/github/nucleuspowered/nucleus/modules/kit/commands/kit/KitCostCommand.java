@@ -2,12 +2,10 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.kit.commands;
+package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -25,41 +23,43 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 
-import java.time.Duration;
-
 /**
- * Sets kit cooldown.
+ * Sets kit cost.
  *
- * Command Usage: /kit set Permission: plugin.kit.set.base
+ * Command Usage: /kit cost [kit] [cost] Permission: plugin.kit.cost.base
  */
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"setcooldown", "setinterval"}, subcommandOf = KitCommand.class)
+@RegisterCommand(value = {"cost", "setcost"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitSetCooldownCommand extends AbstractCommand<CommandSource> {
+public class KitCostCommand extends AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
 
-    private final String kit = "kit";
-    private final String duration = "duration";
+    private final String costKey = "cost";
+    private final String kitKey = "kit";
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, false)),
-                GenericArguments.onlyOne(new TimespanArgument(Text.of(duration))))};
+        return new CommandElement[] {GenericArguments.onlyOne(new KitArgument(Text.of(kitKey), kca, kitConfig, false)),
+                GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of(costKey)))};
     }
 
     @Override
-    public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
-        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
-        long seconds = args.<Long>getOne(duration).get();
+    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kitKey).get();
+        double cost = args.<Double>getOne(costKey).get();
 
-        kitInfo.kit.setInterval(Duration.ofSeconds(seconds));
+        if (cost < 0) {
+            cost = 0;
+        }
+
+        kitInfo.kit.setCost(cost);
         kitConfig.saveKit(kitInfo.name, kitInfo.kit);
-        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.setcooldown.success", kitInfo.name, Util.getTimeStringFromSeconds(seconds)));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.cost.success", kitInfo.name, String.valueOf(cost)));
         return CommandResult.success();
     }
 }
