@@ -30,7 +30,7 @@ import java.util.Map;
 @NoWarmup
 @NoCost
 @RunAsync
-@EssentialsEquivalent("afk, away")
+@EssentialsEquivalent({"afk", "away"})
 public class AFKCommand extends AbstractCommand<Player> {
 
     @Inject private AFKHandler afkHandler;
