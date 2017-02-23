@@ -167,9 +167,12 @@ public class TeleportHandler {
                 NucleusTeleportHandler.TeleportMode mode = safe ? tpHandler.getTeleportModeForPlayer(playerToTeleport) :
                     NucleusTeleportHandler.TeleportMode.NO_CHECK;
 
-                if (!tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode, Cause.of(NamedCause.owner(this.source)))) {
+                NucleusTeleportHandler.TeleportResult result =
+                        tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode, Cause.of(NamedCause.owner(this.source)));
+                if (!result.isSuccess()) {
                     if (!silentSource) {
-                        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.nosafe"));
+                        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(result ==
+                                NucleusTeleportHandler.TeleportResult.FAILED_NO_LOCATION ? "teleport.nosafe" : "teleport.cancelled"));
                     }
 
                     onCancel();
@@ -200,10 +203,6 @@ public class TeleportHandler {
 
         @Override
         public void onCancel() {
-            if (!silentSource) {
-                source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.cancelled"));
-            }
-
             if (charged != null && cost > 0) {
                 plugin.getEconHelper().depositInPlayer(charged, cost);
             }

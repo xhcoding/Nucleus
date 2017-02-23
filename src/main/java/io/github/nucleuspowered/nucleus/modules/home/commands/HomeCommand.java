@@ -71,7 +71,8 @@ public class HomeCommand extends AbstractCommand<Player> {
         }
 
         // Warp to it safely.
-        if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault().isSafeTeleport())) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault()
+                .isSafeTeleport()).isSuccess()) {
             if (!wl.getName().equalsIgnoreCase(NucleusHomeService.DEFAULT_HOME_NAME)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.success", wl.getName()));
             } else {
@@ -80,8 +81,7 @@ public class HomeCommand extends AbstractCommand<Player> {
 
             return CommandResult.success();
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.fail", wl.getName()));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.home.fail", wl.getName());
         }
     }
 }

@@ -110,7 +110,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
 
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
-            if (teleportHandler.teleportPlayer(pl, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK, Cause.of(NamedCause.owner(src)))) {
+            if (teleportHandler.teleportPlayer(pl, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK, Cause.of(NamedCause.owner(src))).isSuccess()) {
                 pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
                 if (!src.equals(pl)) {
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -128,17 +128,19 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
             mode = NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE_CHUNK;
         }
 
-        if (teleportHandler.teleportPlayer(pl, loc, mode, Cause.of(NamedCause.owner(src)))) {
+        NucleusTeleportHandler.TeleportResult result = teleportHandler.teleportPlayer(pl, loc, mode, Cause.of(NamedCause.owner(src)));
+        if (result.isSuccess()) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
             }
 
             return CommandResult.success();
-        } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.nosafe"));
-            return CommandResult.empty();
+        } else if (result == NucleusTeleportHandler.TeleportResult.FAILED_NO_LOCATION) {
+            throw ReturnMessageException.fromKey("command.tppos.nosafe");
         }
+
+        throw ReturnMessageException.fromKey("command.tppos.cancelledevent");
     }
 
     private boolean isBetween(int toCheck, int max, int min) {

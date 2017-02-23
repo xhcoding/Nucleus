@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
@@ -87,11 +88,17 @@ public class SpawnCommand extends AbstractCommand<Player> {
         }
 
         // If we don't have a rotation, then use the current rotation
-        if (plugin.getTeleportHandler().teleportPlayer(src, SpawnHelper.getSpawn(ow.get().getProperties(), plugin, src), sca.getNodeOrDefault().isSafeTeleport())) {
+        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(src,
+                SpawnHelper.getSpawn(ow.get().getProperties(), plugin, src), sca.getNodeOrDefault().isSafeTeleport());
+        if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
             return CommandResult.success();
         }
 
-        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.fail", wp.getWorldName()));
+        if (result == NucleusTeleportHandler.TeleportResult.FAILED_NO_LOCATION) {
+            throw ReturnMessageException.fromKey("command.spawn.fail", wp.getWorldName());
+        }
+
+        throw ReturnMessageException.fromKey("command.spawn.cancelled", wp.getWorldName());
     }
 }

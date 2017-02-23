@@ -69,7 +69,8 @@ public class HomeOtherCommand extends AbstractCommand<Player> {
         }
 
         // Warp to it safely.
-        if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault().isSafeTeleport())) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault()
+                .isSafeTeleport()).isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.homeother.success", wl.getUser().getName(), wl.getName()));
             return CommandResult.success();
         } else {

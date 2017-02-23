@@ -24,6 +24,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.event.UseWarpEvent;
 import org.spongepowered.api.Sponge;
@@ -173,14 +174,16 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
 
         // Warp them.
         boolean isSafe = !args.getOne("f").isPresent() && adapter.getNodeOrDefault().isSafeTeleport();
-        if (!plugin.getTeleportHandler().teleportPlayer(player, wd.getLocation().get(), wd.getRotation(), isSafe)) {
-            source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.nosafe"));
-
+        NucleusTeleportHandler.TeleportResult result =
+                plugin.getTeleportHandler().teleportPlayer(player, wd.getLocation().get(), wd.getRotation(), isSafe);
+        if (!result.isSuccess()) {
             if (charge) {
                 plugin.getEconHelper().depositInPlayer(player, cost, false);
             }
+
             // Don't add the cooldown if enabled.
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey(result == NucleusTeleportHandler.TeleportResult.FAILED_NO_LOCATION ? "command.warps.nosafe" :
+                    "command.warps.cancelled");
         }
 
         if (isOther) {
