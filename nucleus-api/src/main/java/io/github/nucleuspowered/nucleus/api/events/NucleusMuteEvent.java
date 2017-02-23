@@ -1,3 +1,7 @@
+/*
+ * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
+ * at the root of this project for more details.
+ */
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
@@ -13,7 +17,7 @@ import java.util.Optional;
  * Events that occur whilst muted.
  *
  * <p>
- *     <p>These events might occur async!</p>
+ *     These events might occur async!
  * </p>
  */
 @NonnullByDefault
