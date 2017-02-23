@@ -158,7 +158,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
                 }
 
                 // If this is a prohibited type, loop again.
-            } while (prohibitedBiomeTypes.contains(transform.getExtent().getBiome(x, 1, z).getId()));
+            } while (prohibitedBiomeTypes.contains(transform.getExtent().getBiome(x, 0, z).getId()));
 
             int y;
             if (onSurface) {
