@@ -71,7 +71,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
             information.add(sep);
             information.add("Nucleus Mixins");
             information.add(sep);
-            information.add("World Generation mixins: " + (x.get().config.isWorldgeneration() ? "on" : "off"));
+            information.add("World Generation mixins: " + (x.testWorldGen() ? "on" : "off"));
             information.add("/invsee mixins: " + (x.get().config.isInvsee() ? "on" : "off"));
         });
 

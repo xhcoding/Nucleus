@@ -9,7 +9,6 @@ import com.flowpowered.math.vector.Vector3i;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorld;
-import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorldServer;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.GenerateChunksCommand;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
@@ -24,6 +23,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.extent.Extent;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -163,10 +163,16 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
                         && inmw.hasChunkBeenGenerated(pos2) && inmw.hasChunkBeenGenerated(pos3))) {
                     // Only mark as generated if we actually have to generate at least one.
                     chunksGenerated += this.currentGenCount;
-                    this.world.loadChunk(position, true);
-                    this.world.loadChunk(position.sub(Vector3i.UNIT_X), true);
-                    this.world.loadChunk(position.sub(Vector3i.UNIT_Z), true);
-                    this.world.loadChunk(position.sub(Vector3i.UNIT_X).sub(Vector3i.UNIT_Z), true);
+                    if (this.world.loadChunk(position, true).map(Extent::isLoaded).orElse(false)) {
+                        this.world.loadChunk(position.sub(Vector3i.UNIT_X), true);
+                        this.world.loadChunk(position.sub(Vector3i.UNIT_Z), true);
+                        this.world.loadChunk(position.sub(Vector3i.UNIT_X).sub(Vector3i.UNIT_Z), true);
+                    } else {
+                        ((INucleusMixinWorld)(this.world)).loadChunkForce(position);
+                        ((INucleusMixinWorld)(this.world)).loadChunkForce(position.sub(Vector3i.UNIT_X));
+                        ((INucleusMixinWorld)(this.world)).loadChunkForce(position.sub(Vector3i.UNIT_Z));
+                        ((INucleusMixinWorld)(this.world)).loadChunkForce(position.sub(Vector3i.UNIT_X).sub(Vector3i.UNIT_Z));
+                    }
                 } else {
                     skipped += this.currentGenCount;
                 }
@@ -274,12 +280,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
             getChannel().send(
                     NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.saving"));
             try {
-                try {
-                    world.save();
-                } catch (AbstractMethodError e) {
-                    ((INucleusMixinWorldServer) world).saveWorld();
-                }
-
+                world.save();
                 getChannel().send(
                         NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.saved"));
             } catch (Throwable e) {

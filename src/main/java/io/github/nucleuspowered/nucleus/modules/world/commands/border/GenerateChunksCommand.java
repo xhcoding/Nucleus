@@ -109,7 +109,7 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
     private void setupGenerationClass() {
         if (generator == null) {
             Optional<MixinConfigProxy> mixinConfigProxy = plugin.getMixinConfigIfAvailable();
-            if (mixinConfigProxy.isPresent() && mixinConfigProxy.get().get().config.isWorldgeneration()) {
+            if (mixinConfigProxy.isPresent() && mixinConfigProxy.get().testWorldGen()) {
                 this.generator = new EnhancedGeneration(worldHelper, permissions.getPermissionWithSuffix("notify"), worldConfigAdapter);
             } else {
                 this.generator = standardGeneration;

@@ -72,6 +72,7 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -99,7 +100,8 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
+@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION,
+        dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.0", optional = true))
 public class NucleusPlugin extends Nucleus {
 
     private final PluginContainer pluginContainer;
