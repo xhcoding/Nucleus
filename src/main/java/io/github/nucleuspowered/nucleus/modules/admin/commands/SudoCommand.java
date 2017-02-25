@@ -67,23 +67,32 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
             }
 
             Text rawMessage = Text.of(cmd.split(":", 2)[1]);
-            MessageChannelEvent.Chat event = new NucleusMessageChannelEvent(
-                    Cause.source(pl).named(NamedCause.notifier(src)).build(),
-                    pl.getMessageChannel(),
-                    rawMessage,
-                    new NucleusMessageChannelEvent.MessageFormatter(Text.builder(pl.getName())
-                            .onShiftClick(TextActions.insertText(pl.getName()))
-                            .onClick(TextActions.suggestCommand("/msg " + pl.getName()))
-                            .build(), rawMessage)
-                    );
 
-            if (!Sponge.getEventManager().post(event)) {
-                pl.getMessageChannel().send(pl, Util.applyChatTemplate(event.getFormatter()));
-                return CommandResult.success();
+            MessageChannelEvent.Chat event;
+            try {
+                event = pl.simulateChat(rawMessage, Cause.of(NamedCause.simulated(pl), NamedCause.owner(src)));
+            } catch (Throwable e) { // just in case people don't update.
+                event = new NucleusMessageChannelEvent(
+                        Cause.source(pl).named(NamedCause.notifier(src)).build(),
+                        pl.getMessageChannel(),
+                        rawMessage,
+                        new NucleusMessageChannelEvent.MessageFormatter(Text.builder(pl.getName())
+                                .onShiftClick(TextActions.insertText(pl.getName()))
+                                .onClick(TextActions.suggestCommand("/msg " + pl.getName()))
+                                .build(), rawMessage)
+                );
+
+                if (!Sponge.getEventManager().post(event)) {
+                    pl.getMessageChannel().send(pl, Util.applyChatTemplate(event.getFormatter()));
+                }
             }
 
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.chatcancelled"));
-            return CommandResult.empty();
+            if (event.isCancelled()) {
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.chatcancelled"));
+                return CommandResult.empty();
+            }
+
+            return CommandResult.success();
         }
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.force", pl.getName(), cmd));
