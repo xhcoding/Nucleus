@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.blacklist.listeners;
 
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
@@ -132,13 +133,18 @@ public class PossessionListener extends BlacklistListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean isPlayerInventory(Inventory container, Player player) {
-        if (container instanceof CarriedInventory) {
-            Optional optional = ((CarriedInventory) container).getCarrier();
-            return !(!optional.isPresent() || !(optional.get() instanceof Player) || !optional.get().equals(player));
-        }
+        try {
+            return container instanceof CarriedInventory && (boolean) ((CarriedInventory) container).getCarrier()
+                    .map(x -> x instanceof Player && ((Player) x).getUniqueId().equals(player.getUniqueId())).orElse(false);
+        } catch (Exception e) {
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
 
-        return false;
+            return false;
+        }
     }
 
     @Override public void onReload() throws Exception {
