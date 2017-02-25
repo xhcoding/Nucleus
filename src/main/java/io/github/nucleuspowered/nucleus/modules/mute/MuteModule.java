@@ -15,6 +15,8 @@ import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
@@ -39,6 +41,7 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
             plugin.getInjector().injectMembers(m);
             game.getServiceManager().setProvider(plugin, NucleusMuteService.class, m);
             serviceManager.registerService(MuteHandler.class, m);
+            Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> x.registerContextCalculator(m));
         } catch (Exception ex) {
             logger.warn("Could not load the mute module for the reason below.");
             ex.printStackTrace();

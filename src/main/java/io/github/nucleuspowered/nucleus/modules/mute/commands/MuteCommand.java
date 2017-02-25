@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
@@ -27,6 +28,8 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
@@ -49,6 +52,7 @@ import java.util.UUID;
 @NoCooldown
 @NoCost
 @RegisterCommand({"mute", "unmute"})
+@EssentialsEquivalent({"mute", "silence"})
 public class MuteCommand extends AbstractCommand<CommandSource> {
 
     @Inject private MuteConfigAdapter mca;
@@ -107,7 +111,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
         // No time, no reason, but is muted, unmute
         if (omd.isPresent() && !time.isPresent() && !reas.isPresent()) {
             // Unmute.
-            handler.unmutePlayer(user);
+            handler.unmutePlayer(user, Cause.of(NamedCause.source(src)), false);
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.unmute.success", user.getName(), src.getName()));
             return CommandResult.success();
         }

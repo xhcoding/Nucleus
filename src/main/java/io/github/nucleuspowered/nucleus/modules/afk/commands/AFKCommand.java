@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
@@ -23,12 +24,13 @@ import org.spongepowered.api.entity.living.player.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-@RegisterCommand("afk")
+@RegisterCommand({"afk", "away"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @NoCooldown
 @NoWarmup
 @NoCost
 @RunAsync
+@EssentialsEquivalent({"afk", "away"})
 public class AFKCommand extends AbstractCommand<Player> {
 
     @Inject private AFKHandler afkHandler;

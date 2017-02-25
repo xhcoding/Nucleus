@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -30,6 +31,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand("weather")
+@EssentialsEquivalent({"thunder", "sun", "weather", "sky", "storm", "rain"})
 public class WeatherCommand extends AbstractCommand<CommandSource> {
     private final String world = "world";
     private final String weather = "weather";

@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"jump", "j", "jmp"})
+@EssentialsEquivalent({"jump", "j", "jumpto"})
 public class JumpCommand extends AbstractCommand<Player> {
 
     @Inject private JumpConfigAdapter jca;

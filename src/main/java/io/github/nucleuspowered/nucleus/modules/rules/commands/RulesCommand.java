@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 @NoWarmup
 @NoCooldown
 @NoCost
+@EssentialsEquivalent("rules")
 public class RulesCommand extends AbstractCommand<CommandSource> {
 
     @Inject private RulesConfigAdapter rca;

@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -41,9 +42,10 @@ import javax.inject.Inject;
 @SuppressWarnings("ALL")
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
-@RegisterCommand({"tpa", "teleportask"})
+@RegisterCommand({"tpa", "teleportask", "call", "tpask"})
 @RunAsync
 @NotifyIfAFK(TeleportAskCommand.playerKey)
+@EssentialsEquivalent({"tpa", "call", "tpask"})
 public class TeleportAskCommand extends StandardAbstractCommand<Player> {
 
     @Inject private TeleportHandler tpHandler;

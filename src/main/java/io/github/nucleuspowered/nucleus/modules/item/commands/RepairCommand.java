@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.item.commands;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,6 +20,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 @Permissions(supportsOthers = true)
 @RegisterCommand({"repair", "mend"})
+@EssentialsEquivalent({"repair", "fix"})
 public class RepairCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     @Override protected CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {

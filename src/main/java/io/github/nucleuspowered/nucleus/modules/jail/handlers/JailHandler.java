@@ -123,7 +123,6 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
         }
 
         jailUserDataModule.setJailData(data);
-        jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.getJailName()));
         if (user.isOnline()) {
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
@@ -135,6 +134,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
             jailUserDataModule.setJailOnNextLogin(true);
         }
 
+        jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.getJailName()));
         return true;
     }
 

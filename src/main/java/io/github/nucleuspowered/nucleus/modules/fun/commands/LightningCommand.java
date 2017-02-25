@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -34,7 +35,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @Permissions(supportsOthers = true)
-@RegisterCommand({"lightning", "smite", "thor"})
+@RegisterCommand({"lightning", "strike", "smite", "thor", "shock"})
+@EssentialsEquivalent(value = {"lightning", "strike", "smite", "thor", "shock"}, isExact = false,
+        notes = "Selectors can be used, entities can be struck.")
 public class LightningCommand extends AbstractCommand<CommandSource> {
 
     private final String player = "subject";

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Cancellable;
@@ -32,6 +33,7 @@ public interface NucleusWarpEvent extends Cancellable, CancelMessage, Event {
     /**
      * Fired when a warp is created.
      */
+    @MightOccurAsync
     interface Create extends NucleusWarpEvent {
 
         /**
@@ -45,6 +47,7 @@ public interface NucleusWarpEvent extends Cancellable, CancelMessage, Event {
     /**
      * Fired when a warp is deleted.
      */
+    @MightOccurAsync
     interface Delete extends NucleusWarpEvent {
 
         /**

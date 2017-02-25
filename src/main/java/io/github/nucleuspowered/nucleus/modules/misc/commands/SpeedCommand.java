@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
@@ -34,6 +35,8 @@ import javax.inject.Inject;
 @SuppressWarnings("ALL")
 @RegisterCommand("speed")
 @Permissions(supportsOthers = true)
+@EssentialsEquivalent(value = {"speed", "flyspeed", "walkspeed", "fspeed", "wspeed"}, isExact = false,
+    notes = "This command either uses your current state or a specified argument to determine whether to alter fly or walk speed.")
 public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private final String speedKey = "speed";

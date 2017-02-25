@@ -44,6 +44,7 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextRepresentable;
 import org.spongepowered.api.text.TextTemplate;
@@ -182,6 +183,12 @@ public class Util {
         }
 
         return consoleFakeUUID;
+    }
+
+    public static CommandSource getFromUUID(UUID uuid) {
+        return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+                .get(uuid).map(x -> x.getPlayer().map(y -> (CommandSource)y).orElse((CommandSource)x))
+                .orElse(Sponge.getServer().getConsole());
     }
 
     public static String getTimeToNow(Instant time) {

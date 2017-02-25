@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.CatalogType;
@@ -27,6 +28,7 @@ import org.spongepowered.api.text.Text;
 @RunAsync
 @RegisterCommand("worth")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
+@EssentialsEquivalent({"worth", "price"})
 public class WorthCommand extends AbstractCommand<CommandSource> {
 
     private final String item = "item";

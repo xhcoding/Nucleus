@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
@@ -30,6 +31,7 @@ import org.spongepowered.api.text.Text;
 @NoCost
 @NoWarmup
 @RegisterCommand({"deletehome", "delhome"})
+@EssentialsEquivalent({"delhome", "remhome", "rmhome"})
 public class DeleteHomeCommand extends AbstractCommand<Player> {
 
     private final String homeKey = "home";

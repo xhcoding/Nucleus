@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.ignore.datamodules.IgnoreUserDataModule;
@@ -33,6 +34,7 @@ import java.util.Map;
 @NoWarmup
 @RegisterCommand("ignore")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
+@EssentialsEquivalent("ignore")
 public class IgnoreCommand extends AbstractCommand<Player> {
 
     @Inject private UserDataManager loader;

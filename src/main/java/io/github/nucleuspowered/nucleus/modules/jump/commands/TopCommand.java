@@ -10,8 +10,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -29,6 +31,7 @@ import java.util.Map;
 
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"top", "tosurface", "totop"})
+@EssentialsEquivalent("top")
 public class TopCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "subject";
@@ -70,7 +73,9 @@ public class TopCommand extends AbstractCommand<CommandSource> {
             }
         }
 
-        if (plugin.getTeleportHandler().teleportPlayer(playerToTeleport, end.getLocation(), !args.hasAny("f"))) {
+        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler()
+                .teleportPlayer(playerToTeleport, end.getLocation(), !args.hasAny("f"));
+        if (result.isSuccess()) {
             // OK
             if (!playerToTeleport.equals(src)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.top.success.other", plugin.getNameUtil().getSerialisedName(playerToTeleport)));
@@ -80,6 +85,10 @@ public class TopCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         }
 
-        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.top.notsafe"));
+        if (result == NucleusTeleportHandler.TeleportResult.FAILED_NO_LOCATION) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.top.notsafe"));
+        } else {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.top.cancelled"));
+        }
     }
 }

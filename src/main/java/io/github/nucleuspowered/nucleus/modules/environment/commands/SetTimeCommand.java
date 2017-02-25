@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.argumentparsers.WorldTimeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,6 +20,7 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 @Permissions(prefix = "time")
 @RegisterCommand(value = "set", subcommandOf = TimeCommand.class)
+@EssentialsEquivalent(value = {"time", "day", "night"}, isExact = false, notes = "A time MUST be specified.")
 public class SetTimeCommand extends AbstractCommand<CommandSource> {
     private final String time = "time";
     private final String world = "world";

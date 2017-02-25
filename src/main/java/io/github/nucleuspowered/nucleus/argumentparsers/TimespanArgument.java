@@ -13,10 +13,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 /**
  * Parses an argument and tries to get a timespan. Returns in seconds.
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
  * https://github.com/dualspiral/Hammer/blob/master/HammerCore/src/main/java/uk/co/drnaylor/minecraft/hammer/core/commands/parsers/TimespanParser.java
  */
 public class TimespanArgument extends CommandElement {
+    private final Pattern minorTimeString = Pattern.compile("^\\d+$");
     private final Pattern timeString = Pattern.compile("^((\\d+)w)?((\\d+)d)?((\\d+)h)?((\\d+)m)?((\\d+)s)?$");
 
     private final int secondsInMinute = 60;
@@ -44,6 +46,12 @@ public class TimespanArgument extends CommandElement {
         }
 
         String s = args.next();
+
+        // First, if just digits, return the number in seconds.
+        if (minorTimeString.matcher(s).matches()) {
+            return Integer.parseUnsignedInt(s);
+        }
+
         Matcher m = timeString.matcher(s);
         if (m.matches()) {
             long time = amount(m.group(2), secondsInWeek);
@@ -61,7 +69,7 @@ public class TimespanArgument extends CommandElement {
     }
 
     private int amount(String g, int multipler) {
-        if (g != null && g.length() > 0) {
+        if (g.length() > 0) {
             return multipler * Integer.parseInt(g);
         }
 

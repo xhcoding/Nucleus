@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.datamodules.TeleportUserDataModule;
@@ -32,6 +33,7 @@ import java.util.Map;
 @NoCost
 @RegisterCommand({"tptoggle"})
 @RunAsync
+@EssentialsEquivalent("tptoggle")
 public class TeleportToggleCommand extends AbstractCommand<Player> {
 
     private final String key = "toggle";

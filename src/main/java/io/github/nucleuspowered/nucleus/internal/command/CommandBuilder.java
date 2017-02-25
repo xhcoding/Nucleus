@@ -77,7 +77,11 @@ public class CommandBuilder {
         }
 
         if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("enabled").getBoolean(true)) {
-            ConfigurationNode node = plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("aliases");
+            ConfigurationNode cn = plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias());
+            ConfigurationNode node = cn.getNode("aliases");
+            if (node.getValue() == null) {
+                cn.removeChild("aliases");
+            }
 
             // Register the commands.
             if (rootCmd) {

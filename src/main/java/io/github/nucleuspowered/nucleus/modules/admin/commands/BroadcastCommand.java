@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateMessageSender;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
@@ -33,6 +34,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @Permissions
 @RegisterCommand({ "broadcast", "bcast", "bc" })
+@EssentialsEquivalent({"broadcast", "bcast"})
 public class BroadcastCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
     private final String message = "message";
     @Inject private AdminConfigAdapter adminConfigAdapter;

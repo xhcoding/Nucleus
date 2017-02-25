@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
@@ -86,13 +87,15 @@ public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
 
         // If we don't have a rotation, then use the current rotation
         Player player = target.getPlayer().get();
-        if (plugin.getTeleportHandler().teleportPlayer(player, worldTransform, sca.getNodeOrDefault().isSafeTeleport())) {
+        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(player, worldTransform, sca.getNodeOrDefault()
+                .isSafeTeleport());
+        if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.success.source", target.getName(), world.getWorldName()));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.success.target", world.getWorldName()));
             return CommandResult.success();
         }
 
-        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.fail", target.getName(), world.getWorldName()));
+        throw ReturnMessageException.fromKey("command.spawnother.fail", target.getName(), world.getWorldName());
     }
 
     private CommandResult isOffline(CommandSource source, User user, Transform<World> worldTransform) throws Exception {

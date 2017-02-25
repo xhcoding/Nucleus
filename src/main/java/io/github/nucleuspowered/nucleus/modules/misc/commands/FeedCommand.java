@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.misc.commands;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -15,7 +16,8 @@ import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.entity.living.player.Player;
 
 @Permissions(supportsOthers = true)
-@RegisterCommand("feed")
+@RegisterCommand({"feed", "eat"})
+@EssentialsEquivalent({"feed", "eat"})
 public class FeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private static final String player = "subject";

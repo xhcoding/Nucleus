@@ -69,21 +69,10 @@ public class NucleusTeleportHandler {
      *
      * @param player The {@link Player}
      * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
-     * @return {@code true} if successful.
-     */
-    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo) {
-        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), getTeleportModeForPlayer(player), Cause.of(NamedCause.owner(player)));
-    }
-
-    /**
-     * Attempts to teleport a subject using the appropriate {@link TeleportMode} strategy.
-     *
-     * @param player The {@link Player}
-     * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
      * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
-     * @return {@code true} if successful.
+     * @return The {@link TeleportResult}
      */
-    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, boolean safe) {
+    public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, boolean safe) {
         return teleportPlayer(player, locationToTeleportTo, player.getRotation(), safe);
     }
 
@@ -94,39 +83,35 @@ public class NucleusTeleportHandler {
      * @param worldLocation The {@link Location} in the {@link World} to teleport to.
      * @param rotation The {@link Vector3d} containing the rotation to port to.
      * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
-     * @return {@code true} if successful.
+     * @return The {@link TeleportResult}
      */
-    public boolean teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {
+    public TeleportResult teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {
         TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
         return teleportPlayer(player, worldLocation, rotation, mode, Cause.of(NamedCause.owner(player)));
     }
 
-    public boolean teleportPlayer(Player player, Transform<World> worldTransform) {
+    public TeleportResult teleportPlayer(Player player, Transform<World> worldTransform) {
         return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), getTeleportModeForPlayer(player), Cause.of(NamedCause.owner(player)));
     }
 
-    public boolean teleportPlayer(Player player, Transform<World> worldTransform, boolean safe) {
+    public TeleportResult teleportPlayer(Player player, Transform<World> worldTransform, boolean safe) {
         TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
         return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), mode, Cause.of(NamedCause.owner(player)));
     }
 
-    public boolean teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode) {
+    public TeleportResult teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode) {
         return teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, Cause.of(NamedCause.owner(player)));
     }
 
-    public boolean teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode, Cause cause) {
+    public TeleportResult teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode, Cause cause) {
         return teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, cause);
     }
 
-    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, TeleportMode teleportMode) {
-        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), teleportMode, Cause.of(NamedCause.owner(player)));
-    }
-
-    public boolean teleportPlayer(Player pl, Location<World> loc, TeleportMode mode, Cause of) {
+    public TeleportResult teleportPlayer(Player pl, Location<World> loc, TeleportMode mode, Cause of) {
         return teleportPlayer(pl, loc, pl.getRotation(), mode, of);
     }
 
-    public boolean teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode, Cause cause) {
+    public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode, Cause cause) {
         Optional<Location<World>> targetLocation = getSafeLocation(player, locationToTeleportTo, teleportMode);
 
         if (targetLocation.isPresent() && Util.isLocationInWorldBorder(targetLocation.get())) {
@@ -143,14 +128,14 @@ public class NucleusTeleportHandler {
                         ((MessageReceiver) o).sendMessage(x);
                     }
                 });
-                return false;
+                return TeleportResult.FAILED_CANCELLED;
             }
 
             // Do it, tell the routine if it worked.
-            return player.setLocationAndRotation(targetLocation.get(), rotation);
+            return result(player.setLocationAndRotation(targetLocation.get(), rotation));
         }
 
-        return false;
+        return TeleportResult.FAILED_NO_LOCATION;
     }
 
     public Optional<Location<World>> getSafeLocation(@Nullable Player player, Location<World> locationToTeleportTo, TeleportMode teleportMode) {
@@ -350,6 +335,37 @@ public class NucleusTeleportHandler {
             }
 
             return Optional.empty();
+        }
+    }
+
+    private TeleportResult result(boolean res) {
+        return res ? TeleportResult.SUCCESS : TeleportResult.FAILED_CANCELLED;
+    }
+
+    public enum TeleportResult {
+        /**
+         * The teleportation was a success.
+         */
+        SUCCESS(true),
+
+        /**
+         * The teleportation failed due to no safe location.
+         */
+        FAILED_NO_LOCATION(false),
+
+        /**
+         * The teleportation failed due to a plugin cancellation.
+         */
+        FAILED_CANCELLED(false);
+
+        private final boolean b;
+
+        TeleportResult(boolean b) {
+            this.b = b;
+        }
+
+        public boolean isSuccess() {
+            return b;
         }
     }
 }

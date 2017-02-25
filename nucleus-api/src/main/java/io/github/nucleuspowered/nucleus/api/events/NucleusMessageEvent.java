@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.api.events;
 
 import io.github.nucleuspowered.nucleus.api.Stable;
+import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.Event;
@@ -13,6 +14,7 @@ import org.spongepowered.api.event.Event;
  * An event that is posted when a player uses /m in NucleusPlugin
  */
 @Stable
+@MightOccurAsync
 public interface NucleusMessageEvent extends Event, Cancellable {
 
     /**

@@ -9,8 +9,11 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import io.github.nucleuspowered.nucleus.modules.back.listeners.BackListeners;
 import org.spongepowered.api.command.CommandResult;
@@ -24,6 +27,7 @@ import java.util.Optional;
 
 @Permissions
 @RegisterCommand({"back", "return"})
+@EssentialsEquivalent({"back", "return"})
 public class BackCommand extends AbstractCommand<Player> {
 
     @Inject private BackHandler handler;
@@ -46,12 +50,14 @@ public class BackCommand extends AbstractCommand<Player> {
         }
 
         Transform<World> loc = ol.get();
-        if (plugin.getTeleportHandler().teleportPlayer(src, loc)) {
+        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(src, loc);
+        if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.success"));
             return CommandResult.success();
-        } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.nosafe"));
-            return CommandResult.empty();
+        } else if (result == NucleusTeleportHandler.TeleportResult.FAILED_NO_LOCATION) {
+            throw ReturnMessageException.fromKey("command.back.nosafe");
         }
+
+        throw ReturnMessageException.fromKey("command.back.cancelled");
     }
 }

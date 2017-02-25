@@ -63,6 +63,15 @@ public class CommandDoc {
     private String spongeVersion;
 
     @Setting
+    private List<String> essentialsEquivalents;
+
+    @Setting
+    private Boolean isExactEssEquiv = null;
+
+    @Setting
+    private String essNotes;
+
+    @Setting
     private List<PermissionDoc> permissions;
 
     @Setting private String simpleUsage;
@@ -233,5 +242,29 @@ public class CommandDoc {
 
     public void setSubcommands(String subcommands) {
         this.subcommands = subcommands;
+    }
+
+    public List<String> getEssentialsEquivalents() {
+        return essentialsEquivalents;
+    }
+
+    public void setEssentialsEquivalents(List<String> essentialsEquivalents) {
+        this.essentialsEquivalents = essentialsEquivalents;
+    }
+
+    public Boolean getExactEssEquiv() {
+        return isExactEssEquiv;
+    }
+
+    public void setExactEssEquiv(Boolean exactEssEquiv) {
+        isExactEssEquiv = exactEssEquiv;
+    }
+
+    public String getEssNotes() {
+        return essNotes;
+    }
+
+    public void setEssNotes(String essNotes) {
+        this.essNotes = essNotes;
     }
 }

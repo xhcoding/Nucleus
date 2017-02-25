@@ -36,7 +36,7 @@ public class FirstSpawnCommand extends AbstractCommand<Player> {
             return CommandResult.empty();
         }
 
-        if (plugin.getTeleportHandler().teleportPlayer(src, olwr.get(), spawnConfigAdapter.getNodeOrDefault().isSafeTeleport())) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, olwr.get(), spawnConfigAdapter.getNodeOrDefault().isSafeTeleport()).isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstspawn.success"));
             return CommandResult.success();
         }
