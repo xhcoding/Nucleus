@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
@@ -19,6 +20,7 @@ import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataMod
 import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailGeneralDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.jail.events.JailEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -27,6 +29,7 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -135,11 +138,21 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
         }
 
         jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.getJailName()));
+        Sponge.getEventManager().post(new JailEvent.Jailed(
+                user,
+                Cause.of(NamedCause.owner(Util.getFromUUID(data.getJailer()))),
+                data.getJailName(),
+                TextSerializers.FORMATTING_CODE.deserialize(data.getReason()),
+                data.getTimeLeft().orElse(null)));
         return true;
     }
 
     @Override
     public boolean unjailPlayer(User user) {
+        return unjailPlayer(user, Cause.of(NamedCause.owner(Nucleus.getNucleus())));
+    }
+
+    public boolean unjailPlayer(User user, Cause cause) {
         final ModularUserService modularUserService = plugin.getUserDataManager().get(user).get();
         final JailUserDataModule jailUserDataModule = modularUserService.get(JailUserDataModule.class);
         Optional<JailData> ojd = jailUserDataModule.getJailData();
@@ -165,6 +178,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
             jailUserDataModule.removeJailData();
         }
 
+        Sponge.getEventManager().post(new JailEvent.Unjailed(user, cause));
         return true;
     }
 

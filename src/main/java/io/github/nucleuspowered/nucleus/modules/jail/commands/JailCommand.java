@@ -28,6 +28,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
@@ -89,7 +91,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
     }
 
     private CommandResult onUnjail(CommandSource src, CommandContext args, User user) {
-        if (handler.unjailPlayer(user)) {
+        if (handler.unjailPlayer(user, Cause.of(NamedCause.owner(src)))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.unjail.success", user.getName()));
             return CommandResult.success();
         } else {
