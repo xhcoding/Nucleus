@@ -28,7 +28,6 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.chat.ChatTypes;
@@ -63,6 +62,7 @@ public class MeCommand extends AbstractCommand<CommandSource> implements Standar
         String message = ChatListener.stripPermissionless(src, args.<String>getOne(messageKey).get());
         Text header = config.getMePrefix().getForCommandSource(src);
         TextParsingUtils.StyleTuple t = plugin.getTextParsingUtils().getLastColourAndStyle(header, null);
+        Text originalMessage = TextSerializers.FORMATTING_CODE.deserialize(message);
         MessageEvent.MessageFormatter formatter = new MessageEvent.MessageFormatter(
             Text.builder().color(t.colour).style(t.style)
                 .append(TextSerializers.FORMATTING_CODE.deserialize(message)).toText()
@@ -76,11 +76,8 @@ public class MeCommand extends AbstractCommand<CommandSource> implements Standar
         MessageChannelEvent.Chat event = new NucleusMessageChannelEvent(
                 Cause.source(src).build(),
                 channel,
-                Text.of(message),
-                new MessageEvent.MessageFormatter(Text.builder(src.getName())
-                        .onShiftClick(TextActions.insertText(src.getName()))
-                        .onClick(TextActions.suggestCommand("/msg " + src.getName()))
-                        .build()));
+                originalMessage,
+                formatter);
 
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.me.cancel"));
