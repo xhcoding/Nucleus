@@ -29,7 +29,7 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
+import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
 import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
@@ -93,7 +93,7 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
         // Sponge requires the root cause to be a SpawnCause. So we don't lose sight of the subject causing this,
         // we make use of Sponge's awesome Cause system, and just make them the second argument.
         Cause cause = Cause.of(
-                NamedCause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()),
+                NamedCause.source(EntitySpawnCause.builder().type(SpawnTypes.PLUGIN).entity(pl).build()),
                 NamedCause.owner(pl));
         do {
             Entity e = w.createEntity(et, loc.getPosition());
