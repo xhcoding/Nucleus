@@ -160,6 +160,7 @@ public class NucleusPlugin extends Nucleus {
                 PluginInfo.VERSION, Sponge.getPlatform().getContainer(Platform.Component.API).getVersion().orElse("unknown")));
         s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome2"));
         s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome3"));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome4"));
         s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
 
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
