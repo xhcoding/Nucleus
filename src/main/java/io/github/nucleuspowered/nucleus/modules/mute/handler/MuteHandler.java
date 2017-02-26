@@ -127,6 +127,8 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
                         user,
                         expired));
 
+                user.getPlayer().ifPresent(x ->
+                    x.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("mute.elapsed")));
                 return true;
             }
         }
@@ -170,5 +172,9 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
     @Override public boolean matches(Context context, Subject subject) {
         return context.getKey().equals("nucleus_muted") && subject instanceof User &&
                 muteContextCache.computeIfAbsent(((User) subject).getUniqueId(), k -> isMuted((User)subject));
+    }
+
+    public boolean isMutedCached(User x) {
+        return muteContextCache.containsKey(x.getUniqueId());
     }
 }

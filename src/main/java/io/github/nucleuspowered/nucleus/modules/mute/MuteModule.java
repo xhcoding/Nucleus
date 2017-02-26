@@ -20,9 +20,10 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "mute", name = "Mute")
+@ModuleData(id = MuteModule.ID, name = "Mute")
 public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
 
+    public static final String ID = "mute";
     @Inject private Game game;
     @Inject private Logger logger;
 

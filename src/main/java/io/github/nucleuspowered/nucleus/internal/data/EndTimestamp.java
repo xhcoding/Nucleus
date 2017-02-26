@@ -67,7 +67,7 @@ public abstract class EndTimestamp implements TimedEntry {
         }
 
         if (endtimestamp != null) {
-            return Optional.of(Duration.between(Instant.ofEpochSecond(endtimestamp), Instant.now()));
+            return Optional.of(Duration.between(Instant.now(), Instant.ofEpochSecond(endtimestamp)));
         }
 
         return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
