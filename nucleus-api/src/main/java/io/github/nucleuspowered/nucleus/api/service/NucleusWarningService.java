@@ -33,6 +33,7 @@ public interface NucleusWarningService {
     /**
      * Gets all warnings (active and expired) for a {@link User}
      *
+     * @param user The {@link User} to get the warnings for.
      * @return The {@link Warning}s.
      */
     List<Warning> getWarnings(User user);

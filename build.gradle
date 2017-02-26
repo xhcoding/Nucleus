@@ -5,6 +5,7 @@ plugins {
     id 'ninja.miserable.blossom' version '1.0.1'
     id 'maven'
     id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id 'java-library'
     // id "com.qixalite.spongestart" version "1.4.3"
 }
 
@@ -13,7 +14,7 @@ project.ext.spongeapiversion = '5.1'
 project.ext.suffix = '-SNAPSHOT'
 
 allprojects {
-    apply plugin: 'java'
+    apply plugin: 'java-library'
 
     version = rootProject.versionno + rootProject.suffix + '-S' + rootProject.spongeapiversion
 
@@ -29,6 +30,14 @@ allprojects {
         classifier = 'javadoc'
         from javadoc.destinationDir
         archiveName = "Nucleus-${version}-api-javadocs.jar"
+    }
+
+    tasks.withType(JavaCompile) {
+        //enable compilation in a separate daemon process
+        options.fork = true
+
+        //enable incremental compilation
+        options.incremental = true
     }
 }
 
@@ -66,22 +75,22 @@ repositories {
 }
 
 dependencies {
-    compile project(":nucleus-api", {
+    api project(":nucleus-api", {
         ext.versionno = versionno
         ext.suffix = suffix
     })
-    compile "org.spongepowered:spongeapi:" + project.ext.spongeapi
-    compile qsmlDep
-    compile(mixinDep) {
+    api "org.spongepowered:spongeapi:" + project.ext.spongeapi
+    implementation qsmlDep
+    implementation (mixinDep) {
         exclude module: 'mixin'
         exclude module: 'launchwrapper'
         exclude module: 'guava'
     }
 
-    compile "com.github.hsyyid:EssentialCmds:v8.1.7"
+    implementation "com.github.hsyyid:EssentialCmds:v8.1.7"
 
     // For Geo IP
-    compile geoIpDep
+    implementation geoIpDep
 
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-all:1.10.19"

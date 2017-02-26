@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHelpOpEvent;
 import io.github.nucleuspowered.nucleus.modules.mute.commands.MuteCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.commands.VoiceCommand;
@@ -172,11 +173,12 @@ public class MuteListener extends ListenerBase {
     }
 
     private void onMute(MuteData md, Player user) {
+        MessageProvider messageProvider = plugin.getMessageProvider();
         if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.time",
+            user.sendMessage(messageProvider.getTextMessageWithFormat("mute.playernotify.time",
                     Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
         } else {
-            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.standard"));
+            user.sendMessage(messageProvider.getTextMessageWithFormat("mute.playernotify.standard"));
         }
     }
 

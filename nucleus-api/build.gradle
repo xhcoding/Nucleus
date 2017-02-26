@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'idea'
     id 'eclipse'
     id 'maven'
@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.spongepowered:spongeapi:" + project.getRootProject().ext.spongeapi
+    api "org.spongepowered:spongeapi:" + project.getRootProject().ext.spongeapi
 }
 
 license {
