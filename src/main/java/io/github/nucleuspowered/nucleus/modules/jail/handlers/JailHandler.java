@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralServi
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.data.JailData;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusJailService;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
@@ -33,6 +34,8 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +48,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
 
     private final NucleusPlugin plugin;
 
-    // Used for the context canclulator
+    // Used for the context calculator
     private final Map<UUID, Context> jailDataCache = Maps.newHashMap();
     private final static Context jailContext = new Context("nucleus_jailed", "true");
 
@@ -75,6 +78,10 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
     @Override
     public Map<String, NamedLocation> getJails() {
         return getModule().getJails();
+    }
+
+    public boolean isPlayerJailedCached(User user) {
+        return jailDataCache.containsKey(user.getUniqueId());
     }
 
     @Override
@@ -229,5 +236,31 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
         }
 
         return false;
+    }
+
+    public boolean checkJail(final User player, boolean sendMessage) {
+        Optional<JailData> omd = Util.testForEndTimestamp(getPlayerJailData(player), () -> unjailPlayer(player));
+        if (omd.isPresent()) {
+            if (sendMessage) {
+                Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(FlyUserDataModule.class).setFlying(false);
+                player.getPlayer().ifPresent(x -> onJail(omd.get(), x));
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void onJail(JailData md, Player user) {
+        MessageProvider provider = Nucleus.getNucleus().getMessageProvider();
+        if (md.getEndTimestamp().isPresent()) {
+            user.sendMessage(provider.getTextMessageWithFormat("jail.playernotify.time",
+                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
+        } else {
+            user.sendMessage(provider.getTextMessageWithFormat("jail.playernotify.standard"));
+        }
+
+        user.sendMessage(provider.getTextMessageWithFormat("standard.reason", md.getReason()));
     }
 }

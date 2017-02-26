@@ -8,7 +8,6 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -17,6 +16,7 @@ import org.spongepowered.api.scheduler.Task;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -28,10 +28,8 @@ public class JailTask extends TaskBase {
 
     @Override
     public void accept(Task task) {
-        Collection<Player> pl = Sponge.getServer().getOnlinePlayers();
-        pl.stream().map(x -> userDataManager.getUser(x).orElse(null))
-                .filter(x -> x == null || x.get(JailUserDataModule.class).getJailData().isPresent())
-                .forEach(x -> Util.testForEndTimestamp(x.get(JailUserDataModule.class).getJailData(), () -> jailHandler.unjailPlayer(x.getUser())));
+        Collection<Player> pl = Sponge.getServer().getOnlinePlayers().stream().filter(x -> jailHandler.isPlayerJailedCached(x)).collect(Collectors.toList());
+        pl.stream().forEach(x -> Util.testForEndTimestamp(jailHandler.getPlayerJailData(x), () -> jailHandler.unjailPlayer(x)));
     }
 
     @Override

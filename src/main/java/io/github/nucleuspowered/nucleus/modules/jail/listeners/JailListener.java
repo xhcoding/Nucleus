@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusSendToSpawnEvent;
@@ -34,19 +33,17 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
-import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-public class JailListener extends ListenerBase {
+public class JailListener extends ListenerBase.Reloadable {
 
     @Inject private UserDataManager loader;
     @Inject private InternalServiceManager ism;
@@ -55,6 +52,9 @@ public class JailListener extends ListenerBase {
     private final String notify;
     private final String teleport;
     private final String teleportto;
+
+    private boolean isMuteOnJail = false;
+    private List<String> allowedCommands;
 
     @Inject
     public JailListener(NucleusPlugin plugin) {
@@ -102,10 +102,11 @@ public class JailListener extends ListenerBase {
         JailHandler handler = ism.getService(JailHandler.class).get();
 
         // Jailing the subject if we need to.
-        if (qs.jailOnNextLogin() && qs.getJailData().isPresent()) {
+        Optional<JailData> data = handler.getPlayerJailData(user);
+        if (qs.jailOnNextLogin() && data.isPresent()) {
             // It exists.
             NamedLocation owl = handler.getWarpLocation(user).get();
-            JailData jd = qs.getJailData().get();
+            JailData jd = data.get();
             Optional<Duration> timeLeft = jd.getRemainingTime();
             Text message;
             message = timeLeft.map(duration -> plugin.getMessageProvider()
@@ -132,7 +133,7 @@ public class JailListener extends ListenerBase {
                 omd = Util.testForEndTimestamp(qs.getJailData(), () -> handler.unjailPlayer(user));
                 if (omd.isPresent()) {
                     md = omd.get();
-                    onJail(md, event.getTargetEntity());
+                    handler.onJail(md, event.getTargetEntity());
                 }
             }
         }).submit(plugin);
@@ -166,77 +167,41 @@ public class JailListener extends ListenerBase {
     @Listener
     public void onCommand(SendCommandEvent event, @Root Player player) {
         // Only if the command is not in the control list.
-        if (checkJail(player, false) && jailConfigAdapter.getNodeOrDefault().getAllowedCommands().stream().noneMatch(x -> event.getCommand().equalsIgnoreCase(x))) {
+        if (handler.checkJail(player, false) && allowedCommands.stream().noneMatch(x -> event.getCommand().equalsIgnoreCase(x))) {
             event.setCancelled(true);
 
             // This is the easiest way to send the messages.
-            checkJail(player, true);
+            handler.checkJail(player, true);
         }
     }
 
     @Listener
     public void onBlockChange(ChangeBlockEvent event, @Root Player player) {
-        event.setCancelled(checkJail(player, true));
+        event.setCancelled(handler.checkJail(player, true));
     }
 
     @Listener
     public void onInteract(InteractEvent event, @Root Player player) {
-        event.setCancelled(checkJail(player, true));
+        event.setCancelled(handler.checkJail(player, true));
     }
 
     @Listener
     public void onSpawn(RespawnPlayerEvent event) {
-        if (checkJail(event.getTargetEntity(), false)) {
+        if (handler.checkJail(event.getTargetEntity(), false)) {
             event.setToTransform(event.getToTransform().setLocation(handler.getWarpLocation(event.getTargetEntity()).get().getLocation().get()));
-        }
-    }
-
-    @Listener(order = Order.FIRST)
-    public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
-        if (checkJail(player, false) && jailConfigAdapter.getNodeOrDefault().isMuteOnJail()) {
-            player.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("jail.muteonchat"));
-            event.setCancelled(true);
         }
     }
 
     @Listener
     public void onSendToSpawn(NucleusSendToSpawnEvent event, @Getter("getTargetUser") User user) {
-        if (checkJail(user, false)) {
+        if (handler.checkJail(user, false)) {
             event.setCancelled(true);
             event.setCancelReason(plugin.getMessageProvider().getMessageWithFormat("jail.isjailed"));
         }
     }
 
-    private boolean checkJail(final User player, boolean sendMessage) {
-        Optional<ModularUserService> oqs = loader.get(player);
-        if (!oqs.isPresent()) {
-            return false;
-        }
-
-        JailUserDataModule qs = oqs.get().get(JailUserDataModule.class);
-
-        Optional<JailData> omd = Util.testForEndTimestamp(qs.getJailData(), () -> handler.unjailPlayer(player));
-        if (omd.isPresent()) {
-            if (sendMessage) {
-                oqs.get().get(FlyUserDataModule.class).setFlying(false);
-                player.getPlayer().ifPresent(x -> onJail(omd.get(), x));
-            }
-
-            return true;
-        }
-
-        return false;
+    @Override public void onReload() throws Exception {
+        isMuteOnJail = jailConfigAdapter.getNodeOrDefault().isMuteOnJail();
+        allowedCommands = jailConfigAdapter.getNodeOrDefault().getAllowedCommands();
     }
-
-    private void onJail(JailData md, Player user) {
-        if (md.getEndTimestamp().isPresent()) {
-            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.playernotify.time",
-                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
-        } else {
-            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("jail.playernotify.standard"));
-        }
-
-        user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", md.getReason()));
-    }
-
 }
