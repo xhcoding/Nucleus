@@ -4,15 +4,19 @@
  */
 package io.github.nucleuspowered.nucleus.iapi.service;
 
-import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.BetweenInstantsData;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailData;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailFilter;
+import com.google.common.base.Preconditions;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.MailMessage;
 import org.spongepowered.api.entity.living.player.User;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 /**
  * A service that handles sending and retrieving mail.
@@ -26,16 +30,16 @@ public interface NucleusMailService {
      * @param filters The {@link MailFilter}s
      * @return A list of mail.
      */
-    List<MailData> getMail(User player, MailFilter... filters);
+    List<MailMessage> getMail(User player, MailFilter... filters);
 
     /**
      * Removes a specific mail for a specific player.
      *
      * @param player The {@link User} to remove the mail from.
-     * @param mailData The {@link MailData} to remove from the player.
+     * @param mailData The {@link MailMessage} to remove from the player.
      * @return <code>true</code> if the mail was removed, <code>false</code> if the player didn't have the mail.
      */
-    boolean removeMail(User player, MailData mailData);
+    boolean removeMail(User player, MailMessage mailData);
 
     /**
      * Sends mail to a subject, addressed from another subject.
@@ -69,22 +73,28 @@ public interface NucleusMailService {
      *     Multiple player filters can be provided - this will return messages authored by all specified players.
      * </p>
      *
-     * @param player The {@link UUID} of the player. Use <code>null</code> for the console.
+     * @param includeConsole If <code>true</code>, include the console/plugins in any returned mail.
+     * @param player The {@link UUID}s of the players.
      * @return The {@link MailFilter}
-     * @throws NoSuchPlayerException Thrown when the subject has never subject on the server.
      */
-    MailFilter<UUID> createPlayerFilter(UUID player) throws NoSuchPlayerException;
+    default MailFilter createSenderFilter(boolean includeConsole, UUID... player) {
+        return createSenderFilter(includeConsole, Arrays.asList(player));
+    }
 
     /**
-     * Create a filter that restricts the returned mail to the console.
+     * Create a filter that restricts the mail to the senders provided.
      *
      * <p>
-     *      This can be combined with the {@link #createPlayerFilter(UUID)} method to include players too.
+     *     Multiple player filters can be provided - this will return messages authored by all specified players.
      * </p>
      *
+     * @param includeConsole If <code>true</code>, include the console/plugins in any returned mail.
+     * @param player The {@link UUID}s of the players.
      * @return The {@link MailFilter}
      */
-    MailFilter<Void> createConsoleFilter();
+    default MailFilter createSenderFilter(boolean includeConsole, final Collection<UUID> player) {
+        return m -> m.getSender().map(x -> player.contains(x.getUniqueId())).orElse(includeConsole);
+    }
 
     /**
      * Create a filter that restricts the mail to a certain time period. One parameter may be
@@ -94,21 +104,54 @@ public interface NucleusMailService {
      *     Only <strong>one</strong> of these filters can be used at a time.
      * </p>
      *
-     * @param from The {@link Instant} which indicates the earliest date to return.
-     * @param to The {@link Instant} which indicates the latest date to return.
+     * @param after The {@link Instant} which indicates the earliest date to return.
+     * @param before The {@link Instant} which indicates the latest date to return.
      * @return The {@link MailFilter}
      */
-    MailFilter<BetweenInstantsData> createDateFilter(Instant from, Instant to);
+    default MailFilter createDateFilter(@Nullable Instant after, @Nullable Instant before) {
+        Preconditions.checkArgument(after != null || before != null);
+        final Instant inAfter = after == null ? Instant.ofEpochMilli(0) : after;
+        final Instant inBefore = before == null ? Instant.now() : before;
+
+        return m -> inAfter.isBefore(m.getDate()) && inBefore.isAfter(m.getDate());
+    }
 
     /**
      * Create a filter that restricts the messages returned to the provided substring.
      *
      * <p>
-     *     If multiple filters are set, all need to match.
+     *     If multiple strings are set, all need to match.
      * </p>
      *
      * @param message The message.
      * @return The {@link MailFilter}
      */
-    MailFilter<String> createMessageFilter(String message);
+    default MailFilter createMessageFilter(final boolean caseSensitive, String... message) {
+        return createMessageFilter(caseSensitive, Arrays.asList(message));
+    }
+
+    /**
+     * Create a filter that restricts the messages returned to the provided substring.
+     *
+     * <p>
+     *     If multiple strings are set, all need to match.
+     * </p>
+     *
+     * @param message The message.
+     * @return The {@link MailFilter}
+     */
+    default MailFilter createMessageFilter(final boolean caseSensitive, Collection<String> message) {
+        final List<String> strings = message.stream().map(x -> !caseSensitive ? x.toLowerCase() : x).collect(Collectors.toList());
+        return m -> {
+            String mm = caseSensitive ? m.getMessage() : m.getMessage().toLowerCase();
+            return strings.stream().allMatch(mm::contains);
+        };
+    }
+
+    /**
+     * This {@link MailFilter} is simply to prevent compiler warnings with varargs, and is functionally the same as a
+     * {@link Predicate}
+     */
+    @FunctionalInterface
+    interface MailFilter extends Predicate<MailMessage> {}
 }

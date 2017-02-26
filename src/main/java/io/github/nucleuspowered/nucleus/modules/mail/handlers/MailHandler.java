@@ -4,29 +4,24 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mail.handlers;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.BetweenInstantsData;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailData;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailFilter;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.MailMessage;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusMailService;
+import io.github.nucleuspowered.nucleus.modules.mail.data.MailData;
 import io.github.nucleuspowered.nucleus.modules.mail.datamodules.MailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mail.events.InternalNucleusMailEvent;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MailHandler implements NucleusMailService {
@@ -40,7 +35,11 @@ public class MailHandler implements NucleusMailService {
     }
 
     @Override
-    public List<MailData> getMail(User player, MailFilter... filters) {
+    public final List<MailMessage> getMail(User player, MailFilter... filters) {
+        return Lists.newArrayList(getMailInternal(player, filters));
+    }
+
+    public final List<MailData> getMailInternal(User player, MailFilter... filters) {
         MailUserDataModule iqsu = plugin.getUserDataManager().get(player).get().get(MailUserDataModule.class);
 
         List<MailData> lmd = iqsu.getMail();
@@ -48,42 +47,12 @@ public class MailHandler implements NucleusMailService {
             return Lists.newArrayList(lmd);
         }
 
-        List<MailFilter> lmf = Arrays.asList(filters);
-        Optional<DateFilter> odf = lmf.stream().filter(d -> d instanceof DateFilter).map(d -> (DateFilter) d).findFirst();
-        if (odf.isPresent()) {
-            BetweenInstantsData df = odf.get().getSuppliedData();
-            lmd = lmd.stream().filter(x -> df.from().orElseGet(() -> Instant.ofEpochSecond(0)).isBefore(x.getDate())
-                    && df.to().orElseGet(() -> Instant.now().plus(1, ChronoUnit.DAYS)).isAfter(x.getDate())).collect(Collectors.toList());
-        }
-
-        // Get players.
-        List<UUID> pf =
-                lmf.stream().filter(x -> x instanceof PlayerFilter).map(d -> ((PlayerFilter) d).getSuppliedData()).collect(Collectors.toList());
-        if (lmf.stream().anyMatch(x -> x instanceof ConsoleFilter)) {
-            pf.add(Util.consoleFakeUUID);
-        }
-
-        // Add the predicates
-        if (!pf.isEmpty()) {
-            // Check the UUIDs - if they are in the list, let them through.
-            lmd = lmd.stream().filter(x -> pf.contains(x.getUuid())).collect(Collectors.toList());
-        }
-
-        // Message parts
-        List<String> m = lmf.stream().filter(x -> x instanceof MessageFilter).map(d -> ((MessageFilter) d).getSuppliedData().toLowerCase())
-                .collect(Collectors.toList());
-        if (!m.isEmpty()) {
-            // For each mail, check to see if any filters match after everything
-            // goes lowercase.
-            lmd = lmd.stream().filter(x -> m.stream().allMatch(a -> x.getMessage().toLowerCase().contains(a.toLowerCase())))
-                    .collect(Collectors.toList());
-        }
-
-        return lmd;
+        Optional<Predicate<MailMessage>> lmf = Arrays.stream(filters).map(x -> (Predicate<MailMessage>)x).reduce(Predicate::and);
+        return lmf.map(pred -> lmd.stream().filter(pred::test).collect(Collectors.toList())).orElse(lmd);
     }
 
     @Override
-    public boolean removeMail(User player, MailData mailData) {
+    public boolean removeMail(User player, MailMessage mailData) {
         try {
             return plugin.getUserDataManager().get(player).get().get(MailUserDataModule.class).removeMail(mailData);
         } catch (Exception e) {
@@ -135,80 +104,5 @@ public class MailHandler implements NucleusMailService {
         }
 
         return iqsu.clearMail();
-    }
-
-    @Override
-    public MailFilter<UUID> createPlayerFilter(UUID player) throws NoSuchPlayerException {
-        if (!game.getServiceManager().provideUnchecked(UserStorageService.class).get(player).isPresent()) {
-            throw new NoSuchPlayerException();
-        }
-
-        return new PlayerFilter(player);
-    }
-
-    @Override
-    public MailFilter<Void> createConsoleFilter() {
-        return new ConsoleFilter();
-    }
-
-    @Override
-    public MailFilter<BetweenInstantsData> createDateFilter(Instant from, Instant to) {
-        Preconditions.checkState(from != null || to != null);
-        return new DateFilter(new BetweenInstantsData(from, to));
-    }
-
-    @Override
-    public MailFilter<String> createMessageFilter(String message) {
-        return new MessageFilter(message);
-    }
-
-    private static class ConsoleFilter implements MailFilter<Void> {
-
-        @Override
-        public Void getSuppliedData() {
-            return null;
-        }
-    }
-
-    private static class PlayerFilter implements MailFilter<UUID> {
-
-        private final UUID uuid;
-
-        public PlayerFilter(UUID uuid) {
-            this.uuid = uuid;
-        }
-
-        @Override
-        public UUID getSuppliedData() {
-            return uuid;
-        }
-    }
-
-    private static class DateFilter implements MailFilter<BetweenInstantsData> {
-
-        private final BetweenInstantsData bid;
-
-        public DateFilter(BetweenInstantsData bid) {
-            this.bid = bid;
-        }
-
-        @Override
-        public BetweenInstantsData getSuppliedData() {
-            return bid;
-        }
-    }
-
-    private static class MessageFilter implements MailFilter<String> {
-
-        private final String message;
-
-        public MessageFilter(String message) {
-            this.message = message;
-        }
-
-        @Override
-        public String getSuppliedData() {
-            return message;
-        }
     }
 }

@@ -6,10 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.mail.datamodules;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.MailMessage;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailData;
+import io.github.nucleuspowered.nucleus.modules.mail.data.MailData;
 
 import java.util.List;
 
@@ -30,9 +31,8 @@ public class MailUserDataModule extends DataModule<ModularUserService> {
         mailDataList.add(mailData);
     }
 
-    public boolean removeMail(MailData mailData) {
-        return mailDataList.removeIf(x -> x.getDate().equals(mailData.getDate()) &&
-                x.getMessage().equals(mailData.getMessage()) && x.getUuid().equals(mailData.getUuid()));
+    public boolean removeMail(MailMessage mailData) {
+        return mailDataList.removeIf(x -> x.equals(mailData));
     }
 
     public boolean clearMail() {

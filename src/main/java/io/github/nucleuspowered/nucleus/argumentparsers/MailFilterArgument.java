@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailFilter;
+import io.github.nucleuspowered.nucleus.iapi.service.NucleusMailService;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -19,6 +17,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Identifiable;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -32,10 +31,11 @@ import javax.annotation.Nullable;
 
 public class MailFilterArgument extends CommandElement {
 
-    private static final Pattern before = Pattern.compile("b:(\\d+)]");
-    private static final Pattern after = Pattern.compile("a:(\\d+)]");
+    private static final Pattern late = Pattern.compile("b:(\\d+)");
+    private static final Pattern early = Pattern.compile("a:(\\d+)");
     private static final Pattern message = Pattern.compile("m:(.+?)(?= [abmp]:|$)");
-    private static final Pattern player = Pattern.compile("p:([a-zA-Z0-9_]{1,16})");
+    private static final Pattern player = Pattern.compile("p:([a-zA-Z0-9_]{3,16})");
+    private static final Pattern console = Pattern.compile("c:");
     private final MailHandler handler;
 
     public MailFilterArgument(@Nullable Text key, MailHandler handler) {
@@ -47,63 +47,58 @@ public class MailFilterArgument extends CommandElement {
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         // Get all the arguments in list.
-        List<String> array = Lists.newArrayList();
+        List<UUID> players = Lists.newArrayList();
+        boolean console = false;
+        Instant ea = null;
+        Instant l = null;
+        List<String> message = Lists.newArrayList();
         while (args.hasNext()) {
-            array.add(args.next());
-        }
+            String toParse = args.next();
+            try {
+                String s = toParse.substring(0, 2);
 
-        String together = String.join(" ", array);
-
-        List<MailFilter> lmf = Lists.newArrayList();
-
-        // Get the arguments
-        // Players
-        Matcher players = player.matcher(together);
-        if (players.find()) {
-            do {
-                UUID u = player(players.group(1));
-                if (u != null) {
-                    if (Util.consoleFakeUUID.equals(u)) {
-                        lmf.add(handler.createConsoleFilter());
-                    } else {
-                        try {
-                            lmf.add(handler.createPlayerFilter(u));
-                        } catch (NoSuchPlayerException e) {
-                            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.mailfilter.player", players.group(1)));
+                switch (s) {
+                    case "p:":
+                        player(toParse.split(":", 2)[1]).ifPresent(players::add);
+                        break;
+                    case "m:":
+                        message.add(toParse.split(":", 2)[1]);
+                        break;
+                    case "c:":
+                        console = true;
+                        break;
+                    case "b:":
+                        Matcher b = late.matcher(toParse);
+                        if (b.find()) {
+                            // Days before
+                            l = Instant.now().minus(Integer.parseInt(b.group(1)), ChronoUnit.DAYS);
                         }
-                    }
+
+                        break;
+                    case "a:":
+                        Matcher a = early.matcher(toParse);
+                        if (a.find()) {
+                            ea = Instant.now().minus(Integer.parseInt(a.group(1)), ChronoUnit.DAYS);
+                        }
+
+                        break;
                 }
-            } while (players.find());
-        }
-
-        // Message
-        Matcher m = message.matcher(together);
-        if (m.find()) {
-            do {
-                lmf.add(handler.createMessageFilter(m.group(1)));
-            } while (m.find());
-        }
-
-        // Before
-        Matcher b = before.matcher(together);
-        Instant before1 = null;
-        Instant after1 = null;
-        if (b.find()) {
-            // Days before
-            before1 = Instant.now().minus(Integer.parseInt(b.group(1)), ChronoUnit.DAYS);
-        }
-
-        Matcher a = after.matcher(together);
-        if (a.find()) {
-            after1 = Instant.now().minus(Integer.parseInt(a.group(1)), ChronoUnit.DAYS);
-        }
-
-        if (before1 != null || after1 != null) {
-            if (before1 != null && after1 != null && before1.isAfter(after1)) {
-                lmf.add(handler.createDateFilter(after1, before1));
-            } else {
-                lmf.add(handler.createDateFilter(before1, after1));
+            } catch (Exception e) {
+                // ignored
             }
+        }
+
+        List<NucleusMailService.MailFilter> lmf = Lists.newArrayList();
+        if (console || !players.isEmpty()) {
+            lmf.add(handler.createSenderFilter(console, players));
+        }
+
+        if (ea != null || l != null) {
+            lmf.add(handler.createDateFilter(ea, l));
+        }
+
+        if (!message.isEmpty()) {
+            lmf.add(handler.createMessageFilter(false, message));
         }
 
         return lmf.isEmpty() ? null : lmf;
@@ -114,14 +109,14 @@ public class MailFilterArgument extends CommandElement {
         return Lists.newArrayList();
     }
 
-    private UUID player(String text) {
+    private Optional<UUID> player(String text) {
         if (text.equalsIgnoreCase("server") || (text.equalsIgnoreCase("console"))) {
-            return Util.consoleFakeUUID;
+            return Optional.of(Util.consoleFakeUUID);
         }
 
         UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
         Optional<User> ou = uss.get(text);
-        return ou.isPresent() ? ou.get().getUniqueId() : null;
+        return ou.map(Identifiable::getUniqueId);
     }
 
     private Instant getDateOnly(Instant i) {

@@ -25,7 +25,7 @@ public class MailListener extends ListenerBase {
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
         game.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
-            int mailCount = handler.getMail(event.getTargetEntity()).size();
+            int mailCount = handler.getMailInternal(event.getTargetEntity()).size();
             if (mailCount > 0) {
                 event.getTargetEntity().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mail.login", String.valueOf(mailCount)));
                 event.getTargetEntity().sendMessage(Text.builder()
