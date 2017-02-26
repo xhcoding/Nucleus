@@ -64,6 +64,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.Asset;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -153,6 +154,14 @@ public class NucleusPlugin extends Nucleus {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
+        ConsoleSource s = Sponge.getServer().getConsole();
+        s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome", PluginInfo.NAME,
+                PluginInfo.VERSION, Sponge.getPlatform().getContainer(Platform.Component.API).getVersion().orElse("unknown")));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome2"));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome3"));
+        s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
+
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
         Game game = Sponge.getGame();
         NucleusAPI.onPreInit(this);
