@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.iapi.data;
 
-import io.github.nucleuspowered.nucleus.iapi.data.interfaces.EndTimestamp;
+import io.github.nucleuspowered.nucleus.internal.data.EndTimestamp;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;

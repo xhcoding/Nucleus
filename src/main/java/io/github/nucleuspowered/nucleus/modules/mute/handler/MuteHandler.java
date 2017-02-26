@@ -11,10 +11,11 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.MuteInfo;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusMuteService;
+import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.datamodules.MuteUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mute.events.MuteEvent;
 import org.spongepowered.api.Sponge;
@@ -25,6 +26,7 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Identifiable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -34,7 +36,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class MuteHandler implements NucleusMuteService, ContextCalculator<Subject> {
+import javax.annotation.Nullable;
+
+public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteService {
 
     private final NucleusPlugin nucleus;
     @Inject private UserDataManager ucl;
@@ -49,12 +53,15 @@ public class MuteHandler implements NucleusMuteService, ContextCalculator<Subjec
         this.nucleus = nucleus;
     }
 
-    @Override
-    public boolean isMuted(User user) {
+    @Override public boolean isMuted(User user) {
         return getPlayerMuteData(user).isPresent();
     }
 
-    @Override
+    @Override public Optional<MuteInfo> getPlayerMuteInfo(User user) {
+        return getPlayerMuteData(user).map(x -> (MuteInfo)x);
+    }
+
+    // Internal
     public Optional<MuteData> getPlayerMuteData(User user) {
         Optional<ModularUserService> nu = ucl.get(user);
         if (nu.isPresent()) {
@@ -66,8 +73,16 @@ public class MuteHandler implements NucleusMuteService, ContextCalculator<Subjec
         return Optional.empty();
     }
 
-    @Override
+    @Override public boolean mutePlayer(User user, String reason, @Nullable Duration duration, Cause cause) {
+        UUID first = cause.first(User.class).map(Identifiable::getUniqueId).orElse(Util.consoleFakeUUID);
+        return mutePlayer(user, new MuteData(first, reason, duration), cause);
+    }
+
     public boolean mutePlayer(User user, MuteData data) {
+        return mutePlayer(user, data, Cause.of(NamedCause.source(Util.getObjectFromUUID(data.getMuterInternal()))));
+    }
+
+    public boolean mutePlayer(User user, MuteData data, Cause cause) {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(data);
 
@@ -78,32 +93,27 @@ public class MuteHandler implements NucleusMuteService, ContextCalculator<Subjec
 
         Instant time = Instant.now();
         ModularUserService u = nu.get();
+        final Duration d = data.getRemainingTime().orElse(null);
         if (user.isOnline() && data.getTimeFromNextLogin().isPresent() && !data.getEndTimestamp().isPresent()) {
-            data = new MuteData(data.getMuter(), data.getReason(), time.plus(data.getTimeFromNextLogin().get()));
-        }
-
-        final Duration d;
-        if (data.getTimeFromNextLogin().isPresent()) {
-            d = data.getTimeFromNextLogin().get();
-        } else if (data.getEndTimestamp().isPresent()) {
-            d = data.getEndTimestamp().map(x -> Duration.between(time, x)).get();
-        } else {
-            d = null;
+            data.setEndtimestamp(time.plus(data.getTimeFromNextLogin().get()));
         }
 
         u.get(MuteUserDataModule.class).setMuteData(data);
         muteContextCache.put(u.getUniqueId(), true);
         Sponge.getEventManager().post(new MuteEvent.Muted(
-                Cause.of(NamedCause.source(Util.getObjectFromUUID(data.getMuter()))),
+                cause,
                 user,
                 d,
                 Text.of(data.getReason())));
         return true;
     }
 
-    @Override
     public boolean unmutePlayer(User user) {
         return unmutePlayer(user, Cause.of(NamedCause.owner(Sponge.getPluginManager().getPlugin(PluginInfo.ID))), true);
+    }
+
+    @Override public boolean unmutePlayer(User user, Cause cause) {
+        return unmutePlayer(user, cause, false);
     }
 
     public boolean unmutePlayer(User user, Cause cause, boolean expired) {

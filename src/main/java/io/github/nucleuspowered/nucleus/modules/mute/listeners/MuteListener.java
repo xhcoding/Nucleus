@@ -8,7 +8,6 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
-import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -16,6 +15,7 @@ import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHe
 import io.github.nucleuspowered.nucleus.modules.mute.commands.MuteCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.commands.VoiceCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;

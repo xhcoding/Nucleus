@@ -7,11 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.mute;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusMuteService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.mute.commands.CheckMuteCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -39,7 +38,6 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
         try {
             MuteHandler m = new MuteHandler(plugin);
             plugin.getInjector().injectMembers(m);
-            game.getServiceManager().setProvider(plugin, NucleusMuteService.class, m);
             serviceManager.registerService(MuteHandler.class, m);
             Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> x.registerContextCalculator(m));
         } catch (Exception ex) {

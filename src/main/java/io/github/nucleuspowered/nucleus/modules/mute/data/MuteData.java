@@ -2,9 +2,11 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.iapi.data;
+package io.github.nucleuspowered.nucleus.modules.mute.data;
 
-import io.github.nucleuspowered.nucleus.iapi.data.interfaces.EndTimestamp;
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.MuteInfo;
+import io.github.nucleuspowered.nucleus.internal.data.EndTimestamp;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -14,20 +16,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 @ConfigSerializable
-public final class MuteData extends EndTimestamp {
+public final class MuteData extends EndTimestamp implements MuteInfo {
 
     @Setting
     private UUID muter;
 
     @Setting
-    private Long endtimestamp;
-
-    @Setting
     private String reason;
-
-    @Setting
-    private Long timeFromNextLogin;
 
     // For Configurate
     public MuteData() { }
@@ -56,12 +54,14 @@ public final class MuteData extends EndTimestamp {
      * @param reason The reason
      * @param timeFromNextLogin The time to mute for from next login.
      */
-    public MuteData(UUID muter, String reason, Duration timeFromNextLogin) {
+    public MuteData(UUID muter, String reason, @Nullable Duration timeFromNextLogin) {
         this(muter, reason);
-        this.timeFromNextLogin = timeFromNextLogin.getSeconds();
+        if (timeFromNextLogin != null) {
+            this.timeFromNextLogin = timeFromNextLogin.getSeconds();
+        }
     }
 
-    public String getReason() {
+    @Override public String getReason() {
         return reason;
     }
 
@@ -78,7 +78,11 @@ public final class MuteData extends EndTimestamp {
         return Optional.of(Instant.ofEpochSecond(endtimestamp));
     }
 
-    public UUID getMuter() {
+    @Override public Optional<UUID> getMuter() {
+        return muter.equals(Util.consoleFakeUUID) ? Optional.empty() : Optional.of(this.muter);
+    }
+
+    public UUID getMuterInternal() {
         return muter;
     }
 
