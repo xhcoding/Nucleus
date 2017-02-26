@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.dataservices.modular;
 
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
+import com.google.common.collect.ImmutableMap;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.AbstractService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
@@ -130,7 +131,7 @@ public abstract class ModularDataService<S extends ModularDataService<S>> extend
     @Override public boolean save() {
         try {
             saveTimings.startTimingIfSync();
-            cached.values().forEach(x -> x.saveTo(data));
+            ImmutableMap.copyOf(cached).values().forEach(x -> x.saveTo(data));
             return super.save();
         } finally {
             saveTimings.stopTimingIfSync();
