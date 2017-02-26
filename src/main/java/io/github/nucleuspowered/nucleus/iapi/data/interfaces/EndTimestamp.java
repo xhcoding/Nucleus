@@ -60,6 +60,18 @@ public abstract class EndTimestamp {
         }
     }
 
+    public Optional<Duration> getTimeLeft() {
+        if (endtimestamp == null && timeFromNextLogin == null) {
+            return Optional.empty();
+        }
+
+        if (endtimestamp != null) {
+            return Optional.of(Duration.between(Instant.ofEpochSecond(endtimestamp), Instant.now()));
+        }
+
+        return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
+    }
+
     // This HAS to be temporary.
     public Tuple<String, String> getForString() {
         if (getEndTimestamp().isPresent()) {

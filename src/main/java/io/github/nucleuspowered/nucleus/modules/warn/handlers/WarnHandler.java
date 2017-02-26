@@ -8,14 +8,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import io.github.nucleuspowered.nucleus.iapi.service.NucleusWarnService;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.datamodules.WarnUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.warn.events.WarnEvent;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -63,11 +69,22 @@ public class WarnHandler implements NucleusWarnService {
         }
 
         WarnUserDataModule userService = optUserService.get().get(WarnUserDataModule.class);
+        Optional<Duration> duration = warning.getTimeFromNextLogin();
         if (user.isOnline() && warning.getTimeFromNextLogin().isPresent() && !warning.getEndTimestamp().isPresent()) {
-            warning = new WarnData(Instant.now(), warning.getWarner(), warning.getReason(), Instant.now().plus(warning.getTimeFromNextLogin().get()));
+            warning.setEndtimestamp(Instant.now().plus(warning.getTimeFromNextLogin().get()));
         }
 
         userService.addWarning(warning);
+
+        if (!warning.isExpired()) {
+            Sponge.getEventManager().post(new WarnEvent.Warned(
+                    Cause.of(NamedCause.source(Util.getFromUUID(warning.getWarner()))),
+                    user,
+                    warning.getReason(),
+                    duration.orElseGet(() -> warning.getTimeLeft().orElse(null))
+            ));
+        }
+
         return true;
     }
 
