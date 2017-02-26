@@ -6,7 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.info.commands;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.InfoArgument;
+import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -18,30 +20,23 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
-import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHelper;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.source.ConsoleSource;
-import org.spongepowered.api.service.pagination.PaginationList;
-import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,39 +79,19 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         if (infoConfig.isUseDefaultFile() && !oir.isPresent() && !args.hasAny("l")) {
             // Do we have a default?
             String def = infoConfig.getDefaultInfoSection();
-            Optional<List<NucleusTextTemplateImpl>> list = infoHandler.getSection(def);
+            Optional<TextFileController> list = infoHandler.getSection(def);
             if (list.isPresent()) {
                 oir = Optional.of(new InfoArgument.Result(infoHandler.getInfoSections().stream().filter(def::equalsIgnoreCase).findFirst().get(), list.get()));
             }
         }
 
         if (oir.isPresent()) {
-            // Get the list.
-            List<NucleusTextTemplateImpl> info = oir.get().text;
-            Optional<String> os = getTitle(info);
-            String title;
-            if (os.isPresent()) {
-                title = plugin.getMessageProvider().getMessageWithFormat("command.info.title.section", os.get());
+            TextFileController controller = oir.get().text;
+            Text def = TextSerializers.FORMATTING_CODE.deserialize(oir.get().name);
+            Text title = plugin.getMessageProvider().getTextMessageWithTextFormat("command.info.title.section",
+                    controller.getTitle(src).orElseGet(() -> Text.of(def)));
 
-                // Just in case the list is immutable.
-                info = Lists.newArrayList(info);
-                info.remove(0);
-
-                // Remove blank lines.
-                Iterator<NucleusTextTemplateImpl> i = info.iterator();
-                while (i.hasNext()) {
-                    String n = i.next().getRepresentation();
-                    if (n.isEmpty() || n.matches("^\\s+$")) {
-                        i.remove();
-                    } else {
-                        break;
-                    }
-                }
-            } else {
-                title = plugin.getMessageProvider().getMessageWithFormat("command.info.title.section", oir.get().name);
-            }
-
-            InfoHelper.sendInfoNT(info, src, title);
+            controller.sendToPlayer(src, title);
             return CommandResult.success();
         }
 
@@ -135,43 +110,18 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
                     .onClick(TextActions.runCommand("/info " + x)).build());
 
             // If there is a title, then add it.
-            getTitle(infoHandler.getSection(x).get()).ifPresent(sub ->
-                    tb.append(Text.of(TextColors.GOLD, " - ")).append(
-                            NucleusTextTemplateFactory.createFromAmpersandString(sub).getForCommandSource(src))
+            infoHandler.getSection(x).get().getTitle(src).ifPresent(sub ->
+                tb.append(Text.of(TextColors.GOLD, " - ")).append(sub)
             );
 
             s.add(tb.build());
         });
 
-        PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-        PaginationList.Builder pb = ps.builder().contents()
+        Util.getPaginationBuilder(src).contents()
                 .header(plugin.getMessageProvider().getTextMessageWithFormat("command.info.header.default"))
                 .title(plugin.getMessageProvider().getTextMessageWithFormat("command.info.title.default"))
                 .contents(s.stream().sorted(Comparator.comparing(Text::toPlain)).collect(Collectors.toList()))
-                .padding(Text.of(TextColors.GOLD, "-"));
-
-        if (src instanceof ConsoleSource) {
-            pb.linesPerPage(-1);
-        }
-
-        pb.sendTo(src);
+                .padding(Text.of(TextColors.GOLD, "-")).sendTo(src);
         return CommandResult.success();
-    }
-
-    private Optional<String> getTitle(List<NucleusTextTemplateImpl> info) {
-        if (!info.isEmpty()) {
-            String sec1 = info.get(0).getRepresentation();
-            if (sec1.startsWith("#")) {
-                // Get rid of the # and spaces, then limit to 50 characters.
-                sec1 = sec1.replaceFirst("#\\s*", "");
-                if (sec1.length() > 50) {
-                    sec1 = sec1.substring(0, 50);
-                }
-
-                return Optional.of(sec1);
-            }
-        }
-
-        return Optional.empty();
     }
 }

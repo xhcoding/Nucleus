@@ -26,7 +26,6 @@ import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
-import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
@@ -39,7 +38,6 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -189,18 +187,6 @@ public class EssCmdsMigrator extends DataMigrator {
         }
 
         src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.weather"));
-
-        // Rules
-        if (rca != null) {
-            RulesConfig rc = rca.getNodeOrDefault();
-            List<String> rules = rc.getRuleSet();
-            rules.addAll(Utils.getRules());
-            rc.setRuleSet(rules);
-            rca.setNode(rc);
-            plugin.saveSystemConfig();
-
-            src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.rules"));
-        }
 
         src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.success"));
     }

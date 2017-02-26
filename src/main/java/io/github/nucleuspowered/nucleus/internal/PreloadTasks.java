@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
@@ -11,12 +12,14 @@ import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -78,6 +81,46 @@ public abstract class PreloadTasks {
                         old.save(cn);
                     }
                 } catch (IOException e) {
+                    // ignored
+                }
+            },
+            // Move rules into their own file.
+            plugin -> {
+                try {
+                    Path rules = plugin.getConfigDirPath().resolve("rules.txt");
+                    if (Files.exists(rules)) {
+                        return;
+                    }
+
+                    // Get the main conf file, check to see if the "rules" section exists.
+                    Path main = plugin.getConfigDirPath().resolve("main.conf");
+                    if (!Files.exists(main)) {
+                        return;
+                    }
+
+                    HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(main).build();
+                    CommentedConfigurationNode node = loader.load();
+                    CommentedConfigurationNode c = node.getNode("rules", "rules");
+                    if (!c.isVirtual() && c.getValue() != null) {
+                        // Transform!
+                        List<String> r = c.getList(TypeToken.of(String.class));
+                        List<String> newRules = Lists.newArrayList();
+                        if (r.isEmpty()) {
+                            return;
+                        }
+
+                        int i = 1;
+                        for (String s : r) {
+                            newRules.add(String.format("&a%d: %s", i++, s));
+                        }
+
+                        Files.write(rules, newRules, Charsets.UTF_8, StandardOpenOption.CREATE_NEW);
+                        c.setValue(null);
+                        node.getNode("rules").removeChild("rules");
+                        loader.save(node);
+                    }
+
+                } catch (Exception ignored) {
                     // ignored
                 }
             });

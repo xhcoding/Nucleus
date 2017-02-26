@@ -6,9 +6,15 @@ package io.github.nucleuspowered.nucleus.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import org.spongepowered.api.asset.Asset;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.service.pagination.PaginationList;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -16,12 +22,19 @@ import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 /**
  * Handles loading and reading text files.
  */
 public final class TextFileController {
+
+    private static final Text padding = Text.of(TextColors.GOLD, "-");
 
     private static final List<Charset> characterSetsToTest = Lists.newArrayList(
         StandardCharsets.UTF_8,
@@ -33,7 +46,7 @@ public final class TextFileController {
     /**
      * The internal {@link Asset} that represents the default file.
      */
-    private final Asset asset;
+    @Nullable private final Asset asset;
 
     /**
      * Holds the file location.
@@ -49,16 +62,23 @@ public final class TextFileController {
      * Holds the {@link NucleusTextTemplateImpl} information.
      */
     private final List<NucleusTextTemplateImpl> textTemplates = Lists.newArrayList();
+    private final boolean getTitle;
 
     private long fileTimeStamp = 0;
+    @Nullable private NucleusTextTemplate title;
 
-    public TextFileController(Path fileLocation) throws IOException {
-        this(null, fileLocation);
+    public TextFileController(Path fileLocation, boolean getTitle) throws IOException {
+        this(null, fileLocation, getTitle);
     }
 
-    public TextFileController(Asset asset, Path fileLocation) throws IOException {
+    public TextFileController(@Nullable Asset asset, Path fileLocation) throws IOException {
+        this(asset, fileLocation, false);
+    }
+
+    public TextFileController(@Nullable Asset asset, Path fileLocation, boolean getTitle) throws IOException {
         this.asset = asset;
         this.fileLocation = fileLocation;
+        this.getTitle = getTitle;
         load();
     }
 
@@ -98,18 +118,84 @@ public final class TextFileController {
         this.textTemplates.clear();
     }
 
+    public Optional<Text> getTitle(CommandSource source) {
+        if (this.getTitle && this.textTemplates.isEmpty() && !this.fileContents.isEmpty()) {
+            // Initialisation!
+            getFileContentsAsText();
+        }
+
+        if (this.title != null) {
+            return Optional.of(this.title.getForCommandSource(source));
+        }
+
+        return Optional.empty();
+    }
+
+    public List<Text> getTextFromNucleusTextTemplates(CommandSource source) {
+        return getFileContentsAsText().stream().map(x -> x.getForCommandSource(source)).collect(Collectors.toList());
+    }
+
+    public void sendToPlayer(CommandSource src, Text title) {
+
+        PaginationList.Builder pb = Util.getPaginationBuilder(src).contents(getTextFromNucleusTextTemplates(src));
+
+        if (title != null && !title.isEmpty()) {
+            pb.title(title).padding(padding);
+        } else {
+            pb.padding(Util.NOT_EMPTY);
+        }
+
+        pb.sendTo(src);
+    }
+
     /**
      * Gets the contents of the file.
      *
      * @return An {@link ImmutableList} that contains the file contents.
      */
-    public ImmutableList<NucleusTextTemplateImpl> getFileContentsAsText() {
+    private ImmutableList<NucleusTextTemplateImpl> getFileContentsAsText() {
         checkFileStamp();
         if (textTemplates.isEmpty()) {
-            fileContents.forEach(x -> textTemplates.add(NucleusTextTemplateFactory.createFromAmpersandString(x)));
+            List<String> contents = Lists.newArrayList(fileContents);
+            if (this.getTitle) {
+                this.title = getTitleFromStrings(contents);
+
+                if (title != null) {
+                    contents.remove(0);
+
+                    Iterator<String> i = contents.iterator();
+                    while (i.hasNext()) {
+                        String n = i.next();
+                        if (n.isEmpty() || n.matches("^\\s+$")) {
+                            i.remove();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            contents.forEach(x -> textTemplates.add(NucleusTextTemplateFactory.createFromAmpersandString(x)));
         }
 
         return ImmutableList.copyOf(textTemplates);
+    }
+
+    @Nullable private NucleusTextTemplate getTitleFromStrings(List<String> info) {
+        if (!info.isEmpty()) {
+            String sec1 = info.get(0);
+            if (sec1.startsWith("#")) {
+                // Get rid of the # and spaces, then limit to 50 characters.
+                sec1 = sec1.replaceFirst("#\\s*", "");
+                if (sec1.length() > 50) {
+                    sec1 = sec1.substring(0, 50);
+                }
+
+                return NucleusTextTemplateFactory.createFromAmpersandString(sec1);
+            }
+        }
+
+        return null;
     }
 
     private void checkFileStamp() {

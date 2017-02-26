@@ -4,23 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.modules.rules.config;
 
-import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-
-import java.util.List;
 
 @ConfigSerializable
 public class RulesConfig {
 
-    @Setting(value = "rules", comment = "config.rules.ruleset")
-    private List<String> ruleSet = Lists.newArrayList("Be respectful.", "Be ethical.", "Use common sense.");
+    @Setting(value = "rules-title", comment = "config.rules.title")
+    private String rulesTitle = "&6Server Rules";
 
-    public List<String> getRuleSet() {
-        return ruleSet;
-    }
-
-    public void setRuleSet(List<String> ruleSet) {
-        this.ruleSet = ruleSet;
+    public String getRulesTitle() {
+        return rulesTitle;
     }
 }
