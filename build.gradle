@@ -5,7 +5,7 @@ plugins {
     id 'ninja.miserable.blossom' version '1.0.1'
     id 'maven'
     id 'com.github.johnrengelman.shadow' version '1.2.3'
-    id 'java-library'
+    id 'java'
     // id "com.qixalite.spongestart" version "1.4.3"
 }
 
@@ -14,7 +14,7 @@ project.ext.spongeapiversion = '5.1'
 project.ext.suffix = '-SNAPSHOT'
 
 allprojects {
-    apply plugin: 'java-library'
+    apply plugin: 'java'
 
     version = rootProject.versionno + rootProject.suffix + '-S' + rootProject.spongeapiversion
 
@@ -30,14 +30,6 @@ allprojects {
         classifier = 'javadoc'
         from javadoc.destinationDir
         archiveName = "Nucleus-${version}-api-javadocs.jar"
-    }
-
-    tasks.withType(JavaCompile) {
-        //enable compilation in a separate daemon process
-        options.fork = true
-
-        //enable incremental compilation
-        options.incremental = true
     }
 }
 
@@ -75,22 +67,22 @@ repositories {
 }
 
 dependencies {
-    api project(":nucleus-api", {
+    compile project(":nucleus-api", {
         ext.versionno = versionno
         ext.suffix = suffix
     })
-    api "org.spongepowered:spongeapi:" + project.ext.spongeapi
-    implementation qsmlDep
-    implementation (mixinDep) {
+    compile "org.spongepowered:spongeapi:" + project.ext.spongeapi
+    compile qsmlDep
+    compile (mixinDep) {
         exclude module: 'mixin'
         exclude module: 'launchwrapper'
         exclude module: 'guava'
     }
 
-    implementation "com.github.hsyyid:EssentialCmds:v8.1.7"
+    compile "com.github.hsyyid:EssentialCmds:v8.1.7"
 
     // For Geo IP
-    implementation geoIpDep
+    compile geoIpDep
 
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-all:1.10.19"
@@ -153,11 +145,12 @@ shadowJar {
     relocate 'com.maxmind.geoip2', 'io.github.nucleuspowered.relocate.com.maxmind.geoip2'
     relocate 'com.maxmind.db', 'io.github.nucleuspowered.relocate.com.maxmind.db'
     relocate 'com.fasterxml.jackson', 'io.github.nucleuspowered.relocate.com.fasterxml.jackson'
+    relocate 'uk.co.drnaylor', 'io.github.nucleuspowered.relocate.uk.co.drnaylor'
 
     exclude "io/github/nucleuspowered/nucleus/api/NucleusAPIMod.class"
     archiveName = "Nucleus-${version}-plugin.jar"
 }
-shadowJar.dependsOn(':nucleus-api:build')
+shadowJar.dependsOn([':nucleus-api:build'])
 
 task cleanJars() {
     project.file('output').listFiles().each {
