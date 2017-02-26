@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.kit.commands;
+package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
@@ -24,42 +24,43 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 
 /**
- * Sets kit cost.
+ * Sets kit as a one time use.
  *
- * Command Usage: /kit cost [kit] [cost] Permission: plugin.kit.cost.base
+ * Command Usage: /kit set Permission: plugin.kit.onetime.base
  */
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
-@RegisterCommand(value = {"cost", "setcost"}, subcommandOf = KitCommand.class)
+@RegisterCommand(value = {"onetime"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoWarmup
 @NoCooldown
 @NoCost
-public class KitCostCommand extends AbstractCommand<CommandSource> {
+public class KitOneTimeCommand extends AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
     @Inject private KitConfigAdapter kca;
 
-    private final String costKey = "cost";
-    private final String kitKey = "kit";
+    private final String kit = "kit";
+    private final String toggle = "oneTimeToggle";
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new KitArgument(Text.of(kitKey), kca, kitConfig, false)),
-                GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of(costKey)))};
+        return new CommandElement[] {
+            GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, true)),
+            GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
+        };
     }
 
     @Override
-    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kitKey).get();
-        double cost = args.<Double>getOne(costKey).get();
+    public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
+        KitArgument.KitInfo kitInfo = args.<KitArgument.KitInfo>getOne(kit).get();
+        boolean b = args.<Boolean>getOne(toggle).get();
 
-        if (cost < 0) {
-            cost = 0;
-        }
-
-        kitInfo.kit.setCost(cost);
+        // This Kit is a reference back to the version in list, so we don't need
+        // to update it explicitly
+        kitInfo.kit.setOneTime(b);
         kitConfig.saveKit(kitInfo.name, kitInfo.kit);
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.cost.success", kitInfo.name, String.valueOf(cost)));
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(b ? "command.kit.onetime.on" : "command.kit.onetime.off", kitInfo.name));
+
         return CommandResult.success();
     }
 }

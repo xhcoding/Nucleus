@@ -19,11 +19,18 @@ public class JailConfig {
     @Setting(value = "mute-when-jailed",comment = "config.jail.muteWhenJailed")
     private boolean muteOnJail = false;
 
+    @Setting(value = "jail-time-counts-online-only",comment = "config.jail.countonlineonly")
+    private boolean jailOnlineOnly = false;
+
     public List<String> getAllowedCommands() {
         return allowedCommands;
     }
 
     public boolean isMuteOnJail() {
         return muteOnJail;
+    }
+
+    public boolean isJailOnlineOnly() {
+        return jailOnlineOnly;
     }
 }

@@ -12,23 +12,18 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.rules.RulesModule;
+import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfig;
 import io.github.nucleuspowered.nucleus.modules.rules.config.RulesConfigAdapter;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.pagination.PaginationList;
-import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
-
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
@@ -37,35 +32,26 @@ import java.util.stream.Collectors;
 @NoCooldown
 @NoCost
 @EssentialsEquivalent("rules")
-public class RulesCommand extends AbstractCommand<CommandSource> {
+public class RulesCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
 
     @Inject private RulesConfigAdapter rca;
+    private Text title = Text.EMPTY;
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-
-        List<String> r = rca.getNodeOrDefault().getRuleSet();
-        if (r.isEmpty()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.empty"));
-            return CommandResult.empty();
-        }
-
-        // Number the rules.
-        for (int i = 0; i < r.size(); i++) {
-            r.set(i, MessageFormat.format("&a{0}: &r{1}", String.valueOf(i + 1), r.get(i)));
-        }
-
-        List<Text> rules = r.stream()
-                .map(TextSerializers.FORMATTING_CODE::deserialize).collect(Collectors.toList());
-        PaginationList.Builder pb = Sponge.getServiceManager().provideUnchecked(PaginationService.class).builder().contents(rules).padding(Text.of(TextColors.GREEN, "-"))
-                .title(plugin.getMessageProvider().getTextMessageWithFormat("command.rules.list.header"));
-
-        if (!(src instanceof Player)) {
-            pb.linesPerPage(-1);
-        }
-
-        pb.sendTo(src);
-
+        plugin.getTextFileController(RulesModule.RULES_KEY)
+                .orElseThrow(() -> ReturnMessageException.fromKey("command.rules.empty"))
+                .sendToPlayer(src, title);
         return CommandResult.success();
+    }
+
+    @Override public void onReload() {
+        RulesConfig config = rca.getNodeOrDefault();
+        String title = config.getRulesTitle();
+        if (title.isEmpty()) {
+            this.title = Text.EMPTY;
+        } else {
+            this.title = TextSerializers.FORMATTING_CODE.deserialize(title);
+        }
     }
 }

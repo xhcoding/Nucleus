@@ -43,6 +43,16 @@ public abstract class EndTimestamp {
         return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
     }
 
+    public void setEndtimestamp(Instant time) {
+        this.endtimestamp = time.getEpochSecond();
+        this.timeFromNextLogin = null;
+    }
+
+    public void setTimeFromNextLogin(Duration duration) {
+        this.timeFromNextLogin = duration.getSeconds();
+        this.endtimestamp = null;
+    }
+
     public void nextLoginToTimestamp() {
         if (timeFromNextLogin != null && endtimestamp == null) {
             endtimestamp = Instant.now().plus(timeFromNextLogin, ChronoUnit.SECONDS).getEpochSecond();

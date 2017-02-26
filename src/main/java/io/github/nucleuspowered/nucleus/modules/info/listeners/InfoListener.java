@@ -15,12 +15,15 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
 import io.github.nucleuspowered.nucleus.modules.info.commands.MotdCommand;
+import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.serializer.TextSerializers;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
@@ -36,20 +39,21 @@ public class InfoListener extends ListenerBase.Reloadable {
     @Inject private InfoConfigAdapter ica;
 
     private String motdPermission = null;
+    private boolean isPaginated = true;
+    private Text title = Text.EMPTY;
+
     private int delay = 500;
 
     @Listener
-    public void playerJoin(ClientConnectionEvent.Join event) {
-        final Player player = event.getTargetEntity();
-
+    public void playerJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
         // Send message one second later on the Async thread.
         Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
                 if (player.hasPermission(getMotdPermission())) {
                     plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> {
                         if (ica.getNodeOrDefault().isMotdUsePagination()) {
-                            InfoHelper.sendInfo(x, player, ica.getNodeOrDefault().getMotdTitle());
+                            x.sendToPlayer(player, title);
                         } else {
-                            InfoHelper.getTextFromNucleusTextTemplates(x.getFileContentsAsText(), player).forEach(player::sendMessage);
+                            x.getTextFromNucleusTextTemplates(player).forEach(player::sendMessage);
                         }
                     });
                 }
@@ -72,7 +76,17 @@ public class InfoListener extends ListenerBase.Reloadable {
     }
 
     @Override public void onReload() throws Exception {
-        this.delay = (int)(ica.getNodeOrDefault().getMotdDelay() * 1000);
+        InfoConfig config = ica.getNodeOrDefault();
+        this.delay = (int)(config.getMotdDelay() * 1000);
+
+        String title = config.getMotdTitle();
+        if (title.isEmpty()) {
+            this.title = Text.EMPTY;
+        } else {
+            this.title = TextSerializers.FORMATTING_CODE.deserialize(title);
+        }
+
+        this.isPaginated = config.isMotdUsePagination();
     }
 
     public static class Test implements Predicate<Nucleus> {

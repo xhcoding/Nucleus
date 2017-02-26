@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.kit.commands;
+package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -167,6 +167,8 @@ public class KitCommand extends AbstractCommand<Player> {
             if (cost > 0 && econHelper.economyServiceExists()) {
                 econHelper.withdrawFromPlayer(player, cost);
             }
+
+            kit.redeemKitCommands(player);
 
             // Register the last used time. Do it for everyone, in case
             // permissions or cooldowns change later

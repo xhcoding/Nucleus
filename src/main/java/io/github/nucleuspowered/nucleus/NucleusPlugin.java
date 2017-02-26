@@ -64,6 +64,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.Asset;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -72,6 +73,7 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -99,7 +101,8 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
+@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION,
+        dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.0", optional = true))
 public class NucleusPlugin extends Nucleus {
 
     private final PluginContainer pluginContainer;
@@ -151,6 +154,15 @@ public class NucleusPlugin extends Nucleus {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
+        ConsoleSource s = Sponge.getServer().getConsole();
+        s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome", PluginInfo.NAME,
+                PluginInfo.VERSION, Sponge.getPlatform().getContainer(Platform.Component.API).getVersion().orElse("unknown")));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome2"));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome3"));
+        s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome4"));
+        s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
+
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
         Game game = Sponge.getGame();
         NucleusAPI.onPreInit(this);

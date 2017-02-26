@@ -68,8 +68,8 @@ public class TimespanArgument extends CommandElement {
         throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.timespan.incorrectformat", s));
     }
 
-    private int amount(String g, int multipler) {
-        if (g.length() > 0) {
+    private int amount(@Nullable String g, int multipler) {
+        if (g != null && g.length() > 0) {
             return multipler * Integer.parseInt(g);
         }
 

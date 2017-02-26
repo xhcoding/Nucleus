@@ -78,6 +78,33 @@ public interface Kit {
     Kit setOneTime(boolean oneTime);
 
     /**
+     * Gets the commands associated with this kit.
+     *
+     * @return The list of commands.
+     */
+    List<String> getCommands();
+
+    /**
+     * Sets the commands associated with this kit.
+     *
+     * @param commands The list of commands, with <code>{{player}}</code> as the token for the name of the player.
+     * @return This {@link Kit} for chaining.
+     */
+    Kit setCommands(List<String> commands);
+
+    /**
+     * Adds a command to the {@link Kit}
+     *
+     * @param command The command to add.
+     * @return This {@link Kit} for chaining.
+     */
+    default Kit addCommand(String command) {
+        List<String> commands = getCommands();
+        commands.add(command);
+        return setCommands(commands);
+    }
+
+    /**
      * Convenience method for updating the kit with the contents of the player's inventory.
      *
      * @param inventory The inventory to get the kit from.
@@ -92,4 +119,11 @@ public interface Kit {
      * @return This {@link Kit} for chaining.
      */
     Kit updateKitInventory(Player player);
+
+    /**
+     * Redeems the commands in this kit for the specified player.
+     *
+     * @param player The player.
+     */
+    void redeemKitCommands(Player player);
 }

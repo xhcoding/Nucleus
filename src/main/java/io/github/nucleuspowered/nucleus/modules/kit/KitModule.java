@@ -13,8 +13,10 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "kit", name = "Kit")
+@ModuleData(id = KitModule.ID, name = "Kit")
 public class KitModule extends ConfigurableModule<KitConfigAdapter> {
+
+    public static final String ID = "kit";
 
     @Inject private Game game;
     @Inject private Logger logger;

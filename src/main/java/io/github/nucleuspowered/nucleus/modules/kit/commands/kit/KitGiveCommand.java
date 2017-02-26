@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.modules.kit.commands;
+package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -153,6 +153,7 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
                 user.addKitLastUsedTime(kitName, now);
             }
 
+            kit.redeemKitCommands(player);
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.give.spawned", plugin.getNameUtil().getSerialisedName(player), kitName));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
             return CommandResult.success();

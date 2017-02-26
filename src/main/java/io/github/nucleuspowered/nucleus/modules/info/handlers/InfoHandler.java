@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
-import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.AssetManager;
 
@@ -40,19 +39,14 @@ public class InfoHandler {
     /**
      * Gets the text associated with the specified key, if it exists.
      *
-     * <p>
-     *     While it is not normal to return an optional of a collection (usually preferring an empty collection)
-     *     in this case, a "not present" value is different to an "empty file" value.
-     * </p>
-     *
      * @param name The name of the section to retrieve the keys from.
-     * @return An {@link Optional} potentially containing the list of strings.
+     * @return An {@link Optional} potentially containing the {@link TextFileController}.
      *
      */
-    public Optional<List<NucleusTextTemplateImpl>> getSection(String name) {
+    public Optional<TextFileController> getSection(String name) {
         Optional<String> os = infoFiles.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
         if (os.isPresent()) {
-            return Optional.of(infoFiles.get(name).getFileContentsAsText());
+            return Optional.of(infoFiles.get(os.get()));
         }
 
         return Optional.empty();
@@ -93,7 +87,7 @@ public class InfoHandler {
                     return;
                 }
 
-                mst.put(name, new TextFileController(x));
+                mst.put(name, new TextFileController(x, true));
             } catch (IOException e) {
                 e.printStackTrace();
             }

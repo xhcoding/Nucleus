@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.modules.kit.KitModule;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandSource;
@@ -26,13 +27,22 @@ import javax.annotation.Nullable;
 public class KitArgument extends CommandElement {
 
     private final KitConfigAdapter config;
-    private final KitHandler kitConfig;
+    private final KitHandler kitHandler;
     private final boolean permissionCheck;
 
-    public KitArgument(@Nullable Text key, KitConfigAdapter config, KitHandler kitConfig, boolean permissionCheck) {
+    public KitArgument(@Nullable Text key, boolean permissionCheck) {
+        this(
+            key,
+            Nucleus.getNucleus().getConfigAdapter(KitModule.ID, KitConfigAdapter.class).get(),
+            Nucleus.getNucleus().getInternalServiceManager().getService(KitHandler.class).get(),
+            permissionCheck
+        );
+    }
+
+    public KitArgument(@Nullable Text key, KitConfigAdapter config, KitHandler kitHandler, boolean permissionCheck) {
         super(key);
         this.config = config;
-        this.kitConfig = kitConfig;
+        this.kitHandler = kitHandler;
         this.permissionCheck = permissionCheck;
     }
 
@@ -44,7 +54,7 @@ public class KitArgument extends CommandElement {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.kit.noname"));
         }
 
-        Optional<Kit> kit = kitConfig.getKit(kitName);
+        Optional<Kit> kit = kitHandler.getKit(kitName);
 
         if (!kit.isPresent()) {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.kit.noexist"));
@@ -61,7 +71,7 @@ public class KitArgument extends CommandElement {
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         try {
             String name = args.peek().toLowerCase();
-            return kitConfig.getKitNames().stream().filter(s -> s.toLowerCase().startsWith(name))
+            return kitHandler.getKitNames().stream().filter(s -> s.toLowerCase().startsWith(name))
                     .filter(x -> checkPermission(src, name)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Lists.newArrayList();
