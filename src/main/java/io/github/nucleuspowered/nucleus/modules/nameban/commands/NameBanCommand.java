@@ -17,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.nameban.config.NameBanConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.nameban.handlers.NameBanHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -24,8 +25,9 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.stream.Collectors;
 
@@ -41,6 +43,7 @@ public class NameBanCommand extends AbstractCommand<CommandSource> {
     private final String reasonKey = "reason";
 
     @Inject private NameBanConfigAdapter nameBanConfigAdapter;
+    @Inject private NameBanHandler handler;
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
@@ -62,9 +65,7 @@ public class NameBanCommand extends AbstractCommand<CommandSource> {
         String name = args.<String>getOne(nameKey).get().toLowerCase();
         String reason = args.<String>getOne(reasonKey).orElse(nameBanConfigAdapter.getNodeOrDefault().getDefaultReason());
 
-        if (plugin.getNameBanService().setBan(name, reason)) {
-            Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().equalsIgnoreCase(name)).findFirst()
-                .ifPresent(x -> x.kick(TextSerializers.FORMATTING_CODE.deserialize(reason)));
+        if (handler.addName(name, reason, Cause.of(NamedCause.owner(src)))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nameban.success", name));
             return CommandResult.success();
         }

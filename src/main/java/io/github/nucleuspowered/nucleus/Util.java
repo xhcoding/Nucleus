@@ -89,6 +89,7 @@ public class Util {
             TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
 
     public static final String usernameRegexPattern = "[0-9a-zA-Z_]{3,16}";
+    public static final Pattern usernameRegex = Pattern.compile(usernameRegexPattern);
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 

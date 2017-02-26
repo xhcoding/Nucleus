@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nameban.commands;
 
+import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.RegexArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
@@ -14,10 +15,13 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.modules.nameban.handlers.NameBanHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 @Permissions(prefix = "nameban", mainOverride = "unban")
@@ -29,6 +33,7 @@ import org.spongepowered.api.text.Text;
 public class NameUnbanCommand extends AbstractCommand<CommandSource> {
 
     private final String nameKey = "name";
+    @Inject private NameBanHandler handler;
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
@@ -39,7 +44,7 @@ public class NameUnbanCommand extends AbstractCommand<CommandSource> {
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String name = args.<String>getOne(nameKey).get().toLowerCase();
 
-        if (plugin.getNameBanService().removeBan(name)) {
+        if (handler.removeName(name, Cause.of(NamedCause.owner(src)))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nameban.pardon.success", name));
             return CommandResult.success();
         }
