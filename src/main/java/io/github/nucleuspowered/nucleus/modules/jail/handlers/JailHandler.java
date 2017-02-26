@@ -140,10 +140,10 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
         jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.getJailName()));
         Sponge.getEventManager().post(new JailEvent.Jailed(
                 user,
-                Cause.of(NamedCause.owner(Util.getFromUUID(data.getJailer()))),
+                Cause.of(NamedCause.owner(Util.getObjectFromUUID(data.getJailer()))),
                 data.getJailName(),
                 TextSerializers.FORMATTING_CODE.deserialize(data.getReason()),
-                data.getTimeLeft().orElse(null)));
+                data.getRemainingTime().orElse(null)));
         return true;
     }
 

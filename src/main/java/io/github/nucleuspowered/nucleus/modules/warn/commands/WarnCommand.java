@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -19,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -125,7 +125,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
 
             //Check if the subject has action command should be executed
             if (wca.getNodeOrDefault().getWarningsBeforeAction() != -1) {
-                if (warnHandler.getWarnings(user, true, false).size() < wca.getNodeOrDefault().getWarningsBeforeAction()) {
+                if (warnHandler.getWarningsInternal(user, true, false).size() < wca.getNodeOrDefault().getWarningsBeforeAction()) {
                     return CommandResult.success();
                 }
 

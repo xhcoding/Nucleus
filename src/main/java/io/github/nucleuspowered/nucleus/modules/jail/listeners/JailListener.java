@@ -106,7 +106,7 @@ public class JailListener extends ListenerBase {
             // It exists.
             NamedLocation owl = handler.getWarpLocation(user).get();
             JailData jd = qs.getJailData().get();
-            Optional<Duration> timeLeft = jd.getTimeLeft();
+            Optional<Duration> timeLeft = jd.getRemainingTime();
             Text message;
             message = timeLeft.map(duration -> plugin.getMessageProvider()
                 .getTextMessageWithFormat("command.jail.jailed", owl.getName(), plugin.getNameUtil().getNameFromUUID(jd.getJailer()),

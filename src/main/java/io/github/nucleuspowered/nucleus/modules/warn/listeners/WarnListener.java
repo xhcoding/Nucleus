@@ -7,12 +7,12 @@ package io.github.nucleuspowered.nucleus.modules.warn.listeners;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -45,7 +45,7 @@ public class WarnListener extends ListenerBase {
     public void onPlayerLogin(final ClientConnectionEvent.Join event) {
         Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS).execute(() -> {
             Player player = event.getTargetEntity();
-            List<WarnData> warnings = handler.getWarnings(player, true, false);
+            List<WarnData> warnings = handler.getWarningsInternal(player, true, false);
             if (warnings != null && !warnings.isEmpty()) {
                 for (WarnData warning : warnings) {
                     warning.nextLoginToTimestamp();

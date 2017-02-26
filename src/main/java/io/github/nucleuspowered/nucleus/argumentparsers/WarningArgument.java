@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
+import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -54,7 +54,7 @@ public class WarningArgument extends CommandElement {
             throw args.createError(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("args.warning.noindex", user.getName()));
         }
 
-        List<WarnData> warnData = handler.getWarnings(user);
+        List<WarnData> warnData = handler.getWarningsInternal(user);
         int index;
         try {
             index = Integer.parseInt(optIndex.get()) - 1;

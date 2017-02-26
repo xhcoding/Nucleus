@@ -94,7 +94,7 @@ public class MuteHandler implements NucleusMuteService, ContextCalculator<Subjec
         u.get(MuteUserDataModule.class).setMuteData(data);
         muteContextCache.put(u.getUniqueId(), true);
         Sponge.getEventManager().post(new MuteEvent.Muted(
-                Cause.of(NamedCause.source(Util.getFromUUID(data.getMuter()))),
+                Cause.of(NamedCause.source(Util.getObjectFromUUID(data.getMuter()))),
                 user,
                 d,
                 Text.of(data.getReason())));

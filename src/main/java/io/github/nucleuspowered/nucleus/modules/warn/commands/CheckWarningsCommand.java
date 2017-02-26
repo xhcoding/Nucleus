@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -15,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -24,7 +24,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.pagination.PaginationService;
-import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -36,6 +35,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -66,7 +66,7 @@ public class CheckWarningsCommand extends AbstractCommand<CommandSource> {
 
         handler.updateWarnings(user);
         List<WarnData> warnings;
-        final List<WarnData> allWarnings = handler.getWarnings(user);
+        final List<WarnData> allWarnings = handler.getWarningsInternal(user);
         if (args.hasAny("all")) {
             warnings = allWarnings;
         } else if (args.hasAny("expired")) {
@@ -102,13 +102,11 @@ public class CheckWarningsCommand extends AbstractCommand<CommandSource> {
     }
 
     private Text createMessage(List<WarnData> allData, WarnData warning, User user) {
-        String name;
-        if (warning.getWarner().equals(Util.consoleFakeUUID)) {
-            name = Sponge.getServer().getConsole().getName();
-        } else {
-            Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(warning.getWarner());
-            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
-        }
+        Optional<UUID> warner = warning.getWarner();
+        final String name;
+        name = warner.map(
+                uuid -> Util.getUserFromUUID(warning.getWarner().get()).map(User::getName).orElse(Sponge.getServer().getConsole().getName()))
+                .orElseGet(() -> Sponge.getServer().getConsole().getName());
 
         //Get the remaining length of the warning
         String time;

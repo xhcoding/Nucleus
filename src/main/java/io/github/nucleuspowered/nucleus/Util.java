@@ -191,6 +191,21 @@ public class Util {
                 .orElse(Sponge.getServer().getConsole());
     }
 
+    public static Optional<User> getUserFromUUID(UUID uuid) {
+        return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+                .get(uuid).map(x -> x.isOnline() ? ((User)x.getPlayer().get()) : x);
+    }
+
+    public static Object getObjectFromUUID(UUID uuid) {
+        Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+                .get(uuid).map(x -> x.isOnline() ? x.getPlayer().get() : x);
+        if (user.isPresent()) {
+            return user.get();
+        }
+
+        return Sponge.getServer().getConsole();
+    }
+
     public static String getTimeToNow(Instant time) {
         return getTimeStringFromSeconds(Instant.now().getEpochSecond() - time.getEpochSecond());
     }

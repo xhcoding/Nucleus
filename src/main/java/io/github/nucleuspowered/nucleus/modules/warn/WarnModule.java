@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.warn;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusWarnService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusWarningService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.warn.commands.CheckWarningsCommand;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
@@ -35,7 +35,7 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
         try {
             WarnHandler warnHandler = new WarnHandler(plugin);
             plugin.getInjector().injectMembers(warnHandler);
-            game.getServiceManager().setProvider(plugin, NucleusWarnService.class, warnHandler);
+            game.getServiceManager().setProvider(plugin, NucleusWarningService.class, warnHandler);
             serviceManager.registerService(WarnHandler.class, warnHandler);
         } catch (Exception ex) {
             logger.warn("Could not load the warn module for the reason below.");
@@ -52,8 +52,8 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
         createSeenModule(CheckWarningsCommand.class, (c, u) -> {
 
             WarnHandler jh = plugin.getInternalServiceManager().getService(WarnHandler.class).get();
-            int active = jh.getWarnings(u, true, false).size();
-            int expired = jh.getWarnings(u, false, true).size();
+            int active = jh.getWarningsInternal(u, true, false).size();
+            int expired = jh.getWarningsInternal(u, false, true).size();
 
             Text r = plugin.getMessageProvider().getTextMessageWithFormat("seen.warnings", String.valueOf(active), String.valueOf(expired));
             if (active > 0) {

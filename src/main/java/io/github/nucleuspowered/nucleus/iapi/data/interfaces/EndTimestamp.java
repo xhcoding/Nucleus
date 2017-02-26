@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.iapi.data.interfaces;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.TimedEntry;
 import ninja.leaping.configurate.objectmapping.Setting;
 import org.spongepowered.api.util.Tuple;
 
@@ -14,7 +15,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-public abstract class EndTimestamp {
+public abstract class EndTimestamp implements TimedEntry {
 
     @Setting
     protected Long endtimestamp;
@@ -60,7 +61,7 @@ public abstract class EndTimestamp {
         }
     }
 
-    public Optional<Duration> getTimeLeft() {
+    @Override public Optional<Duration> getRemainingTime() {
         if (endtimestamp == null && timeFromNextLogin == null) {
             return Optional.empty();
         }
@@ -83,5 +84,9 @@ public abstract class EndTimestamp {
         }
 
         return Tuple.of("", "");
+    }
+
+    @Override public boolean isCurrentlyTicking() {
+        return endtimestamp != null;
     }
 }
