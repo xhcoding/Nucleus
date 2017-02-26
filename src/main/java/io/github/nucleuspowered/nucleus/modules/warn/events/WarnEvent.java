@@ -12,6 +12,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -20,10 +21,12 @@ public abstract class WarnEvent extends AbstractEvent implements NucleusWarnEven
 
     private final Cause cause;
     private final User targetUser;
+    private final String reason;
 
-    private WarnEvent(Cause cause, User targetUser) {
+    private WarnEvent(Cause cause, User targetUser, String reason) {
         this.cause = cause;
         this.targetUser = targetUser;
+        this.reason = reason;
     }
 
     @Override public User getTargetUser() {
@@ -34,24 +37,36 @@ public abstract class WarnEvent extends AbstractEvent implements NucleusWarnEven
         return this.cause;
     }
 
+    @Override public String getReason() {
+        return this.reason;
+    }
+
     public static class Warned extends WarnEvent implements NucleusWarnEvent.Warned {
 
-        private final String reason;
         @Nullable private final Duration expiration;
 
         public Warned(Cause cause, User targetUser, String reason, @Nullable Duration expiration) {
-            super(cause, targetUser);
+            super(cause, targetUser, reason);
 
-            this.reason = reason;
             this.expiration = expiration;
-        }
-
-        @Override public String getReason() {
-            return this.reason;
         }
 
         @Override public Optional<Duration> getTimeUntilExpiration() {
             return Optional.ofNullable(this.expiration);
+        }
+    }
+
+    public static class Expire extends WarnEvent implements NucleusWarnEvent.Expired {
+
+        @Nullable private final UUID warner;
+
+        public Expire(Cause cause, User targetUser, String reason, @Nullable UUID warner) {
+            super(cause, targetUser, reason);
+            this.warner = warner;
+        }
+
+        @Override public Optional<UUID> getWarner() {
+            return Optional.ofNullable(warner);
         }
     }
 }

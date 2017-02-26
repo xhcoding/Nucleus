@@ -21,6 +21,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 import java.util.List;
@@ -71,7 +73,7 @@ public class ClearWarningsCommand extends AbstractCommand<CommandSource> {
             message = plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.expired", user.getName());
         }
 
-        if (handler.clearWarnings(user, removeActive, removeExpired)) {
+        if (handler.clearWarnings(user, removeActive, removeExpired, Cause.of(NamedCause.owner(src)))) {
             src.sendMessage(message);
             return CommandResult.success();
         }

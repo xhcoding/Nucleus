@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.iapi.service;
 
 import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
 
 import java.util.List;
 
@@ -56,9 +57,10 @@ public interface NucleusWarnService {
      * @param user The {@link User} to remove a warning from.
      * @param warning The {@link WarnData} to remove.
      * @param permanent If the warning should be removed permanently.
+     * @param of
      * @return <code>true</code> if the warning was removed.
      */
-    boolean removeWarning(User user, WarnData warning, boolean permanent);
+    boolean removeWarning(User user, WarnData warning, boolean permanent, Cause of);
 
     /**
      * Clears warnings from a player.
@@ -66,9 +68,10 @@ public interface NucleusWarnService {
      * @param user The {@link User} to remove all warnings from.
      * @param clearActive If active warnings should be removed.
      * @param clearExpired If expired warnings should be removed.
+     * @param of
      * @return <code>true</code> if all warnings were removed.
      */
-    boolean clearWarnings(User user, boolean clearActive, boolean clearExpired);
+    boolean clearWarnings(User user, boolean clearActive, boolean clearExpired, Cause of);
 
     /**
      * Updates a current users warnings

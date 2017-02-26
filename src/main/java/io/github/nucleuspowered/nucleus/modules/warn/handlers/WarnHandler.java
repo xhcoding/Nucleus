@@ -90,17 +90,27 @@ public class WarnHandler implements NucleusWarnService {
 
     @Override
     public boolean removeWarning(User user, WarnData warning) {
-        return removeWarning(user, warning, false);
+        return removeWarning(user, warning, false, Cause.of(NamedCause.owner(NucleusPlugin.getNucleus())));
     }
 
     @Override
-    public boolean removeWarning(User user, WarnData warning, boolean permanent) {
+    public boolean removeWarning(User user, WarnData warning, boolean permanent, Cause of) {
         Optional<ModularUserService> userService = userDataManager.get(user);
         if (userService.isPresent()) {
             userService.get().get(WarnUserDataModule.class).removeWarning(warning);
             if (wca.getNodeOrDefault().isExpireWarnings() && !warning.isExpired() && !permanent) {
                 userService.get().get(WarnUserDataModule.class).addWarning(new WarnData(warning.getDate(), warning.getWarner(), warning.getReason(), true));
             }
+
+            if (!warning.isExpired()) {
+                Sponge.getEventManager().post(new WarnEvent.Expire(
+                        Cause.of(NamedCause.source(Util.getFromUUID(warning.getWarner()))),
+                        user,
+                        warning.getReason(),
+                        warning.getWarner() != Util.consoleFakeUUID ? warning.getWarner() : null
+                ));
+            }
+
             return true;
         }
 
@@ -108,7 +118,7 @@ public class WarnHandler implements NucleusWarnService {
     }
 
     @Override
-    public boolean clearWarnings(User user, boolean clearActive, boolean clearExpired) {
+    public boolean clearWarnings(User user, boolean clearActive, boolean clearExpired, Cause of) {
         Optional<ModularUserService> userService = userDataManager.get(user);
         if (userService.isPresent()) {
             List<WarnData> warnings = userService.get().get(WarnUserDataModule.class).getWarnings();
@@ -120,11 +130,13 @@ public class WarnHandler implements NucleusWarnService {
                 }
 
                 if (clearActive) {
-                    warnings.stream().filter(warnData -> !warnData.isExpired()).forEach(warnData -> removeWarning(user, warnData, true));
+                    warnings.stream().filter(warnData -> !warnData.isExpired()).forEach(warnData -> removeWarning(user, warnData, true,
+                            Cause.of(NamedCause.owner(Sponge.getServer().getConsole()))));
                 }
 
                 if (clearExpired) {
-                    warnings.stream().filter(WarnData::isExpired).forEach(warnData -> removeWarning(user, warnData, true));
+                    warnings.stream().filter(WarnData::isExpired).forEach(warnData -> removeWarning(user, warnData, true,
+                            Cause.of(NamedCause.owner(Sponge.getServer().getConsole()))));
                 }
 
                 return true;

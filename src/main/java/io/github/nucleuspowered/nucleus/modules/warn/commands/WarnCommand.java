@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
@@ -26,6 +27,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
@@ -127,7 +130,8 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
                 }
 
                 //Expire all active warnings
-                warnHandler.clearWarnings(user, false, false);
+                // The cause is the plugin, as this isn't directly the warning user.
+                warnHandler.clearWarnings(user, false, false, Cause.of(NamedCause.owner(NucleusPlugin.getNucleus())));
 
                 //Get and run the action command
                 String command = wca.getNodeOrDefault().getActionCommand().replaceAll("\\{\\{name}}", user.getName());
