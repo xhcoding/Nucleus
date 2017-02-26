@@ -5,9 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.back.handlers;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusBackService;
 import io.github.nucleuspowered.nucleus.modules.back.datamodules.BackUserTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.entity.Transform;
@@ -43,13 +43,13 @@ public class BackHandler implements NucleusBackService {
     }
 
     @Override
-    public boolean getLogBack(User user) {
+    public boolean isLoggingLastLocation(User user) {
         Optional<ModularUserService> oi = getUser(user);
         return oi.isPresent() && oi.get().getTransient(BackUserTransientModule.class).isLogLastLocation();
     }
 
     @Override
-    public void setLogBack(User user, boolean log) {
+    public void setLoggingLastLocation(User user, boolean log) {
         getUser(user).ifPresent(x -> x.getTransient(BackUserTransientModule.class).setLogLastLocation(log));
     }
 

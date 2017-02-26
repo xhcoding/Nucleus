@@ -68,6 +68,6 @@ public class BackListeners extends ListenerBase {
     }
 
     private boolean getLogBack(Player player) {
-        return !(njs != null && njs.isPlayerJailed(player)) && handler.getLogBack(player);
+        return !(njs != null && njs.isPlayerJailed(player)) && handler.isLoggingLastLocation(player);
     }
 }

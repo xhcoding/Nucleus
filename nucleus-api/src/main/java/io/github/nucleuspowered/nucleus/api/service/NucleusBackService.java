@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.iapi.service;
+package io.github.nucleuspowered.nucleus.api.service;
 
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.User;
@@ -51,7 +51,7 @@ public interface NucleusBackService {
      *
      * @return <code>true</code> if it is being logged.
      */
-    boolean getLogBack(User user);
+    boolean isLoggingLastLocation(User user);
 
     /**
      * Sets whether the user will have their last location logged.
@@ -59,5 +59,5 @@ public interface NucleusBackService {
      * @param user The {@link User}
      * @param log Whether to log the user's last location.
      */
-    void setLogBack(User user, boolean log);
+    void setLoggingLastLocation(User user, boolean log);
 }
