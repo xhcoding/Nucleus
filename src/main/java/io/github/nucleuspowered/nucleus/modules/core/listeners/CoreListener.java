@@ -52,7 +52,12 @@ public class CoreListener extends ListenerBase {
     public void onPlayerLoginFirst(final ClientConnectionEvent.Login event, @Getter("getTargetUser") User user) {
         // This works here. Not complaining.
         if (Util.isFirstPlay(user)) {
-            loader.get(user).ifPresent(qsu -> qsu.get(CoreUserDataModule.class).setStartedFirstJoin(true));
+            loader.get(user).ifPresent(qsu -> {
+                CoreUserDataModule cu = qsu.get(CoreUserDataModule.class);
+                if (!cu.getLastLogout().isPresent()) {
+                    cu.setStartedFirstJoin(true);
+                }
+            });
         }
     }
 

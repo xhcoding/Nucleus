@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.iapi.service;
 
 import com.flowpowered.math.vector.Vector3d;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
-import io.github.nucleuspowered.nucleus.iapi.data.JailData;
 import io.github.nucleuspowered.nucleus.internal.LocationData;
+import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;

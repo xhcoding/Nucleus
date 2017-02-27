@@ -4,17 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.message.datamodules;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 
 public class MessageUserDataModule extends DataModule.ReferenceService<ModularUserService> {
-
-    private static final CommandPermissionHandler ssSocialSpy
-        = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(SocialSpyCommand.class);
 
     @DataKey("socialspy")
     private boolean socialspy = false;
@@ -24,15 +18,10 @@ public class MessageUserDataModule extends DataModule.ReferenceService<ModularUs
     }
 
     public boolean isSocialSpy() {
-        // Only a spy if they have the permission!
-
-        return (ssSocialSpy.testSuffix(getService().getUser(), "force") || socialspy) && ssSocialSpy.testBase(getService().getUser());
+        return this.socialspy;
     }
 
-    public boolean setSocialSpy(boolean socialSpy) {
+    public void setSocialSpy(boolean socialSpy) {
         this.socialspy = socialSpy;
-
-        // Permission checks! Return true if it's what we wanted.
-        return isSocialSpy() == socialSpy;
     }
 }

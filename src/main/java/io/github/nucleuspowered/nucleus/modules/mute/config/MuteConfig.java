@@ -25,6 +25,9 @@ public class MuteConfig {
     @Setting(value = "muted-chat-tag", comment = "config.mute.seemutedchattag")
     private String cancelledTag = "&c[cancelled] ";
 
+    @Setting(value = "mute-time-counts-online-only",comment = "config.mute.countonlineonly")
+    private boolean muteOnlineOnly = false;
+
     public List<String> getBlockedCommands() {
         return blockedCommands;
     }
@@ -39,5 +42,9 @@ public class MuteConfig {
 
     public String getCancelledTag() {
         return cancelledTag;
+    }
+
+    public boolean isMuteOnlineOnly() {
+        return muteOnlineOnly;
     }
 }

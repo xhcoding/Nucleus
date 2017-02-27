@@ -6,8 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailData;
-import io.github.nucleuspowered.nucleus.iapi.data.mail.MailFilter;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.MailMessage;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
+import io.github.nucleuspowered.nucleus.modules.mail.data.MailData;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandResult;
@@ -39,12 +40,12 @@ public class MailReadBase {
         this.handler = handler;
     }
 
-    public CommandResult executeCommand(CommandSource src, final User target, Collection<MailFilter> lmf) {
+    public CommandResult executeCommand(CommandSource src, final User target, Collection<NucleusMailService.MailFilter> lmf) {
         List<MailData> lmd;
         if (!lmf.isEmpty()) {
-            lmd = handler.getMail(target, lmf.toArray(new MailFilter[lmf.size()]));
+            lmd = handler.getMailInternal(target, lmf.toArray(new NucleusMailService.MailFilter[lmf.size()]));
         } else {
-            lmd = handler.getMail(target);
+            lmd = handler.getMailInternal(target);
         }
 
         if (lmd.isEmpty()) {
@@ -57,7 +58,7 @@ public class MailReadBase {
             return CommandResult.success();
         }
 
-        List<Text> mails = lmd.stream().sorted(Comparator.comparing(MailData::getDate)).map(x -> createMessage(x, target)).collect(Collectors.toList());
+        List<Text> mails = lmd.stream().sorted(Comparator.comparing(MailMessage::getDate)).map(x -> createMessage(x, target)).collect(Collectors.toList());
 
         // Paginate the mail.
         PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);

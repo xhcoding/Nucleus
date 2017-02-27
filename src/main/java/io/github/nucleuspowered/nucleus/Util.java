@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.iapi.data.interfaces.EndTimestamp;
+import io.github.nucleuspowered.nucleus.internal.data.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.util.Action;
@@ -89,6 +89,7 @@ public class Util {
             TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
 
     public static final String usernameRegexPattern = "[0-9a-zA-Z_]{3,16}";
+    public static final Pattern usernameRegex = Pattern.compile(usernameRegexPattern);
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
@@ -189,6 +190,21 @@ public class Util {
         return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
                 .get(uuid).map(x -> x.getPlayer().map(y -> (CommandSource)y).orElse((CommandSource)x))
                 .orElse(Sponge.getServer().getConsole());
+    }
+
+    public static Optional<User> getUserFromUUID(UUID uuid) {
+        return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+                .get(uuid).map(x -> x.isOnline() ? ((User)x.getPlayer().get()) : x);
+    }
+
+    public static Object getObjectFromUUID(UUID uuid) {
+        Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+                .get(uuid).map(x -> x.isOnline() ? x.getPlayer().get() : x);
+        if (user.isPresent()) {
+            return user.get();
+        }
+
+        return Sponge.getServer().getConsole();
     }
 
     public static String getTimeToNow(Instant time) {

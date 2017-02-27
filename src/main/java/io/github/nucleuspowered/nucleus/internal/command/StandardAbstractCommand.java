@@ -22,6 +22,7 @@ import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoHelpSubcommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoTimings;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
@@ -480,7 +481,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             cb.executor(this).arguments(getArguments());
         } else {
             // Usage
-            cb.executor(new UsageCommand());
+            cb.executor(usageCommand);
         }
 
         if (!permissions.isPassthrough()) {
@@ -1086,7 +1087,10 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             });
         }
 
-        map.put(Lists.newArrayList("?", "help"), usageCommand);
+        if (!this.getClass().isAnnotationPresent(NoHelpSubcommand.class)) {
+            map.put(Lists.newArrayList("?", "help"), usageCommand);
+        }
+
         return map;
     }
 

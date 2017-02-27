@@ -49,7 +49,7 @@ public class TimespanArgument extends CommandElement {
 
         // First, if just digits, return the number in seconds.
         if (minorTimeString.matcher(s).matches()) {
-            return Integer.parseUnsignedInt(s);
+            return Long.parseUnsignedLong(s);
         }
 
         Matcher m = timeString.matcher(s);
@@ -68,9 +68,9 @@ public class TimespanArgument extends CommandElement {
         throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.timespan.incorrectformat", s));
     }
 
-    private int amount(@Nullable String g, int multipler) {
+    private long amount(@Nullable String g, int multipler) {
         if (g != null && g.length() > 0) {
-            return multipler * Integer.parseInt(g);
+            return multipler * Long.parseUnsignedLong(g);
         }
 
         return 0;

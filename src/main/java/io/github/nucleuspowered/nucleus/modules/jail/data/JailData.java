@@ -2,9 +2,9 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.iapi.data;
+package io.github.nucleuspowered.nucleus.modules.jail.data;
 
-import io.github.nucleuspowered.nucleus.iapi.data.interfaces.EndTimestamp;
+import io.github.nucleuspowered.nucleus.internal.data.EndTimestamp;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;
@@ -13,7 +13,6 @@ import org.spongepowered.api.world.World;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -95,17 +94,5 @@ public final class JailData extends EndTimestamp {
         }
 
         return Optional.empty();
-    }
-
-    public Optional<Duration> getTimeLeft() {
-        if (endtimestamp == null && timeFromNextLogin == null) {
-            return Optional.empty();
-        }
-
-        if (endtimestamp != null) {
-            return Optional.of(Duration.between(Instant.ofEpochSecond(endtimestamp), Instant.now()));
-        }
-
-        return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
     }
 }

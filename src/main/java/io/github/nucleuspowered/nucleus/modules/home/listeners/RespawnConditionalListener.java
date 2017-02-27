@@ -9,14 +9,13 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.home.HomeModule;
+import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfig;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.datamodules.HomeUserDataModule;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.function.Predicate;
 
@@ -35,16 +34,7 @@ public class RespawnConditionalListener extends ListenerBase {
 
         @Override
         public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(HomeModule.ID, HomeConfigAdapter.class)
-                        .getNodeOrDefault().isRespawnAtHome();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
+            return nucleus.getConfigValue(HomeModule.ID, HomeConfigAdapter.class, HomeConfig::isRespawnAtHome).orElse(false);
         }
     }
 }

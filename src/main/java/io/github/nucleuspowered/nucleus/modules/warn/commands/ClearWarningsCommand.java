@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -14,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -21,6 +21,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 
 import java.util.List;
@@ -46,7 +48,7 @@ public class ClearWarningsCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
 
-        List<WarnData> warnings = handler.getWarnings(user);
+        List<WarnData> warnings = handler.getWarningsInternal(user);
         if (warnings.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
             return CommandResult.success();
@@ -71,7 +73,7 @@ public class ClearWarningsCommand extends AbstractCommand<CommandSource> {
             message = plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.expired", user.getName());
         }
 
-        if (handler.clearWarnings(user, removeActive, removeExpired)) {
+        if (handler.clearWarnings(user, removeActive, removeExpired, Cause.of(NamedCause.owner(src)))) {
             src.sendMessage(message);
             return CommandResult.success();
         }

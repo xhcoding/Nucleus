@@ -5,19 +5,20 @@
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -25,8 +26,9 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
@@ -45,8 +47,6 @@ import java.util.UUID;
 @RegisterCommand({"warn", "warning", "addwarning"})
 public class WarnCommand extends AbstractCommand<CommandSource> {
 
-    public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "warn.notify";
-
     private final String playerKey = "subject";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
@@ -59,13 +59,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("exempt.length", PermissionInformation.getWithTranslation("permission.warn.exempt.length", SuggestedLevel.MOD));
         m.put("exempt.target", PermissionInformation.getWithTranslation("permission.warn.exempt.target", SuggestedLevel.MOD));
-        return m;
-    }
-
-    @Override
-    public Map<String, PermissionInformation> permissionsToRegister() {
-        Map<String, PermissionInformation> m = new HashMap<>();
-        m.put(notifyPermission, PermissionInformation.getWithTranslation("permission.warn.notify", SuggestedLevel.MOD));
+        m.put("notify", PermissionInformation.getWithTranslation("permission.warn.notify", SuggestedLevel.MOD));
         return m;
     }
 
@@ -83,8 +77,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
         String reason = args.<String>getOne(reasonKey).get();
 
         if (permissions.testSuffix(user, "exempt.target", src, false)) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warn.exempt", user.getName()));
-            return CommandResult.success();
+            throw ReturnMessageException.fromKey("command.warn.exempt", user.getName());
         }
 
         //Set default duration if no duration given
@@ -92,39 +85,27 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
             optDuration = Optional.of(wca.getNodeOrDefault().getDefaultLength());
         }
 
-        UUID warner = Util.consoleFakeUUID;
-        if (src instanceof Player) {
-            warner = ((Player) src).getUniqueId();
-        }
-
-        WarnData warnData;
-        if (optDuration.isPresent()) {
-            warnData = new WarnData(Instant.now(), warner, reason, Duration.ofSeconds(optDuration.get()));
-        } else {
-            warnData = new WarnData(Instant.now(), warner, reason);
-        }
+        UUID warner = Util.getUUID(src);
+        WarnData warnData = optDuration.map(aLong -> new WarnData(Instant.now(), warner, reason, Duration.ofSeconds(aLong)))
+                .orElseGet(() -> new WarnData(Instant.now(), warner, reason));
 
         //Check if too long (No duration provided, it is infinite)
         if (!optDuration.isPresent() && wca.getNodeOrDefault().getMaximumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warn.length.toolong", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMaximumWarnLength())));
-            return CommandResult.success();
+            throw ReturnMessageException.fromKey("command.warn.length.toolong", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMaximumWarnLength()));
         }
 
         //Check if too long
         if (optDuration.orElse(Long.MAX_VALUE) > wca.getNodeOrDefault().getMaximumWarnLength() && wca.getNodeOrDefault().getMaximumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warn.length.toolong", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMaximumWarnLength())));
-            return CommandResult.success();
-
+            throw ReturnMessageException.fromKey("command.warn.length.toolong", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMaximumWarnLength()));
         }
 
         //Check if too short
         if (optDuration.orElse(Long.MAX_VALUE) < wca.getNodeOrDefault().getMinimumWarnLength() && wca.getNodeOrDefault().getMinimumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warn.length.tooshort", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMinimumWarnLength())));
-            return CommandResult.success();
+            throw ReturnMessageException.fromKey("command.warn.length.tooshort", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMinimumWarnLength()));
         }
 
         if (warnHandler.addWarning(user, warnData)) {
-            MutableMessageChannel messageChannel = MessageChannel.permission(notifyPermission).asMutable();
+            MutableMessageChannel messageChannel = MessageChannel.permission(permissions.getPermissionWithSuffix("notify")).asMutable();
             messageChannel.addMember(src);
 
             if (optDuration.isPresent()) {
@@ -144,23 +125,22 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
 
             //Check if the subject has action command should be executed
             if (wca.getNodeOrDefault().getWarningsBeforeAction() != -1) {
-                if (warnHandler.getWarnings(user, true, false).size() < wca.getNodeOrDefault().getWarningsBeforeAction()) {
+                if (warnHandler.getWarningsInternal(user, true, false).size() < wca.getNodeOrDefault().getWarningsBeforeAction()) {
                     return CommandResult.success();
                 }
 
                 //Expire all active warnings
-                warnHandler.clearWarnings(user, false, false);
+                // The cause is the plugin, as this isn't directly the warning user.
+                warnHandler.clearWarnings(user, false, false, Cause.of(NamedCause.owner(NucleusPlugin.getNucleus())));
 
                 //Get and run the action command
                 String command = wca.getNodeOrDefault().getActionCommand().replaceAll("\\{\\{name}}", user.getName());
                 Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
-                return CommandResult.success();
             }
 
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warn.fail", user.getName()));
-        return CommandResult.empty();
+        throw ReturnMessageException.fromKey("command.warn.fail", user.getName());
     }
 }

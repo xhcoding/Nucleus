@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.iapi.service;
 
-import io.github.nucleuspowered.nucleus.iapi.data.NoteData;
+import io.github.nucleuspowered.nucleus.modules.note.data.NoteData;
 import org.spongepowered.api.entity.living.player.User;
 
 import java.util.List;

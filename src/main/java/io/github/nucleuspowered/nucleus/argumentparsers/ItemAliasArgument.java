@@ -98,8 +98,12 @@ public class ItemAliasArgument extends CommandElement {
         }
 
         // Well, hopefully it's a blockstate then.
-        return Optional.of(Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst()
-                .orElseThrow(() -> args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.itemarg.orphanedarg", arg, id))));
+        Optional<BlockState> blockState = Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst();
+        if (blockState.isPresent()) {
+            return Optional.of(blockState.get());
+        }
+
+        throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.itemarg.orphanedarg", arg, id));
     }
 
     @Override

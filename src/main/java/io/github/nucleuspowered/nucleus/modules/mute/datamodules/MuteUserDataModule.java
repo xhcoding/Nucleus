@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.mute.datamodules;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.data.MuteData;
+import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 
 import java.util.Optional;
 

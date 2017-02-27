@@ -2,10 +2,11 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.iapi.data.interfaces;
+package io.github.nucleuspowered.nucleus.internal.data;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.TimedEntry;
 import ninja.leaping.configurate.objectmapping.Setting;
 import org.spongepowered.api.util.Tuple;
 
@@ -14,7 +15,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-public abstract class EndTimestamp {
+public abstract class EndTimestamp implements TimedEntry {
 
     @Setting
     protected Long endtimestamp;
@@ -60,6 +61,18 @@ public abstract class EndTimestamp {
         }
     }
 
+    @Override public Optional<Duration> getRemainingTime() {
+        if (endtimestamp == null && timeFromNextLogin == null) {
+            return Optional.empty();
+        }
+
+        if (endtimestamp != null) {
+            return Optional.of(Duration.between(Instant.now(), Instant.ofEpochSecond(endtimestamp)));
+        }
+
+        return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
+    }
+
     // This HAS to be temporary.
     public Tuple<String, String> getForString() {
         if (getEndTimestamp().isPresent()) {
@@ -71,5 +84,9 @@ public abstract class EndTimestamp {
         }
 
         return Tuple.of("", "");
+    }
+
+    @Override public boolean isCurrentlyTicking() {
+        return endtimestamp != null;
     }
 }

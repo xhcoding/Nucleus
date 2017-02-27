@@ -6,10 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.warn.datamodules;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Warning;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.data.WarnData;
+import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 
 import java.util.List;
 
@@ -35,13 +36,8 @@ public class WarnUserDataModule extends DataModule<ModularUserService> {
         warnings.sort((x, y) -> Boolean.compare(x.isExpired(), y.isExpired()));
     }
 
-    public boolean removeWarning(WarnData warning) {
-        return warnings.removeIf(x -> x.getEndTimestamp().equals(warning.getEndTimestamp()) &&
-                x.getReason().equals(warning.getReason()) &&
-                x.getTimeFromNextLogin().equals(warning.getTimeFromNextLogin()) &&
-                x.getWarner().equals(warning.getWarner()) &&
-                x.getDate().equals(warning.getDate()));
-
+    public boolean removeWarning(Warning warning) {
+        return warnings.removeIf(x -> x.equals(warning));
     }
 
     public boolean clearWarnings() {
