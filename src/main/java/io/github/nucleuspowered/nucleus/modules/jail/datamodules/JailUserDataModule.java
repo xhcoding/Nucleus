@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.datamodules;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.data.JailData;
+import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 
 import java.util.Optional;
 

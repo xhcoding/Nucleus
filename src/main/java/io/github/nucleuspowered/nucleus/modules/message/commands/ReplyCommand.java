@@ -46,7 +46,7 @@ public class ReplyCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         if (alertOnAfk()) {
-            handler.getPlayerToReplyTo(Util.getUUID(src)).ifPresent(x -> {
+            handler.getLastMessageFrom(Util.getUUID(src)).ifPresent(x -> {
                 if (x instanceof Player && isAfk((Player)x)) {
                     sendAfkMessage(src, (Player)x);
                 }

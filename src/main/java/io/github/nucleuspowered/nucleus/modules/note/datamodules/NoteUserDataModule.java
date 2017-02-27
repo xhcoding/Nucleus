@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.data.NoteData;
+import io.github.nucleuspowered.nucleus.modules.note.data.NoteData;
 
 import java.util.List;
 

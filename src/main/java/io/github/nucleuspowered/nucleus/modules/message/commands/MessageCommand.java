@@ -43,7 +43,6 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
     @Inject
     private MessageCommand(MessageHandler handler) {
         this.handler = handler;
-        handler.setCommandPermissionHandler(this::getPermissionHandler);
     }
 
     @Override

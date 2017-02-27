@@ -123,6 +123,7 @@ public interface NucleusMailService {
      *     If multiple strings are set, all need to match.
      * </p>
      *
+     * @param caseSensitive Whether this filter is case sensitive.
      * @param message The message.
      * @return The {@link MailFilter}
      */
@@ -137,6 +138,7 @@ public interface NucleusMailService {
      *     If multiple strings are set, all need to match.
      * </p>
      *
+     * @param caseSensitive Whether this filter is case sensitive.
      * @param message The message.
      * @return The {@link MailFilter}
      */

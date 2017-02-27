@@ -8,14 +8,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.message.MessageModule;
+import io.github.nucleuspowered.nucleus.modules.message.commands.MessageCommand;
+import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserDataModule;
@@ -26,17 +27,17 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Tristate;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MessageHandler implements NucleusPrivateMessagingService {
@@ -48,7 +49,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     private boolean useLevels = false;
     private boolean sameLevel = false;
     private int serverLevel = 0;
-    private Supplier<CommandPermissionHandler> cph = null;
+    private final CommandPermissionHandler messagepermissions;
+    private final CommandPermissionHandler socialspypermissions;
 
     private final Map<String[], Function<String, String>> replacements = createReplacements();
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
@@ -58,6 +60,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         textParsingUtils = nucleus.getTextParsingUtils();
         ucl = nucleus.getUserDataManager();
         mca = nucleus.getModuleContainer().getConfigAdapterForModule(MessageModule.ID, MessageConfigAdapter.class);
+        messagepermissions = nucleus.getPermissionRegistry().getPermissionsForNucleusCommand(MessageCommand.class);
+        socialspypermissions = nucleus.getPermissionRegistry().getPermissionsForNucleusCommand(SocialSpyCommand.class);
         onReload();
     }
 
@@ -68,48 +72,118 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         serverLevel = messageConfig.getServerLevel();
     }
 
-    public void setCommandPermissionHandler(Supplier<CommandPermissionHandler> commandPermissionHandler) {
-        if (cph == null) {
-            cph = commandPermissionHandler;
-        }
-    }
-
     @Override
     public boolean isSocialSpy(User user) {
-        try {
-            return ucl.get(user).get().get(MessageUserDataModule.class).isSocialSpy();
-        } catch (Exception e) {
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
+        Tristate ts = forcedSocialSpyState(user);
+        if (ts == Tristate.UNDEFINED) {
+            return ucl.getUnchecked(user).get(MessageUserDataModule.class).isSocialSpy();
+        }
+
+        return ts.asBoolean();
+    }
+
+    @Override public boolean isUsingSocialSpyLevels() {
+        return this.useLevels;
+    }
+
+    @Override public boolean canSpySameLevel() {
+        return this.sameLevel;
+    }
+
+    @Override public int getServerLevel() {
+        return getSocialSpyLevelForSource(Sponge.getServer().getConsole());
+    }
+
+    @Override public int getSocialSpyLevel(User user) {
+        return useLevels ? Util.getPositiveIntOptionFromSubject(user, socialSpyOption).orElse(0) : 0;
+    }
+
+    @Override public Tristate forcedSocialSpyState(User user) {
+        if (socialspypermissions.testSuffix(user, "base")) {
+            if (socialspypermissions.testSuffix(user, "force")) {
+                return Tristate.TRUE;
             }
 
-            return false;
+            return Tristate.UNDEFINED;
         }
+
+        return Tristate.FALSE;
     }
 
     @Override
     public boolean setSocialSpy(User user, boolean isSocialSpy) {
-        try {
-            return ucl.get(user).get().get(MessageUserDataModule.class).setSocialSpy(isSocialSpy);
-        } catch (Exception e) {
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
+        if (forcedSocialSpyState(user) != Tristate.UNDEFINED) {
             return false;
         }
+
+        ucl.getUnchecked(user).get(MessageUserDataModule.class).setSocialSpy(isSocialSpy);
+        return true;
     }
 
-    public boolean replyMessage(CommandSource sender, String message) {
-        Optional<CommandSource> cs = getPlayerToReplyTo(getUUID(sender));
-        if (cs.isPresent()) {
-            return sendMessage(sender, cs.get(), message);
+    @Override public boolean canSpyOn(User spyingUser, CommandSource... sourceToSpyOn) throws IllegalArgumentException {
+        if (sourceToSpyOn.length == 0) {
+            throw new IllegalArgumentException("sourceToSpyOn must have at least one CommandSource");
         }
 
-        sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.noreply"));
+        if (isSocialSpy(spyingUser)) {
+            if (Arrays.stream(sourceToSpyOn).anyMatch(x -> x instanceof User && spyingUser.getUniqueId().equals(((User)x).getUniqueId()))) {
+                return false;
+            }
+
+            if (useLevels) {
+                int target = Arrays.stream(sourceToSpyOn).mapToInt(this::getSocialSpyLevelForSource).max().orElse(0);
+                if (sameLevel) {
+                    return target <= getSocialSpyLevel(spyingUser);
+                } else {
+                    return target < getSocialSpyLevel(spyingUser);
+                }
+            }
+
+            return true;
+        }
+
         return false;
     }
 
+    @Override public Set<CommandSource> onlinePlayersCanSpyOn(boolean includeConsole, CommandSource... sourceToSpyOn)
+            throws IllegalArgumentException {
+        if (sourceToSpyOn.length == 0) {
+            throw new IllegalArgumentException("sourceToSpyOn must have at least one CommandSource");
+        }
+
+        // Get the users to scan.
+        List<CommandSource> toSpyOn = Arrays.asList(sourceToSpyOn);
+        Set<UUID> uuidsToSpyOn = toSpyOn.stream().map(x -> x instanceof User ? ((User)x).getUniqueId() : Util.consoleFakeUUID)
+                .collect(Collectors.toSet());
+
+        // Get those who aren't the subjects and have social spy on.
+        Set<CommandSource> sources = Sponge.getServer().getOnlinePlayers().stream()
+                .filter(x -> !uuidsToSpyOn.contains(x.getUniqueId()))
+                .filter(this::isSocialSpy)
+                .collect(Collectors.toSet());
+
+        if (!useLevels) {
+            if (includeConsole) {
+                sources.add(Sponge.getServer().getConsole());
+            }
+
+            return sources;
+        }
+
+        // Get the highest level from the sources to spy on.
+        int highestLevel = toSpyOn.stream().mapToInt(this::getSocialSpyLevelForSource).max().orElse(0);
+        sources = sources.stream()
+            .filter(x -> sameLevel ? getSocialSpyLevelForSource(x) >= highestLevel : getSocialSpyLevelForSource(x) > highestLevel)
+            .collect(Collectors.toSet());
+
+        if (includeConsole) {
+            sources.add(Sponge.getServer().getConsole());
+        }
+
+        return sources;
+    }
+
+    @Override
     public boolean sendMessage(CommandSource sender, CommandSource receiver, String message) {
         // Message is about to be sent. Send the event out. If canceled, then that's that.
         boolean isCancelled = Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message));
@@ -149,40 +223,11 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             prefix = NucleusTextTemplateFactory.createFromAmpersandString(messageConfig.getMutedTag() + prefix.getRepresentation());
         }
 
-        final int senderLevel = useLevels ? Util.getPositiveIntOptionFromSubject(sender, socialSpyOption)
-            .orElseGet(() -> sender instanceof Player ? 0 : serverLevel) : 0;
-        final int receiverLevel = useLevels ? Util.getPositiveIntOptionFromSubject(receiver, socialSpyOption)
-            .orElseGet(() -> receiver instanceof Player ? 0 : serverLevel) : 0;
-
         // Always if it's a subject who does the sending, if subject only is disabled in the config, to all.
         if (!messageConfig.isOnlyPlayerSocialSpy() || sender instanceof Player) {
-            List<MessageReceiver> lm =
-                ucl.getOnlineUsersInternal().stream()
-                    .filter(x -> !uuidSender.equals(x.getUniqueId()) && !uuidReceiver.equals(x.getUniqueId()))
-                    .filter(x -> x.get(MessageUserDataModule.class).isSocialSpy())
-                    .map(ModularUserService::getPlayer)
-                    .filter(x -> {
-                        if (!x.isPresent()) {
-                            return false;
-                        }
-
-                        if (!useLevels) {
-                            return true;
-                        }
-
-                        int rLvl =  Util.getPositiveIntOptionFromSubject(x.get(), socialSpyOption).orElse(0);
-                        if (sameLevel) {
-                            return rLvl >= senderLevel && rLvl >= receiverLevel;
-                        }
-
-                        return rLvl > senderLevel && rLvl > receiverLevel;
-                    })
-                    .map(Optional::get).collect(Collectors.toList());
-
-            // If the console is not involved, make them involved.
-            if (!uuidSender.equals(Util.consoleFakeUUID) && !uuidReceiver.equals(Util.consoleFakeUUID)) {
-                lm.add(Sponge.getServer().getConsole());
-            }
+            Set<CommandSource> lm = onlinePlayersCanSpyOn(
+                !uuidSender.equals(Util.consoleFakeUUID) && !uuidReceiver.equals(Util.consoleFakeUUID), sender, receiver
+            );
 
             MessageChannel mc = MessageChannel.fixed(lm);
             if (!mc.getMembers().isEmpty()) {
@@ -198,7 +243,41 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         return !isCancelled;
     }
 
-    public Optional<CommandSource> getPlayerToReplyTo(UUID from) {
+    public boolean replyMessage(CommandSource sender, String message) {
+        Optional<CommandSource> cs = getLastMessageFrom(getUUID(sender));
+        if (cs.isPresent()) {
+            return sendMessage(sender, cs.get(), message);
+        }
+
+        sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.noreply"));
+        return false;
+    }
+
+    @Override public Optional<CommandSource> getConsoleReplyTo() {
+        return getLastMessageFrom(Util.consoleFakeUUID);
+    }
+
+    @Override public Optional<CommandSource> getReplyTo(User user) {
+        return getLastMessageFrom(user.getUniqueId());
+    }
+
+    @Override public void setReplyTo(User user, CommandSource toReplyTo) {
+        messagesReceived.put(user.getUniqueId(), getUUID(Preconditions.checkNotNull(toReplyTo)));
+    }
+
+    @Override public void setConsoleReplyTo(CommandSource toReplyTo) {
+        messagesReceived.put(Util.consoleFakeUUID, getUUID(Preconditions.checkNotNull(toReplyTo)));
+    }
+
+    @Override public void clearReplyTo(User user) {
+        messagesReceived.remove(user.getUniqueId());
+    }
+
+    @Override public void clearConsoleReplyTo() {
+        messagesReceived.remove(Util.consoleFakeUUID);
+    }
+
+    public Optional<CommandSource> getLastMessageFrom(UUID from) {
         Preconditions.checkNotNull(from);
         UUID to = messagesReceived.get(from);
         if (to == null) {
@@ -233,25 +312,29 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     }
 
     private Text useMessage(CommandSource player, String m) {
-        if (cph == null) {
-            return Text.of(m);
-        }
-
         for (Map.Entry<String[],  Function<String, String>> r : replacements.entrySet()) {
             // If we don't have the required permission...
-            if (Arrays.stream(r.getKey()).noneMatch(x -> cph.get().testSuffix(player, x))) {
+            if (Arrays.stream(r.getKey()).noneMatch(x -> messagepermissions.testSuffix(player, x))) {
                 // ...strip the codes.
                 m = r.getValue().apply(m);
             }
         }
 
         Text result;
-        if (cph.get().testSuffix(player, "url")) {
+        if (messagepermissions.testSuffix(player, "url")) {
             result = TextParsingUtils.addUrls(m);
         } else {
             result = TextSerializers.FORMATTING_CODE.deserialize(m);
         }
 
         return result;
+    }
+
+    private int getSocialSpyLevelForSource(CommandSource source) {
+        if (useLevels) {
+            return source instanceof User ? getSocialSpyLevel((User) source) : serverLevel;
+        }
+
+        return 0;
     }
 }
