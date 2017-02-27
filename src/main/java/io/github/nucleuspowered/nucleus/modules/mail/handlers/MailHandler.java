@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.MailMessage;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusMailService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
 import io.github.nucleuspowered.nucleus.modules.mail.data.MailData;
 import io.github.nucleuspowered.nucleus.modules.mail.datamodules.MailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mail.events.InternalNucleusMailEvent;
