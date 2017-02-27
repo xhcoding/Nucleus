@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 public class CollisionListener extends ListenerBase {
 
     @Listener
-    public void onCollision(CollideEntityEvent.Impact event, @Root Player player) {
+    public void onCollision(CollideEntityEvent event, @Root Player player) {
         event.filterEntities(x -> !(x instanceof Player));
     }
 
