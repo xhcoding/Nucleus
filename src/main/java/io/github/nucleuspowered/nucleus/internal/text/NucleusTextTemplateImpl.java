@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.SimpleConfigurationNode;
@@ -76,11 +75,6 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
 
         tokens.forEach((k, v) -> {
             String key = k.toLowerCase();
-            boolean hasSpace = false;
-            if (k.endsWith(":s")) {
-                key = k.substring(0, k.length() - 2);
-                hasSpace = true;
-            }
 
             Text t;
             if (tokenMap.containsKey(key)) {
@@ -92,11 +86,7 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
             }
 
             if (t != null) {
-                if (hasSpace) {
-                    finalArgs.put(k, Text.join(t, Util.NOT_EMPTY));
-                } else {
-                    finalArgs.put(k, t);
-                }
+                finalArgs.put(k, t);
             }
         });
 

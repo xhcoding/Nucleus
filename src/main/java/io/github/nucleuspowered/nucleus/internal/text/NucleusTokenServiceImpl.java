@@ -155,7 +155,7 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
             }
         }
 
-        return Optional.of(Text.EMPTY);
+        return Optional.empty();
     }
 
     public Tokens getNucleusTokenParser() {
