@@ -46,8 +46,13 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
     @Override
     public CommandResult accept(World world, CommandSource source, CommandContext args) {
         boolean aggressive = args.hasAny("a");
-        worldHelper.addPregenForWorld(world, new NucleusChunkPreGenerator(world, notifyPermission, aggressive,
-            args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L), worldConfigAdapter), aggressive);
+        worldHelper.addPregenForWorld(
+            world,
+            new NucleusChunkPreGenerator(world, notifyPermission,
+                    aggressive, args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L),
+                    worldConfigAdapter,
+                    args.<Integer>getOne(Text.of(GenerateChunksCommand.ticksKey)).orElse(null)),
+            aggressive);
 
         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.enhanced"));
         source.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
@@ -93,13 +98,16 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
         private final boolean aggressive;
         private final WorldConfigAdapter worldConfigAdapter;
 
-        private NucleusChunkPreGenerator(World world, String permission, boolean aggressive, long timeToSave, WorldConfigAdapter worldConfigAdapter) {
+        private NucleusChunkPreGenerator(World world, String permission, boolean aggressive, long timeToSave, WorldConfigAdapter worldConfigAdapter,
+                Integer integer) {
             this.notifyPermission = permission;
             this.aggressive = aggressive;
             this.world = world;
             this.chunkRadius = GenericMath.floor(world.getWorldBorder().getDiameter() / (2 * Sponge.getServer().getChunkLayout().getChunkSize().getX()));
 
-            if (aggressive) {
+            if (integer != null) {
+                this.tickTimeLimit = Math.round(Sponge.getScheduler().getPreferredTickInterval() * Math.max(0f, Math.min(1f, integer / 100f)));
+            } else if (aggressive) {
                 this.tickTimeLimit = Math.round(Sponge.getScheduler().getPreferredTickInterval() * 0.9);
             } else {
                 this.tickTimeLimit = Math.round(Sponge.getScheduler().getPreferredTickInterval() * 0.8);

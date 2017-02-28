@@ -19,6 +19,8 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 public class WorldHelper {
 
     @Inject private NucleusPlugin plugin;
@@ -45,7 +47,7 @@ public class WorldHelper {
         return false;
     }
 
-    public boolean startPregenningForWorld(World world, boolean agressive) {
+    public boolean startPregenningForWorld(World world, boolean agressive, @Nullable Integer tickPercent) {
         cleanup();
         if (!isPregenRunningForWorld(world.getUniqueId())) {
             WorldProperties wp = world.getProperties();
@@ -53,6 +55,10 @@ public class WorldHelper {
                 .owner(plugin).logger(new GenerationLogger(plugin.getLogger(), world.getName()));
             if (agressive) {
                 wbcp.tickPercentLimit(0.9f).tickInterval(3);
+            }
+
+            if (tickPercent != null) {
+                wbcp.tickPercentLimit(Math.max(0f, Math.min(tickPercent / 100.0f, 1f)));
             }
 
             pregen.put(world.getUniqueId(), wbcp.start());

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
+    public static final String ticksKey = "tickPercent";
     public static final String saveTimeKey = "time between saves";
 
     @Inject
@@ -51,7 +53,7 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     private final TriFunction<World, CommandSource, CommandContext, CommandResult> standardGeneration = (world, source, args) -> {
         // Create the task.
-        this.worldHelper.startPregenningForWorld(world, args.hasAny("a"));
+        this.worldHelper.startPregenningForWorld(world, args.hasAny("a"), args.<Integer>getOne(ticksKey).orElse(null));
 
         if (args.hasAny(saveTimeKey)) {
             source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.using.nosave"));
@@ -78,8 +80,11 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
                 GenericArguments.flags()
                     .flag("s")
                     .flag("a")
-                    .valueFlag(new TimespanArgument(Text.of(saveTimeKey)), "-save").buildWith(
-                GenericArguments.optional(GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY))))
+                    .valueFlag(new TimespanArgument(Text.of(saveTimeKey)), "-save")
+                    .valueFlag(new BoundedIntegerArgument(Text.of(ticksKey), 0, 100), "t", "-tickpercent")
+                    .buildWith(
+                        GenericArguments.optional(
+                            GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY))))
         };
     }
 
