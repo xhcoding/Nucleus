@@ -131,19 +131,44 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
                 lastSaveTime = startTime;
             }
 
-            if (!aggressive) {
+            if (aggressive) {
                 long percent = getMemPercent();
                 if (percent >= 90) {
                     if (!highMemTriggered) {
-                        world.getLoadedChunks().forEach(Chunk::unloadChunk);
-                        save();
-                        NucleusPlugin.getNucleus().getMessageProvider()
-                            .getTextMessageWithFormat("command.pregen.gen.memory.high", String.valueOf(percent));
-                        highMemTriggered = true;
-                    }
+                        // Try to force a GC to save as much memory as possible.
+                        System.gc();
 
-                    // Try again next tick.
-                    return;
+                        // Save to ensure data isn't lost...
+                        save();
+                        world.getLoadedChunks().forEach(Chunk::unloadChunk);
+
+                        // Try to force a GC again.
+                        System.gc();
+
+                        highMemTriggered = getMemPercent() >= 90;
+                    }
+                } else if (highMemTriggered) {
+                    highMemTriggered = false;
+                }
+            } else {
+                long percent = getMemPercent();
+                if (percent >= 90) {
+                    if (!highMemTriggered) {
+                        save();
+                        world.getLoadedChunks().forEach(Chunk::unloadChunk);
+
+                        // Ask the system to try to garbage collect.
+                        System.gc();
+
+                        if (getMemPercent() >= 90) {
+                            NucleusPlugin.getNucleus().getMessageProvider()
+                                    .getTextMessageWithFormat("command.pregen.gen.memory.high", String.valueOf(percent));
+                            highMemTriggered = true;
+                        }
+                    } else {
+                        // Try again next tick.
+                        return;
+                    }
                 } else if (highMemTriggered && percent <= 80) {
                     // Get the memory usage down to 80% to prevent too much ping pong.
                     highMemTriggered = false;
