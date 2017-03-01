@@ -11,7 +11,6 @@ import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -31,7 +30,6 @@ import java.util.Map;
  * Messages a player.
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
-@RunAsync
 @RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, rootAliasRegister = { "tell" })
 @NotifyIfAFK(MessageCommand.to)
 @EssentialsEquivalent({"msg", "tell", "m", "t", "whisper"})
