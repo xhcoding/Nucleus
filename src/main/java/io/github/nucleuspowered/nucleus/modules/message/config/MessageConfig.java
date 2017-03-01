@@ -51,8 +51,12 @@ public class MessageConfig {
         return socialSpy.socialSpySameLevel;
     }
 
+    public int getCustomTargetLevel() {
+        return socialSpy.level.customTargets;
+    }
+
     public int getServerLevel() {
-        return socialSpy.serverLevel;
+        return socialSpy.level.server;
     }
 
     public boolean isShowMessagesInSocialSpyWhileMuted() {
@@ -63,8 +67,8 @@ public class MessageConfig {
         return socialSpy.mutedTag;
     }
 
-    public boolean isOnlyPlayerSocialSpy() {
-        return socialSpy.onlyPlayerSocialSpy;
+    public Targets spyOn() {
+        return socialSpy.targets;
     }
 
     @ConfigSerializable
@@ -79,8 +83,8 @@ public class MessageConfig {
         @Setting(value = "same-levels-can-see-each-other", comment = "config.message.socialspy.samelevel")
         private boolean socialSpySameLevel = true;
 
-        @Setting(value = "server-level", comment = "config.message.socialspy.serverlevel")
-        private int serverLevel = Integer.MAX_VALUE;
+        @Setting(value = "levels", comment = "config.message.socialspy.serverlevels")
+        private Levels level = new Levels();
 
         @Setting(value = "show-cancelled-messages", comment = "config.message.socialspy.mutedshow")
         private boolean showMessagesInSocialSpyWhileMuted = false;
@@ -88,7 +92,42 @@ public class MessageConfig {
         @Setting(value = "cancelled-messages-tag", comment = "config.message.socialspy.mutedtag")
         private String mutedTag = "&c[cancelled] ";
 
-        @Setting(value = "show-only-players", comment = "config.message.socialspy.playeronly")
-        private boolean onlyPlayerSocialSpy = false;
+        @Setting(value = "senders-to-spy-on", comment = "config.message.socialspy.spyon")
+        private Targets targets = new Targets();
+    }
+
+    @ConfigSerializable
+    public static class Levels {
+
+        @Setting(value = "server", comment = "config.message.socialspy.serverlevel")
+        private int server = Integer.MAX_VALUE;
+
+        @Setting(value = "custom-targets", comment = "config.message.socialspy.customlevel")
+        private int customTargets = Integer.MAX_VALUE;
+    }
+
+    @ConfigSerializable
+    public static class Targets {
+
+        @Setting
+        private boolean player = true;
+
+        @Setting
+        private boolean server = true;
+
+        @Setting(value = "custom-target")
+        private boolean custom = true;
+
+        public boolean isPlayer() {
+            return player;
+        }
+
+        public boolean isServer() {
+            return server;
+        }
+
+        public boolean isCustom() {
+            return custom;
+        }
     }
 }

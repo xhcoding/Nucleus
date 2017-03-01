@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.MessageTargetArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
@@ -59,7 +60,10 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE),
+            GenericArguments.firstParsing(
+                new MessageTargetArgument(Text.of(to)),
+                SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE)
+            ),
             GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };
     }
