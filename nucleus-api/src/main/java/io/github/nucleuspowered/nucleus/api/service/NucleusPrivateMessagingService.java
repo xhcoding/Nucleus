@@ -159,6 +159,7 @@ public interface NucleusPrivateMessagingService {
      * Gets the {@link CommandSource} that the specified {@link T} will reply to if <code>/r</code> is used, if any.
      *
      * @param from The {@link T} to inspect.
+     * @param <T> The {@link Identifiable} {@link CommandSource} type.
      * @return The {@link CommandSource}.
      */
     <T extends CommandSource & Identifiable> Optional<CommandSource> getCommandSourceReplyTo(T from);
@@ -184,6 +185,7 @@ public interface NucleusPrivateMessagingService {
      * </p>
      *
      * @param source The {@link T} to modify.
+     * @param <T> The {@link Identifiable} {@link CommandSource} type.
      * @param replyTo The {@link CommandSource} to now reply to.
      */
     <T extends CommandSource & Identifiable> void setCommandSourceReplyTo(T source, CommandSource replyTo);
@@ -197,6 +199,7 @@ public interface NucleusPrivateMessagingService {
     /**
      * Removes the {@link CommandSource} that the specified {@link CommandSource} will reply to if <code>/r</code> is used.
      * @param user The {@link User} to modify.
+     * @param <T> The {@link Identifiable} {@link CommandSource} type.
      */
     <T extends CommandSource & Identifiable> void clearCommandSourceReplyTo(T user);
 

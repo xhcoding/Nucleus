@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitConfigDataNode;
+import io.github.nucleuspowered.nucleus.configurate.datatypes.UserCacheVersionNode;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.gson.GsonConfigurationLoader;
@@ -31,6 +32,7 @@ public class DataProviders {
         private final TypeToken<Map<String, ItemDataNode>> ttmsi = new TypeToken<Map<String, ItemDataNode>>() {};
     private final TypeToken<Map<String, String>> ttss = new TypeToken<Map<String, String>>() {};
     private final TypeToken<KitConfigDataNode> ttmk = TypeToken.of(KitConfigDataNode.class);
+    private final TypeToken<UserCacheVersionNode> ttucv = TypeToken.of(UserCacheVersionNode.class);
 
     private final String userJson = "userdata%1$s%2$s%1$s%3$s.json";
     private final String worldJson = "worlddata%1$s%2$s%1$s%3$s.json";
@@ -84,6 +86,17 @@ public class DataProviders {
             return null;
         }
     }
+
+    public DataProvider<UserCacheVersionNode> getUserCacheDataProvider() {
+        try {
+            Path p = plugin.getDataPath().resolve("nucleususercache.json");
+            return new ConfigurateDataProvider<>(ttucv,
+                    path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p, plugin.getLogger());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     public DataProvider<ConfigurationNode> getGeneralDataProvider() {
         // For now, just the Configurate one.
