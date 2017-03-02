@@ -18,6 +18,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.selector.Selector;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -74,7 +75,8 @@ public class TwoPlayersArgument extends CommandElement {
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         try {
             String s = args.peek().toLowerCase();
-            return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().startsWith(s.toLowerCase())).map(User::getName)
+            return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().startsWith(s.toLowerCase()))
+                    .map(User::getName)
                     .collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Sponge.getServer().getOnlinePlayers().stream().map(User::getName).collect(Collectors.toList());
@@ -87,7 +89,9 @@ public class TwoPlayersArgument extends CommandElement {
     }
 
     private Optional<Player> getPlayerFromPartialName(String name) {
-        return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getName().startsWith(name.toLowerCase()))
-                .sorted().findFirst();
+        return Sponge.getServer().getOnlinePlayers().stream()
+                .filter(x -> x.getName().toLowerCase().startsWith(name.toLowerCase()))
+                .sorted(Comparator.comparing(x -> x.getName().toLowerCase()))
+                .findFirst();
     }
 }
