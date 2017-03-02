@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
 import io.github.nucleuspowered.nucleus.modules.nickname.NicknameModule;
@@ -26,8 +25,6 @@ import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Tuple;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.Map;
 import java.util.Optional;
@@ -44,10 +41,6 @@ public class NameUtil {
     }
 
     private final NucleusPlugin plugin;
-
-    // An empty optional indicates we checked.
-    @SuppressWarnings("all")
-    private Optional<ChatConfigAdapter> chatConfigAdapterOptional = null;
 
     private final static Map<Character, TextColor> colourMap = Maps.newHashMap();
     private final static Map<Character, TextStyle> styleMap;
@@ -191,14 +184,6 @@ public class NameUtil {
 
     private <T extends TextElement> T getStyle(User player, Function<String, T> returnIfAvailable,
             Function<ChatTemplateConfig, T> fromTemplate, T def, String... options) {
-        if (chatConfigAdapterOptional == null) {
-            try {
-                chatConfigAdapterOptional = Optional.of(plugin.getModuleContainer().getConfigAdapterForModule("chat", ChatConfigAdapter.class));
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                chatConfigAdapterOptional = Optional.empty();
-            }
-        }
-
         Optional<String> os = Util.getOptionFromSubject(player, options);
         if (os.isPresent()) {
             return returnIfAvailable.apply(os.get());
