@@ -86,6 +86,10 @@ public class NameUtil {
         return ImmutableMap.copyOf(styleMapFull);
     }
 
+    public Optional<Text> getName(UUID player) {
+        return Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(player).map(this::getName);
+    }
+
      /**
      * Gets the display name from a {@link User} as Sponge sees it.
      *

@@ -39,7 +39,7 @@ public class UserCacheDataNode {
     }
 
     public void set(ModularUserService x) {
-        ipAddress = x.get(CoreUserDataModule.class).getLastIp().orElse(null);
+        ipAddress = x.get(CoreUserDataModule.class).getLastIp().map(y -> y.replace("/", "")).orElse(null);
         jail = x.get(JailUserDataModule.class).getJailData().map(JailData::getJailName).orElse(null);
         isMuted = x.get(MuteUserDataModule.class).getMuteData().isPresent();
     }
