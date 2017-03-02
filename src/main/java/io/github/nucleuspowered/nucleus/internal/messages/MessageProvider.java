@@ -33,13 +33,16 @@ public abstract class MessageProvider {
         }
     }
 
-    public Text getTextMessageWithFormat(String key, String... substitutions) {
-        return TextSerializers.FORMATTING_CODE.deserialize(MessageFormat.format(getMessageFromKey(key).get(), (Object[]) substitutions));
+    public final Text getTextMessageWithFormat(String key, String... substitutions) {
+        return getTextMessageWithTextFormat(key, Arrays.stream(substitutions).map(Text::of).collect(Collectors.toList()));
     }
 
     public final Text getTextMessageWithTextFormat(String key, Text... substitutions) {
+        return getTextMessageWithTextFormat(key, Arrays.asList(substitutions));
+    }
+
+    public final Text getTextMessageWithTextFormat(String key, List<Text> textList) {
         TextTemplate template = textTemplateMap.computeIfAbsent(key, k -> templateCreator(getMessageWithFormat(k)));
-        List<Text> textList = Arrays.asList(substitutions);
         return template.apply(textList.stream().collect(Collectors.toMap(k -> String.valueOf(textList.indexOf(k)), v -> v))).build();
     }
 
