@@ -17,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -62,6 +63,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         m.put("offline", PermissionInformation.getWithTranslation("permission.jail.offline", SuggestedLevel.MOD));
         m.put("teleportjailed", PermissionInformation.getWithTranslation("permission.jail.teleportjailed", SuggestedLevel.ADMIN));
         m.put("teleporttojailed", PermissionInformation.getWithTranslation("permission.jail.teleporttojailed", SuggestedLevel.ADMIN));
+        m.put("exempt.target", PermissionInformation.getWithTranslation("permission.jail.exempt.target", SuggestedLevel.ADMIN));
         return m;
     }
 
@@ -86,6 +88,10 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         if (handler.isPlayerJailed(pl)) {
             return onUnjail(src, args, pl);
         } else {
+            if (permissions.testSuffix(pl, "exempt.target")) { // only for jailing
+                throw ReturnMessageException.fromKey("command.jail.exempt", pl.getName());
+            }
+
             return onJail(src, args, pl);
         }
     }
