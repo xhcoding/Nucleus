@@ -88,7 +88,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         if (handler.isPlayerJailed(pl)) {
             return onUnjail(src, args, pl);
         } else {
-            if (permissions.testSuffix(pl, "exempt.target")) { // only for jailing
+            if (permissions.testSuffix(pl, "exempt.target", src, false)) { // only for jailing
                 throw ReturnMessageException.fromKey("command.jail.exempt", pl.getName());
             }
 
