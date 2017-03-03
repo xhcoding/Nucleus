@@ -143,19 +143,20 @@ public class CoreListener extends ListenerBase {
             return;
         }
 
+        this.plugin.getUserDataManager().get(player).ifPresent(x -> onPlayerQuit(x, player));
+    }
+
+    private void onPlayerQuit(ModularUserService x, Player player) {
         final Location<World> location = player.getLocation();
         final InetAddress address = player.getConnection().getAddress().getAddress();
 
         try {
-            this.plugin.getUserDataManager().get(player).ifPresent(x -> {
-                x.quickSet(CoreUserDataModule.class, y -> {
-                    y.setLastLogout(location);
-                    y.setLastIp(address);
-                });
-
-                plugin.getUserCacheService().updateCacheForPlayer(x);
+            x.quickSet(CoreUserDataModule.class, y -> {
+                y.setLastLogout(location);
+                y.setLastIp(address);
             });
 
+            plugin.getUserCacheService().updateCacheForPlayer(x);
         } catch (Exception e) {
             if (cca.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
@@ -165,6 +166,8 @@ public class CoreListener extends ListenerBase {
 
     @Listener
     public void onServerAboutToStop(final GameStoppingServerEvent event) {
+        plugin.getUserDataManager().getOnlineUsers().forEach(x -> onPlayerQuit(x, x.getPlayer().get()));
+
         if (cca.getNodeOrDefault().isKickOnStop()) {
             Iterator<Player> players = Sponge.getServer().getOnlinePlayers().iterator();
             while (players.hasNext()) {
