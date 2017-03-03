@@ -73,7 +73,12 @@ public class InvSeeCommand extends AbstractCommand<Player> {
         }
 
         // Just in case, get the subject inventory if they are online.
-        src.openInventory(target.isOnline() ? target.getPlayer().get().getInventory() : target.getInventory(), Cause.of(NamedCause.of("plugin", plugin), NamedCause.source(src)));
-        return CommandResult.success();
+        try {
+            src.openInventory(target.isOnline() ? target.getPlayer().get().getInventory() : target.getInventory(),
+                    Cause.of(NamedCause.of("plugin", plugin), NamedCause.source(src)));
+            return CommandResult.success();
+        } catch (UnsupportedOperationException e) {
+            throw ReturnMessageException.fromKey("command.invsee.offlinenotsupported");
+        }
     }
 }

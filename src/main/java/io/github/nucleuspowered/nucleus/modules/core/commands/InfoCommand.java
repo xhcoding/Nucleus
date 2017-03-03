@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -29,7 +30,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,7 +65,7 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         PluginContainer implementation = platform.getContainer(Platform.Component.IMPLEMENTATION);
         PluginContainer api = platform.getContainer(Platform.Component.API);
 
-        information.add(String.format("Minecraft Version: %s %s", game.getName(), game.getVersion()));
+        information.add(String.format("Minecraft Version: %s %s", game.getName(), game.getVersion().orElse("unknown")));
         information.add(String.format("Sponge Version: %s %s", implementation.getName(), implementation.getVersion().orElse("unknown")));
         information.add(String.format("Sponge API Version: %s %s", api.getName(), api.getVersion().orElse("unknown")));
         information.add("Nucleus Version: " + PluginInfo.VERSION + " (Git: " + PluginInfo.GIT_HASH + ")");
@@ -85,21 +88,40 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         information.add("Registered Commands");
         information.add(sep);
 
+        final Map<String, String> commands = Maps.newHashMap();
+        final Map<String, String> plcmds = Maps.newHashMap();
         final CommandManager manager = Sponge.getCommandManager();
-        manager.getPrimaryAliases().stream().sorted().forEachOrdered(x -> {
+        manager.getPrimaryAliases().forEach(x -> {
             Optional<? extends CommandMapping> ocm = manager.get(x);
             if (ocm.isPresent()) {
+                Set<String> a = ocm.get().getAllAliases();
                 Optional<PluginContainer> optionalPC = manager.getOwner(ocm.get());
                 if (optionalPC.isPresent()) {
                     PluginContainer container = optionalPC.get();
-                    information.add("/" + x + " - " + container.getName() + " (" + container.getId() + ") version " + container.getVersion().orElse("unknown"));
+                    String id = container.getId();
+                    String info = " - " + container.getName() + " (" + id + ") version " + container.getVersion().orElse("unknown");
+                    a.forEach(y -> {
+                        if (y.startsWith(id + ":")) {
+                            // /nucleus:<blah>
+                            plcmds.put(y, "/" + y + info);
+                        } else {
+                            commands.put(y, "/" + y + info);
+                        }
+                    });
                 } else {
-                    information.add("/" + x + " - unknown (plugin container not present)");
+                    String info = " - unknown (plugin container not present)";
+                    a.forEach(y -> commands.put(y, "/" + y + info));
                 }
             } else {
-                information.add("/" + x + " - unknown (mapping not present)");
+                commands.put(x, "/" + x + " - unknown (mapping not present)");
             }
         });
+
+        commands.entrySet().stream().sorted(Comparator.comparing(x -> x.getKey().toLowerCase())).forEachOrdered(x -> information.add(x.getValue()));
+        information.add(sep);
+        information.add("Namespaced commands");
+        information.add(sep);
+        plcmds.entrySet().stream().sorted(Comparator.comparing(x -> x.getKey().toLowerCase())).forEachOrdered(x -> information.add(x.getValue()));
 
         information.add(sep);
         information.add("Nucleus: Enabled Modules");
