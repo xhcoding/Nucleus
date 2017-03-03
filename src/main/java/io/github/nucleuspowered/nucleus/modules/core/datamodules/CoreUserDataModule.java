@@ -82,9 +82,9 @@ public class CoreUserDataModule extends DataModule<ModularUserService> {
     }
 
     public Optional<Location<World>> getLogoutLocation() {
-        if (locationOnLogin != null) {
+        if (lastLocation != null) {
             try {
-                return Optional.ofNullable(locationOnLogin.getLocation());
+                return Optional.ofNullable(lastLocation.getLocation());
             } catch (NoSuchWorldException | NullPointerException e) {
                 return Optional.empty();
             }
@@ -94,12 +94,12 @@ public class CoreUserDataModule extends DataModule<ModularUserService> {
     }
 
     public Optional<Location<World>> getLocationOnLogin() {
-        if (lastLocation == null) {
+        if (locationOnLogin == null) {
             return Optional.empty();
         }
 
         try {
-            return Optional.ofNullable(lastLocation.getLocation());
+            return Optional.ofNullable(locationOnLogin.getLocation());
         } catch (NoSuchWorldException e) {
             return Optional.empty();
         }

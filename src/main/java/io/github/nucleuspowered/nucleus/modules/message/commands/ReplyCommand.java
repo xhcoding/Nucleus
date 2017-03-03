@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoHelpSubcommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -27,7 +26,6 @@ import org.spongepowered.api.text.Text;
  * Replies to the last player who sent a message.
  */
 @Permissions(mainOverride = "message", suggestedLevel = SuggestedLevel.USER)
-@RunAsync
 @NoHelpSubcommand
 @ConfigCommandAlias(value = "message", generate = false)
 @RegisterCommand({"reply", "r"})

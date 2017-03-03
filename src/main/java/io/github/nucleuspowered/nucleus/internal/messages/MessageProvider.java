@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.messages;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -33,13 +34,16 @@ public abstract class MessageProvider {
         }
     }
 
-    public Text getTextMessageWithFormat(String key, String... substitutions) {
-        return TextSerializers.FORMATTING_CODE.deserialize(MessageFormat.format(getMessageFromKey(key).get(), (Object[]) substitutions));
+    public final Text getTextMessageWithFormat(String key, String... substitutions) {
+        return getTextMessageWithTextFormat(key, Arrays.stream(substitutions).map(Text::of).collect(Collectors.toList()));
     }
 
     public final Text getTextMessageWithTextFormat(String key, Text... substitutions) {
+        return getTextMessageWithTextFormat(key, Arrays.asList(substitutions));
+    }
+
+    public final Text getTextMessageWithTextFormat(String key, List<Text> textList) {
         TextTemplate template = textTemplateMap.computeIfAbsent(key, k -> templateCreator(getMessageWithFormat(k)));
-        List<Text> textList = Arrays.asList(substitutions);
         return template.apply(textList.stream().collect(Collectors.toMap(k -> String.valueOf(textList.indexOf(k)), v -> v))).build();
     }
 
@@ -55,13 +59,17 @@ public abstract class MessageProvider {
         String[] s = string.split("\\{([\\d]+)}");
 
         List<Object> objects = Lists.newArrayList();
-        objects.add(TextSerializers.FORMATTING_CODE.deserialize(s[0]));
-        map.forEach(x -> {
-            objects.add(TextTemplate.arg(x.toString()));
+        Text t = TextSerializers.FORMATTING_CODE.deserialize(s[0]);
+        TextParsingUtils.StyleTuple tuple = TextParsingUtils.getLastColourAndStyle(t, null);
+        objects.add(t);
+        for (Integer x : map) {
+            objects.add(TextTemplate.arg(x.toString()).optional().color(tuple.colour).style(tuple.style).build());
             if (s.length > x + 1) {
-                objects.add(TextSerializers.FORMATTING_CODE.deserialize(s[x + 1]));
+                t = Text.of(tuple.colour, tuple.style, TextSerializers.FORMATTING_CODE.deserialize(s[x + 1]));
+                tuple = TextParsingUtils.getLastColourAndStyle(t, null);
+                objects.add(t);
             }
-        });
+        }
 
         return TextTemplate.of((Object[])objects.toArray(new Object[objects.size()]));
     }

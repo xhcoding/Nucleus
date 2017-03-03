@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
+
 public class WorldHelper {
     private static final String TIME_FORMAT = "s's 'S'ms'";
 
@@ -40,7 +42,7 @@ public class WorldHelper {
         return pregen.containsKey(uuid);
     }
 
-    public boolean startPregenningForWorld(World world, boolean aggressive, long saveTime) {
+    public boolean startPregenningForWorld(World world, boolean aggressive, long saveTime, @Nullable Integer tickPercent) {
         cleanup();
         if (!isPregenRunningForWorld(world.getUniqueId())) {
             WorldProperties wp = world.getProperties();
@@ -48,6 +50,10 @@ public class WorldHelper {
                 .owner(plugin).addListener(new Listener(aggressive, saveTime));
             if (aggressive) {
                 wbcp.tickPercentLimit(0.9f).tickInterval(3);
+            }
+
+            if (tickPercent != null) {
+                wbcp.tickPercentLimit(Math.max(0f, Math.min(tickPercent / 100.0f, 1f)));
             }
 
             pregen.put(world.getUniqueId(), wbcp.start());

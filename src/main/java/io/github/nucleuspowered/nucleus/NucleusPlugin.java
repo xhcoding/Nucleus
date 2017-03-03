@@ -25,6 +25,7 @@ import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.NameBanService;
+import io.github.nucleuspowered.nucleus.dataservices.UserCacheService;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -112,6 +113,7 @@ public class NucleusPlugin extends Nucleus {
     private CommandsConfig commandsConfig;
     private ModularGeneralService generalService;
     private ItemDataService itemDataService;
+    private UserCacheService userCacheService;
     private UserDataManager userDataManager;
     private WorldDataManager worldDataManager;
     private NameBanService nameBanService;
@@ -191,6 +193,7 @@ public class NucleusPlugin extends Nucleus {
             worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider, d::doesWorldFileExist);
             kitService = new KitService(d.getKitsDataProvider());
             nameBanService = new NameBanService(d.getNameBanDataProvider());
+            userCacheService = new UserCacheService(d.getUserCacheDataProvider());
             warmupManager = new WarmupManager();
             textParsingUtils = new TextParsingUtils(this);
             nameUtil = new NameUtil(this);
@@ -299,6 +302,9 @@ public class NucleusPlugin extends Nucleus {
     public void onGameStarting(GameStartingServerEvent event) {
         if (isErrored == null) {
             generalService.getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
+
+            // Start the user cache walk if required, the user storage service is loaded at this point.
+            Task.builder().async().execute(() -> userCacheService.startFilewalkIfNeeded()).submit(this);
         }
     }
 
@@ -336,6 +342,7 @@ public class NucleusPlugin extends Nucleus {
         try {
             generalService.save();
             nameBanService.save();
+            userCacheService.save();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -375,6 +382,10 @@ public class NucleusPlugin extends Nucleus {
     @Override
     public WorldDataManager getWorldDataManager() {
         return worldDataManager;
+    }
+
+    public UserCacheService getUserCacheService() {
+        return userCacheService;
     }
 
     @Override

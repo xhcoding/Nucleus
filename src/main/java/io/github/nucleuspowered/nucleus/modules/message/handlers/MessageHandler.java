@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.message.handlers;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -23,12 +24,15 @@ import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserD
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusMessageEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,7 +42,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class MessageHandler implements NucleusPrivateMessagingService {
 
@@ -54,6 +61,9 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     private final Map<String[], Function<String, String>> replacements = createReplacements();
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
+    private final Map<UUID, CustomMessageTarget<? extends CommandSource>> targets = Maps.newHashMap();
+    private final Map<String, UUID> targetNames = Maps.newHashMap();
+
     public static final String socialSpyOption = "nucleus.socialspy.level";
 
     public MessageHandler(Nucleus nucleus) throws Exception {
@@ -88,6 +98,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     @Override public boolean canSpySameLevel() {
         return this.sameLevel;
+    }
+
+    @Override public int getCustomTargetLevel() {
+        return messageConfig.getCustomTargetLevel();
     }
 
     @Override public int getServerLevel() {
@@ -206,10 +220,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
         // Create the tokens.
         Map<String, Function<CommandSource, Optional<Text>>> tokens = Maps.newHashMap();
-        tokens.put("from", cs -> Optional.of(textParsingUtils.addCommandToName(sender)));
-        tokens.put("to", cs -> Optional.of(textParsingUtils.addCommandToName(receiver)));
-        tokens.put("fromdisplay", cs -> Optional.of(textParsingUtils.addCommandToDisplayName(sender)));
-        tokens.put("todisplay", cs -> Optional.of(textParsingUtils.addCommandToDisplayName(receiver)));
+        tokens.put("from", cs -> getNameFromCommandSource(sender, textParsingUtils::addCommandToName));
+        tokens.put("to", cs -> getNameFromCommandSource(receiver, textParsingUtils::addCommandToName));
+        tokens.put("fromdisplay", cs -> getNameFromCommandSource(sender, textParsingUtils::addCommandToDisplayName));
+        tokens.put("todisplay", cs -> getNameFromCommandSource(receiver, textParsingUtils::addCommandToDisplayName));
 
         Text tm = useMessage(sender, message);
 
@@ -223,8 +237,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             prefix = NucleusTextTemplateFactory.createFromAmpersandString(messageConfig.getMutedTag() + prefix.getRepresentation());
         }
 
-        // Always if it's a subject who does the sending, if subject only is disabled in the config, to all.
-        if (!messageConfig.isOnlyPlayerSocialSpy() || sender instanceof Player) {
+        MessageConfig.Targets targets = messageConfig.spyOn();
+        if (sender instanceof Player && targets.isPlayer() || sender instanceof ConsoleSource && targets.isCustom() || targets.isCustom()) {
             Set<CommandSource> lm = onlinePlayersCanSpyOn(
                 !uuidSender.equals(Util.consoleFakeUUID) && !uuidReceiver.equals(Util.consoleFakeUUID), sender, receiver
             );
@@ -241,6 +255,17 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         }
 
         return !isCancelled;
+    }
+
+    private Optional<Text> getNameFromCommandSource(CommandSource source, Function<CommandSource, Text> standardFn) {
+        if (source instanceof Identifiable) {
+            CustomMessageTarget<? extends CommandSource> target = targets.get(((Identifiable) source).getUniqueId());
+            if (target != null) {
+                return Optional.of(target.getDisplayName());
+            }
+        }
+
+        return Optional.of(standardFn.apply(source));
     }
 
     public boolean replyMessage(CommandSource sender, String message) {
@@ -261,6 +286,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         return getLastMessageFrom(user.getUniqueId());
     }
 
+    @Override public <T extends CommandSource & Identifiable> Optional<CommandSource> getCommandSourceReplyTo(T from) {
+        return getLastMessageFrom(from.getUniqueId());
+    }
+
     @Override public void setReplyTo(User user, CommandSource toReplyTo) {
         messagesReceived.put(user.getUniqueId(), getUUID(Preconditions.checkNotNull(toReplyTo)));
     }
@@ -269,12 +298,37 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         messagesReceived.put(Util.consoleFakeUUID, getUUID(Preconditions.checkNotNull(toReplyTo)));
     }
 
+    @Override public <T extends CommandSource & Identifiable> void setCommandSourceReplyTo(T source, CommandSource replyTo) {
+        messagesReceived.put(source.getUniqueId(), getUUID(replyTo));
+    }
+
     @Override public void clearReplyTo(User user) {
+        messagesReceived.remove(user.getUniqueId());
+    }
+
+    @Override public <T extends CommandSource & Identifiable> void clearCommandSourceReplyTo(T user) {
         messagesReceived.remove(user.getUniqueId());
     }
 
     @Override public void clearConsoleReplyTo() {
         messagesReceived.remove(Util.consoleFakeUUID);
+    }
+
+    @Override
+    public <T extends CommandSource & Identifiable> void registerMessageTarget(UUID uniqueId, String targetName, @Nullable Text displayName,
+            Supplier<T> target) {
+        Preconditions.checkNotNull(uniqueId);
+        Preconditions.checkNotNull(targetName);
+        Preconditions.checkNotNull(target);
+        Preconditions.checkArgument(!uniqueId.equals(Util.consoleFakeUUID), "Cannot use the zero UUID");
+        Preconditions.checkArgument(targetName.toLowerCase().matches("[a-z0-9_-]{3,}"),
+                "Target name must only contain letters, numbers, hyphens and underscores. and must be at least three characters long.");
+        Preconditions.checkState(!targets.containsKey(uniqueId), "UUID already registered");
+        Preconditions.checkState(!targetNames.containsKey(targetName.toLowerCase()), "Target name already registered.");
+
+        // Create it
+        targets.put(uniqueId, new CustomMessageTarget<>(uniqueId, targetName, displayName, target));
+        targetNames.put(targetName.toLowerCase(), uniqueId);
     }
 
     public Optional<CommandSource> getLastMessageFrom(UUID from) {
@@ -288,16 +342,39 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             return Optional.of(Sponge.getServer().getConsole());
         }
 
+        if (targets.containsKey(to)) {
+            Optional<? extends CommandSource> om = targets.get(to).get();
+            if (om.isPresent()) {
+                return om.map(x -> x);
+            }
+        }
+
         return Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.getUniqueId().equals(to)).map(y -> (CommandSource) y).findFirst();
     }
 
+    public Optional<CommandSource> getTarget(String target) {
+        UUID u = targetNames.get(target.toLowerCase());
+        if (u != null) {
+            CustomMessageTarget<? extends CommandSource> cmt = targets.get(u);
+            if (cmt != null) {
+                return cmt.get().map(x -> x);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public ImmutableMap<String, UUID> getTargetNames() {
+        return ImmutableMap.copyOf(targetNames);
+    }
+
     private UUID getUUID(CommandSource sender) {
-        return sender instanceof Player ? ((Player) sender).getUniqueId() : Util.consoleFakeUUID;
+        return sender instanceof Identifiable ? ((Identifiable) sender).getUniqueId() : Util.consoleFakeUUID;
     }
 
     @SuppressWarnings("unchecked")
-    private Text constructMessage(CommandSource sender, Text message, NucleusTextTemplateImpl template, Map<String, Function<CommandSource,
-            Optional<Text>>> tokens, Map<String, Object> variables) {
+    private Text constructMessage(CommandSource sender, Text message, NucleusTextTemplateImpl template,
+            Map<String, Function<CommandSource, Optional<Text>>> tokens, Map<String, Object> variables) {
         return TextParsingUtils.joinTextsWithColoursFlowing(template.getForCommandSource(sender, tokens, variables), message);
     }
 
@@ -332,9 +409,48 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     private int getSocialSpyLevelForSource(CommandSource source) {
         if (useLevels) {
-            return source instanceof User ? getSocialSpyLevel((User) source) : serverLevel;
+            if (source instanceof User) {
+               return getSocialSpyLevel((User) source);
+            } else if (source instanceof Identifiable && targets.containsKey(((Identifiable) source).getUniqueId())) {
+                return messageConfig.getCustomTargetLevel();
+            }
+
+            return messageConfig.getServerLevel();
         }
 
         return 0;
+    }
+
+    @NonnullByDefault
+    private class CustomMessageTarget<T extends CommandSource & Identifiable> implements Identifiable {
+
+        private final UUID uuid;
+        @Nullable private final Text displayName;
+        private final Supplier<T> supplier;
+        private final String targetName;
+
+        private CustomMessageTarget(UUID uuid, String targetName, @Nullable Text displayName, Supplier<T> supplier) {
+            this.uuid = uuid;
+            this.targetName = targetName;
+            this.displayName = displayName;
+            this.supplier = supplier;
+        }
+
+        private Optional<T> get() {
+            T t = supplier.get();
+            if (t.getUniqueId().equals(uuid)) {
+                return Optional.of(t);
+            }
+
+            return Optional.empty();
+        }
+
+        private Text getDisplayName() {
+            return displayName == null ? Text.of(supplier.get().getName()) : displayName;
+        }
+
+        @Override public UUID getUniqueId() {
+            return this.uuid;
+        }
     }
 }

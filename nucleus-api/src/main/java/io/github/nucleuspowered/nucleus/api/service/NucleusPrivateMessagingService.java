@@ -7,10 +7,16 @@ package io.github.nucleuspowered.nucleus.api.service;
 import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Identifiable;
 import org.spongepowered.api.util.Tristate;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
 
 /**
  * A service that contains message related APIs.
@@ -53,6 +59,13 @@ public interface NucleusPrivateMessagingService {
      * @return Whether the server allows those with the same social spy level to spy on each other.
      */
     boolean canSpySameLevel();
+
+    /**
+     * Gets the social spy level for any message targets registered using {@link #registerMessageTarget(UUID, String, Text, Supplier)}.
+     *
+     * @return The target's social spy level.
+     */
+    int getCustomTargetLevel();
 
     /**
      * Gets the social spy level the server is assigned. Typically (but not always) this is {@link Integer#MAX_VALUE}, or zero if levels aren't
@@ -143,6 +156,15 @@ public interface NucleusPrivateMessagingService {
     Optional<CommandSource> getReplyTo(User from);
 
     /**
+     * Gets the {@link CommandSource} that the specified {@link T} will reply to if <code>/r</code> is used, if any.
+     *
+     * @param from The {@link T} to inspect.
+     * @param <T> The {@link Identifiable} {@link CommandSource} type.
+     * @return The {@link CommandSource}.
+     */
+    <T extends CommandSource & Identifiable> Optional<CommandSource> getCommandSourceReplyTo(T from);
+
+    /**
      * Sets the {@link CommandSource} that the specified {@link User} will reply to if <code>/r</code> is used.
      * @param user The {@link User} to modify.
      * @param toReplyTo The {@link CommandSource}.
@@ -156,13 +178,56 @@ public interface NucleusPrivateMessagingService {
     void setConsoleReplyTo(CommandSource toReplyTo);
 
     /**
+     * Sets the {@link CommandSource} that the specified {@link CommandSource} will reply to if <code>/r</code> is used.
+     *
+     * <p>
+     *     If the {@link CommandSource} in both cases isn't a normal target or isn't registered, this will fail silently.
+     * </p>
+     *
+     * @param source The {@link T} to modify.
+     * @param <T> The {@link Identifiable} {@link CommandSource} type.
+     * @param replyTo The {@link CommandSource} to now reply to.
+     */
+    <T extends CommandSource & Identifiable> void setCommandSourceReplyTo(T source, CommandSource replyTo);
+
+    /**
      * Removes the {@link CommandSource} that the specified {@link User} will reply to if <code>/r</code> is used.
      * @param user The {@link User} to modify.
      */
     void clearReplyTo(User user);
 
     /**
+     * Removes the {@link CommandSource} that the specified {@link CommandSource} will reply to if <code>/r</code> is used.
+     * @param user The {@link User} to modify.
+     * @param <T> The {@link Identifiable} {@link CommandSource} type.
+     */
+    <T extends CommandSource & Identifiable> void clearCommandSourceReplyTo(T user);
+
+    /**
      * Removes the {@link CommandSource} that the console will reply to if <code>/r</code> is used.
      */
     void clearConsoleReplyTo();
+
+    /**
+     * Registers a message target. The target's UUID must remain constant, otherwise Nucleus will treat any interaction as coming from the console.
+     *
+     * <p>
+     *     A message target is, perhaps unsurprisingly, a valid target for messaging. Players can message this target using
+     *     <code>/m &lt;targetName&gt; [message]</code>
+     * </p>
+     * <p>
+     *     Message targets <em>cannot</em> be ignored. They are mostly intended for bot use.
+     * </p>
+     *
+     * @param uniqueId The {@link UUID} of the target.
+     * @param targetName The name of the target in commands.
+     * @param displayName The display name of the target. If <code>null</code>, {@link CommandSource#getName()} is used.
+     * @param target A {@link Supplier} of the message target, which must implement both {@link CommandSource} and {@link Identifiable}.
+     * @param <T> The type that implements both {@link CommandSource} and {@link Identifiable}.
+     * @throws NullPointerException thrown if any non {@link Nullable} parameter is null.
+     * @throws IllegalArgumentException thrown if the {@link UUID} is the zero UUID.
+     * @throws IllegalStateException thrown if the {@link UUID} has already been registered.
+     */
+    <T extends CommandSource & Identifiable> void registerMessageTarget(UUID uniqueId, String targetName, @Nullable Text displayName, Supplier<T> target)
+        throws NullPointerException, IllegalArgumentException, IllegalStateException;
 }
