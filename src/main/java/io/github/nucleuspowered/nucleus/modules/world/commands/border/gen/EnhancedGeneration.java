@@ -169,8 +169,8 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
                         System.gc();
 
                         if (getMemPercent() >= 90) {
-                            NucleusPlugin.getNucleus().getMessageProvider()
-                                    .getTextMessageWithFormat("command.pregen.gen.memory.high", String.valueOf(percent));
+                            getChannel().send(NucleusPlugin.getNucleus().getMessageProvider()
+                                    .getTextMessageWithFormat("command.pregen.gen.memory.high", String.valueOf(percent)));
                             highMemTriggered = true;
                         }
                     } else {
@@ -180,7 +180,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
                 } else if (highMemTriggered && percent <= 80) {
                     // Get the memory usage down to 80% to prevent too much ping pong.
                     highMemTriggered = false;
-                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.memory.low");
+                    getChannel().send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.memory.low"));
                 }
             }
 
