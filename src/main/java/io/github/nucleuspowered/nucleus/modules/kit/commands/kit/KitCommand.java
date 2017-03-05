@@ -192,6 +192,7 @@ public class KitCommand extends AbstractCommand<Player> {
             return CommandResult.success();
         } else {
             // Failed.
+            Sponge.getEventManager().post(new KitEvent.FailedRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fail", kitName));
             return CommandResult.empty();
         }

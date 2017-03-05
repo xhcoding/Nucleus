@@ -67,5 +67,10 @@ public interface NucleusKitEvent extends Event {
          * Fired when a player's kit has been updated.
          */
         interface Post extends Redeem {}
+
+        /**
+         * Fired when a player's kit could not be updated.
+         */
+        interface Failed extends Redeem {}
     }
 }

@@ -173,6 +173,7 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         } else {
             // Failed.
+            Sponge.getEventManager().post(new KitEvent.FailedRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.give.fail", plugin.getNameUtil().getSerialisedName(player), kitName));
         }
     }

@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 public abstract class KitEvent extends AbstractEvent implements NucleusKitEvent {
 
-    public static class PreRedeem extends KitEvent implements NucleusKitEvent.Redeem.Pre {
+    public static class Redeem extends KitEvent implements NucleusKitEvent.Redeem {
 
         private final Cause cause;
         private final String name;
@@ -28,10 +28,7 @@ public abstract class KitEvent extends AbstractEvent implements NucleusKitEvent 
         @Nullable private final Instant lastTime;
         private final Player targetPlayer;
 
-        @Nullable private Text cancelMessage = null;
-        private boolean isCancelled;
-
-        public PreRedeem(Cause cause, @Nullable Instant lastTime, String name, Kit kit, Player targetPlayer) {
+        public Redeem(Cause cause, @Nullable Instant lastTime, String name, Kit kit, Player targetPlayer) {
             this.cause = cause;
             this.name = name;
             this.kit = kit;
@@ -51,20 +48,30 @@ public abstract class KitEvent extends AbstractEvent implements NucleusKitEvent 
             return this.kit;
         }
 
-        @Override public boolean isCancelled() {
-            return this.isCancelled;
-        }
-
-        @Override public void setCancelled(boolean cancel) {
-            this.isCancelled = cancel;
-        }
-
         @Override public Player getTargetEntity() {
             return targetPlayer;
         }
 
         @Override public Cause getCause() {
             return cause;
+        }
+    }
+
+    public static class PreRedeem extends Redeem implements NucleusKitEvent.Redeem.Pre {
+
+        @Nullable private Text cancelMessage = null;
+        private boolean isCancelled;
+
+        public PreRedeem(Cause cause, @Nullable Instant lastTime, String name, Kit kit, Player targetPlayer) {
+            super(cause, lastTime, name, kit, targetPlayer);
+        }
+
+        @Override public boolean isCancelled() {
+            return this.isCancelled;
+        }
+
+        @Override public void setCancelled(boolean cancel) {
+            this.isCancelled = cancel;
         }
 
         @Override public Optional<Text> getCancelMessage() {
@@ -76,40 +83,17 @@ public abstract class KitEvent extends AbstractEvent implements NucleusKitEvent 
         }
     }
 
-    public static class PostRedeem extends KitEvent implements NucleusKitEvent.Redeem.Post {
-
-        private final Cause cause;
-        private final String name;
-        private final Kit kit;
-        @Nullable private final Instant lastTime;
-        private final Player targetPlayer;
+    public static class PostRedeem extends Redeem implements NucleusKitEvent.Redeem.Post {
 
         public PostRedeem(Cause cause, @Nullable Instant lastTime, String name, Kit kit, Player targetPlayer) {
-            this.cause = cause;
-            this.name = name;
-            this.kit = kit;
-            this.targetPlayer = targetPlayer;
-            this.lastTime = lastTime;
+            super(cause, lastTime, name, kit, targetPlayer);
         }
+    }
 
-        @Override public Optional<Instant> getLastRedeemedTime() {
-            return Optional.ofNullable(lastTime);
-        }
+    public static class FailedRedeem extends Redeem implements NucleusKitEvent.Redeem.Failed {
 
-        @Override public String getName() {
-            return this.name;
-        }
-
-        @Override public Kit getRedeemedKit() {
-            return this.kit;
-        }
-
-        @Override public Player getTargetEntity() {
-            return targetPlayer;
-        }
-
-        @Override public Cause getCause() {
-            return cause;
+        public FailedRedeem(Cause cause, @Nullable Instant lastTime, String name, Kit kit, Player targetPlayer) {
+            super(cause, lastTime, name, kit, targetPlayer);
         }
     }
 }
