@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.events.NucleusKitEvent;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -19,13 +20,17 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.kit.events.KitEvent;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -84,8 +89,9 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
         Instant now = Instant.now();
 
         // If the kit was used before...
+        Optional<Instant> oi = Util.getValueIgnoreCase(user.getKitLastUsedTime(), kitName);
+        Cause cause = Cause.of(NamedCause.owner(src));
         if (!skip) {
-            Optional<Instant> oi = Util.getValueIgnoreCase(user.getKitLastUsedTime(), kitName);
             if (oi.isPresent()) {
 
                 // if it's one time only and the user does not have an exemption...
@@ -111,6 +117,12 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
                                 plugin.getNameUtil().getSerialisedName(player), Util.getTimeStringFromSeconds(d.getSeconds()), kitName));
                     }
                 }
+            }
+
+            NucleusKitEvent.Redeem.Pre preEvent = new KitEvent.PreRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player);
+            if (Sponge.getEventManager().post(preEvent)) {
+                throw new ReturnMessageException(preEvent.getCancelMessage()
+                        .orElseGet(() -> (plugin.getMessageProvider().getTextMessageWithFormat("command.kit.cancelledpre", kitName))));
             }
         }
 
@@ -155,6 +167,8 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
 
             kit.redeemKitCommands(player);
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.give.spawned", plugin.getNameUtil().getSerialisedName(player), kitName));
+
+            Sponge.getEventManager().post(new KitEvent.PostRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
             return CommandResult.success();
         } else {
