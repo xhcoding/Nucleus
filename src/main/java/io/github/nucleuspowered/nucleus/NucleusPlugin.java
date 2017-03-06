@@ -237,6 +237,7 @@ public class NucleusPlugin extends Nucleus {
                         Sponge.getEventManager().post(new BaseModuleEvent.PreEnable(this));
                     })
                     .setOnPostEnable(() -> Sponge.getEventManager().post(new BaseModuleEvent.Enabled(this)))
+                    .setRequireModuleDataAnnotation(true)
                     .build();
 
             moduleContainer.startDiscover();
