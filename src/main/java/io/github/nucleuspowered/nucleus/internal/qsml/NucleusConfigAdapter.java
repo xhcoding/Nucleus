@@ -10,9 +10,9 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.quickstart.config.AbstractAdaptableConfig;
-import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
+import uk.co.drnaylor.quickstart.config.TypedAbstractConfigAdapter;
 
-public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
+public abstract class NucleusConfigAdapter<R> extends TypedAbstractConfigAdapter<R> {
 
     @Inject private NucleusPlugin plugin;
 
@@ -20,33 +20,6 @@ public abstract class NucleusConfigAdapter<R> extends AbstractConfigAdapter<R> {
     @SuppressWarnings("unchecked")
     public void onAttach(String module, AbstractAdaptableConfig<?, ?> adapter) {
         plugin.preInjectorUpdate((Class)this.getClass(), this);
-    }
-
-    public final R getNodeOrDefault() {
-        try {
-            R node = getNode();
-            if (node != null) {
-                return node;
-            }
-        } catch (ObjectMappingException e) {
-            //
-        }
-
-        return getDefaultObject();
-    }
-
-    protected abstract R getDefaultObject();
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected ConfigurationNode generateDefaults(ConfigurationNode node) {
-        R o = getDefaultObject();
-        try {
-            return node.setValue(TypeToken.of((Class<R>)o.getClass()), o);
-        } catch (ObjectMappingException e) {
-            e.printStackTrace();
-            return node;
-        }
     }
 
     public abstract static class Standard<R> extends NucleusConfigAdapter<R> {
