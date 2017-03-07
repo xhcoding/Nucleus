@@ -11,8 +11,6 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.freezeplayer.datamodules.FreezePlayerUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,10 +20,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Permissions
+@Permissions(supportsOthers = true)
 @RegisterCommand({"freezeplayer", "freeze"})
 public class FreezePlayerCommand extends AbstractCommand<CommandSource> {
 
@@ -33,13 +28,6 @@ public class FreezePlayerCommand extends AbstractCommand<CommandSource> {
 
     private final String player = "subject";
     private final String truefalsekey = "true|false";
-
-    @Override
-    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
-        Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.others", this.getAliases()[0]), SuggestedLevel.ADMIN));
-        return m;
-    }
 
     @Override
     public CommandElement[] getArguments() {
