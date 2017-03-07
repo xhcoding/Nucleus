@@ -99,7 +99,7 @@ public class DocGenCache {
         }
         cmd.setOneLineDescription(desc);
 
-        String extendedDescription = abstractCommand.getExtendedDescription().replaceAll("\n", "|br|");
+        String extendedDescription = abstractCommand.getExtendedDescription().replace("\n", "|br|").replace("\"", "&quot;");
         if (!extendedDescription.isEmpty()) {
             cmd.setExtendedDescription(extendedDescription);
         }
