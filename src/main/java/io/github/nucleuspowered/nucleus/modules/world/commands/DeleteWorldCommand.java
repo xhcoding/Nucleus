@@ -55,13 +55,17 @@ public class DeleteWorldCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(world), NucleusWorldPropertiesArgument.Type.DISABLED_ONLY)),
+            GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(world), NucleusWorldPropertiesArgument.Type.ALL)),
         };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         WorldProperties properties = args.<WorldProperties>getOne(world).get();
+        if (!properties.isEnabled()) {
+            throw ReturnMessageException.fromKey("args.worldproperties.noexistdisabled", properties.getWorldName());
+        }
+
         if (confirm != null && confirm.getFirst().isAfter(Instant.now()) && confirm.getSecond().equals(Util.getUUID(src)) && confirm.getThird().getUniqueId().equals(properties.getUniqueId())) {
             try {
                 completeDeletion(src);
