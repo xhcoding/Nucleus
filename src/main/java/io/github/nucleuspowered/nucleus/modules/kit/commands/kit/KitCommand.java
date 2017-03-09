@@ -153,7 +153,6 @@ public class KitCommand extends AbstractCommand<Player> {
         if (tristate != Tristate.TRUE) {
             if (mustConsumeAll) {
                 Inventory inventory = Util.getStandardInventory(player);
-                inventory.clear();
 
                 // Slots
                 Iterator<Inventory> slot = inventory.slots().iterator();
@@ -161,6 +160,7 @@ public class KitCommand extends AbstractCommand<Player> {
                 // Slots to restore
                 slotList.forEach(x -> {
                     Inventory i = slot.next();
+                    i.clear();
                     x.ifPresent(y -> i.offer(y.createStack()));
                 });
 
