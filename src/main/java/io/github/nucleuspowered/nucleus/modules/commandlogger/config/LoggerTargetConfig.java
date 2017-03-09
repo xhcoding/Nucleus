@@ -14,13 +14,13 @@ public class LoggerTargetConfig {
     private boolean logPlayer = true;
 
     @Setting("command-block")
-    private boolean logCommandBlock = true;
+    private boolean logCommandBlock = false;
 
     @Setting("console")
     private boolean logConsole = true;
 
     @Setting("other-source")
-    private boolean logOther = true;
+    private boolean logOther = false;
 
     public boolean isLogPlayer() {
         return logPlayer;
