@@ -6,17 +6,16 @@ package io.github.nucleuspowered.nucleus.modules.ignore.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusNoIgnoreChannel;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.ignore.commands.IgnoreCommand;
 import io.github.nucleuspowered.nucleus.modules.ignore.datamodules.IgnoreUserDataModule;
-import io.github.nucleuspowered.nucleus.util.MessageChannelWrapper;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
@@ -24,6 +23,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.channel.MessageReceiver;
+import org.spongepowered.api.text.channel.MutableMessageChannel;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,20 +31,22 @@ import java.util.Optional;
 
 public class IgnoreListener extends ListenerBase {
 
-    @Inject private PermissionRegistry permissionRegistry;
     @Inject private UserDataManager loader;
     @Inject private CoreConfigAdapter cca;
-    private CommandPermissionHandler ignoreHandler;
+    private CommandPermissionHandler ignoreHandler = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(IgnoreCommand.class);
 
-    @Listener(order = Order.FIRST)
+    @Listener(order = Order.LATE)
     public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
         if (event.getChannel().orElseGet(event::getOriginalChannel) instanceof NucleusNoIgnoreChannel) {
             return;
         }
 
         // Reset the channel - but only if we have to.
-        checkCancels(event.getChannel().orElseGet(event::getOriginalChannel).getMembers(), player).ifPresent(x ->
-                event.setChannel(new MessageChannelWrapper(event.getChannel().orElseGet(event::getOriginalChannel), x)));
+        checkCancels(event.getChannel().orElseGet(event::getOriginalChannel).getMembers(), player).ifPresent(x -> {
+            MutableMessageChannel mmc = event.getChannel().orElseGet(event::getOriginalChannel).asMutable();
+            x.forEach(mmc::removeMember);
+            event.setChannel(mmc);
+        });
     }
 
     @Listener(order = Order.FIRST)
@@ -55,7 +57,7 @@ public class IgnoreListener extends ListenerBase {
                         .get(IgnoreUserDataModule.class)
                         .getIgnoreList().contains(player.getUniqueId()));
             } catch (Exception e) {
-                if (cca.getNodeOrDefault().isDebugmode()) {
+                if (plugin.isDebugMode()) {
                     e.printStackTrace();
                 }
             }
@@ -69,7 +71,7 @@ public class IgnoreListener extends ListenerBase {
                     .get(IgnoreUserDataModule.class)
                     .getIgnoreList().contains(player.getUniqueId()));
         } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
+            if (plugin.isDebugMode()) {
                 e.printStackTrace();
             }
         }
@@ -80,13 +82,9 @@ public class IgnoreListener extends ListenerBase {
      *
      * @param collection The collection to check through.
      * @param player The subject who is sending the message.
-     * @return {@link Optional} if unchanged, otherwise a {@link Collection} of {@link MessageReceiver}s
+     * @return {@link Optional} if unchanged, otherwise a {@link Collection} of {@link MessageReceiver}s to remove
      */
     private Optional<Collection<MessageReceiver>> checkCancels(Collection<MessageReceiver> collection, Player player) {
-        if (ignoreHandler == null) {
-            ignoreHandler = permissionRegistry.getPermissionsForNucleusCommand(IgnoreCommand.class);
-        }
-
         if (ignoreHandler.testSuffix(player, "exempt.chat")) {
             return Optional.empty();
         }
@@ -94,20 +92,32 @@ public class IgnoreListener extends ListenerBase {
         List<MessageReceiver> list = Lists.newArrayList(collection);
         list.removeIf(x -> {
             try {
-                return x instanceof Player && !x.equals(player) && loader.get((Player) x).get()
+                if (!(x instanceof Player)) {
+                    // Remove if not a player.
+                    return true;
+                }
+
+                if (x.equals(player)) {
+                    // Remove if the same player.
+                    return true;
+                }
+
+                // Don't remove if they are in the list.
+                return !loader.getUnchecked((Player) x)
                         .get(IgnoreUserDataModule.class)
                         .getIgnoreList().contains(player.getUniqueId());
             } catch (Exception e) {
-                if (cca.getNodeOrDefault().isDebugmode()) {
+                if (plugin.isDebugMode()) {
                     e.printStackTrace();
                 }
 
-                return false;
+                // Remove them.
+                return true;
             }
         });
 
         // We do this so we don't have to recreate a channel if nothing changes.
-        if (list.size() == collection.size()) {
+        if (list.isEmpty()) {
             return Optional.empty();
         }
 
