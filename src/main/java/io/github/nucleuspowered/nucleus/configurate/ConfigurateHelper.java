@@ -6,11 +6,12 @@ package io.github.nucleuspowered.nucleus.configurate;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.configurate.objectmapper.NucleusObjectMapperFactory;
+import io.github.nucleuspowered.neutrino.objectmapper.NeutrinoObjectMapperFactory;
+import io.github.nucleuspowered.neutrino.typeserialisers.PatternTypeSerialiser;
+import io.github.nucleuspowered.neutrino.typeserialisers.SetTypeSerialiser;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusItemStackSnapshotSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusTextTemplateTypeSerialiser;
-import io.github.nucleuspowered.nucleus.configurate.typeserialisers.PatternTypeSerialiser;
-import io.github.nucleuspowered.nucleus.configurate.typeserialisers.SetTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSnapshot;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
@@ -22,6 +23,7 @@ import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConfigurateHelper {
@@ -29,6 +31,24 @@ public class ConfigurateHelper {
     private ConfigurateHelper() {}
 
     private static TypeSerializerCollection typeSerializerCollection = null;
+    private final static NeutrinoObjectMapperFactory objectMapperFactory;
+    private static final Pattern commentPattern = Pattern.compile("^(loc:)?(?<key>([a-zA-Z0-9_-]+\\.?)+)$");
+
+    static {
+        objectMapperFactory = NeutrinoObjectMapperFactory.builder()
+            .setCommentProcessor(setting -> {
+                String comment = setting.comment();
+                if (comment.contains(".") && !comment.contains(" ")) {
+                    Matcher matcher = commentPattern.matcher(comment);
+
+                    if (matcher.matches()) {
+                        return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat(matcher.group("key"));
+                    }
+                }
+
+                return comment;
+        }).build(true);
+    }
 
     public static CommentedConfigurationNode getNewNode() {
         return SimpleCommentedConfigurationNode.root(setOptions(ConfigurationOptions.defaults()));
@@ -44,7 +64,7 @@ public class ConfigurateHelper {
         TypeSerializerCollection tsc = getNucleusTypeSerialiserCollection();
 
         // Allows us to use localised comments and @ProcessSetting annotations
-        return options.setSerializers(tsc).setObjectMapperFactory(NucleusObjectMapperFactory.getInstance());
+        return options.setSerializers(tsc).setObjectMapperFactory(objectMapperFactory);
     }
 
     private static TypeSerializerCollection getNucleusTypeSerialiserCollection() {

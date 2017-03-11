@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.mob.config;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
-import io.github.nucleuspowered.nucleus.configurate.settingprocessor.LowercaseListSettingProcessor;
+import io.github.nucleuspowered.neutrino.annotations.ProcessSetting;
+import io.github.nucleuspowered.neutrino.settingprocessor.LowercaseListSettingProcessor;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
