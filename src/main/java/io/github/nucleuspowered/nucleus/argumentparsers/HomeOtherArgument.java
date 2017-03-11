@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -65,15 +66,20 @@ public class HomeOtherArgument extends HomeArgument {
             Optional<String> arg2 = args.nextIfPresent();
             if (arg2.isPresent()) {
                 // Get the user
-                User user = (User)this.nickArg.parseInternal(arg1, src, args);
-                return this.complete(user, arg2.get());
+                List<?> u = this.nickArg.parseInternal(arg1, src, args);
+                if (!u.isEmpty()) {
+                    User user = (User)(u.get(0));
+                    return this.complete(user, arg2.get());
+                }
             } else {
                 args.setState(saveState);
                 return nickArg.complete(src, args, context);
             }
 
         } catch (Exception e) {
-            //
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
         } finally {
             if (saveState != null) {
                 args.setState(saveState);

@@ -5,7 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.afk.handlers;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
@@ -23,6 +25,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextRepresentable;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -48,7 +51,11 @@ public class AFKHandler implements NucleusAFKService {
 
     @GuardedBy("lock")
     private final Set<UUID> activity = Sets.newHashSet();
+
+    @GuardedBy("lock2")
+    private final Multimap<UUID, UUID> disabledTracking = HashMultimap.create();
     private final Object lock = new Object();
+    private final Object lock2 = new Object();
 
     private final String exempttoggle = "exempt.toggle";
     private final String exemptkick = "exempt.kick";
@@ -71,6 +78,12 @@ public class AFKHandler implements NucleusAFKService {
 
     private void stageUserActivityUpdate(UUID uuid) {
         synchronized (lock) {
+            synchronized (lock2) {
+                if (disabledTracking.containsKey(uuid)) {
+                    return;
+                }
+            }
+
             activity.add(uuid);
         }
     }
@@ -281,6 +294,24 @@ public class AFKHandler implements NucleusAFKService {
 
     @Override public void invalidateCachedPermissions() {
         invalidateAfkCache();
+    }
+
+    @Override public AutoCloseable disableTrackingFor(final Player player, int ticks) {
+        // Disable tracking now with a new UUID.
+        Task n = Task.builder().execute(t -> {
+            synchronized (lock2) {
+                disabledTracking.remove(player.getUniqueId(), t.getUniqueId());
+            }
+        }).delayTicks(ticks).submit(plugin);
+
+        synchronized (lock2) {
+            disabledTracking.put(player.getUniqueId(), n.getUniqueId());
+        }
+
+        return () -> {
+            n.cancel();
+            n.getConsumer().accept(n);
+        };
     }
 
     private AFKData getData(UUID uuid) {

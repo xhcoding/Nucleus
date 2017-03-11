@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.configurate.settingprocessor;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
+import io.github.nucleuspowered.neutrino.settingprocessor.SettingProcessor;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;

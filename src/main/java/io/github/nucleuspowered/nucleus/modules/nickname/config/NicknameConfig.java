@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.config;
 
-import io.github.nucleuspowered.nucleus.configurate.annotations.Default;
+import io.github.nucleuspowered.neutrino.annotations.Default;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 

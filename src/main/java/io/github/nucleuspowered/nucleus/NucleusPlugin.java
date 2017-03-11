@@ -103,7 +103,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION,
-        dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.0", optional = true))
+        dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.2", optional = true))
 public class NucleusPlugin extends Nucleus {
 
     private final PluginContainer pluginContainer;
@@ -156,6 +156,7 @@ public class NucleusPlugin extends Nucleus {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
+        // Setup object mapper.
         ConsoleSource s = Sponge.getServer().getConsole();
         s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
         s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome", PluginInfo.NAME,
@@ -237,6 +238,7 @@ public class NucleusPlugin extends Nucleus {
                         Sponge.getEventManager().post(new BaseModuleEvent.PreEnable(this));
                     })
                     .setOnPostEnable(() -> Sponge.getEventManager().post(new BaseModuleEvent.Enabled(this)))
+                    .setRequireModuleDataAnnotation(true)
                     .build();
 
             moduleContainer.startDiscover();

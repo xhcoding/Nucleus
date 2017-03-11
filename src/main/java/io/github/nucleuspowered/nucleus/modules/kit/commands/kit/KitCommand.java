@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.events.NucleusKitEvent;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -24,12 +25,16 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.kit.events.KitEvent;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -130,6 +135,14 @@ public class KitCommand extends AbstractCommand<Player> {
             }
         }
 
+        // Kit pre redeem
+        Cause cause = Cause.of(NamedCause.owner(player));
+        NucleusKitEvent.Redeem.Pre preEvent = new KitEvent.PreRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player);
+        if (Sponge.getEventManager().post(preEvent)) {
+            throw new ReturnMessageException(preEvent.getCancelMessage()
+                .orElseGet(() -> (plugin.getMessageProvider().getTextMessageWithFormat("command.kit.cancelledpre", kitName))));
+        }
+
         boolean mustConsumeAll = kca.getNodeOrDefault().isMustGetAll();
         boolean dropItems = kca.getNodeOrDefault().isDropKitIfFull();
 
@@ -140,7 +153,6 @@ public class KitCommand extends AbstractCommand<Player> {
         if (tristate != Tristate.TRUE) {
             if (mustConsumeAll) {
                 Inventory inventory = Util.getStandardInventory(player);
-                inventory.clear();
 
                 // Slots
                 Iterator<Inventory> slot = inventory.slots().iterator();
@@ -148,6 +160,7 @@ public class KitCommand extends AbstractCommand<Player> {
                 // Slots to restore
                 slotList.forEach(x -> {
                     Inventory i = slot.next();
+                    i.clear();
                     x.ifPresent(y -> i.offer(y.createStack()));
                 });
 
@@ -173,10 +186,13 @@ public class KitCommand extends AbstractCommand<Player> {
             // Register the last used time. Do it for everyone, in case
             // permissions or cooldowns change later
             user.addKitLastUsedTime(kitName, now);
+
+            Sponge.getEventManager().post(new KitEvent.PostRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
             return CommandResult.success();
         } else {
             // Failed.
+            Sponge.getEventManager().post(new KitEvent.FailedRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fail", kitName));
             return CommandResult.empty();
         }

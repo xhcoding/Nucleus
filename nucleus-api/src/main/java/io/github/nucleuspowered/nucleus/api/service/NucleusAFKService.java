@@ -83,4 +83,59 @@ public interface NucleusAFKService {
      * Invalidates cached permissions, used to resync a player's exemption status.
      */
     void invalidateCachedPermissions();
+
+    /**
+     * Disables activity tracking for the specified {@link Player} for the next tick. See {@link #disableTrackingFor(Player, int)} for more
+     * information on how to use this method.
+     *
+     * @param player Player to disable tracking for.
+     * @return The {@link AutoCloseable} that will re-enable the tracking when done.
+     *
+     * @see #disableTrackingFor(Player, int)
+     */
+    default AutoCloseable disableTrackingFor(Player player) {
+        return disableTrackingFor(player, 1);
+    }
+
+    /**
+     * Disables activity tracking for the specified {@link Player} for up to the number of ticks specified.
+     *
+     * <p>
+     *     This method returns an {@link AutoCloseable}, and as such, the recommended way of using this method is using "try with resources":
+     * </p>
+     * <pre>
+     *     try (AutoClosable dummy = disableTrackingFor(player, 1)){
+     *         // perform actions here, most likely something like:
+     *         player.setLocation(location);
+     *
+     *         // Any actions here will not disable the AFK timer.
+     *     }
+     *
+     *     // any actions here that move the player will be tracked again.
+     * </pre>
+     * <p>
+     *     This pattern isn't strictly required, as the {@link AutoCloseable} will close itself after the specified number of ticks. However, it's
+     *     prudent to consider the following:
+     * </p>
+     * <ul>
+     *     <li>
+     *         This method will reset the tracking on the main thread. This means if you use this async (though usually, you wouldn't do so), you
+     *         will possibly find that the tracking will re-enable before the task finishes on the defaults. Minimise the amount of time the
+     *         activity tracking must be disabled, and consider increasing the tick count slightly.
+     *     </li>
+     *     <li>
+     *         There is no need to increase the tick parameter on the main thread. Consider using {@link #disableTrackingFor(Player)} for a sane
+     *         default.
+     *     </li>
+     * </ul>
+     *
+     * <p>
+     *      If you do not use "try with resources", call the <code>close</code> method upon completion to reactivate tracking.
+     * </p>
+     *
+     * @param player The {@link Player} to disable tracking for.
+     * @param ticks The number of ticks to disable tracking for.
+     * @return The {@link AutoCloseable} that will re-enable the tracking when done.
+     */
+    AutoCloseable disableTrackingFor(Player player, int ticks);
 }

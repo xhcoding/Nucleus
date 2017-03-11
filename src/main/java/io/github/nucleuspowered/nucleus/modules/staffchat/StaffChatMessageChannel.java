@@ -59,7 +59,7 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
         }
 
         Text prefix = template.getForCommandSource((CommandSource)sender);
-        getMembers().forEach(x -> x.sendMessage(Text.of(prefix, colour, original)));
+        NucleusChatChannel.StaffChat.super.send(sender, Text.of(prefix, colour, original), type);
     }
 
     @Override

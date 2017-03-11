@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.environment.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WeatherArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -13,7 +14,11 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.environment.config.EnvironmentConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -22,11 +27,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.weather.Weather;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Permissions
@@ -36,56 +42,51 @@ public class WeatherCommand extends AbstractCommand<CommandSource> {
     private final String world = "world";
     private final String weather = "weather";
     private final String duration = "duration";
-    private final String timespan = "timespan";
 
     @Inject private WorldDataManager loader;
+    @Inject private EnvironmentConfigAdapter eca;
+
+    @Override
+    public Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("exempt.length", PermissionInformation.getWithTranslation("permission.weather.exempt.length", SuggestedLevel.ADMIN));
+        return m;
+    }
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[]{
-                GenericArguments.optionalWeak(GenericArguments.onlyOne(GenericArguments.world(Text.of(world)))),
+                GenericArguments.optionalWeak(GenericArguments.onlyOne(
+                        new NucleusWorldPropertiesArgument(Text.of(world), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY))),
                 GenericArguments.onlyOne(new WeatherArgument(Text.of(weather))), // More flexible with the arguments we can use.
-                GenericArguments.firstParsing(
-                        GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.integer(Text.of(duration)))),
-                        GenericArguments.onlyOne(GenericArguments.optional(new TimespanArgument(Text.of(timespan))))
-                )
+                GenericArguments.onlyOne(GenericArguments.optional(new TimespanArgument(Text.of(duration))))
         };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // We can predict the weather on multiple worlds now!
-        WorldProperties wp = args.<WorldProperties>getOne(world).orElse(null);
-        World w;
-        if (wp != null) {
-            w = Sponge.getServer().getWorld(wp.getUniqueId()).get();
-        } else {
-            // Actually, we just care about where we are.
-            if (src instanceof Locatable) {
-                w = ((Locatable) src).getWorld();
-            } else {
-                // As supreme overlord of the worlds... you have to specify one.
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.specifyworld"));
-                return CommandResult.empty();
-            }
-        }
+        WorldProperties wp = this.getWorldFromUserOrArgs(src, world, args);
+        World w = Sponge.getServer().getWorld(wp.getUniqueId())
+            .orElseThrow(() -> ReturnMessageException.fromKey("args.worldproperties.notloaded", wp.getWorldName()));
 
         // Get whether we locked the weather.
         ModularWorldService ew = loader.getWorld(w).get();
         if (ew.quickGet(EnvironmentWorldDataModule.class, EnvironmentWorldDataModule::isLockWeather)) {
             // Tell the user to unlock first.
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.weather.locked", w.getName()));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.weather.locked", w.getName());
         }
 
         // Houston, we have a world! Now, what was the forecast?
         Weather we = args.<Weather>getOne(weather).get();
 
         // Have we gotten an accurate forecast? Do we know how long this weather spell will go on for?
-        Optional<Long> oi = args.getOne(timespan);
-        if (!oi.isPresent()) {
-            Optional<Integer> i = args.getOne(duration);
-            oi =  i.isPresent() ? Optional.of((long)i.get()) : Optional.empty();
+        Optional<Long> oi = args.getOne(duration);
+
+        // Even weather masters have their limits. Sometimes.
+        long max = eca.getNodeOrDefault().getMaximumWeatherTimespan();
+        if (max > 0 && oi.orElse(Long.MAX_VALUE) > max && !permissions.testSuffix(src, "exempt.length")) {
+            throw ReturnMessageException.fromKey("command.weather.toolong", Util.getTimeStringFromSeconds(max));
         }
 
         if (oi.isPresent()) {

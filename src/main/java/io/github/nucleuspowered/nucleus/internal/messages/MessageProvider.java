@@ -44,7 +44,16 @@ public abstract class MessageProvider {
 
     public final Text getTextMessageWithTextFormat(String key, List<Text> textList) {
         TextTemplate template = textTemplateMap.computeIfAbsent(key, k -> templateCreator(getMessageWithFormat(k)));
-        return template.apply(textList.stream().collect(Collectors.toMap(k -> String.valueOf(textList.indexOf(k)), v -> v))).build();
+        if (textList.isEmpty()) {
+            return template.toText();
+        }
+
+        Map<String, Text> objs = Maps.newHashMap();
+        for (int i = 0; i < textList.size(); i++) {
+            objs.put(String.valueOf(i), textList.get(i));
+        }
+
+        return template.apply(objs).build();
     }
 
     private TextTemplate templateCreator(String string) {

@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.configurate.datatypes;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import io.github.nucleuspowered.nucleus.configurate.annotations.ProcessSetting;
+import io.github.nucleuspowered.neutrino.annotations.ProcessSetting;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.item.BlacklistNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.item.PriceNode;
 import io.github.nucleuspowered.nucleus.configurate.settingprocessor.ItemAliasSettingProcessor;

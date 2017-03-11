@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.config;
 
-import io.github.nucleuspowered.nucleus.configurate.annotations.DoNotGenerate;
+import io.github.nucleuspowered.neutrino.annotations.DoNotGenerate;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
