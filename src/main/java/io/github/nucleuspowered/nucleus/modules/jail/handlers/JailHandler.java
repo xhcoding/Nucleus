@@ -120,7 +120,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
 
         // Get the jail.
         Optional<NamedLocation> owl = getJail(data.getJailName());
-        NamedLocation wl = owl.orElseGet(() -> {
+        NamedLocation wl = owl.filter(x -> x.getLocation().isPresent()).orElseGet(() -> {
             if (!getJails().isEmpty()) {
                 return null;
             }

@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -39,12 +40,17 @@ import java.util.Optional;
 @RegisterCommand({"checkjail"})
 public class CheckJailCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerKey = "subject";
+    private final String playerKey = "user/UUID";
     @Inject private JailHandler handler;
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.user(Text.of(playerKey)))};
+        return new CommandElement[] {
+            GenericArguments.firstParsing(
+                GenericArguments.user(Text.of(playerKey)),
+                new UUIDArgument<>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
+            )
+        };
     }
 
     @Override
