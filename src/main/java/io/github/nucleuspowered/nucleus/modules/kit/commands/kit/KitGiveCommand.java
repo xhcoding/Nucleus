@@ -166,7 +166,8 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
             }
 
             kit.redeemKitCommands(player);
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.give.spawned", plugin.getNameUtil().getSerialisedName(player), kitName));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.kit.give.spawned", plugin.getNameUtil()
+                    .getName(player), Text.of(kitName)));
 
             Sponge.getEventManager().post(new KitEvent.PostRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
@@ -174,7 +175,8 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
         } else {
             // Failed.
             Sponge.getEventManager().post(new KitEvent.FailedRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.give.fail", plugin.getNameUtil().getSerialisedName(player), kitName));
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithTextFormat("command.kit.give.fail",
+                    plugin.getNameUtil().getName(player), Text.of(kitName)));
         }
     }
 }
