@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -42,17 +43,22 @@ import java.util.Optional;
 public class CheckMuteCommand extends AbstractCommand<CommandSource> {
 
     @Inject private MuteHandler handler;
-    private final String playerArgument = "subject";
+    private final String playerKey = "user/UUID";
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.user(Text.of(playerArgument)))};
+        return new CommandElement[] {
+            GenericArguments.firstParsing(
+                GenericArguments.user(Text.of(playerKey)),
+                new UUIDArgument<>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
+            )
+        };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // Get the user.
-        User user = args.<User>getOne(playerArgument).get();
+        User user = args.<User>getOne(playerKey).get();
 
         Optional<MuteData> omd = handler.getPlayerMuteData(user);
         if (!omd.isPresent()) {

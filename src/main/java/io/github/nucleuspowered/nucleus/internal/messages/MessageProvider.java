@@ -71,13 +71,16 @@ public abstract class MessageProvider {
         Text t = TextSerializers.FORMATTING_CODE.deserialize(s[0]);
         TextParsingUtils.StyleTuple tuple = TextParsingUtils.getLastColourAndStyle(t, null);
         objects.add(t);
+        int count = 1;
         for (Integer x : map) {
             objects.add(TextTemplate.arg(x.toString()).optional().color(tuple.colour).style(tuple.style).build());
-            if (s.length > x + 1) {
-                t = Text.of(tuple.colour, tuple.style, TextSerializers.FORMATTING_CODE.deserialize(s[x + 1]));
+            if (s.length > count) {
+                t = Text.of(tuple.colour, tuple.style, TextSerializers.FORMATTING_CODE.deserialize(s[count]));
                 tuple = TextParsingUtils.getLastColourAndStyle(t, null);
                 objects.add(t);
             }
+
+            count++;
         }
 
         return TextTemplate.of((Object[])objects.toArray(new Object[objects.size()]));
