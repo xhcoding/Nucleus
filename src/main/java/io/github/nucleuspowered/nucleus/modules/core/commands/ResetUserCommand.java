@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -31,6 +32,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
 
+import java.nio.file.Files;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -116,6 +118,8 @@ public class ResetUserCommand extends AbstractCommand<CommandSource> {
             bss.addBan(Ban.builder().type(BanTypes.PROFILE).expirationDate(Instant.now().plus(30, ChronoUnit.SECONDS)).profile(user.getProfile())
                     .build());
 
+            final MessageProvider messageProvider = NucleusPlugin.getNucleus().getMessageProvider();
+
             // Unload the player in a second, just to let events fire.
             Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
                 UserDataManager ucl = plugin.getUserDataManager();
@@ -125,21 +129,24 @@ public class ResetUserCommand extends AbstractCommand<CommandSource> {
                     // Remove them from the cache immediately.
                     ucl.forceUnloadAndDelete(user.getUniqueId());
                     if (all) {
+                        String uuid = user.getUniqueId() + ".dat";
                         if (Sponge.getServiceManager().provideUnchecked(UserStorageService.class).delete(user)) {
-                            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider()
-                                .getTextMessageWithFormat("command.nucleus.reset.completeall", user.getName()));
+                            // Sponge Data
+                            Files.deleteIfExists(Sponge.getGame().getSavesDirectory().resolve("data/sponge").resolve(uuid));
+                            source.sendMessage(messageProvider
+                                    .getTextMessageWithFormat("command.nucleus.reset.completeall", user.getName()));
                         } else {
-                            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.completenonm", user.getName()));
+                            source.sendMessage(messageProvider.getTextMessageWithFormat("command.nucleus.reset.completenonm", user.getName()));
                         }
                     } else {
-                        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider()
-                            .getTextMessageWithFormat("command.nucleus.reset.complete", user.getName()));
+                        source.sendMessage(messageProvider
+                                .getTextMessageWithFormat("command.nucleus.reset.complete", user.getName()));
                     }
 
-                    source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider()
-                        .getTextMessageWithFormat("command.nucleus.reset.restartadvised", user.getName()));
+                    source.sendMessage(messageProvider
+                            .getTextMessageWithFormat("command.nucleus.reset.restartadvised", user.getName()));
                 } catch (Exception e) {
-                    source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.reset.failed", user.getName()));
+                    source.sendMessage(messageProvider .getTextMessageWithFormat("command.nucleus.reset.failed", user.getName()));
                 } finally {
                     if (!isBanned) {
                         bss.getBanFor(user.getProfile()).ifPresent(bss::removeBan);
