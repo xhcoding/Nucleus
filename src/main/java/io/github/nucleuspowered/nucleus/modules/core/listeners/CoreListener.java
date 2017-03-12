@@ -166,7 +166,7 @@ public class CoreListener extends ListenerBase {
 
     @Listener
     public void onServerAboutToStop(final GameStoppingServerEvent event) {
-        plugin.getUserDataManager().getOnlineUsers().forEach(x -> onPlayerQuit(x, x.getPlayer().get()));
+        plugin.getUserDataManager().getOnlineUsers().forEach(x -> x.getPlayer().ifPresent(y -> onPlayerQuit(x, y)));
 
         if (cca.getNodeOrDefault().isKickOnStop()) {
             Iterator<Player> players = Sponge.getServer().getOnlinePlayers().iterator();

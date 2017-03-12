@@ -50,6 +50,14 @@ public abstract class TestBase {
         setFinalStatic(field);
 
         field.set(null, new SafeTextSerializer() {
+            @Override public String getId() {
+                return "id";
+            }
+
+            @Override public String getName() {
+                return "name";
+            }
+
             @Override
             public Text deserialize(String input) {
                 return Text.of("key");
@@ -66,6 +74,14 @@ public abstract class TestBase {
         setFinalStatic(field);
 
         field.set(null, new FormattingCodeTextSerializer() {
+            @Override public String getId() {
+                return "id2";
+            }
+
+            @Override public String getName() {
+                return "name2";
+            }
+
             @Override
             public char getCharacter() {
                 return '&';
