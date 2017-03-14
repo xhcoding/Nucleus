@@ -60,11 +60,11 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
                 new NoDescriptionArgument(GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "--force"))),
 
                 // Actual arguments
-                GenericArguments.requiringPermission(
-                        GenericArguments.optionalWeak(
+                GenericArguments.optionalWeak(
+                        GenericArguments.requiringPermission(
                                 GenericArguments.onlyOne(
-                        SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER))), permissions.getOthers()),
-                GenericArguments.onlyOne(GenericArguments.optional(GenericArguments.world(Text.of(location)))),
+                        SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER)), permissions.getOthers())),
+                GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.world(Text.of(location)))),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),
                 GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(z), Integer.MIN_VALUE, Integer.MAX_VALUE))
