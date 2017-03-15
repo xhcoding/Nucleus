@@ -2,13 +2,15 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.iapi.service;
+package io.github.nucleuspowered.nucleus.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
+import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchLocationException;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Inmate;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
-import io.github.nucleuspowered.nucleus.internal.LocationData;
-import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 /**
  * A service that handles subject jailing.
  */
+@NonnullByDefault
 public interface NucleusJailService {
     /**
      * Sets a jail location in the world.
@@ -32,7 +35,7 @@ public interface NucleusJailService {
     /**
      * Gets the name of the jails on the server. All jails returned in this map exist.
      *
-     * @return A {@link Map} of names to {@link LocationData}.
+     * @return A {@link Map} of names to {@link NamedLocation}.
      */
     Map<String, NamedLocation> getJails();
 
@@ -40,7 +43,7 @@ public interface NucleusJailService {
      * Gets the location of a jail, if it exists.
      *
      * @param name The name of the jail to get. Case in-sensitive.
-     * @return An {@link Optional} that potentially contains the {@link LocationData} if the jail exists.
+     * @return An {@link Optional} that potentially contains the {@link NamedLocation} if the jail exists.
      */
     Optional<NamedLocation> getJail(String name);
 
@@ -64,18 +67,21 @@ public interface NucleusJailService {
      * Returns information about why a subject is jailed, if they are indeed jailed.
      *
      * @param user The {@link User} to check
-     * @return An {@link Optional} that will contain {@link JailData} if the subject is jailed.
+     * @return An {@link Optional} that will contain {@link Inmate} information if the subject is jailed.
      */
-    Optional<JailData> getPlayerJailData(User user);
+    Optional<Inmate> getPlayerJailData(User user);
 
     /**
      * Jails a subject if they are not currently jailed.
      *
-     * @param user The {@link User} to jail.
-     * @param data The {@link JailData} that contains information to jail with.
+     * @param victim The user to jail.
+     * @param jail The jail to send the user to.
+     * @param jailer The jailing entity.
+     * @param reason The reason for jailing.
      * @return <code>true</code> if the subject was jailed successfully.
+     * @throws NoSuchLocationException if the jail does not exist.
      */
-    boolean jailPlayer(User user, JailData data);
+    boolean jailPlayer(User victim, String jail, CommandSource jailer, String reason) throws NoSuchLocationException;
 
     /**
      * Unjails a subject if they are currently jailed.
