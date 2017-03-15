@@ -45,7 +45,7 @@ public class ClearNotesCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
 
-        List<NoteData> notes = handler.getNotes(user);
+        List<NoteData> notes = handler.getNotesInternal(user);
         if (notes.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.none", user.getName()));
             return CommandResult.success();

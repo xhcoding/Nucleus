@@ -6,6 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.note.datamodules;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Note;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
@@ -30,8 +32,9 @@ public class NoteUserDataModule extends DataModule<ModularUserService> {
         notes.add(note);
     }
 
-    public boolean removeNote(NoteData note) {
-        return notes.removeIf(x -> x.getNoter().equals(note.getNoter()) && x.getNote().equals(note.getNote()));
+    public boolean removeNote(Note note) {
+        return notes.removeIf(x -> x.getNoterInternal().equals(note.getNoter().orElseGet(() -> Util.consoleFakeUUID))
+                && x.getNote().equals(note.getNote()));
     }
 
     public boolean clearNotes() {
