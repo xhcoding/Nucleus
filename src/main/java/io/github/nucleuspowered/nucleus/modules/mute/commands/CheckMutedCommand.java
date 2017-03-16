@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -14,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
-import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -32,8 +30,6 @@ import java.util.stream.Collectors;
 @NoWarmup
 @RegisterCommand("checkmuted")
 public class CheckMutedCommand extends AbstractCommand<CommandSource> {
-
-    @Inject private JailHandler handler;
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // Using the cache, tell us who is jailed.
