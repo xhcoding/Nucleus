@@ -11,12 +11,14 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.TextMessageException;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 /**
  * A basic {@link CommandExecutor} that does not attempt to cache permission calls.
  *
  * @param <T> The type of {@link CommandSource}.
  */
+@NonnullByDefault
 public abstract class AbstractCommand<T extends CommandSource> extends StandardAbstractCommand<T> {
 
     @Override
@@ -40,6 +42,7 @@ public abstract class AbstractCommand<T extends CommandSource> extends StandardA
      */
     protected abstract CommandResult executeCommand(T src, CommandContext args) throws Exception;
 
+    @NonnullByDefault
     public abstract static class SimpleTargetOtherPlayer extends StandardAbstractCommand.SimpleTargetOtherPlayer {
 
         @Override protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> source, Player target, CommandContext args, boolean isSelf)

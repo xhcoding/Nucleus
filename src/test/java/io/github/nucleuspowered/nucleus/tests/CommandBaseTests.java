@@ -9,6 +9,7 @@ import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.NucleusCommandException;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class CommandBaseTests extends TestBase {
         getInjector().injectMembers(cmd);
         cmd.postInit();
         Player mock = getMockPlayer();
-        CommandResult result = cmd.execute(mock, getContext());
+        CommandResult result = cmd.process(mock, "");
 
         Assert.assertTrue("There should have been one success!", result.getSuccessCount().orElse(0) == 1);
     }
@@ -46,14 +47,13 @@ public class CommandBaseTests extends TestBase {
      *
      * @throws CommandException
      */
-    @Test
+    @Test(expected = NucleusCommandException.class)
     public void testThatCommandSourcesCannotExecutePlayerCommands() throws CommandException {
         PlayerCommand cmd = new PlayerCommand();
         getInjector().injectMembers(cmd);
         cmd.postInit();
         CommandSource mock = getMockCommandSource();
-        CommandResult result = cmd.execute(mock, getContext());
-        Assert.assertTrue("There should have been no successes!", !result.getSuccessCount().isPresent() || result.getSuccessCount().get() == 0);
+        CommandResult result = cmd.process(mock, "");
     }
 
     /**
@@ -67,7 +67,7 @@ public class CommandBaseTests extends TestBase {
         getInjector().injectMembers(cmd);
         cmd.postInit();
         CommandSource mock = getMockCommandSource();
-        CommandResult result = cmd.execute(mock, getContext());
+        CommandResult result = cmd.process(mock, "");
         Assert.assertTrue("There should have been one success!", result.getSuccessCount().orElse(0) == 1);
     }
 
@@ -82,17 +82,14 @@ public class CommandBaseTests extends TestBase {
         getInjector().injectMembers(cmd);
         cmd.postInit();
         Player mock = getMockPlayer();
-        CommandResult result = cmd.execute(mock, getContext());
+        CommandResult result = cmd.process(mock, "");
         Assert.assertTrue("There should have been one success!", result.getSuccessCount().orElse(0) == 1);
-    }
-
-    private CommandContext getContext() {
-        return new CommandContext();
     }
 
     private Player getMockPlayer() {
         Player pl = Mockito.mock(Player.class);
         Mockito.when(pl.hasPermission(Matchers.any())).thenReturn(true);
+        Mockito.when(pl.hasPermission(Matchers.any(), Matchers.any())).thenReturn(true);
         Mockito.when(pl.getPermissionValue(Matchers.any(), Matchers.any())).thenReturn(Tristate.TRUE);
         return pl;
     }
@@ -100,6 +97,8 @@ public class CommandBaseTests extends TestBase {
     private CommandSource getMockCommandSource() {
         CommandSource pl = Mockito.mock(CommandSource.class);
         Mockito.when(pl.hasPermission(Matchers.any())).thenReturn(true);
+        Mockito.when(pl.hasPermission(Matchers.any(), Matchers.any())).thenReturn(true);
+        Mockito.when(pl.getPermissionValue(Matchers.any(), Matchers.any())).thenReturn(Tristate.TRUE);
         return pl;
     }
 

@@ -58,6 +58,7 @@ import io.github.nucleuspowered.nucleus.logging.DebugLogger;
 import io.github.nucleuspowered.nucleus.modules.core.CoreModule;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
@@ -145,6 +146,7 @@ public class NucleusPlugin extends Nucleus {
     private final Path configDir;
     private final Path dataDir;
     @Nullable private MixinConfigProxy mixinConfigProxy = null;
+    private WarmupConfig warmupConfig;
 
     private boolean isDebugMode = false;
     private int isTraceUserCreations = 0;
@@ -359,7 +361,7 @@ public class NucleusPlugin extends Nucleus {
         }
     }
 
-    public Injector getInjector() {
+    @Override public Injector getInjector() {
         return injector;
     }
 
@@ -368,11 +370,11 @@ public class NucleusPlugin extends Nucleus {
         return logger;
     }
 
-    public Path getConfigDirPath() {
+    @Override public Path getConfigDirPath() {
         return configDir;
     }
 
-    public Path getDataPath() {
+    @Override public Path getDataPath() {
         return dataDir;
     }
 
@@ -395,7 +397,7 @@ public class NucleusPlugin extends Nucleus {
         return worldDataManager;
     }
 
-    public UserCacheService getUserCacheService() {
+    @Override public UserCacheService getUserCacheService() {
         return userCacheService;
     }
 
@@ -407,10 +409,11 @@ public class NucleusPlugin extends Nucleus {
     @Override
     public synchronized boolean reload() {
         try {
-            moduleContainer.reloadSystemConfig();
+            this.moduleContainer.reloadSystemConfig();
             reloadMessages();
-            commandsConfig.load();
-            itemDataService.load();
+            this.commandsConfig.load();
+            this.itemDataService.load();
+            this.warmupConfig = null;
 
             this.isDebugMode = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::isDebugmode).orElse(false);
             this.isTraceUserCreations = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::traceUserCreations).orElse(0);
@@ -461,6 +464,14 @@ public class NucleusPlugin extends Nucleus {
         return warmupManager;
     }
 
+    @Override public WarmupConfig getWarmupConfig() {
+        if (this.warmupConfig == null) {
+            this.warmupConfig = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::getWarmupConfig).orElseGet(WarmupConfig::new);
+        }
+
+        return this.warmupConfig;
+    }
+
     @Override
     public EconHelper getEconHelper() {
         return econHelper;
@@ -502,6 +513,10 @@ public class NucleusPlugin extends Nucleus {
         return serviceManager;
     }
 
+    @Override public Optional<Instant> getGameStartedTime() {
+        return Optional.ofNullable(this.gameStartedTime);
+    }
+
     @Override
     public ModularGeneralService getGeneralService() {
         return generalService;
@@ -512,12 +527,13 @@ public class NucleusPlugin extends Nucleus {
         return itemDataService;
     }
 
-    public KitService getKitService() {
+    @Override public KitService getKitService() {
         return kitService;
     }
 
-    public NameBanService getNameBanService() { return nameBanService; }
+    @Override public NameBanService getNameBanService() { return nameBanService; }
 
+    @Override
     public CommandsConfig getCommandsConfig() {
         return commandsConfig;
     }
@@ -572,11 +588,11 @@ public class NucleusPlugin extends Nucleus {
      * @param getController The ID of the {@link TextFileController}.
      * @return An {@link Optional} that might contain a {@link TextFileController}.
      */
-    public Optional<TextFileController> getTextFileController(String getController) {
+    @Override public Optional<TextFileController> getTextFileController(String getController) {
         return Optional.ofNullable(textFileControllers.get(getController));
     }
 
-    public void addTextFileController(String id, Asset asset, Path file) throws IOException {
+    @Override public void addTextFileController(String id, Asset asset, Path file) throws IOException {
         if (!textFileControllers.containsKey(id)) {
             textFileControllers.put(id, new TextFileController(asset, file));
         }
@@ -586,19 +602,15 @@ public class NucleusPlugin extends Nucleus {
         reloadableList.add(reloadable);
     }
 
-    public Optional<DocGenCache> getDocGenCache() {
+    @Override public Optional<DocGenCache> getDocGenCache() {
         return Optional.ofNullable(docGenCache);
-    }
-
-    public Optional<Instant> getGameStartedTime() {
-        return Optional.ofNullable(this.gameStartedTime);
     }
 
     public Optional<MixinConfigProxy> getMixinConfigIfAvailable() {
         return Optional.ofNullable(this.mixinConfigProxy);
     }
 
-    public PluginContainer getPluginContainer() {
+    @Override public PluginContainer getPluginContainer() {
         return pluginContainer;
     }
 
@@ -624,7 +636,7 @@ public class NucleusPlugin extends Nucleus {
         }
     }
 
-    private void registerPermissions() {
+    @Override protected void registerPermissions() {
         Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
         if (ops.isPresent()) {
             Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(this);

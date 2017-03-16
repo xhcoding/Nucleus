@@ -27,7 +27,7 @@ import java.util.Set;
 public class SubjectPermissionCache<S extends Subject> implements Subject {
 
     private final S subject;
-    private final Map<String, Tristate> permissionCache = Maps.newHashMap();
+    private final Map<String, Boolean> permissionCache = Maps.newHashMap();
     private final Map<String, Optional<String>> optionCache = Maps.newHashMap();
 
     public SubjectPermissionCache(S subject) {
@@ -49,7 +49,7 @@ public class SubjectPermissionCache<S extends Subject> implements Subject {
         return subject;
     }
 
-    public void setPermissionOverride(String permission, Tristate override) {
+    public void setPermissionOverride(String permission, boolean override) {
         permissionCache.put(permission, override);
     }
 
@@ -69,8 +69,14 @@ public class SubjectPermissionCache<S extends Subject> implements Subject {
         return this.subject.getTransientSubjectData();
     }
 
+    // Overriden for performance reasons.
+    @Override public boolean hasPermission(Set<Context> contexts, String permission) {
+        return permissionCache.computeIfAbsent(permission.toLowerCase(), k -> this.subject.hasPermission(contexts, k));
+    }
+
     @Override public Tristate getPermissionValue(Set<Context> contexts, String permission) {
-        return permissionCache.computeIfAbsent(permission.toLowerCase(), k -> subject.getPermissionValue(contexts, k));
+        return permissionCache.computeIfAbsent(permission.toLowerCase(), k -> this.subject.hasPermission(contexts, k))
+                ? Tristate.TRUE : Tristate.FALSE;
     }
 
     @Override public boolean isChildOf(Set<Context> contexts, Subject parent) {
@@ -90,6 +96,6 @@ public class SubjectPermissionCache<S extends Subject> implements Subject {
     }
 
     @Override public Set<Context> getActiveContexts() {
-        return subject.getActiveContexts();
+        return this.subject.getActiveContexts();
     }
 }

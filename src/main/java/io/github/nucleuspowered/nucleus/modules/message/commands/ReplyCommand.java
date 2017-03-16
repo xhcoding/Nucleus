@@ -6,6 +6,8 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.AlertOnAfkArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.util.NucleusProcessing;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoHelpSubcommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -38,20 +40,24 @@ public class ReplyCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
+        };
     }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        if (alertOnAfk()) {
+        boolean b = handler.replyMessage(src, args.<String>getOne(message).get());
+        if (b) {
             handler.getLastMessageFrom(Util.getUUID(src)).ifPresent(x -> {
-                if (x instanceof Player && isAfk((Player)x)) {
-                    sendAfkMessage(src, (Player)x);
+                if (x instanceof Player) {
+                    NucleusProcessing.addToContextOnSuccess(args, () -> AlertOnAfkArgument.getAction(src, (Player)x));
                 }
             });
+
+            return CommandResult.success();
         }
 
-        boolean b = handler.replyMessage(src, args.<String>getOne(message).get());
-        return b ? CommandResult.success() : CommandResult.empty();
+        return CommandResult.empty();
     }
 }

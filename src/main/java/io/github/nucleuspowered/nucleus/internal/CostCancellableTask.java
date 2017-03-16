@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import org.spongepowered.api.Sponge;
@@ -14,11 +14,11 @@ import org.spongepowered.api.entity.living.player.Player;
 public abstract class CostCancellableTask implements CancellableTask {
 
     protected final double cost;
-    protected final NucleusPlugin plugin;
+    protected final Nucleus plugin;
     protected final SubjectPermissionCache<? extends CommandSource> subject;
     private boolean hasRun = false;
 
-    public CostCancellableTask(NucleusPlugin plugin, SubjectPermissionCache<? extends CommandSource> src, double cost) {
+    public CostCancellableTask(Nucleus plugin, SubjectPermissionCache<? extends CommandSource> src, double cost) {
         this.plugin = plugin;
         this.subject = src;
         this.cost = cost;

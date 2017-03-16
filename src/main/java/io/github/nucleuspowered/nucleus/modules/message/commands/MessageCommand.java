@@ -5,11 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.AlertOnAfkArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.MessageTargetArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -33,7 +33,6 @@ import java.util.Map;
  */
 @Permissions(suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, rootAliasRegister = { "tell" })
-@NotifyIfAFK(MessageCommand.to)
 @EssentialsEquivalent({"msg", "tell", "m", "t", "whisper"})
 public class MessageCommand extends AbstractCommand<CommandSource> {
     static final String to = "to";
@@ -61,9 +60,9 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.firstParsing(
-                new MessageTargetArgument(Text.of(to)),
-                SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE,
-                        true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c))
+                    new MessageTargetArgument(Text.of(to)),
+                    new AlertOnAfkArgument(SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE,
+                            true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c)))
             ),
             GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };

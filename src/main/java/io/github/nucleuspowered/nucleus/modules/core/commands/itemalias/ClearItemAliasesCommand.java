@@ -38,7 +38,7 @@ public class ClearItemAliasesCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new ItemAliasArgument(Text.of(item), itemDataService))
+            GenericArguments.onlyOne(new ItemAliasArgument(Text.of(item)))
         };
     }
 

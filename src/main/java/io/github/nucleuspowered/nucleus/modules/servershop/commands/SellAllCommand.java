@@ -59,7 +59,7 @@ public class SellAllCommand extends AbstractCommand<Player> {
         return new CommandElement[] {
             GenericArguments.flags().flag("a", "-accept").buildWith(GenericArguments.none()),
             GenericArguments.optional(
-                new ItemAliasArgument(Text.of(itemKey), plugin.getItemDataService())
+                new ItemAliasArgument(Text.of(itemKey))
             )
         };
     }

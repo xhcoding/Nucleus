@@ -29,7 +29,7 @@ public class HomeOtherArgument extends HomeArgument {
     private final NicknameArgument nickArg;
     private final CommandPermissionHandler reg;
 
-    public HomeOtherArgument(@Nullable Text key, NucleusPlugin plugin, CoreConfigAdapter cca) {
+    public HomeOtherArgument(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
         super(key, plugin, cca);
         nickArg = new NicknameArgument<>(key, NicknameArgument.UnderlyingType.USER);
         this.reg = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class);

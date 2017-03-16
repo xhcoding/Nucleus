@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -57,7 +58,7 @@ public class ResetUserCommand extends AbstractCommand<CommandSource> {
             GenericArguments.flags().flag("a", "-all").buildWith(
                 GenericArguments.firstParsing(
                     GenericArguments.user(Text.of(userKey)),
-                    new UUIDArgument<>(Text.of(uuidKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
+                    new UUIDArgument<User>(Text.of(uuidKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
                 ))
         };
     }
@@ -91,10 +92,10 @@ public class ResetUserCommand extends AbstractCommand<CommandSource> {
     private class Delete implements Consumer<CommandSource> {
 
         private final User user;
-        private final NucleusPlugin plugin;
+        private final Nucleus plugin;
         private final boolean all;
 
-        public Delete(NucleusPlugin plugin, User user, boolean all) {
+        public Delete(Nucleus plugin, User user, boolean all) {
             this.user = user;
             this.plugin = plugin;
             this.all = all;

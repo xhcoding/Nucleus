@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.util.WrappedElement;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -15,16 +16,14 @@ import java.util.function.BiFunction;
 
 import javax.annotation.Nullable;
 
-public class AdditionalCompletionsArgument extends CommandElement {
+public class AdditionalCompletionsArgument extends WrappedElement {
 
-    private final CommandElement wrapped;
     private final BiFunction<CommandSource, String, List<String>> additional;
     private final int minArgs;
     private final int maxArgs;
 
     public AdditionalCompletionsArgument(CommandElement wrapped, int min, int max, BiFunction<CommandSource, String, List<String>> additional) {
-        super(wrapped.getKey());
-        this.wrapped = wrapped;
+        super(wrapped);
         this.additional = additional;
         this.maxArgs = max;
         this.minArgs = min;
@@ -36,11 +35,11 @@ public class AdditionalCompletionsArgument extends CommandElement {
     }
 
     @Override public void parse(CommandSource source, CommandArgs args, CommandContext context) throws ArgumentParseException {
-        this.wrapped.parse(source, args, context);
+        getWrappedElement().parse(source, args, context);
     }
 
     @Override public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        List<String> s = this.wrapped.complete(src, args, context);
+        List<String> s = getWrappedElement().complete(src, args, context);
 
         if (args.getAll().size() >= minArgs && args.getAll().size() <= maxArgs) {
             try {

@@ -12,7 +12,6 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.spec.CommandSpec;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -63,12 +62,6 @@ public class CommandBuilder {
             return Optional.empty();
         }
 
-        // No spec, no return. We also don't want to run it twice...
-        CommandSpec spec = c.getSpec();
-        if (spec == null) {
-            return Optional.empty();
-        }
-
         // If we are using DocGen, add the command information to the system.
         plugin.getDocGenCache().ifPresent(x -> x.addCommand(moduleID, c));
 
@@ -89,13 +82,13 @@ public class CommandBuilder {
                 String first = c.getAliases()[0];
                 String[] aliases = Arrays.stream(c.getAliases()).filter(x -> x.equals(first) || node.getNode(x).getBoolean(true))
                         .toArray(String[]::new);
-                Sponge.getCommandManager().register(plugin, spec, aliases);
+                Sponge.getCommandManager().register(plugin, c, aliases);
             }
 
             // Register as another full blown command.
             for (String s : c.getRootCommandAliases()) {
                 if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("aliases", s).getBoolean(true)) {
-                    Sponge.getCommandManager().register(plugin, spec, s);
+                    Sponge.getCommandManager().register(plugin, c, s);
                 }
             }
 

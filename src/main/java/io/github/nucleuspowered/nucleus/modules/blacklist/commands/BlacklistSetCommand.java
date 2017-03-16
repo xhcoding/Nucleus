@@ -43,7 +43,7 @@ public class BlacklistSetCommand extends AbstractCommand<CommandSource> {
             GenericArguments.flags().valueFlag(GenericArguments.enumValue(Text.of(typeKey), Type.class), "t", "-type")
                 .buildWith(
                     GenericArguments.seq(
-                        GenericArguments.optionalWeak(GenericArguments.onlyOne(new ItemAliasArgument(Text.of(itemKey), itemDataService))),
+                        GenericArguments.optionalWeak(GenericArguments.onlyOne(new ItemAliasArgument(Text.of(itemKey)))),
                         GenericArguments.onlyOne(GenericArguments.bool(Text.of(blacklistKey)))))
         };
     }

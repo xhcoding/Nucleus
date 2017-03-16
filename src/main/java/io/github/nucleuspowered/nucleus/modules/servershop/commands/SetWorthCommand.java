@@ -53,7 +53,7 @@ public class SetWorthCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.optionalWeak(new ItemAliasArgument(Text.of(item), itemDataService)),
+            GenericArguments.optionalWeak(new ItemAliasArgument(Text.of(item))),
             GenericArguments.choices(Text.of(type), ImmutableMap.of("buy", Type.BUY, "sell", Type.SELL)),
             GenericArguments.doubleNum(Text.of(cost))
         };

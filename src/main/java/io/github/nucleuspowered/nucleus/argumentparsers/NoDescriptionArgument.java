@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
+import io.github.nucleuspowered.nucleus.argumentparsers.util.WrappedElement;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -20,13 +21,10 @@ import javax.annotation.Nullable;
  * Prevents a usage string from being shown.
  */
 @NonnullByDefault
-public class NoDescriptionArgument extends CommandElement {
-
-    private final CommandElement element;
+public class NoDescriptionArgument extends WrappedElement {
 
     public NoDescriptionArgument(CommandElement element) {
-        super(element.getKey());
-        this.element = element;
+        super(element);
     }
 
     @Nullable @Override protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
@@ -34,11 +32,11 @@ public class NoDescriptionArgument extends CommandElement {
     }
 
     @Override public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        return element.complete(src, args, context);
+        return getWrappedElement().complete(src, args, context);
     }
 
     @Override public void parse(CommandSource source, CommandArgs args, CommandContext context) throws ArgumentParseException {
-        element.parse(source, args, context);
+        getWrappedElement().parse(source, args, context);
     }
 
     @Override public Text getUsage(CommandSource src) {

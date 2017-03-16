@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.argumentparsers.util.WrappedElement;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -23,14 +24,12 @@ import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 @NonnullByDefault
-public class SelectorWrapperArgument<T extends Entity> extends CommandElement {
+public class SelectorWrapperArgument<T extends Entity> extends WrappedElement {
 
-    private final CommandElement wrappedElement;
     private final Class<T> entityFilter;
 
     public SelectorWrapperArgument(CommandElement wrappedElement, final Class<T> selectorFilter) {
-        super(wrappedElement.getKey());
-        this.wrappedElement = wrappedElement;
+        super(wrappedElement);
         this.entityFilter = selectorFilter;
     }
 
@@ -74,16 +73,16 @@ public class SelectorWrapperArgument<T extends Entity> extends CommandElement {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.selector.notarget"));
         }
 
-        wrappedElement.parse(source, args, context);
+        getWrappedElement().parse(source, args, context);
     }
 
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        return wrappedElement.complete(src, args, context);
+        return getWrappedElement().complete(src, args, context);
     }
 
     @Override
     public Text getUsage(CommandSource src) {
-        return wrappedElement.getUsage(src);
+        return getWrappedElement().getUsage(src);
     }
 }

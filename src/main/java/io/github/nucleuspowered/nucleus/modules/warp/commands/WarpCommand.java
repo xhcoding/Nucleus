@@ -19,6 +19,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ContinueMode;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -39,7 +40,6 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.util.Tristate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +106,7 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
         CommandSource cs = source.getSubject();
         if (args.<Player>getOne(playerKey).map(x -> !(cs instanceof Player) || x.getUniqueId().equals(((Player) cs).getUniqueId())).orElse(false)) {
             // Bypass cooldowns
-            source.setPermissionOverride(permissions.getPermissionWithSuffix("exempt.cooldown"), Tristate.TRUE);
+            source.setPermissionOverride(permissions.getPermissionWithSuffix("exempt.cooldown"), true);
             return ContinueMode.CONTINUE;
         }
 
