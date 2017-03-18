@@ -60,7 +60,7 @@ public class TeleportHandler {
         return from.hasPermission(tptoggleBypassPermission);
     }
 
-    public static boolean canTeleportTo(SubjectPermissionCache<? extends CommandSource> source, Player to)  {
+    public static boolean canTeleportTo(SubjectPermissionCache<? extends CommandSource> source, User to)  {
         if (source.getSubject() instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
             if (!Nucleus.getNucleus().getUserDataManager().get(to).map(x -> x.get(TeleportUserDataModule.class).isTeleportToggled()).orElse(true)) {
                 source.getSubject().sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
