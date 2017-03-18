@@ -5,8 +5,14 @@
 package io.github.nucleuspowered.nucleus.modules.rtp.config;
 
 import com.flowpowered.math.GenericMath;
+import io.github.nucleuspowered.neutrino.annotations.ProcessSetting;
+import io.github.nucleuspowered.nucleus.configurate.settingprocessor.LowercaseMapKeySettingProcessor;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @ConfigSerializable
 public class RTPConfig {
@@ -29,28 +35,55 @@ public class RTPConfig {
     @Setting(value = "per-world-permissions", comment = "config.rtp.perworldperms")
     private boolean perWorldPermissions = false;
 
+    @Setting(value = "world-overrides", comment = "config.rtp.perworldsect")
+    @ProcessSetting(LowercaseMapKeySettingProcessor.class)
+    private Map<String, PerWorldRTPConfig> perWorldRTPConfigList = new HashMap<String, PerWorldRTPConfig>() {{
+        put("example", new PerWorldRTPConfig());
+    }};
+
     public int getNoOfAttempts() {
         return noOfAttempts;
     }
 
-    public int getRadius() {
-        return radius;
+    private Optional<PerWorldRTPConfig> get(String worldName) {
+        return Optional.ofNullable(perWorldRTPConfigList.get(worldName.toLowerCase()));
     }
 
-    public boolean isMustSeeSky() {
-        return mustSeeSky;
+    public int getRadius(String worldName) {
+        return get(worldName).map(x -> x.radius).orElse(radius);
     }
 
-    public int getMinY() {
-        return GenericMath.clamp(minY, 0, Math.min(255, maxY));
+    public boolean isMustSeeSky(String worldName) {
+        return get(worldName).map(x -> x.mustSeeSky).orElse(mustSeeSky);
     }
 
-    public int getMaxY() {
-        // We use 252 as the safe TP handler might try to look above.
-        return GenericMath.clamp(maxY, Math.max(0, minY), 255);
+    public int getMinY(String worldName) {
+        return get(worldName).map(x -> GenericMath.clamp(x.minY, 0, Math.min(255, x.maxY)))
+                .orElseGet(() -> GenericMath.clamp(this.minY, 0, Math.min(255, this.maxY)));
+    }
+
+    public int getMaxY(String worldName) {
+        return get(worldName).map(x -> GenericMath.clamp(x.maxY, Math.max(0, x.minY), 255))
+                .orElseGet(() -> GenericMath.clamp(maxY, Math.max(0, minY), 255));
     }
 
     public boolean isPerWorldPermissions() {
         return perWorldPermissions;
+    }
+
+    @ConfigSerializable
+    public static class PerWorldRTPConfig {
+        @Setting(value = "radius")
+        private int radius = 30000;
+
+        @Setting(value = "minimum-y")
+        private int minY = 0;
+
+        @Setting(value = "maximum-y")
+        private int maxY = 255;
+
+        @Setting(value = "surface-only")
+        private boolean mustSeeSky = false;
+
     }
 }

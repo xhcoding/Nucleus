@@ -104,19 +104,18 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         // World border
         WorldBorder wb = currentWorld.getWorldBorder();
 
-        int diameter = Math.min(Math.abs(rc.getRadius() * 2), (int)wb.getDiameter());
+        int diameter = Math.min(Math.abs(rc.getRadius(currentWorld.getName()) * 2), (int)wb.getDiameter());
         Vector3d centre = wb.getCenter();
 
-        int count = Math.max(rc.getNoOfAttempts(), 1);
         src.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
 
         if (self) {
             SubjectPermissionCache<Player> sp = new SubjectPermissionCache<>(player, src);
-            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args),
-                sp, currentWorld, rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY())).submit(plugin);
+            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, centre, diameter, getCost(src, args), sp, currentWorld, rc))
+                    .submit(plugin);
         } else {
-            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, count, diameter, centre, getCost(src, args),
-                player, currentWorld, rc.isMustSeeSky(), rc.getMinY(), rc.getMaxY(), src)).submit(plugin);
+            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, centre, diameter, getCost(src, args), player, currentWorld, src,
+                    rc)).submit(plugin);
         }
 
         return CommandResult.success();
@@ -147,23 +146,25 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         private final boolean onSurface;
         private boolean isSelf = false;
 
-        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, SubjectPermissionCache<Player> target,
-            World currentWorld, boolean onSurface, int minY, int maxY) {
-            this(plugin, count, diameter, centre, cost, target.getSubject(), currentWorld, onSurface, minY, maxY, target);
+        private RTPTask(NucleusPlugin plugin, Vector3d centre, int diameter, double cost, SubjectPermissionCache<Player> target,
+            World currentWorld, RTPConfig config) {
+            this(plugin, centre, diameter, cost, target.getSubject(), currentWorld, target, config);
             isSelf = true;
         }
 
-        private RTPTask(NucleusPlugin plugin, int count, int diameter, Vector3d centre, double cost, Player target, World currentWorld, boolean onSurface,
-                        int minY, int maxY, SubjectPermissionCache<? extends CommandSource> source) {
+        private RTPTask(NucleusPlugin plugin, Vector3d centre, int diameter, double cost, Player target, World currentWorld,
+                SubjectPermissionCache<? extends CommandSource> source, RTPConfig config) {
             super(plugin, source, cost);
-            this.count = count;
-            this.maxCount = count;
+            this.count = Math.max(config.getNoOfAttempts(), 1);
+            this.maxCount = this.count;
             this.diameter = diameter;
             this.centre = centre;
             this.currentWorld = currentWorld;
-            this.onSurface = onSurface;
-            this.minY = minY;
-            this.maxY = maxY;
+
+            String name = this.currentWorld.getName();
+            this.onSurface = config.isMustSeeSky(name);
+            this.minY = config.getMinY(name);
+            this.maxY = config.getMaxY(name);
             this.target = target;
             this.source = source;
         }
