@@ -166,7 +166,10 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
         worldConfigAdapter.getNodeOrDefault().getWorldBorderDefault().ifPresent(worldProperties::setWorldBorderDiameter);
         worldProperties.setDifficulty(wa.getDifficulty());
 
-        Sponge.getServer().saveWorldProperties(worldProperties);
+        if (!Sponge.getServer().saveWorldProperties(worldProperties)) {
+            throw ReturnMessageException.fromKey("command.world.create.couldnotsave", nameInput);
+        }
+
         Optional<World> world = Sponge.getGame().getServer().loadWorld(worldProperties);
 
         if (world.isPresent()) {
@@ -174,7 +177,7 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.success", nameInput));
             return CommandResult.success();
         } else {
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.create.worldfailedtoload", nameInput));
+            throw ReturnMessageException.fromKey("command.world.create.worldfailedtoload", nameInput);
         }
     }
 
