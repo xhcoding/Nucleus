@@ -6,15 +6,19 @@ package io.github.nucleuspowered.nucleus.modules.rtp.commands;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.rtp.RTPModule;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfig;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -23,10 +27,13 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
@@ -34,14 +41,22 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
 import org.spongepowered.api.world.biome.BiomeTypes;
+import org.spongepowered.api.world.storage.WorldProperties;
+import uk.co.drnaylor.quickstart.config.TypedAbstractConfigAdapter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
 @Permissions(supportsOthers = true)
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
-public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetOtherPlayer {
+public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetOtherPlayer implements StandardAbstractCommand.Reloadable {
+
+    private RTPConfig rc = new RTPConfig();
+
+    private final String worldKey = "world";
 
     private Set<BlockType> prohibitedTypes = null;
     private Set<String> prohibitedBiomeTypes = Sets.newHashSet(
@@ -52,25 +67,48 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
     private final Vector3d direction = new Vector3d(0.00001, -1, 0.000001);
 
     private final Random random = new Random();
-    @Inject private RTPConfigAdapter rca;
+
+    @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        return new HashMap<String, PermissionInformation>() {{
+            put("worlds", PermissionInformation.getWithTranslation("permission.rtp.worlds", SuggestedLevel.ADMIN));
+        }};
+    }
+
+    @Override public CommandElement[] additionalArguments() {
+        return new CommandElement[] {
+            GenericArguments.optionalWeak(
+                GenericArguments.requiringPermission(
+                    new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY),
+                    permissions.getPermissionWithSuffix("world")
+                ))
+        };
+    }
 
     @Override
     protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> src, Player player, CommandContext args, boolean self)
             throws Exception {
 
         // Get the current world.
-        World currentWorld = player.getWorld();
+        WorldProperties wp = this.getWorldFromUserOrArgs(src.getSubject(), worldKey, args);
+
+        if (rc.isPerWorldPermissions()) {
+            String name = wp.getWorldName();
+            permissions.checkSuffix(src, "worlds." + name.toLowerCase(), () -> ReturnMessageException.fromKey("command.rtp.worldnoperm", name));
+        }
+
+        World currentWorld = Sponge.getServer().getWorld(wp.getUniqueId()).orElse(null);
+        if (currentWorld == null) {
+            currentWorld = Sponge.getServer().loadWorld(wp).orElseThrow(() -> ReturnMessageException.fromKey("command.rtp.worldnoload", wp.getWorldName()));
+        }
 
         // World border
         WorldBorder wb = currentWorld.getWorldBorder();
 
-        RTPConfig rc = rca.getNodeOrDefault();
         int diameter = Math.min(Math.abs(rc.getRadius() * 2), (int)wb.getDiameter());
         Vector3d centre = wb.getCenter();
 
         int count = Math.max(rc.getNoOfAttempts(), 1);
         src.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
-
 
         if (self) {
             SubjectPermissionCache<Player> sp = new SubjectPermissionCache<>(player, src);
@@ -82,6 +120,10 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         }
 
         return CommandResult.success();
+    }
+
+    @Override public void onReload() {
+        this.rc = plugin.getConfigAdapter(RTPModule.ID, RTPConfigAdapter.class).map(TypedAbstractConfigAdapter::getNodeOrDefault).orElseGet(RTPConfig::new);
     }
 
     /*

@@ -26,6 +26,9 @@ public class RTPConfig {
     @Setting(value = "surface-only", comment = "config.rtp.surface")
     private boolean mustSeeSky = false;
 
+    @Setting(value = "per-world-permissions", comment = "config.rtp.perworldperms")
+    private boolean perWorldPermissions = false;
+
     public int getNoOfAttempts() {
         return noOfAttempts;
     }
@@ -45,5 +48,9 @@ public class RTPConfig {
     public int getMaxY() {
         // We use 252 as the safe TP handler might try to look above.
         return GenericMath.clamp(maxY, Math.max(0, minY), 255);
+    }
+
+    public boolean isPerWorldPermissions() {
+        return perWorldPermissions;
     }
 }

@@ -28,6 +28,7 @@ import org.spongepowered.api.service.permission.Subject;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class CommandPermissionHandler {
 
@@ -205,6 +206,14 @@ public class CommandPermissionHandler {
         this.mssl.put(permission, pi);
     }
 
+    public <X extends Exception> void checkSuffix(Subject src, String suffix, Supplier<X> exception) throws X {
+        if (src instanceof User && !(src instanceof Player) && ((User) src).getPlayer().isPresent()) {
+            src = ((User) src).getPlayer().get();
+        }
+
+        check(src, prefix + suffix, exception);
+    }
+
     public boolean testSuffix(Subject src, String suffix) {
         if (src instanceof User && !(src instanceof Player) && ((User) src).getPlayer().isPresent()) {
             src = ((User) src).getPlayer().get();
@@ -240,5 +249,11 @@ public class CommandPermissionHandler {
 
     private boolean test(Subject src, String permission) {
         return justReturnTrue || src.hasPermission(permission);
+    }
+
+    private <X extends Exception> void check(Subject src, String permission, Supplier<X> exception) throws X {
+        if (!test(src, permission)) {
+            throw exception.get();
+        }
     }
 }
