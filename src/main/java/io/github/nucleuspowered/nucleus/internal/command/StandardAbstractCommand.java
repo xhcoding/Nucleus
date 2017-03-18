@@ -808,7 +808,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             if (src instanceof Locatable) {
                 return ((Locatable) src).getWorld().getProperties();
             } else {
-                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.noworldconsole"));
+                throw ReturnMessageException.fromKey("command.noworldconsole");
             }
         }
     }

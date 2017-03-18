@@ -9,6 +9,8 @@ import io.github.nucleuspowered.neutrino.annotations.ProcessSetting;
 import io.github.nucleuspowered.nucleus.configurate.settingprocessor.LowercaseMapKeySettingProcessor;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +43,9 @@ public class RTPConfig {
         put("example", new PerWorldRTPConfig());
     }};
 
+    @Setting(value = "default-world", comment = "config.rtp.defaultworld")
+    private String defaultWorld = "";
+
     public int getNoOfAttempts() {
         return noOfAttempts;
     }
@@ -69,6 +74,14 @@ public class RTPConfig {
 
     public boolean isPerWorldPermissions() {
         return perWorldPermissions;
+    }
+
+    public Optional<WorldProperties> getDefaultWorld() {
+        if (this.defaultWorld == null || this.defaultWorld.equalsIgnoreCase("")) {
+            return Optional.empty();
+        }
+
+        return Sponge.getServer().getWorldProperties(this.defaultWorld).filter(WorldProperties::isEnabled);
     }
 
     @ConfigSerializable

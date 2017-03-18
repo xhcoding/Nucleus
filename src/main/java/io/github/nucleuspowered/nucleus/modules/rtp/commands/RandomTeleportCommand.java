@@ -37,6 +37,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
+import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
@@ -89,7 +90,16 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             throws Exception {
 
         // Get the current world.
-        WorldProperties wp = this.getWorldFromUserOrArgs(src.getSubject(), worldKey, args);
+        WorldProperties worldProperties = args.<WorldProperties>getOne(worldKey).orElseGet(() -> this.rc.getDefaultWorld().orElse(null));
+        if (worldProperties == null) {
+            if (src.getSubject() instanceof Locatable) {
+                worldProperties = ((Locatable) src).getWorld().getProperties();
+            } else {
+                throw ReturnMessageException.fromKey("command.noworldconsole");
+            }
+        }
+
+        final WorldProperties wp = worldProperties;
 
         if (rc.isPerWorldPermissions()) {
             String name = wp.getWorldName();
