@@ -131,8 +131,14 @@ public abstract class ModularDataService<S extends ModularDataService<S>> extend
     @Override public boolean save() {
         try {
             saveTimings.startTimingIfSync();
-            ImmutableMap.copyOf(cached).values().forEach(x -> x.saveTo(data));
-            return super.save();
+
+            // If there is nothing in the cache, don't save (because we don't need to).
+            if (!cached.isEmpty()) {
+                ImmutableMap.copyOf(cached).values().forEach(x -> x.saveTo(data));
+                return super.save();
+            }
+
+            return true;
         } finally {
             saveTimings.stopTimingIfSync();
         }
