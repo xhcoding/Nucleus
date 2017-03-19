@@ -6,10 +6,12 @@ package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import ninja.leaping.configurate.ConfigurationNode;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
@@ -44,6 +46,11 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
 
     @Override
     public Optional<ModularUserService> getNew(UUID uuid, DataProvider<ConfigurationNode> dataProvider) throws Exception {
+        if (Nucleus.getNucleus().traceUserCreations()) {
+            Logger logger = Nucleus.getNucleus().getLogger();
+            logger.info("Creating user: " + uuid.toString() + " - THIS IS NOT AN ERROR", new Throwable());
+        }
+
         // Does the user exist?
         Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(uuid);
         if (user.isPresent()) {
