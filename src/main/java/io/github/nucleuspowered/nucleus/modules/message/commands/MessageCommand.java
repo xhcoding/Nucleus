@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.MessageTargetArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
@@ -21,6 +22,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
@@ -60,7 +62,8 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
         return new CommandElement[] {
             GenericArguments.firstParsing(
                 new MessageTargetArgument(Text.of(to)),
-                SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE)
+                SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE,
+                        true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c))
             ),
             GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };

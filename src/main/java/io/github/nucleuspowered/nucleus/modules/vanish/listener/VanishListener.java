@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.listener;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -63,5 +64,9 @@ public class VanishListener extends ListenerBase {
                 }
             }
         });
+    }
+
+    public void onNucleusMessage(NucleusMessageEvent event) {
+
     }
 }

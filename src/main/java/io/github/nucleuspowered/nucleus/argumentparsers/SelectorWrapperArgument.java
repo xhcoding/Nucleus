@@ -12,11 +12,13 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.selector.Selector;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 
 import javax.annotation.Nullable;
 
@@ -32,13 +34,18 @@ public class SelectorWrapperArgument<T extends Entity> extends CommandElement {
         this.entityFilter = selectorFilter;
     }
 
-    public static SelectorWrapperArgument<Player> nicknameSelector(@Nullable Text key, NicknameArgument.UnderlyingType type) {
-        return nicknameSelector(key, type, true, Player.class);
+    public static SelectorWrapperArgument<Player> nicknameSelector(@Nullable Text key, NicknameArgument.UnderlyingType<?> type) {
+        return nicknameSelector(key, type, true, Player.class, (c, s) -> true);
     }
 
-    public static <S extends Entity> SelectorWrapperArgument<S> nicknameSelector(@Nullable Text key, NicknameArgument.UnderlyingType type,
+    public static <S extends Entity> SelectorWrapperArgument<S> nicknameSelector(@Nullable Text key, NicknameArgument.UnderlyingType<?> type,
             boolean onlyOne, Class<S> selectorFilter) {
-        return new SelectorWrapperArgument<>(new NicknameArgument(key, type, onlyOne), selectorFilter);
+        return nicknameSelector(key, type, onlyOne, selectorFilter, (c, s) -> true);
+    }
+
+    public static <S extends Entity, T extends User> SelectorWrapperArgument<S> nicknameSelector(@Nullable Text key,
+            NicknameArgument.UnderlyingType<T> type, boolean onlyOne, Class<S> selectorFilter, BiPredicate<CommandSource, T> filter) {
+        return new SelectorWrapperArgument<>(new NicknameArgument<>(key, type, onlyOne, filter), selectorFilter);
     }
 
     @Nullable
