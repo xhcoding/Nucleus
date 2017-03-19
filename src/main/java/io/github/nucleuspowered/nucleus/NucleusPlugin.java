@@ -247,7 +247,6 @@ public class NucleusPlugin extends Nucleus {
                     .build();
 
             moduleContainer.startDiscover();
-            this.isDebugMode = moduleContainer.getConfigAdapterForModule(CoreModule.ID, CoreConfigAdapter.class).getNodeOrDefault().isDebugmode();
         } catch (Exception e) {
             isErrored = e;
             disable();
@@ -285,6 +284,10 @@ public class NucleusPlugin extends Nucleus {
             if (moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isErrorOnStartup()) {
                 throw new IllegalStateException("In main.conf, core.simulate-error-on-startup is set to TRUE. Remove this config entry to allow Nucleus to start. Simulating error and disabling Nucleus.");
             }
+
+            this.isDebugMode = moduleContainer.getConfigAdapterForModule(CoreModule.ID, CoreConfigAdapter.class).getNodeOrDefault().isDebugmode();
+            this.isTraceUserCreations = moduleContainer.getConfigAdapterForModule(CoreModule.ID, CoreConfigAdapter.class).getNodeOrDefault()
+                    .traceUserCreations();
         } catch (Throwable construction) {
             logger.info(messageProvider.getMessageWithFormat("startup.modulenotloaded", PluginInfo.NAME));
             construction.printStackTrace();
