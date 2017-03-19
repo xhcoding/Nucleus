@@ -4,48 +4,54 @@
  */
 package io.github.nucleuspowered.nucleus.modules.item.commands.lore;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.item.LoreData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.util.List;
 
-abstract class LoreSetBaseCommand extends AbstractCommand<Player> {
+@Permissions(prefix = "lore", mainOverride = "set")
+@RegisterCommand(value = "delete", subcommandOf = LoreCommand.class)
+public class LoreDeleteCommand extends AbstractCommand<Player> {
 
-    final String loreKey = "lore";
+    @Inject private MessageProvider provider;
+
+    private final String loreLine = "line";
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.remainingJoinedStrings(Text.of(loreKey))
+                new PositiveIntegerArgument(Text.of(loreLine))
         };
     }
 
-    CommandResult setLore(Player src, String message, boolean replace) throws Exception{
-        ItemStack stack = src.getItemInHand(HandTypes.MAIN_HAND).orElseThrow(() -> ReturnMessageException.fromKey("command.lore.set.noitem"));
+    @Override
+    protected CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+        int line = args.<Integer>getOne(loreLine).get();
+        if(line != 0) --line;
+
+        ItemStack stack = src.getItemInHand(HandTypes.MAIN_HAND).orElseThrow(() -> ReturnMessageException.fromKey("command.lore.clear.noitem"));
         LoreData loreData = stack.getOrCreate(LoreData.class).get();
 
-        Text getLore = TextSerializers.FORMATTING_CODE.deserialize(message);
-
-        List<Text> loreList;
-        if (replace) {
-            loreList = Lists.newArrayList(getLore);
-        } else {
-            loreList = loreData.lore().get();
-            loreList.add(getLore);
+        List<Text> loreList = loreData.lore().get();
+        if(loreList.size() < line){
+            throw ReturnMessageException.fromKey("command.lore.set.invalidLine");
         }
+
+        loreList.remove(line);
 
         if (stack.offer(Keys.ITEM_LORE, loreList).isSuccessful()) {
             src.setItemInHand(HandTypes.MAIN_HAND, stack);
