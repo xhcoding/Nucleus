@@ -13,20 +13,33 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
-import javax.annotation.Nullable;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class PositiveIntegerArgument extends CommandElement {
 
+    private final boolean allowZero;
+
     public PositiveIntegerArgument(@Nullable Text key) {
+        this(key, true);
+    }
+
+    public PositiveIntegerArgument(@Nullable Text key, boolean allowZero) {
         super(key);
+        this.allowZero = allowZero;
     }
 
     @Nullable
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
         try {
-            return Integer.parseUnsignedInt(args.next());
+            int a = Integer.parseUnsignedInt(args.next());
+            if (allowZero || a != 0) {
+                return a;
+            }
+
+            throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.positiveint.zero"));
         } catch (NumberFormatException e) {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.positiveint.negative"));
         }
