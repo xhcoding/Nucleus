@@ -87,6 +87,8 @@ public abstract class Nucleus {
 
     public abstract MessageProvider getCommandMessageProvider();
 
+    public abstract boolean traceUserCreations();
+
     public abstract void registerReloadable(ThrowableAction<? extends Exception> reloadable);
 
     public abstract Optional<MixinConfigProxy> getMixinConfigIfAvailable();
