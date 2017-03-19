@@ -60,9 +60,9 @@ public abstract class DataManager<I, P, S extends Service> {
             }
 
             try {
-                S us = getNew(data, d).get();
-                dataStore.put(data, us);
-                return Optional.of(us);
+                Optional<S> us = getNew(data, d);
+                us.ifPresent(x -> dataStore.put(data, x));
+                return us;
             } catch (Exception e) {
                 e.printStackTrace();
                 return Optional.empty();
