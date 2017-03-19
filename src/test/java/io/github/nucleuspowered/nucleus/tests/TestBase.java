@@ -205,6 +205,10 @@ public abstract class TestBase {
             return null;
         }
 
+        @Override public boolean traceUserCreations() {
+            return false;
+        }
+
         @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
 
         }
