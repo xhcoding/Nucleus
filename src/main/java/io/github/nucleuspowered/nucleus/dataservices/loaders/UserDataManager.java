@@ -22,13 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class UserDataManager extends DataManager<UUID, ConfigurationNode, ModularUserService> {
 
-    public UserDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<ConfigurationNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+    public UserDataManager(NucleusPlugin plugin, BiFunction<UUID, Boolean, DataProvider<ConfigurationNode>> dataProviderFactory,
+            Predicate<UUID> fileExist) {
         super(plugin, dataProviderFactory, fileExist);
     }
 
@@ -42,6 +43,10 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
 
     public Optional<ModularUserService> get(User user) {
         return get(user.getUniqueId());
+    }
+
+    public Optional<ModularUserService> get(User user, boolean create) {
+        return get(user.getUniqueId(), create);
     }
 
     @Override
