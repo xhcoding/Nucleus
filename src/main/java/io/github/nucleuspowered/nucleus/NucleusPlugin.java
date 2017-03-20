@@ -55,6 +55,8 @@ import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTokenServiceImpl;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.logging.DebugLogger;
+import io.github.nucleuspowered.nucleus.modules.core.CoreModule;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
@@ -143,6 +145,9 @@ public class NucleusPlugin extends Nucleus {
     private final Path configDir;
     private final Path dataDir;
     @Nullable private MixinConfigProxy mixinConfigProxy = null;
+
+    private boolean isDebugMode = false;
+    private boolean isTraceUserCreations = false;
 
     // We inject this into the constructor so we can build the config path ourselves.
     @Inject
@@ -242,7 +247,7 @@ public class NucleusPlugin extends Nucleus {
                     .build();
 
             moduleContainer.startDiscover();
-        } catch (QuickStartModuleDiscoveryException e) {
+        } catch (Exception e) {
             isErrored = e;
             disable();
             e.printStackTrace();
@@ -279,6 +284,10 @@ public class NucleusPlugin extends Nucleus {
             if (moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isErrorOnStartup()) {
                 throw new IllegalStateException("In main.conf, core.simulate-error-on-startup is set to TRUE. Remove this config entry to allow Nucleus to start. Simulating error and disabling Nucleus.");
             }
+
+            this.isDebugMode = moduleContainer.getConfigAdapterForModule(CoreModule.ID, CoreConfigAdapter.class).getNodeOrDefault().isDebugmode();
+            this.isTraceUserCreations = moduleContainer.getConfigAdapterForModule(CoreModule.ID, CoreConfigAdapter.class).getNodeOrDefault()
+                    .traceUserCreations();
         } catch (Throwable construction) {
             logger.info(messageProvider.getMessageWithFormat("startup.modulenotloaded", PluginInfo.NAME));
             construction.printStackTrace();
@@ -403,6 +412,9 @@ public class NucleusPlugin extends Nucleus {
             commandsConfig.load();
             itemDataService.load();
 
+            this.isDebugMode = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::isDebugmode).orElse(false);
+            this.isTraceUserCreations = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::traceUserCreations).orElse(false);
+
             for (TextFileController tfc : textFileControllers.values()) {
                 tfc.load();
             }
@@ -435,11 +447,7 @@ public class NucleusPlugin extends Nucleus {
         } catch (Exception e) {
             // On error, fallback.
             logger.warn("Could not load custom messages file. Falling back.");
-            try {
-                if (getModuleContainer().getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isDebugmode()) {
-                    e.printStackTrace();
-                }
-            } catch (NoModuleException | IncorrectAdapterTypeException e1) {
+            if (this.isDebugMode()) {
                 e.printStackTrace();
             }
 
@@ -543,11 +551,11 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Override public boolean isDebugMode() {
-        try {
-            return this.getModuleContainer().getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isDebugmode();
-        } catch (NoModuleException | IncorrectAdapterTypeException e) {
-            return true;
-        }
+        return this.isDebugMode;
+    }
+
+    @Override public boolean traceUserCreations() {
+        return this.isTraceUserCreations;
     }
 
     public <T> void preInjectorUpdate(Class<T> clazz, T instance) {

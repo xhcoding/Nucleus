@@ -13,10 +13,14 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -25,11 +29,17 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Permissions(prefix = "teleport", mainOverride = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsOthers = true)
 @RegisterCommand(value = "teleport", rootAliasRegister = "tp")
@@ -48,7 +58,7 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
-        m.put("others", PermissionInformation.getWithTranslation("permission.teleport.others", SuggestedLevel.ADMIN));
+        m.put("offline", PermissionInformation.getWithTranslation("permission.teleport.offline", SuggestedLevel.ADMIN));
         m.put("quiet", PermissionInformation.getWithTranslation("permission.teleport.quiet", SuggestedLevel.ADMIN));
         return m;
     }
@@ -63,18 +73,17 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                     // Either we get two arguments, or we get one.
                     GenericArguments.firstParsing(
                         // <subject> <subject>
-                        // TODO: Hook up with selectors
                         GenericArguments.requiringPermission(new NoModifiersArgument<Player>(
                             new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey), permissions), (c, o) -> true),
                                 permissions.getOthers()),
 
                     // <subject>
-                    GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER)))
+                    GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER)))
        };
     }
 
     @Override protected ContinueMode preProcessChecks(SubjectPermissionCache<CommandSource> source, CommandContext args) {
-        return TeleportHandler.canTeleportTo(source, args.<Player>getOne(playerKey).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
+        return TeleportHandler.canTeleportTo(source, args.<User>getOne(playerKey).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
     }
 
     @Override
@@ -95,12 +104,35 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        Player pl = args.<Player>getOne(playerKey).get();
-        if (handler.getBuilder().setSource(src).setFrom(from).setTo(pl).setSafe(!args.<Boolean>getOne("f").orElse(false))
-                .setSilentTarget(beQuiet).startTeleport()) {
+        User pl = args.<Player>getOne(playerKey).get();
+        if (pl.getPlayer().isPresent()) {
+            if (handler.getBuilder().setSource(src).setFrom(from).setTo(pl.getPlayer().get()).setSafe(!args.<Boolean>getOne("f").orElse(false))
+                    .setSilentTarget(beQuiet).startTeleport()) {
+                return CommandResult.success();
+            }
+
+            return CommandResult.empty();
+        }
+
+        // We have an offline player.
+        permissions.checkSuffix(src, "offline", () -> ReturnMessageException.fromKey("command.teleport.noofflineperms"));
+
+        // Can we get a location?
+        Supplier<ReturnMessageException> r = () -> ReturnMessageException.fromKey("command.teleport.nolastknown", pl.getName());
+        Location<World> l = plugin.getUserDataManager().get(pl.getUniqueId()).orElseThrow(r).get(CoreUserDataModule.class).getLogoutLocation()
+                .orElseThrow(r);
+
+        MessageProvider provider = plugin.getMessageProvider();
+        if (plugin.getTeleportHandler()
+                .teleportPlayer(from, l, NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE, Cause.of(NamedCause.owner(src))).isSuccess()) {
+            if (!(src instanceof Player && ((Player) src).getUniqueId().equals(from.getUniqueId()))) {
+                src.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.other", from.getName(), pl.getName()));
+            }
+
+            from.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.self", pl.getName()));
             return CommandResult.success();
         }
 
-        return CommandResult.empty();
+        throw ReturnMessageException.fromKey("command.teleport.error");
     }
 }

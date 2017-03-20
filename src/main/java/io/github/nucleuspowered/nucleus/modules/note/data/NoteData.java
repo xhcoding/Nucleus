@@ -4,14 +4,17 @@
  */
 package io.github.nucleuspowered.nucleus.modules.note.data;
 
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Note;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @ConfigSerializable
-public class NoteData {
+public class NoteData implements Note {
     @Setting
     private UUID noter;
 
@@ -29,16 +32,19 @@ public class NoteData {
         this.date = date.toEpochMilli();
     }
 
-    public String getNote() {
+    @Override public String getNote() {
         return note;
     }
 
+    @Override public Optional<UUID> getNoter() {
+        return noter.equals(Util.consoleFakeUUID) ? Optional.empty() : Optional.of(noter);
+    }
 
-    public UUID getNoter() {
+    public UUID getNoterInternal() {
         return noter;
     }
 
-    public Instant getDate() {
+    @Override public Instant getDate() {
         return Instant.ofEpochMilli(date);
     }
 }

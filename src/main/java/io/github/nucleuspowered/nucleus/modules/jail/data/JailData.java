@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.data;
 
+import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Inmate;
 import io.github.nucleuspowered.nucleus.internal.data.EndTimestamp;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -17,7 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ConfigSerializable
-public final class JailData extends EndTimestamp {
+public final class JailData extends EndTimestamp implements Inmate {
 
     @Setting
     private UUID jailer;
@@ -73,19 +75,23 @@ public final class JailData extends EndTimestamp {
         this.previousz = previousLocation.getZ();
     }
 
-    public String getReason() {
+    @Override public String getReason() {
         return reason;
     }
 
-    public String getJailName() {
+    @Override public String getJailName() {
         return jailName;
     }
 
-    public UUID getJailer() {
+    @Override public Optional<UUID> getJailer() {
+        return jailer.equals(Util.consoleFakeUUID) ? Optional.empty() : Optional.of(jailer);
+    }
+
+    public UUID getJailerInternal() {
         return jailer;
     }
 
-    public Optional<Location<World>> getPreviousLocation() {
+    @Override public Optional<Location<World>> getPreviousLocation() {
         if (world != null) {
             Optional<World> ow = Sponge.getServer().getWorld(world);
             if (ow.isPresent() && previousx != 0 && previousy != -1 && previousz != 0) {

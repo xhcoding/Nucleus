@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.docgen.EssentialsDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.PermissionDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.TokenDoc;
+import io.github.nucleuspowered.nucleus.internal.docgen.generators.MarkdownGenerator;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.SimpleConfigurationNode;
@@ -61,30 +62,38 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
         // Generate command file.
         YAMLConfigurationLoader configurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("commands.yml"))
             .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
-        ConfigurationNode commandConfigurationNode = SimpleConfigurationNode.root().setValue(ttlcd, getAndSort(genCache.getCommandDocs(), (first, second) -> {
+        List<CommandDoc> lcd = getAndSort(genCache.getCommandDocs(), (first, second) -> {
             int m = first.getModule().compareToIgnoreCase(second.getModule());
             if (m == 0) {
                 return first.getCommandName().compareToIgnoreCase(second.getCommandName());
             }
 
             return m;
-        }));
+        });
 
+        ConfigurationNode commandConfigurationNode = SimpleConfigurationNode.root().setValue(ttlcd, lcd);
         configurationLoader.save(commandConfigurationNode);
+
+        // Markdown
+        new MarkdownGenerator.CommandMarkdownGenerator().create(plugin.getDataPath().resolve("commands.md"), lcd);
 
         // Generate permission file.
         YAMLConfigurationLoader permissionsConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("permissions.yml"))
             .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
-        ConfigurationNode permissionConfigurationNode = SimpleConfigurationNode.root().setValue(ttlpd, getAndSort(genCache.getPermissionDocs(),  (first, second) -> {
-            int m = first.getModule().compareToIgnoreCase(second.getModule());
-            if (m == 0) {
-                return first.getPermission().compareToIgnoreCase(second.getPermission());
-            }
+        List<PermissionDoc> lpd = getAndSort(genCache.getPermissionDocs(),  (first, second) -> {
+                    int m = first.getModule().compareToIgnoreCase(second.getModule());
+                    if (m == 0) {
+                        return first.getPermission().compareToIgnoreCase(second.getPermission());
+                    }
 
-            return m;
-        }));
+                    return m;
+                });
 
+        ConfigurationNode permissionConfigurationNode = SimpleConfigurationNode.root().setValue(ttlpd, lpd);
         permissionsConfigurationLoader.save(permissionConfigurationNode);
+
+        // Markdown
+        new MarkdownGenerator.PermissionMarkdownGenerator().create(plugin.getDataPath().resolve("permissions.md"), lpd);
 
         YAMLConfigurationLoader tokenConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("tokens.yml"))
             .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();

@@ -45,7 +45,7 @@ public class DebugCommand extends AbstractCommand<CommandSource> {
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {
-                new NicknameArgument(Text.of(userName), plugin.getUserDataManager(), NicknameArgument.UnderlyingType.USER, false)
+                new NicknameArgument<>(Text.of(userName), NicknameArgument.UnderlyingType.USER, false)
             };
         }
 

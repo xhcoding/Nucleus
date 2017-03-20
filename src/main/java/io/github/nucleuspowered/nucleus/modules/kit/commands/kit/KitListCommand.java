@@ -120,7 +120,7 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
         }
 
         // Can use.
-        Text.Builder builder = tb.color(TextColors.AQUA).onClick(TextActions.runCommand("/kit " + kitName))
+        Text.Builder builder = tb.color(TextColors.AQUA).onClick(TextActions.runCommand("/kit \"" + kitName + "\""))
                 .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.text", kitName)))
                 .style(TextStyles.ITALIC);
         if (kitObj.getCost() > 0 && plugin.getEconHelper().economyServiceExists() && !kitPermissionHandler.testCostExempt(source)) {

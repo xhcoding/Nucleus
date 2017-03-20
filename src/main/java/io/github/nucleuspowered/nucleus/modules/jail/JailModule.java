@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusJailService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.jail.commands.CheckJailCommand;
@@ -42,14 +42,11 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
     protected void performPreTasks() throws Exception {
         try {
             JailHandler jh = new JailHandler(nucleus);
-            nucleus.getInjector().injectMembers(jh);
             game.getServiceManager().setProvider(nucleus, NucleusJailService.class, jh);
             serviceManager.registerService(JailHandler.class, jh);
 
             // Context
-            Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> {
-                x.registerContextCalculator(jh);
-            });
+            Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> x.registerContextCalculator(jh));
         } catch (Exception ex) {
             logger.warn("Could not load the jail module for the reason below.");
             ex.printStackTrace();
@@ -65,7 +62,7 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
             // If we have a ban service, then check for a ban.
             JailHandler jh = nucleus.getInternalServiceManager().getService(JailHandler.class).get();
             if (jh.isPlayerJailed(u)) {
-                JailData jd = jh.getPlayerJailData(u).get();
+                JailData jd = jh.getPlayerJailDataInternal(u).get();
                 Text.Builder m;
                 if (jd.getEndTimestamp().isPresent()) {
                     m = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.isjailed.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();

@@ -47,7 +47,7 @@ public class NoteListener extends ListenerBase {
     @Listener
     public void onPlayerLogin(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
         Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS).execute(() -> {
-            List<NoteData> notes = handler.getNotes(player);
+            List<NoteData> notes = handler.getNotesInternal(player);
             if (notes != null && !notes.isEmpty()) {
                 MutableMessageChannel messageChannel = MessageChannel.permission(showOnLogin).asMutable();
                 messageChannel.send(plugin.getMessageProvider().getTextMessageWithFormat("note.login.notify", player.getName(), String.valueOf(notes.size())).toBuilder()

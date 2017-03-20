@@ -102,7 +102,7 @@ public class JailListener extends ListenerBase.Reloadable {
         JailHandler handler = ism.getService(JailHandler.class).get();
 
         // Jailing the subject if we need to.
-        Optional<JailData> data = handler.getPlayerJailData(user);
+        Optional<JailData> data = handler.getPlayerJailDataInternal(user);
         if (qs.jailOnNextLogin() && data.isPresent()) {
             // It exists.
             NamedLocation owl = handler.getWarpLocation(user).get();
@@ -110,10 +110,10 @@ public class JailListener extends ListenerBase.Reloadable {
             Optional<Duration> timeLeft = jd.getRemainingTime();
             Text message;
             message = timeLeft.map(duration -> plugin.getMessageProvider()
-                .getTextMessageWithFormat("command.jail.jailed", owl.getName(), plugin.getNameUtil().getNameFromUUID(jd.getJailer()),
+                .getTextMessageWithFormat("command.jail.jailed", owl.getName(), plugin.getNameUtil().getNameFromUUID(jd.getJailerInternal()),
                     plugin.getMessageProvider().getMessageWithFormat("standard.for"), Util.getTimeStringFromSeconds(duration.getSeconds())))
                 .orElseGet(() -> plugin.getMessageProvider()
-                    .getTextMessageWithFormat("command.jail.jailed", owl.getName(), plugin.getNameUtil().getNameFromUUID(jd.getJailer()), "",
+                    .getTextMessageWithFormat("command.jail.jailed", owl.getName(), plugin.getNameUtil().getNameFromUUID(jd.getJailerInternal()), "",
                         ""));
 
             oqs.get().get(FlyUserDataModule.class).setFlying(false);

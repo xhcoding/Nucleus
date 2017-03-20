@@ -5,15 +5,17 @@
 package io.github.nucleuspowered.nucleus.modules.jail.handlers;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchLocationException;
+import io.github.nucleuspowered.nucleus.api.nucleusdata.Inmate;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
+import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
@@ -23,6 +25,7 @@ import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailGeneralData
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.events.JailEvent;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
@@ -31,6 +34,8 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -42,10 +47,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+@NonnullByDefault
 public class JailHandler implements NucleusJailService, ContextCalculator<Subject> {
 
-    @Inject private ModularGeneralService store;
-
+    private final ModularGeneralService store;
     private final NucleusPlugin plugin;
 
     // Used for the context calculator
@@ -54,6 +59,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
 
     public JailHandler(NucleusPlugin plugin) {
         this.plugin = plugin;
+        this.store = plugin.getGeneralService();
     }
 
     private JailGeneralDataModule getModule() {
@@ -86,13 +92,17 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
 
     @Override
     public boolean isPlayerJailed(User user) {
-        return getPlayerJailData(user).isPresent();
+        return getPlayerJailDataInternal(user).isPresent();
     }
 
     @Override
-    public Optional<JailData> getPlayerJailData(User user) {
+    public Optional<Inmate> getPlayerJailData(User user) {
+        return getPlayerJailDataInternal(user).map(x -> x);
+    }
+
+    public Optional<JailData> getPlayerJailDataInternal(User user) {
         try {
-            Optional<JailData> data = plugin.getUserDataManager().get(user).get().get(JailUserDataModule.class).getJailData();
+            Optional<JailData> data = plugin.getUserDataManager().getUnchecked(user).get(JailUserDataModule.class).getJailData();
             if (data.isPresent()) {
                 jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.get().getJailName()));
             } else {
@@ -110,8 +120,18 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
     }
 
     @Override
+    public boolean jailPlayer(User victim, String jail, CommandSource jailer, String reason) throws NoSuchLocationException {
+        Preconditions.checkNotNull(victim);
+        Preconditions.checkNotNull(jail);
+        Preconditions.checkNotNull(jailer);
+        Preconditions.checkNotNull(reason);
+        NamedLocation location = getJail(jail).orElseThrow(NoSuchLocationException::new);
+        return jailPlayer(victim,
+                new JailData(Util.getUUID(jailer), location.getName(), reason, victim.getPlayer().map(Locatable::getLocation).orElse(null)));
+    }
+
     public boolean jailPlayer(User user, JailData data) {
-        ModularUserService modularUserService = plugin.getUserDataManager().get(user).get();
+        ModularUserService modularUserService = plugin.getUserDataManager().getUnchecked(user);
         JailUserDataModule jailUserDataModule = modularUserService.get(JailUserDataModule.class);
 
         if (jailUserDataModule.getJailData().isPresent()) {
@@ -147,7 +167,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
         jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.getJailName()));
         Sponge.getEventManager().post(new JailEvent.Jailed(
                 user,
-                Cause.of(NamedCause.owner(Util.getObjectFromUUID(data.getJailer()))),
+                Cause.of(NamedCause.owner(Util.getObjectFromUUID(data.getJailerInternal()))),
                 data.getJailName(),
                 TextSerializers.FORMATTING_CODE.deserialize(data.getReason()),
                 data.getRemainingTime().orElse(null)));
@@ -160,7 +180,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
     }
 
     public boolean unjailPlayer(User user, Cause cause) {
-        final ModularUserService modularUserService = plugin.getUserDataManager().get(user).get();
+        final ModularUserService modularUserService = plugin.getUserDataManager().getUnchecked(user);
         final JailUserDataModule jailUserDataModule = modularUserService.get(JailUserDataModule.class);
         Optional<JailData> ojd = jailUserDataModule.getJailData();
         if (!ojd.isPresent()) {
@@ -194,7 +214,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
             return Optional.empty();
         }
 
-        Optional<NamedLocation> owl = getJail(getPlayerJailData(user).get().getJailName());
+        Optional<NamedLocation> owl = getJail(getPlayerJailDataInternal(user).get().getJailName());
         if (!owl.isPresent()) {
             Collection<NamedLocation> wl = getJails().values();
             if (wl.isEmpty()) {
@@ -211,7 +231,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
         if (calculable instanceof User) {
             UUID c = ((User) calculable).getUniqueId();
             if (!jailDataCache.containsKey(c)) {
-                getPlayerJailData((User) calculable);
+                getPlayerJailDataInternal((User) calculable);
             }
 
             Context co = jailDataCache.get(c);
@@ -239,7 +259,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
     }
 
     public boolean checkJail(final User player, boolean sendMessage) {
-        Optional<JailData> omd = Util.testForEndTimestamp(getPlayerJailData(player), () -> unjailPlayer(player));
+        Optional<JailData> omd = Util.testForEndTimestamp(getPlayerJailDataInternal(player), () -> unjailPlayer(player));
         if (omd.isPresent()) {
             if (sendMessage) {
                 Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(FlyUserDataModule.class).setFlying(false);

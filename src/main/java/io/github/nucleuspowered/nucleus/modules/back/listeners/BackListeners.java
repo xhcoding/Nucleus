@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.back.listeners;
 
 import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.iapi.service.NucleusJailService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.back.commands.BackCommand;

@@ -29,7 +29,7 @@ public class JailTask extends TaskBase {
     @Override
     public void accept(Task task) {
         Collection<Player> pl = Sponge.getServer().getOnlinePlayers().stream().filter(x -> jailHandler.isPlayerJailedCached(x)).collect(Collectors.toList());
-        pl.stream().forEach(x -> Util.testForEndTimestamp(jailHandler.getPlayerJailData(x), () -> jailHandler.unjailPlayer(x)));
+        pl.stream().forEach(x -> Util.testForEndTimestamp(jailHandler.getPlayerJailDataInternal(x), () -> jailHandler.unjailPlayer(x)));
     }
 
     @Override

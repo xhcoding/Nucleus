@@ -56,7 +56,7 @@ public class CheckJailCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
-        Optional<JailData> jail = handler.getPlayerJailData(user);
+        Optional<JailData> jail = handler.getPlayerJailDataInternal(user);
 
         if (!jail.isPresent()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.nojail", user.getName()));
@@ -65,10 +65,10 @@ public class CheckJailCommand extends AbstractCommand<CommandSource> {
 
         JailData md = jail.get();
         String name;
-        if (md.getJailer().equals(Util.consoleFakeUUID)) {
+        if (md.getJailerInternal().equals(Util.consoleFakeUUID)) {
             name = Sponge.getServer().getConsole().getName();
         } else {
-            Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getJailer());
+            Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getJailerInternal());
             name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 

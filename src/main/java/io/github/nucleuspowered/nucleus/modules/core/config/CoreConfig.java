@@ -40,6 +40,10 @@ public class CoreConfig {
     @Setting(value = "console-overrides-exemptions", comment = "config.core.consoleoverrides")
     private boolean consoleOverride = true;
 
+    @DoNotGenerate
+    @Setting(value = "trace-user-creations")
+    private boolean traceUserCreations = false;
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -78,5 +82,9 @@ public class CoreConfig {
 
     public boolean isConsoleOverride() {
         return consoleOverride;
+    }
+
+    public boolean traceUserCreations() {
+        return this.traceUserCreations;
     }
 }

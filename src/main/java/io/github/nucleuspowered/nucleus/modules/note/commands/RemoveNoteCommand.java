@@ -47,7 +47,7 @@ public class RemoveNoteCommand extends AbstractCommand<CommandSource> {
         NoteArgument.Result result = args.<NoteArgument.Result>getOne(noteKey).get();
         User user = result.user;
 
-        List<NoteData> notes = handler.getNotes(user);
+        List<NoteData> notes = handler.getNotesInternal(user);
         if (notes.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkwarnings.none", user.getName()));
             return CommandResult.success();

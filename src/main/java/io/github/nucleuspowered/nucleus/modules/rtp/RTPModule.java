@@ -8,8 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "rtp", name = "rtp")
+@ModuleData(id = RTPModule.ID, name = "rtp")
 public class RTPModule extends ConfigurableModule<RTPConfigAdapter> {
+
+    public static final String ID = "rtp";
 
     @Override
     public RTPConfigAdapter createAdapter() {

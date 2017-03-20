@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -34,16 +35,27 @@ public class PlayerConsoleArgument extends CommandElement {
     private final boolean console;
     private final Supplier<Collection<Player>> onlinePlayersSupplier;
     private static final String vanishPermission = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(VanishCommand.class).getPermissionWithSuffix("see");
+    private final BiPredicate<CommandSource, Player> filter;
 
     public PlayerConsoleArgument(@Nullable Text key, boolean console) {
         this(key, console, () -> Sponge.getServer().getOnlinePlayers());
     }
 
+    public PlayerConsoleArgument(@Nullable Text key, boolean console, BiPredicate<CommandSource, Player> filter) {
+        this(key, console, () -> Sponge.getServer().getOnlinePlayers(), filter);
+    }
+
     // For testing.
     public PlayerConsoleArgument(@Nullable Text key, boolean console, @Nonnull Supplier<Collection<Player>> onlinePlayerSupplier) {
+        this(key, console, onlinePlayerSupplier, (c, s) -> true);
+    }
+
+    public PlayerConsoleArgument(@Nullable Text key, boolean console, @Nonnull Supplier<Collection<Player>> onlinePlayerSupplier,
+            BiPredicate<CommandSource, Player> filter) {
         super(key);
         this.console = console;
         this.onlinePlayersSupplier = onlinePlayerSupplier;
+        this.filter = filter;
     }
 
     @Nullable
@@ -59,12 +71,14 @@ public class PlayerConsoleArgument extends CommandElement {
         }
 
         List<CommandSource> players = onlinePlayersSupplier.get().stream().filter(x -> x.getName().toLowerCase().startsWith(name))
+                .filter(x -> filter.test(src, x))
                 .sorted(Comparator.comparing(User::getName)).collect(Collectors.toList());
         if (players.isEmpty()) {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.playerconsole.noexist"));
         }
 
-        List<CommandSource> exactUser = players.stream().filter(x -> x.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+        List<CommandSource> exactUser = players.stream().filter(x -> x.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
         if (exactUser.size() == 1) {
             return exactUser;
         }
@@ -84,6 +98,7 @@ public class PlayerConsoleArgument extends CommandElement {
     List<String> completeInternal(final String name, CommandSource src, CommandArgs args, CommandContext context) {
         List<String> list = Sponge.getServer().getOnlinePlayers().stream()
             .filter(x -> PlayerConsoleArgument.shouldShow(x, src))
+            .filter(x -> filter.test(src, x))
             .map(User::getName).collect(Collectors.toList());
         // Console.
         if (console) {
@@ -105,7 +120,7 @@ public class PlayerConsoleArgument extends CommandElement {
         return true;
     }
 
-    private static boolean shouldShow(Player player, CommandSource cs) {
+    public static boolean shouldShow(Player player, CommandSource cs) {
         return cs.hasPermission(vanishPermission) || !player.get(Keys.VANISH).orElse(false);
     }
 }

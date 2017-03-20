@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
@@ -32,40 +31,39 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @NonnullByDefault
-public class NicknameArgument extends CommandElement {
+public class NicknameArgument<T extends User> extends CommandElement {
 
     private final UserDataManager userDataManager;
     private final ThrownTriFunction<String, CommandSource, CommandArgs, List<?>, ArgumentParseException> parser;
     private final QuadFunction<String, CommandSource, CommandArgs, CommandContext, List<String>> completer;
     private final boolean onlyOne;
     private final UnderlyingType type;
+    private final BiPredicate<CommandSource, T> filter;
 
-    public NicknameArgument(@Nullable Text key, UnderlyingType type) {
-        this(key, Nucleus.getNucleus().getUserDataManager(), type);
+    public NicknameArgument(@Nullable Text key, UnderlyingType<T> type) {
+        this(key, type, true);
     }
 
-    public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type) {
-        this(key, userDataManager, type, true);
+    public NicknameArgument(@Nullable Text key, UnderlyingType<T> type, boolean onlyOne) {
+        this(key, type, onlyOne, (s, c) -> true);
     }
 
-    public NicknameArgument(@Nullable Text key, UnderlyingType type, boolean onlyOne) {
-        this(key, Nucleus.getNucleus().getUserDataManager(), type, onlyOne);
-    }
-
-    public NicknameArgument(@Nullable Text key, @Nonnull UserDataManager userDataManager, UnderlyingType type, boolean onlyOne) {
+    @SuppressWarnings("unchecked")
+    public NicknameArgument(@Nullable Text key, UnderlyingType<T> type, boolean onlyOne,
+            BiPredicate<CommandSource, T> filter) {
         super(key);
 
-        Preconditions.checkNotNull(userDataManager);
         this.onlyOne = onlyOne;
-        this.userDataManager = userDataManager;
+        this.userDataManager = Nucleus.getNucleus().getUserDataManager();
         this.type = type;
+        this.filter = filter;
 
         if (type == UnderlyingType.USER) {
             parser = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
@@ -75,6 +73,8 @@ public class NicknameArgument extends CommandElement {
                     .getAll()
                     .stream()
                     .filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(s))
+                    .filter(x -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(x).map(y -> filter.test(cs, (T)y))
+                            .orElse(false))
                     .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
                     .map(x -> x.getName().get())
                     .distinct()
@@ -90,7 +90,8 @@ public class NicknameArgument extends CommandElement {
                     .collect(Collectors.toList());
             };
         } else {
-            PlayerConsoleArgument pca = new PlayerConsoleArgument(key, type == UnderlyingType.PLAYER_CONSOLE);
+            PlayerConsoleArgument pca = new PlayerConsoleArgument(key, type == UnderlyingType.PLAYER_CONSOLE,
+                    (BiPredicate<CommandSource, Player>)filter);
             parser = pca::parseInternal;
             completer = pca::completeInternal;
         }
@@ -103,6 +104,7 @@ public class NicknameArgument extends CommandElement {
         return parseInternal(name, source, args);
     }
 
+    @SuppressWarnings("unchecked")
     List<?> parseInternal(String name, CommandSource src, CommandArgs args) throws ArgumentParseException {
         boolean playerOnly = name.startsWith("p:");
 
@@ -148,6 +150,7 @@ public class NicknameArgument extends CommandElement {
             .sorted(Comparator.comparing(Map.Entry::getKey))
             .filter(x -> x.getValue().getUser().getPlayer().isPresent())
             .map(x -> x.getValue().getUser().getPlayer().get())
+            .filter(x -> filter.test(src, (T)x))
             .collect(Collectors.toList());
 
         if (players.isEmpty()) {
@@ -192,20 +195,26 @@ public class NicknameArgument extends CommandElement {
         return original;
     }
 
-    public enum UnderlyingType {
-        PLAYER,
-        PLAYER_CONSOLE,
-        USER
+    public static class UnderlyingType<U extends User> {
+        public static final UnderlyingType<Player> PLAYER = new UnderlyingType<>();
+        public static final UnderlyingType<Player> PLAYER_CONSOLE = new UnderlyingType<>();
+        public static final UnderlyingType<User> USER = new UnderlyingType<>();
     }
 
     public static final class UserParser implements ThrownTriFunction<String, CommandSource, CommandArgs, List<?>, ArgumentParseException> {
 
         private final boolean onlyOne;
         private final Supplier<UserStorageService> userStorageServiceSupplier;
+        private final BiPredicate<CommandSource, User> filter;
 
         public UserParser(boolean onlyOne, Supplier<UserStorageService> userStorageServiceSupplier) {
+            this(onlyOne, userStorageServiceSupplier, (c, s) -> true);
+        }
+
+        public UserParser(boolean onlyOne, Supplier<UserStorageService> userStorageServiceSupplier, BiPredicate<CommandSource, User> filter) {
             this.onlyOne = onlyOne;
             this.userStorageServiceSupplier = userStorageServiceSupplier;
+            this.filter = filter;
         }
 
         @Override
@@ -224,6 +233,7 @@ public class NicknameArgument extends CommandElement {
                         // Remove players who have no user
                         .filter(Optional::isPresent)
                         .map(Optional::get)
+                        .filter(x -> filter.test(cs, x))
                         .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
                         .collect(Collectors.toList());
 

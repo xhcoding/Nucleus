@@ -50,7 +50,7 @@ public class GeoIpCommand extends AbstractCommand<CommandSource> {
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
-            new NicknameArgument(Text.of(playerKey), userDataManager, NicknameArgument.UnderlyingType.PLAYER)
+            new NicknameArgument<>(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER)
         };
     }
 

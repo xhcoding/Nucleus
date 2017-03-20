@@ -61,7 +61,7 @@ public class CheckNotesCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
 
-        List<NoteData> notes = handler.getNotes(user);
+        List<NoteData> notes = handler.getNotesInternal(user);
         if (notes.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.none", user.getName()));
             return CommandResult.success();
@@ -90,15 +90,15 @@ public class CheckNotesCommand extends AbstractCommand<CommandSource> {
 
     private Text createMessage(NoteData note, User user) {
         String name;
-        if (note.getNoter().equals(Util.consoleFakeUUID)) {
+        if (note.getNoterInternal().equals(Util.consoleFakeUUID)) {
             name = Sponge.getServer().getConsole().getName();
         } else {
-            Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(note.getNoter());
+            Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(note.getNoterInternal());
             name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
         //Get the ID of the note, its index in the users List<NoteData>. Add one to start with an ID of 1.
-        int id = handler.getNotes(user).indexOf(note) + 1;
+        int id = handler.getNotesInternal(user).indexOf(note) + 1;
 
         //Action buttons, this should look like 'Action > [Delete] - [Return] <'
         Text.Builder actions = plugin.getMessageProvider().getTextMessageWithFormat("command.checknotes.action").toBuilder();

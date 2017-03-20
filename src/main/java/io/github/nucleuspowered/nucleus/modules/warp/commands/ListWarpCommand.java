@@ -147,7 +147,7 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
         Location<World> world = data.getLocation().get();
 
         Text.Builder inner = Text.builder(name).color(TextColors.GREEN).style(TextStyles.ITALIC)
-                .onClick(TextActions.runCommand("/warp " + name));
+                .onClick(TextActions.runCommand("/warp \"" + name + "\""));
 
         Text.Builder tb;
         Optional<Text> description = data.getDescription();

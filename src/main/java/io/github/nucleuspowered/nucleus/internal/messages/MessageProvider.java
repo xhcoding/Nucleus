@@ -35,7 +35,7 @@ public abstract class MessageProvider {
     }
 
     public final Text getTextMessageWithFormat(String key, String... substitutions) {
-        return getTextMessageWithTextFormat(key, Arrays.stream(substitutions).map(Text::of).collect(Collectors.toList()));
+        return getTextMessageWithTextFormat(key, Arrays.stream(substitutions).map(TextSerializers.FORMATTING_CODE::deserialize).collect(Collectors.toList()));
     }
 
     public final Text getTextMessageWithTextFormat(String key, Text... substitutions) {
