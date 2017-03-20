@@ -102,7 +102,8 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
 
     public Optional<JailData> getPlayerJailDataInternal(User user) {
         try {
-            Optional<JailData> data = plugin.getUserDataManager().getUnchecked(user).get(JailUserDataModule.class).getJailData();
+            Optional<JailData> data = plugin.getUserDataManager().get(user, false)
+                    .map(y -> y.get(JailUserDataModule.class).getJailData().orElse(null));
             if (data.isPresent()) {
                 jailDataCache.put(user.getUniqueId(), new Context("nucleus_jail", data.get().getJailName()));
             } else {

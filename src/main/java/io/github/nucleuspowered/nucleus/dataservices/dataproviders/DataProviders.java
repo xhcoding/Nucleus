@@ -41,14 +41,18 @@ public class DataProviders {
         this.plugin = plugin;
     }
 
-    public DataProvider<ConfigurationNode> getUserFileDataProviders(UUID uuid) {
+    public DataProvider<ConfigurationNode> getUserFileDataProviders(UUID uuid, boolean create) {
         // For now, just the Configurate one.
         try {
             Path p = getFile(userJson, uuid);
-            return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
+            if (create || doesUserFileExist(uuid)) {
+                return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
+            }
         } catch (Exception e) {
-            return null;
+            // ignored
         }
+
+        return null;
     }
 
     public boolean doesUserFileExist(UUID uuid) {
@@ -59,14 +63,18 @@ public class DataProviders {
         }
     }
 
-    public DataProvider<ConfigurationNode> getWorldFileDataProvider(UUID uuid) {
+    public DataProvider<ConfigurationNode> getWorldFileDataProvider(UUID uuid, boolean create) {
         // For now, just the Configurate one.
         try {
             Path p = getFile(worldJson, uuid);
-            return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
+            if (create || doesWorldFileExist(uuid)) {
+                return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
+            }
         } catch (Exception e) {
-            return null;
+            // ignored
         }
+
+        return null;
     }
 
     public boolean doesWorldFileExist(UUID uuid) {

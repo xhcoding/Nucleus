@@ -14,12 +14,13 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public class WorldDataManager extends DataManager<UUID, ConfigurationNode, ModularWorldService> {
 
-    public WorldDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<ConfigurationNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+    public WorldDataManager(NucleusPlugin plugin, BiFunction<UUID, Boolean, DataProvider<ConfigurationNode>> dataProviderFactory,
+            Predicate<UUID> fileExist) {
         super(plugin, dataProviderFactory, fileExist);
     }
 
