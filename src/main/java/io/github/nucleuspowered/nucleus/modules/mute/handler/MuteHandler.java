@@ -63,7 +63,7 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
 
     // Internal
     public Optional<MuteData> getPlayerMuteData(User user) {
-        Optional<ModularUserService> nu = ucl.get(user);
+        Optional<ModularUserService> nu = ucl.get(user, false);
         if (nu.isPresent()) {
             muteContextCache.put(user.getUniqueId(), true);
             return nu.get().get(MuteUserDataModule.class).getMuteData();
