@@ -103,9 +103,8 @@ public class IgnoreListener extends ListenerBase {
                 }
 
                 // Don't remove if they are in the list.
-                return !loader.getUnchecked((Player) x)
-                        .get(IgnoreUserDataModule.class)
-                        .getIgnoreList().contains(player.getUniqueId());
+                return !loader.get((Player) x).map(y ->
+                        y.get(IgnoreUserDataModule.class).getIgnoreList().contains(player.getUniqueId())).orElse(false);
             } catch (Exception e) {
                 if (plugin.isDebugMode()) {
                     e.printStackTrace();

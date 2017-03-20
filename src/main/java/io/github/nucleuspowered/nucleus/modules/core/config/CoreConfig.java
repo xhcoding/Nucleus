@@ -41,8 +41,8 @@ public class CoreConfig {
     private boolean consoleOverride = true;
 
     @DoNotGenerate
-    @Setting(value = "trace-user-creations")
-    private boolean traceUserCreations = false;
+    @Setting(value = "trace-user-creations-level")
+    private int traceUserCreations = 0;
 
     public boolean isDebugmode() {
         return debugmode;
@@ -84,7 +84,11 @@ public class CoreConfig {
         return consoleOverride;
     }
 
-    public boolean traceUserCreations() {
+    /**
+     * For debugging. 0 is off, 1 is abnormal players, such as "offline", 2 is everyone.
+     * @return The level to debug.
+     */
+    public int traceUserCreations() {
         return this.traceUserCreations;
     }
 }

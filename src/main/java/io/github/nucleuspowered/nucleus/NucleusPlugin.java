@@ -147,7 +147,7 @@ public class NucleusPlugin extends Nucleus {
     @Nullable private MixinConfigProxy mixinConfigProxy = null;
 
     private boolean isDebugMode = false;
-    private boolean isTraceUserCreations = false;
+    private int isTraceUserCreations = 0;
 
     // We inject this into the constructor so we can build the config path ourselves.
     @Inject
@@ -413,7 +413,7 @@ public class NucleusPlugin extends Nucleus {
             itemDataService.load();
 
             this.isDebugMode = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::isDebugmode).orElse(false);
-            this.isTraceUserCreations = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::traceUserCreations).orElse(false);
+            this.isTraceUserCreations = getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::traceUserCreations).orElse(0);
 
             for (TextFileController tfc : textFileControllers.values()) {
                 tfc.load();
@@ -554,7 +554,7 @@ public class NucleusPlugin extends Nucleus {
         return this.isDebugMode;
     }
 
-    @Override public boolean traceUserCreations() {
+    @Override public int traceUserCreations() {
         return this.isTraceUserCreations;
     }
 
