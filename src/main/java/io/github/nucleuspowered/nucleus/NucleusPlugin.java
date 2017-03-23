@@ -203,26 +203,19 @@ public class NucleusPlugin extends Nucleus {
             warmupManager = new WarmupManager();
             textParsingUtils = new TextParsingUtils(this);
             nameUtil = new NameUtil(this);
-        } catch (Exception e) {
-            isErrored = e;
-            disable();
-            e.printStackTrace();
-            return;
-        }
 
-        PreloadTasks.getPreloadTasks2().forEach(x -> x.accept(this));
+            PreloadTasks.getPreloadTasks2().forEach(x -> x.accept(this));
 
-        // We register the ModuleService NOW so that others can hook into it.
-        game.getServiceManager().setProvider(this, NucleusModuleService.class, new ModuleRegistrationProxyService(this));
-        game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
-        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
-        serviceManager.registerService(WarmupManager.class, warmupManager);
+            // We register the ModuleService NOW so that others can hook into it.
+            game.getServiceManager().setProvider(this, NucleusModuleService.class, new ModuleRegistrationProxyService(this));
+            game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
+            this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
+            serviceManager.registerService(WarmupManager.class, warmupManager);
 
-        nucleusChatService = new NucleusTokenServiceImpl(this);
-        serviceManager.registerService(NucleusTokenServiceImpl.class, nucleusChatService);
-        Sponge.getServiceManager().setProvider(this, NucleusMessageTokenService.class, nucleusChatService);
+            nucleusChatService = new NucleusTokenServiceImpl(this);
+            serviceManager.registerService(NucleusTokenServiceImpl.class, nucleusChatService);
+            Sponge.getServiceManager().setProvider(this, NucleusMessageTokenService.class, nucleusChatService);
 
-        try {
             HoconConfigurationLoader.Builder builder = HoconConfigurationLoader.builder();
             moduleContainer = DiscoveryModuleContainer.builder()
                     .setConstructor(new QuickStartModuleConstructor(injector))
