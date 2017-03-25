@@ -1331,7 +1331,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
         @Override public final CommandElement[] getArguments() {
             return ArrayUtils.addAll(new CommandElement[] {
-                GenericArguments.optional(
+                GenericArguments.optionalWeak(
                     GenericArguments.requiringPermission(
                         new NoModifiersArgument<>(
                             SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER),
