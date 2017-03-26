@@ -17,8 +17,10 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.action.InteractEvent;
+import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.item.ItemType;
 
 public class PowertoolListener extends ListenerBase {
@@ -39,6 +41,7 @@ public class PowertoolListener extends ListenerBase {
     }
 
     @Listener
+    @Exclude(InteractBlockEvent.class)
     public void onUserInteract(final InteractEvent event, @Root Player player) {
         // No item in hand or no permission -> no powertool.
         if (!getPermissionUtil().testBase(player) || !player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
