@@ -76,8 +76,9 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -153,32 +154,20 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         // could've just created a subclass that does
         // the same thing, but I like to beat the system! :)
         //
-        // This code reflectively looks for methods called "executeCommand",
-        // which is defined in this class. However,
-        // due to type erasure, if a generic type is specified, there are two
-        // "executeCommand" methods, one that satisfies
-        // this abstract class (with the CommandSource argument) and a second
-        // method that fulfils the generic type T.
-        //
-        // Thus, we need to check that there is a method called executeCommand
-        // that has a more restrictive argument than
-        // "CommandSource" in order to check for the generic type.
-        //
-        // This allows us to then have code that filters out non-Players by
-        // simply specifying the generic type "Player".
-        //
-        // The provided stream filters out the standard executeCommand method,
-        // and checks to see if there is a second that makes
-        // use of the generic parameter.
-        Optional<Method> me = Arrays.stream(getClass().getMethods())
-                .filter(x -> x.getName().equals("executeCommand") && x.getParameterTypes().length == 2
-                        && x.getParameterTypes()[1].isAssignableFrom(CommandContext.class) && !x.getParameterTypes()[0].equals(CommandSource.class))
-                .findFirst();
+        // See http://stackoverflow.com/a/18709327
+        Type type = getClass().getGenericSuperclass();
 
-        // If there is a second executeCommand method, then we know that's the
-        // type that we need and we can do our source
-        // checks against it accordingly.
-        this.sourceType = me.map(method -> (Class<T>) (method.getParameterTypes()[0])).orElseGet(() -> (Class<T>) CommandSource.class);
+        while (!(type instanceof ParameterizedType) ||
+                (((ParameterizedType) type).getRawType() != AbstractCommand.class &&
+                ((ParameterizedType) type).getRawType() != StandardAbstractCommand.class)) {
+            if (type instanceof ParameterizedType) {
+                type = ((Class<?>) ((ParameterizedType) type).getRawType()).getGenericSuperclass();
+            } else {
+                type = ((Class<?>) type).getGenericSuperclass();
+            }
+        }
+
+        this.sourceType = (Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0];
         if (this.sourceType.getClass().isAssignableFrom(CommandSource.class)) {
             this.sourceTypePredicate = x -> true;
         } else {
