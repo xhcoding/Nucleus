@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices;
 
+import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 
@@ -17,7 +18,7 @@ public abstract class AbstractService<T> implements Service {
     }
 
     protected AbstractService(DataProvider<T> dataProvider, boolean loadNow) throws Exception {
-        this.dataProvider = dataProvider;
+        this.dataProvider = Preconditions.checkNotNull(dataProvider);
         if (loadNow) {
             data = dataProvider.load();
         }

@@ -38,7 +38,7 @@ public class WorthCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.optionalWeak(new ItemAliasArgument(Text.of(item), itemDataService))
+            GenericArguments.optionalWeak(new ItemAliasArgument(Text.of(item)))
         };
     }
 

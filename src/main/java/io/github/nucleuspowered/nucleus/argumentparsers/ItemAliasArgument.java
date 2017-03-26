@@ -33,12 +33,9 @@ import javax.annotation.Nullable;
  */
 public class ItemAliasArgument extends CommandElement {
 
-    private final ItemDataService itemDataService;
-
-    public ItemAliasArgument(@Nullable Text key, ItemDataService itemDataService) {
+    public ItemAliasArgument(@Nullable Text key) {
         super(key);
         Preconditions.checkNotNull(key);
-        this.itemDataService = itemDataService;
     }
 
     @Nullable
@@ -84,7 +81,7 @@ public class ItemAliasArgument extends CommandElement {
     }
 
     private Optional<CatalogType> parseAlias(String arg, @Nonnull CommandArgs args) throws ArgumentParseException {
-        Optional<String> oid = itemDataService.getIdFromAlias(arg);
+        Optional<String> oid = Nucleus.getNucleus().getItemDataService().getIdFromAlias(arg);
         if (!oid.isPresent()) {
             return Optional.empty();
         }
@@ -109,6 +106,7 @@ public class ItemAliasArgument extends CommandElement {
     @Override
     @Nonnull
     public List<String> complete(@Nonnull CommandSource src, @Nonnull CommandArgs args, @Nonnull CommandContext context) {
+        ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
         try {
             String arg = args.peek().toLowerCase();
             return itemDataService.getAliases().stream().filter(x -> x.startsWith(arg)).sorted().collect(Collectors.toList());

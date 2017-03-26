@@ -64,7 +64,7 @@ public class BuyCommand extends AbstractCommand<Player> {
         return new CommandElement[] {
             GenericArguments.flags().flag("y", "f", "a", "-yes", "-auto").buildWith(
                 GenericArguments.seq(
-                    GenericArguments.onlyOne(new ItemAliasArgument(Text.of(itemKey), itemDataService)),
+                    GenericArguments.onlyOne(new ItemAliasArgument(Text.of(itemKey))),
                     GenericArguments.onlyOne(new PositiveIntegerArgument(Text.of(amountKey)))))
         };
     }

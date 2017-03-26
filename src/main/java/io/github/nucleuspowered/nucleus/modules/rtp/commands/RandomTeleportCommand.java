@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.rtp.commands;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Sets;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
@@ -35,9 +36,9 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
-import org.spongepowered.api.world.Locatable;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
@@ -51,6 +52,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+@NonnullByDefault
 @Permissions(supportsOthers = true)
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
 public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetOtherPlayer implements StandardAbstractCommand.Reloadable {
@@ -59,7 +63,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
 
     private final String worldKey = "world";
 
-    private Set<BlockType> prohibitedTypes = null;
+    @Nullable private Set<BlockType> prohibitedTypes = null;
     private Set<String> prohibitedBiomeTypes = Sets.newHashSet(
         BiomeTypes.OCEAN.getId(), BiomeTypes.DEEP_OCEAN.getId(), BiomeTypes.FROZEN_OCEAN.getId()
     );
@@ -90,16 +94,12 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             throws Exception {
 
         // Get the current world.
-        WorldProperties worldProperties = args.<WorldProperties>getOne(worldKey).orElseGet(() -> this.rc.getDefaultWorld().orElse(null));
-        if (worldProperties == null) {
-            if (src.getSubject() instanceof Locatable) {
-                worldProperties = ((Locatable) src).getWorld().getProperties();
-            } else {
-                throw ReturnMessageException.fromKey("command.noworldconsole");
-            }
+        final WorldProperties wp;
+        if (this.rc.getDefaultWorld().isPresent()) {
+            wp = this.getWorldProperties(src.getSubject(), worldKey, args).orElseGet(() -> this.rc.getDefaultWorld().get());
+        } else {
+            wp = this.getWorldFromUserOrArgs(src.getSubject(), worldKey, args);
         }
-
-        final WorldProperties wp = worldProperties;
 
         if (rc.isPerWorldPermissions()) {
             String name = wp.getWorldName();
@@ -156,13 +156,13 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         private final boolean onSurface;
         private boolean isSelf = false;
 
-        private RTPTask(NucleusPlugin plugin, Vector3d centre, int diameter, double cost, SubjectPermissionCache<Player> target,
+        private RTPTask(Nucleus plugin, Vector3d centre, int diameter, double cost, SubjectPermissionCache<Player> target,
             World currentWorld, RTPConfig config) {
             this(plugin, centre, diameter, cost, target.getSubject(), currentWorld, target, config);
             isSelf = true;
         }
 
-        private RTPTask(NucleusPlugin plugin, Vector3d centre, int diameter, double cost, Player target, World currentWorld,
+        private RTPTask(Nucleus plugin, Vector3d centre, int diameter, double cost, Player target, World currentWorld,
                 SubjectPermissionCache<? extends CommandSource> source, RTPConfig config) {
             super(plugin, source, cost);
             this.count = Math.max(config.getNoOfAttempts(), 1);

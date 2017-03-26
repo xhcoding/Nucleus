@@ -8,7 +8,6 @@ package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.jail.JailModule;
@@ -35,14 +34,15 @@ public class LogoutJailListener extends ListenerBase {
 
     @Listener
     public void onLogout(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-        ModularUserService mus = loader.getUnchecked(player);
-        Optional<JailData> ojd = mus.get(JailUserDataModule.class).getJailData();
-        if (ojd.isPresent()) {
-            JailData jd = ojd.get();
-            Optional<Instant> end = jd.getEndTimestamp();
-            end.ifPresent(instant -> jd.setTimeFromNextLogin(Duration.between(Instant.now(), instant)));
-            mus.get(JailUserDataModule.class).setJailData(jd);
-        }
+        loader.get(player).ifPresent(mus -> {
+            Optional<JailData> ojd = mus.get(JailUserDataModule.class).getJailData();
+            if (ojd.isPresent()) {
+                JailData jd = ojd.get();
+                Optional<Instant> end = jd.getEndTimestamp();
+                end.ifPresent(instant -> jd.setTimeFromNextLogin(Duration.between(Instant.now(), instant)));
+                mus.get(JailUserDataModule.class).setJailData(jd);
+            }
+        });
     }
 
     public static class Condition implements Predicate<Nucleus> {

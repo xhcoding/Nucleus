@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.argumentparsers.util.WrappedElement;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
 import org.spongepowered.api.command.args.CommandArgs;
@@ -19,7 +20,7 @@ import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 
 @NonnullByDefault
-public class NoModifiersArgument<T> extends CommandElement {
+public class NoModifiersArgument<T> extends WrappedElement {
 
     public static final String NO_COST_ARGUMENT = "nocost";
     public static final String NO_COOLDOWN_ARGUMENT = "nocooldown";
@@ -30,7 +31,6 @@ public class NoModifiersArgument<T> extends CommandElement {
 
     private final BiPredicate<CommandSource, T> test;
     private final List<String> argsToPut = Lists.newArrayList();
-    private final CommandElement element;
 
     public NoModifiersArgument(CommandElement element, @Nullable BiPredicate<CommandSource, T> test) {
         this(element, test, true, true, true);
@@ -38,8 +38,7 @@ public class NoModifiersArgument<T> extends CommandElement {
 
     @SuppressWarnings("SameParameterValue")
     protected NoModifiersArgument(CommandElement element, @Nullable BiPredicate<CommandSource, T> test, boolean isNoCost, boolean isNoWarmup, boolean isNoCooldown) {
-        super(element.getKey());
-        this.element = element;
+        super(element);
         this.test = test == null ? (c, o) -> true : test;
 
         if (isNoCooldown) {
@@ -60,7 +59,7 @@ public class NoModifiersArgument<T> extends CommandElement {
     }
 
     @Override public void parse(CommandSource source, CommandArgs args, CommandContext context) throws ArgumentParseException {
-        this.element.parse(source, args, context);
+        getWrappedElement().parse(source, args, context);
 
         // We'll get here if there are no exceptions thrown.
         if (getKey() != null && context.hasAny(getKey()) && context.<T>getOne(getKey()).map(x -> test.test(source, x)).orElse(false)) {
@@ -69,6 +68,6 @@ public class NoModifiersArgument<T> extends CommandElement {
     }
 
     @Override public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        return this.element.complete(src, args, context);
+        return getWrappedElement().complete(src, args, context);
     }
 }

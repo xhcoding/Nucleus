@@ -22,13 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class UserDataManager extends DataManager<UUID, ConfigurationNode, ModularUserService> {
 
-    public UserDataManager(NucleusPlugin plugin, Function<UUID, DataProvider<ConfigurationNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+    public UserDataManager(NucleusPlugin plugin, BiFunction<UUID, Boolean, DataProvider<ConfigurationNode>> dataProviderFactory,
+            Predicate<UUID> fileExist) {
         super(plugin, dataProviderFactory, fileExist);
     }
 
@@ -44,16 +45,28 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
         return get(user.getUniqueId());
     }
 
+    public Optional<ModularUserService> get(User user, boolean create) {
+        return get(user.getUniqueId(), create);
+    }
+
     @Override
     public Optional<ModularUserService> getNew(UUID uuid, DataProvider<ConfigurationNode> dataProvider) throws Exception {
-        if (Nucleus.getNucleus().traceUserCreations()) {
-            Logger logger = Nucleus.getNucleus().getLogger();
-            logger.info("Creating user: " + uuid.toString() + " - THIS IS NOT AN ERROR", new Throwable());
-        }
-
         // Does the user exist?
         Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(uuid);
         if (user.isPresent()) {
+            int trace = Nucleus.getNucleus().traceUserCreations();
+            if (trace > 0) {
+                boolean t = trace >= 2 || !Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(uuid).isPresent()
+                        || Sponge.getServer().getPlayer(uuid).map(x -> x.getClass().getSimpleName().toLowerCase().contains("fakeplayer")).orElse(true);
+
+                if (t) {
+                    Logger logger = Nucleus.getNucleus().getLogger();
+                    logger.info("Creating user: " + uuid.toString());
+                    Sponge.getServer().getPlayer(uuid).ifPresent(x -> logger.info("Player Class: " + x.getClass().getName()));
+                    logger.info("THIS IS NOT AN ERROR", new Throwable());
+                }
+            }
+
             return Optional.of(new ModularUserService(dataProvider, user.get().getUniqueId()));
         }
 
@@ -87,13 +100,8 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
         return ImmutableList.copyOf(dataStore.values());
     }
 
-    public Optional<ModularUserService> getUser(UUID playerUUID) {
-        Preconditions.checkNotNull("playerUUID");
-        return Optional.ofNullable(get(playerUUID).orElse(null));
-    }
-
     public Optional<ModularUserService> getUser(User user) {
         Preconditions.checkNotNull("user");
-        return getUser(user.getUniqueId());
+        return get(user.getUniqueId());
     }
 }

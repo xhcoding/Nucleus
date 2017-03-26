@@ -32,7 +32,7 @@ public class InfoWorldCommand extends AbstractCommand<CommandSource> {
     }
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        WorldProperties wp = getWorldPropertiesOrDefault(src, worldKey, args);
+        WorldProperties wp = getWorldFromUserOrArgs(src, worldKey, args);
         final List<Text> listContent = Lists.newArrayList();
         final boolean canSeeSeeds = permissions.testSuffix(src, "seed");
         ListWorldCommand.getWorldInfo(listContent, wp, canSeeSeeds);

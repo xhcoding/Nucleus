@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
@@ -33,10 +34,10 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 public class HomeArgument extends CommandElement {
 
-    private final NucleusPlugin plugin;
+    private final Nucleus plugin;
     private final CoreConfigAdapter cca;
 
-    public HomeArgument(@Nullable Text key, NucleusPlugin plugin, CoreConfigAdapter cca) {
+    public HomeArgument(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
         super(key);
         this.plugin = plugin;
         this.cca = cca;

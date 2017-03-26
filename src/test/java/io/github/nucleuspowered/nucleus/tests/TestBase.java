@@ -4,10 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.tests;
 
+import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
+import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
+import io.github.nucleuspowered.nucleus.dataservices.KitService;
+import io.github.nucleuspowered.nucleus.dataservices.NameBanService;
+import io.github.nucleuspowered.nucleus.dataservices.UserCacheService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
@@ -15,15 +20,20 @@ import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.TextFileController;
+import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
+import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
+import org.spongepowered.api.asset.Asset;
+import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.FormattingCodeTextSerializer;
 import org.spongepowered.api.text.serializer.SafeTextSerializer;
@@ -34,6 +44,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Optional;
 
 public abstract class TestBase {
@@ -134,8 +146,20 @@ public abstract class TestBase {
 
         }
 
+        @Override public Injector getInjector() {
+            return null;
+        }
+
         @Override
         public Logger getLogger() {
+            return null;
+        }
+
+        @Override public Path getConfigDirPath() {
+            return null;
+        }
+
+        @Override public Path getDataPath() {
             return null;
         }
 
@@ -146,6 +170,10 @@ public abstract class TestBase {
 
         @Override
         public WorldDataManager getWorldDataManager() {
+            return null;
+        }
+
+        @Override public UserCacheService getUserCacheService() {
             return null;
         }
 
@@ -161,6 +189,10 @@ public abstract class TestBase {
 
         @Override
         public WarmupManager getWarmupManager() {
+            return null;
+        }
+
+        @Override public WarmupConfig getWarmupConfig() {
             return null;
         }
 
@@ -189,6 +221,10 @@ public abstract class TestBase {
 
         @Override
         public InternalServiceManager getInternalServiceManager() {
+            return null;
+        }
+
+        @Override public Optional<Instant> getGameStartedTime() {
             return null;
         }
 
@@ -221,12 +257,24 @@ public abstract class TestBase {
             return null;
         }
 
-        @Override public boolean traceUserCreations() {
-            return false;
+        @Override public int traceUserCreations() {
+            return 0;
+        }
+
+        @Override public Optional<TextFileController> getTextFileController(String getController) {
+            return null;
+        }
+
+        @Override public void addTextFileController(String id, Asset asset, Path file) throws IOException {
+
         }
 
         @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
 
+        }
+
+        @Override public Optional<DocGenCache> getDocGenCache() {
+            return null;
         }
 
         @Override
@@ -245,6 +293,26 @@ public abstract class TestBase {
 
         @Override public boolean isDebugMode() {
             return true;
+        }
+
+        @Override public KitService getKitService() {
+            return null;
+        }
+
+        @Override public NameBanService getNameBanService() {
+            return null;
+        }
+
+        @Override public CommandsConfig getCommandsConfig() {
+            return null;
+        }
+
+        @Override public PluginContainer getPluginContainer() {
+            return null;
+        }
+
+        @Override protected void registerPermissions() {
+
         }
     }
 }

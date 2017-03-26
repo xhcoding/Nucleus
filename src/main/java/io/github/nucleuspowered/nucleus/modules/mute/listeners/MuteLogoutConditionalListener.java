@@ -23,10 +23,10 @@ public class MuteLogoutConditionalListener extends ListenerBase {
 
     @Listener
     public void onLogout(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-        plugin.getUserDataManager().getUnchecked(player).get(MuteUserDataModule.class).getMuteData().ifPresent(x -> {
-            x.getRemainingTime().ifPresent(x::setTimeFromNextLogin);
-            plugin.getUserDataManager().getUnchecked(player).get(MuteUserDataModule.class).setMuteData(x);
-        });
+        plugin.getUserDataManager().get(player).ifPresent(y -> y.get(MuteUserDataModule.class).getMuteData().ifPresent(x -> {
+                x.getRemainingTime().ifPresent(x::setTimeFromNextLogin);
+                plugin.getUserDataManager().getUnchecked(player).get(MuteUserDataModule.class).setMuteData(x);
+            }));
     }
 
     public static class Condition implements Predicate<Nucleus> {

@@ -111,7 +111,7 @@ public class DocGenCache {
         });
 
         cmd.setPermissions(lp);
-        cmd.setUsageString(abstractCommand.getUsage(Sponge.getServer().getConsole()));
+        cmd.setUsageString(abstractCommand.getUsageString(Sponge.getServer().getConsole()));
         cmd.setSubcommands(abstractCommand.getChildrenUsage(Sponge.getServer().getConsole()).map(Text::toPlain).orElse(""));
         cmd.setSimpleUsage(abstractCommand.getSimpleUsage(Sponge.getServer().getConsole()));
 

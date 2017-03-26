@@ -88,7 +88,8 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
 
         Player player = (Player)src;
 
-        StaffChatTransientModule s = plugin.getUserDataManager().getUnchecked(player).getTransient(StaffChatTransientModule.class);
+        StaffChatTransientModule s = plugin.getUserDataManager().get(player).map(y -> y.getTransient(StaffChatTransientModule.class))
+                .orElseGet(StaffChatTransientModule::new);
 
         boolean result = !(src.getMessageChannel() instanceof StaffChatMessageChannel);
         if (result) {

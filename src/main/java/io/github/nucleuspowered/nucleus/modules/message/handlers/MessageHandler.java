@@ -86,7 +86,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     public boolean isSocialSpy(User user) {
         Tristate ts = forcedSocialSpyState(user);
         if (ts == Tristate.UNDEFINED) {
-            return ucl.getUnchecked(user).get(MessageUserDataModule.class).isSocialSpy();
+            return ucl.get(user).map(y -> y.get(MessageUserDataModule.class).isSocialSpy()).orElse(false);
         }
 
         return ts.asBoolean();
@@ -130,8 +130,10 @@ public class MessageHandler implements NucleusPrivateMessagingService {
             return false;
         }
 
-        ucl.getUnchecked(user).get(MessageUserDataModule.class).setSocialSpy(isSocialSpy);
-        return true;
+        return ucl.get(user).map(x -> {
+            x.get(MessageUserDataModule.class).setSocialSpy(isSocialSpy);
+            return true;
+        }).orElse(false);
     }
 
     @Override public boolean canSpyOn(User spyingUser, CommandSource... sourceToSpyOn) throws IllegalArgumentException {

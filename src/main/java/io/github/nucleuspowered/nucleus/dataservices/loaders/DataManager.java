@@ -14,13 +14,13 @@ import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public abstract class DataManager<I, P, S extends Service> {
 
     private final Predicate<I> fileExists;
-    private final Function<I, DataProvider<P>> dataProviderFactory;
+    private final BiFunction<I, Boolean, DataProvider<P>> dataProviderFactory;
     final Map<I, S> dataStore = new ConcurrentHashMap<>();
     final NucleusPlugin plugin;
 
@@ -28,7 +28,7 @@ public abstract class DataManager<I, P, S extends Service> {
     private Timing actualLoad = TimingsDummy.DUMMY;
     private Timing save = TimingsDummy.DUMMY;
 
-    DataManager(NucleusPlugin plugin, Function<I, DataProvider<P>> dataProviderFactory, Predicate<I> fileExistsPredicate) {
+    DataManager(NucleusPlugin plugin, BiFunction<I, Boolean, DataProvider<P>> dataProviderFactory, Predicate<I> fileExistsPredicate) {
         this.dataProviderFactory = dataProviderFactory;
         this.plugin = plugin;
         this.fileExists = fileExistsPredicate;
@@ -47,6 +47,10 @@ public abstract class DataManager<I, P, S extends Service> {
     }
 
     public final Optional<S> get(I data) {
+        return get(data, true);
+    }
+
+    public final Optional<S> get(I data, boolean create) {
         try {
             generalLoad.startTimingIfSync();
             if (this.dataStore.containsKey(data)) {
@@ -54,7 +58,7 @@ public abstract class DataManager<I, P, S extends Service> {
             }
 
             actualLoad.startTimingIfSync();
-            DataProvider<P> d = this.dataProviderFactory.apply(data);
+            DataProvider<P> d = this.dataProviderFactory.apply(data, create);
             if (d == null) {
                 return Optional.empty();
             }

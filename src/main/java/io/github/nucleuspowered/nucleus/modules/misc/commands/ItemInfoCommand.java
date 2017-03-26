@@ -58,7 +58,7 @@ public class ItemInfoCommand extends AbstractCommand<Player> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
                 GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("extended"), "e", "-extended")
-            .buildWith(GenericArguments.optional(new ItemAliasArgument(Text.of(key), itemDataService)))
+            .buildWith(GenericArguments.optional(new ItemAliasArgument(Text.of(key))))
         };
     }
 

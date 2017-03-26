@@ -39,7 +39,7 @@ public class SetItemAliasCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.optionalWeak(new ItemAliasArgument(Text.of(item), itemDataService)),
+            GenericArguments.optionalWeak(new ItemAliasArgument(Text.of(item))),
             GenericArguments.string(Text.of(alias))
         };
     }
