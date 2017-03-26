@@ -70,12 +70,8 @@ public class KitCreateCommand extends AbstractCommand<CommandSource> {
                             () -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.create.notcreated")));
             Sponge.getEventManager().registerListeners(plugin, new TemporaryEventListener(inventory, container, kitName));
         } else {
-            if (kitConfig.getKitNames().stream().noneMatch(kitName::equalsIgnoreCase)) {
-                kitConfig.saveKit(kitName, kitConfig.createKit());
-                source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.addempty.success", kitName));
-            } else {
-                throw ReturnMessageException.fromKey("command.kit.add.alreadyexists", kitName);
-            }
+            kitConfig.saveKit(kitName, kitConfig.createKit());
+            source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.addempty.success", kitName));
         }
 
         return CommandResult.success();
