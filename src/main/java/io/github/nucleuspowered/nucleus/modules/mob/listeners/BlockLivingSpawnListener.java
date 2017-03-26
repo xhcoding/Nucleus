@@ -53,7 +53,7 @@ public class BlockLivingSpawnListener extends ListenerBase.Reloadable {
     // Most will be caught by the attempt above, but just in case, this catches them.
     @Listener
     public void onSpawn(SpawnEntityEvent event) {
-        event.filterEntities(x -> isSpawnable(x.getClass(), x.getType(), event.getTargetWorld()));
+        event.filterEntities(x -> isSpawnable(x.getClass(), x.getType(), x.getWorld()));
     }
 
     private boolean isSpawnable(Class<? extends Entity> classType, EntityType type, World world) {
