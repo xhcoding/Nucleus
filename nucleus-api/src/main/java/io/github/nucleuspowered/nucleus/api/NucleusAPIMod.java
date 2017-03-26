@@ -11,7 +11,7 @@ import org.spongepowered.api.plugin.Plugin;
 
 import javax.inject.Inject;
 
-@Plugin(id = NucleusAPI.ID, name = NucleusAPI.NAME, version = NucleusAPI.VERSION, description = NucleusAPI.DESCRIPTION)
+@Plugin(id = NucleusAPITokens.ID, name = NucleusAPITokens.NAME, version = NucleusAPITokens.VERSION, description = NucleusAPITokens.DESCRIPTION)
 public final class NucleusAPIMod {
 
     private final Logger logger;
@@ -23,7 +23,7 @@ public final class NucleusAPIMod {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent event) {
-        logger.info("Loading " + NucleusAPI.NAME + " for Nucleus version " + NucleusAPI.VERSION);
-        NucleusAPI.onPreInit(this);
+        logger.info("Loading " + NucleusAPITokens.NAME + " for Nucleus version " + NucleusAPITokens.VERSION);
+        NucleusAPITokens.onPreInit(this);
     }
 }
