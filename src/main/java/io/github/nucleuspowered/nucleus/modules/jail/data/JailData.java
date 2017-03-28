@@ -42,6 +42,9 @@ public final class JailData extends EndTimestamp implements Inmate {
     @Setting
     private UUID world;
 
+    @Setting
+    private long creationTime = Instant.now().getEpochSecond();
+
     // Configurate
     public JailData() { }
 
@@ -85,6 +88,10 @@ public final class JailData extends EndTimestamp implements Inmate {
 
     @Override public Optional<UUID> getJailer() {
         return jailer.equals(Util.consoleFakeUUID) ? Optional.empty() : Optional.of(jailer);
+    }
+
+    public long getCreationTime() {
+        return creationTime;
     }
 
     public UUID getJailerInternal() {

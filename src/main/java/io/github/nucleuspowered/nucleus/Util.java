@@ -65,6 +65,9 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Comparator;
@@ -84,6 +87,9 @@ public class Util {
     private Util() {
     }
 
+    public static final DateTimeFormatter FULL_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL)
+            .withZone(ZoneId.systemDefault());
+
     public static final Text NOT_EMPTY = Text.of(" ");
 
     public static final TextTemplate CHAT_TEMPLATE = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
@@ -94,11 +100,11 @@ public class Util {
 
     public static final UUID consoleFakeUUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
+    private static final Pattern inventory = Pattern.compile("\\{\\{.+?}}");
+
     public static Inventory getStandardInventory(Carrier player) {
         return player.getInventory().query(Hotbar.class, GridInventory.class);
     }
-
-    private static final Pattern inventory = Pattern.compile("\\{\\{.+?}}");
 
     public static Text applyChatTemplate(MessageEvent.MessageFormatter formatter) {
         return applyChatTemplate(formatter.getHeader(), formatter.getBody(), formatter.getFooter());

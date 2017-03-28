@@ -27,9 +27,9 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.util.Tuple;
 
 import java.text.MessageFormat;
+import java.time.Instant;
 import java.util.Optional;
 
 @Permissions(prefix = "jail", suggestedLevel = SuggestedLevel.MOD)
@@ -68,14 +68,26 @@ public class CheckJailCommand extends AbstractCommand<CommandSource> {
         if (md.getJailerInternal().equals(Util.consoleFakeUUID)) {
             name = Sponge.getServer().getConsole().getName();
         } else {
-            Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getJailerInternal());
-            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
+            name = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getJailerInternal())
+                    .map(User::getName).orElseGet(() -> plugin.getMessageProvider().getMessageWithFormat("standard.unknown"));
         }
 
-        Tuple<String, String> a = md.getForString();
+        if (md.getRemainingTime().isPresent()) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailedfor", user.getName(), md.getJailName(),
+                    name, Util.getTimeStringFromSeconds(md.getRemainingTime().get().getSeconds())));
+        } else {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailedperm", user.getName(), md.getJailName(),
+                    name));
+        }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailed", user.getName(), md.getJailName(), name,
-                a.getSecond(), a.getFirst()));
+        if (md.getCreationTime() > 0) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.created",
+                    Util.FULL_TIME_FORMATTER.withLocale(src.getLocale()).format(Instant.ofEpochSecond(md.getCreationTime()))));
+        } else {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.created",
+                    plugin.getMessageProvider().getMessageWithFormat("standard.unknown")));
+        }
+
         src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(plugin.getMessageProvider().getMessageWithFormat("standard.reason"), md.getReason())));
         return CommandResult.success();
     }

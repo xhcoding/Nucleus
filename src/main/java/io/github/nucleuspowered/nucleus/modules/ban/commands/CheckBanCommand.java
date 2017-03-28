@@ -68,21 +68,26 @@ public class CheckBanCommand extends AbstractCommand<CommandSource> {
         }
 
         Ban.Profile bp = obp.get();
-        String f = "";
-        String t = "";
-        if (bp.getExpirationDate().isPresent()) {
-            f = plugin.getMessageProvider().getMessageWithFormat("standard.for");
-            t = Util.getTimeToNow(bp.getExpirationDate().get());
-        }
 
-        String reason;
+        String name;
         if (bp.getBanSource().isPresent()) {
-            reason = bp.getBanSource().get().toPlain();
+            name = bp.getBanSource().get().toPlain();
         } else {
-            reason = plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
+            name = plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.banned", gp.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown")), reason, f, t));
+        if (bp.getExpirationDate().isPresent()) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.bannedfor",
+                    gp.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown")), name,
+                    Util.getTimeToNow(bp.getExpirationDate().get())));
+        } else {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.bannedperm",
+                    gp.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown")), name));
+        }
+
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.created", Util.FULL_TIME_FORMATTER.withLocale(src.getLocale())
+                .format(bp.getCreationDate()
+        )));
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", TextSerializers.FORMATTING_CODE.serialize(bp.getReason().orElse(plugin.getMessageProvider().getTextMessageWithFormat("ban.defaultreason")))));
         return CommandResult.success();
     }
