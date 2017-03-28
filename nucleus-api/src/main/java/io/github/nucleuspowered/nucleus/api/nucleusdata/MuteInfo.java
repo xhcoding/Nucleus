@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.api.nucleusdata;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,4 +24,13 @@ public interface MuteInfo extends TimedEntry {
      * @return The {@link UUID} of the muter, if applicable.
      */
     Optional<UUID> getMuter();
+
+    /**
+     * Gets the {@link Instant} this player was muted, if this information was recorded.
+     *
+     * @since 0.27
+     *
+     * @return The instant, if known.
+     */
+    Optional<Instant> getCreationInstant();
 }

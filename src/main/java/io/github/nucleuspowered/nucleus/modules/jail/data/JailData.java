@@ -90,6 +90,10 @@ public final class JailData extends EndTimestamp implements Inmate {
         return jailer.equals(Util.consoleFakeUUID) ? Optional.empty() : Optional.of(jailer);
     }
 
+    public Optional<Instant> getCreationInstant() {
+        return creationTime > 0 ? Optional.of(Instant.ofEpochSecond(creationTime)) : Optional.empty();
+    }
+
     public long getCreationTime() {
         return creationTime;
     }

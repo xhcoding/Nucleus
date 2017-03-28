@@ -81,6 +81,10 @@ public final class MuteData extends EndTimestamp implements MuteInfo {
         return Optional.of(Instant.ofEpochSecond(endtimestamp));
     }
 
+    public Optional<Instant> getCreationInstant() {
+        return creationTime > 0 ? Optional.of(Instant.ofEpochSecond(creationTime)) : Optional.empty();
+    }
+
     public long getCreationTime() {
         return creationTime;
     }
