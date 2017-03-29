@@ -4,11 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.internal.data;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.TimedEntry;
 import ninja.leaping.configurate.objectmapping.Setting;
-import org.spongepowered.api.util.Tuple;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -71,19 +68,6 @@ public abstract class EndTimestamp implements TimedEntry {
         }
 
         return Optional.of(Duration.of(timeFromNextLogin, ChronoUnit.SECONDS));
-    }
-
-    // This HAS to be temporary.
-    public Tuple<String, String> getForString() {
-        if (getEndTimestamp().isPresent()) {
-            return Tuple.of(Util.getTimeStringFromSeconds(Instant.now().until(getEndTimestamp().get(), ChronoUnit.SECONDS)),
-                " " + Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.for") + " ");
-        } else if (getTimeFromNextLogin().isPresent()) {
-            return Tuple.of(Util.getTimeStringFromSeconds(getTimeFromNextLogin().get().getSeconds()),
-                " " + Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.for") + " ");
-        }
-
-        return Tuple.of("", "");
     }
 
     @Override public boolean isCurrentlyTicking() {

@@ -25,12 +25,13 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.service.context.Contextual;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -39,18 +40,24 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
+@NonnullByDefault
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"list", "listplayers", "ls"})
 @EssentialsEquivalent({"list", "who", "playerlist", "online", "plist"})
 public class ListPlayerCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
 
-    private AFKHandler handler;
-    @Inject private PlayerInfoConfigAdapter configAdapter;
+    @Nullable private AFKHandler handler;
+
+    @SuppressWarnings("NullableProblems") @Inject private PlayerInfoConfigAdapter configAdapter;
+
+    @SuppressWarnings("ConstantConditions")
     private ListConfig listConfig = null;
 
-    private Text afk = null;
-    private Text hidden = null;
+    @Nullable private Text afk = null;
+    @Nullable private Text hidden = null;
 
     public static final Function<Subject, Integer> weightingFunction = s -> Util.getIntOptionFromSubject(s, "nucleus.list.weight").orElse(0);
 
@@ -109,31 +116,17 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
         groups.sort((x, y) -> groupComparison(weightingFunction, x, y));
 
         // Keep a copy of the players that we will remove from.
-        final List<Player> playersToList = new ArrayList<>(players);
+        final Map<Player, List<String>> playersToList = players.stream()
+            .collect(Collectors.toMap(x -> x, y -> Util.getParentSubjects(y).stream().map(Contextual::getIdentifier).collect(Collectors.toList())));
 
+        // Messages
         final List<Text> messages = Lists.newArrayList();
 
-        final Map<String, List<Player>> groupToPlayer = Maps.newHashMap();
-
-        // Add players to groups.
-        groups.forEach(x -> {
-            List<Player> groupPlayerList;
-            String groupName = x.getIdentifier();
-            if (listConfig.isGroupByPermissionGroup() && listConfig.getAliases().containsKey(x.getIdentifier())) {
-                groupName = listConfig.getAliases().get(x.getIdentifier());
-            }
-
-            groupPlayerList = groupToPlayer.computeIfAbsent(groupName, g -> Lists.newArrayList());
-
-            // Get the players in the group.
-            Collection<Player> cp = playersToList.stream().filter(pl -> Util.getParentSubjects(pl).contains(x)).collect(Collectors.toList());
-            playersToList.removeAll(cp);
-            groupPlayerList.addAll(cp);
-        });
+        final Map<String, List<Player>> groupToPlayer = linkPlayersToGroups(groups, listConfig.getAliases(), playersToList);
 
         // For the rest of the players...
         if (!playersToList.isEmpty()) {
-            groupToPlayer.computeIfAbsent(listConfig.getDefaultGroupName(), g -> Lists.newArrayList()).addAll(playersToList);
+            groupToPlayer.computeIfAbsent(listConfig.getDefaultGroupName(), g -> Lists.newArrayList()).addAll(playersToList.keySet());
         }
 
         // Create messages based on the alias list first.
@@ -229,6 +222,32 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
         listConfig = configAdapter.getNodeOrDefault().getList();
     }
 
+    public static Map<String, List<Player>> linkPlayersToGroups(List<Subject> groups, Map<String, String> groupAliases,
+           Map<Player, List<String>> players) {
+
+        final Map<String, List<Player>> groupToPlayer = Maps.newHashMap();
+
+        for (Subject x : groups) {
+            List<Player> groupPlayerList;
+            String groupName = x.getIdentifier();
+            if (groupAliases.containsKey(x.getIdentifier())) {
+                groupName = groupAliases.get(x.getIdentifier());
+            }
+
+            // Get the players in the group.
+            Collection<Player> cp = players.entrySet().stream().filter(k -> k.getValue().contains(x.getIdentifier()))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            if (!cp.isEmpty()) {
+                groupPlayerList = groupToPlayer.computeIfAbsent(groupName, g -> Lists.newArrayList());
+                cp.forEach(players::remove);
+                groupPlayerList.addAll(cp);
+            }
+        }
+
+        return groupToPlayer;
+    }
+
     // For testing
     public static int groupComparison(Function<Subject, Integer> weightingFunction, Subject x, Subject y)  {
         // If the weight of x is bigger than y, x should go first. We therefore need a large x to provide a negative number.
@@ -236,7 +255,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
         if (res == 0) {
             // If x is bigger than y, x should go first. We therefore need a large x to provide a negative number,
             // so x is above y.
-            return y.getParents().size() - x.getParents().size() ;
+            return y.getParents().size() - x.getParents().size();
         }
 
         return res;

@@ -96,7 +96,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         // Get the current world.
         final WorldProperties wp;
         if (this.rc.getDefaultWorld().isPresent()) {
-            wp = this.getWorldProperties(src.getSubject(), worldKey, args).orElseGet(() -> this.rc.getDefaultWorld().get());
+            wp = args.<WorldProperties>getOne(worldKey).orElseGet(() -> this.rc.getDefaultWorld().get());
         } else {
             wp = this.getWorldFromUserOrArgs(src.getSubject(), worldKey, args);
         }

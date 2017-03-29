@@ -9,11 +9,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@NonnullByDefault
 @ConfigSerializable
 public class ListConfig {
 

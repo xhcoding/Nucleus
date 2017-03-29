@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.api.nucleusdata;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,4 +43,13 @@ public interface Inmate extends TimedEntry {
      * @return The previous location of the player, if known.
      */
     Optional<Location<World>> getPreviousLocation();
+
+    /**
+     * Gets the {@link Instant} this inmate was jailed, if this information was recorded.
+     *
+     * @since 0.27
+     *
+     * @return The instant, if known.
+     */
+    Optional<Instant> getCreationInstant();
 }

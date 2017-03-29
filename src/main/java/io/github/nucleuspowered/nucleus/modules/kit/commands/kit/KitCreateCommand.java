@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
@@ -39,7 +40,7 @@ import org.spongepowered.api.text.Text;
 @NoCooldown
 @NoCost
 @Since(spongeApiVersion = "5.0", minecraftVersion = "1.10.2", nucleusVersion = "0.13")
-public class KitCreateCommand extends AbstractCommand<Player> {
+public class KitCreateCommand extends AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
 
@@ -51,19 +52,27 @@ public class KitCreateCommand extends AbstractCommand<Player> {
     }
 
     @Override
-    public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
+    public CommandResult executeCommand(final CommandSource source, CommandContext args) throws Exception {
         String kitName = args.<String>getOne(name).get();
 
         if (kitConfig.getKitNames().stream().anyMatch(kitName::equalsIgnoreCase)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.alreadyexists", kitName));
         }
 
-        Inventory inventory = Util.getKitInventoryBuilder()
-            .property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.create.title", kitName)))
-            .build(plugin);
-        Container container = player.openInventory(inventory, Cause.of(NamedCause.owner(plugin), NamedCause.source(player)))
-            .orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.create.notcreated")));
-        Sponge.getEventManager().registerListeners(plugin, new TemporaryEventListener(inventory, container, kitName));
+        if (source instanceof Player) {
+            final Player player = (Player)source;
+            Inventory inventory = Util.getKitInventoryBuilder()
+                    .property(InventoryTitle.PROPERTY_NAME,
+                            InventoryTitle.of(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.create.title", kitName)))
+                    .build(plugin);
+            Container container = player.openInventory(inventory, Cause.of(NamedCause.owner(plugin), NamedCause.source(player)))
+                    .orElseThrow(
+                            () -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.create.notcreated")));
+            Sponge.getEventManager().registerListeners(plugin, new TemporaryEventListener(inventory, container, kitName));
+        } else {
+            kitConfig.saveKit(kitName, kitConfig.createKit());
+            source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.addempty.success", kitName));
+        }
 
         return CommandResult.success();
     }

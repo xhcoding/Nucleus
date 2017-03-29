@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -25,8 +26,9 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.util.Tuple;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+import java.time.Instant;
 import java.util.Optional;
 
 /**
@@ -40,9 +42,10 @@ import java.util.Optional;
 @NoCooldown
 @NoCost
 @RegisterCommand("checkmute")
+@NonnullByDefault
 public class CheckMuteCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private MuteHandler handler;
+    @SuppressWarnings("NullableProblems") @Inject private MuteHandler handler;
     private final String playerKey = "user/UUID";
 
     @Override
@@ -50,7 +53,7 @@ public class CheckMuteCommand extends AbstractCommand<CommandSource> {
         return new CommandElement[] {
             GenericArguments.firstParsing(
                 GenericArguments.user(Text.of(playerKey)),
-                new UUIDArgument<>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
+                new UUIDArgument<User>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
             )
         };
     }
@@ -72,12 +75,27 @@ public class CheckMuteCommand extends AbstractCommand<CommandSource> {
         if (!md.getMuter().isPresent()) {
             name = Sponge.getServer().getConsole().getName();
         } else {
-            Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getMuter().get());
-            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
+            name = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getMuter().get())
+                    .map(User::getName)
+                    .orElseGet(() -> plugin.getMessageProvider().getMessageWithFormat("standard.unknown"));
         }
 
-        Tuple<String, String> a = md.getForString();
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.mute", user.getName(), name, a.getSecond(), a.getFirst()));
+        if (md.getRemainingTime().isPresent()) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.mutedfor", user.getName(),
+                    name, Util.getTimeStringFromSeconds(md.getRemainingTime().get().getSeconds())));
+        } else {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.mutedperm", user.getName(),
+                    name));
+        }
+
+        if (md.getCreationTime() > 0) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.created",
+                    Util.FULL_TIME_FORMATTER.withLocale(src.getLocale()).format(Instant.ofEpochSecond(md.getCreationTime()))));
+        } else {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkmute.created",
+                    plugin.getMessageProvider().getMessageWithFormat("standard.unknown")));
+        }
+
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", md.getReason()));
         return CommandResult.success();
     }
