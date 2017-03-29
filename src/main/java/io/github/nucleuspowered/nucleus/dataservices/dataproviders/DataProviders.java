@@ -68,7 +68,7 @@ public class DataProviders {
         try {
             Path p = getFile(worldJson, uuid);
             if (create || doesWorldFileExist(uuid)) {
-                return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, true, plugin.getLogger());
+                return new SimpleConfigurateDataProvider(path -> getGsonBuilder().setPath(path).build(), p, false, plugin.getLogger());
             }
         } catch (Exception e) {
             // ignored
