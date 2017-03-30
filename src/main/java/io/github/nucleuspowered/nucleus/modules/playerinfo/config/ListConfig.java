@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+import uk.co.drnaylor.quickstart.config.NoMergeIfPresent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,12 +63,14 @@ public class ListConfig {
         @Setting(value = "use-aliases-only", comment = "config.playerinfo.list.aliasonly")
         private boolean useAliasOnly = false;
 
+        @NoMergeIfPresent
         @Setting(value = "group-aliases", comment = "config.playerinfo.list.groupaliases")
         private Map<String, String> groupAliasing = new HashMap<String, String>() {{
             put("example-default-group", "Default Group");
             put("example-default-group-2", "Default Group");
         }};
 
+        @NoMergeIfPresent
         @Setting(value = "group-order", comment = "config.playerinfo.list.grouporder")
         private List<String> groupPriority = Lists.newArrayList();
 

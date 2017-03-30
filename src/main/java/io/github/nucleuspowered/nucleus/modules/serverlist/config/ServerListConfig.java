@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import uk.co.drnaylor.quickstart.config.NoMergeIfPresent;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class ServerListConfig {
     @Setting(value = "hide-player-count", comment = "config.serverlist.hideall")
     private boolean hidePlayerCount = false;
 
+    @NoMergeIfPresent
     @Setting(value = "server-list-messages", comment = "config.serverlist.messages")
     public List<NucleusTextTemplateImpl> messages = Lists.newArrayList();
 
