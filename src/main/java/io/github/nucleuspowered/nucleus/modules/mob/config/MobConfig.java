@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.world.World;
+import uk.co.drnaylor.quickstart.config.NoMergeIfPresent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class MobConfig {
     @Setting(value = "max-mobs-to-spawn", comment = "config.mobspawn.maxamt")
     private int maxMobsToSpawn = 20;
 
+    @NoMergeIfPresent
     @Setting(value = "spawning-blocks", comment = "config.blockspawn.category")
     private Map<String, BlockSpawnsConfig> blockSpawnsConfig = new HashMap<String, BlockSpawnsConfig>() {{
         put("world", new BlockSpawnsConfig());
