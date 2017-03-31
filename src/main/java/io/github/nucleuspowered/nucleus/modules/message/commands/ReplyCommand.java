@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -50,9 +51,11 @@ public class ReplyCommand extends AbstractCommand<CommandSource> {
         boolean b = handler.replyMessage(src, args.<String>getOne(message).get());
         if (b) {
             handler.getLastMessageFrom(Util.getUUID(src)).ifPresent(x -> {
-                if (x instanceof Player) {
-                    NucleusProcessing.addToContextOnSuccess(args, () -> AlertOnAfkArgument.getAction(src, (Player)x));
-                }
+                    if (x instanceof Player) {
+                        plugin.getInternalServiceManager().getService(AFKHandler.class).filter(y -> y.isAfk((Player)x)).ifPresent(k ->
+                            NucleusProcessing.addToContextOnSuccess(args, () -> AlertOnAfkArgument.getAction(src, (Player)x))
+                        );
+                    }
             });
 
             return CommandResult.success();
