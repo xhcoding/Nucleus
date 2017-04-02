@@ -68,7 +68,7 @@ public class SpawnCommand extends AbstractCommand<Player> {
         WorldProperties wp = args.<WorldProperties>getOne(key)
             .orElseGet(() -> gsc.isOnSpawnCommand() ? gsc.getWorld().orElse(src.getWorld().getProperties()) : src.getWorld().getProperties());
 
-        Optional<World> ow = Sponge.getServer().getWorld(wp.getUniqueId());
+        Optional<World> ow = Sponge.getServer().loadWorld(wp.getUniqueId());
 
         if (!ow.isPresent()) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.noworld"));
