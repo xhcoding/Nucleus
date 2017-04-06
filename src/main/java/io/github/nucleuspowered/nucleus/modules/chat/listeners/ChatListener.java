@@ -99,12 +99,10 @@ public class ChatListener extends ListenerBase.Reloadable {
     // --- Listener Proper
     private final ChatConfigAdapter cca;
     private ChatConfig chatConfig = null;
-    private final TextParsingUtils textParsingUtils;
     private final TemplateUtil templateUtil;
 
     @Inject
-    public ChatListener(TextParsingUtils textParsingUtils, ChatConfigAdapter cca, TemplateUtil templateUtil) {
-        this.textParsingUtils = textParsingUtils;
+    public ChatListener(ChatConfigAdapter cca, TemplateUtil templateUtil) {
         this.cca = cca;
         this.templateUtil = templateUtil;
     }
