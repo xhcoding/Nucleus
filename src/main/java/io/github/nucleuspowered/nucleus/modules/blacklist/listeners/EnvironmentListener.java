@@ -17,6 +17,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.event.filter.type.Include;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class EnvironmentListener extends BlacklistListener {
     private final String environment = PermissionRegistry.PERMISSIONS_PREFIX + "blacklist.bypass.environment";
 
     @Listener
+    @Include({ChangeBlockEvent.Break.class, ChangeBlockEvent.Modify.class, ChangeBlockEvent.Place.class})
     public void onPlayerChangeBlock(ChangeBlockEvent event, @Root Player player) {
         if (hasBypass(player, environment)) {
             return;
