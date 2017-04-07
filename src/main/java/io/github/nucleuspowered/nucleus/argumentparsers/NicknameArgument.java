@@ -69,12 +69,12 @@ public class NicknameArgument<T extends User> extends CommandElement {
             parser = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
             completer = (s, cs, a, c) -> {
                 Collection<String> onlinePlayers = Sponge.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+                UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
                 return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
                     .getAll()
                     .stream()
                     .filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(s))
-                    .filter(x -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(x).map(y -> filter.test(cs, (T)y))
-                            .orElse(false))
+                    .filter(x -> uss.get(x).map(y -> filter.test(cs, (T)y)).orElse(false))
                     .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
                     .map(x -> x.getName().get())
                     .distinct()
@@ -82,9 +82,11 @@ public class NicknameArgument<T extends User> extends CommandElement {
                         boolean firstBool = onlinePlayers.contains(first);
                         boolean secondBool = onlinePlayers.contains(second);
                         if (firstBool == secondBool) {
-                            return first.compareTo(second);
+                            return first.compareToIgnoreCase(second);
                         }
 
+                        // Negative integer indicates that the first object is "less than" the second object, and therefore will be
+                        // higher in the list.
                         return firstBool ? -1 : 1;
                     })
                     .collect(Collectors.toList());

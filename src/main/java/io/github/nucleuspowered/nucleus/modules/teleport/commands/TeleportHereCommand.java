@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.IfConditionElseArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
@@ -28,6 +29,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +46,7 @@ import java.util.Map;
 @RegisterCommand({"tphere", "tph"})
 @EssentialsEquivalent(value = {"tphere", "s", "tpohere"}, isExact = false,
         notes = "If you have permission, this will override '/tptoggle' automatically.")
+@NonnullByDefault
 public class TeleportHereCommand extends AbstractCommand<Player> {
 
     private final String playerKey = "subject";
@@ -63,8 +66,9 @@ public class TeleportHereCommand extends AbstractCommand<Player> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.onlyOne(
-                SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER)
-            )
+                IfConditionElseArgument.permission(this.permissions.getPermissionWithSuffix("offline"),
+                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER),
+                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER)))
         };
     }
 

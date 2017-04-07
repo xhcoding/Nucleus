@@ -5,16 +5,16 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.IfConditionElseArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.ContinueMode;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -34,6 +34,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -46,15 +47,15 @@ import java.util.function.Supplier;
 @RegisterCommand(value = "teleport", rootAliasRegister = "tp")
 @EssentialsEquivalent(value = {"tp", "tele", "tp2p", "teleport", "tpo"}, isExact = false,
         notes = "If you have permission, this will override '/tptoggle' automatically.")
+@NonnullByDefault
 public class TeleportCommand extends AbstractCommand<CommandSource> {
 
     private final String playerFromKey = "playerFrom";
     private final String playerKey = "subject";
     private final String quietKey = "quiet";
 
-    @Inject private TeleportHandler handler;
-    @Inject private TeleportConfigAdapter tca;
-    @Inject private UserDataManager userDataManager;
+    @SuppressWarnings("NullableProblems") @Inject private TeleportHandler handler;
+    @SuppressWarnings("NullableProblems") @Inject private TeleportConfigAdapter tca;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -68,6 +69,7 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
        return new CommandElement[]{
                 GenericArguments.flags().flag("f")
+                    .setAnchorFlags(true)
                     .valueFlag(GenericArguments.requiringPermission(GenericArguments.bool(Text.of(quietKey)), permissions.getPermissionWithSuffix("quiet")), "q")
                     .buildWith(GenericArguments.none()),
 
@@ -79,7 +81,10 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                                 permissions.getOthers()),
 
                     // <subject>
-                    GenericArguments.onlyOne(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER)))
+                    GenericArguments.onlyOne(
+                        IfConditionElseArgument.permission(this.permissions.getPermissionWithSuffix("offline"),
+                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER),
+                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER))))
        };
     }
 
