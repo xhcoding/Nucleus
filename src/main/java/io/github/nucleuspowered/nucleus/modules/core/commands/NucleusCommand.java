@@ -9,6 +9,7 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.NAME;
 import static io.github.nucleuspowered.nucleus.PluginInfo.VERSION;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCommandPrefix;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -37,6 +38,7 @@ import java.util.Set;
 @NoCooldown
 @NoCost
 @RegisterCommand({ "nucleus" })
+@NoCommandPrefix
 public class NucleusCommand extends AbstractCommand<CommandSource> {
 
     @Inject private ModuleContainer container;
