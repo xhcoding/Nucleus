@@ -26,7 +26,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -65,35 +64,42 @@ public class NicknameArgument<T extends User> extends CommandElement {
         this.type = type;
         this.filter = filter;
 
-        if (type == UnderlyingType.USER) {
-            parser = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
-            completer = (s, cs, a, c) -> {
-                Collection<String> onlinePlayers = Sponge.getServer().getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
-                UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
-                return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
-                    .getAll()
-                    .stream()
-                    .filter(x -> x.getName().isPresent() && x.getName().get().toLowerCase().startsWith(s))
-                    .filter(x -> uss.get(x).map(y -> filter.test(cs, (T)y)).orElse(false))
-                    .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
-                    .map(x -> x.getName().get())
-                    .distinct()
-                    .sorted((first, second) -> {
-                        boolean firstBool = onlinePlayers.contains(first);
-                        boolean secondBool = onlinePlayers.contains(second);
-                        if (firstBool == secondBool) {
-                            return first.compareToIgnoreCase(second);
-                        }
+        PlayerConsoleArgument pca = new PlayerConsoleArgument(key, type == UnderlyingType.PLAYER_CONSOLE,
+                (BiPredicate<CommandSource, Player>)filter);
 
-                        // Negative integer indicates that the first object is "less than" the second object, and therefore will be
-                        // higher in the list.
-                        return firstBool ? -1 : 1;
-                    })
-                    .collect(Collectors.toList());
+        if (type == UnderlyingType.USER) {
+            UserParser p = new UserParser(onlyOne, () -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class));
+            parser = (name, cs, a) -> {
+                List<?> i = p.accept(name, cs, a);
+                if (i.isEmpty()) {
+                    i = pca.parseInternal(name, cs, a);
+                }
+
+                return i;
+            };
+
+            completer = (s, cs, a, c) -> {
+                List<String> toReturn = pca.completeInternal(s, cs, a, c);
+
+                if (!s.isEmpty()) {
+                    UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
+                    List<String> offline = Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+                            .getAll()
+                            .stream()
+                            .filter(x -> x.getName().isPresent())
+                            .filter(x -> !Sponge.getServer().getPlayer(x.getName().get()).isPresent())
+                            .filter(x -> x.getName().get().toLowerCase().startsWith(s))
+                            .filter(x -> uss.get(x).map(y -> filter.test(cs, (T) y)).orElse(false))
+                            .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
+                            .map(x -> x.getName().get())
+                            .collect(Collectors.toList());
+
+                    toReturn.addAll(offline);
+                }
+
+                return toReturn;
             };
         } else {
-            PlayerConsoleArgument pca = new PlayerConsoleArgument(key, type == UnderlyingType.PLAYER_CONSOLE,
-                    (BiPredicate<CommandSource, Player>)filter);
             parser = pca::parseInternal;
             completer = pca::completeInternal;
         }
@@ -186,12 +192,14 @@ public class NicknameArgument<T extends User> extends CommandElement {
         if (playerOnly) {
             return original.stream().map(x -> "p:" + x).collect(Collectors.toList());
         } else if (Nucleus.getNucleus().isModuleLoaded(NicknameModule.ID)) {
-            original.addAll(userDataManager.getOnlineUsersInternal().stream()
+            List<String> toAdd = userDataManager.getOnlineUsersInternal().stream()
                     .filter(x -> x.getUser().isOnline() && x.get(NicknameUserDataModule.class).getNicknameAsString().isPresent() &&
                             TextSerializers.FORMATTING_CODE.stripCodes(x.get(NicknameUserDataModule.class).getNicknameAsString().get())
                                     .toLowerCase().startsWith(fName))
                     .map(x -> TextSerializers.FORMATTING_CODE.stripCodes(x.get(NicknameUserDataModule.class).getNicknameAsString().get()))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+            toAdd.removeIf(original::contains);
+            original.addAll(toAdd);
         }
 
         return original;
@@ -247,6 +255,9 @@ public class NicknameArgument<T extends User> extends CommandElement {
 
                     return users;
                 }
+
+                // If users is empty, then we should check online players.
+
             } catch (Exception e) {
                 // We want to rethrow this!
                 if (e instanceof ArgumentParseException) {
