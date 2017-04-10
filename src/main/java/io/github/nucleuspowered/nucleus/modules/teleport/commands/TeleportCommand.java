@@ -5,11 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.argumentparsers.AlternativeUsageArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.IfConditionElseArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoModifiersArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.TwoPlayersArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -50,7 +49,7 @@ import java.util.function.Supplier;
 @NonnullByDefault
 public class TeleportCommand extends AbstractCommand<CommandSource> {
 
-    private final String playerFromKey = "playerFrom";
+    private final String playerToKey = "Player to warp to";
     private final String playerKey = "subject";
     private final String quietKey = "quiet";
 
@@ -73,19 +72,47 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                     .valueFlag(GenericArguments.requiringPermission(GenericArguments.bool(Text.of(quietKey)), permissions.getPermissionWithSuffix("quiet")), "q")
                     .buildWith(GenericArguments.none()),
 
-                    // Either we get two arguments, or we get one.
-                    GenericArguments.firstParsing(
-                        // <subject> <subject>
-                        GenericArguments.requiringPermission(new NoModifiersArgument<Player>(
-                            new TwoPlayersArgument(Text.of(playerFromKey), Text.of(playerKey), permissions), (c, o) -> true),
-                                permissions.getOthers()),
+                    new AlternativeUsageArgument(
+                        GenericArguments.seq(
+                            GenericArguments.onlyOne(
+                                IfConditionElseArgument.permission(this.permissions.getPermissionWithSuffix("offline"),
+                                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER),
+                                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER))),
 
-                    // <subject>
-                    GenericArguments.onlyOne(
-                        IfConditionElseArgument.permission(this.permissions.getPermissionWithSuffix("offline"),
-                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER),
-                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER))))
+                            new IfConditionElseArgument(
+                                SelectorWrapperArgument.nicknameSelector(Text.of(playerToKey), NicknameArgument.UnderlyingType.PLAYER),
+                                GenericArguments.none(),
+                                this::testForSecondPlayer)),
+
+                        src -> {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("<player to warp to>");
+                            if (permissions.testOthers(src)) {
+                                sb.append("|<player to warp> <player to warp to>");
+                            }
+
+                            if (permissions.testOthers(src)) {
+                                sb.append("|<offline player to warp to>");
+                            }
+
+                            return Text.of(sb.toString());
+                        }
+                    )
        };
+    }
+
+    private boolean testForSecondPlayer(CommandSource source, CommandContext context) {
+        try {
+            if (context.hasAny(playerKey) && this.permissions.testOthers(source)) {
+                return context.<User>getOne(playerKey).map(
+                    y -> y.getPlayer().isPresent()
+                ).orElse(false);
+            }
+        } catch (Exception e) {
+            // ignored
+        }
+
+        return false;
     }
 
     @Override protected ContinueMode preProcessChecks(SubjectPermissionCache<CommandSource> source, CommandContext args) {
@@ -95,24 +122,24 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         boolean beQuiet = args.<Boolean>getOne(quietKey).orElse(tca.getNodeOrDefault().isDefaultQuiet());
-        Optional<Player> ofrom = args.getOne(playerFromKey);
+        Optional<Player> oTo = args.getOne(playerToKey);
+        User to;
         Player from;
-        if (ofrom.isPresent()) {
-            from = ofrom.get();
-            if (from.equals(src)) {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.teleport.player.noself"));
-                return CommandResult.empty();
+        if (oTo.isPresent()) { // Two player argument.
+            from = args.<Player>getOne(playerKey).get(); // Checked in argument.
+            to = oTo.get();
+            if (to.equals(src)) {
+                throw ReturnMessageException.fromKey("command.teleport.player.noself");
             }
         } else if (src instanceof Player) {
             from = (Player) src;
+            to = args.<User>getOne(playerKey).get();
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.playeronly"));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.playeronly");
         }
 
-        User pl = args.<Player>getOne(playerKey).get();
-        if (pl.getPlayer().isPresent()) {
-            if (handler.getBuilder().setSource(src).setFrom(from).setTo(pl.getPlayer().get()).setSafe(!args.<Boolean>getOne("f").orElse(false))
+        if (to.getPlayer().isPresent()) {
+            if (handler.getBuilder().setSource(src).setFrom(from).setTo(to.getPlayer().get()).setSafe(!args.<Boolean>getOne("f").orElse(false))
                     .setSilentTarget(beQuiet).startTeleport()) {
                 return CommandResult.success();
             }
@@ -124,21 +151,22 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
         permissions.checkSuffix(src, "offline", () -> ReturnMessageException.fromKey("command.teleport.noofflineperms"));
 
         // Can we get a location?
-        Supplier<ReturnMessageException> r = () -> ReturnMessageException.fromKey("command.teleport.nolastknown", pl.getName());
-        Location<World> l = plugin.getUserDataManager().get(pl.getUniqueId()).orElseThrow(r).get(CoreUserDataModule.class).getLogoutLocation()
+        Supplier<ReturnMessageException> r = () -> ReturnMessageException.fromKey("command.teleport.nolastknown", to.getName());
+        Location<World> l = plugin.getUserDataManager().get(to.getUniqueId()).orElseThrow(r).get(CoreUserDataModule.class).getLogoutLocation()
                 .orElseThrow(r);
 
         MessageProvider provider = plugin.getMessageProvider();
         if (plugin.getTeleportHandler()
                 .teleportPlayer(from, l, NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE, Cause.of(NamedCause.owner(src))).isSuccess()) {
             if (!(src instanceof Player && ((Player) src).getUniqueId().equals(from.getUniqueId()))) {
-                src.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.other", from.getName(), pl.getName()));
+                src.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.other", from.getName(), to.getName()));
             }
 
-            from.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.self", pl.getName()));
+            from.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.self", to.getName()));
             return CommandResult.success();
         }
 
         throw ReturnMessageException.fromKey("command.teleport.error");
     }
+
 }
