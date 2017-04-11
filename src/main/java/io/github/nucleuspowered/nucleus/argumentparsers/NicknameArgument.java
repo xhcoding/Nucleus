@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.nickname.NicknameModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.util.QuadFunction;
@@ -267,5 +268,24 @@ public class NicknameArgument<T extends User> extends CommandElement {
 
             return Lists.newArrayList();
         }
+    }
+
+    @Override public void parse(CommandSource source, CommandArgs args, CommandContext context) throws ArgumentParseException {
+        if (context.hasAny(StandardAbstractCommand.COMPLETION_ARG)) {
+            // Are we at the end (so, is there this arg, and then the next?
+            Object state = args.getState();
+            try {
+                // Should be there.
+                args.next();
+
+                // Should fail here if this is the last element.
+                // We don't want to catch the error, because this will trigger the completion!
+                args.next();
+            } finally {
+                args.setState(state);
+            }
+        }
+
+        super.parse(source, args, context);
     }
 }

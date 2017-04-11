@@ -101,6 +101,12 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 public abstract class StandardAbstractCommand<T extends CommandSource> implements CommandCallable {
 
+    /**
+     * An argument key to denote that the current operation is for a tab completion and
+     * so the argument should react accordingly. This is specifically useful for an
+     * argument that will accept partial completion of names.
+     */
+    public static final String COMPLETION_ARG = "comp";
     private static final InputTokenizer tokeniser = InputTokenizer.quotedStrings(false);
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
@@ -546,6 +552,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
         final Set<String> options = Sets.newHashSet();
         CommandContext context = new CommandContext();
+        context.putArg(COMPLETION_ARG, true); // We don't care for the value.
 
         // Subcommand
         Object state = args.getState();
