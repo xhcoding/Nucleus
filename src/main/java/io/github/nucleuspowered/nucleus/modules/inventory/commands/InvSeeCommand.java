@@ -14,9 +14,13 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.inventory.InventoryModule;
+import io.github.nucleuspowered.nucleus.modules.inventory.config.InventoryConfig;
+import io.github.nucleuspowered.nucleus.modules.inventory.config.InventoryConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
@@ -25,6 +29,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 
@@ -35,9 +40,11 @@ import java.util.Map;
 @RegisterCommand("invsee")
 @EssentialsEquivalent("invsee")
 @Since(minecraftVersion = "1.10.2", spongeApiVersion = "5.0.0", nucleusVersion = "0.13.0")
-public class InvSeeCommand extends AbstractCommand<Player> {
+@NonnullByDefault
+public class InvSeeCommand extends AbstractCommand<Player> implements StandardAbstractCommand.Reloadable {
 
     private final String player = "subject";
+    private boolean self = false;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -64,7 +71,7 @@ public class InvSeeCommand extends AbstractCommand<Player> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.invsee.nooffline"));
         }
 
-        if (target.getUniqueId().equals(src.getUniqueId())) {
+        if (!this.self && target.getUniqueId().equals(src.getUniqueId())) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.invsee.self"));
         }
 
@@ -80,5 +87,10 @@ public class InvSeeCommand extends AbstractCommand<Player> {
         } catch (UnsupportedOperationException e) {
             throw ReturnMessageException.fromKey("command.invsee.offlinenotsupported");
         }
+    }
+
+    @Override public void onReload() {
+        this.self = plugin.getConfigValue(InventoryModule.ID, InventoryConfigAdapter.class,
+                InventoryConfig::isAllowInvseeOnSelf).orElse(false);
     }
 }
