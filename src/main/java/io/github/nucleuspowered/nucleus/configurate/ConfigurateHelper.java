@@ -13,6 +13,9 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusItemStackSnapshotSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusTextTemplateTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.arrays.ByteArrayTypeSerialiser;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.arrays.IntArrayTypeSerialiser;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.arrays.ShortArrayTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSnapshot;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.ConfigurationOptions;
@@ -83,6 +86,10 @@ public class ConfigurateHelper {
                 typeToken -> Set.class.isAssignableFrom(typeToken.getRawType()),
                 new SetTypeSerialiser()
         );
+
+        tsc.registerType(new TypeToken<byte[]>(){}, new ByteArrayTypeSerialiser());
+        tsc.registerType(new TypeToken<short[]>(){}, new ShortArrayTypeSerialiser());
+        tsc.registerType(new TypeToken<int[]>(){}, new IntArrayTypeSerialiser());
 
         if (Sponge.getGame().getState() == GameState.SERVER_STARTED) {
             typeSerializerCollection = tsc;

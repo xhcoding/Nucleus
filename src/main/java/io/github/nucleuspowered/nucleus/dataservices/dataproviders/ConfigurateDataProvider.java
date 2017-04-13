@@ -54,7 +54,7 @@ public class ConfigurateDataProvider<T> extends AbstractConfigurateDataProvider<
         ConfigurationOptions configurateOptions = ConfigurateHelper.setOptions(loader.getDefaultOptions());
         ConfigurationNode node = loader.createEmptyNode(configurateOptions);
 
-        if (node.getOptions().acceptsType(Short.class)) {
+        if (node.getOptions().acceptsType(Short.class) && node.getOptions().acceptsType(Byte.class)) {
             return node.setValue(typeToken, info);
         }
 
