@@ -39,6 +39,8 @@ public class KitDataNode implements Kit {
 
     @Setting private boolean oneTime = false;
 
+    @Setting private boolean displayMessage = true;
+
     @Setting private List<String> commands = Lists.newArrayList();
 
     @Override
@@ -128,5 +130,14 @@ public class KitDataNode implements Kit {
         ConsoleSource source = Sponge.getServer().getConsole();
         String playerName = player.getName();
         getCommands().forEach(x -> Sponge.getCommandManager().process(source, x.replace("{{player}}", playerName)));
+    }
+
+    @Override public boolean isDisplayMessageOnRedeem() {
+        return this.displayMessage;
+    }
+
+    @Override public Kit setDisplayMessageOnRedeem(boolean displayMessage) {
+        this.displayMessage = displayMessage;
+        return this;
     }
 }

@@ -170,7 +170,10 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> {
                     .getName(player), Text.of(kitName)));
 
             Sponge.getEventManager().post(new KitEvent.PostRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
-            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
+            if (kit.isDisplayMessageOnRedeem()) {
+                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
+            }
+
             return CommandResult.success();
         } else {
             // Failed.

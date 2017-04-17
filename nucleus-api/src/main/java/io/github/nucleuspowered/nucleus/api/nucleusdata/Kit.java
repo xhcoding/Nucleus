@@ -141,4 +141,19 @@ public interface Kit {
      * @param player The player.
      */
     void redeemKitCommands(Player player);
+
+    /**
+     * Gets whether a message is displayed to the player when a kit is redeemed.
+     *
+     * @return <code>true</code> if the player will be notified if a player will be notified.
+     */
+    boolean isDisplayMessageOnRedeem();
+
+    /**
+     * Sets whether a message is displayed to the player when a kit is redeemed.
+     *
+     * @param displayMessage <code>true</code> to display a message to the player when they redeem a kit.
+     * @return This {@link Kit} for chaining.
+     */
+    Kit setDisplayMessageOnRedeem(boolean displayMessage);
 }

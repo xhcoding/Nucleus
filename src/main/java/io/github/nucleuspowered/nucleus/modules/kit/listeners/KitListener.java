@@ -138,7 +138,9 @@ public class KitListener extends ListenerBase {
                         user.addKitLastUsedTime(k.getKey(), now);
 
                         Sponge.getEventManager().post(new KitEvent.PostRedeem(cause, oi.orElse(null), k.getKey(), k.getValue(), player));
-                        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", k.getKey()));
+                        if (k.getValue().isDisplayMessageOnRedeem()) {
+                            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", k.getKey()));
+                        }
                     } else {
                         // Failed.
                         Sponge.getEventManager().post(new KitEvent.FailedRedeem(cause, oi.orElse(null), k.getKey(), k.getValue(), player));
