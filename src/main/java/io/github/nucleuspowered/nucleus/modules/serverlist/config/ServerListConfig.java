@@ -26,7 +26,7 @@ public class ServerListConfig {
     private boolean hidePlayerCount = false;
 
     @NoMergeIfPresent
-    @Default("&bWelcome to the server!")
+    @Default("&bWelcome to the server!\n&cCome join us!")
     @Setting(value = "server-list-messages", comment = "config.serverlist.messages")
     public List<NucleusTextTemplateImpl> messages;
 
