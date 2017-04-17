@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.serverlist.config;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.neutrino.annotations.Default;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -25,8 +26,13 @@ public class ServerListConfig {
     private boolean hidePlayerCount = false;
 
     @NoMergeIfPresent
+    @Default("&bWelcome to the server!")
     @Setting(value = "server-list-messages", comment = "config.serverlist.messages")
-    public List<NucleusTextTemplateImpl> messages = Lists.newArrayList();
+    public List<NucleusTextTemplateImpl> messages;
+
+    @NoMergeIfPresent
+    @Setting(value = "whitelist-server-list-messages", comment = "config.serverlist.whitelistmessages")
+    public List<NucleusTextTemplateImpl> whitelist = Lists.newArrayList();
 
     public boolean isModifyServerList() {
         return modifyServerList;
@@ -42,6 +48,10 @@ public class ServerListConfig {
 
     public List<NucleusTextTemplateImpl> getMessages() {
         return messages;
+    }
+
+    public List<NucleusTextTemplateImpl> getWhitelist() {
+        return whitelist;
     }
 
     public boolean enableListener() {
