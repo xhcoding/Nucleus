@@ -8,8 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.connection.config.ConnectionConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "connection", name = "Connection")
+@ModuleData(id = ConnectionModule.ID, name = "Connection")
 public class ConnectionModule extends ConfigurableModule<ConnectionConfigAdapter> {
+
+    public static final String ID = "connection";
 
     @Override
     public ConnectionConfigAdapter createAdapter() {
