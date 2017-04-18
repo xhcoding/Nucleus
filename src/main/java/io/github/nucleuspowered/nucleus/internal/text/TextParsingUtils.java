@@ -25,6 +25,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -399,6 +400,7 @@ public class TextParsingUtils {
         }
     }
 
+    @NonnullByDefault
     public static final class StyleTuple {
         public final TextColor colour;
         public final TextStyle style;
@@ -410,6 +412,16 @@ public class TextParsingUtils {
 
         public void applyTo(Consumer<StyleTuple> consumer) {
             consumer.accept(this);
+        }
+
+        public Text getTextOf() {
+            Text.Builder tb = Text.builder();
+            if (colour != TextColors.NONE) {
+                tb.color(colour);
+            }
+
+            tb.style(style);
+            return tb.toText();
         }
     }
 }

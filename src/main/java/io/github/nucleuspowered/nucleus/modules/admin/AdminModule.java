@@ -8,8 +8,10 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "admin", name = "Admin")
+@ModuleData(id = AdminModule.ID, name = "Admin")
 public class AdminModule extends ConfigurableModule<AdminConfigAdapter> {
+
+    public final static String ID = "admin";
 
     @Override
     public AdminConfigAdapter createAdapter() {

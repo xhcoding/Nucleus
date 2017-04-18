@@ -19,9 +19,11 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
@@ -31,19 +33,21 @@ import java.util.Optional;
 @NoCost
 @Permissions(supportsSelectors = true, supportsOthers = true)
 @EssentialsEquivalent({"hat", "head"})
+@NonnullByDefault
 public class HatCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     @Override protected CommandResult executeWithPlayer(CommandSource player, Player pl, CommandContext args, boolean isSelf) throws Exception {
         Optional<ItemStack> helmetOptional = pl.getHelmet();
 
-        ItemStack stack = pl.getItemInHand(HandTypes.MAIN_HAND).orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.generalerror.handempty")));
-        stack.setQuantity(1);
-        pl.setHelmet(stack);
-        Text itemName = stack.get(Keys.DISPLAY_NAME).orElse(Text.of(Util.getTranslatableIfPresentOnCatalogType(stack.getItem())));
+        ItemStack stack = pl.getItemInHand(HandTypes.MAIN_HAND)
+                .orElseThrow(() -> ReturnMessageException.fromKey("command.generalerror.handempty"));
+        ItemStack hand = stack.copy();
+        hand.setQuantity(1);
+        pl.setHelmet(hand);
+        Text itemName = hand.get(Keys.DISPLAY_NAME).orElseGet(() -> Text.of(stack));
 
-        if (pl.get(Keys.GAME_MODE).get() == GameModes.SURVIVAL) {
-            stack = pl.getItemInHand(HandTypes.MAIN_HAND).get();
-
+        GameMode gameMode = pl.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET);
+        if (gameMode != GameModes.CREATIVE) {
             if (stack.getQuantity() > 1) {
                 stack.setQuantity(stack.getQuantity() - 1);
                 pl.setItemInHand(HandTypes.MAIN_HAND, stack);

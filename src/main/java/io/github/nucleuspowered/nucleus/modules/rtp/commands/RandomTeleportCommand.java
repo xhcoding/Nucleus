@@ -106,7 +106,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             permissions.checkSuffix(src, "worlds." + name.toLowerCase(), () -> ReturnMessageException.fromKey("command.rtp.worldnoperm", name));
         }
 
-        World currentWorld = Sponge.getServer().getWorld(wp.getUniqueId()).orElse(null);
+        World currentWorld = Sponge.getServer().loadWorld(wp.getUniqueId()).orElse(null);
         if (currentWorld == null) {
             currentWorld = Sponge.getServer().loadWorld(wp).orElseThrow(() -> ReturnMessageException.fromKey("command.rtp.worldnoload", wp.getWorldName()));
         }

@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
+import io.github.nucleuspowered.nucleus.util.Tuples;
 import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.SimpleConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -102,7 +103,9 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
      */
     static class Ampersand extends NucleusTextTemplateImpl {
 
-        private static final Pattern pattern = Pattern.compile("(?!\\[[.]+\\]\\(/[^\\)]*?)\\{\\{(?!subject)([^\\s\\{\\}]+)}}(?![^\\(]*?\\))");
+        private static final Pattern pattern =
+            Pattern.compile("(?<url>\\[[^\\[]+\\]\\(/[^\\)]*?)?(?<match>\\{\\{(?!subject)(?<name>[^\\s\\{\\}]+)}})"
+                    + "(?<urltwo>[^\\(]*?\\))?");
 
         Ampersand(String representation) {
             super(representation);
@@ -114,11 +117,42 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
             Matcher mat = pattern.matcher(string);
             List<String> map = Lists.newArrayList();
 
+            List<String> s = Lists.newArrayList(pattern.split(string));
+            int index = 0;
+
             while (mat.find()) {
-                map.add(mat.group(1));
+                if (mat.group("url") != null && mat.group("url2") != null) {
+                    String toUpdate = s.get(index);
+                    toUpdate = toUpdate + mat.group();
+                    if (s.size() < index + 1) {
+                        toUpdate += s.get(index + 1);
+                        s.remove(index + 1);
+                        s.set(index, toUpdate);
+                    }
+                } else {
+                    String out = mat.group("url");
+                    if (out != null) {
+                        if (s.isEmpty()) {
+                            s.add(out);
+                        } else {
+                            s.set(index, s.get(index) + out);
+                        }
+                    }
+
+                    index++;
+                    out = mat.group("urltwo");
+                    if (out != null) {
+                        if (s.size() <= index) {
+                            s.add(out);
+                        } else {
+                            s.set(index, out + s.get(index));
+                        }
+                    }
+
+                    map.add(mat.group("match"));
+                }
             }
 
-            String[] s = pattern.split(string);
 
             // Generic hell.
             ArrayDeque<TextRepresentable> texts = new ArrayDeque<>();
@@ -128,20 +162,29 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
             TextParsingUtils cu = Nucleus.getNucleus().getTextParsingUtils();
 
             // This condition only occurs if you _just_ use the token. Otherwise, you get a part either side - so it's either 0 or 2.
-            if (s.length > 0) {
-                cu.createTextTemplateFragmentWithLinks(s[0]).mapIfPresent(texts::addAll, tokens::putAll);
+            if (s.size() > 0) {
+                cu.createTextTemplateFragmentWithLinks(s.get(0)).mapIfPresent(texts::addAll, tokens::putAll);
             }
 
             for (int i = 0; i < map.size(); i++) {
                 TextTemplate.Arg.Builder arg = TextTemplate.arg(map.get(i)).optional();
                 TextRepresentable r = texts.peekLast();
+                TextParsingUtils.StyleTuple style = null;
                 if (r != null) {
-                    TextParsingUtils.getLastColourAndStyle(r, null).applyTo(st -> arg.color(st.colour).style(st.style));
+                    // Create the argument
+                    style = TextParsingUtils.getLastColourAndStyle(r, null);
+                    style.applyTo(st -> arg.color(st.colour).style(st.style));
                 }
 
                 texts.add(arg.build());
-                if (s.length > i + 1) {
-                    cu.createTextTemplateFragmentWithLinks(s[i + 1]).mapIfPresent(texts::addAll, tokens::putAll);
+                if (s.size() > i + 1) {
+                    Tuples.NullableTuple<List<TextRepresentable>, Map<String, Function<CommandSource, Text>>> tt =
+                        cu.createTextTemplateFragmentWithLinks(s.get(i + 1));
+                    if (style != null && tt.getFirst().isPresent()) {
+                        texts.push(style.getTextOf());
+                    }
+
+                    cu.createTextTemplateFragmentWithLinks(s.get(i + 1)).mapIfPresent(texts::addAll, tokens::putAll);
                 }
             }
 

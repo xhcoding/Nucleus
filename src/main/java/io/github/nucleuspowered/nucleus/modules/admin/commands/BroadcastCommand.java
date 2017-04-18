@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
@@ -19,6 +18,8 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateFactory;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateMessageSender;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
+import io.github.nucleuspowered.nucleus.modules.admin.AdminModule;
+import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfig;
 import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.admin.config.BroadcastConfig;
 import org.spongepowered.api.command.CommandResult;
@@ -27,6 +28,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @RunAsync
 @NoCooldown
@@ -35,11 +37,10 @@ import org.spongepowered.api.text.Text;
 @Permissions
 @RegisterCommand({ "broadcast", "bcast", "bc" })
 @EssentialsEquivalent({"broadcast", "bcast"})
+@NonnullByDefault
 public class BroadcastCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
     private final String message = "message";
-    @Inject private AdminConfigAdapter adminConfigAdapter;
-    @Inject private TextParsingUtils textParsingUtils;
-    private BroadcastConfig bc;
+    private BroadcastConfig bc = new BroadcastConfig();
 
     @Override
     public CommandElement[] getArguments() {
@@ -59,6 +60,8 @@ public class BroadcastCommand extends AbstractCommand<CommandSource> implements 
     }
 
     @Override public void onReload() {
-        bc = adminConfigAdapter.getNodeOrDefault().getBroadcastMessage();
+        this.bc = plugin
+            .getConfigValue(AdminModule.ID, AdminConfigAdapter.class, AdminConfig::getBroadcastMessage)
+            .orElseGet(BroadcastConfig::new);
     }
 }

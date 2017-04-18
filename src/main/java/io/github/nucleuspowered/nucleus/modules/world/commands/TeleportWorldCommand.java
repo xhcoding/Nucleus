@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnWorldDataModule;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -21,6 +22,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.HashMap;
@@ -65,8 +67,14 @@ public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.notenabled", worldProperties.getWorldName()));
         }
 
-        if (!player.transferToWorld(worldProperties.getUniqueId(), worldProperties.getSpawnPosition().toDouble())) {
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.failed", worldProperties.getWorldName()));
+        World world = Sponge.getServer().loadWorld(worldProperties.getUniqueId())
+            .orElseThrow(() -> ReturnMessageException.fromKey(
+                    "command.world.teleport.failed", worldProperties.getWorldName()
+            ));
+
+        if (!player.transferToWorld(world, worldProperties.getSpawnPosition().toDouble())) {
+            throw ReturnMessageException.fromKey(
+                    "command.world.teleport.failed", worldProperties.getWorldName());
         }
 
         // Rotate.

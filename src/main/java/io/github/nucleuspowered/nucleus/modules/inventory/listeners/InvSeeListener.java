@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.inventory.listeners;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.inventory.commands.InvSeeCommand;
@@ -18,7 +19,8 @@ import org.spongepowered.api.item.inventory.type.CarriedInventory;
 
 public class InvSeeListener extends ListenerBase {
 
-    private CommandPermissionHandler invSeePermissionHandler = null;
+    private CommandPermissionHandler invSeePermissionHandler =
+            Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(InvSeeCommand.class);
 
     /**
      * Fired when a {@link Player} interacts with another's inventory.
@@ -30,6 +32,18 @@ public class InvSeeListener extends ListenerBase {
     @Listener
     @Exclude({ClickInventoryEvent.Open.class, ClickInventoryEvent.Close.class})
     public void onInventoryChange(ClickInventoryEvent event, @Root Player player, @Getter("getTargetInventory") Inventory targetInventory) {
+
+        // This seems to be throwing an NPE. Can't confirm, but will put this in debug mode.
+        //noinspection ConstantConditions
+        if (targetInventory == null) {
+            if (plugin.isDebugMode()) {
+                // Tell the console
+                plugin.getLogger().warn("When trying to listen for the inventory events, targetInventory is null");
+            }
+
+            return;
+        }
+
         if (!(targetInventory instanceof CarriedInventory)) {
             return;
         }
@@ -42,10 +56,6 @@ public class InvSeeListener extends ListenerBase {
         Player target = (Player)carriedInventory.getCarrier().get();
         if (player.equals(target)) {
             return;
-        }
-
-        if (this.invSeePermissionHandler == null) {
-            this.invSeePermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(InvSeeCommand.class);
         }
 
         // Ok, so we're interacting with another subject's inventory.

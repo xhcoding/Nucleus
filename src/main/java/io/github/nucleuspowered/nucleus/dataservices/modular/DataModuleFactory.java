@@ -24,6 +24,7 @@ import io.github.nucleuspowered.nucleus.modules.mute.datamodules.MuteUserDataMod
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.note.datamodules.NoteUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.serverlist.datamodules.ServerListGeneralDataModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnWorldDataModule;
 import io.github.nucleuspowered.nucleus.modules.staffchat.datamodules.StaffChatTransientModule;
@@ -64,6 +65,7 @@ final class DataModuleFactory {
         general.put(JailGeneralDataModule.class, x -> new JailGeneralDataModule());
         general.put(SpawnGeneralDataModule.class, x -> new SpawnGeneralDataModule());
         general.put(WarpGeneralDataModule.class, x -> new WarpGeneralDataModule());
+        general.put(ServerListGeneralDataModule.class, x -> new ServerListGeneralDataModule());
 
         world.put(EnvironmentWorldDataModule.class, x -> new EnvironmentWorldDataModule());
         world.put(SpawnWorldDataModule.class, x -> new SpawnWorldDataModule());

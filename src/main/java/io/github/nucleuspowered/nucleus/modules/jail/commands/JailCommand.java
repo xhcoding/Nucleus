@@ -34,6 +34,7 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.world.Locatable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -119,6 +120,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         JailData jd;
         Text message;
         Text messageTo;
+
         if (duration.isPresent()) {
             if (user.isOnline()) {
                 jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, user.getPlayer().get().getLocation(),
@@ -127,14 +129,14 @@ public class JailCommand extends AbstractCommand<CommandSource> {
                 jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, null, Duration.of(duration.get(), ChronoUnit.SECONDS));
             }
 
-            message = plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailed", user.getName(), owl.get().getName(), src.getName(),
-                    " " + plugin.getMessageProvider().getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get()));
-            messageTo = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), src.getName(),
-                    " " + plugin.getMessageProvider().getMessageWithFormat("standard.for"), " " + Util.getTimeStringFromSeconds(duration.get()));
+            message = plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailedfor", user.getName(), jd.getJailName(),
+                    src.getName(), Util.getTimeStringFromSeconds(duration.get()));
+            messageTo = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailedfor", owl.get().getName(), src.getName(),
+                    Util.getTimeStringFromSeconds(duration.get()));
         } else {
-            jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, user.isOnline() ? user.getPlayer().get().getLocation() : null);
-            message = plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailed", user.getName(), owl.get().getName(), src.getName(), "", "");
-            messageTo = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailed", owl.get().getName(), src.getName(), "", "");
+            jd = new JailData(Util.getUUID(src), owl.get().getName(), reason, user.getPlayer().map(Locatable::getLocation).orElse(null));
+            message = plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailedperm", user.getName(), owl.get().getName(), src.getName());
+            messageTo = plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jailedperm", owl.get().getName(), src.getName());
         }
 
         if (handler.jailPlayer(user, jd)) {

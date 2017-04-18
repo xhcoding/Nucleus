@@ -21,6 +21,7 @@ import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCommandPrefix;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoHelpSubcommand;
@@ -100,12 +101,18 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 public abstract class StandardAbstractCommand<T extends CommandSource> implements CommandCallable {
 
+    /**
+     * An argument key to denote that the current operation is for a tab completion and
+     * so the argument should react accordingly. This is specifically useful for an
+     * argument that will accept partial completion of names.
+     */
+    public static final String COMPLETION_ARG = "comp";
     private static final InputTokenizer tokeniser = InputTokenizer.quotedStrings(false);
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
 
     private Timing commandTimings = TimingsDummy.DUMMY;
-    // A period separated list of parent commands, starting with the prefix. Period terminateed.
+    // A period separated list of parent commands, starting with the prefix. Period terminated.
     private final String commandPath;
 
     // Null until set, then should be considered immutable.
@@ -181,8 +188,21 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
         this.isRoot = rc == null || rc.subcommandOf().equals(StandardAbstractCommand.class);
         this.hasExecutor = rc != null && rc.hasExecutor();
-        this.aliases = rc == null ? new String[0] : rc.value();
-        this.forcedAliases = rc == null ? new String[0] : rc.rootAliasRegister();
+
+        List<String> force = rc == null ? Lists.newArrayList() : Lists.newArrayList(rc.rootAliasRegister());
+
+        List<String> a = rc == null ? Lists.newArrayList() : Lists.newArrayList(rc.value());
+        if (!this.getClass().isAnnotationPresent(NoCommandPrefix.class)
+            && !a.isEmpty() && this.isRoot) { // Testing might return a zero length.
+
+            final String nPrimary = "n" + a.get(0).toLowerCase();
+            if (!a.contains(nPrimary) && !force.contains(nPrimary)) {
+                force.add(nPrimary);
+            }
+        }
+
+        this.aliases = a.toArray(new String[a.size()]);
+        this.forcedAliases = force.toArray(new String[force.size()]);
 
         // The Permissions annotation provides the backbone of the permissions
         // system for the commands.
@@ -532,6 +552,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
         final Set<String> options = Sets.newHashSet();
         CommandContext context = new CommandContext();
+        context.putArg(COMPLETION_ARG, true); // We don't care for the value.
 
         // Subcommand
         Object state = args.getState();

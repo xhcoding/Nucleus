@@ -75,7 +75,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Player pl = this.getUserFromArgs(Player.class, src, key, args);
         WorldProperties wp = args.<WorldProperties>getOne(location).orElse(pl.getWorld().getProperties());
-        World world = Sponge.getServer().getWorld(wp.getUniqueId()).get();
+        World world = Sponge.getServer().loadWorld(wp.getUniqueId()).get();
 
         int xx = args.<Integer>getOne(x).get();
         int zz = args.<Integer>getOne(z).get();

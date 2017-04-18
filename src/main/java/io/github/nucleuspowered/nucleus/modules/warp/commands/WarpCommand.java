@@ -145,6 +145,14 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
         // Permission checks are done by the parser.
         Warp wd = args.<Warp>getOne(warpNameArg).get();
 
+        // Load the world in question
+        if (!wd.getTransform().isPresent()) {
+            Sponge.getServer().loadWorld(wd.getWorldProperties().get().getUniqueId())
+                .orElseThrow(() -> ReturnMessageException.fromKey(
+                    "command.warp.worldnotloaded"
+                ));
+        }
+
         UseWarpEvent event = new UseWarpEvent(Cause.of(NamedCause.owner(source)), player, wd);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->

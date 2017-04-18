@@ -4,8 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.modules.inventory;
 
-import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.modules.inventory.config.InventoryConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "inventory", name = "Inventory")
-public class InventoryModule extends StandardModule {}
+@ModuleData(id = InventoryModule.ID, name = "Inventory")
+public class InventoryModule extends ConfigurableModule<InventoryConfigAdapter> {
+
+    public static final String ID = "inventory";
+
+    @Override public InventoryConfigAdapter createAdapter() {
+        return new InventoryConfigAdapter();
+    }
+}

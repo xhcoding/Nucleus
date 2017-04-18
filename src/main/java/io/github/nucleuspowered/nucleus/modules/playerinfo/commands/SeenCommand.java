@@ -36,6 +36,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.entity.JoinData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -132,6 +133,8 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
 
                 messages.add(messageProvider.getTextMessageWithFormat("command.seen.canfly", getYesNo(pl.get(Keys.CAN_FLY).orElse(false))));
                 messages.add(messageProvider.getTextMessageWithFormat("command.seen.isflying", getYesNo(pl.get(Keys.IS_FLYING).orElse(false))));
+                messages.add(messageProvider.getTextMessageWithFormat("command.seen.gamemode",
+                        pl.get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL).getName()));
             } else {
                 coreUserDataModule.getLastIp().ifPresent(x ->
                     messages.add(messageProvider.getTextMessageWithFormat("command.seen.lastipaddress", x))

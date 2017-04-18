@@ -188,7 +188,10 @@ public class KitCommand extends AbstractCommand<Player> {
             user.addKitLastUsedTime(kitName, now);
 
             Sponge.getEventManager().post(new KitEvent.PostRedeem(cause, oi.orElse(null), kitInfo.name, kitInfo.kit, player));
-            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
+            if (kit.isDisplayMessageOnRedeem()) {
+                player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", kitName));
+            }
+
             return CommandResult.success();
         } else {
             // Failed.
