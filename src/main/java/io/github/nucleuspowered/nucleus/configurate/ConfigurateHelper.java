@@ -10,6 +10,7 @@ import io.github.nucleuspowered.neutrino.objectmapper.NeutrinoObjectMapperFactor
 import io.github.nucleuspowered.neutrino.typeserialisers.PatternTypeSerialiser;
 import io.github.nucleuspowered.neutrino.typeserialisers.SetTypeSerialiser;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.configurate.typeserialisers.InstantTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusItemStackSnapshotSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.NucleusTextTemplateTypeSerialiser;
 import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dTypeSerialiser;
@@ -25,6 +26,7 @@ import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollectio
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 
+import java.time.Instant;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,6 +92,7 @@ public class ConfigurateHelper {
         tsc.registerType(new TypeToken<byte[]>(){}, new ByteArrayTypeSerialiser());
         tsc.registerType(new TypeToken<short[]>(){}, new ShortArrayTypeSerialiser());
         tsc.registerType(new TypeToken<int[]>(){}, new IntArrayTypeSerialiser());
+        tsc.registerType(TypeToken.of(Instant.class), new InstantTypeSerialiser());
 
         if (Sponge.getGame().getState() == GameState.SERVER_STARTED) {
             typeSerializerCollection = tsc;
