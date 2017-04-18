@@ -33,6 +33,11 @@ public class ConnectionListener extends ListenerBase {
     @Listener
     @IsCancelled(Tristate.UNDEFINED)
     public void onPlayerJoin(ClientConnectionEvent.Login event) {
+        if (Sponge.getServer().hasWhitelist()) {
+            // No modifications if a whitelist is in play.
+            return;
+        }
+
         if (!(Sponge.getServer().getOnlinePlayers().size() >= Sponge.getServer().getMaxPlayers())) {
             return;
         }
