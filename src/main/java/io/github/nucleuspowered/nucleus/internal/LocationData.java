@@ -52,20 +52,12 @@ public class LocationData implements NamedLocation {
 
     @Override public Optional<Location<World>> getLocation() {
         Optional<World> optional = Sponge.getServer().getWorld(worldUUID);
-        if (optional.isPresent()) {
-            return Optional.of(new Location<>(optional.get(), position));
-        }
-
-        return Optional.empty();
+        return optional.map(world -> new Location<>(world, position));
     }
 
     @Override public Optional<Transform<World>> getTransform() {
         Optional<Location<World>> olw = getLocation();
-        if (olw.isPresent()) {
-            return Optional.of(new Transform<>(olw.get().getExtent(), position, rotation));
-        }
-
-        return Optional.empty();
+        return olw.map(worldLocation -> new Transform<>(worldLocation.getExtent(), position, rotation));
     }
 
     public String toLocationString() {
