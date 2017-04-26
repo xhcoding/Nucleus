@@ -27,6 +27,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
@@ -43,7 +45,9 @@ public class HomeCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(GenericArguments.optional(new HomeArgument(Text.of(home), plugin, cca)))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(GenericArguments.optional(new HomeArgument(Text.of(home), plugin, cca)))
+        };
     }
 
     @Override
@@ -58,10 +62,10 @@ public class HomeCommand extends AbstractCommand<Player> {
                 .orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("args.home.nohome", "home")));
         }
 
-        if (!wl.getLocation().isPresent()) {
-            // Fail
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.home.invalid", wl.getName()));
-        }
+        Sponge.getServer().loadWorld(wl.getWorldProperties()
+                .orElseThrow(() -> ReturnMessageException.fromKey("command.home.invalid", wl.getName())));
+
+        Location<World> targetLocation = wl.getLocation().orElseThrow(() -> ReturnMessageException.fromKey("command.home.invalid", wl.getName()));
 
         UseHomeEvent event = new UseHomeEvent(Cause.of(NamedCause.owner(src)), src, wl);
         if (Sponge.getEventManager().post(event)) {
@@ -71,7 +75,7 @@ public class HomeCommand extends AbstractCommand<Player> {
         }
 
         // Warp to it safely.
-        if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault()
+        if (plugin.getTeleportHandler().teleportPlayer(src, targetLocation, wl.getRotation(), homeConfigAdapter.getNodeOrDefault()
                 .isSafeTeleport()).isSuccess()) {
             if (!wl.getName().equalsIgnoreCase(NucleusHomeService.DEFAULT_HOME_NAME)) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.home.success", wl.getName()));

@@ -9,8 +9,10 @@ import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchWorldException;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -42,13 +44,21 @@ public class LocationNode {
     }
 
     public LocationNode(Location<World> length, Vector3d rotation) {
+        this(length.getExtent().getUniqueId(), length.getPosition(), rotation);
+    }
+
+    public LocationNode(UUID world, Vector3d length, Vector3d rotation) {
         this.x = length.getX();
         this.y = length.getY();
         this.z = length.getZ();
         this.rotx = rotation.getX();
         this.roty = rotation.getY();
         this.rotz = rotation.getZ();
-        this.world = length.getExtent().getUniqueId();
+        this.world = world;
+    }
+
+    public LocationNode clone() {
+        return new LocationNode(this.world, getPosition(), getRotation());
     }
 
     public Vector3d getPosition() {
@@ -57,6 +67,11 @@ public class LocationNode {
 
     public UUID getWorld() {
         return world;
+    }
+
+    public Tuple<WorldProperties, Vector3d> getLocationIfNotLoaded() throws NoSuchWorldException {
+        return Sponge.getServer().getWorldProperties(this.world)
+            .map(x -> Tuple.of(x, getPosition())).orElseThrow(NoSuchWorldException::new);
     }
 
     /**

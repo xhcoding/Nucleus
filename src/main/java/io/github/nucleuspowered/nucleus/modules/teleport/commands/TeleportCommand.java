@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.AlternativeUsageArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.IfConditionElseArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
+import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -77,10 +78,12 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                             GenericArguments.onlyOne(
                                 IfConditionElseArgument.permission(this.permissions.getPermissionWithSuffix("offline"),
                                     SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER),
-                                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER))),
+                                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER,
+                                        true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c)))),
 
                             new IfConditionElseArgument(
-                                SelectorWrapperArgument.nicknameSelector(Text.of(playerToKey), NicknameArgument.UnderlyingType.PLAYER),
+                                SelectorWrapperArgument.nicknameSelector(Text.of(playerToKey), NicknameArgument.UnderlyingType.PLAYER,
+                                    true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c)),
                                 GenericArguments.none(),
                                 this::testForSecondPlayer)),
 

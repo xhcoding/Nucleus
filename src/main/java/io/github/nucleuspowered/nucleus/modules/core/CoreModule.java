@@ -4,8 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core;
 
+import io.github.nucleuspowered.nucleus.api.service.NucleusPlayerMetadataService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.core.service.PlayerMetadataService;
+import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = CoreModule.ID, name = "Core", isRequired = true)
@@ -27,5 +30,8 @@ public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
 
     @Override public void onEnable() {
         super.onEnable();
+
+        // Register service
+        Sponge.getServiceManager().setProvider(this.plugin, NucleusPlayerMetadataService.class, new PlayerMetadataService());
     }
 }

@@ -25,6 +25,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,11 +57,10 @@ public class HomeOtherCommand extends AbstractCommand<Player> {
         // Get the home.
         Home wl = args.<Home>getOne(home).get();
 
-        if (!wl.getLocation().isPresent()) {
-            // Fail
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.homeother.invalid", wl.getUser().getName(), wl.getName()));
-            return CommandResult.empty();
-        }
+        Sponge.getServer().loadWorld(wl.getWorldProperties()
+                .orElseThrow(() -> ReturnMessageException.fromKey("command.home.invalid", wl.getName())));
+
+        Location<World> targetLocation = wl.getLocation().orElseThrow(() -> ReturnMessageException.fromKey("command.home.invalid", wl.getName()));
 
         UseHomeEvent event = new UseHomeEvent(Cause.of(NamedCause.owner(src)), src, wl);
         if (Sponge.getEventManager().post(event)) {
@@ -69,7 +70,7 @@ public class HomeOtherCommand extends AbstractCommand<Player> {
         }
 
         // Warp to it safely.
-        if (plugin.getTeleportHandler().teleportPlayer(src, wl.getLocation().get(), wl.getRotation(), homeConfigAdapter.getNodeOrDefault()
+        if (plugin.getTeleportHandler().teleportPlayer(src, targetLocation, wl.getRotation(), homeConfigAdapter.getNodeOrDefault()
                 .isSafeTeleport()).isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.homeother.success", wl.getUser().getName(), wl.getName()));
             return CommandResult.success();

@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNameBanService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusPlayerMetadataService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusSeenService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusServerShopService;
@@ -50,6 +51,15 @@ public class NucleusAPI {
      */
     public static NucleusModuleService getModuleService() {
         return getService(NucleusModuleService.class).orElseThrow(() -> new IllegalStateException("Nucleus Modules have not been discovered yet"));
+    }
+
+    /**
+     * Gets the API Player Metadata service, which contains the player metadata information.
+     * @return The {@link NucleusPlayerMetadataService}
+     * @throws IllegalStateException if Nucleus hasn't completed post init yet.
+     */
+    public static NucleusPlayerMetadataService getPlayerMetadataService() {
+        return getService(NucleusPlayerMetadataService.class).orElseThrow(() -> new IllegalStateException("Nucleus API has not started registering yet"));
     }
 
     /**
