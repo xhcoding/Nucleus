@@ -24,6 +24,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +35,9 @@ import java.util.Map;
 @Permissions(suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, rootAliasRegister = { "tell" })
 @EssentialsEquivalent({"msg", "tell", "m", "t", "whisper"})
+@NonnullByDefault
 public class MessageCommand extends AbstractCommand<CommandSource> {
-    static final String to = "to";
+    private final String to = "to";
     private final String message = "message";
 
     private final MessageHandler handler;
