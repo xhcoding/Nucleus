@@ -82,8 +82,9 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                                         true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c)))),
 
                             new IfConditionElseArgument(
-                                SelectorWrapperArgument.nicknameSelector(Text.of(playerToKey), NicknameArgument.UnderlyingType.PLAYER,
-                                    true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c)),
+                                GenericArguments.optionalWeak(
+                                    SelectorWrapperArgument.nicknameSelector(Text.of(playerToKey), NicknameArgument.UnderlyingType.PLAYER,
+                                    true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c))),
                                 GenericArguments.none(),
                                 this::testForSecondPlayer)),
 
@@ -107,9 +108,7 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
     private boolean testForSecondPlayer(CommandSource source, CommandContext context) {
         try {
             if (context.hasAny(playerKey) && this.permissions.testOthers(source)) {
-                return context.<User>getOne(playerKey).map(
-                    y -> y.getPlayer().isPresent()
-                ).orElse(false);
+                return context.<User>getOne(playerKey).map(y -> y.getPlayer().isPresent()).orElse(false);
             }
         } catch (Exception e) {
             // ignored
