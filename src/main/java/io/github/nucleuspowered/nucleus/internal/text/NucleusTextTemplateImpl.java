@@ -149,7 +149,7 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
                         }
                     }
 
-                    map.add(mat.group("match"));
+                    map.add(mat.group("name").toLowerCase());
                 }
             }
 
