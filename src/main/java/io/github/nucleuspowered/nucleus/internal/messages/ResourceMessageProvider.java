@@ -13,14 +13,14 @@ public class ResourceMessageProvider extends MessageProvider {
 
     public static final String messagesBundle = "assets.nucleus.messages";
     public static final String commandMessagesBundle = "assets.nucleus.commands";
-    protected final ResourceBundle rb;
+    final ResourceBundle rb;
 
     ResourceMessageProvider(ResourceBundle resource) {
         rb = resource;
     }
 
     public ResourceMessageProvider(String resource) {
-        rb = ResourceBundle.getBundle(resource, Locale.getDefault());
+        rb = ResourceBundle.getBundle(resource, Locale.getDefault(), new UTF8Control());
     }
 
     @Override
