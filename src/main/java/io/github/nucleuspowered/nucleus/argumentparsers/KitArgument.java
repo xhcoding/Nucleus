@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.kit.KitModule;
+import io.github.nucleuspowered.nucleus.modules.kit.commands.kit.KitCommand;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandSource;
@@ -29,20 +30,13 @@ public class KitArgument extends CommandElement {
     private final KitConfigAdapter config;
     private final KitHandler kitHandler;
     private final boolean permissionCheck;
+    private final String showhiddenperm = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(KitCommand.class)
+            .getPermissionWithSuffix("showhidden");
 
     public KitArgument(@Nullable Text key, boolean permissionCheck) {
-        this(
-            key,
-            Nucleus.getNucleus().getConfigAdapter(KitModule.ID, KitConfigAdapter.class).get(),
-            Nucleus.getNucleus().getInternalServiceManager().getService(KitHandler.class).get(),
-            permissionCheck
-        );
-    }
-
-    public KitArgument(@Nullable Text key, KitConfigAdapter config, KitHandler kitHandler, boolean permissionCheck) {
         super(key);
-        this.config = config;
-        this.kitHandler = kitHandler;
+        this.config = Nucleus.getNucleus().getConfigAdapter(KitModule.ID, KitConfigAdapter.class).get();
+        this.kitHandler = Nucleus.getNucleus().getInternalServiceManager().getService(KitHandler.class).get();
         this.permissionCheck = permissionCheck;
     }
 
@@ -60,7 +54,7 @@ public class KitArgument extends CommandElement {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.kit.noexist"));
         }
 
-        if (!checkPermission(source, kitName)) {
+        if (!checkPermission(source, kitName, kit.get())) {
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.kit.noperms"));
         }
 
@@ -70,16 +64,22 @@ public class KitArgument extends CommandElement {
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         try {
+            final boolean showhidden = src.hasPermission(showhiddenperm);
             String name = args.peek().toLowerCase();
-            return kitHandler.getKitNames().stream().filter(s -> s.toLowerCase().startsWith(name))
-                    .filter(x -> checkPermission(src, name)).collect(Collectors.toList());
+            return this.kitHandler.getKits().entrySet().stream()
+                    .filter(s -> s.getKey().toLowerCase().startsWith(name))
+                    .filter(x -> checkPermission(src, x.getKey(), x.getValue()))
+                    .filter(x -> this.permissionCheck && (showhidden || !x.getValue().isHiddenFromList()))
+                    .map(x -> x.getKey().toLowerCase())
+                    .collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return Lists.newArrayList();
         }
     }
 
-    private boolean checkPermission(CommandSource src, String name) {
-        if (!permissionCheck || !config.getNodeOrDefault().isSeparatePermissions()) {
+    private boolean checkPermission(CommandSource src, String name, Kit kit) {
+        if (!this.permissionCheck ||
+                !this.config.getNodeOrDefault().isSeparatePermissions() || kit.ignoresPermission()) {
             return true;
         }
 

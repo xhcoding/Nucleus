@@ -19,6 +19,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 /**
  * Sets kit items.
@@ -30,6 +31,7 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
+@NonnullByDefault
 public class KitAddCommand extends AbstractCommand<Player> {
 
     @Inject private KitHandler kitConfig;

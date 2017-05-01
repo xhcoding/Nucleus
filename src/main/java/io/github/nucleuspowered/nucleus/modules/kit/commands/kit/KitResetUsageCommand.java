@@ -15,9 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
-import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -39,8 +37,6 @@ import org.spongepowered.api.text.Text;
 @NoCost
 public class KitResetUsageCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
-    @Inject private KitConfigAdapter kca;
     @Inject private UserDataManager userConfigLoader;
 
     private final String kit = "kit";
@@ -50,7 +46,7 @@ public class KitResetUsageCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.onlyOne(GenericArguments.user(Text.of(user))),
-            GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, false))
+            GenericArguments.onlyOne(new KitArgument(Text.of(kit), false))
         };
     }
 

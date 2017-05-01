@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSna
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ public class KitConfigDataNode {
     @Setting
     private Map<String, KitDataNode> kits = Maps.newHashMap();
 
+    @Deprecated
     @Setting
     private List<NucleusItemStackSnapshot> firstKit = Lists.newArrayList();
 
@@ -64,19 +64,20 @@ public class KitConfigDataNode {
         return kits;
     }
 
-    public List<ItemStackSnapshot> getFirstKit() {
-        if (firstKit == null) {
-            firstKit = Lists.newArrayList();
+    @SuppressWarnings("deprecation")
+    public void migrate() {
+        if (this.firstKit != null) {
+            // Is there a "firstjoinkit"?
+            if (!this.getKits().containsKey("firstjoinkit")) {
+                KitDataNode kit = new KitDataNode();
+                kit.setStacks(this.firstKit.stream().map(NucleusItemStackSnapshot::getSnapshot)
+                        .filter(x -> x.getType() != ItemTypes.NONE)
+                        .collect(Collectors.toList()))
+                    .setFirstJoinKit(true);
+                kits.put("firstjoinkit", kit);
+
+                this.firstKit = null;
+            }
         }
-
-        return firstKit.stream().map(NucleusItemStackSnapshot::getSnapshot)
-                .filter(x -> x.getType() != ItemTypes.NONE)
-                .collect(Collectors.toList());
-    }
-
-    public void setFirstKit(List<ItemStackSnapshot> stacks) {
-        this.firstKit = stacks != null ? stacks.stream()
-                .filter(x -> x.getType() != ItemTypes.NONE)
-                .map(NucleusItemStackSnapshot::new).collect(Collectors.toList()) : Lists.newArrayList();
     }
 }

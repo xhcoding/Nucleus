@@ -48,8 +48,10 @@ public class KitSetCooldownCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, false)),
-                GenericArguments.onlyOne(new TimespanArgument(Text.of(duration))))};
+        return new CommandElement[] {
+            GenericArguments.onlyOne(new KitArgument(Text.of(kit), false)),
+            GenericArguments.onlyOne(new TimespanArgument(Text.of(duration)))
+        };
     }
 
     @Override

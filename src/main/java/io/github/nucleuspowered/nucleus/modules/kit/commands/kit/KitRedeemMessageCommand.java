@@ -14,7 +14,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -33,8 +32,12 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 @NonnullByDefault
 public class KitRedeemMessageCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
-    @Inject private KitConfigAdapter kca;
+    private KitHandler handler;
+
+    @Inject
+    public KitRedeemMessageCommand(KitHandler handler) {
+        this.handler = handler;
+    }
 
     private final String kit = "kit";
     private final String toggle = "displayMessageToggle";
@@ -42,7 +45,7 @@ public class KitRedeemMessageCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, true)),
+                GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), true)),
                         GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
         };
     }
@@ -55,7 +58,7 @@ public class KitRedeemMessageCommand extends AbstractCommand<CommandSource> {
         // This Kit is a reference back to the version in list, so we don't need
         // to update it explicitly
         kitInfo.kit.setDisplayMessageOnRedeem(b);
-        kitConfig.saveKit(kitInfo.name, kitInfo.kit);
+        handler.saveKit(kitInfo.name, kitInfo.kit);
         player.sendMessage(plugin.getMessageProvider()
                 .getTextMessageWithFormat(b ? "command.kit.displaymessage.on" : "command.kit.displaymessage.off", kitInfo.name));
 

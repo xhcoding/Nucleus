@@ -5,20 +5,17 @@
 package io.github.nucleuspowered.nucleus.modules.kit.listeners;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
-import io.github.nucleuspowered.nucleus.api.events.NucleusKitEvent;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.dataservices.KitService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
-import io.github.nucleuspowered.nucleus.modules.kit.events.KitEvent;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
@@ -35,19 +32,11 @@ import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.World;
 
-import java.time.Instant;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -64,10 +53,14 @@ public class KitListener extends ListenerBase {
     @Listener
     public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player player) {
         loader.get(player).ifPresent(p -> {
-            List<ItemStackSnapshot> l = gds.getFirstKit();
-            if (l != null && !l.isEmpty()) {
-                Util.addToStandardInventory(player, gds.getFirstKit(), false, kca.getNodeOrDefault().isProcessTokens());
-            }
+            gds.getKits().entrySet().stream().filter(x -> x.getValue().isFirstJoinKit())
+                .forEach(kit -> {
+                    try {
+                        handler.redeemKit(kit.getValue(), kit.getKey(), player, player, false, true);
+                    } catch (ReturnMessageException e) {
+                        // ignored
+                    }
+                });
         });
     }
 
@@ -78,73 +71,15 @@ public class KitListener extends ListenerBase {
             gds.getKits().entrySet().stream()
                 .filter(k -> k.getValue().isAutoRedeem())
                 .filter(k -> k.getValue().getCost() <= 0)
-                .filter(k -> !kca.getNodeOrDefault().isSeparatePermissions() && !player.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + k.getKey().toLowerCase()))
+                .filter(k ->
+                    k.getValue().ignoresPermission() ||
+                        (!kca.getNodeOrDefault().isSeparatePermissions() &&
+                        !player.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + k.getKey().toLowerCase())))
                 .forEach(k -> {
-                    Instant now = Instant.now();
-                    Optional<Instant> oi = Util.getValueIgnoreCase(user.getKitLastUsedTime(), k.getKey());
-                    if (oi.isPresent()) {
-                        if (k.getValue().isOneTime() || k.getValue().getInterval().getSeconds() <= 0) {
-                            return;
-                        }
-                        Instant timeForNextUse = oi.get().plus(k.getValue().getInterval());
-                        if (timeForNextUse.isAfter(now)) {
-                            return;
-                        }
-                    }
-
-                    // Kit pre redeem
-                    Cause cause = Cause.of(NamedCause.owner(player));
-                    NucleusKitEvent.Redeem.Pre preEvent = new KitEvent.PreRedeem(cause, oi.orElse(null), k.getKey(), k.getValue(), player);
-                    if (Sponge.getEventManager().post(preEvent)) {
-                        return;
-                    }
-
-                    boolean mustConsumeAll = kca.getNodeOrDefault().isMustGetAll();
-                    boolean dropItems = kca.getNodeOrDefault().isDropKitIfFull();
-
-                    List<Optional<ItemStackSnapshot>> slotList = Lists.newArrayList();
-                    Util.getStandardInventory(player).slots().forEach(x -> slotList.add(x.peek().map(ItemStack::createSnapshot)));
-
-                    Tristate tristate = Util.addToStandardInventory(player, k.getValue().getStacks(), !mustConsumeAll && dropItems, kca.getNodeOrDefault().isProcessTokens());
-                    if (tristate != Tristate.TRUE) {
-                        if (mustConsumeAll) {
-                            Inventory inventory = Util.getStandardInventory(player);
-
-                            // Slots
-                            Iterator<Inventory> slot = inventory.slots().iterator();
-
-                            // Slots to restore
-                            slotList.forEach(x -> {
-                                Inventory i = slot.next();
-                                i.clear();
-                                x.ifPresent(y -> i.offer(y.createStack()));
-                            });
-
-                            return;
-                        }
-
-                        if (dropItems) {
-                            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.itemsdropped"));
-                        } else {
-                            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fullinventory"));
-                        }
-                    }
-
-                    if (dropItems || tristate != Tristate.FALSE) {
-                        k.getValue().redeemKitCommands(player);
-
-                        // Register the last used time. Do it for everyone, in case
-                        // permissions or cooldowns change later
-                        user.addKitLastUsedTime(k.getKey(), now);
-
-                        Sponge.getEventManager().post(new KitEvent.PostRedeem(cause, oi.orElse(null), k.getKey(), k.getValue(), player));
-                        if (k.getValue().isDisplayMessageOnRedeem()) {
-                            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.spawned", k.getKey()));
-                        }
-                    } else {
-                        // Failed.
-                        Sponge.getEventManager().post(new KitEvent.FailedRedeem(cause, oi.orElse(null), k.getKey(), k.getValue(), player));
-                        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.fail", k.getKey()));
+                    try {
+                        handler.redeemKit(k.getValue(), k.getKey(), player, player, true);
+                    } catch (ReturnMessageException e) {
+                        player.sendMessage(e.getText());
                     }
                 });
         });
@@ -168,28 +103,6 @@ public class KitListener extends ListenerBase {
                 }
 
                 player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.edit.error", x.getFirst().name));
-            }
-        });
-
-        handler.getFirstJoinKitInventory().ifPresent(x -> {
-            if (x.getFirst().equals(inventory)) {
-                try {
-                    List<Slot> slots = Lists.newArrayList(x.getSecond().slots());
-                    gds.setFirstKit(
-                        slots.stream().filter(y -> y.peek().isPresent()).map(z -> z.peek().get().createSnapshot()).collect(Collectors.toList()));
-
-                    if (event instanceof InteractInventoryEvent.Close) {
-                        gds.save();
-                        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.edit.success"));
-                        handler.setFirstJoinKitInventory(null);
-                    }
-                } catch (Exception e) {
-                    if (coreConfigAdapter.getNodeOrDefault().isDebugmode()) {
-                        e.printStackTrace();
-                    }
-
-                    player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.firstkit.edit.error"));
-                }
             }
         });
     }

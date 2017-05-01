@@ -44,7 +44,7 @@ public class KitCostCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new KitArgument(Text.of(kitKey), kca, kitConfig, false)),
+        return new CommandElement[] {GenericArguments.onlyOne(new KitArgument(Text.of(kitKey), false)),
                 GenericArguments.onlyOne(GenericArguments.doubleNum(Text.of(costKey)))};
     }
 

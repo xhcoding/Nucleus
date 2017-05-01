@@ -14,7 +14,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,6 +21,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 /**
  * Sets kit as a one time use.
@@ -34,10 +34,10 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
+@NonnullByDefault
 public class KitOneTimeCommand extends AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
-    @Inject private KitConfigAdapter kca;
 
     private final String kit = "kit";
     private final String toggle = "oneTimeToggle";
@@ -45,7 +45,7 @@ public class KitOneTimeCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, true)),
+            GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), true)),
             GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
         };
     }
