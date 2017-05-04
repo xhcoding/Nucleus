@@ -33,7 +33,7 @@ import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
 @Permissions(prefix = "home", mainOverride = "set", suggestedLevel = SuggestedLevel.USER)
-@RegisterCommand({"homeset", "sethome"})
+@RegisterCommand(value = {"homeset"}, rootAliasRegister = "sethome")
 @EssentialsEquivalent({"sethome", "createhome"})
 public class SetHomeCommand extends AbstractCommand<Player> {
 

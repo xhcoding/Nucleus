@@ -22,7 +22,9 @@ public class CollisionListener extends ListenerBase {
 
     @Listener
     public void onCollision(CollideEntityEvent event, @Root Player player) {
-        event.filterEntities(x -> !(x instanceof Player));
+        if (event.getEntities().stream().anyMatch(x -> !x.getUniqueId().equals(player.getUniqueId()) && x instanceof Player)) {
+            event.setCancelled(true);
+        }
     }
 
     public static class Condition implements Predicate<Nucleus> {
