@@ -16,8 +16,6 @@ import io.github.hsyyid.essentialcmds.utils.Mail;
 import io.github.hsyyid.essentialcmds.utils.Utils;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.item.BlacklistNode;
-import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
 import io.github.nucleuspowered.nucleus.modules.home.datamodules.HomeUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
@@ -32,8 +30,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.item.ItemType;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -70,22 +66,6 @@ public class EssCmdsMigrator extends DataMigrator {
 
             src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.warps"));
         }
-
-        // Blacklisted items
-        ItemDataService ids = this.plugin.getItemDataService();
-        for (String item : Utils.getBlacklistItems()) {
-            ItemType itemType = Sponge.getRegistry().getType(ItemType.class, item).orElse(ItemTypes.NONE);
-
-            if (itemType != ItemTypes.NONE) {
-                BlacklistNode bn = ids.getDataForItem(itemType.getId()).getBlacklist();
-                bn.setUse(true);
-                bn.setEnvironment(true);
-                bn.setInventory(true);
-                ids.save();
-            }
-        }
-
-        src.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nucleus.migrate.blacklist"));
 
         // Homes
         Configurable homesConfig = HomeConfig.getConfig();

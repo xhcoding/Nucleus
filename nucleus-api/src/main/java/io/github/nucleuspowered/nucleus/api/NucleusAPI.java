@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.api;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAPIMetaService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusBlacklistMigrationService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
@@ -94,7 +95,7 @@ public class NucleusAPI {
     }
 
     /**
-     * Gets the {@link NucleusAFKService}, if it exists.
+     * Gets the {@link NucleusBackService}, if it exists.
      *
      * <p>
      *     Requires the "back" module.
@@ -104,6 +105,19 @@ public class NucleusAPI {
      */
     public static Optional<NucleusBackService> getBackService() {
         return getService(NucleusBackService.class);
+    }
+
+    /**
+     * Gets the {@link NucleusBlacklistMigrationService}, if it exists.
+     *
+     * <p>
+     *     Requires the "blacklist" module.
+     * </p>
+     *
+     * @return The {@link NucleusBlacklistMigrationService}
+     */
+    public static Optional<NucleusBlacklistMigrationService> getBlacklistMigrationService() {
+        return getService(NucleusBlacklistMigrationService.class);
     }
 
     /**

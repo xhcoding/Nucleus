@@ -10,13 +10,13 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 @ConfigSerializable
 public class BlacklistNode {
 
-    @Setting(value = "block-environment", comment = "loc:config.itemdatanode.blacklist.environment")
+    @Setting(value = "block-environment")
     private boolean environment = false;
 
-    @Setting(value = "block-possesion", comment = "loc:config.itemdatanode.blacklist.possesion")
+    @Setting(value = "block-possesion")
     private boolean inventory = false;
 
-    @Setting(value = "block-use", comment = "loc:config.itemdatanode.blacklist.block-use")
+    @Setting(value = "block-use")
     private boolean use = false;
 
     public boolean isEnvironment() {
