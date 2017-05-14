@@ -16,9 +16,7 @@ public class BlacklistModule extends ConfigurableModule<BlacklistConfigAdapter> 
 
     public final static String ID = "blacklist";
 
-    @Override public void onEnable() {
-        super.onEnable();
-
+    @Override public void performPreTasks() {
         plugin.getLogger().warn("-----------------------------------");
         plugin.getLogger().warn("NOTICE OF REMOVAL: BLACKLIST MODULE");
         plugin.getLogger().warn("-----------------------------------");
