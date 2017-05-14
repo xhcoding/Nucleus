@@ -199,6 +199,8 @@ public interface Kit {
 
     /**
      * Returns whether this kit acts like a First Join Kit.
+     *
+     * @return <code>true</code> if so.
      */
     boolean isFirstJoinKit();
 

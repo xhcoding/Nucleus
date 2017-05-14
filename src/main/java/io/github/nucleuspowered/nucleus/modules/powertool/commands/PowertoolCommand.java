@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -14,7 +15,9 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,9 +29,11 @@ import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Creates or destroys a powertool based on the item in the player's hand.
@@ -42,37 +47,45 @@ import java.util.Optional;
 @NoCost
 @RegisterCommand({"powertool", "pt"})
 @EssentialsEquivalent({"powertool", "pt"})
+@NonnullByDefault
 public class PowertoolCommand extends AbstractCommand<Player> {
 
-    @Inject private UserDataManager loader;
+    private final UserDataManager loader;
     private final String commandKey = "command";
+
+    @Inject
+    public PowertoolCommand(UserDataManager userDataManager) {
+        this.loader = userDataManager;
+    }
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of(commandKey)))};
+        return new CommandElement[] {
+                GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of(commandKey)))
+        };
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        Optional<ItemStack> itemStack = src.getItemInHand(HandTypes.MAIN_HAND);
-        if (!itemStack.isPresent()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.noitem"));
-            return CommandResult.empty();
-        }
+        ItemStack itemStack = src.getItemInHand(HandTypes.MAIN_HAND)
+                .orElseThrow(() -> ReturnMessageException.fromKey("command.powertool.noitem"));
 
         Optional<String> command = args.getOne(commandKey);
-        PowertoolUserDataModule inu = loader.get(src).get().get(PowertoolUserDataModule.class);
-        return command.isPresent() ? setPowertool(src, inu, itemStack.get().getItem(), command.get())
-                : viewPowertool(src, inu, itemStack.get().getItem());
+        PowertoolUserDataModule inu = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
+        return command.map(s -> setPowertool(src, inu, itemStack.getItem(), s))
+                .orElseGet(() -> viewPowertool(src, inu, itemStack));
     }
 
-    private CommandResult viewPowertool(Player src, PowertoolUserDataModule user, ItemType item) {
-        Optional<List<String>> cmds = user.getPowertoolForItem(item);
+    private CommandResult viewPowertool(Player src, PowertoolUserDataModule user, ItemStack item) {
+        Optional<List<String>> cmds = user.getPowertoolForItem(item.getItem());
+        MessageProvider mp = plugin.getMessageProvider();
         if (cmds.isPresent() && !cmds.get().isEmpty()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.viewcmds", item.getId()));
-            cmds.get().forEach(f -> src.sendMessage(Text.of(TextColors.YELLOW, f)));
+            Util.getPaginationBuilder(src)
+                    .contents(cmds.get().stream().map(f -> Text.of(TextColors.YELLOW, f)).collect(Collectors.toList()))
+                    .title(mp.getTextMessageWithTextFormat("command.powertool.viewcmdstitle", Text.of(item), Text.of(item.getItem().getId())))
+                    .sendTo(src);
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.nocmds", item.getId()));
+            src.sendMessage(mp.getTextMessageWithTextFormat("command.powertool.nocmds", Text.of(item)));
         }
 
         return CommandResult.success();

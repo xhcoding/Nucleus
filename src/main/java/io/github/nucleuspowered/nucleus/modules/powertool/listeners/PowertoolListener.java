@@ -5,10 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.listeners;
 
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.powertool.commands.PowertoolCommand;
 import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
@@ -28,23 +28,14 @@ public class PowertoolListener extends ListenerBase {
     @Inject private UserDataManager loader;
     @Inject private CoreConfigAdapter config;
 
-    @Inject private PermissionRegistry permissionRegistry;
-
-    private CommandPermissionHandler s = null;
-
-    private CommandPermissionHandler getPermissionUtil() {
-        if (s == null) {
-            s = permissionRegistry.getPermissionsForNucleusCommand(PowertoolCommand.class);
-        }
-
-        return s;
-    }
+    private final CommandPermissionHandler permissionRegistry =
+            Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(PowertoolCommand.class);
 
     @Listener
     @Exclude(InteractBlockEvent.class)
     public void onUserInteract(final InteractEvent event, @Root Player player) {
         // No item in hand or no permission -> no powertool.
-        if (!getPermissionUtil().testBase(player) || !player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+        if (!permissionRegistry.testBase(player) || !player.getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
             return;
         }
 
@@ -52,7 +43,7 @@ public class PowertoolListener extends ListenerBase {
         ItemType item = player.getItemInHand(HandTypes.MAIN_HAND).get().getItem();
         PowertoolUserDataModule user;
         try {
-            user = loader.get(player).get().get(PowertoolUserDataModule.class);
+            user = loader.getUnchecked(player).get(PowertoolUserDataModule.class);
         } catch (Exception e) {
             if (config.getNodeOrDefault().isDebugmode()) {
                 e.printStackTrace();
