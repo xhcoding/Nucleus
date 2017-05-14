@@ -22,7 +22,7 @@ public class BlacklistModule extends ConfigurableModule<BlacklistConfigAdapter> 
         plugin.getLogger().warn("-----------------------------------");
         plugin.getLogger().warn("NOTICE OF REMOVAL: BLACKLIST MODULE");
         plugin.getLogger().warn("-----------------------------------");
-        plugin.getLogger().warn("The item blacklist module has been removed from Nucleus. Please use some other protection plugin, such as "
+        plugin.getLogger().warn("The item blacklist module will be removed from Nucleus soon. Please use some other protection plugin, such as "
                 + "GriefPrevention that can block these items.");
         plugin.getLogger().warn("A migrator for those of you that use ProtectionPerms has been provided, run `/blacklist migrate pp` to "
                 + "attempt to migrate.");
