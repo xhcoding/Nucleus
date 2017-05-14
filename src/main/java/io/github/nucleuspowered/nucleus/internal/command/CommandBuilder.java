@@ -76,29 +76,24 @@ public class CommandBuilder {
                 cn.removeChild("aliases");
             }
 
-            try {
-                // Register the commands.
-                if (rootCmd) {
-                    // This will return true for the first anyway
-                    String first = c.getAliases()[0];
-                    String[] aliases = Arrays.stream(c.getAliases()).filter(x -> x.equals(first) || node.getNode(x).getBoolean(true))
-                            .toArray(String[]::new);
-                    Sponge.getCommandManager().register(plugin, c, aliases);
-                }
+            // Register the commands.
+            if (rootCmd) {
+                // This will return true for the first anyway
+                String first = c.getAliases()[0];
+                String[] aliases = Arrays.stream(c.getAliases()).filter(x -> x.equals(first) || node.getNode(x).getBoolean(true))
+                        .toArray(String[]::new);
+                Sponge.getCommandManager().register(plugin, c, aliases);
+            }
 
-                // Register as another full blown command.
-                for (String s : c.getRootCommandAliases()) {
-                    if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("aliases", s).getBoolean(true)) {
-                        Sponge.getCommandManager().register(plugin, c, s);
-                    }
+            // Register as another full blown command.
+            for (String s : c.getRootCommandAliases()) {
+                if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("aliases", s).getBoolean(true)) {
+                    Sponge.getCommandManager().register(plugin, c, s);
                 }
+            }
 
-                if (c instanceof StandardAbstractCommand.Reloadable) {
-                    plugin.registerReloadable(((StandardAbstractCommand.Reloadable) c)::onReload);
-                }
-            } catch (Exception e) {
-                throw new IllegalStateException(plugin.getMessageProvider().getMessageWithFormat("startup.commandfailiure", c.getAliases()[0],
-                        commandClass.getName()));
+            if (c instanceof StandardAbstractCommand.Reloadable) {
+                plugin.registerReloadable(((StandardAbstractCommand.Reloadable) c)::onReload);
             }
 
             registeredCommands.add(c.getClass());

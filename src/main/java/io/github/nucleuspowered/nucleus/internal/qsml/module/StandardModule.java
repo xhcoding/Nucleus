@@ -107,7 +107,6 @@ public abstract class StandardModule implements Module {
 
         // Find all commands that are also scannable.
         performFilter(plugin.getModuleContainer().getLoadedClasses().stream()
-            .filter(x -> x.getPackage().getName().startsWith(packageName))
             .filter(x -> x.isAnnotationPresent(Scan.class))
             .flatMap(x -> Arrays.stream(x.getDeclaredClasses()))
             .filter(StandardAbstractCommand.class::isAssignableFrom)
