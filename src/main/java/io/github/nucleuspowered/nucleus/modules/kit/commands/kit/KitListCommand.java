@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -34,30 +35,36 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Set;
 
-/**
- * Lists all the kits.
- *
- * Command Usage: /kit list Permission: plugin.kit.list.base
- */
+import javax.annotation.Nullable;
+
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = KitCommand.class, rootAliasRegister = "kits")
 @RunAsync
 @NoWarmup
 @NoCooldown
 @NoCost
+@NonnullByDefault
 public class KitListCommand extends StandardAbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
-    @Inject private KitConfigAdapter kca;
-    @Inject private UserDataManager userConfigLoader;
+    private final KitHandler kitConfig;
+    private final KitConfigAdapter kca;
+    private final UserDataManager userConfigLoader;
+    private final CommandPermissionHandler kitPermissionHandler = Nucleus.getNucleus().getPermissionRegistry()
+            .getPermissionsForNucleusCommand(KitCommand.class);
 
-    private CommandPermissionHandler kitPermissionHandler = null;
+    @Inject
+    public KitListCommand(KitHandler kitConfig, KitConfigAdapter kca, UserDataManager userConfigLoader) {
+        this.kitConfig = kitConfig;
+        this.kca = kca;
+        this.userConfigLoader = userConfigLoader;
+    }
 
     @Override
     public CommandResult executeCommand(final SubjectPermissionCache<CommandSource> spc, CommandContext args) throws Exception {
@@ -68,22 +75,19 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        // Get permission handler for the /kit command in question.
-        if (kitPermissionHandler == null) {
-            kitPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(KitCommand.class);
-        }
-
-        PaginationService paginationService = Sponge.getServiceManager().provide(PaginationService.class).get();
+        PaginationService paginationService = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         ArrayList<Text> kitText = Lists.newArrayList();
 
         final KitUserDataModule user =
-                src instanceof Player ? userConfigLoader.get(((Player)src).getUniqueId()).get().get(KitUserDataModule.class) : null;
+                src instanceof Player ? userConfigLoader.getUnchecked(((Player)src).getUniqueId()).get(KitUserDataModule.class) : null;
 
         // Only show kits that the user has permission for, if needed. This is the permission "plugin.kits.<kit>".
-        kitConfig.getKitNames().stream()
+        final boolean showHidden = kitPermissionHandler.testSuffix(src, "showhidden");
+        kitConfig.getKits().entrySet().stream()
+            .filter(x -> showHidden || !x.getValue().isHiddenFromList())
             .filter(kit -> !kca.getNodeOrDefault().isSeparatePermissions() ||
-                    src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + kit.toLowerCase()))
-            .forEach(kit -> kitConfig.getKit(kit).ifPresent(k -> kitText.add(createKit(spc, user, kit, k))));
+                    src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + kit.getKey().toLowerCase()))
+            .forEach(kit -> kitText.add(createKit(spc, user, kit.getKey(), kit.getValue())));
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
                 .title(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
@@ -92,7 +96,7 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createKit(SubjectPermissionCache<CommandSource> source, KitUserDataModule user, String kitName, Kit kitObj) {
+    private Text createKit(SubjectPermissionCache<CommandSource> source, @Nullable KitUserDataModule user, String kitName, Kit kitObj) {
         Text.Builder tb = Text.builder(kitName);
 
         if (user != null && Util.getKeyIgnoreCase(user.getKitLastUsedTime(), kitName).isPresent()) {

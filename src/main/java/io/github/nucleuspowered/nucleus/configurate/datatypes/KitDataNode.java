@@ -41,7 +41,13 @@ public class KitDataNode implements Kit {
 
     @Setting private boolean displayMessage = true;
 
+    @Setting private boolean ignoresPermission = false;
+
+    @Setting private boolean hidden = false;
+
     @Setting private List<String> commands = Lists.newArrayList();
+
+    @Setting private boolean firstJoin = false;
 
     @Override
     public List<ItemStackSnapshot> getStacks() {
@@ -140,4 +146,37 @@ public class KitDataNode implements Kit {
         this.displayMessage = displayMessage;
         return this;
     }
+
+    @Override public boolean ignoresPermission() {
+        return this.ignoresPermission;
+    }
+
+    @Override public Kit setIgnoresPermission(boolean ignoresPermission) {
+        this.ignoresPermission = ignoresPermission;
+        return this;
+    }
+
+    @Override public boolean isHiddenFromList() {
+        return this.hidden;
+    }
+
+    @Override public Kit setHiddenFromList(boolean hide) {
+        this.hidden = hide;
+        return this;
+    }
+
+    @Override public boolean isFirstJoinKit() {
+        return this.firstJoin;
+    }
+
+    @Override public Kit setFirstJoinKit(boolean firstJoin) {
+        this.firstJoin = firstJoin;
+        if (this.firstJoin) {
+            this.hidden = true;
+        }
+
+        return this;
+    }
+
+
 }

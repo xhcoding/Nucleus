@@ -50,7 +50,7 @@ public class KitEditCommand extends AbstractCommand<Player> {
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new KitArgument(Text.of(kitKey), kca, kitHandler, false))
+            GenericArguments.onlyOne(new KitArgument(Text.of(kitKey), false))
         };
     }
 

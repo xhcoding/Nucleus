@@ -54,4 +54,5 @@ public interface NucleusKitService {
      * @return The {@link Kit}
      */
     Kit createKit();
+
 }

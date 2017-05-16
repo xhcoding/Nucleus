@@ -24,6 +24,8 @@ import org.spongepowered.api.util.Tuple;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -113,9 +115,20 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
 
     public final Optional<Text> getTextFromToken(String token, CommandSource source, Map<String, Object> variables) {
         token = token.toLowerCase().trim().replace("{{", "").replace("}}", "");
-        boolean addSpace = token.endsWith(":s");
-        if (addSpace) {
-            token = token.substring(0, token.length() - 2);
+        boolean matches = token.matches(".*:[sp]+$");
+        boolean addSpace;
+        boolean prependSpace;
+        if (matches) {
+            Matcher m = Pattern.compile(":([sp]+)$", Pattern.CASE_INSENSITIVE).matcher(token);
+            m.find(0);
+            String match = m.group(1).toLowerCase();
+            addSpace = match.contains("s");
+            prependSpace = match.contains("p");
+
+            token = token.replaceAll(":[sp]+$", "");
+        } else {
+            addSpace = false;
+            prependSpace = false;
         }
 
         try {
@@ -126,12 +139,16 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
                     return EMPTY;
                 }
 
-                return applyToken(tokSplit[1], tokSplit[2], source, variables).map(x -> addSpace ? Text.join(x, Util.NOT_EMPTY) : x);
+                return applyToken(tokSplit[1], tokSplit[2], source, variables)
+                        .map(x -> addSpace ? Text.join(x, Util.NOT_EMPTY) : x)
+                        .map(x -> prependSpace ? Text.join(Util.NOT_EMPTY, x) : x);
             } else if (token.startsWith("o:")) { // Option identifier.
-                return getTextFromOption(source, token.substring(2), addSpace);
+                return getTextFromOption(source, token.substring(2), addSpace, prependSpace);
             } else {
                 // Standard.
-                return applyPrimaryToken(token, source, variables).map(x -> addSpace ? Text.join(x, Util.NOT_EMPTY) : x);
+                return applyPrimaryToken(token, source, variables)
+                    .map(x -> addSpace ? Text.join(x, Util.NOT_EMPTY) : x)
+                    .map(x -> prependSpace ? Text.join(Util.NOT_EMPTY, x) : x);
             }
         } catch (Exception e) {
             if (plugin.isDebugMode()) {
@@ -142,13 +159,17 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         }
     }
 
-    private Optional<Text> getTextFromOption(CommandSource cs, String option, boolean addSpace) {
+    private Optional<Text> getTextFromOption(CommandSource cs, String option, boolean addSpace, boolean prependSpace) {
         if (cs instanceof Player) {
             Optional<String> os = Util.getOptionFromSubject(cs, option);
             if (os.isPresent() && !os.get().isEmpty()) {
                 String s = os.get();
                 if (addSpace) {
                     s += " ";
+                }
+
+                if (prependSpace) {
+                    s = " " + s;
                 }
 
                 return Optional.of(TextSerializers.FORMATTING_CODE.deserialize(s));

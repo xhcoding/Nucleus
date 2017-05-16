@@ -24,4 +24,8 @@ public class ReturnMessageException extends TextMessageException {
     public static ReturnMessageException fromKey(String loc, String... arg) {
         return new ReturnMessageException(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat(loc, arg));
     }
+
+    public static ReturnMessageException fromKeyText(String loc, Text... arg) {
+        return new ReturnMessageException(Nucleus.getNucleus().getMessageProvider().getTextMessageWithTextFormat(loc, arg));
+    }
 }

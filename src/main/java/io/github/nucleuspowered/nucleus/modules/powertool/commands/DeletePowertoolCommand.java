@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -20,6 +21,8 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,28 +37,33 @@ import java.util.Optional;
 @NoCooldown
 @NoWarmup
 @NoCost
+@NonnullByDefault
 @RegisterCommand(value = {"delete", "del", "rm", "remove"}, subcommandOf = PowertoolCommand.class)
 public class DeletePowertoolCommand extends AbstractCommand<Player> {
 
-    @Inject private UserDataManager loader;
+    private final UserDataManager loader;
+
+    @Inject
+    public DeletePowertoolCommand(UserDataManager loader) {
+        this.loader = loader;
+    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Optional<ItemStack> itemStack = src.getItemInHand(HandTypes.MAIN_HAND);
         if (!itemStack.isPresent()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.noitem"));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.powertool.noitem");
         }
 
-        PowertoolUserDataModule user = loader.get(src).get().get(PowertoolUserDataModule.class);
+        PowertoolUserDataModule user = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
         ItemType item = itemStack.get().getItem();
 
         Optional<List<String>> cmds = user.getPowertoolForItem(item);
         if (cmds.isPresent() && !cmds.get().isEmpty()) {
             user.clearPowertool(item);
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.removed", item.getId()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.powertool.removed", Text.of(item)));
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.powertool.nocmds", item.getId()));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.powertool.nocmds", Text.of(item)));
         }
 
         return CommandResult.success();

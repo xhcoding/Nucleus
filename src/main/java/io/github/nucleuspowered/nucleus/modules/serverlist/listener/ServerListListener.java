@@ -62,12 +62,14 @@ public class ServerListListener extends ListenerBase.Reloadable {
         if (this.config.isHidePlayerCount()) {
             response.setHidePlayers(true);
         } else if (this.config.isHideVanishedPlayers()) {
-            Collection<GameProfile> players = Sponge.getServer().getOnlinePlayers().stream().filter(x -> x.get(Keys.VANISH).orElse(false))
+            Collection<GameProfile> players = Sponge.getServer().getOnlinePlayers().stream()
+                    .filter(x -> !x.get(Keys.VANISH).orElse(false))
                     .map(User::getProfile).collect(Collectors.toList());
 
             response.getPlayers().ifPresent(y -> {
-                y.getProfiles().removeIf(players::contains);
-                y.setOnline(y.getProfiles().size());
+                y.getProfiles().clear();
+                y.getProfiles().addAll(players);
+                y.setOnline(players.size());
             });
         }
     }

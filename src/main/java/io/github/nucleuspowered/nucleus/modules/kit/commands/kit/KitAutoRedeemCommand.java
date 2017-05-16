@@ -14,8 +14,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.kit.commands.kit.KitCommand;
-import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -38,7 +36,6 @@ import org.spongepowered.api.text.Text;
 public class KitAutoRedeemCommand extends AbstractCommand<CommandSource> {
 
     @Inject private KitHandler kitConfig;
-    @Inject private KitConfigAdapter kca;
 
     private final String kit = "kit";
     private final String toggle = "autoRedeemToggle";
@@ -46,7 +43,7 @@ public class KitAutoRedeemCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), kca, kitConfig, true)),
+            GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), true)),
             GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
         };
     }

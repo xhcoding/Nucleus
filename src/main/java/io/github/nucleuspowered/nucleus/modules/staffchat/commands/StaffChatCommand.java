@@ -22,6 +22,8 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.chat.ChatTypes;
@@ -50,8 +52,16 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<String> toSend = args.getOne(message);
         if (toSend.isPresent()) {
-            StaffChatMessageChannel.getInstance()
-                .send(src, TextParsingUtils.addUrls(toSend.get()), ChatTypes.CHAT);
+            if (src instanceof Player) {
+                Player pl = (Player) src;
+                MessageChannel mc = pl.getMessageChannel();
+                pl.setMessageChannel(StaffChatMessageChannel.getInstance());
+                pl.simulateChat(TextParsingUtils.addUrls(toSend.get()), Cause.of(NamedCause.source(src)));
+                pl.setMessageChannel(mc);
+            } else {
+                StaffChatMessageChannel.getInstance()
+                        .send(src, TextParsingUtils.addUrls(toSend.get()), ChatTypes.CHAT);
+            }
 
             return CommandResult.success();
         }

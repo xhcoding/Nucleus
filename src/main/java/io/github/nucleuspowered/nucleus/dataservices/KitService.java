@@ -5,19 +5,14 @@
 package io.github.nucleuspowered.nucleus.dataservices;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitConfigDataNode;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.KitDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.annotation.Nullable;
 
 public class KitService extends AbstractService<KitConfigDataNode> {
 
@@ -25,13 +20,15 @@ public class KitService extends AbstractService<KitConfigDataNode> {
         super(dataProvider, false);
     }
 
-    public Optional<KitDataNode> getKit(String name) {
-        Optional<String> key = Util.getKeyIgnoreCase(data.getKits(), name);
-        if (key.isPresent()) {
-            return Optional.of(data.getKits().get(key.get()));
-        }
+    @Override public void loadInternal() throws Exception {
+        super.loadInternal();
 
-        return Optional.empty();
+        // Migrate to new first join kit structure.
+        data.migrate();
+    }
+
+    public Optional<KitDataNode> getKit(String name) {
+        return Util.getKeyIgnoreCase(data.getKits(), name).map(s -> data.getKits().get(s));
     }
 
     public Map<String, Kit> getKits() {
@@ -51,17 +48,5 @@ public class KitService extends AbstractService<KitConfigDataNode> {
         Map<String, KitDataNode> msk = data.getKits();
         Optional<String> key = msk.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
         return key.isPresent() && data.getKits().remove(key.get()) != null;
-    }
-
-    public List<ItemStackSnapshot> getFirstKit() {
-        return data.getFirstKit();
-    }
-
-    public void setFirstKit(@Nullable List<ItemStackSnapshot> stack) {
-        if (stack == null) {
-            stack = Lists.newArrayList();
-        }
-
-        data.setFirstKit(stack);
     }
 }

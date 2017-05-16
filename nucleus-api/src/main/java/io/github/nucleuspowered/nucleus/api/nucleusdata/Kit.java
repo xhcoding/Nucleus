@@ -17,6 +17,7 @@ import java.util.List;
  */
 @Stable
 public interface Kit {
+
     /**
      * Gets the stacks that would be given out by this kit.
      *
@@ -156,4 +157,58 @@ public interface Kit {
      * @return This {@link Kit} for chaining.
      */
     Kit setDisplayMessageOnRedeem(boolean displayMessage);
+
+    /**
+     * Gets whether redeeming this kit will ignore the permission checks.
+     *
+     * <p>
+     *     Specifically, this is for when separate kit permissions are turned on in the Nucleus config, if this is
+     *     <code>true</code>, this kit will never require a separate permission to redeem.
+     * </p>
+     *
+     * @return <code>true</code> if this kit does not require a permission to redeem.
+     */
+    boolean ignoresPermission();
+
+    /**
+     * Sets whether redeeming this kit ignores permission checks.
+     *
+     * @param ignoresPermission Whether to ignore separate permission checks
+     * @return This {@link Kit}, for chaining.
+     */
+    Kit setIgnoresPermission(boolean ignoresPermission);
+
+    /**
+     * Gets whether this kit is hidden from the <code>/kits</code> list (except for those with permission to view it).
+     *
+     * <p>
+     *     If hidden, a player won't be able to tab complete to this either, but can still redeem the kit.
+     * </p>
+     *
+     * @return Whether the kit is hidden from the <code>/kits</code> list and tab complete.
+     */
+    boolean isHiddenFromList();
+
+    /**
+     * Sets whether this kit is hidden from <code>/kits</code>
+     *
+     * @param hide <code>true</code> if so.
+     * @return This {@link Kit}, for chaining.
+     */
+    Kit setHiddenFromList(boolean hide);
+
+    /**
+     * Returns whether this kit acts like a First Join Kit.
+     *
+     * @return <code>true</code> if so.
+     */
+    boolean isFirstJoinKit();
+
+    /**
+     * Sets whether this kit will be redeemed on first join.
+     *
+     * @param firstJoinKit <code>true</code> if so.
+     * @return This {@link Kit}, for chaining.
+     */
+    Kit setFirstJoinKit(boolean firstJoinKit);
 }

@@ -27,6 +27,7 @@ public class KitModule extends ConfigurableModule<KitConfigAdapter> {
 
         try {
             KitHandler kitHandler = new KitHandler();
+            plugin.registerReloadable(kitHandler::reload);
             plugin.getInjector().injectMembers(kitHandler);
             serviceManager.registerService(KitHandler.class, kitHandler);
             game.getServiceManager().setProvider(plugin, NucleusKitService.class, kitHandler);
