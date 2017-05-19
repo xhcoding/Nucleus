@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -23,7 +24,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.util.ban.Ban;
 
@@ -70,7 +70,7 @@ public class UnbanCommand extends AbstractCommand<CommandSource> {
 
         service.removeBan(obp.get());
 
-        MutableMessageChannel notify = MessageChannel.permission(BanCommand.notifyPermission).asMutable();
+        MutableMessageChannel notify = new PermissionMessageChannel(BanCommand.notifyPermission).asMutable();
         notify.addMember(src);
         notify.send(plugin.getMessageProvider().getTextMessageWithFormat("command.unban.success", obp.get().getProfile().getName().orElse("standard.unknown"), src.getName()));
         return CommandResult.success();

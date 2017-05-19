@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -22,7 +23,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 
 import java.util.Map;
@@ -84,7 +84,7 @@ public class VoiceCommand extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        MutableMessageChannel mmc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify")).asMutable();
+        MutableMessageChannel mmc = new PermissionMessageChannel(permissions.getPermissionWithSuffix("notify")).asMutable();
         mmc.addMember(src);
         if (turnOn) {
             muteHandler.addVoice(pl.getUniqueId());

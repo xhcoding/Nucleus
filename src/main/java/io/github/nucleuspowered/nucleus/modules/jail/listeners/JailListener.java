@@ -21,6 +21,7 @@ import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -35,7 +36,6 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.time.Duration;
@@ -72,7 +72,7 @@ public class JailListener extends ListenerBase.Reloadable {
         if (userDataModule.jailOnNextLogin() && userDataModule.getJailData().isPresent()) {
             Optional<NamedLocation> owl = handler.getWarpLocation(user);
             if (!owl.isPresent()) {
-                MessageChannel.permission(notify)
+                new PermissionMessageChannel(notify)
                     .send(Text.of(TextColors.RED, "WARNING: No jail is defined. Jailed players are going free!"));
                 handler.unjailPlayer(user);
                 return;
