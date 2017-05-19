@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.modules.mute.commands.VoiceCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandMapping;
 import org.spongepowered.api.entity.living.player.Player;
@@ -128,7 +129,7 @@ public class MuteListener extends ListenerBase {
                         Text.join(TextSerializers.FORMATTING_CODE.deserialize(m), event.getFormatter().getHeader().toText()));
                 }
 
-                MessageChannel.permission(MuteCommand.getMutedChatPermission()).send(player, event.getMessage(), ChatTypes.SYSTEM);
+                new PermissionMessageChannel(MuteCommand.getMutedChatPermission()).send(player, event.getMessage(), ChatTypes.SYSTEM);
             }
 
             event.setCancelled(true);

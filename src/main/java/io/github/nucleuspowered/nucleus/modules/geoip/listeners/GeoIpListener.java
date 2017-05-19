@@ -15,11 +15,11 @@ import io.github.nucleuspowered.nucleus.modules.geoip.commands.GeoIpCommand;
 import io.github.nucleuspowered.nucleus.modules.geoip.config.GeoIpConfig;
 import io.github.nucleuspowered.nucleus.modules.geoip.config.GeoIpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.geoip.handlers.GeoIpDatabaseHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.channel.MessageChannel;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
@@ -44,10 +44,10 @@ public class GeoIpListener extends ListenerBase {
             try {
                 Optional<Country> result = handler.getDetails(event.getTargetEntity().getConnection().getAddress().getAddress()).get();
                 if (result.isPresent()) {
-                    MessageChannel.permission(commandPermissionHandler.getPermissionWithSuffix("login"))
+                    new PermissionMessageChannel(commandPermissionHandler.getPermissionWithSuffix("login"))
                         .send(plugin.getMessageProvider().getTextMessageWithFormat("geoip.playerfrom", event.getTargetEntity().getName(), result.get().getName()));
                 } else {
-                    MessageChannel.permission(commandPermissionHandler.getPermissionWithSuffix("login"))
+                    new PermissionMessageChannel(commandPermissionHandler.getPermissionWithSuffix("login"))
                         .send(plugin.getMessageProvider().getTextMessageWithFormat("geoip.noinfo", event.getTargetEntity().getName()));
                 }
             } catch (Exception e) {

@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.note.data.NoteData;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -26,7 +27,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 
 import java.time.Instant;
@@ -74,7 +74,7 @@ public class NoteCommand extends AbstractCommand<CommandSource> {
         NoteData noteData = new NoteData(Instant.now(), noter, note);
 
         if (noteHandler.addNote(user, noteData)) {
-            MutableMessageChannel messageChannel = MessageChannel.permission(notifyPermission).asMutable();
+            MutableMessageChannel messageChannel = new PermissionMessageChannel(notifyPermission).asMutable();
             messageChannel.addMember(src);
 
             messageChannel.send(plugin.getMessageProvider().getTextMessageWithFormat("command.note.success", src.getName(), noteData.getNote(), user.getName()));
