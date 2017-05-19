@@ -17,6 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.events.InternalNucleusHelpOpEvent;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -24,7 +25,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +66,8 @@ public class HelpOpCommand extends AbstractCommand<Player> implements StandardAb
 
         Text prefix = messageConfig.getHelpOpPrefix().getForCommandSource(src);
 
-        MessageChannel.permission(permissions.getPermissionWithSuffix("receive"))
-                .send(src, textParsingUtils.joinTextsWithColoursFlowing(prefix, Text.of(message)));
+        new PermissionMessageChannel(permissions.getPermissionWithSuffix("receive"))
+                .send(src, TextParsingUtils.joinTextsWithColoursFlowing(prefix, Text.of(message)));
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.helpop.success"));
 

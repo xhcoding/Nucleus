@@ -17,13 +17,13 @@ import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfig;
 import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.note.data.NoteData;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class NoteListener extends ListenerBase {
         Sponge.getScheduler().createTaskBuilder().async().delay(500, TimeUnit.MILLISECONDS).execute(() -> {
             List<NoteData> notes = handler.getNotesInternal(player);
             if (notes != null && !notes.isEmpty()) {
-                MutableMessageChannel messageChannel = MessageChannel.permission(showOnLogin).asMutable();
+                MutableMessageChannel messageChannel = new PermissionMessageChannel(showOnLogin).asMutable();
                 messageChannel.send(plugin.getMessageProvider().getTextMessageWithFormat("note.login.notify", player.getName(), String.valueOf(notes.size())).toBuilder()
                         .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("note.login.view", player.getName())))
                         .onClick(TextActions.runCommand("/checknotes " + player.getName()))

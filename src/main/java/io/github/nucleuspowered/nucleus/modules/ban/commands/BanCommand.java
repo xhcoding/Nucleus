@@ -20,6 +20,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -33,7 +34,6 @@ import org.spongepowered.api.profile.GameProfileManager;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.ban.Ban;
@@ -165,7 +165,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
         service.addBan(bp);
 
         // Get the permission, "quickstart.ban.notify"
-        MutableMessageChannel send = MessageChannel.permission(notifyPermission).asMutable();
+        MutableMessageChannel send = new PermissionMessageChannel(notifyPermission).asMutable();
         send.addMember(src);
         send.send(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.applied", u.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown")), src.getName()));
         send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", r));

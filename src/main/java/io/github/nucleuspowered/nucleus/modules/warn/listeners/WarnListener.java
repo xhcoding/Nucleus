@@ -14,12 +14,12 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.action.TextActions;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 
 import java.time.Instant;
@@ -68,7 +68,7 @@ public class WarnListener extends ListenerBase {
                 if (wca.getNodeOrDefault().isShowOnLogin()) {
                     List<WarnData> lwd = warnings.stream().filter(x -> !x.isExpired()).collect(Collectors.toList());
                     if (!lwd.isEmpty()) {
-                        MutableMessageChannel messageChannel = MessageChannel.permission(showOnLogin).asMutable();
+                        MutableMessageChannel messageChannel = new PermissionMessageChannel(showOnLogin).asMutable();
                         messageChannel.send(plugin.getMessageProvider().getTextMessageWithFormat("warn.login.notify", player.getName(), String.valueOf(lwd.size())).toBuilder()
                                 .onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("warn.login.view", player.getName())))
                                 .onClick(TextActions.runCommand("/checkwarnings " + player.getName()))
