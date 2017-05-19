@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.mixins.interfaces.INucleusMixinWorld;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.GenerateChunksCommand;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.spongepowered.api.Sponge;
@@ -271,7 +272,7 @@ public class EnhancedGeneration implements TriFunction<World, CommandSource, Com
         }
 
         private MessageChannel getChannel() {
-            return MessageChannel.combined(MessageChannel.TO_CONSOLE, MessageChannel.permission(this.notifyPermission));
+            return MessageChannel.combined(MessageChannel.TO_CONSOLE, new PermissionMessageChannel(this.notifyPermission));
         }
 
         private Vector3i nextChunkPosition() {

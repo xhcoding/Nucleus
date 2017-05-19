@@ -23,6 +23,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -32,7 +33,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.world.Locatable;
 
@@ -140,7 +140,7 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         }
 
         if (handler.jailPlayer(user, jd)) {
-            MutableMessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify")).asMutable();
+            MutableMessageChannel mc = new PermissionMessageChannel(permissions.getPermissionWithSuffix("notify")).asMutable();
             mc.addMember(src);
             mc.send(message);
             mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));

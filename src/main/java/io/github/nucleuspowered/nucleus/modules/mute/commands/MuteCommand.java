@@ -21,6 +21,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -137,7 +138,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
 
         if (handler.mutePlayer(user, data)) {
             // Success.
-            MutableMessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify")).asMutable();
+            MutableMessageChannel mc = new PermissionMessageChannel(permissions.getPermissionWithSuffix("notify")).asMutable();
             mc.addMember(src);
 
             if (time.isPresent()) {

@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -69,7 +70,7 @@ public class KickCommand extends AbstractCommand<CommandSource> {
 
         pl.kick(TextSerializers.FORMATTING_CODE.deserialize(r));
 
-        MessageChannel mc = MessageChannel.permission(permissions.getPermissionWithSuffix("notify"));
+        MessageChannel mc = new PermissionMessageChannel(permissions.getPermissionWithSuffix("notify"));
         mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.kick.message", pl.getName(), src.getName()));
         mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.reason", r));
         return CommandResult.success();
