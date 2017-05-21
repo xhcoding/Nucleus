@@ -52,7 +52,7 @@ public class KitHiddenCommand extends AbstractCommand<CommandSource> {
         // to update it explicitly
         kitInfo.kit.setHiddenFromList(b);
         kitConfig.saveKit(kitInfo.name, kitInfo.kit);
-        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(b ? "command.kit.hidden.on" : "command.kit.hidden.off", kitInfo
+        player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(b ? "command.kit.hidden.off" : "command.kit.hidden.on", kitInfo
                 .name));
 
         return CommandResult.success();
