@@ -21,6 +21,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"hidden"}, subcommandOf = KitCommand.class)
@@ -28,18 +29,24 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
+@NonnullByDefault
 public class KitHiddenCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
+    private final KitHandler kitConfig;
 
     private final String kit = "kit";
     private final String toggle = "hidden toggle";
 
+    @Inject
+    public KitHiddenCommand(KitHandler handler) {
+        this.kitConfig = handler;
+    }
+
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.seq(GenericArguments.onlyOne(new KitArgument(Text.of(kit), false)),
-            GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle))))
+            GenericArguments.onlyOne(new KitArgument(Text.of(kit), false)),
+            GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle)))
         };
     }
 
