@@ -23,8 +23,6 @@ import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
-import org.spongepowered.api.GameState;
-import org.spongepowered.api.Sponge;
 
 import java.time.Instant;
 import java.util.Set;
@@ -77,27 +75,23 @@ public class ConfigurateHelper {
             return typeSerializerCollection;
         }
 
-        TypeSerializerCollection tsc = ConfigurationOptions.defaults().getSerializers();
+        typeSerializerCollection = ConfigurationOptions.defaults().getSerializers().newChild();
 
         // Custom type serialisers for Nucleus
-        tsc.registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
-        tsc.registerType(TypeToken.of(NucleusItemStackSnapshot.class), new NucleusItemStackSnapshotSerialiser());
-        tsc.registerType(TypeToken.of(Pattern.class), new PatternTypeSerialiser());
-        tsc.registerType(TypeToken.of(NucleusTextTemplateImpl.class), new NucleusTextTemplateTypeSerialiser());
-        tsc.registerPredicate(
+        typeSerializerCollection.registerType(TypeToken.of(Vector3d.class), new Vector3dTypeSerialiser());
+        typeSerializerCollection.registerType(TypeToken.of(NucleusItemStackSnapshot.class), new NucleusItemStackSnapshotSerialiser());
+        typeSerializerCollection.registerType(TypeToken.of(Pattern.class), new PatternTypeSerialiser());
+        typeSerializerCollection.registerType(TypeToken.of(NucleusTextTemplateImpl.class), new NucleusTextTemplateTypeSerialiser());
+        typeSerializerCollection.registerPredicate(
                 typeToken -> Set.class.isAssignableFrom(typeToken.getRawType()),
                 new SetTypeSerialiser()
         );
 
-        tsc.registerType(new TypeToken<byte[]>(){}, new ByteArrayTypeSerialiser());
-        tsc.registerType(new TypeToken<short[]>(){}, new ShortArrayTypeSerialiser());
-        tsc.registerType(new TypeToken<int[]>(){}, new IntArrayTypeSerialiser());
-        tsc.registerType(TypeToken.of(Instant.class), new InstantTypeSerialiser());
+        typeSerializerCollection.registerType(new TypeToken<byte[]>(){}, new ByteArrayTypeSerialiser());
+        typeSerializerCollection.registerType(new TypeToken<short[]>(){}, new ShortArrayTypeSerialiser());
+        typeSerializerCollection.registerType(new TypeToken<int[]>(){}, new IntArrayTypeSerialiser());
+        typeSerializerCollection.registerType(TypeToken.of(Instant.class), new InstantTypeSerialiser());
 
-        if (Sponge.getGame().getState() == GameState.SERVER_STARTED) {
-            typeSerializerCollection = tsc;
-        }
-
-        return tsc;
+        return typeSerializerCollection;
     }
 }

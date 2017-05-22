@@ -21,6 +21,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setfirstjoin", "firstjoin"}, subcommandOf = KitCommand.class)
@@ -28,17 +29,24 @@ import org.spongepowered.api.text.Text;
 @NoWarmup
 @NoCooldown
 @NoCost
+@NonnullByDefault
 public class KitSetFirstJoinCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
+    private final KitHandler kitConfig;
 
     private final String kit = "kit";
     private final String toggle = "first join kit toggle";
 
+    @Inject
+    public KitSetFirstJoinCommand(KitHandler kitConfig) {
+        this.kitConfig = kitConfig;
+    }
+
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new KitArgument(Text.of(kit), false))
+            GenericArguments.onlyOne(new KitArgument(Text.of(kit), false)),
+            GenericArguments.onlyOne(GenericArguments.bool(Text.of(toggle)))
         };
     }
 

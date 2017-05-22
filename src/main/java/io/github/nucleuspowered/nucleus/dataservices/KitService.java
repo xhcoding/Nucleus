@@ -24,7 +24,9 @@ public class KitService extends AbstractService<KitConfigDataNode> {
         super.loadInternal();
 
         // Migrate to new first join kit structure.
-        data.migrate();
+        if (data.migrate()) {
+            save();
+        }
     }
 
     public Optional<KitDataNode> getKit(String name) {

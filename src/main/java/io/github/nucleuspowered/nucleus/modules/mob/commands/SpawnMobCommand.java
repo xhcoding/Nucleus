@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mob.config.BlockSpawnsConfig;
@@ -86,6 +87,7 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
         Location<World> loc = pl.getLocation();
         World w = loc.getExtent();
+        MessageProvider mp = plugin.getMessageProvider();
 
         // Count the number of entities spawned.
         int i = 0;
@@ -95,10 +97,15 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
         Cause cause = Cause.of(
                 NamedCause.source(EntitySpawnCause.builder().type(SpawnTypes.PLUGIN).entity(pl).build()),
                 NamedCause.owner(pl));
+        Entity entityone = null;
         do {
             Entity e = w.createEntity(et, loc.getPosition());
             if (!w.spawnEntity(e, cause)) {
-                throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.fail", et.getTranslation().get()));
+                throw ReturnMessageException.fromKeyText("command.spawnmob.fail", Text.of(e));
+            }
+
+            if (entityone == null) {
+                entityone = e;
             }
 
             i++;
@@ -106,18 +113,17 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
         if (amount > mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()) {
             src.sendMessage(
-                    plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.limit", String.valueOf(mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn())));
+                    mp.getTextMessageWithFormat("command.spawnmob.limit", String.valueOf(mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn())));
         }
 
         if (i == 0) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.fail", et.getTranslation().get()));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.spawnmob.fail", et.getTranslation().get());
         }
 
         if (i == 1) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.success.singular", String.valueOf(i), et.getTranslation().get()));
+            src.sendMessage(mp.getTextMessageWithTextFormat("command.spawnmob.success.singular", Text.of(i), Text.of(entityone)));
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.success.plural", String.valueOf(i), et.getTranslation().get()));
+            src.sendMessage(mp.getTextMessageWithTextFormat("command.spawnmob.success.plural", Text.of(i), Text.of(entityone)));
         }
 
         return CommandResult.success();
