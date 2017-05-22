@@ -65,7 +65,7 @@ public class KitConfigDataNode {
     }
 
     @SuppressWarnings("deprecation")
-    public void migrate() {
+    public boolean migrate() {
         if (this.firstKit != null) {
             // Is there a "firstjoinkit"?
             if (!this.getKits().containsKey("firstjoinkit")) {
@@ -77,7 +77,11 @@ public class KitConfigDataNode {
                 kits.put("firstjoinkit", kit);
 
                 this.firstKit = null;
+
+                return true;
             }
         }
+
+        return false;
     }
 }
