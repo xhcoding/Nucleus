@@ -111,7 +111,17 @@ public class NucleusTeleportHandler {
         return teleportPlayer(pl, loc, pl.getRotation(), mode, of);
     }
 
-    public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode, Cause cause) {
+    public TeleportResult teleportPlayer(Player pl, Location<World> loc, TeleportMode mode, Cause of, boolean addOffset) {
+        return teleportPlayer(pl, loc, pl.getRotation(), mode, of, true);
+    }
+
+    public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode,
+            Cause cause) {
+        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), teleportMode, cause, false);
+    }
+
+    public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode,
+            Cause cause, boolean addOffset) {
         Optional<Location<World>> targetLocation = getSafeLocation(player, locationToTeleportTo, teleportMode);
 
         if (targetLocation.isPresent() && Util.isLocationInWorldBorder(targetLocation.get())) {
@@ -132,6 +142,10 @@ public class NucleusTeleportHandler {
             }
 
             // Do it, tell the routine if it worked.
+            if (addOffset) {
+                return result(player.setLocationAndRotation(targetLocation.get().add(0.5, 0.5, 0.5), rotation));
+            }
+
             return result(player.setLocationAndRotation(targetLocation.get(), rotation));
         }
 

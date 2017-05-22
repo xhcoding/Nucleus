@@ -128,7 +128,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
             mode = NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE_CHUNK;
         }
 
-        NucleusTeleportHandler.TeleportResult result = teleportHandler.teleportPlayer(pl, loc, mode, Cause.of(NamedCause.owner(src)));
+        NucleusTeleportHandler.TeleportResult result = teleportHandler.teleportPlayer(pl, loc, mode, Cause.of(NamedCause.owner(src)), true);
         if (result.isSuccess()) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {
