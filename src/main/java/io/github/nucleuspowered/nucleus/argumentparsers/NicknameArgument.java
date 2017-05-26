@@ -246,6 +246,7 @@ public class NicknameArgument<T extends User> extends CommandElement {
                         .map(Optional::get)
                         .filter(x -> filter.test(cs, x))
                         .filter(x -> PlayerConsoleArgument.shouldShow(x.getUniqueId(), cs))
+                        .map(x -> x.getPlayer().map(y -> (User) y).orElse(x))
                         .collect(Collectors.toList());
 
                 if (!users.isEmpty()) {
