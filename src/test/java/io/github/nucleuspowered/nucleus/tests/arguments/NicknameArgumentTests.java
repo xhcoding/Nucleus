@@ -69,8 +69,10 @@ public class NicknameArgumentTests extends TestBase {
 
         User u1 = Mockito.mock(User.class);
         Mockito.when(u1.getName()).thenAnswer(g -> gp1.getName().get());
+        Mockito.when(u1.getPlayer()).thenAnswer(g -> Optional.empty());
         User u2 = Mockito.mock(User.class);
         Mockito.when(u2.getName()).thenAnswer(g -> gp2.getName().get());
+        Mockito.when(u2.getPlayer()).thenAnswer(g -> Optional.empty());
 
         Mockito.when(mockUss.get(gp1)).thenReturn(Optional.of(u1));
         Mockito.when(mockUss.get(gp2)).thenReturn(Optional.of(u2));
