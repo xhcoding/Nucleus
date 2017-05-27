@@ -85,6 +85,7 @@ import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.enums.ConstructionPhase;
 import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
@@ -108,6 +109,9 @@ import javax.annotation.Nullable;
 @Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION,
         dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.2", optional = true))
 public class NucleusPlugin extends Nucleus {
+
+    private static final String divider = "+------------------------------------------------------------+";
+    private static final int length = divider.length() - 2;
 
     private final PluginContainer pluginContainer;
     private Instant gameStartedTime = null;
@@ -225,16 +229,18 @@ public class NucleusPlugin extends Nucleus {
         Sponge.getServiceManager().setProvider(this, NucleusMessageTokenService.class, nucleusChatService);
 
         try {
+            final String he = this.messageProvider.getMessageWithFormat("config.main-header", PluginInfo.VERSION);
             HoconConfigurationLoader.Builder builder = HoconConfigurationLoader.builder();
             moduleContainer = DiscoveryModuleContainer.builder()
                     .setConstructor(new QuickStartModuleConstructor(injector))
                     .setConfigurationLoader(
-                        builder.setDefaultOptions(ConfigurateHelper.setOptions(builder.getDefaultOptions()))
+                        builder.setDefaultOptions(
+                                ConfigurateHelper.setOptions(builder.getDefaultOptions()).setHeader(he))
                             .setPath(Paths.get(configDir.toString(), "main.conf"))
                             .build())
                     .setPackageToScan(getClass().getPackage().getName() + ".modules")
                     .setLoggerProxy(new NucleusLoggerProxy(logger))
-                    .setConfigurationOptionsTransformer(ConfigurateHelper::setOptions)
+                    .setConfigurationOptionsTransformer(x -> ConfigurateHelper.setOptions(x).setHeader(he))
                     .setOnPreEnable(() -> {
                         runInjectorUpdate();
                         initDocGenIfApplicable();
@@ -247,6 +253,31 @@ public class NucleusPlugin extends Nucleus {
                     .setOnPostEnable(() -> Sponge.getEventManager().post(new BaseModuleEvent.Enabled(this)))
                     .setRequireModuleDataAnnotation(true)
                     .setNoMergeIfPresent(true)
+                    .setModuleConfigurationHeader(m -> {
+                            StringBuilder ssb = new StringBuilder().append(divider).append("\n");
+                            String name = m.getClass().getAnnotation(ModuleData.class).name();
+                            int nameLength = name.length() + 2;
+                            int dashes = (length - nameLength) / 2;
+                            ssb.append("|");
+                            for (int i = 0; i < dashes; i++) {
+                                ssb.append(" ");
+                            }
+
+                            ssb.append(" ").append(name).append(" ");
+                            for (int i = 0; i < dashes; i++) {
+                                ssb.append(" ");
+                            }
+
+                            if (length > dashes * 2 + nameLength) {
+                                ssb.append(" ");
+                            }
+
+                            return ssb.append("|").append("\n").append(divider).toString();
+                    })
+                    .setModuleConfigSectionName("-modules")
+                    .setModuleConfigSectionDescription(this.messageProvider.getMessageWithFormat("config.module-desc"))
+                    .setModuleDescriptionHandler(m -> this.messageProvider.getMessageWithFormat("config.module." +
+                            m.getAnnotation(ModuleData.class).id().toLowerCase() + ".desc"))
                     .build();
 
             moduleContainer.startDiscover();
