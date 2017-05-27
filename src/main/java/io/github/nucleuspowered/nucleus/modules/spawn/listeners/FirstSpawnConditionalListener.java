@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralServi
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.spawn.SpawnModule;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
 import org.spongepowered.api.entity.living.player.Player;
@@ -24,28 +25,24 @@ import java.util.function.Predicate;
 @ConditionalListener(FirstSpawnConditionalListener.Condition.class)
 public class FirstSpawnConditionalListener extends ListenerBase {
 
-    @Inject private ModularGeneralService store;
+    private final ModularGeneralService store;
+
+    @Inject
+    public FirstSpawnConditionalListener(ModularGeneralService store) {
+        this.store = store;
+    }
 
     @Listener(order = Order.LATE)
     public void onJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player player) {
         // Try to force a subject location in a tick.
-        Task.builder().execute(() -> store.get(SpawnGeneralDataModule.class).getFirstSpawn().ifPresent(player::setTransform)).delayTicks(1)
+        Task.builder().execute(() -> store.get(SpawnGeneralDataModule.class).getFirstSpawn().ifPresent(player::setTransform)).delayTicks(3)
                 .submit(plugin);
     }
 
     public static class Condition implements Predicate<Nucleus> {
 
         @Override public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(SpawnModule.ID, SpawnConfigAdapter.class)
-                    .getNodeOrDefault().isForceFirstSpawn();
-            } catch (Exception e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
+            return nucleus.getConfigValue(SpawnModule.ID, SpawnConfigAdapter.class, SpawnConfig::isForceFirstSpawn).orElse(false);
         }
     }
 }
