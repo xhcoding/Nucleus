@@ -123,6 +123,28 @@ public abstract class PreloadTasks {
                 } catch (Exception ignored) {
                     // ignored
                 }
+            },
+            // Move the modules location
+            plugin -> {
+                try {
+                    // Get the main conf file, move the "modules" section
+                    Path main = plugin.getConfigDirPath().resolve("main.conf");
+                    if (!Files.exists(main)) {
+                        return;
+                    }
+
+                    HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(main).build();
+                    CommentedConfigurationNode node = loader.load();
+                    CommentedConfigurationNode c = node.getNode("modules");
+                    if (!c.isVirtual()) {
+                        node.getNode("-modules").setValue(c);
+                        node.getNode("modules").setValue(null);
+                    }
+
+                    loader.save(node);
+                } catch (Exception ignored) {
+                    // ignored
+                }
             });
     }
 
