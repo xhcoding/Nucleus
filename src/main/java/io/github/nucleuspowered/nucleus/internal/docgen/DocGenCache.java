@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.docgen;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -21,9 +22,9 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public class DocGenCache {
 
     private final List<CommandDoc> commandDocs = Lists.newArrayList();
-    private final List<PermissionDoc> permissionDocs = Lists.newArrayList();
+    private final Map<String, PermissionDoc> permissionDocs = Maps.newHashMap();
     private final List<TokenDoc> tokenDocs = Lists.newArrayList();
     private final List<EssentialsDoc> essentialsDocs = Lists.newArrayList();
 
@@ -46,8 +47,8 @@ public class DocGenCache {
         return commandDocs;
     }
 
-    public List<PermissionDoc> getPermissionDocs() {
-        return permissionDocs;
+    public Collection<PermissionDoc> getPermissionDocs() {
+        return permissionDocs.values();
     }
 
     public List<TokenDoc> getTokenDocs() {
@@ -105,10 +106,7 @@ public class DocGenCache {
         }
 
         List<PermissionDoc> lp = new ArrayList<>();
-        abstractCommand.getPermissionHandler().getSuggestedPermissions().forEach((k, v) -> {
-            PermissionInformation pi = new PermissionInformation(MessageFormat.format(v.plainDescription, cmd.getCommandName()), v.level);
-            lp.add(getPermissionFrom(moduleID, k, pi));
-        });
+        abstractCommand.getPermissionHandler().getSuggestedPermissions().forEach((k, v) -> lp.add(addPermissionDocs(moduleID, k, v)));
 
         cmd.setPermissions(lp);
         cmd.setUsageString(abstractCommand.getUsageString(Sponge.getServer().getConsole()));
@@ -145,12 +143,26 @@ public class DocGenCache {
             essentialsDocs.add(doc);
         }
 
-        permissionDocs.addAll(lp);
         commandDocs.add(cmd);
     }
 
     public void addPermissionDocs(final String moduleID, Map<String, PermissionInformation> msp) {
-        msp.forEach((k, v) -> permissionDocs.add(getPermissionFrom(moduleID, k, v)));
+        msp.forEach((k, v) -> addPermissionDocs(moduleID, k, v));
+    }
+
+    private PermissionDoc addPermissionDocs(final String moduleID, String k, PermissionInformation v) {
+        PermissionDoc pd;
+        if (!permissionDocs.containsKey(k)) {
+            pd = getPermissionFrom(moduleID, k, v);
+            permissionDocs.put(k, pd);
+        } else {
+            pd = permissionDocs.get(k);
+            if (!pd.getDescription().contains(v.plainDescription)) {
+                pd.setDescription(pd.getDescription().replaceAll("\\.$", "") + ", " + v.plainDescription);
+            }
+        }
+
+        return pd;
     }
 
     public void addTokenDocs(Set<String> tokens) {
@@ -165,6 +177,7 @@ public class DocGenCache {
         perm.setDescription(v.plainDescription);
         perm.setPermission(k);
         perm.setDefaultLevel(v.level.name());
+        perm.setOre(v.isOre).setNormal(v.isNormal);
         return perm;
     }
 }

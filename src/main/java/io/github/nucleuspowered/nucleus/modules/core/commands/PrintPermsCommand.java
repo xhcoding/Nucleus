@@ -4,6 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -23,9 +26,12 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @RunAsync
+@NoCooldown
+@NoCost
+@NoWarmup
 @Permissions(prefix = "nucleus")
 @RegisterCommand(value = "printperms", subcommandOf = NucleusCommand.class)
-public class SuggestedPermissionsCommand extends AbstractCommand<CommandSource> {
+public class PrintPermsCommand extends AbstractCommand<CommandSource> {
 
     private final String file = "plugin-perms.txt";
 

@@ -111,11 +111,13 @@ public class ChatListener extends ListenerBase.Reloadable {
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = new HashMap<>();
         mp.put(prefix + "color", PermissionInformation.getWithTranslation("permission.chat.color", SuggestedLevel.ADMIN));
-        mp.put(prefix + "colour", PermissionInformation.getWithTranslation("permission.chat.colour", SuggestedLevel.ADMIN));
+        mp.put(prefix + "color.<color>", PermissionInformation.getWithTranslation("permission.chat.colorsingle", SuggestedLevel.ADMIN, false, true));
+        mp.put(prefix + "colour", PermissionInformation.getWithTranslation("permission.chat.colour", SuggestedLevel.ADMIN, true, false));
         mp.put(prefix + "style", PermissionInformation.getWithTranslation("permission.chat.style", SuggestedLevel.ADMIN));
+        mp.put(prefix + "style.<style>", PermissionInformation.getWithTranslation("permission.chat.stylesingle", SuggestedLevel.ADMIN, false, true));
         mp.put(prefix + "magic", PermissionInformation.getWithTranslation("permission.chat.magic", SuggestedLevel.ADMIN));
         mp.put(prefix + "url", PermissionInformation.getWithTranslation("permission.chat.urls", SuggestedLevel.ADMIN));
-        permissionToDesc.forEach((k, v) -> mp.put(k, new PermissionInformation(v, SuggestedLevel.ADMIN)));
+        permissionToDesc.forEach((k, v) -> mp.put(k, new PermissionInformation(v, SuggestedLevel.ADMIN, true, false)));
         return mp;
     }
 
