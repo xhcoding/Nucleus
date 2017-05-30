@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
@@ -34,6 +33,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Locatable;
 
 import java.time.Duration;
@@ -43,6 +43,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
+@NonnullByDefault
 @Permissions(suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @NoWarmup
 @NoCooldown
@@ -51,11 +54,17 @@ import java.util.Optional;
 @EssentialsEquivalent({"togglejail", "tjail", "unjail", "jail"})
 public class JailCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private JailHandler handler;
+    private final JailHandler handler;
+
     private final String playerKey = "subject";
     private final String jailKey = "jail";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
+
+    @Inject
+    public JailCommand(JailHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -145,10 +154,10 @@ public class JailCommand extends AbstractCommand<CommandSource> {
             mc.send(message);
             mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
 
-            if (user.isOnline()) {
-                user.getPlayer().get().sendMessage(messageTo);
-                user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
-            }
+            user.getPlayer().ifPresent(x -> {
+                x.sendMessage(messageTo);
+                x.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
+            });
 
             return CommandResult.success();
         }
