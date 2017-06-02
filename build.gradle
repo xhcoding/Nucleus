@@ -148,8 +148,11 @@ shadowJar {
     relocate 'com.maxmind.geoip2', 'io.github.nucleuspowered.relocate.com.maxmind.geoip2'
     relocate 'com.maxmind.db', 'io.github.nucleuspowered.relocate.com.maxmind.db'
     relocate 'com.fasterxml.jackson', 'io.github.nucleuspowered.relocate.com.fasterxml.jackson'
-    relocate 'uk.co.drnaylor', 'io.github.nucleuspowered.relocate.uk.co.drnaylor'
-    relocate 'io.github.nucleuspowered.neutrino', 'io.github.nucleuspowered.relocate.nucleus.neutrino'
+
+    if (!project.hasProperty('norelocate')) {
+        relocate 'uk.co.drnaylor', 'io.github.nucleuspowered.relocate.uk.co.drnaylor'
+        relocate 'io.github.nucleuspowered.neutrino', 'io.github.nucleuspowered.relocate.nucleus.neutrino'
+    }
 
     exclude "io/github/nucleuspowered/nucleus/api/NucleusAPIMod.class"
     archiveName = "Nucleus-${version}-plugin.jar"
