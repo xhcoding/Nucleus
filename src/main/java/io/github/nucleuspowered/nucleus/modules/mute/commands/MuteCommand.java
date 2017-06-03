@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
-import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ResortUserArgumentParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
@@ -34,6 +34,7 @@ import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -41,12 +42,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Mutes or unmutes a subject.
- *
- * Command Usage: /mute user [time] [reason] Permission: quickstart.mute.base
- * Notify: quickstart.mute.notify
- */
+import javax.inject.Inject;
+
+@NonnullByDefault
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @NoWarmup
@@ -56,10 +54,17 @@ import java.util.UUID;
 @EssentialsEquivalent({"mute", "silence"})
 public class MuteCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private MuteConfigAdapter mca;
-    @Inject private MuteHandler handler;
+    private final MuteConfigAdapter mca;
+    private final MuteHandler handler;
 
-    private static String mutedChatPermission = null;
+    private final static String mutedChatPermission = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(MuteCommand.class)
+            .getPermissionWithSuffix("seemutedchat");
+
+    @Inject
+    public MuteCommand(MuteConfigAdapter mca, MuteHandler handler) {
+        this.mca = mca;
+        this.handler = handler;
+    }
 
     public static String getMutedChatPermission() {
         return mutedChatPermission;
@@ -77,13 +82,6 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
         m.put("notify", PermissionInformation.getWithTranslation("permission.mute.notify", SuggestedLevel.MOD));
         m.put("seemutedchat", PermissionInformation.getWithTranslation("permission.mute.seemutedchat", SuggestedLevel.ADMIN));
         return m;
-    }
-
-    @Override
-    protected void afterPostInit() {
-        if (mutedChatPermission == null) {
-            mutedChatPermission = permissions.getPermissionWithSuffix("seemutedchat");
-        }
     }
 
     @Override

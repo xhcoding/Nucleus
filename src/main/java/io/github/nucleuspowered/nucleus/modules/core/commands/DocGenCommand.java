@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
@@ -26,10 +27,12 @@ import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Intended as a local command.
@@ -41,6 +44,7 @@ import java.util.List;
 @NoDocumentation
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"docgen", "gendocs"}, subcommandOf = NucleusCommand.class)
+@NonnullByDefault
 public class DocGenCommand extends AbstractCommand<CommandSource> {
 
     private final TypeToken<List<CommandDoc>> ttlcd = new TypeToken<List<CommandDoc>>() {};
@@ -80,7 +84,7 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
         // Generate permission file.
         YAMLConfigurationLoader permissionsConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("permissions.yml"))
             .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
-        List<PermissionDoc> lpd = getAndSort(genCache.getPermissionDocs(),  (first, second) -> {
+        List<PermissionDoc> lpd = getAndSort(Lists.newArrayList(genCache.getPermissionDocs()),  (first, second) -> {
                     int m = first.getModule().compareToIgnoreCase(second.getModule());
                     if (m == 0) {
                         return first.getPermission().compareToIgnoreCase(second.getPermission());
@@ -89,11 +93,13 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
                     return m;
                 });
 
-        ConfigurationNode permissionConfigurationNode = SimpleConfigurationNode.root().setValue(ttlpd, lpd);
+        ConfigurationNode permissionConfigurationNode = SimpleConfigurationNode.root()
+                .setValue(ttlpd, lpd.stream().filter(PermissionDoc::isNormal).collect(Collectors.toList()));
         permissionsConfigurationLoader.save(permissionConfigurationNode);
 
         // Markdown
-        new MarkdownGenerator.PermissionMarkdownGenerator().create(plugin.getDataPath().resolve("permissions.md"), lpd);
+        new MarkdownGenerator.PermissionMarkdownGenerator().create(plugin.getDataPath().resolve("permissions.md"),
+                lpd.stream().filter(PermissionDoc::isOre).collect(Collectors.toList()));
 
         YAMLConfigurationLoader tokenConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("tokens.yml"))
             .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();

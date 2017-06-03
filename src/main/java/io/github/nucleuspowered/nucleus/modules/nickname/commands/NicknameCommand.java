@@ -35,6 +35,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Tuple;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,14 +45,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@NonnullByDefault
 @RegisterCommand({"nick", "nickname"})
 @Permissions
 @EssentialsEquivalent(value = {"nick", "nickname"}, isExact = false,
         notes = "To remove a nickname, use '/delnick'")
 public class NicknameCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private UserDataManager loader;
-    @Inject private NicknameConfigAdapter nicknameConfigAdapter;
+    private final UserDataManager loader;
+    private final NicknameConfigAdapter nicknameConfigAdapter;
+
+    @Inject
+    public NicknameCommand(UserDataManager loader, NicknameConfigAdapter nicknameConfigAdapter) {
+        this.loader = loader;
+        this.nicknameConfigAdapter = nicknameConfigAdapter;
+    }
 
     private final String playerKey = "subject";
     private final String nickName = "nickname";
@@ -73,7 +81,8 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
                 Tuple.of(Pattern.compile("[&]+" + key.toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
                     mp.getTextMessageWithFormat("command.nick.colour.nopermswith", value.getName())));
 
-            permissionToDesc.put(colPerm + value.getName(), mp.getMessageWithFormat("permission.nick.colourspec", value.getName().toLowerCase(), key.toString()));
+            permissionToDesc.put(colPerm + value.getName(),
+                    mp.getMessageWithFormat("permission.nick.colourspec", value.getName().toLowerCase(), key.toString()));
             permissionToDesc.put(colPerm2 + value.getName(), mp.getMessageWithFormat("permission.nick.colorspec", value.getName().toLowerCase(), key.toString()));
         });
 
@@ -96,9 +105,11 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
         m.put("others", PermissionInformation.getWithTranslation("permission.nick.others", SuggestedLevel.ADMIN));
-        m.put("colour", PermissionInformation.getWithTranslation("permission.nick.colour", SuggestedLevel.ADMIN));
-        m.put("color", PermissionInformation.getWithTranslation("permission.nick.colour", SuggestedLevel.ADMIN));
+        m.put("colour", PermissionInformation.getWithTranslation("permission.nick.colour", SuggestedLevel.ADMIN, true, false));
+        m.put("color", PermissionInformation.getWithTranslation("permission.nick.color", SuggestedLevel.ADMIN));
+        m.put("color.<color>", PermissionInformation.getWithTranslation("permission.nick.colorsingle", SuggestedLevel.ADMIN, false, true));
         m.put("style", PermissionInformation.getWithTranslation("permission.nick.style", SuggestedLevel.ADMIN));
+        m.put("style.<style>", PermissionInformation.getWithTranslation("permission.nick.stylesingle", SuggestedLevel.ADMIN, false, true));
         m.put("magic", PermissionInformation.getWithTranslation("permission.nick.magic", SuggestedLevel.ADMIN));
         return m;
     }
@@ -106,7 +117,7 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
     @Override
     protected Map<String, PermissionInformation> permissionsToRegister() {
         return permissionToDesc.entrySet().stream().collect(Collectors.toMap(
-            Map.Entry::getKey, v -> new PermissionInformation(v.getValue(), SuggestedLevel.ADMIN)));
+            Map.Entry::getKey, v -> new PermissionInformation(v.getValue(), SuggestedLevel.ADMIN, true, false)));
     }
 
     @Override
@@ -186,7 +197,7 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
     }
 
 
-    private String stripPermissionless(Subject source, String message) throws ReturnMessageException {
+    private void stripPermissionless(Subject source, String message) throws ReturnMessageException {
         if (message.contains("&")) {
             for (Map.Entry<String[], Tuple<Matcher, Text>> r : replacements.entrySet()) {
                 // If we don't have the required permission...
@@ -196,7 +207,5 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
                 }
             }
         }
-
-        return message;
     }
 }

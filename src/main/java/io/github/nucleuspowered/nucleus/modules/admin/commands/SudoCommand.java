@@ -5,6 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -28,6 +31,9 @@ import org.spongepowered.api.text.action.TextActions;
 import java.util.HashMap;
 import java.util.Map;
 
+@NoCooldown
+@NoCost
+@NoWarmup
 @Permissions
 @RegisterCommand("sudo")
 @EssentialsEquivalent("sudo")

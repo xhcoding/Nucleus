@@ -674,9 +674,15 @@ public class NucleusPlugin extends Nucleus {
             Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(this);
             if (opdb.isPresent()) {
                 Map<String, PermissionInformation> m = this.getPermissionRegistry().getPermissions();
-                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN).forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
-                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD).forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
-                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN)
+                        .filter(x -> x.getValue().isNormal)
+                        .forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD)
+                        .filter(x -> x.getValue().isNormal)
+                        .forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
+                m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER)
+                        .filter(x -> x.getValue().isNormal)
+                        .forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
             }
         }
     }

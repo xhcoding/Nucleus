@@ -17,6 +17,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.Transform;
+import org.spongepowered.api.entity.living.ArmorStand;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -41,11 +42,12 @@ public class BlockLivingSpawnListener extends ListenerBase.Reloadable {
     @Listener
     public void onConstruct(ConstructEntityEvent.Pre event, @Getter("getTransform") Transform<World> worldTransform, @Getter("getTargetType") EntityType type) {
         // No, let's not prevent players from spawning...
-        if (Player.class.isAssignableFrom(type.getEntityClass())) {
+        Class<? extends Entity> entityType = type.getEntityClass();
+        if (Player.class.isAssignableFrom(entityType) || ArmorStand.class.isAssignableFrom(entityType)) {
             return;
         }
 
-        if (!isSpawnable(type.getEntityClass(), type, worldTransform.getExtent())) {
+        if (!isSpawnable(entityType, type, worldTransform.getExtent())) {
             event.setCancelled(true);
         }
     }

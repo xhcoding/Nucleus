@@ -4,10 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.inventory.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
@@ -24,9 +22,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 
+@NonnullByDefault
 @Permissions(supportsOthers = true)
 @RegisterCommand({"enderchest", "ec", "echest"})
 @Since(minecraftVersion = "1.10.2", spongeApiVersion = "5.0.0", nucleusVersion = "0.13.0")
@@ -34,8 +34,6 @@ import java.util.Map;
 public class EnderChestCommand extends AbstractCommand<Player> {
 
     private final String player = "subject";
-    @Inject
-    private UserDataManager udm;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
