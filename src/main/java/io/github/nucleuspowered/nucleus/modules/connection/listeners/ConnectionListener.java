@@ -18,58 +18,65 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.service.ban.BanService;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tristate;
 
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class ConnectionListener extends ListenerBase.Reloadable {
 
     private final String joinFullServer = PermissionRegistry.PERMISSIONS_PREFIX + "connection.joinfullserver";
 
-    private ConnectionConfig connectionConfig;
+    private int reservedSlots = 0;
+    @Nullable private Text whitelistMessage;
 
     /**
-     * At the time the player joins if the server is full, check if they are permitted to join a full server.
+     * Perform connection events on when a player is currently not permitted to join.
      *
      * @param event The event.
      */
     @Listener
-    @IsCancelled(Tristate.UNDEFINED)
-    public void onPlayerJoin(ClientConnectionEvent.Login event, @Getter("getTargetUser") User user) {
+    @IsCancelled(Tristate.TRUE)
+    public void onPlayerJoinAndCancelled(ClientConnectionEvent.Login event, @Getter("getTargetUser") User user) {
+        // Don't affect the banned.
+        BanService banService = Sponge.getServiceManager().provideUnchecked(BanService.class);
+        if (banService.isBanned(user.getProfile()) || banService.isBanned(event.getConnection().getAddress().getAddress())) {
+            return;
+        }
+
         if (Sponge.getServer().hasWhitelist()) {
-            if (event.isCancelled()) {
-                connectionConfig.getWhitelistMessage().ifPresent(x -> {
-                    event.setMessage(x);
-                    event.setMessageCancelled(false);
-                });
+            if (this.whitelistMessage != null) {
+                event.setMessage(this.whitelistMessage);
+                event.setMessageCancelled(false);
             }
 
             // Do not continue, whitelist should always apply.
             return;
         }
 
-        if (!(Sponge.getServer().getOnlinePlayers().size() >= Sponge.getServer().getMaxPlayers())) {
-            return;
-        }
+        if (user.hasPermission(this.joinFullServer)) {
 
-        if (user.hasPermission(joinFullServer)) {
-            if (connectionConfig.getReservedSlots() != -1
-                    && Sponge.getServer().getOnlinePlayers().size() - Sponge.getServer().getMaxPlayers() >= connectionConfig.getReservedSlots()) {
-                return;
+            // online >= max, so online - max will always >= 0
+            if (this.reservedSlots == -1 ||
+                    Sponge.getServer().getOnlinePlayers().size() - Sponge.getServer().getMaxPlayers() < this.reservedSlots) {
+                event.setCancelled(false);
             }
-
-            event.setCancelled(false);
         }
     }
 
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
-        mp.put(joinFullServer, PermissionInformation.getWithTranslation("permission.connection.joinfullserver", SuggestedLevel.MOD));
+        mp.put(this.joinFullServer, PermissionInformation.getWithTranslation("permission.connection.joinfullserver", SuggestedLevel.MOD));
         return mp;
     }
 
     @Override public void onReload() throws Exception {
-        connectionConfig = plugin.getConfigAdapter(ConnectionModule.ID, ConnectionConfigAdapter.class).get().getNodeOrDefault();
+        ConnectionConfig connectionConfig = this.plugin.getConfigAdapter(ConnectionModule.ID, ConnectionConfigAdapter.class).get().getNodeOrDefault();
+        this.reservedSlots = connectionConfig.getReservedSlots();
+        this.whitelistMessage = connectionConfig.getWhitelistMessage().orElse(null);
     }
 }
