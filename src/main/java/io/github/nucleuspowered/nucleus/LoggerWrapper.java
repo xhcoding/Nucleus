@@ -17,7 +17,7 @@ import org.slf4j.Marker;
  */
 public class LoggerWrapper implements Logger {
 
-    private final Logger wrappedLogger;
+    protected final Logger wrappedLogger;
 
     public LoggerWrapper(Logger wrappedLogger) {
         this.wrappedLogger = wrappedLogger;
