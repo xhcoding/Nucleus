@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.nucleusdata;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
@@ -15,7 +14,6 @@ import java.util.List;
 /**
  * Represents a kit in Nucleus.
  */
-@Stable
 public interface Kit {
 
     /**

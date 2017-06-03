@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.nucleusdata;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.text.Text;
 
 import java.util.Collection;
@@ -13,7 +12,6 @@ import java.util.Optional;
 /**
  * Defines a warp category.
  */
-@Stable
 public interface WarpCategory {
 
     /**

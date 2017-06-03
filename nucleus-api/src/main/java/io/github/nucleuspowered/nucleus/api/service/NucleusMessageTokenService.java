@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.api.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.exceptions.PluginAlreadyRegisteredException;
 import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
@@ -26,7 +25,6 @@ import javax.annotation.Nullable;
 /**
  * Allows plugins to register their own tokens for use in templated messages, and to obtain {@link NucleusTextTemplate} instances.
  */
-@Stable
 public interface NucleusMessageTokenService {
 
     /**
@@ -136,11 +134,8 @@ public interface NucleusMessageTokenService {
      */
     default Optional<Text> applyToken(String plugin, String token, CommandSource source, Map<String, Object> variables) {
         Optional<TokenParser> tokenFunction = getTokenParser(plugin);
-        if (tokenFunction.isPresent()) {
-            return tokenFunction.get().parse(token, source, variables);
-        }
+        return tokenFunction.flatMap(tokenParser -> tokenParser.parse(token, source, variables));
 
-        return Optional.empty();
     }
 
     /**
@@ -191,45 +186,6 @@ public interface NucleusMessageTokenService {
      * @return The token result, if it exists.
      */
     Optional<Text> parseToken(String token, CommandSource source, @Nullable Map<String, Object> variables);
-
-    /**
-     * Uses Nucleus' parser to format a string that uses Minecraft colour codes.
-     *
-     * @deprecated Use {@link #createFromString(String)} instead to create a {@link NucleusTextTemplate}.
-     *
-     * @param input The input.
-     * @param source The {@link CommandSource} that will view the message.
-     * @return The {@link Text} that represents the output, or {@link Text#EMPTY} if an error is caught.
-     *
-     * @see #createFromString(String)
-     */
-    @Deprecated
-    default Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source) {
-        try {
-            return createFromString(input).getForCommandSource(source, null, null);
-        } catch (NucleusException e) {
-            return Text.EMPTY;
-        }
-    }
-
-    /**
-     * Uses Nucleus' parser to format a string that uses Minecraft colour codes.
-     *
-     * @deprecated Use {@link #createFromString(String)} instead to create a {@link NucleusTextTemplate}.
-     *
-     * @param input The input.
-     * @param source The {@link CommandSource} that will view the message.
-     * @param variables Any variables to be provided to the text.
-     * @return The {@link Text} that represents the output.
-     */
-    @Deprecated
-    default Text formatAmpersandEncodedStringWithTokens(String input, CommandSource source, Map<String, Object> variables) {
-        try {
-            return createFromString(input).getForCommandSource(source, null, variables);
-        } catch (NucleusException e) {
-            return Text.EMPTY;
-        }
-    }
 
     /**
      * Allows users to register additional token delimiter formats. For example, if a token wanted to register {%id%} to run

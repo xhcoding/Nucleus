@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoModuleException;
 import io.github.nucleuspowered.nucleus.api.exceptions.UnremovableModuleException;
 import org.spongepowered.api.event.Event;
@@ -15,7 +14,6 @@ import java.util.Map;
 /**
  * A set of events that fire at various points of the NucleusPlugin lifecycle.
  */
-@Stable
 public interface NucleusModuleEvent extends Event {
 
     /**

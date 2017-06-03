@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.playerinfo.handlers;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.service.NucleusSeenService;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.PlayerInfoModule;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.commands.SeenCommand;
@@ -20,7 +19,6 @@ import java.util.function.BiFunction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Stable
 public class BasicSeenInformationProvider implements NucleusSeenService.SeenInformationProvider {
 
     private final String permission;

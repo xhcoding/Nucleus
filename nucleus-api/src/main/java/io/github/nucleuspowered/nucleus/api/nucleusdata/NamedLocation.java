@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.api.nucleusdata;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -16,7 +15,6 @@ import java.util.Optional;
 /**
  * Represents a location that has a name attached to it.
  */
-@Stable
 public interface NamedLocation {
 
     /**

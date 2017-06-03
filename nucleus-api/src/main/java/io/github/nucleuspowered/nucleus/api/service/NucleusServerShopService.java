@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.api.service;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.item.ItemType;
@@ -18,7 +17,6 @@ import java.util.Optional;
 /**
  * A service to get the current prices of an item.
  */
-@Stable
 @NonnullByDefault
 public interface NucleusServerShopService {
 

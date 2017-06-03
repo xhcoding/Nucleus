@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.user.TargetUserEvent;
 import org.spongepowered.api.text.Text;
@@ -16,7 +15,6 @@ import java.util.Optional;
 /**
  * Called when a {@link User} is jailed or unjailed.
  */
-@Stable
 @NonnullByDefault
 public interface NucleusJailEvent extends TargetUserEvent {
 

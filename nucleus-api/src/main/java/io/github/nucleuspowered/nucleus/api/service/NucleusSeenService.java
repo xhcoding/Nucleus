@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.service;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
@@ -29,7 +28,6 @@ import javax.annotation.Nullable;
  *     require the use of a synchronous API should be used here.
  * </p>
  */
-@Stable
 @NonnullByDefault
 public interface NucleusSeenService {
 
@@ -70,7 +68,6 @@ public interface NucleusSeenService {
      *     This must be registered with the {@link NucleusSeenService}
      * </p>
      */
-    @Stable
     interface SeenInformationProvider {
 
         /**
