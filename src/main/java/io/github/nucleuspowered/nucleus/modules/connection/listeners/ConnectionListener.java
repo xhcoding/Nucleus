@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.modules.connection.config.ConnectionConf
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -38,7 +39,7 @@ public class ConnectionListener extends ListenerBase.Reloadable {
      *
      * @param event The event.
      */
-    @Listener
+    @Listener(order = Order.FIRST)
     @IsCancelled(Tristate.TRUE)
     public void onPlayerJoinAndCancelled(ClientConnectionEvent.Login event, @Getter("getTargetUser") User user) {
         // Don't affect the banned.
@@ -60,7 +61,7 @@ public class ConnectionListener extends ListenerBase.Reloadable {
         if (user.hasPermission(this.joinFullServer)) {
 
             // online >= max, so online - max will always >= 0
-            if (this.reservedSlots == -1 ||
+            if (this.reservedSlots <= -1 ||
                     Sponge.getServer().getOnlinePlayers().size() - Sponge.getServer().getMaxPlayers() < this.reservedSlots) {
                 event.setCancelled(false);
             }
