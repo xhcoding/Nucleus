@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import org.spongepowered.api.entity.living.player.User;
@@ -20,7 +19,6 @@ import java.util.Optional;
 /**
  * Events when a server warp changes.
  */
-@Stable
 public interface NucleusWarpEvent extends Cancellable, CancelMessage, Event {
 
     /**

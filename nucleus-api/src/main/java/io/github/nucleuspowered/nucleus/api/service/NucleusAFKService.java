@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.service;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
@@ -17,7 +16,6 @@ import java.util.Optional;
 /**
  * Allows plugins to see a player's AFK status.
  */
-@Stable
 public interface NucleusAFKService {
 
     /**

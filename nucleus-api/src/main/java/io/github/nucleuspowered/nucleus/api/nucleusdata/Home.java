@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.nucleusdata;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
@@ -14,7 +13,6 @@ import java.util.UUID;
 /**
  * Represents a home in Nucleus.
  */
-@Stable
 public interface Home extends NamedLocation {
 
     /**

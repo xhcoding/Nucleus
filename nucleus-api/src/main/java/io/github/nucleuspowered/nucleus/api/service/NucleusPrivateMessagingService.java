@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.service;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
@@ -21,7 +20,6 @@ import javax.annotation.Nullable;
 /**
  * A service that contains message related APIs.
  */
-@Stable
 public interface NucleusPrivateMessagingService {
 
     /**

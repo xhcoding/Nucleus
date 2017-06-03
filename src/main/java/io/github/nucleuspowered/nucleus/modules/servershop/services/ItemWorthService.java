@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.servershop.services;
 
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusServerShopService;
 import org.spongepowered.api.block.BlockState;
@@ -22,7 +21,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Stable
 @NonnullByDefault
 public class ItemWorthService implements NucleusServerShopService {
 

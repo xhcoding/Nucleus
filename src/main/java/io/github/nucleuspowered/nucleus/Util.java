@@ -92,7 +92,7 @@ public class Util {
 
     public static final Text NOT_EMPTY = Text.of(" ");
 
-    public static final TextTemplate CHAT_TEMPLATE = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
+    private static final TextTemplate CHAT_TEMPLATE = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
             TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
 
     public static final String usernameRegexPattern = "[0-9a-zA-Z_]{3,16}";
@@ -205,13 +205,10 @@ public class Util {
     }
 
     public static Object getObjectFromUUID(UUID uuid) {
-        Optional<User> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
+        Optional<Object> user = Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
                 .get(uuid).map(x -> x.isOnline() ? x.getPlayer().get() : x);
-        if (user.isPresent()) {
-            return user.get();
-        }
+        return user.orElseGet(() -> Sponge.getServer().getConsole());
 
-        return Sponge.getServer().getConsole();
     }
 
     public static String getTimeToNow(Instant time) {
@@ -411,7 +408,8 @@ public class Util {
         }
 
         // BlockState, you're up next!
-        Optional<BlockState> obs = Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst();
+        Optional<? extends CatalogType> obs = Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id))
+                .findFirst();
         if (obs.isPresent()) {
             return Optional.of(obs.get());
         }

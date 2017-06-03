@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.event.Cancellable;
 import org.spongepowered.api.event.user.TargetUserEvent;
 import org.spongepowered.api.text.Text;
@@ -12,7 +11,6 @@ import org.spongepowered.api.text.Text;
 /**
  * Fired when a player requests a nickname.
  */
-@Stable
 public interface NucleusChangeNicknameEvent extends Cancellable, TargetUserEvent {
 
     /**

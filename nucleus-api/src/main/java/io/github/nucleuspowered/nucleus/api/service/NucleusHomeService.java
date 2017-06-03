@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.exceptions.NoSuchPlayerException;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
@@ -26,7 +25,6 @@ import java.util.regex.Pattern;
 /**
  * Provides information about user homes.
  */
-@Stable
 public interface NucleusHomeService {
 
     /**

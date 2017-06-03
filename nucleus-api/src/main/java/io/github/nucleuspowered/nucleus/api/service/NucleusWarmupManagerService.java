@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.service;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.scheduler.Task;
 
 import java.util.UUID;
@@ -12,7 +11,6 @@ import java.util.UUID;
 /**
  * Manages the warmups.
  */
-@Stable
 public interface NucleusWarmupManagerService {
 
     /**

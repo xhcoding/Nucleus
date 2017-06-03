@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.api.nucleusdata;
 
-import io.github.nucleuspowered.nucleus.api.Stable;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
@@ -12,7 +11,6 @@ import java.util.Optional;
 /**
  * Represents a warp.
  */
-@Stable
 public interface Warp extends NamedLocation {
 
     /**

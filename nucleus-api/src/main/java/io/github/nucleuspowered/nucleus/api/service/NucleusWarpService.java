@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.api.service;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.github.nucleuspowered.nucleus.api.Stable;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
 import org.spongepowered.api.text.Text;
@@ -18,7 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -34,7 +32,6 @@ public interface NucleusWarpService {
      * @param warpName The name of the warp to check.
      * @return The {@link Location} of the warp, or {@link Optional#empty()} otherwise.
      */
-    @Stable
     Optional<Warp> getWarp(String warpName);
 
     /**
@@ -62,7 +59,6 @@ public interface NucleusWarpService {
      *
      * @return All warps in Nucleus.
      */
-    @Stable
     List<Warp> getAllWarps();
 
     /**
@@ -70,7 +66,6 @@ public interface NucleusWarpService {
      *
      * @return The {@link Warp}s without a category.
      */
-    @Stable
     List<Warp> getUncategorisedWarps();
 
     /**
@@ -79,41 +74,13 @@ public interface NucleusWarpService {
      * @param category The category.
      * @return The warps.
      */
-    @Stable
     List<Warp> getWarpsForCategory(String category);
 
     /**
      * Gets all warps that have categories.
      *
-     * @deprecated Use {@link #getWarpsWithCategories()} instead.
      * @return The warps.
      */
-    @Stable
-    @Deprecated
-    default Map<String, List<Warp>> getCategorisedWarps() {
-        return getWarpsWithCategories(x -> true).entrySet().stream().collect(Collectors.toMap(k -> k.getKey().getId(), Map.Entry::getValue));
-    }
-
-    /**
-     * Gets all warps that have categories.
-     *
-     * @param warpDataPredicate The filtering predicate to return the subset of warps required.
-     * @return The warps.
-     * @deprecated Use {@link #getWarpsWithCategories()} instead.
-     */
-
-    @Stable
-    @Deprecated
-    default Map<String, List<Warp>> getCategorisedWarps(Predicate<Warp> warpDataPredicate) {
-        return getWarpsWithCategories(warpDataPredicate).entrySet().stream().collect(Collectors.toMap(k -> k.getKey().getId(), Map.Entry::getValue));
-    }
-
-    /**
-     * Gets all warps that have categories.
-     *
-     * @return The warps.
-     */
-    @Stable
     default Map<WarpCategory, List<Warp>> getWarpsWithCategories() {
         return getWarpsWithCategories(x -> true);
     }
@@ -124,7 +91,6 @@ public interface NucleusWarpService {
      * @param warpDataPredicate The filtering predicate to return the subset of warps required.
      * @return The warps.
      */
-    @Stable
     Map<WarpCategory, List<Warp>> getWarpsWithCategories(Predicate<Warp> warpDataPredicate);
 
     /**
@@ -168,7 +134,6 @@ public interface NucleusWarpService {
      *
      * @return A set of warp.
      */
-    @Stable
     Set<String> getWarpNames();
 
     /**
@@ -177,7 +142,6 @@ public interface NucleusWarpService {
      * @param name The name to check for.
      * @return <code>true</code> if it exists, <code>false</code> otherwise.
      */
-    @Stable
     default boolean warpExists(String name) {
         return getWarp(name).isPresent();
     }
