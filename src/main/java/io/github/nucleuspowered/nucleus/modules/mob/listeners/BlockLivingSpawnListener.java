@@ -43,11 +43,7 @@ public class BlockLivingSpawnListener extends ListenerBase.Reloadable {
     public void onConstruct(ConstructEntityEvent.Pre event, @Getter("getTransform") Transform<World> worldTransform, @Getter("getTargetType") EntityType type) {
         // No, let's not prevent players from spawning...
         Class<? extends Entity> entityType = type.getEntityClass();
-        if (Player.class.isAssignableFrom(entityType) || ArmorStand.class.isAssignableFrom(entityType)) {
-            return;
-        }
-
-        if (!isSpawnable(entityType, type, worldTransform.getExtent())) {
+        if (!checkIsValid(entityType) && !isSpawnable(entityType, type, worldTransform.getExtent())) {
             event.setCancelled(true);
         }
     }
@@ -55,16 +51,21 @@ public class BlockLivingSpawnListener extends ListenerBase.Reloadable {
     // Most will be caught by the attempt above, but just in case, this catches them.
     @Listener
     public void onSpawn(SpawnEntityEvent event) {
-        event.filterEntities(x -> isSpawnable(x.getClass(), x.getType(), x.getWorld()));
+        event.filterEntities(x -> {
+            Class<? extends Entity> entityType = x.getClass();
+            return checkIsValid(entityType) || isSpawnable(entityType, x.getType(), event.getTargetWorld());
+        });
+    }
+
+    // Checks to see if the entity is of a type that should spawn regardless
+    private boolean checkIsValid(Class<? extends Entity> entityType) {
+        return !Living.class.isAssignableFrom(entityType) || Player.class.isAssignableFrom(entityType) ||
+                ArmorStand.class.isAssignableFrom(entityType);
     }
 
     private boolean isSpawnable(Class<? extends Entity> classType, EntityType type, World world) {
         if (config == null) {
             config = configAdapter.getNodeOrDefault();
-        }
-
-        if (!Living.class.isAssignableFrom(classType)) {
-            return true;
         }
 
         Optional<BlockSpawnsConfig> bsco = config.getBlockSpawnsConfigForWorld(world);
