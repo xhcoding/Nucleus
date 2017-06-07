@@ -46,7 +46,7 @@ public class AFKHandler implements NucleusAFKService {
     private final Map<UUID, AFKData> data = Maps.newConcurrentMap();
     private final AFKConfigAdapter afkConfigAdapter;
     private final NucleusPlugin plugin;
-    private CommandPermissionHandler afkPermissionHandler;
+    private final CommandPermissionHandler afkPermissionHandler;
     private AFKConfig config;
 
     @GuardedBy("lock")
@@ -65,6 +65,7 @@ public class AFKHandler implements NucleusAFKService {
 
     public AFKHandler(NucleusPlugin plugin, AFKConfigAdapter afkConfigAdapter) {
         this.plugin = plugin;
+        this.afkPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(AFKCommand.class);
         this.afkConfigAdapter = afkConfigAdapter;
         plugin.registerReloadable(this::onReload);
         onReload();
@@ -79,7 +80,7 @@ public class AFKHandler implements NucleusAFKService {
     private void stageUserActivityUpdate(UUID uuid) {
         synchronized (lock) {
             synchronized (lock2) {
-                if (disabledTracking.containsKey(uuid)) {
+                if (this.disabledTracking.containsKey(uuid)) {
                     return;
                 }
             }
@@ -132,7 +133,7 @@ public class AFKHandler implements NucleusAFKService {
                         if (config.isBroadcastOnKick()) {
                             mc = MessageChannel.TO_ALL;
                         } else {
-                            mc = MessageChannel.permission(getPermissionUtil().getPermissionWithSuffix("notify"));
+                            mc = MessageChannel.permission(this.afkPermissionHandler.getPermissionWithSuffix("notify"));
                         }
 
                         mc.send(messageToServer.getForCommandSource(player));
@@ -162,17 +163,19 @@ public class AFKHandler implements NucleusAFKService {
     }
 
     public boolean setAfk(Player player) {
-        return setAfk(player, Cause.of(NamedCause.owner(player)));
+        return setAfk(player, Cause.of(NamedCause.owner(player)), false);
     }
 
-    public boolean setAfk(Player player, Cause cause) {
+    public boolean setAfk(Player player, Cause cause, boolean force) {
         if (!player.isOnline()) {
             return false;
         }
 
         UUID uuid = player.getUniqueId();
         AFKData a = data.compute(uuid, ((u, afkData) -> afkData == null ? new AFKData(u) : afkData));
-        if (a.isKnownAfk) {
+        if (force) {
+            a.isKnownAfk = false;
+        } else if (a.isKnownAfk) {
             return false;
         }
 
@@ -194,19 +197,6 @@ public class AFKHandler implements NucleusAFKService {
 
     private void onReload() {
         config = afkConfigAdapter.getNodeOrDefault();
-    }
-
-    /**
-     * Gets the permission utility from the AFK command.
-     *
-     * @return The permission util.
-     */
-    private CommandPermissionHandler getPermissionUtil() {
-        if (afkPermissionHandler == null) {
-            afkPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(AFKCommand.class);
-        }
-
-        return afkPermissionHandler;
     }
 
     private AFKData updateActivity(UUID uuid, AFKData data) {
@@ -260,7 +250,7 @@ public class AFKHandler implements NucleusAFKService {
         }
 
         if (isAfk) {
-            return setAfk(player, cause);
+            return setAfk(player, cause, false);
         } else {
             return !updateActivity(player.getUniqueId(), data, cause).isKnownAfk;
         }
@@ -364,13 +354,13 @@ public class AFKHandler implements NucleusAFKService {
                 if (!cacheValid) {
                     // Get the subject.
                     Sponge.getServer().getPlayer(uuid).ifPresent(x -> {
-                        if (getPermissionUtil().testSuffix(x, exempttoggle)) {
+                        if (AFKHandler.this.afkPermissionHandler.testSuffix(x, exempttoggle)) {
                             timeToAfk = -1;
                         } else {
                             timeToAfk = Util.getPositiveLongOptionFromSubject(x, afkOption).orElseGet(() -> config.getAfkTime()) * 1000;
                         }
 
-                        if (getPermissionUtil().testSuffix(x, exemptkick)) {
+                        if (AFKHandler.this.afkPermissionHandler.testSuffix(x, exemptkick)) {
                             timeToKick = -1;
                         } else {
                             timeToKick = Util.getPositiveLongOptionFromSubject(x, afkKickOption).orElseGet(() -> config.getAfkTimeToKick()) * 1000;

@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
 import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
@@ -20,9 +19,14 @@ import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 @RegisterCommand({"afk", "away"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
@@ -31,9 +35,15 @@ import java.util.Map;
 @NoCost
 @RunAsync
 @EssentialsEquivalent({"afk", "away"})
+@NonnullByDefault
 public class AFKCommand extends AbstractCommand<Player> {
 
-    @Inject private AFKHandler afkHandler;
+    private final AFKHandler afkHandler;
+
+    @Inject
+    public AFKCommand(AFKHandler afkHandler) {
+        this.afkHandler = afkHandler;
+    }
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -47,15 +57,14 @@ public class AFKCommand extends AbstractCommand<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         if (permissions.testSuffix(src, "exempt.toggle")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.afk.exempt"));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.afk.exempt");
         }
 
         boolean isAFK = afkHandler.isAfk(src);
 
         if (isAFK) {
             afkHandler.stageUserActivityUpdate(src);
-        } else if (!afkHandler.setAfk(src)) {
+        } else if (!afkHandler.setAfk(src, Cause.of(NamedCause.owner(src)), true)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.afk.notset"));
         }
 
