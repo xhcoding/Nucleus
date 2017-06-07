@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
@@ -16,6 +17,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @NonnullByDefault
@@ -36,9 +38,20 @@ public class BlacklistMigrateGpCommand extends AbstractCommand<CommandSource> {
                 .orElseThrow(() -> ReturnMessageException.fromKey("command.blacklist.migrate.permissionabs"));
         SubjectData defaults = service.getDefaults().getSubjectData();
 
-        throw ReturnMessageException.fromKey("command.blacklist.migrate.gp.soon");
+        this.blacklistMigrationHandler.getBlacklistedItemtypes().entrySet().stream().filter(x -> x.getValue().environment() || x.getValue().use())
+                .forEach(x -> {
+            defaults.setPermission(Sets.newHashSet(), "griefprevention.flag.interact-item-secondary." + x.getKey().getId(), Tristate.FALSE);
+            defaults.setPermission(Sets.newHashSet(), "griefprevention.flag.interact-item-primary." + x.getKey().getId(), Tristate.FALSE);
+        });
 
-        //        return CommandResult.success();
+        this.blacklistMigrationHandler.getBlacklistedBlockstates().entrySet().stream().filter(x -> x.getValue().environment() || x.getValue().use())
+                .forEach(x -> {
+            defaults.setPermission(Sets.newHashSet(), "griefprevention.flag.interact-item-secondary." + x.getKey().getId(), Tristate.FALSE);
+            defaults.setPermission(Sets.newHashSet(), "griefprevention.flag.interact-item-primary." + x.getKey().getId(), Tristate.FALSE);
+        });
+
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.blacklist.migrate.gp.done"));
+        return CommandResult.success();
     }
 
 }
