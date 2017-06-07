@@ -4,32 +4,33 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-/**
- * nucleus.firstspawn.set.base
- */
+import javax.inject.Inject;
+
 @RegisterCommand({"setfirstspawn"})
 @Permissions(prefix = "firstspawn", mainOverride = "set")
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RunAsync
+@NonnullByDefault
 public class SetFirstSpawnCommand extends AbstractCommand<Player> {
 
-    @Inject private ModularGeneralService data;
+    private final ModularGeneralService data;
+
+    @Inject
+    public SetFirstSpawnCommand(ModularGeneralService data) {
+        this.data = data;
+    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

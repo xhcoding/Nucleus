@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusSendToSpawnEvent;
@@ -42,6 +41,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 public class JailListener extends ListenerBase.Reloadable {
 

@@ -4,16 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveDoubleArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
@@ -23,19 +20,27 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @RunAsync
-@NoCost
-@NoCooldown
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"cost", "setcost"}, subcommandOf = WarpCommand.class)
 public class SetCostCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private WarpConfigAdapter warpConfigAdapter;
-    @Inject private WarpHandler warpHandler;
+    private final WarpConfigAdapter warpConfigAdapter;
+    private final WarpHandler warpHandler;
     private final String warpKey = "warp";
     private final String costKey = "cost";
+
+    @Inject
+    public SetCostCommand(WarpConfigAdapter warpConfigAdapter, WarpHandler warpHandler) {
+        this.warpConfigAdapter = warpConfigAdapter;
+        this.warpHandler = warpHandler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

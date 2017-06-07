@@ -10,11 +10,9 @@ import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.LocationData;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
@@ -47,9 +45,7 @@ import javax.inject.Inject;
 
 @NonnullByDefault
 @Permissions(suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RegisterCommand({"jail", "unjail", "togglejail"})
 @EssentialsEquivalent({"togglejail", "tjail", "unjail", "jail"})
 public class JailCommand extends AbstractCommand<CommandSource> {

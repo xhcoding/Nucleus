@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.mute.handler;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.Util;
@@ -37,6 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteService {
 

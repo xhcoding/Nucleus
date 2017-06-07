@@ -4,8 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.*;
+import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -15,17 +17,24 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @Permissions
 @RegisterCommand("globalmute")
 public class GlobalMuteCommand extends AbstractCommand<CommandSource> {
 
     private final String on = "turn on";
-    @Inject private MuteHandler muteHandler;
+    private final MuteHandler muteHandler;
+
+    @Inject
+    public GlobalMuteCommand(MuteHandler muteHandler) {
+        this.muteHandler = muteHandler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

@@ -4,11 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -31,6 +29,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -40,16 +39,20 @@ import java.util.Map;
 import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @Permissions(prefix = "spawn", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = "other", subcommandOf = SpawnCommand.class)
 public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
 
     private final String otherKey = "subject";
     private final String worldKey = "world";
-    @Inject private SpawnConfigAdapter sca;
+    private final SpawnConfigAdapter sca;
+
+    @Inject
+    public SpawnOtherCommand(SpawnConfigAdapter sca) {
+        this.sca = sca;
+    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

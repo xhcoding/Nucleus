@@ -5,9 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.blacklist.handler.BlacklistMigrationHandler;
@@ -19,6 +18,8 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @NonnullByDefault
 @Permissions(prefix = "blacklist", mainOverride = "migrate")

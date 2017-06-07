@@ -6,12 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.kit.commands.kit.command;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -30,6 +28,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tuple;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 import java.util.Random;
@@ -37,16 +36,20 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @RunAsync
 @Permissions(prefix = "kit.command", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"edit"}, subcommandOf = KitCommandCommand.class)
 public class KitEditCommandCommand extends AbstractCommand<Player> {
 
     private final String key = "kit";
-    @Inject private KitHandler handler;
+    private final KitHandler handler;
+
+    @Inject
+    public KitEditCommandCommand(KitHandler handler) {
+        this.handler = handler;
+    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

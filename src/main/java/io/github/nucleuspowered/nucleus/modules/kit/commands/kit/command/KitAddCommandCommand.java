@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands.kit.command;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
@@ -21,10 +18,12 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-@NoCooldown
-@NoCost
-@NoWarmup
+import javax.inject.Inject;
+
+@NoModifiers
+@NonnullByDefault
 @RunAsync
 @Permissions(prefix = "kit.command", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"add", "+"}, subcommandOf = KitCommandCommand.class)
@@ -33,7 +32,12 @@ public class KitAddCommandCommand extends AbstractCommand<CommandSource> {
     private final String key = "kit";
     private final String command = "command";
 
-    @Inject private KitHandler handler;
+    private final KitHandler handler;
+
+    @Inject
+    public KitAddCommandCommand(KitHandler handler) {
+        this.handler = handler;
+    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

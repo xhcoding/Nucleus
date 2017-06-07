@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -33,18 +30,25 @@ import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"create"}, subcommandOf = KitCommand.class)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @Since(spongeApiVersion = "5.0", minecraftVersion = "1.10.2", nucleusVersion = "0.13")
 public class KitCreateCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
+    private final KitHandler kitConfig;
 
     private final String name = "name";
+
+    @Inject
+    public KitCreateCommand(KitHandler kitConfig) {
+        this.kitConfig = kitConfig;
+    }
 
     @Override
     public CommandElement[] getArguments() {

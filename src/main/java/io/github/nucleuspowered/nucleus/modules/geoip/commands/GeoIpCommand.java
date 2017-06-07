@@ -4,16 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.geoip.commands;
 
-import com.google.inject.Inject;
 import com.maxmind.geoip2.record.Country;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -24,23 +21,31 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 @RunAsync
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
 @Permissions
 @RegisterCommand("geoip")
+@NonnullByDefault
 public class GeoIpCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private GeoIpDatabaseHandler databaseHandler;
-    @Inject private UserDataManager userDataManager;
+    private final GeoIpDatabaseHandler databaseHandler;
+    private final UserDataManager userDataManager;
 
     private final String playerKey = "subject";
+
+    @Inject
+    public GeoIpCommand(GeoIpDatabaseHandler databaseHandler, UserDataManager userDataManager) {
+        this.databaseHandler = databaseHandler;
+        this.userDataManager = userDataManager;
+    }
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{

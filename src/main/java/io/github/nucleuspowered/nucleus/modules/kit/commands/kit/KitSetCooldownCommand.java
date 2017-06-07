@@ -4,19 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -24,27 +20,28 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 
-/**
- * Sets kit cooldown.
- *
- * Command Usage: /kit set Permission: plugin.kit.set.base
- */
+import javax.inject.Inject;
+
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setcooldown", "setinterval"}, subcommandOf = KitCommand.class)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 public class KitSetCooldownCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
-    @Inject private KitConfigAdapter kca;
+    private final KitHandler kitHandler;
 
     private final String kit = "kit";
     private final String duration = "duration";
+
+    @Inject
+    public KitSetCooldownCommand(KitHandler kitHandler) {
+        this.kitHandler = kitHandler;
+    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -60,7 +57,7 @@ public class KitSetCooldownCommand extends AbstractCommand<CommandSource> {
         long seconds = args.<Long>getOne(duration).get();
 
         kitInfo.kit.setInterval(Duration.ofSeconds(seconds));
-        kitConfig.saveKit(kitInfo.name, kitInfo.kit);
+        kitHandler.saveKit(kitInfo.name, kitInfo.kit);
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.setcooldown.success", kitInfo.name, Util.getTimeStringFromSeconds(seconds)));
         return CommandResult.success();
     }

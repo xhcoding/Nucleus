@@ -4,10 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
@@ -19,6 +18,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
 
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("firstspawn")

@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
@@ -24,16 +21,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-/**
- * Toggles whether powetools will activate for this user.
- *
- * Permission: plugin.powertool.base (uses the base permission)
- */
+import javax.inject.Inject;
+
 @Permissions(mainOverride = "powertool")
 @RunAsync
-@NoCooldown
-@NoWarmup
-@NoCost
+@NoModifiers
 @RegisterCommand(value = {"toggle"}, subcommandOf = PowertoolCommand.class)
 @NonnullByDefault
 @EssentialsEquivalent({"powertooltoggle", "ptt", "pttoggle"})

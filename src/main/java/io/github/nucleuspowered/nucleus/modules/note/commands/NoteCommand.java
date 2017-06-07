@@ -4,18 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.note.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.note.data.NoteData;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
@@ -28,25 +24,31 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"note", "addnote"})
 public class NoteCommand extends AbstractCommand<CommandSource> {
-    public static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "note.notify";
+    private static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "note.notify";
 
     private final String playerKey = "subject";
     private final String noteKey = "note";
 
-    @Inject private NoteHandler noteHandler;
-    @Inject private NoteConfigAdapter nca;
+    private final NoteHandler noteHandler;
+
+    @Inject
+    public NoteCommand(NoteHandler noteHandler) {
+        this.noteHandler = noteHandler;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {

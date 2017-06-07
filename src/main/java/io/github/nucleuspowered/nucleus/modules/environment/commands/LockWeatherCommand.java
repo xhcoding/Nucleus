@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.environment.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.environment.datamodule.EnvironmentWorldDataModule;
 import org.spongepowered.api.command.CommandResult;
@@ -21,27 +18,29 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Optional;
 
-/**
- * Locks (or unlocks) the weather.
- *
- * Permission: plugin.lockweather.base
- */
+import javax.inject.Inject;
+
 @Permissions
 @RunAsync
 @RegisterCommand({ "lockweather", "killweather" })
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 public class LockWeatherCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private WorldDataManager loader;
+    private final WorldDataManager loader;
 
     private final String worldKey = "world";
     private final String toggleKey = "toggle";
+
+    @Inject
+    public LockWeatherCommand(WorldDataManager loader) {
+        this.loader = loader;
+    }
 
     @Override
     public CommandElement[] getArguments() {

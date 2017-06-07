@@ -7,12 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.warp.commands;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -24,22 +22,27 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("ALL")
 @RunAsync
-@NoCost
-@NoCooldown
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"setdescription"}, subcommandOf = WarpCommand.class)
 public class SetDescriptionCommand extends AbstractCommand<CommandSource> {
 
     private final String warpKey = "warp";
     private final String descriptionKey = "description";
-    @Inject private WarpConfigAdapter warpConfigAdapter;
-    @Inject private WarpHandler handler;
+    private final WarpConfigAdapter warpConfigAdapter;
+    private final WarpHandler handler;
+
+    @Inject
+    public SetDescriptionCommand(WarpConfigAdapter warpConfigAdapter, WarpHandler handler) {
+        this.warpConfigAdapter = warpConfigAdapter;
+        this.handler = handler;
+    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

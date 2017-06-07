@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.message;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
@@ -18,6 +17,8 @@ import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 @ModuleData(id = MessageModule.ID, name = "Message")
 public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {

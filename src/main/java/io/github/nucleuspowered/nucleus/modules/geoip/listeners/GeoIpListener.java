@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.geoip.listeners;
 
-import com.google.inject.Inject;
 import com.maxmind.geoip2.record.Country;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
@@ -25,6 +24,8 @@ import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import javax.inject.Inject;
 
 @ConditionalListener(GeoIpListener.Condition.class)
 public class GeoIpListener extends ListenerBase {

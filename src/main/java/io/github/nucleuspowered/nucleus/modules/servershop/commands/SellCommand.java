@@ -7,13 +7,11 @@ package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
@@ -25,24 +23,29 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("ALL")
 @RunAsync
-@NoCost
-@NoCooldown
-@NoWarmup
+@NoModifiers
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itemsell", "sell"})
 @EssentialsEquivalent("sell")
+@NonnullByDefault
 public class SellCommand extends AbstractCommand<Player> {
 
-    @Inject private ItemDataService itemDataService;
-    @Inject private EconHelper econHelper;
+    private final ItemDataService itemDataService;
+    private final EconHelper econHelper;
+
+    @Inject
+    public SellCommand(ItemDataService itemDataService, EconHelper econHelper) {
+        this.itemDataService = itemDataService;
+        this.econHelper = econHelper;
+    }
 
     @Override
     public CommandResult executeCommand(final Player src, CommandContext args) throws Exception {

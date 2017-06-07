@@ -16,10 +16,11 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.weather.Weather;
 import org.spongepowered.api.world.weather.Weathers;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 public class WeatherArgument extends CommandElement {
 

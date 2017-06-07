@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
@@ -12,6 +11,8 @@ import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
+
+import javax.inject.Inject;
 
 @ModuleData(id = KitModule.ID, name = "Kit")
 public class KitModule extends ConfigurableModule<KitConfigAdapter> {

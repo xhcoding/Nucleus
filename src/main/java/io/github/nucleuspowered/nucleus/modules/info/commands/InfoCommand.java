@@ -5,16 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.info.commands;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.InfoArgument;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
@@ -34,6 +31,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -43,20 +41,29 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"info", "einfo"})
 @EssentialsEquivalent({"info", "ifo", "news", "about", "inform"})
 public class InfoCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private InfoHandler infoHandler;
-    @Inject private TextParsingUtils textParsingUtils;
-    @Inject private InfoConfigAdapter infoConfigAdapter;
+    private final InfoHandler infoHandler;
+    private final TextParsingUtils textParsingUtils;
+    private final InfoConfigAdapter infoConfigAdapter;
 
     private final String key = "section";
+
+    @Inject
+    public InfoCommand(InfoHandler infoHandler, TextParsingUtils textParsingUtils,
+            InfoConfigAdapter infoConfigAdapter) {
+        this.infoHandler = infoHandler;
+        this.textParsingUtils = textParsingUtils;
+        this.infoConfigAdapter = infoConfigAdapter;
+    }
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> map = new HashMap<>();

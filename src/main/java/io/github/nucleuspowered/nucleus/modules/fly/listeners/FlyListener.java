@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fly.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
@@ -30,6 +29,8 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.World;
 
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 public class FlyListener extends ListenerBase {
 

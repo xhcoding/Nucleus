@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.mute.listeners;
 
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
@@ -40,6 +39,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 public class MuteListener extends ListenerBase {
 

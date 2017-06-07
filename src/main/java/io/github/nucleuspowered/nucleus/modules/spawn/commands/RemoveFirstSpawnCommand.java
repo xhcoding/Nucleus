@@ -4,32 +4,36 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.spawn.datamodules.SpawnGeneralDataModule;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 /**
  * plugin.firstspawn.remove.base
  */
 @RegisterCommand(value = {"del", "rm"}, subcommandOf = SetFirstSpawnCommand.class)
 @Permissions(prefix = "firstspawn", mainOverride = "remove")
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RunAsync
+@NonnullByDefault
 public class RemoveFirstSpawnCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private ModularGeneralService data;
+    private final ModularGeneralService data;
+
+    @Inject
+    public RemoveFirstSpawnCommand(ModularGeneralService data) {
+        this.data = data;
+    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

@@ -5,17 +5,14 @@
 package io.github.nucleuspowered.nucleus.modules.warp.commands;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarpCategoryArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Scan;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -26,6 +23,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -33,9 +31,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 @Scan
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"category"}, subcommandOf = WarpCommand.class, hasExecutor = false)
+@NonnullByDefault
 public class CategoryCommand extends AbstractCommand<CommandSource> {
 
     private static final String key = "category";
@@ -43,18 +44,21 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
     private static final String description = "displayname";
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        return null;
+        return CommandResult.empty();
     }
 
     @Permissions(prefix = "warp.category", mainOverride = "list")
     @RunAsync
-    @NoCooldown
-    @NoCost
-    @NoWarmup
+    @NoModifiers
     @RegisterCommand(value = {"list"}, subcommandOf = CategoryCommand.class)
     public static class ListCategoryCommand extends AbstractCommand<CommandSource> {
 
-        @Inject private WarpHandler handler;
+        private final WarpHandler handler;
+
+        @Inject
+        public ListCategoryCommand(WarpHandler handler) {
+            this.handler = handler;
+        }
 
         @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
             // Get all the categories.
@@ -78,13 +82,16 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
 
     @Permissions(prefix = "warp.category", mainOverride = "displayname")
     @RunAsync
-    @NoCooldown
-    @NoCost
-    @NoWarmup
+    @NoModifiers
     @RegisterCommand(value = {"setdisplayname"}, subcommandOf = CategoryCommand.class)
     public static class CategoryDisplayNameCommand extends AbstractCommand<CommandSource> {
 
-        @Inject private WarpHandler handler;
+        private final WarpHandler handler;
+
+        @NonnullByDefault
+        public CategoryDisplayNameCommand(WarpHandler handler) {
+            this.handler = handler;
+        }
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {
@@ -105,13 +112,16 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
 
     @Permissions(prefix = "warp.category", mainOverride = "displayname")
     @RunAsync
-    @NoCooldown
-    @NoCost
-    @NoWarmup
+    @NoModifiers
     @RegisterCommand(value = {"removedisplayname"}, subcommandOf = CategoryCommand.class)
     public static class CategoryRemoveDisplayNameCommand extends AbstractCommand<CommandSource> {
 
-        @Inject private WarpHandler handler;
+        private final WarpHandler handler;
+
+        @Inject
+        public CategoryRemoveDisplayNameCommand(WarpHandler handler) {
+            this.handler = handler;
+        }
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {
@@ -129,13 +139,16 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
 
     @Permissions(prefix = "warp.category", mainOverride = "description")
     @RunAsync
-    @NoCooldown
-    @NoCost
-    @NoWarmup
+    @NoModifiers
     @RegisterCommand(value = {"setdescription"}, subcommandOf = CategoryCommand.class)
     public static class CategoryDescriptionCommand extends AbstractCommand<CommandSource> {
 
-        @Inject private WarpHandler handler;
+        private final WarpHandler handler;
+
+        @Inject
+        public CategoryDescriptionCommand(WarpHandler handler) {
+            this.handler = handler;
+        }
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {
@@ -155,13 +168,16 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
 
     @Permissions(prefix = "warp.category", mainOverride = "description")
     @RunAsync
-    @NoCooldown
-    @NoCost
-    @NoWarmup
+    @NoModifiers
     @RegisterCommand(value = {"removedescription"}, subcommandOf = CategoryCommand.class)
     public static class CategoryRemoveDescriptionCommand extends AbstractCommand<CommandSource> {
 
-        @Inject private WarpHandler handler;
+        private final WarpHandler handler;
+
+        @Inject
+        public CategoryRemoveDescriptionCommand(WarpHandler handler) {
+            this.handler = handler;
+        }
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {

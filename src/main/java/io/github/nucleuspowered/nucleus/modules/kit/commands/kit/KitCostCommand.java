@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
@@ -22,6 +19,9 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 /**
  * Sets kit cost.
@@ -31,16 +31,21 @@ import org.spongepowered.api.text.Text;
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"cost", "setcost"}, subcommandOf = KitCommand.class)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 public class KitCostCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private KitHandler kitConfig;
-    @Inject private KitConfigAdapter kca;
+    private final KitHandler kitConfig;
+    private final KitConfigAdapter kca;
 
     private final String costKey = "cost";
     private final String kitKey = "kit";
+
+    @Inject
+    public KitCostCommand(KitHandler kitConfig, KitConfigAdapter kca) {
+        this.kitConfig = kitConfig;
+        this.kca = kca;
+    }
 
     @Override
     public CommandElement[] getArguments() {

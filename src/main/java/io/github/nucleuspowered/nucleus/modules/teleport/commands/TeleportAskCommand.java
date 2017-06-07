@@ -8,10 +8,10 @@ import io.github.nucleuspowered.nucleus.argumentparsers.AlertOnAfkArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ContinueMode;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
@@ -30,6 +30,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -41,17 +42,22 @@ import javax.inject.Inject;
 /**
  * Sends a request to a subject to teleport to them, using click handlers.
  */
-@SuppressWarnings("ALL")
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER, supportsSelectors = true)
 @NoWarmup(generateConfigEntry = true, generatePermissionDocs = true)
 @RegisterCommand({"tpa", "teleportask", "call", "tpask"})
 @RunAsync
+@NonnullByDefault
 @EssentialsEquivalent({"tpa", "call", "tpask"})
 public class TeleportAskCommand extends StandardAbstractCommand<Player> {
 
-    @Inject private TeleportHandler tpHandler;
+    private final TeleportHandler tpHandler;
 
-    static final String playerKey = "subject";
+    private static final String playerKey = "subject";
+
+    @Inject
+    public TeleportAskCommand(TeleportHandler tpHandler) {
+        this.tpHandler = tpHandler;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

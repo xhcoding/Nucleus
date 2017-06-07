@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.runnables;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
@@ -13,6 +12,8 @@ import org.spongepowered.api.scheduler.Task;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+
+import javax.inject.Inject;
 
 /**
  * Core tasks. No module, must always run.

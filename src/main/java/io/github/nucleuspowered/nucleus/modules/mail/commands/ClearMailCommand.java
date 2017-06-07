@@ -4,33 +4,33 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-/**
- * Permission is "quickstart.mail.base", because a player should always be able
- * to clear mail if they can read it.
- */
+import javax.inject.Inject;
+
 @Permissions(mainOverride = "mail", suggestedLevel = SuggestedLevel.USER)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RunAsync
 @RegisterCommand(value = "clear", subcommandOf = MailCommand.class)
+@NonnullByDefault
 public class ClearMailCommand extends AbstractCommand<Player> {
 
-    @Inject private MailHandler handler;
+    private final MailHandler handler;
+
+    @Inject
+    public ClearMailCommand(MailHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
@@ -39,6 +39,7 @@ public class ClearMailCommand extends AbstractCommand<Player> {
         } else {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mail.clear.nomail"));
         }
+
         return CommandResult.success();
     }
 }

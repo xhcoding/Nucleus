@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chatlogger.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
@@ -22,6 +21,8 @@ import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
 import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.function.Predicate;
+
+import javax.inject.Inject;
 
 @ConditionalListener(ChatLoggingListener.Condition.class)
 public class ChatLoggingListener extends ListenerBase {

@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.warn.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warning;
@@ -31,6 +30,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 public class WarnHandler implements NucleusWarningService {
 

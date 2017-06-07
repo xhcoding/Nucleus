@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -26,6 +23,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -33,16 +31,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@NoCooldown
-@NoCost
-@NoWarmup
+import javax.inject.Inject;
+
+@NoModifiers
+@NonnullByDefault
 @RunAsync
 @RegisterCommand(value = "jails")
 @Permissions(prefix = "jail", mainOverride = "list", suggestedLevel = SuggestedLevel.MOD)
 @EssentialsEquivalent("jails")
 public class JailsCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private JailHandler handler;
+    private final JailHandler handler;
+
+    @Inject
+    public JailsCommand(JailHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

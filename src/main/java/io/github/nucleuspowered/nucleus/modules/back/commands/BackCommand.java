@@ -5,9 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.back.commands;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
@@ -24,6 +23,8 @@ import org.spongepowered.api.world.World;
 
 import java.util.Map;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 @Permissions
 @RegisterCommand({"back", "return"})

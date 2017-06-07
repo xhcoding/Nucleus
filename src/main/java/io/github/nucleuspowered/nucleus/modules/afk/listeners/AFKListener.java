@@ -4,9 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.entity.living.player.Player;
@@ -23,6 +22,8 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 public class AFKListener extends ListenerBase {
 

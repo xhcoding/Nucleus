@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
@@ -27,6 +24,7 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -38,6 +36,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 /**
  * Checks the warnings of a subject.
  *
@@ -45,14 +45,18 @@ import java.util.stream.Collectors;
  */
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"checkwarnings", "checkwarn", "warnings"})
 public class CheckWarningsCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private WarnHandler handler;
+    private final WarnHandler handler;
     private final String playerKey = "subject";
+
+    @Inject
+    public CheckWarningsCommand(WarnHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

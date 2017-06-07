@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.blacklist.commands;
 
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -18,6 +18,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 public class BlacklistMigrateCommand extends AbstractCommand<CommandSource> {
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        return null;
+        return CommandResult.empty();
     }
 }

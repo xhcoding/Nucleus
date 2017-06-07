@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.world;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.LoggerWrapper;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.gen.EnhancedGeneration;
@@ -20,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 public class WorldHelper {
 

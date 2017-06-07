@@ -4,10 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chatlogger.handlers;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.logging.AbstractLoggingHandler;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
+
+import javax.inject.Inject;
 
 public class ChatLoggerHandler extends AbstractLoggingHandler {
 

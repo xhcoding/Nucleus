@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -32,6 +29,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -40,10 +38,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"warn", "warning", "addwarning"})
 public class WarnCommand extends AbstractCommand<CommandSource> {
 
@@ -51,8 +50,14 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
 
-    @Inject private WarnHandler warnHandler;
-    @Inject private WarnConfigAdapter wca;
+    private final WarnHandler warnHandler;
+    private final WarnConfigAdapter wca;
+
+    @Inject
+    public WarnCommand(WarnHandler warnHandler, WarnConfigAdapter wca) {
+        this.warnHandler = warnHandler;
+        this.wca = wca;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

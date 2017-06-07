@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
@@ -27,28 +24,35 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 @Permissions(prefix = "jail", suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"checkjail"})
 public class CheckJailCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "user/UUID";
-    @Inject private JailHandler handler;
+    private final JailHandler handler;
+
+    @Inject
+    public CheckJailCommand(JailHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.firstParsing(
                 GenericArguments.user(Text.of(playerKey)),
-                new UUIDArgument<>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
+                new UUIDArgument<User>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
             )
         };
     }

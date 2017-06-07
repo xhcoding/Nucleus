@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.WarningArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
@@ -25,20 +22,26 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RegisterCommand({"removewarning", "deletewarning", "delwarn"})
+@NonnullByDefault
 public class RemoveWarningCommand extends AbstractCommand<CommandSource> {
 
-    @Inject
-    private WarnHandler handler;
+    private final WarnHandler handler;
     private final String warningKey = "warning";
+
+    @Inject
+    public RemoveWarningCommand(WarnHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

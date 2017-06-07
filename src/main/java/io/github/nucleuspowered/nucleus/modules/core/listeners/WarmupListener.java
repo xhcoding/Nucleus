@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -17,6 +16,8 @@ import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+
+import javax.inject.Inject;
 
 public class WarmupListener extends ListenerBase {
 

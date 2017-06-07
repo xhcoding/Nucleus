@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.freezeplayer.listeners;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.freezeplayer.datamodules.FreezePlayerUserDataModule;
@@ -20,6 +19,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 public class FreezePlayerListener extends ListenerBase {
 

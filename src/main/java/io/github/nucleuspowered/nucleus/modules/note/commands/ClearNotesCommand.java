@@ -4,13 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.note.commands;
 
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.data.NoteData;
@@ -22,19 +19,26 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"clearnotes", "removeallnotes"})
 public class ClearNotesCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private NoteHandler handler;
+    private final NoteHandler handler;
     private final String playerKey = "subject";
+
+    @Inject
+    public ClearNotesCommand(NoteHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

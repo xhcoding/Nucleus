@@ -2,7 +2,7 @@
  * This file is part of Nucleus, licensed under the MIT License (MIT). See the LICENSE.txt file
  * at the root of this project for more details.
  */
-package io.github.nucleuspowered.nucleus.internal.annotations;
+package io.github.nucleuspowered.nucleus.internal.annotations.command;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,11 +11,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * If the Guice injector is unable to create an instance of a class with this annotation, then NucleusPlugin and QSML
- * will not fail to load a module.
+ * Instructs Nucleus to scan the class for inner classes that might be registerable.
  */
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 @Documented
-public @interface SkipOnError {
-}
+public @interface Scan {}

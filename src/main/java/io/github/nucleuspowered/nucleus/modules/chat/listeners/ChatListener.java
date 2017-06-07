@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -41,6 +40,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+import javax.inject.Inject;
 
 /**
  * A listener that modifies all chat messages. Uses the

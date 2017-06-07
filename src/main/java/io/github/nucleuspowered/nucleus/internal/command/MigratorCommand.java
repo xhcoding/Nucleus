@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.internal.command;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.migrators.DataMigrator;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -27,9 +25,7 @@ import java.util.Arrays;
  *
  * @param <M> The {@link DataMigrator} the command represents.
  */
-@NoCost
-@NoCooldown
-@NoWarmup
+@NoModifiers
 @RunAsync
 public abstract class MigratorCommand<M extends DataMigrator> extends AbstractCommand<CommandSource> {
 

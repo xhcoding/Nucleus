@@ -23,7 +23,8 @@ public class BlacklistModule extends StandardModule {
                 + "GriefPrevention that can block these items.");
         plugin.getLogger().warn("A migrator for those of you that use ProtectionPerms has been provided, run `/blacklist migrate pp` to "
                 + "attempt to migrate.");
-        plugin.getLogger().warn("A migrator for those of you that use GriefPrevention will be provided soon.");
+        plugin.getLogger().warn("A migrator for those of you that use GriefPrevention has been provided, run `/blacklist migrate gp` to "
+                + "attempt to migrate.");
         plugin.getLogger().warn("-----------------------------------");
 
         BlacklistMigrationHandler bmh = new BlacklistMigrationHandler();

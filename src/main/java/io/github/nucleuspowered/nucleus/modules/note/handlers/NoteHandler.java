@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.note.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Note;
@@ -22,6 +21,8 @@ import org.spongepowered.api.entity.living.player.User;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 public class NoteHandler implements NucleusNoteService {
 

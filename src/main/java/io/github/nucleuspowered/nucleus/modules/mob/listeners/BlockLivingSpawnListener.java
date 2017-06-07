@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mob.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
@@ -32,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import javax.inject.Inject;
 
 @ConditionalListener(BlockLivingSpawnListener.Condition.class)
 public class BlockLivingSpawnListener extends ListenerBase.Reloadable {

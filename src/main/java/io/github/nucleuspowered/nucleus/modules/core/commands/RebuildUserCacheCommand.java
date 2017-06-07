@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
@@ -18,9 +16,7 @@ import org.spongepowered.api.command.args.CommandContext;
 
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RunAsync
-@NoCooldown
-@NoWarmup
-@NoCost
+@NoModifiers
 @RegisterCommand(value = "rebuildusercache", subcommandOf = NucleusCommand.class)
 public class RebuildUserCacheCommand extends AbstractCommand<CommandSource> {
 

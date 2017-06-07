@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
@@ -40,6 +39,8 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 public class SpawnListener extends ListenerBase.Reloadable {
 

@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.world.commands.border;
 
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
 import org.spongepowered.api.command.CommandResult;
@@ -18,22 +16,25 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("ALL")
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @Permissions(prefix = "world.border", mainOverride = "gen")
 @RegisterCommand(value = "cancelgen", subcommandOf = BorderCommand.class)
 public class CancelChunkGenCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
 
+    private final WorldHelper worldHelper;
+
     @Inject
-    private WorldHelper worldHelper;
+    public CancelChunkGenCommand(WorldHelper worldHelper) {
+        this.worldHelper = worldHelper;
+    }
 
     @Override
     public CommandElement[] getArguments() {

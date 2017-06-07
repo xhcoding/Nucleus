@@ -20,17 +20,18 @@ import io.github.nucleuspowered.nucleus.argumentparsers.util.NucleusProcessing;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCommandPrefix;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoHelpSubcommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoTimings;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.ConfigCommandAlias;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCommandPrefix;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoHelpSubcommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoTimings;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
@@ -220,21 +221,24 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         // For warmup, cooldown and cost exemption, replace base with:
         //
         // exempt.(cooldown|warmup|cost)
-        //
-        // By default, the permission "nucleus.admin" also gets permission to
-        // run and bypass all warmups, cooldowns and costs, but this can be
-        // turned off in the annotation.
         this.permissions = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(this.getClass());
 
-        // For these flags, we simply need to get whether the annotation was
-        // declared. If they were not, we simply get back
-        // a null - so the check is based around that.
-        NoWarmup w = this.getClass().getAnnotation(NoWarmup.class);
-        this.bypassWarmup = w != null;
-        this.generateWarmupAnyway = !this.bypassWarmup || w.generateConfigEntry();
+        if (this.getClass().isAnnotationPresent(NoModifiers.class)) {
+            this.bypassWarmup = true;
+            this.generateWarmupAnyway = false;
+            this.bypassCooldown = true;
+            this.bypassCost = true;
+        } else {
+            // For these flags, we simply need to get whether the annotation was
+            // declared. If they were not, we simply get back
+            // a null - so the check is based around that.
+            NoWarmup w = this.getClass().getAnnotation(NoWarmup.class);
+            this.bypassWarmup = w != null;
+            this.generateWarmupAnyway = !this.bypassWarmup || w.generateConfigEntry();
 
-        this.bypassCooldown = this.getClass().getAnnotation(NoCooldown.class) != null;
-        this.bypassCost = this.getClass().getAnnotation(NoCost.class) != null;
+            this.bypassCooldown = this.getClass().getAnnotation(NoCooldown.class) != null;
+            this.bypassCost = this.getClass().getAnnotation(NoCost.class) != null;
+        }
 
         ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
         String configSect;

@@ -4,7 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.back.listeners;
 
-import com.google.inject.Inject;
+import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.api.NucleusAPI;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -19,6 +20,9 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.type.Exclude;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
 public class BackListeners extends ListenerBase {
 
     public static final String onTeleport = "targets.teleport";
@@ -27,29 +31,21 @@ public class BackListeners extends ListenerBase {
 
     @Inject private BackHandler handler;
     @Inject private BackConfigAdapter bca;
-    @Inject(optional = true) private NucleusJailService njs;
+    @Nullable private final NucleusJailService njs = NucleusAPI.getJailService().orElse(null);
 
-    private CommandPermissionHandler s = null;
-
-    private CommandPermissionHandler getPermissionUtil() {
-        if (s == null) {
-            s = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(BackCommand.class);
-        }
-
-        return s;
-    }
+    private CommandPermissionHandler s = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(BackCommand.class);
 
     @Listener
     @Exclude(MoveEntityEvent.Teleport.Portal.class) // Don't set /back on a portal.
     public void onTeleportPlayer(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player pl) {
-        if (bca.getNodeOrDefault().isOnTeleport() && getLogBack(pl) && getPermissionUtil().testSuffix(pl, onTeleport)) {
+        if (bca.getNodeOrDefault().isOnTeleport() && getLogBack(pl) && s.testSuffix(pl, onTeleport)) {
             handler.setLastLocation(pl, event.getFromTransform());
         }
     }
 
     @Listener
     public void onPortalPlayer(MoveEntityEvent.Teleport.Portal event, @Getter("getTargetEntity") Player pl) {
-        if (bca.getNodeOrDefault().isOnPortal() && getLogBack(pl) && getPermissionUtil().testSuffix(pl, onPortal)) {
+        if (bca.getNodeOrDefault().isOnPortal() && getLogBack(pl) && s.testSuffix(pl, onPortal)) {
             handler.setLastLocation(pl, event.getFromTransform());
         }
     }
@@ -62,7 +58,7 @@ public class BackListeners extends ListenerBase {
         }
 
         Player pl = (Player)e;
-        if (bca.getNodeOrDefault().isOnDeath() && getLogBack(pl) && getPermissionUtil().testSuffix(pl, onDeath)) {
+        if (bca.getNodeOrDefault().isOnDeath() && getLogBack(pl) && s.testSuffix(pl, onDeath)) {
             handler.setLastLocation(pl, event.getTargetEntity().getTransform());
         }
     }
