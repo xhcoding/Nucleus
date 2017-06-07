@@ -5,19 +5,16 @@
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.CatalogType;
@@ -27,28 +24,36 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import javax.inject.Inject;
+
 /**
  * Sets or unsets an item's worth for either buying or selling.
  */
 @RunAsync
-@NoCost
-@NoCooldown
-@NoWarmup
+@NoModifiers
 @Permissions
 @RegisterCommand({"setworth", "setitemworth"})
-@EssentialsEquivalent("setworth ")
+@EssentialsEquivalent("setworth")
+@NonnullByDefault
 public class SetWorthCommand extends AbstractCommand<CommandSource> {
 
     private final String item = "item";
     private final String type = "type";
     private final String cost = "cost";
-    @Inject private ItemDataService itemDataService;
-    @Inject private EconHelper econHelper;
+    private final ItemDataService itemDataService;
+    private final EconHelper econHelper;
+
+    @Inject
+    public SetWorthCommand(ItemDataService itemDataService, EconHelper econHelper) {
+        this.itemDataService = itemDataService;
+        this.econHelper = econHelper;
+    }
 
     @Override
     public CommandElement[] getArguments() {

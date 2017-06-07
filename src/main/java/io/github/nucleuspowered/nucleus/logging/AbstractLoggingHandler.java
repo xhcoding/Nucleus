@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.logging;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
@@ -19,6 +18,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 public abstract class AbstractLoggingHandler {
 

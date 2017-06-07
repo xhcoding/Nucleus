@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.runnables;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
@@ -19,6 +18,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 /**
  * Temporary solution until we can check for feeding levels to drop.

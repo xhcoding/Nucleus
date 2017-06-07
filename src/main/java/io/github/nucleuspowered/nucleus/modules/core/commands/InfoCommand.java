@@ -7,12 +7,10 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.PluginInfo;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.Platform;
@@ -38,9 +36,7 @@ import java.util.Set;
 
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RegisterCommand(value = "info", subcommandOf = NucleusCommand.class)
 public class InfoCommand extends AbstractCommand<CommandSource> {
 

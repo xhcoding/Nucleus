@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
@@ -41,6 +40,8 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 public class CoreListener extends ListenerBase {
 

@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.warn;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarningService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.warn.commands.CheckWarningsCommand;
@@ -16,6 +15,8 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
+
+import javax.inject.Inject;
 
 @ModuleData(id = "warn", name = "Warn")
 public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {

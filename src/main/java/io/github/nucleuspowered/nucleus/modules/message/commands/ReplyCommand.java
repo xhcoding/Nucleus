@@ -4,14 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.AlertOnAfkArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.util.NucleusProcessing;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConfigCommandAlias;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoHelpSubcommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.ConfigCommandAlias;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoHelpSubcommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -24,6 +23,8 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+
+import javax.inject.Inject;
 
 /**
  * Replies to the last player who sent a message.

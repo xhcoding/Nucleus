@@ -6,8 +6,8 @@ package io.github.nucleuspowered.nucleus.tests;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.NucleusCommandException;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;

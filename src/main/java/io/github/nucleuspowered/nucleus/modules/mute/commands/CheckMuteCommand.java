@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
@@ -31,22 +28,22 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.time.Instant;
 import java.util.Optional;
 
-/**
- * Checks the mute status of a subject.
- *
- * Command Usage: /checkmute user Permission: quickstart.checkmute.base
- */
+import javax.inject.Inject;
+
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RegisterCommand("checkmute")
 @NonnullByDefault
 public class CheckMuteCommand extends AbstractCommand<CommandSource> {
 
-    @SuppressWarnings("NullableProblems") @Inject private MuteHandler handler;
+    private final MuteHandler handler;
     private final String playerKey = "user/UUID";
+
+    @Inject
+    public CheckMuteCommand(MuteHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

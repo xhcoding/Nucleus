@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.home.handlers;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
@@ -31,6 +30,8 @@ import org.spongepowered.api.world.World;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 public class HomeHandler implements NucleusHomeService {
 

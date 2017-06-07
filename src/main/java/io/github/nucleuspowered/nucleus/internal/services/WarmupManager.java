@@ -10,11 +10,12 @@ import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 
-import javax.annotation.concurrent.GuardedBy;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import javax.annotation.concurrent.GuardedBy;
 
 public class WarmupManager implements NucleusWarmupManagerService {
 

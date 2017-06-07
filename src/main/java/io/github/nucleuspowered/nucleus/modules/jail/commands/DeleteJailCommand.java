@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.internal.LocationData;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
@@ -22,18 +19,25 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @Permissions(prefix = "jail")
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RegisterCommand(value = {"delete", "del", "remove"}, subcommandOf = JailsCommand.class)
 @EssentialsEquivalent({"deljail", "remjail", "rmjail"})
+@NonnullByDefault
 public class DeleteJailCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private JailHandler handler;
+    private final JailHandler handler;
     private final String jailKey = "jail";
+
+    @Inject
+    public DeleteJailCommand(JailHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

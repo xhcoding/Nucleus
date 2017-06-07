@@ -4,14 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mail.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
@@ -24,16 +23,24 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 
+import javax.inject.Inject;
+
 @Permissions(prefix = "mail", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand(value = {"send", "s"}, subcommandOf = MailCommand.class)
 public class SendMailCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private MailHandler handler;
-    @Inject private PermissionRegistry permissionRegistry;
+    private final MailHandler handler;
+    private final PermissionRegistry permissionRegistry;
 
     private final String player = "subject";
     private final String message = "message";
+
+    @Inject
+    public SendMailCommand(MailHandler handler, PermissionRegistry permissionRegistry) {
+        this.handler = handler;
+        this.permissionRegistry = permissionRegistry;
+    }
 
     @Override
     public CommandElement[] getArguments() {

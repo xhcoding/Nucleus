@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
@@ -21,6 +20,8 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.scheduler.Task;
 
 import java.util.function.Predicate;
+
+import javax.inject.Inject;
 
 @ConditionalListener(FirstSpawnConditionalListener.Condition.class)
 public class FirstSpawnConditionalListener extends ListenerBase {

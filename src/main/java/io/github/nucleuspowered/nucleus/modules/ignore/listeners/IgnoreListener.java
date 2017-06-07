@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.ignore.listeners;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusNoIgnoreChannel;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent;
@@ -28,6 +27,8 @@ import org.spongepowered.api.text.channel.MutableMessageChannel;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 public class IgnoreListener extends ListenerBase {
 

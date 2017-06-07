@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.info.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
@@ -24,21 +21,28 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand("motd")
 @EssentialsEquivalent("motd")
 public class MotdCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
 
-    @Inject private InfoConfigAdapter infoConfigAdapter;
+    private final InfoConfigAdapter infoConfigAdapter;
     private Text title = Text.EMPTY;
     private boolean usePagination = true;
+
+    @Inject
+    public MotdCommand(InfoConfigAdapter infoConfigAdapter) {
+        this.infoConfigAdapter = infoConfigAdapter;
+    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

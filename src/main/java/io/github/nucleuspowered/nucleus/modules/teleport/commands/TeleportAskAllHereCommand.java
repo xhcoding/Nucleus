@@ -5,12 +5,10 @@
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.teleport.events.RequestEvent;
@@ -23,6 +21,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -31,17 +30,20 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("ALL")
 @Permissions(prefix = "teleport")
-@NoWarmup
-@NoCost
-@NoCooldown
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"tpaall", "tpaskall"})
 @RunAsync
 @EssentialsEquivalent({"tpaall"})
 public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
 
-    @Inject private TeleportHandler tpHandler;
+    private final TeleportHandler tpHandler;
+
+    @Inject
+    public TeleportAskAllHereCommand(TeleportHandler tpHandler) {
+        this.tpHandler = tpHandler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

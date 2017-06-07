@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
@@ -23,24 +20,26 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-/**
- * Resets a kit usage for subject.
- *
- * Command Usage: /kit list Permission: plugin.kit.list.base
- */
+import javax.inject.Inject;
+
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"resetusage", "reset"}, subcommandOf = KitCommand.class)
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NonnullByDefault
+@NoModifiers
 public class KitResetUsageCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private UserDataManager userConfigLoader;
+    private final UserDataManager userConfigLoader;
 
     private final String kit = "kit";
     private final String user = "subject";
+
+    @Inject
+    public KitResetUsageCommand(UserDataManager userConfigLoader) {
+        this.userConfigLoader = userConfigLoader;
+    }
 
     @Override
     public CommandElement[] getArguments() {

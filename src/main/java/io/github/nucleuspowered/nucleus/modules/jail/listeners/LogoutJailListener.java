@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -25,6 +24,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import javax.inject.Inject;
 
 @ConditionalListener(LogoutJailListener.Condition.class)
 public class LogoutJailListener extends ListenerBase {

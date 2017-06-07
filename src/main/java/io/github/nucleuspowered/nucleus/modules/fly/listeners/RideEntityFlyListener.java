@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fly.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
@@ -15,6 +14,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.RideEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+
+import javax.inject.Inject;
 
 /**
  * This will only work in later Sponge API 5 versions.

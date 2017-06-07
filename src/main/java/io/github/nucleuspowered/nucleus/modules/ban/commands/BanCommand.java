@@ -5,15 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
@@ -36,6 +33,7 @@ import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
 
@@ -43,24 +41,30 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 @RegisterCommand("ban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @EssentialsEquivalent("ban")
+@NonnullByDefault
 public class BanCommand extends AbstractCommand<CommandSource> {
 
-    @Inject
-    private Logger logger;
+    private final Logger logger;
+    private final CoreConfigAdapter cca;
 
     static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "ban.notify";
     private final String uuid = "uuid";
     private final String user = "user";
     private final String name = "name";
+
     private final String reason = "reason";
 
-    @Inject private CoreConfigAdapter cca;
+    @Inject
+    public BanCommand(Logger logger, CoreConfigAdapter cca) {
+        this.logger = logger;
+        this.cca = cca;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {

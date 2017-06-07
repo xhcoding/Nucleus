@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ResortUserArgumentParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
@@ -31,6 +28,7 @@ import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.ban.Ban;
 import org.spongepowered.api.util.ban.BanTypes;
 
@@ -39,18 +37,25 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 @RegisterCommand("tempban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @EssentialsEquivalent("tempban")
+@NonnullByDefault
 public class TempBanCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private BanConfigAdapter bca;
+    private final BanConfigAdapter bca;
+
     private final String user = "user";
     private final String reasonKey = "reasonKey";
     private final String duration = "duration";
+
+    @Inject
+    public TempBanCommand(BanConfigAdapter bca) {
+        this.bca = bca;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

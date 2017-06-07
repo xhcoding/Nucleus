@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.jail;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
@@ -22,6 +21,8 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
+
+import javax.inject.Inject;
 
 @ModuleData(id = JailModule.ID, name = "Jail")
 public class JailModule extends ConfigurableModule<JailConfigAdapter> {

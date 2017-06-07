@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.connectionmessages.listeners;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
@@ -29,6 +28,8 @@ import org.spongepowered.api.text.channel.MessageChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 public class ConnectionMessagesListener extends ListenerBase.Reloadable {
 

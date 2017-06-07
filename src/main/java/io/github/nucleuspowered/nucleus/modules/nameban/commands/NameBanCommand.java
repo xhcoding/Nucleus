@@ -5,15 +5,12 @@
 package io.github.nucleuspowered.nucleus.modules.nameban.commands;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.RegexArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.nameban.config.NameBanConfigAdapter;
@@ -28,22 +25,30 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 @Permissions
 @RunAsync
-@NoWarmup
-@NoCost
-@NoCooldown
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand("nameban")
 public class NameBanCommand extends AbstractCommand<CommandSource> {
 
     private final String nameKey = "name";
     private final String reasonKey = "reason";
 
-    @Inject private NameBanConfigAdapter nameBanConfigAdapter;
-    @Inject private NameBanHandler handler;
+    private final NameBanConfigAdapter nameBanConfigAdapter;
+    private final NameBanHandler handler;
+
+    @Inject
+    public NameBanCommand(NameBanConfigAdapter nameBanConfigAdapter, NameBanHandler handler) {
+        this.nameBanConfigAdapter = nameBanConfigAdapter;
+        this.handler = handler;
+    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

@@ -6,13 +6,11 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoDocumentation;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoDocumentation;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.CommandDoc;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
@@ -38,9 +36,7 @@ import java.util.stream.Collectors;
  * Intended as a local command.
  */
 @RunAsync
-@NoCost
-@NoWarmup
-@NoCooldown
+@NoModifiers
 @NoDocumentation
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"docgen", "gendocs"}, subcommandOf = NucleusCommand.class)

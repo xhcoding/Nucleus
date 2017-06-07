@@ -5,12 +5,13 @@
 package io.github.nucleuspowered.nucleus.internal.qsml;
 
 import com.google.common.reflect.TypeToken;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.quickstart.config.AbstractAdaptableConfig;
 import uk.co.drnaylor.quickstart.config.TypedAbstractConfigAdapter;
+
+import javax.inject.Inject;
 
 public abstract class NucleusConfigAdapter<R> extends TypedAbstractConfigAdapter<R> {
 

@@ -4,16 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands.itemalias;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.argumentparsers.SimpleProviderChoicesArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -21,23 +18,29 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @RunAsync
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
 @Permissions(prefix = "nucleus.itemalias")
 @RegisterCommand(value = {"remove", "del"}, subcommandOf = ItemAliasCommand.class)
+@NonnullByDefault
 public class RemoveItemAliasCommand extends AbstractCommand<CommandSource> {
 
-    @Inject
-    private ItemDataService itemDataService;
+    private final ItemDataService itemDataService;
     private final String alias = "alias";
+
+    @Inject
+    public RemoveItemAliasCommand(ItemDataService itemDataService) {
+        this.itemDataService = itemDataService;
+    }
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(SimpleProviderChoicesArgument.withSetSupplier(Text.of(alias), () -> itemDataService.getAliases()))
+            GenericArguments.onlyOne(SimpleProviderChoicesArgument.withSetSupplier(Text.of(alias), itemDataService::getAliases))
         };
     }
 

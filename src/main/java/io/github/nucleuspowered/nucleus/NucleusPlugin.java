@@ -12,7 +12,6 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.VERSION;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.typesafe.config.ConfigException;
@@ -105,6 +104,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 @Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION,
         dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.2", optional = true))

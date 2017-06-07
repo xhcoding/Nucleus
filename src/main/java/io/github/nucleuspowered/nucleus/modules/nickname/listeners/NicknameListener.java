@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
@@ -16,6 +15,8 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 public class NicknameListener extends ListenerBase {
 

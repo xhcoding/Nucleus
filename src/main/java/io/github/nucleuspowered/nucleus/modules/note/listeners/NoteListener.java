@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.note.listeners;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -30,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+
+import javax.inject.Inject;
 
 @ConditionalListener(NoteListener.Condition.class)
 public class NoteListener extends ListenerBase {

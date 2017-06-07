@@ -10,13 +10,11 @@ import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -36,28 +34,34 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("ALL")
 @RunAsync
-@NoCost
-@NoCooldown
-@NoWarmup
+@NoModifiers
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itembuy", "buy"})
 @EssentialsEquivalent("buy")
+@NonnullByDefault
 public class BuyCommand extends AbstractCommand<Player> {
 
-    @Inject private ServerShopConfigAdapter ssca;
-    @Inject private ItemDataService itemDataService;
-    @Inject private EconHelper econHelper;
+    private final ServerShopConfigAdapter ssca;
+    private final ItemDataService itemDataService;
+    private final EconHelper econHelper;
     private final String itemKey = "item";
     private final String amountKey = "amount";
+
+    @Inject
+    public BuyCommand(ServerShopConfigAdapter ssca, ItemDataService itemDataService, EconHelper econHelper) {
+        this.ssca = ssca;
+        this.itemDataService = itemDataService;
+        this.econHelper = econHelper;
+    }
 
     @Override
     public CommandElement[] getArguments() {

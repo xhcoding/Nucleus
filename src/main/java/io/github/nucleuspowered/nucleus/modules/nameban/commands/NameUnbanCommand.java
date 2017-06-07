@@ -4,15 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nameban.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.RegexArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.nameban.handlers.NameBanHandler;
@@ -23,17 +20,24 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @Permissions(prefix = "nameban", mainOverride = "unban")
 @RunAsync
-@NoWarmup
-@NoCost
-@NoCooldown
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"nameunban", "namepardon"})
 public class NameUnbanCommand extends AbstractCommand<CommandSource> {
 
     private final String nameKey = "name";
-    @Inject private NameBanHandler handler;
+    private final NameBanHandler handler;
+
+    @Inject
+    public NameUnbanCommand(NameBanHandler handler) {
+        this.handler = handler;
+    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

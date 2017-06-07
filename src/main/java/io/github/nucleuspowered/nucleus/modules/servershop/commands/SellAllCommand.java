@@ -9,13 +9,11 @@ import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -32,6 +30,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,20 +39,24 @@ import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("ALL")
 @RunAsync
-@NoCost
-@NoCooldown
-@NoWarmup
+@NoModifiers
+@NonnullByDefault
 @RequiresEconomy
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"itemsellall", "sellall"})
 public class SellAllCommand extends AbstractCommand<Player> {
 
-    @Inject private ItemDataService itemDataService;
-    @Inject private EconHelper econHelper;
+    private final ItemDataService itemDataService;
+    private final EconHelper econHelper;
 
     private final String itemKey = "item";
+
+    @Inject
+    public SellAllCommand(ItemDataService itemDataService, EconHelper econHelper) {
+        this.itemDataService = itemDataService;
+        this.econHelper = econHelper;
+    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

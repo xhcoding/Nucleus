@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.warp.handlers;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
@@ -26,6 +25,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 @NonnullByDefault
 public class WarpHandler implements NucleusWarpService {

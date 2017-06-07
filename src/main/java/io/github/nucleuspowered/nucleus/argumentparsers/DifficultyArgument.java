@@ -15,10 +15,11 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.difficulty.Difficulty;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 /**
  * There is currently a bug when using the Difficulty CatalogType, so we handle it ourselves for now.

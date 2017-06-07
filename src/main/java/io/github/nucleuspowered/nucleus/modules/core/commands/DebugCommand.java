@@ -6,12 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.annotations.Scan;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Scan;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
@@ -24,20 +22,23 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Scan
+@NonnullByDefault
 @Permissions(prefix = "nucleus")
 @RegisterCommand(value = "debug", subcommandOf = NucleusCommand.class, hasExecutor = false)
 public class DebugCommand extends AbstractCommand<CommandSource> {
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        return null;
+        return CommandResult.empty();
     }
 
     @Permissions(prefix = "nucleus.debug")
+    @NoModifiers
     @RegisterCommand(value = "getuuids", subcommandOf = DebugCommand.class)
     public static class GetUUIDSCommand extends AbstractCommand<CommandSource> {
 
@@ -75,9 +76,7 @@ public class DebugCommand extends AbstractCommand<CommandSource> {
     }
 
     @Permissions(prefix = "nucleus.debug")
-    @NoCooldown
-    @NoCost
-    @NoWarmup
+    @NoModifiers
     @RegisterCommand(value = "refreshuniquevisitors", subcommandOf = DebugCommand.class)
     public static class RefreshUniqueVisitors extends AbstractCommand<CommandSource> {
 

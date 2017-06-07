@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.modules.staffchat.commands;
 
 import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -32,9 +30,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.Optional;
 
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RegisterCommand({"staffchat", "sc", "a"})
 @NonnullByDefault
 public class StaffChatCommand extends AbstractCommand<CommandSource> {

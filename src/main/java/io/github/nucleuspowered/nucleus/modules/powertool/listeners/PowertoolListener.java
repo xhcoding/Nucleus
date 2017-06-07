@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.powertool.listeners;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
@@ -22,6 +21,8 @@ import org.spongepowered.api.event.entity.InteractEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.item.ItemType;
+
+import javax.inject.Inject;
 
 public class PowertoolListener extends ListenerBase {
 

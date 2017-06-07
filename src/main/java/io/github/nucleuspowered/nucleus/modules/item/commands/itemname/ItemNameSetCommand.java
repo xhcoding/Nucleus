@@ -4,9 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.item.commands.itemname;
 
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import org.spongepowered.api.command.CommandResult;
@@ -19,6 +18,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+
+import javax.inject.Inject;
 
 @Permissions(prefix = "itemname")
 @RegisterCommand(value = "set", subcommandOf = ItemNameCommand.class)

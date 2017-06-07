@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.vanish.listener;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
@@ -18,6 +17,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+
+import javax.inject.Inject;
 
 public class VanishListener extends ListenerBase {
 

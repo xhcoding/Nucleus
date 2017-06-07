@@ -4,12 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -17,19 +14,26 @@ import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandle
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 /**
  * /tpdeny.
  */
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"tpdeny", "teleportdeny", "tpno"})
 @EssentialsEquivalent({"tpdeny", "tpno"})
 public class TeleportDenyCommand extends AbstractCommand<Player> {
 
-    @Inject private TeleportHandler teleportHandler;
+    private final TeleportHandler teleportHandler;
+
+    @Inject
+    public TeleportDenyCommand(TeleportHandler teleportHandler) {
+        this.teleportHandler = teleportHandler;
+    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

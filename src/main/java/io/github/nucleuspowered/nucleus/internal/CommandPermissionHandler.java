@@ -7,13 +7,14 @@ package io.github.nucleuspowered.nucleus.internal;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoDocumentation;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoPermissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCooldown;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCost;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoDocumentation;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoPermissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -146,20 +147,22 @@ public class CommandPermissionHandler {
                     SuggestedLevel.ADMIN));
             }
 
+            if (!cab.isAnnotationPresent(NoModifiers.class)) {
+                if (!cab.isAnnotationPresent(NoWarmup.class) || cab.getAnnotation(NoWarmup.class).generatePermissionDocs()) {
+                    mssl.put(warmup, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.warmup", command),
+                            SuggestedLevel.ADMIN));
+                }
 
-            if (!cab.isAnnotationPresent(NoWarmup.class) || cab.getAnnotation(NoWarmup.class).generatePermissionDocs()) {
-                mssl.put(warmup, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.warmup", command),
-                    SuggestedLevel.ADMIN));
-            }
+                if (!cab.isAnnotationPresent(NoCooldown.class)) {
+                    mssl.put(cooldown,
+                            new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cooldown", command),
+                                    SuggestedLevel.ADMIN));
+                }
 
-            if (!cab.isAnnotationPresent(NoCooldown.class)) {
-                mssl.put(cooldown, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cooldown", command),
-                    SuggestedLevel.ADMIN));
-            }
-
-            if (!cab.isAnnotationPresent(NoCost.class)) {
-                mssl.put(cost, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cost", command),
-                    SuggestedLevel.ADMIN));
+                if (!cab.isAnnotationPresent(NoCost.class)) {
+                    mssl.put(cost, new PermissionInformation(plugin.getMessageProvider().getMessageWithFormat("permission.exempt.cost", command),
+                            SuggestedLevel.ADMIN));
+                }
             }
         }
 

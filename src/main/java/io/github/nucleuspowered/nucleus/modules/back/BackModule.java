@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.back;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.back.config.BackConfigAdapter;
@@ -12,7 +11,9 @@ import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Game;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = "back", name = "Back")
+import javax.inject.Inject;
+
+@ModuleData(id = "back", name = "Back", softDependencies = "jail")
 public class BackModule extends ConfigurableModule<BackConfigAdapter> {
 
     @Inject private Game game;

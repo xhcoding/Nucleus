@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -23,21 +20,28 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand({"tptoggle"})
 @RunAsync
 @EssentialsEquivalent("tptoggle")
 public class TeleportToggleCommand extends AbstractCommand<Player> {
 
     private final String key = "toggle";
-    @Inject private UserDataManager udm;
+    private final UserDataManager udm;
+
+    @Inject
+    public TeleportToggleCommand(UserDataManager udm) {
+        this.udm = udm;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

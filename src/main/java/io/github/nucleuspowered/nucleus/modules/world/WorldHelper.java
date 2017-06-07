@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.world;
 
 import com.flowpowered.math.GenericMath;
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.GenerateChunksCommand;
@@ -26,6 +25,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 public class WorldHelper {
     private static final String TIME_FORMAT = "s's 'S'ms'";

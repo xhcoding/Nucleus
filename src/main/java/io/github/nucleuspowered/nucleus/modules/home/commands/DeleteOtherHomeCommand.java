@@ -4,14 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
@@ -23,18 +20,26 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+
+import javax.inject.Inject;
 
 @Permissions(prefix = "home", mainOverride = "deleteother")
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
 @RegisterCommand({"deletehomeother", "delhomeother"})
+@NonnullByDefault
 public class DeleteOtherHomeCommand extends AbstractCommand<CommandSource> {
 
     private final String homeKey = "home";
 
-    @Inject private CoreConfigAdapter cca;
-    @Inject private HomeHandler homeHandler;
+    private final CoreConfigAdapter cca;
+    private final HomeHandler homeHandler;
+
+    @Inject
+    public DeleteOtherHomeCommand(CoreConfigAdapter cca, HomeHandler homeHandler) {
+        this.cca = cca;
+        this.homeHandler = homeHandler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

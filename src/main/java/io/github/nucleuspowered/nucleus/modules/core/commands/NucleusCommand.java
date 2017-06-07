@@ -8,43 +8,42 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.GIT_HASH;
 import static io.github.nucleuspowered.nucleus.PluginInfo.NAME;
 import static io.github.nucleuspowered.nucleus.PluginInfo.VERSION;
 
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCommandPrefix;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCommandPrefix;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.quickstart.ModuleContainer;
 
 import java.util.Set;
 
-/**
- * Gives information about Nucleus.
- *
- * Command Usage: /nucleus
- * Permission: nucleus.nucleus.base
- */
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
 @RunAsync
 @Permissions
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @RegisterCommand({ "nucleus" })
 @NoCommandPrefix
+@NonnullByDefault
 public class NucleusCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private ModuleContainer container;
+    private final ModuleContainer container;
+
+    @Inject
+    public NucleusCommand(ModuleContainer container) {
+        this.container = container;
+    }
 
     private final Text version = Text.of(TextColors.GREEN, NAME + " version " + VERSION + " (built from commit " + GIT_HASH + ")");
-    private Text modules = null;
+    @Nullable private Text modules = null;
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

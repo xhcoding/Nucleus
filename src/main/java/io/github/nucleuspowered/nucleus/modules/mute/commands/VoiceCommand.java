@@ -4,13 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mute.commands;
 
-import com.google.inject.Inject;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -24,23 +21,29 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 @RunAsync
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
 @Permissions(prefix = "globalmute")
 @RegisterCommand("voice")
+@NonnullByDefault
 public class VoiceCommand extends AbstractCommand<CommandSource> {
 
     private final String on = "turn on";
     private final String player = "subject";
 
+    private final MuteHandler muteHandler;
+
     @Inject
-    private MuteHandler muteHandler;
+    public VoiceCommand(MuteHandler muteHandler) {
+        this.muteHandler = muteHandler;
+    }
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {

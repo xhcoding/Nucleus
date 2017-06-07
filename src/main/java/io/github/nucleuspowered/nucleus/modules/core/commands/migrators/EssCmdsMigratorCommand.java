@@ -4,18 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands.migrators;
 
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.MigratorCommand;
 import io.github.nucleuspowered.nucleus.internal.migrators.EssCmdsMigrator;
 import io.github.nucleuspowered.nucleus.modules.core.commands.MigrateCommand;
 
-@NoCooldown
-@NoCost
-@NoWarmup
+@NoModifiers
 @Permissions(prefix = "nucleus.migrate")
 @RegisterCommand(value = "esscmds", subcommandOf = MigrateCommand.class)
 public class EssCmdsMigratorCommand extends MigratorCommand<EssCmdsMigrator> {

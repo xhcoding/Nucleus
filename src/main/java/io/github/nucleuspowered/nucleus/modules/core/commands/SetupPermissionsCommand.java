@@ -5,14 +5,11 @@
 package io.github.nucleuspowered.nucleus.modules.core.commands;
 
 import com.google.common.collect.Sets;
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCooldown;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoCost;
-import io.github.nucleuspowered.nucleus.internal.annotations.NoWarmup;
-import io.github.nucleuspowered.nucleus.internal.annotations.Permissions;
-import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommand;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
@@ -30,6 +27,7 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tristate;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,16 +36,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
-@NoWarmup
-@NoCooldown
-@NoCost
+@NoModifiers
+@NonnullByDefault
 @RegisterCommand(value = {"setupperms", "setperms"}, subcommandOf = NucleusCommand.class)
 public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private CoreConfigAdapter cca;
-    @Inject private PermissionRegistry permissionRegistry;
+    private final CoreConfigAdapter cca;
+    private final PermissionRegistry permissionRegistry;
+
+    @Inject
+    public SetupPermissionsCommand(CoreConfigAdapter cca, PermissionRegistry permissionRegistry) {
+        this.cca = cca;
+        this.permissionRegistry = permissionRegistry;
+    }
 
     private final String roleKey = "Nucleus Role";
     private final String groupKey = "Permission Group";

@@ -4,11 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world;
 
-import com.google.inject.Inject;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
 import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
+
+import javax.inject.Inject;
 
 @ModuleData(id = WorldModule.ID, name = "World")
 public class WorldModule extends ConfigurableModule<WorldConfigAdapter> {
