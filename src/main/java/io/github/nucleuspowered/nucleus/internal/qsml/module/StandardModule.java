@@ -4,7 +4,9 @@
  */
 package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Injector;
+import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
@@ -38,6 +40,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -208,7 +211,7 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private <T> Stream<Class<? extends T>> getStreamForModule(Class<T> assignableClass) {
-        return plugin.getModuleContainer().getLoadedClasses().stream()
+        return Nucleus.getNucleus().getModuleContainer().getLoadedClasses().stream()
                 .filter(assignableClass::isAssignableFrom)
                 .filter(x -> x.getPackage().getName().startsWith(packageName))
                 .filter(x -> !Modifier.isAbstract(x.getModifiers()) && !Modifier.isInterface(x.getModifiers()))
