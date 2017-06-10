@@ -88,7 +88,7 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
 
         private final WarpHandler handler;
 
-        @NonnullByDefault
+        @Inject
         public CategoryDisplayNameCommand(WarpHandler handler) {
             this.handler = handler;
         }
