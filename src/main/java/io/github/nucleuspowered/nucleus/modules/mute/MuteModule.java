@@ -60,7 +60,7 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
                 MuteData jd = jh.getPlayerMuteData(u).get();
                 // Lightweight checkban.
                 Text.Builder m;
-                if (jd.getEndTimestamp().isPresent()) {
+                if (jd.getRemainingTime().isPresent()) {
                     m = plugin.getMessageProvider().getTextMessageWithFormat("seen.ismuted.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();
                 } else {
                     m = plugin.getMessageProvider().getTextMessageWithFormat("seen.ismuted.perm").toBuilder();
