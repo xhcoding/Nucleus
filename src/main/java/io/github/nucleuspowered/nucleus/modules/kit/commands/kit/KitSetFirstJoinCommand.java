@@ -32,7 +32,7 @@ public class KitSetFirstJoinCommand extends AbstractCommand<CommandSource> {
     private final KitHandler kitConfig;
 
     private final String kit = "kit";
-    private final String toggle = "first join kit toggle";
+    private final String toggle = "true|false";
 
     @Inject
     public KitSetFirstJoinCommand(KitHandler kitConfig) {

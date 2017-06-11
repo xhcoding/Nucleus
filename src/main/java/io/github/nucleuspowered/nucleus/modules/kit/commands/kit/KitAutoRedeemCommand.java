@@ -37,7 +37,7 @@ public class KitAutoRedeemCommand extends AbstractCommand<CommandSource> {
     private final KitHandler kitConfig;
 
     private final String kit = "kit";
-    private final String toggle = "autoRedeemToggle";
+    private final String toggle = "true|false";
 
     @Inject
     public KitAutoRedeemCommand(KitHandler kitConfig) {
