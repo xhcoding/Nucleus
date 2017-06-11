@@ -65,7 +65,7 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
             if (jh.isPlayerJailed(u)) {
                 JailData jd = jh.getPlayerJailDataInternal(u).get();
                 Text.Builder m;
-                if (jd.getEndTimestamp().isPresent()) {
+                if (jd.getRemainingTime().isPresent()) {
                     m = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.isjailed.temp", Util.getTimeToNow(jd.getEndTimestamp().get())).toBuilder();
                 } else {
                     m = NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.isjailed.perm").toBuilder();
