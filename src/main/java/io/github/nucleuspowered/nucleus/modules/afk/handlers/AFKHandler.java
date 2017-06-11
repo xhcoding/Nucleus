@@ -286,6 +286,10 @@ public class AFKHandler implements NucleusAFKService {
         invalidateAfkCache();
     }
 
+    @Override public void updateActivityForUser(Player player) {
+        stageUserActivityUpdate(player);
+    }
+
     @Override public AutoCloseable disableTrackingFor(final Player player, int ticks) {
         // Disable tracking now with a new UUID.
         Task n = Task.builder().execute(t -> {

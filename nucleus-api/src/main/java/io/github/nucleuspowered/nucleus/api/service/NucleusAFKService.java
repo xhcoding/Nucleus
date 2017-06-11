@@ -83,6 +83,14 @@ public interface NucleusAFKService {
     void invalidateCachedPermissions();
 
     /**
+     * Forces an activity tracking update for a {@link Player}, such that Nucleus
+     * thinks that the player has recently been active and resets their AFK timer.
+     *
+     * @param player The player to update the activity of.
+     */
+    void updateActivityForUser(Player player);
+
+    /**
      * Disables activity tracking for the specified {@link Player} for the next tick. See {@link #disableTrackingFor(Player, int)} for more
      * information on how to use this method.
      *
