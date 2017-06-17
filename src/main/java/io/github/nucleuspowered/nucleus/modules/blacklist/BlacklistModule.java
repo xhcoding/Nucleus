@@ -25,6 +25,8 @@ public class BlacklistModule extends StandardModule {
                 + "attempt to migrate.");
         plugin.getLogger().warn("A migrator for those of you that use GriefPrevention has been provided, run `/blacklist migrate gp` to "
                 + "attempt to migrate.");
+        plugin.getLogger().warn(" ");
+        plugin.getLogger().warn("To remove this message, set the blacklist module to DISABLED in main.conf");
         plugin.getLogger().warn("-----------------------------------");
 
         BlacklistMigrationHandler bmh = new BlacklistMigrationHandler();
