@@ -38,6 +38,15 @@ public class ServerListListener extends ListenerBase.Reloadable {
 
     @Listener
     public void onServerListPing(ClientPingServerEvent event, @Getter("getResponse") ClientPingServerEvent.Response response) {
+        if (this.config == null) {
+            try {
+                onReload();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
         if (this.config.isModifyServerList()) {
             List<NucleusTextTemplateImpl> list = null;
             Optional<Text> ott = plugin.getGeneralService()
@@ -74,14 +83,16 @@ public class ServerListListener extends ListenerBase.Reloadable {
         }
     }
 
-    @Override public void onReload() throws Exception {
-        this.config = plugin.getConfigValue(ServerListModule.ID, ServerListConfigAdapter.class, Function.identity())
+    @Override
+    public void onReload() throws Exception {
+        this.config = this.plugin.getConfigValue(ServerListModule.ID, ServerListConfigAdapter.class, Function.identity())
                 .orElseGet(ServerListConfig::new);
     }
 
     public static class Condition implements Predicate<Nucleus> {
 
-        @Override public boolean test(Nucleus nucleus) {
+        @Override
+        public boolean test(Nucleus nucleus) {
             return nucleus.getConfigValue(ServerListModule.ID, ServerListConfigAdapter.class, ServerListConfig::enableListener).orElse(false);
         }
     }
