@@ -4,9 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Injector;
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
@@ -40,7 +38,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
