@@ -31,6 +31,8 @@ import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.junit.BeforeClass;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -60,49 +62,20 @@ public abstract class TestBase {
 
     private static void setFinalStaticPlain(Field field) throws Exception {
         setFinalStatic(field);
-
-        field.set(null, new SafeTextSerializer() {
-            @Override
-            public Text deserialize(String input) {
-                return Text.of("key");
-            }
-
-            @Override
-            public String serialize(Text text) {
-                return "key";
-            }
-        });
+        SafeTextSerializer sts = Mockito.mock(SafeTextSerializer.class);
+        Mockito.when(sts.serialize(Mockito.any())).thenReturn("key");
+        Mockito.when(sts.deserialize(Mockito.any())).thenReturn(Text.of("key"));
+        field.set(null, sts);
     }
 
     private static void setFinalStaticFormatters(Field field) throws Exception {
         setFinalStatic(field);
-
-        field.set(null, new FormattingCodeTextSerializer() {
-            @Override
-            public char getCharacter() {
-                return '&';
-            }
-
-            @Override
-            public String stripCodes(String text) {
-                return "test";
-            }
-
-            @Override
-            public String replaceCodes(String text, char to) {
-                return "test";
-            }
-
-            @Override
-            public Text deserialize(String input) {
-                return Text.of("key");
-            }
-
-            @Override
-            public String serialize(Text text) {
-                return "key";
-            }
-        });
+        FormattingCodeTextSerializer sts = Mockito.mock(FormattingCodeTextSerializer.class);
+        Mockito.when(sts.serialize(Mockito.any())).thenReturn("key");
+        Mockito.when(sts.deserialize(Mockito.any())).thenReturn(Text.of("key"));
+        Mockito.when(sts.stripCodes(Mockito.anyString())).thenReturn("test");
+        Mockito.when(sts.replaceCodes(Mockito.anyString(), Mockito.anyChar())).thenReturn("test");
+        field.set(null, sts);
     }
 
     @BeforeClass
@@ -293,6 +266,14 @@ public abstract class TestBase {
 
         @Override public PluginContainer getPluginContainer() {
             return null;
+        }
+
+        @Override public boolean isSessionDebug() {
+            return false;
+        }
+
+        @Override public void setSessionDebug(boolean debug) {
+            // NOOP
         }
 
         @Override protected void registerPermissions() {

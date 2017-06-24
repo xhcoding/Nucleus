@@ -137,5 +137,9 @@ public abstract class Nucleus {
 
     public abstract PluginContainer getPluginContainer();
 
+    public abstract boolean isSessionDebug();
+
+    public abstract void setSessionDebug(boolean debug);
+
     protected abstract void registerPermissions();
 }
