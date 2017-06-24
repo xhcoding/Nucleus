@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal.docgen;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCooldown;
@@ -20,9 +21,15 @@ import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 
+import java.io.BufferedWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +44,7 @@ public class DocGenCache {
     private final Map<String, PermissionDoc> permissionDocs = Maps.newHashMap();
     private final List<TokenDoc> tokenDocs = Lists.newArrayList();
     private final List<EssentialsDoc> essentialsDocs = Lists.newArrayList();
+    private final Map<String, String> configDocs = Maps.newHashMap();
 
     private final org.slf4j.Logger logger;
 
@@ -58,6 +66,26 @@ public class DocGenCache {
 
     public List<EssentialsDoc> getEssentialsDocs() {
         return essentialsDocs;
+    }
+
+    public Map<String, String> getConfigDocs() {
+        return configDocs;
+    }
+
+    public void addConfigurableModule(String name, ConfigurableModule<?> module) {
+        try (StringWriter sw = new StringWriter(); BufferedWriter writer = new BufferedWriter(sw)) {
+            HoconConfigurationLoader hcl = HoconConfigurationLoader.builder()
+                .setDefaultOptions(ConfigurateHelper.setOptions(ConfigurationOptions.defaults()))
+                .setSink(() -> writer)
+                .build();
+            CommentedConfigurationNode cn = hcl.createEmptyNode(hcl.getDefaultOptions());
+            cn.setValue(module.getConfigAdapter().get().getDefaults());
+            hcl.save(cn);
+            this.configDocs.put(name, sw.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void addCommand(final String moduleID, final StandardAbstractCommand<?> abstractCommand) {

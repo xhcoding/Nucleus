@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
+import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.util.Optional;
@@ -34,4 +35,12 @@ public abstract class ConfigurableModule<A extends NucleusConfigAdapter<?>> exte
         // We need to use the right type...
         return Optional.of(getAdapter());
     }
+
+    @Override
+    public void postEnable() {
+        super.postEnable();
+        plugin.getDocGenCache().ifPresent(x -> x.addConfigurableModule(this.getClass().getAnnotation(ModuleData.class).id(), this));
+    }
+
+
 }

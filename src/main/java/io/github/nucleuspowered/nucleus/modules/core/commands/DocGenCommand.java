@@ -111,6 +111,13 @@ public class DocGenCommand extends AbstractCommand<CommandSource> {
 
         essentialsConfigurationLoader.save(essentialsConfigurationNode);
 
+        YAMLConfigurationLoader configurationConfigurationLoader = YAMLConfigurationLoader.builder().setPath(plugin.getDataPath().resolve("conf.yml"))
+                .setFlowStyle(DumperOptions.FlowStyle.BLOCK).build();
+        ConfigurationNode configurationConfigurationNode = SimpleConfigurationNode.root().setValue(genCache.getConfigDocs());
+
+        configurationConfigurationLoader.save(configurationConfigurationNode);
+
+
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.docgen.complete"));
         return CommandResult.success();
     }
