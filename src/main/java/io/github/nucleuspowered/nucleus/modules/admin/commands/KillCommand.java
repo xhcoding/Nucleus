@@ -16,12 +16,15 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
+import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Collection;
 
@@ -29,6 +32,7 @@ import java.util.Collection;
 @RegisterCommand("kill")
 @EssentialsEquivalent(value = { "kill", "remove", "butcher", "killall", "mobkill" },
         isExact = false, notes = "Nucleus supports killing entities using the Minecraft selectors.")
+@NonnullByDefault
 public class KillCommand extends AbstractCommand<CommandSource> {
 
     private final String key = "subject";
@@ -52,11 +56,18 @@ public class KillCommand extends AbstractCommand<CommandSource> {
                 Player pl = (Player)x;
                 GameMode gm = pl.gameMode().getDirect().orElseGet(() -> pl.gameMode().getDefault());
                 if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {
-                    throw ReturnMessageException.fromKey("command.kill.wronggm", pl.getName());
+                    if (entities.size() == 1) {
+                        throw ReturnMessageException.fromKey("command.kill.wronggm", pl.getName());
+                    } else {
+                        continue;
+                    }
                 }
             }
 
-            x.offer(Keys.HEALTH, 0d);
+            DataTransactionResult dtr = x.offer(Keys.HEALTH, 0d);
+            if (!dtr.isSuccessful() && !(x instanceof Living)) {
+                x.remove();
+            }
             entityKillCount++;
 
             if (x instanceof Player) {

@@ -79,7 +79,7 @@ public class SellAllCommand extends AbstractCommand<Player> {
             query.setQuantity(-1); // Yeah...
         } else {
             // Having a quantity of -1 causes an IllegalArgumentException here...
-            query = ItemStack.of((ItemType)ct, 1);
+            query = ItemStack.of((ItemType) ct, 1);
 
             // and doesn't care here...
             query.setQuantity(-1);
@@ -98,7 +98,8 @@ public class SellAllCommand extends AbstractCommand<Player> {
         // Get the cost.
         final int amt = itemsToSell.stream().mapToInt(ItemStack::getQuantity).sum();
         if (amt <= 0) {
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsellall.none", query.getTranslation().get()));
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itemsellall.none",
+                    Text.of(query)));
         }
 
         final double overallCost = sellPrice * amt;
@@ -106,17 +107,18 @@ public class SellAllCommand extends AbstractCommand<Player> {
         if (accepted) {
             if (econHelper.depositInPlayer(src, overallCost, false)) {
                 slots.forEach(Inventory::clear);
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsell.summary", String.valueOf(amt), query.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itemsell.summary",
+                        Text.of(amt), Text.of(query), Text.of(econHelper.getCurrencySymbol(overallCost))));
                 return CommandResult.success();
             }
 
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsell.error", query.getTranslation().get()));
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itemsell.error", Text.of(query)));
         }
 
         src.sendMessage(
             plugin.getMessageProvider()
-                .getTextMessageWithFormat("command.itemsellall.summary",
-                    String.valueOf(amt), query.getTranslation().get(), econHelper.getCurrencySymbol(overallCost), id)
+                .getTextMessageWithTextFormat("command.itemsellall.summary",
+                    Text.of(amt), Text.of(query), Text.of(econHelper.getCurrencySymbol(overallCost)), Text.of(id))
                 .toBuilder().onClick(TextActions.runCommand("/nucleus:itemsellall -a " + id)).build()
         );
 

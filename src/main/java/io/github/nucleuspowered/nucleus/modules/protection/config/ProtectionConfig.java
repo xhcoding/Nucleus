@@ -22,9 +22,6 @@ public class ProtectionConfig {
     @Setting(value = "mob-griefing")
     private BlockBreaking blockBreaking = new BlockBreaking();
 
-    @Setting(value = "disable-player-collisions", comment = "config.protection.disableplayercollisions")
-    private boolean disablePlayerCollisions = false;
-
     public boolean isDisableAnyCropTrample() {
         return disableCropTrample.players || disableCropTrample.mobs;
     }
@@ -39,10 +36,6 @@ public class ProtectionConfig {
 
     public boolean isEnableProtection() {
         return blockBreaking.enableProtection;
-    }
-
-    public boolean isDisablePlayerCollisions() {
-        return this.disablePlayerCollisions;
     }
 
     public List<EntityType> getWhitelistedEntities() {

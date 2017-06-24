@@ -23,6 +23,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
@@ -67,11 +68,13 @@ public class SellCommand extends AbstractCommand<Player> {
         final double overallCost = sellPrice * amt;
         if (econHelper.depositInPlayer(src, overallCost, false)) {
             src.setItemInHand(HandTypes.MAIN_HAND, null);
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsell.summary", String.valueOf(amt), is.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
+            src.sendMessage(plugin.getMessageProvider()
+                    .getTextMessageWithTextFormat("command.itemsell.summary", Text.of(amt), Text.of(is),
+                            Text.of(econHelper.getCurrencySymbol(overallCost))));
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itemsell.error", is.getTranslation().get()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itemsell.error", Text.of(is)));
         return CommandResult.empty();
     }
 }
