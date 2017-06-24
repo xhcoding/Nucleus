@@ -36,6 +36,9 @@ public class SetFirstSpawnCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         data.get(SpawnGeneralDataModule.class).setFirstSpawn(src.getLocation(), src.getRotation());
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setfirstspawn.success"));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setfirstspawn.success2"));
+
         return CommandResult.success();
     }
+
 }
