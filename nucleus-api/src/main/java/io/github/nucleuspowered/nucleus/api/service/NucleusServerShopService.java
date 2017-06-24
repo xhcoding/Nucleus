@@ -6,12 +6,14 @@ package io.github.nucleuspowered.nucleus.api.service;
 
 import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
+import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -19,6 +21,26 @@ import java.util.Optional;
  */
 @NonnullByDefault
 public interface NucleusServerShopService {
+
+    /**
+     * Gets all the server buy prices.
+     *
+     * <p>Note that the {@link CatalogType} could either be an {@link ItemType}
+     * or a {@link BlockState}</p>
+     *
+     * @return The buy prices
+     */
+    Map<CatalogType, Double> getBuyPrices();
+
+    /**
+     * Gets all the server sell prices.
+     *
+     * <p>Note that the {@link CatalogType} could either be an {@link ItemType}
+     * or a {@link BlockState}</p>
+     *
+     * @return The buy prices
+     */
+    Map<CatalogType, Double> getSellPrices();
 
     /**
      * Gets the buy price of an item (that is, how much a server will sell an item to a player for).

@@ -23,6 +23,7 @@ import org.spongepowered.api.util.Tuple;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> {
@@ -30,6 +31,8 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
     private Map<String, String> aliasToItemIdCache = null;
     private Map<String, BlacklistNode> blacklistCache = null;
     private Map<CatalogType, BlacklistNode> blacklistTypeCache = null;
+    private Map<CatalogType, Double> buyCache = null;
+    private Map<CatalogType, Double> sellCache = null;
     private final Set<Action> onItemUpdate = Sets.newHashSet();
 
     public ItemDataService(DataProvider<Map<String, ItemDataNode>> dataProvider) throws Exception {
@@ -94,32 +97,42 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
         return Optional.ofNullable(getCache().get(alias));
     }
 
-    public Optional<BlacklistNode> getBlacklistFor(String id) {
-        return Optional.ofNullable(getBlacklistCache().get(id));
+    public Map<CatalogType, Double> getServerBuyPrices() {
+        if (this.buyCache == null) {
+            this.buyCache = data.entrySet().stream().filter(x -> x.getValue().getServerBuyPrice() >= 0)
+                    .map(this::toCt)
+                    .collect(Collectors.toMap(Tuple::getFirst, x -> x.getSecond().getServerBuyPrice()));
+        }
+
+        return this.buyCache;
+    }
+
+    public Map<CatalogType, Double> getServerSellPrices() {
+        if (this.sellCache == null) {
+            this.sellCache = data.entrySet().stream().filter(x -> x.getValue().getServerSellPrice() >= 0)
+                    .map(this::toCt)
+                    .collect(Collectors.toMap(Tuple::getFirst, x -> x.getSecond().getServerSellPrice()));
+        }
+
+        return this.sellCache;
     }
 
     public Map<CatalogType, BlacklistNode> getAllBlacklistedItemsByCatalogType() {
         return ImmutableMap.copyOf(getBlacklistItemCache());
     }
 
-    public Map<String, BlacklistNode> getAllBlacklistedItems() {
-        return ImmutableMap.copyOf(getBlacklistCache());
-    }
-
     private Map<CatalogType, BlacklistNode> getBlacklistItemCache() {
         if (this.blacklistTypeCache == null) {
             this.blacklistTypeCache = getBlacklistCache().entrySet().stream()
-                .map(x -> {
-                    Optional<CatalogType> catalogType = Util.getCatalogTypeForItemFromId(x.getKey());
-                    if (catalogType.isPresent()) {
-                        return Tuples.of(catalogType.get(), x.getValue());
-                    } else {
-                        return Tuples.of(ItemTypes.NONE, x.getValue());
-                    }
-                }).filter(x -> !x.getFirst().equals(ItemTypes.NONE)).collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
+                .map(this::toCt).filter(x -> !x.getFirst().equals(ItemTypes.NONE)).collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
         }
 
         return this.blacklistTypeCache;
+    }
+
+    private <T> Tuple<CatalogType, T> toCt(Map.Entry<String, T> x) {
+        Optional<CatalogType> catalogType = Util.getCatalogTypeForItemFromId(x.getKey());
+        return catalogType.map(catalogType1 -> Tuples.of(catalogType1, x.getValue())).orElseGet(() -> Tuples.of(ItemTypes.NONE, x.getValue()));
     }
 
     private Map<String, BlacklistNode> getBlacklistCache() {
@@ -154,6 +167,8 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
         aliasToItemIdCache = null;
         blacklistCache = null;
         blacklistTypeCache = null;
+        buyCache = null;
+        sellCache = null;
         onItemUpdate.forEach(Action::action);
     }
 }

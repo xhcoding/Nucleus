@@ -154,6 +154,7 @@ public class NucleusPlugin extends Nucleus {
     private WarmupConfig warmupConfig;
 
     private boolean isDebugMode = false;
+    private boolean sessionDebugMode = false;
     private int isTraceUserCreations = 0;
 
     // We inject this into the constructor so we can build the config path ourselves.
@@ -601,7 +602,7 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Override public boolean isDebugMode() {
-        return this.isDebugMode;
+        return this.isDebugMode || this.sessionDebugMode;
     }
 
     @Override public int traceUserCreations() {
@@ -646,6 +647,14 @@ public class NucleusPlugin extends Nucleus {
 
     @Override public PluginContainer getPluginContainer() {
         return pluginContainer;
+    }
+
+    @Override public boolean isSessionDebug() {
+        return this.sessionDebugMode;
+    }
+
+    @Override public void setSessionDebug(boolean debug) {
+        this.sessionDebugMode = debug;
     }
 
     private void runInjectorUpdate() {

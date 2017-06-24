@@ -18,6 +18,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
@@ -35,6 +36,28 @@ public class DebugCommand extends AbstractCommand<CommandSource> {
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         return CommandResult.empty();
+    }
+
+    @NonnullByDefault
+    @Permissions(prefix = "nucleus.debug")
+    @RegisterCommand(value = "setsession", subcommandOf = DebugCommand.class)
+    public static class SetSession extends AbstractCommand<CommandSource> {
+
+        private final String key = "true|false";
+
+        @Override public CommandElement[] getArguments() {
+            return new CommandElement[] {
+                    GenericArguments.optional(GenericArguments.bool(Text.of(key)))
+            };
+        }
+
+        @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+            boolean set = args.<Boolean>getOne(key).orElseGet(() -> !this.plugin.isSessionDebug());
+            plugin.setSessionDebug(set);
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.debug.setsession", String.valueOf(set)));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.debug.setsession2"));
+            return CommandResult.success();
+        }
     }
 
     @Permissions(prefix = "nucleus.debug")
