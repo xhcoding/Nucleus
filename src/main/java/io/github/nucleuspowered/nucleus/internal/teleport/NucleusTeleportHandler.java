@@ -171,12 +171,7 @@ public class NucleusTeleportHandler {
             return false;
         }
 
-        Optional<PassableProperty> opp = block.getProperty(PassableProperty.class);
-        if (opp.isPresent()) {
-            return opp.get().getValue();
-        }
-
-        return false;
+        return block.getProperty(PassableProperty.class).map(x -> x.getValue()).orElse(false);
     }
 
     /**

@@ -17,8 +17,12 @@ import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import io.github.nucleuspowered.nucleus.modules.back.listeners.BackListeners;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 
 import java.util.Map;
@@ -29,11 +33,27 @@ import javax.inject.Inject;
 @Permissions
 @RegisterCommand({"back", "return"})
 @EssentialsEquivalent({"back", "return"})
+@NonnullByDefault
 public class BackCommand extends AbstractCommand<Player> {
 
-    @Inject private BackHandler handler;
+    private final BackHandler handler;
 
-    @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+    private final String key = "force";
+
+    @Inject
+    public BackCommand(BackHandler handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public CommandElement[] getArguments() {
+        return new CommandElement[] {
+            GenericArguments.literal(Text.of(this.key), "-f")
+        };
+    }
+
+    @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = Maps.newHashMap();
         m.put(BackListeners.onDeath, PermissionInformation.getWithTranslation("permission.back.ondeath", SuggestedLevel.USER));
         m.put(BackListeners.onTeleport, PermissionInformation.getWithTranslation("permission.back.onteleport", SuggestedLevel.USER));
@@ -51,7 +71,9 @@ public class BackCommand extends AbstractCommand<Player> {
         }
 
         Transform<World> loc = ol.get();
-        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(src, loc);
+        NucleusTeleportHandler.TeleportResult result = args.hasAny(key)
+                ? plugin.getTeleportHandler().teleportPlayer(src, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK)
+                : plugin.getTeleportHandler().teleportPlayer(src, loc);
         if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.success"));
             return CommandResult.success();

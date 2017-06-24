@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -35,6 +36,8 @@ import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -99,8 +102,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
         Optional<String> reas = args.getOne(reason);
 
         if (permissions.testSuffix(user, "exempt.target", src, false)) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.exempt", user.getName()));
-            return CommandResult.success();
+            throw ReturnMessageException.fromKey("command.mute.exempt", user.getName());
         }
 
         // No time, no reason, but is muted, unmute
@@ -119,13 +121,17 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
         }
 
         if (time.orElse(Long.MAX_VALUE) > mca.getNodeOrDefault().getMaximumMuteLength() &&  mca.getNodeOrDefault().getMaximumMuteLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.length.toolong", Util.getTimeStringFromSeconds(mca.getNodeOrDefault().getMaximumMuteLength())));
-            return CommandResult.success();
+            throw ReturnMessageException.fromKey("command.mute.length.toolong",
+                    Util.getTimeStringFromSeconds(mca.getNodeOrDefault().getMaximumMuteLength()));
         }
 
         MuteData data;
         if (time.isPresent()) {
-            data = new MuteData(ua, rs, Duration.ofSeconds(time.get()));
+            if (!user.isOnline()) {
+                data = new MuteData(ua, rs, Duration.ofSeconds(time.get()));
+            } else {
+                data = new MuteData(ua, rs, Instant.now().plus(time.get(), ChronoUnit.SECONDS));
+            }
         } else {
             data = new MuteData(ua, rs);
         }

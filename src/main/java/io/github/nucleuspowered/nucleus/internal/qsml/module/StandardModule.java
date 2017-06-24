@@ -156,10 +156,6 @@ public abstract class StandardModule implements Module {
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
 
-            if (c instanceof ListenerBase.Reloadable) {
-                plugin.registerReloadable((ListenerBase.Reloadable)c);
-            }
-
             final ConditionalListener conditionalListener = c.getClass().getAnnotation(ConditionalListener.class);
             if (conditionalListener != null) {
                 try {
@@ -169,6 +165,9 @@ public abstract class StandardModule implements Module {
                     plugin.registerReloadable(() -> {
                         Sponge.getEventManager().unregisterListeners(c);
                         if (cl.test(plugin)) {
+                            if (c instanceof ListenerBase.Reloadable) {
+                                ((ListenerBase.Reloadable) c).onReload();
+                            }
                             Sponge.getEventManager().registerListeners(plugin, c);
                         }
                     });
@@ -183,6 +182,8 @@ public abstract class StandardModule implements Module {
 
                     return;
                 }
+            } else if (c instanceof ListenerBase.Reloadable) {
+                plugin.registerReloadable((ListenerBase.Reloadable) c);
             }
 
             Sponge.getEventManager().registerListeners(plugin, c);

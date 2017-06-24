@@ -30,7 +30,7 @@ public class KitPermissionBypassCommand extends AbstractCommand<CommandSource> {
     private final KitHandler kitConfig;
 
     private final String kit = "kit";
-    private final String toggle = "permission bypass toggle";
+    private final String toggle = "true|false";
 
     @Inject
     public KitPermissionBypassCommand(KitHandler kitConfig) {

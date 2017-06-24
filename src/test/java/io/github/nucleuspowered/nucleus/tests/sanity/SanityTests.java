@@ -16,6 +16,7 @@ import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -69,6 +70,7 @@ public class SanityTests {
                 .getTopLevelClassesRecursive("io.github.nucleuspowered.nucleus.modules");
         Set<Class<? extends StandardAbstractCommand<?>>> sc = ci.stream().map(ClassPath.ClassInfo::load)
                 .filter(StandardAbstractCommand.class::isAssignableFrom)
+                .filter(x -> !Modifier.isAbstract(x.getModifiers()))
                 .map(x -> (Class<? extends StandardAbstractCommand<?>>)x)
                 .filter(x -> {
                     boolean isDefault = true;

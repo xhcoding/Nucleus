@@ -116,6 +116,7 @@ public class NucleusPlugin extends Nucleus {
     private final PluginContainer pluginContainer;
     private Instant gameStartedTime = null;
     private boolean modulesLoaded = false;
+    private boolean hasStarted = false;
     private Throwable isErrored = null;
     private CommandsConfig commandsConfig;
     private ModularGeneralService generalService;
@@ -367,13 +368,14 @@ public class NucleusPlugin extends Nucleus {
                 return;
             }
 
+            this.hasStarted = true;
             Sponge.getScheduler().createSyncExecutor(this).submit(() -> this.gameStartedTime = Instant.now());
         }
     }
 
     @Listener
     public void onServerStop(GameStoppedServerEvent event) {
-        if (isErrored == null) {
+        if (this.hasStarted && this.isErrored == null) {
             this.gameStartedTime = null;
             logger.info(messageProvider.getMessageWithFormat("startup.stopped", PluginInfo.NAME));
             saveData();
