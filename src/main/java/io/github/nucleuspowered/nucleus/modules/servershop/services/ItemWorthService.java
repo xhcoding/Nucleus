@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusServerShopService;
+import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.key.Keys;
@@ -18,6 +19,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.Tuple;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -28,6 +30,14 @@ public class ItemWorthService implements NucleusServerShopService {
 
     public ItemWorthService(NucleusPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    @Override public Map<CatalogType, Double> getBuyPrices() {
+        return plugin.getItemDataService().getServerBuyPrices();
+    }
+
+    @Override public Map<CatalogType, Double> getSellPrices() {
+        return plugin.getItemDataService().getServerSellPrices();
     }
 
     @Override public Optional<Double> getBuyPrice(BlockState type) throws NucleusException {
