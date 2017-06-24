@@ -101,7 +101,9 @@ public class BuyCommand extends AbstractCommand<Player> {
         final double perUnitCost = node.getServerBuyPrice();
         final int unitCount = amount;
         final double overallCost = perUnitCost * unitCount;
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.summary", String.valueOf(amount), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.summary",
+                Text.of(String.valueOf(amount)), Text.of(created),
+                Text.of(econHelper.getCurrencySymbol(overallCost))));
 
         if (args.hasAny("y")) {
             new BuyCallback(src, overallCost, created, unitCount, perUnitCost).accept(src);
@@ -146,16 +148,18 @@ public class BuyCommand extends AbstractCommand<Player> {
             if (econHelper.withdrawFromPlayer(src, overallCost, false)) {
                 InventoryTransactionResult itr = target.offer(created);
                 if (itr.getRejectedItems().isEmpty()) {
-                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.transactionsuccess",
-                            String.valueOf(unitCount), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost)));
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.transactionsuccess",
+                            Text.of(unitCount), Text.of(created), Text.of(econHelper.getCurrencySymbol(overallCost))));
                 } else {
                     Collection<ItemStackSnapshot> iss = itr.getRejectedItems();
                     int rejected = iss.stream().mapToInt(ItemStackSnapshot::getCount).sum();
                     double refund = rejected * perUnitCost;
                     econHelper.depositInPlayer(src, refund, false);
-                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.transactionpartial", String.valueOf(rejected), created.getTranslation().get()));
-                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.transactionsuccess",
-                            String.valueOf(unitCount - rejected), created.getTranslation().get(), econHelper.getCurrencySymbol(overallCost - refund)));
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.transactionpartial",
+                            Text.of(rejected), Text.of(created)));
+                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.transactionsuccess",
+                            Text.of(String.valueOf(unitCount - rejected)), Text.of(created),
+                            Text.of(econHelper.getCurrencySymbol(overallCost - refund))));
                 }
             } else {
                 // No funds.
