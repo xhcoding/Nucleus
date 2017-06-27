@@ -48,7 +48,7 @@ public class BackCommand extends AbstractCommand<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.literal(Text.of(this.key), "-f")
+            GenericArguments.optional(GenericArguments.literal(Text.of(this.key), "-f"))
         };
     }
 
