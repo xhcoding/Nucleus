@@ -78,6 +78,14 @@ public class ServerListCommand extends AbstractCommand<CommandSource> {
                     messageProvider.getTextMessageWithFormat("command.serverlist.whitelistmessages.click")
                         .toBuilder().onClick(TextActions.runCommand("/nucleus:serverlist -w")).toText());
             }
+        } else if (slc.getModifyServerList() == ServerListConfig.ServerListSelection.WHITELIST) {
+            src.sendMessage(messageProvider.getTextMessageWithFormat("command.serverlist.modify.whitelist"));
+
+            if (!slc.getWhitelist().isEmpty()) {
+                src.sendMessage(
+                        messageProvider.getTextMessageWithFormat("command.serverlist.whitelistmessages.click")
+                                .toBuilder().onClick(TextActions.runCommand("/nucleus:serverlist -w")).toText());
+            }
         } else {
             src.sendMessage(messageProvider.getTextMessageWithFormat("command.serverlist.modify.false"));
         }

@@ -17,7 +17,7 @@ import java.util.List;
 public class ServerListConfig {
 
     @Setting(value = "modify-server-list-messages", comment = "config.serverlist.modify")
-    private boolean modifyServerList = false;
+    private ServerListSelection modifyServerList = ServerListSelection.FALSE;
 
     @Setting(value = "hide-vanished-players", comment = "config.serverlist.hidevanished")
     private boolean hideVanishedPlayers = false;
@@ -35,7 +35,7 @@ public class ServerListConfig {
     public List<NucleusTextTemplateImpl> whitelist = Lists.newArrayList();
 
     public boolean isModifyServerList() {
-        return modifyServerList;
+        return this.modifyServerList == ServerListSelection.TRUE;
     }
 
     public boolean isHideVanishedPlayers() {
@@ -55,6 +55,20 @@ public class ServerListConfig {
     }
 
     public boolean enableListener() {
-        return modifyServerList || hideVanishedPlayers || hidePlayerCount;
+        return modifyServerList == ServerListSelection.TRUE || hideVanishedPlayers || hidePlayerCount;
+    }
+
+    public boolean enableWhitelistListener() {
+        return modifyServerList == ServerListSelection.WHITELIST;
+    }
+
+    public ServerListSelection getModifyServerList() {
+        return this.modifyServerList;
+    }
+
+    public enum ServerListSelection {
+        TRUE,
+        WHITELIST,
+        FALSE
     }
 }
