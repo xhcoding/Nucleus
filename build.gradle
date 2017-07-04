@@ -81,8 +81,6 @@ dependencies {
         exclude module: 'guava'
     }
 
-    compile "com.github.hsyyid:EssentialCmds:v8.1.7"
-
     // For Geo IP
     compile geoIpDep
 
