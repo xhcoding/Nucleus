@@ -40,7 +40,6 @@ import javax.inject.Inject;
 
 public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteService {
 
-    private final NucleusPlugin nucleus;
     @Inject private UserDataManager ucl;
 
     private final Map<UUID, Boolean> muteContextCache = Maps.newHashMap();
@@ -48,10 +47,6 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
 
     private boolean globalMuteEnabled = false;
     private final List<UUID> voicedUsers = Lists.newArrayList();
-
-    public MuteHandler(NucleusPlugin nucleus) {
-        this.nucleus = nucleus;
-    }
 
     @Override public boolean isMuted(User user) {
         return getPlayerMuteData(user).isPresent();
@@ -163,7 +158,7 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
     @Override public void accumulateContexts(Subject calculable, Set<Context> accumulator) {
         if (calculable instanceof User) {
             UUID u = ((User) calculable).getUniqueId();
-            if (muteContextCache.computeIfAbsent(u, k -> isMuted((User)calculable))) {
+            if (muteContextCache.computeIfAbsent(u, k -> isMuted((User) calculable))) {
                 accumulator.add(mutedContext);
             }
         }
@@ -171,7 +166,7 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
 
     @Override public boolean matches(Context context, Subject subject) {
         return context.getKey().equals("nucleus_muted") && subject instanceof User &&
-                muteContextCache.computeIfAbsent(((User) subject).getUniqueId(), k -> isMuted((User)subject));
+                muteContextCache.computeIfAbsent(((User) subject).getUniqueId(), k -> isMuted((User) subject));
     }
 
     public boolean isMutedCached(User x) {
