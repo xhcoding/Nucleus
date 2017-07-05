@@ -28,6 +28,13 @@ public class AFKConfig {
     @Setting(value = "messages", comment = "config.afk.messages.base")
     private MessagesConfig messages = new MessagesConfig();
 
+    @Setting(value = "triggers", comment = "config.afk.triggers.summary")
+    private Triggers triggers = new Triggers();
+
+    public Triggers getTriggers() {
+        return triggers;
+    }
+
     public long getAfkTime() {
         return afkTime;
     }
@@ -50,5 +57,44 @@ public class AFKConfig {
 
     public MessagesConfig getMessages() {
         return messages;
+    }
+
+    @ConfigSerializable
+    public static class Triggers {
+
+        @Setting(value = "on-chat", comment = "config.afk.triggers.onchat")
+        private boolean onChat = true;
+
+        @Setting(value = "on-command", comment = "config.afk.triggers.oncommand")
+        private boolean onCommand = true;
+
+        @Setting(value = "on-movement", comment = "config.afk.triggers.onmove")
+        private boolean onMovement = true;
+
+        @Setting(value = "on-rotation", comment = "config.afk.triggers.onrotation")
+        private boolean onRotation = true;
+
+        @Setting(value = "on-interact", comment = "config.afk.triggers.oninteract")
+        private boolean onInteract = true;
+
+        public boolean isOnChat() {
+            return onChat;
+        }
+
+        public boolean isOnCommand() {
+            return onCommand;
+        }
+
+        public boolean isOnMovement() {
+            return onMovement;
+        }
+
+        public boolean isOnRotation() {
+            return onRotation;
+        }
+
+        public boolean isOnInteract() {
+            return onInteract;
+        }
     }
 }

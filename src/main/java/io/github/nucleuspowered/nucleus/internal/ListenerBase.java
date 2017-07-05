@@ -23,12 +23,15 @@ public abstract class ListenerBase {
         return Maps.newHashMap();
     }
 
-    public abstract static class Reloadable extends ListenerBase implements ThrowableAction<Exception> {
+    public abstract static class Reloadable extends ListenerBase implements Reload {}
 
-        public abstract void onReload() throws Exception;
+    public interface Conditional {
 
-        @Override public final void action() throws Exception {
-            onReload();
-        }
+        boolean shouldEnable();
+    }
+
+    public interface Reload {
+
+        void onReload() throws Exception;
     }
 }
