@@ -4,8 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.staffchat;
 
+import io.github.nucleuspowered.nucleus.api.service.NucleusStaffChatService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.staffchat.service.StaffChatService;
+import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @ModuleData(id = StaffChatModule.ID, name = "Staff Chat")
@@ -24,5 +27,6 @@ public class StaffChatModule extends ConfigurableModule<StaffChatConfigAdapter> 
 
         // Registers itself.
         new StaffChatMessageChannel(plugin);
+        Sponge.getServiceManager().setProvider(this, NucleusStaffChatService.class, new StaffChatService());
     }
 }

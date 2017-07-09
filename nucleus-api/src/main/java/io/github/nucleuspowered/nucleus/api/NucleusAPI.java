@@ -20,6 +20,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusPlayerMetadataService
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusSeenService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusServerShopService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusStaffChatService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarningService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
@@ -234,6 +235,19 @@ public class NucleusAPI {
      */
     public static Optional<NucleusServerShopService> getServerShopService() {
         return getService(NucleusServerShopService.class);
+    }
+
+    /**
+     * Gets the {@link NucleusStaffChatService}, if it exists.
+     *
+     * <p>
+     *     Requires the "staff-chat" module.
+     * </p>
+     *
+     * @return The {@link NucleusStaffChatService}
+     */
+    public static Optional<NucleusStaffChatService> getStaffChatService() {
+        return getService(NucleusStaffChatService.class);
     }
 
     /**
