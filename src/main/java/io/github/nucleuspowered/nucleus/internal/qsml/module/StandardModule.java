@@ -26,6 +26,7 @@ import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
+import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -160,33 +161,50 @@ public abstract class StandardModule implements Module {
             if (conditionalListener != null) {
                 try {
                     Predicate<Nucleus> cl = conditionalListener.value().newInstance();
-
-                    // Add reloadable to load in the listener dynamically if required.
-                    plugin.registerReloadable(() -> {
+                    ThrowableAction<? extends Exception> tae = () -> {
                         Sponge.getEventManager().unregisterListeners(c);
                         if (cl.test(plugin)) {
-                            if (c instanceof ListenerBase.Reloadable) {
-                                ((ListenerBase.Reloadable) c).onReload();
+                            if (c instanceof ListenerBase.Reload) {
+                                ((ListenerBase.Reload) c).onReload();
                             }
                             Sponge.getEventManager().registerListeners(plugin, c);
                         }
-                    });
+                    };
 
-                    if (!cl.test(plugin)) {
-                        return;
-                    }
-                } catch (InstantiationException | IllegalAccessException e) {
+                    // Add reloadable to load in the listener dynamically if required.
+                    plugin.registerReloadable(tae);
+                    tae.action();
+                } catch (Exception e) {
                     if (plugin.isDebugMode()) {
                         e.printStackTrace();
                     }
 
                     return;
                 }
-            } else if (c instanceof ListenerBase.Reloadable) {
-                plugin.registerReloadable((ListenerBase.Reloadable) c);
-            }
+            } else if (c instanceof ListenerBase.Conditional) {
+                // Add reloadable to load in the listener dynamically if required.
+                ThrowableAction<? extends Exception> tae = () -> {
+                    Sponge.getEventManager().unregisterListeners(c);
+                    if (((ListenerBase.Conditional) c).shouldEnable()) {
+                        if (c instanceof ListenerBase.Reload) {
+                            ((ListenerBase.Reload) c).onReload();
+                        }
+                        Sponge.getEventManager().registerListeners(plugin, c);
+                    }
+                };
 
-            Sponge.getEventManager().registerListeners(plugin, c);
+                plugin.registerReloadable(tae);
+                try {
+                    tae.action();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (c instanceof ListenerBase.Reload) {
+                plugin.registerReloadable(((ListenerBase.Reload) c)::onReload);
+                Sponge.getEventManager().registerListeners(plugin, c);
+            } else {
+                Sponge.getEventManager().registerListeners(plugin, c);
+            }
         });
     }
 
