@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.api.exceptions.NicknameException;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
@@ -19,7 +20,9 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.events.ChangeNicknameEvent;
+import io.github.nucleuspowered.nucleus.modules.nickname.services.NicknameService;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -53,13 +56,11 @@ import javax.inject.Inject;
         notes = "To remove a nickname, use '/delnick'")
 public class NicknameCommand extends AbstractCommand<CommandSource> {
 
-    private final UserDataManager loader;
-    private final NicknameConfigAdapter nicknameConfigAdapter;
+    private final NicknameService nicknameService;
 
     @Inject
-    public NicknameCommand(UserDataManager loader, NicknameConfigAdapter nicknameConfigAdapter) {
-        this.loader = loader;
-        this.nicknameConfigAdapter = nicknameConfigAdapter;
+    public NicknameCommand(NicknameService service) {
+        this.nicknameService = service;
     }
 
     private final String playerKey = "subject";
@@ -67,7 +68,6 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
 
     // Order is important here! TODO: Need to de-dup
     private final Map<String, String> permissionToDesc = Maps.newHashMap();
-    private final Map<String[], Tuple<Matcher, Text>> replacements = Maps.newHashMap();
 
     @Override protected void afterPostInit() {
         super.afterPostInit();
@@ -78,10 +78,6 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
         String colPerm2 = permissions.getPermissionWithSuffix("color.");
 
         NameUtil.getColours().forEach((key, value) -> {
-            replacements.put(new String[]{colPerm + value.getName(), colPerm2 + value.getName()},
-                Tuple.of(Pattern.compile("[&]+" + key.toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
-                    mp.getTextMessageWithFormat("command.nick.colour.nopermswith", value.getName())));
-
             permissionToDesc.put(colPerm + value.getName(),
                     mp.getMessageWithFormat("permission.nick.colourspec", value.getName().toLowerCase(), key.toString()));
             permissionToDesc.put(colPerm2 + value.getName(), mp.getMessageWithFormat("permission.nick.colorspec", value.getName().toLowerCase(), key.toString()));
@@ -89,17 +85,9 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
 
         String stylePerm = permissions.getPermissionWithSuffix("style.");
         NameUtil.getStyles().entrySet().stream().filter(x -> x.getKey().getFirst() != 'k').forEach((k) -> {
-            replacements.put(new String[] { stylePerm + k.getKey().getSecond().toLowerCase() },
-                Tuple.of(Pattern.compile("[&]+" + k.getKey().getFirst().toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
-                    mp.getTextMessageWithFormat("command.nick.style.nopermswith", k.getKey().getSecond().toLowerCase())));
-
             permissionToDesc.put(stylePerm + k.getKey().getSecond().toLowerCase(),
                 mp.getMessageWithFormat("permission.nick.stylespec", k.getKey().getSecond().toLowerCase(), k.getKey().getFirst().toString()));
         });
-
-        replacements.put(new String[] { permissions.getPermissionWithSuffix("magic") },
-            Tuple.of(Pattern.compile("[&]+k", Pattern.CASE_INSENSITIVE).matcher(""),
-                mp.getTextMessageWithFormat("command.nick.style.nopermswith", "magic")));
     }
 
     @Override
@@ -132,81 +120,20 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = this.getUserFromArgs(User.class, src, playerKey, args);
-        String name = args.<String>getOne(nickName).get();
+        Text name = args.<String>getOne(nickName).map(TextSerializers.FORMATTING_CODE::deserialize).get();
 
-        // Does the user exist?
         try {
-            Optional<User> match =
-                Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(TextSerializers.FORMATTING_CODE.stripCodes(name));
-
-            // The only person who can use such a name is oneself.
-            if (match.isPresent() && !match.get().getUniqueId().equals(pl.getUniqueId())) {
-                // Fail - cannot use another's name.
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.nameinuse", name));
-                return CommandResult.empty();
-            }
-        } catch (IllegalArgumentException ignored) {
-            // We allow some other nicknames too.
+            nicknameService.setNick(pl, src, name, false);
+        } catch (NicknameException e) {
+            throw new ReturnMessageException(e.getTextMessage());
         }
-
-        // Giving subject must have the colour permissions and whatnot. Also,
-        // colour and color are the two spellings we support. (RULE BRITANNIA!)
-        stripPermissionless(src, name);
-
-        String strippedName = name.replaceAll("&[0-9a-fomlnk]", "");
-        Pattern p = nicknameConfigAdapter.getNodeOrDefault().getPattern();
-        if (!p.matcher(strippedName).matches()) {
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.nopattern", p.pattern()));
-        }
-
-        int strippedNameLength = strippedName.length();
-
-        // Do a regex remove to check minimum length requirements.
-        if (strippedNameLength < Math.max(nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength(), 1)) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.tooshort"));
-            return CommandResult.empty();
-        }
-
-        // Do a regex remove to check maximum length requirements. Will be at least the minimum length
-        if (strippedNameLength > Math.max(nicknameConfigAdapter.getNodeOrDefault().getMaxNicknameLength(), nicknameConfigAdapter.getNodeOrDefault().getMinNicknameLength())) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.toolong"));
-            return CommandResult.empty();
-        }
-
-        // Send an event
-        ChangeNicknameEvent cne = new ChangeNicknameEvent(Cause.of(NamedCause.source(src)), TextSerializers.FORMATTING_CODE.deserialize(name), pl);
-        if (Sponge.getEventManager().post(cne)) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.eventcancel", pl.getName()));
-            return CommandResult.empty();
-        }
-
-        NicknameUserDataModule nicknameUserDataModule = loader.get(pl).get().get(NicknameUserDataModule.class);
-        nicknameUserDataModule.setNickname(name);
-        Text set = nicknameUserDataModule.getNicknameAsText().get();
 
         if (!src.equals(pl)) {
             src.sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.success.other", pl.getName()))
-                    .append(Text.of(" - ", TextColors.RESET, set)).build());
-        }
-
-        if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(Text.builder().append(plugin.getMessageProvider().getTextMessageWithFormat("command.nick.success.base"))
-                    .append(Text.of(" - ", TextColors.RESET, set)).build());
+                    .append(Text.of(" - ", TextColors.RESET, name)).build());
         }
 
         return CommandResult.success();
     }
 
-
-    private void stripPermissionless(Subject source, String message) throws ReturnMessageException {
-        if (message.contains("&")) {
-            for (Map.Entry<String[], Tuple<Matcher, Text>> r : replacements.entrySet()) {
-                // If we don't have the required permission...
-                if (r.getValue().getFirst().reset(message).find() && Arrays.stream(r.getKey()).noneMatch(source::hasPermission)) {
-                    // throw
-                    throw new ReturnMessageException(r.getValue().getSecond());
-                }
-            }
-        }
-    }
 }

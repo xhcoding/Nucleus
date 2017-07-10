@@ -4,12 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.nickname.services.NicknameService;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -17,16 +15,22 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import javax.inject.Inject;
 
+@NonnullByDefault
 @RegisterCommand({"delnick", "delnickname", "deletenick"})
 @Permissions(mainOverride = "nick")
 public class DelNickCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private UserDataManager loader;
-
+    private final NicknameService nicknameService;
     private final String playerKey = "subject";
+
+    @Inject
+    public DelNickCommand(NicknameService nicknameService) {
+        this.nicknameService = nicknameService;
+    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -38,15 +42,10 @@ public class DelNickCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = this.getUserFromArgs(User.class, src, playerKey, args);
-        ModularUserService userService = loader.get(pl).get();
-        userService.get(NicknameUserDataModule.class).removeNickname();
+        nicknameService.setNick(pl, src, null, false);
 
         if (!src.equals(pl)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.delnick.success.other", pl.getName()));
-        }
-
-        if (pl.isOnline()) {
-            pl.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.delnick.success.base"));
         }
 
         return CommandResult.success();

@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusModuleService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNameBanService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPlayerMetadataService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
@@ -184,6 +185,21 @@ public class NucleusAPI {
     public static Optional<NucleusNameBanService> getNameBanService() {
         return getService(NucleusNameBanService.class);
     }
+
+
+    /**
+     * Gets the {@link NucleusNicknameService}, if it exists.
+     *
+     * <p>
+     *     Requires the "nickname" module.
+     * </p>
+     *
+     * @return The {@link NucleusNicknameService}
+     */
+    public static Optional<NucleusNicknameService> getNicknameService() {
+        return getService(NucleusNicknameService.class);
+    }
+
 
     /**
      * Gets the {@link NucleusNoteService}, if it exists.

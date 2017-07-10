@@ -23,14 +23,17 @@ public class NicknameUserDataModule extends DataModule.ReferenceService<ModularU
 
     // Transient, null infers that we need to retrieve the value.
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private static Optional<String> prefix = null;
+    private static Optional<Text> prefix = null;
 
     static {
         Nucleus.getNucleus().registerReloadable(() -> prefix = null);
     }
 
+    @DataKey("nickname-text")
+    @Nullable
     private Text nickname = null;
 
+    @Deprecated
     @DataKey("nickname")
     @Nullable
     private String nicknameStore;
@@ -39,59 +42,60 @@ public class NicknameUserDataModule extends DataModule.ReferenceService<ModularU
         super(modularDataService);
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void migrate() {
+        if (nicknameStore != null && !nicknameStore.isEmpty()) {
+            this.nickname = TextSerializers.FORMATTING_CODE.deserialize(nicknameStore);
+        }
+    }
+
     public Optional<Text> getNicknameWithPrefix() {
         if (getNicknameAsText().isPresent()) {
-            Optional<String> p = getNickPrefix();
+            Optional<Text> p = getNickPrefix();
             if (!p.isPresent() || p.get().isEmpty()) {
                 return getNicknameAsText();
             }
 
-            return Optional.of(Text.join(TextSerializers.FORMATTING_CODE.deserialize(p.get()), getNicknameAsText().get()));
+            return Optional.of(Text.join(p.get(), getNicknameAsText().get()));
         }
 
         return Optional.empty();
     }
 
     public Optional<Text> getNicknameAsText() {
-        if (this.nickname != null) {
-            return Optional.of(this.nickname);
-        }
-
-        Optional<String> os = getNicknameAsString();
-        if (!os.isPresent()) {
-            return Optional.empty();
-        }
-
-        nickname = TextSerializers.FORMATTING_CODE.deserialize(os.get());
-        return Optional.of(nickname);
+        return Optional.ofNullable(nickname);
     }
 
     public Optional<String> getNicknameAsString() {
-        return Optional.ofNullable(nicknameStore);
+        return getNicknameAsText().map(Text::toPlain);
     }
 
-    public void setNickname(String nickname) {
-        this.nicknameStore = nickname;
-        this.nickname = null;
+    public void setNickname(Text nickname) {
+        this.nickname = nickname;
 
-        Optional<String> p = getNickPrefix();
-        if (p.isPresent() && !p.get().isEmpty()) {
-            nickname = p + nickname;
-        }
-
-        Text nick = TextSerializers.FORMATTING_CODE.deserialize(nickname);
-        getService().getPlayer().ifPresent(x -> x.offer(Keys.DISPLAY_NAME, nick));
+        getService().getPlayer().ifPresent(x -> {
+            Optional<Text> p = getNickPrefix();
+            if (p.isPresent() && !p.get().isEmpty()) {
+                x.offer(Keys.DISPLAY_NAME, Text.join(p.get(), nickname));
+            } else {
+                x.offer(Keys.DISPLAY_NAME, nickname);
+            }
+        });
     }
 
     public void removeNickname() {
         nickname = null;
-        nicknameStore = null;
         getService().getPlayer().ifPresent(x -> x.remove(Keys.DISPLAY_NAME));
     }
 
-    private static Optional<String> getNickPrefix() {
+    private static Optional<Text> getNickPrefix() {
         if (prefix == null) {
-            prefix = Nucleus.getNucleus().getConfigValue(NicknameModule.ID, NicknameConfigAdapter.class, NicknameConfig::getPrefix);
+            prefix = Nucleus.getNucleus().getConfigValue(NicknameModule.ID, NicknameConfigAdapter.class, NicknameConfig::getPrefix)
+                    .map(TextSerializers.FORMATTING_CODE::deserialize);
+            if (prefix.map(Text::isEmpty).orElse(true)) {
+                prefix = Optional.empty();
+            }
         }
 
         return prefix;
