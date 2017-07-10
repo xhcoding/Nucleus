@@ -48,6 +48,16 @@ public abstract class DataModule<S extends ModularDataService<S>> {
                 e.printStackTrace();
             }
         }
+
+        // We loaded, migrate anything that needs to be migrated.
+        migrate();
+    }
+
+    /**
+     * Migrate data
+     */
+    protected void migrate() {
+        // noop
     }
 
     private <T> Optional<T> getValue(TypeToken<T> token, String[] path, ConfigurationNode node) {
