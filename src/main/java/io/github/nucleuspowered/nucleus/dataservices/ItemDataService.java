@@ -5,11 +5,9 @@
 package io.github.nucleuspowered.nucleus.dataservices;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
-import io.github.nucleuspowered.nucleus.configurate.datatypes.item.BlacklistNode;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.util.Action;
 import io.github.nucleuspowered.nucleus.util.Tuples;
@@ -23,14 +21,11 @@ import org.spongepowered.api.util.Tuple;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> {
 
     private Map<String, String> aliasToItemIdCache = null;
-    private Map<String, BlacklistNode> blacklistCache = null;
-    private Map<CatalogType, BlacklistNode> blacklistTypeCache = null;
     private Map<CatalogType, Double> buyCache = null;
     private Map<CatalogType, Double> sellCache = null;
     private final Set<Action> onItemUpdate = Sets.newHashSet();
@@ -117,31 +112,9 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
         return this.sellCache;
     }
 
-    public Map<CatalogType, BlacklistNode> getAllBlacklistedItemsByCatalogType() {
-        return ImmutableMap.copyOf(getBlacklistItemCache());
-    }
-
-    private Map<CatalogType, BlacklistNode> getBlacklistItemCache() {
-        if (this.blacklistTypeCache == null) {
-            this.blacklistTypeCache = getBlacklistCache().entrySet().stream()
-                .map(this::toCt).filter(x -> !x.getFirst().equals(ItemTypes.NONE)).collect(Collectors.toMap(Tuple::getFirst, Tuple::getSecond));
-        }
-
-        return this.blacklistTypeCache;
-    }
-
     private <T> Tuple<CatalogType, T> toCt(Map.Entry<String, T> x) {
         Optional<CatalogType> catalogType = Util.getCatalogTypeForItemFromId(x.getKey());
         return catalogType.map(catalogType1 -> Tuples.of(catalogType1, x.getValue())).orElseGet(() -> Tuples.of(ItemTypes.NONE, x.getValue()));
-    }
-
-    private Map<String, BlacklistNode> getBlacklistCache() {
-        if (this.blacklistCache == null) {
-            this.blacklistCache = data.entrySet().stream().filter(x -> x.getValue().isBlacklisted())
-                .collect(Collectors.toMap(Map.Entry::getKey, x -> x.getValue().getBlacklist()));
-        }
-
-        return this.blacklistCache;
     }
 
     private Map<String, String> getCache() {
@@ -165,8 +138,6 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
 
     private void clearCache() {
         aliasToItemIdCache = null;
-        blacklistCache = null;
-        blacklistTypeCache = null;
         buyCache = null;
         sellCache = null;
         onItemUpdate.forEach(Action::action);
