@@ -31,14 +31,34 @@ public class NicknameException extends Exception {
          */
         NOT_OWN_IGN,
 
+        /**
+         * The user has not got permission to use a style or colour
+         */
         INVALID_STYLE_OR_COLOUR,
 
+        /**
+         * This nickname does not conform to the nickname in the config
+         */
         INVALID_PATTERN,
 
+        /**
+         * This nickname is too short
+         */
         TOO_SHORT,
 
+        /**
+         * This nickname is too long
+         */
         TOO_LONG,
 
-        EVENT_CANCELLED
+        /**
+         * The nickname event was cancelled by a plugin
+         */
+        EVENT_CANCELLED,
+
+        /**
+         * The user cannot be found in the Nucleus system
+         */
+        NO_USER
     }
 }
