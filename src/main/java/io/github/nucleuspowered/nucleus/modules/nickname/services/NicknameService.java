@@ -76,24 +76,24 @@ public class NicknameService implements NucleusNicknameService {
     }
 
     @Override
-    public boolean setNickname(User user, @Nullable Text nickname, boolean bypassRestrictions) throws NicknameException {
-        Optional<ModularUserService> userService = Nucleus.getNucleus().getUserDataManager().get(user);
-        if (userService.isPresent()) {
-            if (nickname != null) {
-                setNick(user, Sponge.getServer().getConsole(), nickname, bypassRestrictions);
-            } else {
-                userService.get().get(NicknameUserDataModule.class).removeNickname();
+    public void setNickname(User user, @Nullable Text nickname, boolean bypassRestrictions) throws NicknameException {
+        ModularUserService userService = Nucleus.getNucleus().getUserDataManager().get(user)
+                .orElseThrow(() -> new NicknameException(
+                    Nucleus.getNucleus().getMessageProvider()
+                            .getTextMessageWithFormat("standard.error.nouser"),
+                    NicknameException.Type.NO_USER
+                ));
+        if (nickname != null) {
+            setNick(user, Sponge.getServer().getConsole(), nickname, bypassRestrictions);
+        } else {
+            userService.get(NicknameUserDataModule.class).removeNickname();
 
-                if (user.isOnline()) {
-                    user.getPlayer().ifPresent(x ->
-                        x.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.delnick.success.base")));
-                }
+            if (user.isOnline()) {
+                user.getPlayer().ifPresent(x ->
+                    x.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.delnick.success.base")));
             }
-
-            return true;
         }
 
-        return false;
     }
 
     public void setNick(User pl, CommandSource src, Text nickname, boolean bypass) throws NicknameException {

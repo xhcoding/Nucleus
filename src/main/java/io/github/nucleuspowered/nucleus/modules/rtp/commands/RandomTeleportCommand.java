@@ -22,6 +22,7 @@ import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler
 import io.github.nucleuspowered.nucleus.modules.rtp.RTPModule;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfig;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
+import io.github.nucleuspowered.nucleus.modules.rtp.events.RTPSelectedLocationEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
@@ -33,6 +34,8 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
@@ -144,6 +147,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
      */
     private class RTPTask extends CostCancellableTask {
 
+        private final Cause cause;
         private final int minY;
         private final int maxY;
         private final SubjectPermissionCache<? extends CommandSource> source;
@@ -177,6 +181,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             this.maxY = config.getMaxY(name);
             this.target = target;
             this.source = source;
+            this.cause = Cause.of(NamedCause.source(source.getSubject()));
         }
 
         @Override
@@ -252,6 +257,15 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
                     && oSafeLocation.get().getPosition().getY() <= maxY
                     && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get())
                     && isOnSurface(oSafeLocation.get())) {
+
+                    if (Sponge.getEventManager().post(new RTPSelectedLocationEvent(
+                            oSafeLocation.get(),
+                            this.target,
+                            this.cause
+                    ))) {
+                        onUnsuccesfulAttempt();
+                        return;
+                    }
 
                     Location<World> tpTarget = oSafeLocation.get();
 
