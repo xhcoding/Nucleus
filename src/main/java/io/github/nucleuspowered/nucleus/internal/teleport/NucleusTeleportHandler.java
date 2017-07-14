@@ -112,12 +112,12 @@ public class NucleusTeleportHandler {
     }
 
     public TeleportResult teleportPlayer(Player pl, Location<World> loc, TeleportMode mode, Cause of, boolean addOffset) {
-        return teleportPlayer(pl, loc, pl.getRotation(), mode, of, true);
+        return teleportPlayer(pl, loc, pl.getRotation(), mode, of, addOffset);
     }
 
     public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode,
             Cause cause) {
-        return teleportPlayer(player, locationToTeleportTo, player.getRotation(), teleportMode, cause, false);
+        return teleportPlayer(player, locationToTeleportTo, rotation, teleportMode, cause, false);
     }
 
     public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode,
