@@ -545,7 +545,7 @@ public class Util {
     }
 
     public static Inventory.Builder getKitInventoryBuilder() {
-        return Inventory.builder().of(InventoryArchetypes.CHEST).property(InventoryDimension.PROPERTY_NAM, new InventoryDimension(9, 4));
+        return Inventory.builder().of(InventoryArchetypes.CHEST).property(InventoryDimension.PROPERTY_NAME, new InventoryDimension(9, 4));
     }
 
     public static Optional<CatalogType> getTypeFromItemInHand(Player src) {

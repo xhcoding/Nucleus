@@ -10,7 +10,7 @@ plugins {
 }
 
 project.ext.versionno = '1.1.0'
-project.ext.spongeapiversion = '6.0'
+project.ext.spongeapiversion = '7.0'
 project.ext.suffix = '-SNAPSHOT'
 
 allprojects {
@@ -38,7 +38,7 @@ ext.url = 'http://nucleuspowered.org'
 
 group 'io.github.nucleuspowered'
 
-ext.spongeapi = '6.0.0'
+ext.spongeapi = '7.0.0-SNAPSHOT'
 
 def mixinversion = '0.25.1-5.1'
 def qsmlDep = "uk.co.drnaylor:quickstart-moduleloader:0.8.1"
