@@ -30,10 +30,10 @@ public interface NucleusNicknameService {
      *
      * @param user The {@link User} to change the nickname of
      * @param nickname The nickname, or {@code null} to remove it.
-     * @return {@code true} if successful
+     * @throws NicknameException if the nickname could not be set.
      */
-    default boolean setNickname(User user, @Nullable Text nickname) throws NicknameException {
-        return setNickname(user, nickname, false);
+    default void setNickname(User user, @Nullable Text nickname) throws NicknameException {
+        setNickname(user, nickname, false);
     }
 
     /**
@@ -42,18 +42,18 @@ public interface NucleusNicknameService {
      * @param user The {@link User} to change the nickname of
      * @param nickname The nickname, or {@code null} to remove it.
      * @param bypassRestrictions Whether to bypass the configured restrictions.
-     * @return {@code true} if successful
+     * @throws NicknameException if the nickname could not be set.
      */
-    boolean setNickname(User user, @Nullable Text nickname, boolean bypassRestrictions) throws NicknameException;
+    void setNickname(User user, @Nullable Text nickname, boolean bypassRestrictions) throws NicknameException;
 
     /**
      * Removes the nickname for the specified user.
      *
      * @param user The nickname to set.
-     * @return {@code true} if successful
+     * @throws NicknameException if the nickname could not be set.
      */
-    default boolean removeNickname(User user) throws NicknameException {
-        return setNickname(user, null);
+    default void removeNickname(User user) throws NicknameException {
+        setNickname(user, null);
     }
 
 }
