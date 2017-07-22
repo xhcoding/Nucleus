@@ -49,6 +49,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public abstract class TestBase {
 
@@ -117,6 +118,10 @@ public abstract class TestBase {
         }
 
         @Override public Path getDataPath() {
+            return null;
+        }
+
+        @Override public Supplier<Path> getDataPathSupplier() {
             return null;
         }
 
@@ -278,6 +283,10 @@ public abstract class TestBase {
 
         @Override protected void registerPermissions() {
 
+        }
+
+        @Override public boolean isServer() {
+            return true;
         }
     }
 }

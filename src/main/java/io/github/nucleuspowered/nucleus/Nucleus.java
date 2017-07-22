@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class Nucleus {
 
@@ -61,6 +62,8 @@ public abstract class Nucleus {
     public abstract Path getConfigDirPath();
 
     public abstract Path getDataPath();
+
+    public abstract Supplier<Path> getDataPathSupplier();
 
     public abstract UserDataManager getUserDataManager();
 
@@ -142,4 +145,6 @@ public abstract class Nucleus {
     public abstract void setSessionDebug(boolean debug);
 
     protected abstract void registerPermissions();
+
+    public abstract boolean isServer();
 }

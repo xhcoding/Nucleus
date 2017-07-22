@@ -36,6 +36,7 @@ import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.PreloadTasks;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
+import io.github.nucleuspowered.nucleus.internal.client.ClientMessageReciever;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
@@ -64,10 +65,10 @@ import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.GameState;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.Asset;
-import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -83,6 +84,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.enums.ConstructionPhase;
@@ -102,6 +104,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -149,7 +152,8 @@ public class NucleusPlugin extends Nucleus {
 
     private final Logger logger;
     private final Path configDir;
-    private final Path dataDir;
+    private final Supplier<Path> dataDir;
+    private boolean isServer = false;
     @Nullable private MixinConfigProxy mixinConfigProxy = null;
     private WarmupConfig warmupConfig;
 
@@ -162,7 +166,16 @@ public class NucleusPlugin extends Nucleus {
     public NucleusPlugin(@ConfigDir(sharedRoot = true) Path configDir, Logger logger, PluginContainer container) {
         Nucleus.setNucleus(this);
         this.configDir = configDir.resolve(PluginInfo.ID);
-        this.dataDir = Sponge.getGame().getSavesDirectory().resolve("nucleus");
+        Supplier<Path> sp;
+        try {
+            Path path = Sponge.getGame().getSavesDirectory().resolve("nucleus");
+            sp = () -> path;
+            this.isServer = true;
+        } catch (NullPointerException e) {
+            sp = () -> Sponge.getGame().getSavesDirectory().resolve("nucleus");
+        }
+
+        this.dataDir = sp;
         this.logger = new DebugLogger(this, logger);
         this.pluginContainer = container;
     }
@@ -170,7 +183,14 @@ public class NucleusPlugin extends Nucleus {
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitializationEvent) {
         // Setup object mapper.
-        ConsoleSource s = Sponge.getServer().getConsole();
+        MessageReceiver s;
+        if (Sponge.getGame().isServerAvailable()) {
+            s = Sponge.getServer().getConsole();
+        } else {
+            s = new ClientMessageReciever();
+        }
+
+
         s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
         s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome", PluginInfo.NAME,
                 PluginInfo.VERSION, Sponge.getPlatform().getContainer(Platform.Component.API).getVersion().orElse("unknown")));
@@ -197,7 +217,9 @@ public class NucleusPlugin extends Nucleus {
         // Get the mandatory config files.
         try {
             Files.createDirectories(this.configDir);
-            Files.createDirectories(dataDir);
+            if (this.isServer) {
+                Files.createDirectories(this.dataDir.get());
+            }
             commandsConfig = new CommandsConfig(Paths.get(configDir.toString(), "commands.conf"));
 
             DataProviders d = new DataProviders(this);
@@ -211,6 +233,10 @@ public class NucleusPlugin extends Nucleus {
             warmupManager = new WarmupManager();
             textParsingUtils = new TextParsingUtils(this);
             nameUtil = new NameUtil(this);
+
+            if (this.isServer) {
+                allChange(false);
+            }
         } catch (Exception e) {
             isErrored = e;
             disable();
@@ -233,7 +259,7 @@ public class NucleusPlugin extends Nucleus {
         try {
             final String he = this.messageProvider.getMessageWithFormat("config.main-header", PluginInfo.VERSION);
             HoconConfigurationLoader.Builder builder = HoconConfigurationLoader.builder();
-            moduleContainer = DiscoveryModuleContainer.builder()
+            this.moduleContainer = DiscoveryModuleContainer.builder()
                     .setConstructor(new QuickStartModuleConstructor(injector))
                     .setConfigurationLoader(
                         builder.setDefaultOptions(
@@ -300,9 +326,6 @@ public class NucleusPlugin extends Nucleus {
 
         // Load up the general data files now, mods should have registered items by now.
         try {
-            generalService.loadInternal();
-            kitService.loadInternal();
-
             // Reload so that we can update the serialisers.
             moduleContainer.reloadSystemConfig();
         } catch (Exception e) {
@@ -311,6 +334,7 @@ public class NucleusPlugin extends Nucleus {
             e.printStackTrace();
             return;
         }
+
 
         try {
             Sponge.getEventManager().post(new BaseModuleEvent.AboutToConstructEvent(this));
@@ -346,8 +370,49 @@ public class NucleusPlugin extends Nucleus {
     }
 
     @Listener
+    public void onGameAboutToStart(GameStartingServerEvent event) {
+        if (!this.isServer) {
+            try {
+                Files.createDirectories(this.dataDir.get());
+                allChange(true);
+            } catch (IOException e) {
+                isErrored = e;
+                disable();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void allChange(boolean load) {
+        this.generalService.changeFile();
+        this.kitService.changeFile();
+        this.nameBanService.changeFile();
+        this.userCacheService.changeFile();
+
+        this.userCacheService.load();
+        this.nameBanService.load();
+        if (load) {
+            this.generalService.load();
+            this.kitService.load();
+        }
+    }
+
+    @Listener
     public void onGameStarting(GameStartingServerEvent event) {
         if (isErrored == null) {
+            logger.info(messageProvider.getMessageWithFormat("startup.gamestart", PluginInfo.NAME));
+
+            // Load up the general data files now, mods should have registered items by now.
+            try {
+                generalService.loadInternal();
+                kitService.loadInternal();
+            } catch (Exception e) {
+                isErrored = e;
+                disable();
+                e.printStackTrace();
+                return;
+            }
+
             generalService.getTransient(UniqueUserCountTransientModule.class).resetUniqueUserCount();
 
             // Start the user cache walk if required, the user storage service is loaded at this point.
@@ -387,16 +452,20 @@ public class NucleusPlugin extends Nucleus {
     public void saveData() {
         userDataManager.saveAll();
         worldDataManager.saveAll();
-        try {
-            generalService.save();
-            nameBanService.save();
-            userCacheService.save();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (Sponge.getGame().getState().ordinal() > GameState.SERVER_ABOUT_TO_START.ordinal()) {
+            try {
+                generalService.save();
+                nameBanService.save();
+                userCacheService.save();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    @Override public Injector getInjector() {
+    @Override
+    public Injector getInjector() {
         return injector;
     }
 
@@ -405,12 +474,19 @@ public class NucleusPlugin extends Nucleus {
         return logger;
     }
 
-    @Override public Path getConfigDirPath() {
+    @Override
+    public Path getConfigDirPath() {
         return configDir;
     }
 
-    @Override public Path getDataPath() {
-        return dataDir;
+    @Override
+    public Path getDataPath() {
+        return this.dataDir.get();
+    }
+
+    @Override
+    public Supplier<Path> getDataPathSupplier() {
+        return this.dataDir;
     }
 
     /**
@@ -696,6 +772,11 @@ public class NucleusPlugin extends Nucleus {
                         .forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
             }
         }
+    }
+
+    @Override
+    public boolean isServer() {
+        return this.isServer;
     }
 
     private void disable() {
