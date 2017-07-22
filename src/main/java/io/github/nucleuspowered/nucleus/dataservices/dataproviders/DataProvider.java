@@ -13,4 +13,10 @@ public interface DataProvider<T> {
     void save(T info) throws Exception;
 
     void delete() throws Exception;
+
+    interface FileChanging<T> extends DataProvider<T> {
+
+        void onChange();
+    }
+
 }

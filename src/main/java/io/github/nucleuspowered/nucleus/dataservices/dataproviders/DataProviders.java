@@ -85,20 +85,24 @@ public class DataProviders {
         }
     }
 
-    public DataProvider<KitConfigDataNode> getKitsDataProvider() {
+    public DataProvider.FileChanging<KitConfigDataNode> getKitsDataProvider() {
         // For now, just the Configurate one.
         try {
-            Path p = plugin.getDataPath().resolve("kits.json");
-            return new ConfigurateDataProvider<>(ttmk, path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p, plugin.getLogger());
+            Supplier<Path> p = () -> plugin.getDataPath().resolve("kits.json");
+            return new FileChangingConfigurateDataProvider<>(
+                    ttmk,
+                    path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()),
+                    p,
+                    plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
     }
 
-    public DataProvider<UserCacheVersionNode> getUserCacheDataProvider() {
+    public DataProvider.FileChanging<UserCacheVersionNode> getUserCacheDataProvider() {
         try {
-            Path p = plugin.getDataPath().resolve("nucleususercache.json");
-            return new ConfigurateDataProvider<>(ttucv,
+            Supplier<Path> p = () -> plugin.getDataPath().resolve("nucleususercache.json");
+            return new FileChangingConfigurateDataProvider<>(ttucv,
                     path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p, plugin.getLogger());
         } catch (Exception e) {
             return null;
@@ -106,12 +110,15 @@ public class DataProviders {
     }
 
 
-    public DataProvider<ConfigurationNode> getGeneralDataProvider() {
+    public DataProvider.FileChanging<ConfigurationNode> getGeneralDataProvider() {
         // For now, just the Configurate one.
         try {
-            Path p = plugin.getDataPath().resolve("general.json");
-            return new SimpleConfigurateDataProvider(path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), p,
-                    false, plugin.getLogger());
+            Supplier<Path> p = () -> plugin.getDataPath().resolve("general.json");
+            return new FileChangingSimpleConfigurateDataProvider(
+                    path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()),
+                    p,
+                    false,
+                    plugin.getLogger());
         } catch (Exception e) {
             return null;
         }
@@ -127,11 +134,16 @@ public class DataProviders {
         }
     }
 
-    public DataProvider<Map<String, String>> getNameBanDataProvider() {
+    public DataProvider.FileChanging<Map<String, String>> getNameBanDataProvider() {
         // For now, just the Configurate one.
         try {
-            Path p = plugin.getDataPath().resolve("namebans.json");
-            return new ConfigurateDataProvider<>(ttss, path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()), HashMap::new, p, false, plugin.getLogger());
+            Supplier<Path> p = () -> plugin.getDataPath().resolve("namebans.json");
+            return new FileChangingConfigurateDataProvider<>(ttss, path -> new LazyConfigurationLoader<>(
+                    () -> getGsonBuilder().setPath(path).build()),
+                    HashMap::new,
+                    p,
+                    false,
+                    plugin.getLogger());
         } catch (Exception e) {
             return null;
         }

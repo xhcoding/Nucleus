@@ -28,7 +28,7 @@ public class UserCacheService extends AbstractService<UserCacheVersionNode> {
     private final Object lockingObject = new Object();
 
     public UserCacheService(DataProvider<UserCacheVersionNode> dataProvider) throws Exception {
-        super(dataProvider);
+        super(dataProvider, false);
     }
 
     public List<UUID> getForIp(String ip) {

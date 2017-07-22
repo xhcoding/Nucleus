@@ -216,7 +216,17 @@ public abstract class StandardModule implements Module {
         commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
-            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().execute(c).interval(c.interval().toMillis(), TimeUnit.MILLISECONDS);
+            Task.Builder tb = Sponge.getScheduler().createTaskBuilder().interval(c.interval().toMillis(), TimeUnit.MILLISECONDS);
+            if (Nucleus.getNucleus().isServer()) {
+                tb.execute(c);
+            } else {
+                tb.execute(t -> {
+                    if (Sponge.getGame().isServerAvailable()) {
+                        c.accept(t);
+                    }
+                });
+            }
+
             if (c.isAsync()) {
                 tb.async();
             }
