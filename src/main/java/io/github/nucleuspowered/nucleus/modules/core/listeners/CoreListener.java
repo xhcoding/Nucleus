@@ -110,7 +110,9 @@ public class CoreListener extends ListenerBase {
             }
 
             c.setFirstJoin(player.getJoinData().firstPlayed().get());
-            c.setLastIp(player.getConnection().getAddress().getAddress());
+            if (this.plugin.isServer()) {
+                c.setLastIp(player.getConnection().getAddress().getAddress());
+            }
 
             // We'll do this bit shortly - after the login events have resolved.
             final String name = player.getName();

@@ -133,7 +133,7 @@ public abstract class ModularDataService<S extends ModularDataService<S>> extend
             saveTimings.startTimingIfSync();
 
             // If there is nothing in the cache, don't save (because we don't need to).
-            if (!cached.isEmpty() || !(data.isVirtual() || data.getValue() == null)) {
+            if (data != null && (!cached.isEmpty() || !(data.isVirtual() || data.getValue() == null))) {
                 ImmutableMap.copyOf(cached).values().forEach(x -> x.saveTo(data));
                 return super.save();
             }

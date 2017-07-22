@@ -22,4 +22,5 @@ public class ModularGeneralService extends ModularDataService<ModularGeneralServ
     @Override <T extends DataModule<ModularGeneralService>> Optional<T> tryGet(Class<T> module) {
         return DataModuleFactory.get(module, this);
     }
+
 }

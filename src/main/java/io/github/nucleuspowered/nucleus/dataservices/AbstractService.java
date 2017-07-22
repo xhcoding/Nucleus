@@ -24,6 +24,12 @@ public abstract class AbstractService<T> implements Service {
         }
     }
 
+    public final void changeFile() {
+        if (this.dataProvider instanceof DataProvider.FileChanging) {
+            ((DataProvider.FileChanging) this.dataProvider).onChange();
+        }
+    }
+
     @Override public boolean load() {
         try {
             loadInternal();
@@ -43,17 +49,21 @@ public abstract class AbstractService<T> implements Service {
     }
 
     @Override public boolean save() {
-        try {
-            dataProvider.save(data);
-            return true;
-        } catch (Exception e) {
-            Nucleus.getNucleus().getLogger().error(e.getMessage());
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
+        if (data != null) {
+            try {
+                dataProvider.save(data);
+                return true;
+            } catch (Exception e) {
+                Nucleus.getNucleus().getLogger().error(e.getMessage());
+                if (Nucleus.getNucleus().isDebugMode()) {
+                    e.printStackTrace();
+                }
 
-            return false;
+                return false;
+            }
         }
+
+        return true;
     }
 
     @Override public boolean delete() {
