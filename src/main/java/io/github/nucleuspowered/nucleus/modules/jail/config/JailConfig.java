@@ -22,6 +22,9 @@ public class JailConfig {
     @Setting(value = "jail-time-counts-online-only",comment = "config.jail.countonlineonly")
     private boolean jailOnlineOnly = false;
 
+    @Setting(value = "require-separate-unjail-permission", comment = "config.jail.unjail")
+    private boolean requireUnjailPermission = false;
+
     public List<String> getAllowedCommands() {
         return allowedCommands;
     }
@@ -32,5 +35,9 @@ public class JailConfig {
 
     public boolean isJailOnlineOnly() {
         return jailOnlineOnly;
+    }
+
+    public boolean isRequireUnjailPermission() {
+        return requireUnjailPermission;
     }
 }
