@@ -33,6 +33,7 @@ public class ConnectionListener extends ListenerBase.Reloadable {
 
     private int reservedSlots = 0;
     @Nullable private Text whitelistMessage;
+    @Nullable private Text fullMessage;
 
     /**
      * Perform connection events on when a player is currently not permitted to join.
@@ -58,14 +59,23 @@ public class ConnectionListener extends ListenerBase.Reloadable {
             return;
         }
 
-        if (user.hasPermission(this.joinFullServer)) {
+        int slotsLeft = Sponge.getServer().getMaxPlayers() - Sponge.getServer().getOnlinePlayers().size();
+        if (slotsLeft <= 0) {
+            if (user.hasPermission(this.joinFullServer)) {
 
-            // online >= max, so online - max will always >= 0
-            if (this.reservedSlots <= -1 ||
-                    Sponge.getServer().getOnlinePlayers().size() - Sponge.getServer().getMaxPlayers() < this.reservedSlots) {
-                event.setCancelled(false);
+                // That minus sign before slotsLeft is not a typo. Leave it be!
+                // It will be negative, reserved slots is positive - need to account for that.
+                if (this.reservedSlots <= -1 || -slotsLeft < this.reservedSlots) {
+                    event.setCancelled(false);
+                    return;
+                }
+            }
+
+            if (this.fullMessage != null) {
+                event.setMessage(this.fullMessage);
             }
         }
+
     }
 
     @Override
@@ -75,9 +85,12 @@ public class ConnectionListener extends ListenerBase.Reloadable {
         return mp;
     }
 
-    @Override public void onReload() throws Exception {
+    @Override
+    public void onReload() throws Exception {
         ConnectionConfig connectionConfig = this.plugin.getConfigAdapter(ConnectionModule.ID, ConnectionConfigAdapter.class).get().getNodeOrDefault();
         this.reservedSlots = connectionConfig.getReservedSlots();
         this.whitelistMessage = connectionConfig.getWhitelistMessage().orElse(null);
+        this.fullMessage = connectionConfig.getServerFullMessage().orElse(null);
     }
+
 }

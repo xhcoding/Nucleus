@@ -20,21 +20,27 @@ public class ConnectionConfig {
     @Setting(value = "whitelist-message", comment = "config.connection.whitelistmessage")
     private String whitelistMessage = "";
 
-    private Text cache = null;
+    @Setting(value = "server-full-message", comment = "config.connection.serverfullmessage")
+    private String serverFullMessage = "";
 
     public int getReservedSlots() {
         return reservedSlots;
     }
 
     public Optional<Text> getWhitelistMessage() {
-        if (whitelistMessage == null || whitelistMessage.isEmpty()) {
+        return getMessageFrom(this.whitelistMessage);
+    }
+
+    public Optional<Text> getServerFullMessage() {
+        return getMessageFrom(this.serverFullMessage);
+    }
+
+    private Optional<Text> getMessageFrom(String text) {
+        if (text == null || text.isEmpty()) {
             return Optional.empty();
         }
 
-        if (cache == null) {
-            cache = TextSerializers.FORMATTING_CODE.deserializeUnchecked(whitelistMessage);
-        }
-
-        return Optional.of(this.cache);
+        return Optional.of(TextSerializers.FORMATTING_CODE.deserializeUnchecked(text));
     }
+
 }
