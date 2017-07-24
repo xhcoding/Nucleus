@@ -17,12 +17,15 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
+import org.spongepowered.api.command.args.CommandFlags;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
@@ -32,6 +35,9 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Permissions(prefix = "teleport", supportsOthers = true)
 @NoModifiers
@@ -49,24 +55,32 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                // "Flags", otherwise putting -1 wouldn't work.
-                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "-f")),
-                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "--force")),
-                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("c"), "-c")),
-                GenericArguments.optionalWeak(GenericArguments.literal(Text.of("c"), "--chunk")),
-                new NoDescriptionArgument(GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "-f"))),
-                new NoDescriptionArgument(GenericArguments.optionalWeak(GenericArguments.literal(Text.of("f"), "--force"))),
-
-                // Actual arguments
-                GenericArguments.optionalWeak(
-                        GenericArguments.requiringPermission(
-                                GenericArguments.onlyOne(
-                        SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER)), permissions.getOthers())),
-                GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.world(Text.of(location)))),
-                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
-                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),
-                GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(z), Integer.MIN_VALUE, Integer.MAX_VALUE))
+                GenericArguments.flags()
+                    .setUnknownShortFlagBehavior(CommandFlags.UnknownFlagBehavior.IGNORE)
+                    .flag("f", "-force")
+                    .flag("c", "-chunk")
+                    .permissionFlag(this.permissions.getPermissionWithSuffix("exempt.bordercheck"),"b", "-border")
+                    .buildWith(
+                        GenericArguments.seq(
+                            // Actual arguments
+                            GenericArguments.optionalWeak(
+                                    GenericArguments.requiringPermission(
+                                            GenericArguments.onlyOne(
+                                                    SelectorWrapperArgument.nicknameSelector(Text.of(key), NicknameArgument.UnderlyingType.PLAYER)), permissions.getOthers())),
+                            GenericArguments.onlyOne(GenericArguments.optionalWeak(GenericArguments.world(Text.of(location)))),
+                            GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(x), Integer.MIN_VALUE, Integer.MAX_VALUE)),
+                            GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(y), 0, 255)),
+                            GenericArguments.onlyOne(new BoundedIntegerArgument(Text.of(z), Integer.MIN_VALUE, Integer.MAX_VALUE))
+                        )
+                )
         };
+    }
+
+    @Override
+    protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
+        return new HashMap<String, PermissionInformation>() {{
+            put("exempt.bordercheck", PermissionInformation.getWithTranslation("permission.tppos.border", SuggestedLevel.ADMIN));
+        }};
     }
 
     @Override
@@ -100,7 +114,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
 
         // Create the location
         Location<World> loc = new Location<>(world, xx, yy, zz);
-        if (!Util.isLocationInWorldBorder(loc)) {
+        if (!args.hasAny("b") && !Util.isLocationInWorldBorder(loc)) {
             throw ReturnMessageException.fromKey("command.tppos.worldborder");
         }
 

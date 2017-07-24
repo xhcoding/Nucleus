@@ -61,4 +61,5 @@ public class KitPermissionBypassCommand extends AbstractCommand<CommandSource> {
 
         return CommandResult.success();
     }
+
 }
