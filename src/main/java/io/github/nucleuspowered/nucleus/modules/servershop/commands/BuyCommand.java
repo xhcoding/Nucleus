@@ -146,19 +146,20 @@ public class BuyCommand extends AbstractCommand<Player> {
             // Get the money, transact, return the money on fail.
             Inventory target = Util.getStandardInventory(src);
             if (econHelper.withdrawFromPlayer(src, overallCost, false)) {
+                Text name = Text.of(created);
                 InventoryTransactionResult itr = target.offer(created);
                 if (itr.getRejectedItems().isEmpty()) {
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.transactionsuccess",
-                            Text.of(unitCount), Text.of(created), Text.of(econHelper.getCurrencySymbol(overallCost))));
+                            Text.of(unitCount), name, Text.of(econHelper.getCurrencySymbol(overallCost))));
                 } else {
                     Collection<ItemStackSnapshot> iss = itr.getRejectedItems();
                     int rejected = iss.stream().mapToInt(ItemStackSnapshot::getCount).sum();
                     double refund = rejected * perUnitCost;
                     econHelper.depositInPlayer(src, refund, false);
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.transactionpartial",
-                            Text.of(rejected), Text.of(created)));
+                            Text.of(rejected), name));
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.transactionsuccess",
-                            Text.of(String.valueOf(unitCount - rejected)), Text.of(created),
+                            Text.of(String.valueOf(unitCount - rejected)), name,
                             Text.of(econHelper.getCurrencySymbol(overallCost - refund))));
                 }
             } else {
