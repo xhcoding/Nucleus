@@ -43,6 +43,9 @@ public class ConnectionMessagesConfig {
     @Default(value = "&f{{name}} &ewas previously known by a different name - they were known as &f{{previousname}}", saveDefaultIfNull = true)
     private NucleusTextTemplateImpl priorNameMessage;
 
+    @Setting(value = "force-show-all-connection-messages", comment = "config.connectionmessages.showall")
+    private boolean forceForAll = true;
+
     public boolean isShowFirstTimeMessage() {
         return showFirstTimeMessage;
     }
@@ -77,5 +80,9 @@ public class ConnectionMessagesConfig {
 
     public NucleusTextTemplateImpl getPriorNameMessage() {
         return priorNameMessage;
+    }
+
+    public boolean isForceForAll() {
+        return forceForAll;
     }
 }
