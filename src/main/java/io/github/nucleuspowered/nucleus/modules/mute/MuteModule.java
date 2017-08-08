@@ -39,7 +39,6 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
 
         try {
             MuteHandler m = new MuteHandler();
-            plugin.getInjector().injectMembers(m);
             serviceManager.registerService(MuteHandler.class, m);
             Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> x.registerContextCalculator(m));
         } catch (Exception ex) {

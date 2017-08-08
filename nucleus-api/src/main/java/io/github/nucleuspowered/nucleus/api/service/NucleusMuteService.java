@@ -19,6 +19,13 @@ import javax.annotation.Nullable;
 public interface NucleusMuteService {
 
     /**
+     * The permission context key that indicates a player is muted.
+     *
+     * <p>The value of this context will always be true if set.</p>
+     */
+    String MUTED_CONTEXT = "nucleus_muted";
+
+    /**
      * Gets whether a {@link User} is muted.
      *
      * @param user The {@link User} to check.

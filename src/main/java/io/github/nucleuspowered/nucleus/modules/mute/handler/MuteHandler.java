@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.mute.handler;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.Util;
@@ -40,13 +41,17 @@ import javax.inject.Inject;
 
 public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteService {
 
-    @Inject private UserDataManager ucl;
+    private final UserDataManager ucl;
 
     private final Map<UUID, Boolean> muteContextCache = Maps.newHashMap();
-    private final Context mutedContext = new Context("nucleus_muted", "true");
+    private final Context mutedContext = new Context(NucleusMuteService.MUTED_CONTEXT, "true");
 
     private boolean globalMuteEnabled = false;
     private final List<UUID> voicedUsers = Lists.newArrayList();
+
+    public MuteHandler() {
+        this.ucl = Nucleus.getNucleus().getUserDataManager();
+    }
 
     @Override public boolean isMuted(User user) {
         return getPlayerMuteData(user).isPresent();
@@ -58,14 +63,9 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
 
     // Internal
     public Optional<MuteData> getPlayerMuteData(User user) {
-        Optional<ModularUserService> nu = ucl.get(user, false);
-        if (nu.isPresent()) {
-            muteContextCache.put(user.getUniqueId(), true);
-            return nu.get().get(MuteUserDataModule.class).getMuteData();
-        }
-
-        muteContextCache.put(user.getUniqueId(), false);
-        return Optional.empty();
+        Optional<MuteData> nu = ucl.get(user, false).map(x -> x.get(MuteUserDataModule.class).getMuteData().orElse(null));
+        this.muteContextCache.put(user.getUniqueId(), nu.isPresent());
+        return nu;
     }
 
     @Override public boolean mutePlayer(User user, String reason, @Nullable Duration duration, Cause cause) {
@@ -94,7 +94,7 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
         }
 
         u.get(MuteUserDataModule.class).setMuteData(data);
-        muteContextCache.put(u.getUniqueId(), true);
+        this.muteContextCache.put(u.getUniqueId(), true);
         Sponge.getEventManager().post(new MuteEvent.Muted(
                 cause,
                 user,
@@ -158,14 +158,14 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
     @Override public void accumulateContexts(Subject calculable, Set<Context> accumulator) {
         if (calculable instanceof User) {
             UUID u = ((User) calculable).getUniqueId();
-            if (muteContextCache.computeIfAbsent(u, k -> isMuted((User) calculable))) {
+            if (this.muteContextCache.computeIfAbsent(u, k -> isMuted((User) calculable))) {
                 accumulator.add(mutedContext);
             }
         }
     }
 
     @Override public boolean matches(Context context, Subject subject) {
-        return context.getKey().equals("nucleus_muted") && subject instanceof User &&
+        return context.getKey().equals(NucleusMuteService.MUTED_CONTEXT) && subject instanceof User &&
                 muteContextCache.computeIfAbsent(((User) subject).getUniqueId(), k -> isMuted((User) subject));
     }
 
