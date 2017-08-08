@@ -14,11 +14,13 @@ import org.mockito.Mockito;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
+import org.spongepowered.api.service.permission.SubjectReference;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("SameParameterValue")
@@ -146,8 +148,9 @@ public class ListGroupTests {
         // The player is in both groups. Also, order is important.
         List<Subject> parents = Lists.newArrayList(admin, ace);
         Player player = Mockito.mock(Player.class);
-        Mockito.when(player.getParents()).thenReturn(parents);
-        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(parents);
+        List<SubjectReference> lsr = getSubjectReferences(parents);
+        Mockito.when(player.getParents()).thenReturn(lsr);
+        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(lsr);
 
         // Create our map.
         Map<Player, List<String>> map = Maps.newHashMap();
@@ -180,8 +183,9 @@ public class ListGroupTests {
         // The player is in both groups.
         List<Subject> parents = Lists.newArrayList(ace, admin);
         Player player = Mockito.mock(Player.class);
-        Mockito.when(player.getParents()).thenReturn(parents);
-        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(parents);
+        List<SubjectReference> lsr = getSubjectReferences(parents);
+        Mockito.when(player.getParents()).thenReturn(lsr);
+        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(lsr);
 
         // Create our map.
         Map<Player, List<String>> map = Maps.newHashMap();
@@ -228,8 +232,9 @@ public class ListGroupTests {
         // The player is in both groups. Also, order is important.
         List<Subject> parents = Lists.newArrayList(admin, ace);
         Player player = Mockito.mock(Player.class);
-        Mockito.when(player.getParents()).thenReturn(parents);
-        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(parents);
+        List<SubjectReference> lsr = getSubjectReferences(parents);
+        Mockito.when(player.getParents()).thenReturn(lsr);
+        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(lsr);
 
         // Create our map.
         Map<Player, List<String>> map = Maps.newHashMap();
@@ -262,8 +267,9 @@ public class ListGroupTests {
         List<Subject> parents = Lists.newArrayList(admin, ace);
         Player player = Mockito.mock(Player.class);
         Player player2 = Mockito.mock(Player.class);
-        Mockito.when(player.getParents()).thenReturn(parents);
-        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(parents);
+        List<SubjectReference> lsr = getSubjectReferences(parents);
+        Mockito.when(player.getParents()).thenReturn(lsr);
+        Mockito.when(player.getParents(Mockito.anySet())).thenReturn(lsr);
         Mockito.when(player2.getParents()).thenReturn(Lists.newArrayList());
         Mockito.when(player2.getParents(Mockito.anySet())).thenReturn(Lists.newArrayList());
 
@@ -310,8 +316,9 @@ public class ListGroupTests {
             .then(x -> ls.stream().map(y -> y.getOption("nucleus.list.weight")).filter(Optional::isPresent).findFirst().orElse(Optional.empty()));
         Mockito.when(subject.getOption(Mockito.eq("nucleus.list.weight")))
             .then(x -> ls.stream().map(y -> y.getOption("nucleus.list.weight")).filter(Optional::isPresent).findFirst().orElse(Optional.empty()));
-        Mockito.when(subject.getParents()).thenReturn(Arrays.asList(parents));
-        Mockito.when(subject.getParents(Mockito.anySetOf(Context.class))).thenReturn(Arrays.asList(parents));
+        List<SubjectReference> lsr = getSubjectReferences(Arrays.asList(parents));
+        Mockito.when(subject.getParents()).thenReturn(lsr);
+        Mockito.when(subject.getParents(Mockito.anySetOf(Context.class))).thenReturn(lsr);
         return subject;
     }
 
@@ -321,8 +328,22 @@ public class ListGroupTests {
         Mockito.when(subject.getOption(Mockito.anySetOf(Context.class), Mockito.eq("nucleus.list.weight")))
             .thenReturn(Optional.of(String.valueOf(weight)));
         Mockito.when(subject.getOption(Mockito.eq("nucleus.list.weight"))).thenReturn(Optional.of(String.valueOf(weight)));
-        Mockito.when(subject.getParents()).thenReturn(Arrays.asList(parents));
-        Mockito.when(subject.getParents(Mockito.anySetOf(Context.class))).thenReturn(Arrays.asList(parents));
+        List<SubjectReference> lsr = getSubjectReferences(Arrays.asList(parents));
+        Mockito.when(subject.getParents()).thenReturn(lsr);
+        Mockito.when(subject.getParents(Mockito.anySetOf(Context.class))).thenReturn(lsr);
         return subject;
+    }
+
+    private static List<SubjectReference> getSubjectReferences(List<Subject> ls) {
+        return ls.stream().map(x -> {
+            SubjectReference srmock = Mockito.mock(SubjectReference.class);
+            Mockito.when(srmock.resolve()).then(y -> {
+                CompletableFuture<Subject> c = new CompletableFuture<>();
+                c.complete(x);
+                return c;
+            });
+
+            return srmock;
+        }).collect(Collectors.toList());
     }
 }

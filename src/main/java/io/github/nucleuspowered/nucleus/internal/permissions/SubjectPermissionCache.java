@@ -10,6 +10,7 @@ import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.service.permission.SubjectReference;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -23,6 +24,7 @@ import java.util.Set;
  *
  * @param <S> The type of {@link Subject}
  */
+// TODO: Remove when we go API 7+ only.
 @NonnullByDefault
 public class SubjectPermissionCache<S extends Subject> implements Subject {
 
@@ -61,6 +63,14 @@ public class SubjectPermissionCache<S extends Subject> implements Subject {
         return this.subject.getContainingCollection();
     }
 
+    @Override public SubjectReference asSubjectReference() {
+        return this.subject.asSubjectReference();
+    }
+
+    @Override public boolean isSubjectDataPersisted() {
+        return this.subject.isSubjectDataPersisted();
+    }
+
     @Override public SubjectData getSubjectData() {
         return this.subject.getSubjectData();
     }
@@ -79,12 +89,12 @@ public class SubjectPermissionCache<S extends Subject> implements Subject {
                 ? Tristate.TRUE : Tristate.FALSE;
     }
 
-    @Override public boolean isChildOf(Set<Context> contexts, Subject parent) {
-        return subject.isChildOf(contexts, parent);
+    @Override public boolean isChildOf(Set<Context> contexts, SubjectReference parent) {
+        return false;
     }
 
-    @Override public List<Subject> getParents(Set<Context> contexts) {
-        return subject.getParents(contexts);
+    @Override public List<SubjectReference> getParents(Set<Context> contexts) {
+        return this.subject.getParents(contexts);
     }
 
     @Override public Optional<String> getOption(Set<Context> contexts, String key) {
