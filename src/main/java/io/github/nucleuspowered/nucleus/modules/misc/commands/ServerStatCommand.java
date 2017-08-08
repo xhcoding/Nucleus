@@ -25,6 +25,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColor;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
+import org.spongepowered.api.world.GeneratorType;
 import org.spongepowered.api.world.World;
 
 import java.lang.management.ManagementFactory;
@@ -84,10 +85,13 @@ public class ServerStatCommand extends AbstractCommand<CommandSource> {
             int loadedChunks = Iterables.size(world.getLoadedChunks());
             messages.add(notQuiteEmpty);
             messages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.serverstat.world.title", world.getName()));
+
+            // https://github.com/NucleusPowered/Nucleus/issues/888
+            GeneratorType genType = world.getDimension().getGeneratorType();
             messages.add(plugin.getMessageProvider().getTextMessageWithFormat(
                     "command.serverstat.world.info",
                     world.getDimension().getType().getName(),
-                    world.getDimension().getGeneratorType().getName(),
+                    genType == null ? this.plugin.getMessageProvider().getMessageWithFormat("standard.unknown") : genType.getName(),
                     String.valueOf(numOfEntities),
                     String.valueOf(loadedChunks)));
         }

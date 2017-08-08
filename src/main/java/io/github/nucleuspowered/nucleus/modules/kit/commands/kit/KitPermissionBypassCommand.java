@@ -18,6 +18,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import javax.inject.Inject;
 
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 @RegisterCommand(value = {"permissionbypass"}, subcommandOf = KitCommand.class)
 @RunAsync
 @NoModifiers
+@NonnullByDefault
 public class KitPermissionBypassCommand extends AbstractCommand<CommandSource> {
 
     private final KitHandler kitConfig;
@@ -55,8 +57,9 @@ public class KitPermissionBypassCommand extends AbstractCommand<CommandSource> {
         kitInfo.kit.setIgnoresPermission(b);
         kitConfig.saveKit(kitInfo.name, kitInfo.kit);
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(b ? "command.kit.permissionbypass.on" : "command.kit.permissionbypass.off",
-                kitInfo.name));
+                kitInfo.name.toLowerCase()));
 
         return CommandResult.success();
     }
+
 }
