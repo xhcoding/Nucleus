@@ -44,12 +44,10 @@ import javax.inject.Inject;
 @RegisterCommand(value = {"setupperms", "setperms"}, subcommandOf = NucleusCommand.class)
 public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
 
-    private final CoreConfigAdapter cca;
     private final PermissionRegistry permissionRegistry;
 
     @Inject
-    public SetupPermissionsCommand(CoreConfigAdapter cca, PermissionRegistry permissionRegistry) {
-        this.cca = cca;
+    public SetupPermissionsCommand(PermissionRegistry permissionRegistry) {
         this.permissionRegistry = permissionRegistry;
     }
 
@@ -89,9 +87,10 @@ public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
         @Override
         protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
             String a = args.next();
-            Optional<Subject> ls = getGroups(args).stream().filter(x -> x.getIdentifier().equalsIgnoreCase(a)).findFirst();
+            Optional<String> ls = getGroups(args).stream().filter(x -> x.equalsIgnoreCase(a)).findFirst();
             if (ls.isPresent()) {
-                return ls.get();
+                return Sponge.getServiceManager().provide(PermissionService.class).get()
+                        .getGroupSubjects().getSubject(ls.get()).get();
             }
 
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.permissiongroup.nogroup", a));
@@ -101,20 +100,29 @@ public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
         public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
             try {
                 String a = args.peek();
-                return getGroups(args).stream().map(Contextual::getIdentifier).filter(x -> x.toLowerCase().contains(a)).collect(Collectors.toList());
+                return getGroups(args).stream().filter(x -> x.toLowerCase().contains(a)).collect(Collectors.toList());
             } catch (Exception e) {
                 return Collections.emptyList();
             }
         }
 
-        private Set<Subject> getGroups(CommandArgs args) throws ArgumentParseException {
+        private Set<String> getGroups(CommandArgs args) throws ArgumentParseException {
             Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
             if (!ops.isPresent()) {
                 throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.permissiongroup.noservice"));
             }
 
             PermissionService ps = ops.get();
-            return Sets.newHashSet(ps.getGroupSubjects().getAllSubjects());
+            try {
+                return Sets.newHashSet(ps.getGroupSubjects().getAllIdentifiers().get());
+            } catch (Exception e) {
+                // TODO - Sort this out for API 7+
+                if (Nucleus.getNucleus().isDebugMode()) {
+                    e.printStackTrace();
+                }
+
+                throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.permissiongroup.failed"));
+            }
         }
     }
 }

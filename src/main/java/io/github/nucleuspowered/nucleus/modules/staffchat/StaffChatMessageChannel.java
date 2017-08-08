@@ -14,11 +14,10 @@ import io.github.nucleuspowered.nucleus.modules.staffchat.config.StaffChatConfig
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.source.ProxySource;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.context.Context;
-import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.permission.SubjectCollection;
 import org.spongepowered.api.service.permission.SubjectData;
+import org.spongepowered.api.service.permission.SubjectReference;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MessageReceiver;
@@ -130,6 +129,16 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
         }
 
         @Override
+        public SubjectReference asSubjectReference() {
+            return getOriginalSource().asSubjectReference();
+        }
+
+        @Override
+        public boolean isSubjectDataPersisted() {
+            return getOriginalSource().isSubjectDataPersisted();
+        }
+
+        @Override
         public SubjectData getSubjectData() {
             return getOriginalSource().getSubjectData();
         }
@@ -145,12 +154,12 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
         }
 
         @Override
-        public boolean isChildOf(Set<Context> contexts, Subject parent) {
+        public boolean isChildOf(Set<Context> contexts, SubjectReference parent) {
             return getOriginalSource().isChildOf(contexts, parent);
         }
 
         @Override
-        public List<Subject> getParents(Set<Context> contexts) {
+        public List<SubjectReference> getParents(Set<Context> contexts) {
             return getOriginalSource().getParents();
         }
 

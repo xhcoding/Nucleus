@@ -73,9 +73,11 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -511,7 +513,17 @@ public class Util {
             // Try to cache already known values
             Function<Subject, Integer> subjectIntegerFunction = subject -> subjects.computeIfAbsent(subject, k -> k.getParents(contextSet).size());
 
+            // TODO: Make all completable futures - API 7 (seriously)
             return pl.getParents(contextSet).stream().distinct()
+                    .map(x -> {
+                        try {
+                            return x.resolve().get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
                     .sorted(Comparator.comparingInt(subjectIntegerFunction::apply))
                     .collect(Collectors.toList());
         } catch (Exception e) {
