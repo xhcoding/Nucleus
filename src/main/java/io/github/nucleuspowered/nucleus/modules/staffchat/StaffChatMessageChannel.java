@@ -82,4 +82,5 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
                     this.colour = x.getNodeOrDefault().getColour();
                 });
     }
+
 }

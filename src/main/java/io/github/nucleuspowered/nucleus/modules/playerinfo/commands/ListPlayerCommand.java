@@ -6,11 +6,13 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.commands;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -36,12 +38,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+// TODO: Put return on a new sync thread when permission data comes back.
 @NonnullByDefault
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
@@ -107,9 +111,19 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
         return CommandResult.success();
     }
 
-    private void listByPermissionGroup(final PermissionService service, Collection<Player> players, CommandSource src, boolean showVanished) {
+    private void listByPermissionGroup(final PermissionService service, Collection<Player> players, CommandSource src, boolean showVanished)
+            throws ReturnMessageException {
         // Get the groups
-        List<Subject> groups = Lists.newArrayList(service.getGroupSubjects().getAllSubjects());
+        List<Subject> groups = Lists.newArrayList();
+        try {
+            service.getGroupSubjects().applyToAll(groups::add).get();
+        } catch (InterruptedException | ExecutionException e) {
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
+            }
+
+            throw ReturnMessageException.fromKey("command.list.permission.failed");
+        }
 
         // If weights are the same, sort them in reverse order - that way we get the most inherited
         // groups first and display them first.

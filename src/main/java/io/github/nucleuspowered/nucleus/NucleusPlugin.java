@@ -682,19 +682,17 @@ public class NucleusPlugin extends Nucleus {
     @Override protected void registerPermissions() {
         Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
         if (ops.isPresent()) {
-            Optional<PermissionDescription.Builder> opdb = ops.get().newDescriptionBuilder(this);
-            if (opdb.isPresent()) {
+            PermissionDescription.Builder opdb = ops.get().newDescriptionBuilder(this);
                 Map<String, PermissionInformation> m = this.getPermissionRegistry().getPermissions();
                 m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN)
                         .filter(x -> x.getValue().isNormal)
-                        .forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
+                        .forEach(k -> ops.get().newDescriptionBuilder(this).assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
                 m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD)
                         .filter(x -> x.getValue().isNormal)
-                        .forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
+                        .forEach(k -> ops.get().newDescriptionBuilder(this).assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
                 m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER)
                         .filter(x -> x.getValue().isNormal)
-                        .forEach(k -> ops.get().newDescriptionBuilder(this).get().assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
-            }
+                        .forEach(k -> ops.get().newDescriptionBuilder(this).assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
         }
     }
 
