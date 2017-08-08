@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -51,10 +52,13 @@ import javax.inject.Inject;
 @NoModifiers
 @RegisterCommand({"mute", "unmute"})
 @EssentialsEquivalent({"mute", "silence"})
-public class MuteCommand extends AbstractCommand<CommandSource> {
+public class MuteCommand extends AbstractCommand<CommandSource> implements AbstractCommand.Reloadable {
 
     private final MuteConfigAdapter mca;
     private final MuteHandler handler;
+
+    private boolean requireUnmutePermission = false;
+    private long maxMute = Long.MAX_VALUE;
 
     private final static String mutedChatPermission = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(MuteCommand.class)
             .getPermissionWithSuffix("seemutedchat");
@@ -76,6 +80,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("unmute", PermissionInformation.getWithTranslation("permission.mute.unmute", SuggestedLevel.MOD));
         m.put("exempt.length", PermissionInformation.getWithTranslation("permission.mute.exempt.length", SuggestedLevel.ADMIN));
         m.put("exempt.target", PermissionInformation.getWithTranslation("permission.mute.exempt.target", SuggestedLevel.MOD));
         m.put("notify", PermissionInformation.getWithTranslation("permission.mute.notify", SuggestedLevel.MOD));
@@ -107,10 +112,14 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
 
         // No time, no reason, but is muted, unmute
         if (omd.isPresent() && !time.isPresent() && !reas.isPresent()) {
-            // Unmute.
-            handler.unmutePlayer(user, Cause.of(NamedCause.source(src)), false);
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.unmute.success", user.getName(), src.getName()));
-            return CommandResult.success();
+            if (!this.requireUnmutePermission || this.permissions.testSuffix(src, "unmute")) {
+                // Unmute.
+                this.handler.unmutePlayer(user, Cause.of(NamedCause.source(src)), false);
+                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.unmute.success", user.getName(), src.getName()));
+                return CommandResult.success();
+            }
+
+            throw ReturnMessageException.fromKey("command.unmute.perm");
         }
 
         // Do we have a reason?
@@ -120,7 +129,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
             ua = ((Player) src).getUniqueId();
         }
 
-        if (time.orElse(Long.MAX_VALUE) > mca.getNodeOrDefault().getMaximumMuteLength() &&  mca.getNodeOrDefault().getMaximumMuteLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
+        if (this.maxMute > 0 && time.orElse(Long.MAX_VALUE) > this.maxMute && !permissions.testSuffix(src, "exempt.length")) {
             throw ReturnMessageException.fromKey("command.mute.length.toolong",
                     Util.getTimeStringFromSeconds(mca.getNodeOrDefault().getMaximumMuteLength()));
         }
@@ -173,5 +182,11 @@ public class MuteCommand extends AbstractCommand<CommandSource> {
             user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.standard"));
             user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.reason", data.getReason()));
         }
+    }
+
+    @Override
+    public void onReload() {
+        this.requireUnmutePermission = this.mca.getNodeOrDefault().isRequireUnmutePermission();
+        this.maxMute = this.mca.getNodeOrDefault().getMaximumMuteLength();
     }
 }

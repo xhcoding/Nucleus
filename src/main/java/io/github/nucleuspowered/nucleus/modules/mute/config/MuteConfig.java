@@ -28,6 +28,9 @@ public class MuteConfig {
     @Setting(value = "mute-time-counts-online-only",comment = "config.mute.countonlineonly")
     private boolean muteOnlineOnly = false;
 
+    @Setting(value = "require-separate-unmute-permission", comment = "config.mute.unmute")
+    private boolean requireUnmutePermission = false;
+
     public List<String> getBlockedCommands() {
         return blockedCommands;
     }
@@ -46,5 +49,9 @@ public class MuteConfig {
 
     public boolean isMuteOnlineOnly() {
         return muteOnlineOnly;
+    }
+
+    public boolean isRequireUnmutePermission() {
+        return requireUnmutePermission;
     }
 }

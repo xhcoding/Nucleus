@@ -18,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
@@ -48,23 +49,27 @@ import javax.inject.Inject;
 @NoModifiers
 @RegisterCommand({"jail", "unjail", "togglejail"})
 @EssentialsEquivalent({"togglejail", "tjail", "unjail", "jail"})
-public class JailCommand extends AbstractCommand<CommandSource> {
+public class JailCommand extends AbstractCommand<CommandSource> implements AbstractCommand.Reloadable {
 
+    private final JailConfigAdapter jca;
     private final JailHandler handler;
 
     private final String playerKey = "subject";
     private final String jailKey = "jail";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
+    private boolean requireUnjailPermission = false;
 
     @Inject
-    public JailCommand(JailHandler handler) {
+    public JailCommand(JailConfigAdapter jca, JailHandler handler) {
+        this.jca = jca;
         this.handler = handler;
     }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("unjail", PermissionInformation.getWithTranslation("permission.jail.unjail", SuggestedLevel.MOD));
         m.put("notify", PermissionInformation.getWithTranslation("permission.jail.notify", SuggestedLevel.MOD));
         m.put("offline", PermissionInformation.getWithTranslation("permission.jail.offline", SuggestedLevel.MOD));
         m.put("teleportjailed", PermissionInformation.getWithTranslation("permission.jail.teleportjailed", SuggestedLevel.ADMIN));
@@ -92,7 +97,11 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         }
 
         if (handler.isPlayerJailed(pl)) {
-            return onUnjail(src, args, pl);
+            if (!this.requireUnjailPermission || permissions.testSuffix(src, "unjail")) {
+                return onUnjail(src, args, pl);
+            }
+
+            throw ReturnMessageException.fromKey("command.jail.unjail.perm");
         } else {
             if (permissions.testSuffix(pl, "exempt.target", src, false)) { // only for jailing
                 throw ReturnMessageException.fromKey("command.jail.exempt", pl.getName());
@@ -102,21 +111,19 @@ public class JailCommand extends AbstractCommand<CommandSource> {
         }
     }
 
-    private CommandResult onUnjail(CommandSource src, CommandContext args, User user) {
+    private CommandResult onUnjail(CommandSource src, CommandContext args, User user) throws ReturnMessageException {
         if (handler.unjailPlayer(user, Cause.of(NamedCause.owner(src)))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.unjail.success", user.getName()));
             return CommandResult.success();
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.unjail.fail", user.getName()));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.jail.unjail.fail", user.getName());
         }
     }
 
-    private CommandResult onJail(CommandSource src, CommandContext args, User user) {
+    private CommandResult onJail(CommandSource src, CommandContext args, User user) throws ReturnMessageException {
         Optional<LocationData> owl = args.getOne(jailKey);
         if (!owl.isPresent()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.jail.nojail"));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.jail.jail.nojail");
         }
 
         // This might not be there.
@@ -158,7 +165,11 @@ public class JailCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.error"));
-        return CommandResult.empty();
+        throw ReturnMessageException.fromKey("command.jail.error");
+    }
+
+    @Override
+    public void onReload() {
+        this.requireUnjailPermission = this.jca.getNodeOrDefault().isRequireUnjailPermission();
     }
 }

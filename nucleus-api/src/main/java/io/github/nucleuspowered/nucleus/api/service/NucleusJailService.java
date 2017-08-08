@@ -22,6 +22,21 @@ import java.util.Optional;
  */
 @NonnullByDefault
 public interface NucleusJailService {
+
+    /**
+     * The permission context key that indicates a player is jailed.
+     *
+     * <p>The value of this context will always be true if set.</p>
+     */
+    String JAILED_CONTEXT = "nucleus_jailed";
+
+    /**
+     * The permission context key that indicates which jail a player is in.
+     *
+     * <p>The value of this context will be the name of the jail.</p>
+     */
+    String JAIL_CONTEXT = "nucleus_jail";
+
     /**
      * Sets a jail location in the world.
      *
