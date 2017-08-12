@@ -71,6 +71,10 @@ public class MessageConfig {
         return socialSpy.mutedTag;
     }
 
+    public String getBlockedTag() {
+        return socialSpy.blocked;
+    }
+
     public Targets spyOn() {
         return socialSpy.targets;
     }
@@ -98,6 +102,9 @@ public class MessageConfig {
 
         @Setting(value = "cancelled-messages-tag", comment = "config.message.socialspy.mutedtag")
         private String mutedTag = "&c[cancelled] ";
+
+        @Setting(value = "msgtoggle-blocked-messages-tag", comment = "config.message.socialspy.msgtoggle")
+        private String blocked = "&c[blocked] ";
 
         @Setting(value = "senders-to-spy-on", comment = "config.message.socialspy.spyon")
         private Targets targets = new Targets();
