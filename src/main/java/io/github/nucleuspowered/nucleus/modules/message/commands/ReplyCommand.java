@@ -23,6 +23,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import javax.inject.Inject;
 
@@ -34,11 +35,17 @@ import javax.inject.Inject;
 @ConfigCommandAlias(value = "message", generate = false)
 @RegisterCommand({"reply", "r"})
 @EssentialsEquivalent({"r", "reply"})
+@NonnullByDefault
 public class ReplyCommand extends AbstractCommand<CommandSource> {
 
     private final String message = "message";
 
-    @Inject private MessageHandler handler;
+    private final MessageHandler handler;
+
+    @Inject
+    public ReplyCommand(MessageHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public CommandElement[] getArguments() {

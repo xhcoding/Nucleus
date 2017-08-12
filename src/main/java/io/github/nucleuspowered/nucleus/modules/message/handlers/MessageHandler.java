@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.message.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
@@ -17,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.message.MessageModule;
 import io.github.nucleuspowered.nucleus.modules.message.commands.MessageCommand;
+import io.github.nucleuspowered.nucleus.modules.message.commands.MsgToggleCommand;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfig;
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
@@ -63,6 +65,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     private final Map<UUID, UUID> messagesReceived = Maps.newHashMap();
     private final Map<UUID, CustomMessageTarget<? extends CommandSource>> targets = Maps.newHashMap();
     private final Map<String, UUID> targetNames = Maps.newHashMap();
+    private final String msgToggleBypass = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(MsgToggleCommand.class)
+            .getPermissionWithSuffix("bypass");
 
     public static final String socialSpyOption = "nucleus.socialspy.level";
 
@@ -105,7 +109,7 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     }
 
     @Override public int getServerLevel() {
-        return getSocialSpyLevelForSource(Sponge.getServer().getConsole());
+        return this.serverLevel;
     }
 
     @Override public int getSocialSpyLevel(User user) {
@@ -136,7 +140,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         }).orElse(false);
     }
 
-    @Override public boolean canSpyOn(User spyingUser, CommandSource... sourceToSpyOn) throws IllegalArgumentException {
+    @Override
+    public boolean canSpyOn(User spyingUser, CommandSource... sourceToSpyOn) throws IllegalArgumentException {
         if (sourceToSpyOn.length == 0) {
             throw new IllegalArgumentException("sourceToSpyOn must have at least one CommandSource");
         }
@@ -161,7 +166,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         return false;
     }
 
-    @Override public Set<CommandSource> onlinePlayersCanSpyOn(boolean includeConsole, CommandSource... sourceToSpyOn)
+    @Override
+    public Set<CommandSource> onlinePlayersCanSpyOn(boolean includeConsole, CommandSource... sourceToSpyOn)
             throws IllegalArgumentException {
         if (sourceToSpyOn.length == 0) {
             throw new IllegalArgumentException("sourceToSpyOn must have at least one CommandSource");
@@ -202,11 +208,25 @@ public class MessageHandler implements NucleusPrivateMessagingService {
     @Override
     public boolean sendMessage(CommandSource sender, CommandSource receiver, String message) {
         // Message is about to be sent. Send the event out. If canceled, then that's that.
+        boolean isBlocked = false;
         boolean isCancelled = Sponge.getEventManager().post(new InternalNucleusMessageEvent(sender, receiver, message));
         if (isCancelled) {
             sender.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("message.cancel"));
 
             // Only continue to show Social Spy messages if the subject is muted.
+            if (!messageConfig.isShowMessagesInSocialSpyWhileMuted()) {
+                return false;
+            }
+        }
+
+        // What about msgtoggle?
+        if (receiver instanceof Player && !sender.hasPermission(this.msgToggleBypass) &&
+                ucl.get((Player) receiver).map(x -> !x.get(MessageUserDataModule.class).isMsgToggle()).orElse(false)) {
+            isCancelled = true;
+            isBlocked = true;
+            sender.sendMessage(Nucleus.getNucleus().getMessageProvider()
+                    .getTextMessageWithTextFormat("message.blocked", Nucleus.getNucleus().getNameUtil().getName((Player) receiver)));
+
             if (!messageConfig.isShowMessagesInSocialSpyWhileMuted()) {
                 return false;
             }
@@ -235,7 +255,9 @@ public class MessageHandler implements NucleusPrivateMessagingService {
         }
 
         NucleusTextTemplateImpl prefix = messageConfig.getMessageSocialSpyPrefix();
-        if (isCancelled) {
+        if (isBlocked) {
+            prefix = NucleusTextTemplateFactory.createFromAmpersandString(messageConfig.getBlockedTag() + prefix.getRepresentation());
+        } if (isCancelled) {
             prefix = NucleusTextTemplateFactory.createFromAmpersandString(messageConfig.getMutedTag() + prefix.getRepresentation());
         }
 

@@ -13,6 +13,9 @@ public class MessageUserDataModule extends DataModule.ReferenceService<ModularUs
     @DataKey("socialspy")
     private boolean socialspy = false;
 
+    @DataKey("msgtoggle")
+    private boolean msgToggle = true;
+
     public MessageUserDataModule(ModularUserService modularDataService) {
         super(modularDataService);
     }
@@ -24,4 +27,13 @@ public class MessageUserDataModule extends DataModule.ReferenceService<ModularUs
     public void setSocialSpy(boolean socialSpy) {
         this.socialspy = socialSpy;
     }
+
+    public boolean isMsgToggle() {
+        return msgToggle;
+    }
+
+    public void setMsgToggle(boolean msgToggle) {
+        this.msgToggle = msgToggle;
+    }
+
 }
