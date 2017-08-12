@@ -13,13 +13,13 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(supportsOthers = true)
 @RegisterCommand("heal")
 @EssentialsEquivalent("heal")
+@NonnullByDefault
 public class HealCommand extends AbstractCommand.SimpleTargetOtherPlayer {
-
-    private static final String player = "subject";
 
     @Override protected CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {
         if (pl.offer(Keys.HEALTH, pl.get(Keys.MAX_HEALTH).get()).isSuccessful()) {
