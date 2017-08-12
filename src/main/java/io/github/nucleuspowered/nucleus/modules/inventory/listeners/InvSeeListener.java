@@ -4,23 +4,34 @@
  */
 package io.github.nucleuspowered.nucleus.modules.inventory.listeners;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.inventory.commands.InvSeeCommand;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
+import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.type.CarriedInventory;
 
+import java.util.Map;
+import java.util.UUID;
+
 public class InvSeeListener extends ListenerBase {
 
-    private CommandPermissionHandler invSeePermissionHandler =
-            Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(InvSeeCommand.class);
+    private static Map<UUID, Inventory> preventModify = Maps.newHashMap();
+
+    public static void addEntry(UUID uuid, Container inventory) {
+        preventModify.put(uuid, inventory);
+    }
 
     /**
      * Fired when a {@link Player} interacts with another's inventory.
@@ -31,49 +42,25 @@ public class InvSeeListener extends ListenerBase {
      */
     @Listener
     @Exclude({ClickInventoryEvent.Open.class, ClickInventoryEvent.Close.class})
-    public void onInventoryChange(ClickInventoryEvent event, @Root Player player, @Getter("getTargetInventory") Inventory targetInventory) {
+    public void onInventoryChange(ClickInventoryEvent event, @Root Player player, @Getter("getTargetInventory") Container targetInventory) {
 
-        // This seems to be throwing an NPE. Can't confirm, but will put this in debug mode.
-        //noinspection ConstantConditions
-        if (targetInventory == null) {
-            if (plugin.isDebugMode()) {
-                // Tell the console
-                plugin.getLogger().warn("When trying to listen for the inventory events, targetInventory is null");
-            }
-
-            return;
-        }
-
-        if (!(targetInventory instanceof CarriedInventory)) {
-            return;
-        }
-
-        CarriedInventory<?> carriedInventory = (CarriedInventory)targetInventory;
-        //noinspection ConstantConditions
-        if (carriedInventory.getCarrier() == null) {
-            if (plugin.isDebugMode()) {
-                // Tell the console
-                plugin.getLogger().warn("When trying to listen for the inventory events, targetInventory#getCarrier() is null. "
-                        + "THIS SHOULD NOT HAPPEN - this is a Sponge issue.");
-            }
-
-            return;
-        }
-
-        if (!carriedInventory.getCarrier().isPresent() || !(carriedInventory.getCarrier().get() instanceof Player)) {
-            return;
-        }
-
-        Player target = (Player)carriedInventory.getCarrier().get();
-        if (player.equals(target)) {
-            return;
-        }
-
-        // Ok, so we're interacting with another subject's inventory.
-        if (!invSeePermissionHandler.testSuffix(player, "modify") ||
-                invSeePermissionHandler.testSuffix(target, "exempt.interact", player,false)) {
-            event.getCursorTransaction().setValid(false);
+        if (preventModify.get(player.getUniqueId()) == targetInventory) {
             event.setCancelled(true);
+            event.getCursorTransaction().setValid(false);
+        }
+
+    }
+
+    @Listener(order = Order.POST)
+    public void onInventoryClose(ClickInventoryEvent.Close event, @Root Player player, @Getter("getTargetInventory") Container targetInventory) {
+        if (preventModify.get(player.getUniqueId()) == targetInventory) {
+            preventModify.remove(player.getUniqueId());
         }
     }
+
+    @Listener
+    public void onLogout(ClientConnectionEvent.Disconnect event, @Root Player player) {
+        preventModify.remove(player.getUniqueId());
+    }
+
 }
