@@ -26,7 +26,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 @RunAsync
 @NoModifiers
 @Permissions
-@RegisterCommand("tellplain")
+@RegisterCommand({"tellplain", "plaintell", "ptell"})
 @NonnullByDefault
 public class TellPlainCommand extends AbstractCommand<CommandSource> {
     private final String target = "target";
