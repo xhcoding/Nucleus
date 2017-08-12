@@ -14,15 +14,16 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.manipulator.mutable.entity.FoodData;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(supportsOthers = true)
 @RegisterCommand({"feed", "eat"})
 @EssentialsEquivalent({"feed", "eat"})
+@NonnullByDefault
 public class FeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
-    private static final String player = "subject";
-
-    @Override protected CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {
+    @Override
+    protected CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {
         // Get the food data and modify it.
         FoodData foodData = pl.getFoodData();
         Value<Integer> f = foodData.foodLevel().set(foodData.foodLevel().getDefault());
