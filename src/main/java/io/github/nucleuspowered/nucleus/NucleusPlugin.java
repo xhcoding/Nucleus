@@ -366,7 +366,7 @@ public class NucleusPlugin extends Nucleus {
         modulesLoaded = true;
         Sponge.getEventManager().post(new BaseModuleEvent.Complete(this));
 
-        logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
+        logger.info(messageProvider.getMessageWithFormat("startup.completeinit", PluginInfo.NAME));
     }
 
     @Listener
@@ -417,6 +417,7 @@ public class NucleusPlugin extends Nucleus {
 
             // Start the user cache walk if required, the user storage service is loaded at this point.
             Task.builder().async().execute(() -> userCacheService.startFilewalkIfNeeded()).submit(this);
+            logger.info(messageProvider.getMessageWithFormat("startup.started", PluginInfo.NAME));
         }
     }
 
