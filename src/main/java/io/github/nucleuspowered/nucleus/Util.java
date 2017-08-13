@@ -90,7 +90,7 @@ public class Util {
     public static final DateTimeFormatter FULL_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL)
             .withZone(ZoneId.systemDefault());
 
-    public static final Text NOT_EMPTY = Text.of(" ");
+    public static final Text SPACE = Text.of(" ");
 
     private static final TextTemplate CHAT_TEMPLATE = TextTemplate.of(TextTemplate.arg(MessageEvent.PARAM_MESSAGE_HEADER).build(),
             TextTemplate.arg(MessageEvent.PARAM_MESSAGE_BODY).build(), TextTemplate.arg(MessageEvent.PARAM_MESSAGE_FOOTER).build());
@@ -372,23 +372,14 @@ public class Util {
             // Option for context.
             Optional<String> os = player.getOption(player.getActiveContexts(), o);
             if (os.isPresent()) {
-                return os;
+                return os.map(r -> r.isEmpty() ? null : r);
             }
 
             // General option
             os = player.getOption(o);
             if (os.isPresent()) {
-                return os;
+                return os.map(r -> r.isEmpty() ? null : r);
             }
-        }
-
-        return Optional.empty();
-    }
-
-    public static Optional<String> getTranslatedStringFromItemId(String id) {
-        Optional<CatalogType> type = getCatalogTypeForItemFromId(id);
-        if (type.isPresent()) {
-            return Optional.of(getTranslatableIfPresentOnCatalogType(type.get()));
         }
 
         return Optional.empty();
@@ -557,10 +548,6 @@ public class Util {
         }
     }
 
-    public static CatalogType getTypeFromItem(ItemStackSnapshot is) {
-        return getTypeFromItem(is.createStack());
-    }
-
     public static CatalogType getTypeFromItem(ItemStack is) {
         try {
             Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
@@ -582,72 +569,4 @@ public class Util {
         world.spawnEntity(entityToDrop, Cause.of(NamedCause.owner(Nucleus.getNucleus())));
     }
 
-    /**
-     * Gets a rotation from a direction as specified by a {@link Vector3d}
-     * @param direction The direction to be facing.
-     * @return The {@link Vector3d} containing the required rotation. If looking straight up or down, the yaw will be either 90 or -90.
-     */
-    public static Vector3d getRotationFromDirection(Vector3d direction) {
-        Preconditions.checkArgument(direction.lengthSquared() != 0, "Direction cannot be zero in all directions");
-        Vector3d normalised = direction.normalize();
-
-        // x-z plane represented by theta = atan2
-        double yaw;
-        final double z = normalised.getZ();
-        if (z != 0) {
-            yaw = TrigMath.RAD_TO_DEG * TrigMath.atan2(normalised.getX(), z);
-        } else {
-            // If Z is zero, it's either -90 (for +X) or 90 (for -X)
-            yaw = normalised.getX() > 0 ? -90 : 90;
-        }
-
-        // y direction represented by angle between direction in x-z plane and actual direction
-        // Normalised, so we know the length of the overall direction is one. Sign of y determines the pitch being up or down.
-        double pitch = TrigMath.acos(normalised.toVector2(true).length()) * -Math.signum(normalised.getY());
-
-        return new Vector3d(TrigMath.RAD_TO_DEG * pitch, yaw, 0);
-    }
-
-    /**
-     * Gets the {@link Vector3d} direction from the rotation of an object.
-     * @param rotation The Euler angle rotation.
-     * @return The {@link Vector3d} that represents the direction.
-     */
-    public static Vector3d getDirectionFromRotation(Vector3d rotation) {
-        // Special cases.
-        if (rotation.getX() <= -90) {
-            return Vector3d.UP;
-        } else if (rotation.getX() >= 90) {
-            return Vector3d.UP.negate();
-        }
-
-        // X - y = -90 is UP, y = 90 is DOWN.
-        double rotx = rotation.getX();
-        double y = -TrigMath.sin(TrigMath.DEG_TO_RAD * rotx);
-        double roty = rotation.getY();
-
-        // Corrections.
-        if (roty > 180) {
-            roty -= 360;
-        } else if (roty < -180) {
-            roty += 360;
-        }
-
-        if (roty == 0) {
-            return Vector3d.UNIT_Z.add(0, y, 0);
-        } else if (Math.abs(roty) >= 180) {
-            return Vector3d.UNIT_Z.negate().add(0, y, 0);
-        } else if (roty == 90) {
-            return Vector3d.UNIT_X.negate().add(0, y, 0);
-        } else if (roty == -90) {
-            return Vector3d.UNIT_X.add(0, y, 0);
-        }
-
-        // x is the x-z plane.
-        // Z = 1 @ pitch = 0, Z = -1 @ pitch = +-180, X = 1 @ pitch = -90, X = -1 @ pitch = 90
-        // OK, calculation time.
-        double x = -TrigMath.sin(TrigMath.DEG_TO_RAD * roty);
-        double z = TrigMath.cos(TrigMath.DEG_TO_RAD * roty);
-        return new Vector3d(x, y, z);
-    }
 }

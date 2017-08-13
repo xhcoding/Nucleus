@@ -67,7 +67,7 @@ public class PaginationBuilderWrapper implements PaginationList.Builder {
         while (text.hasNext()) {
             Text t = text.next();
             if (t.toPlain().isEmpty()) {
-                text.set(Util.NOT_EMPTY);
+                text.set(Util.SPACE);
             }
         }
 

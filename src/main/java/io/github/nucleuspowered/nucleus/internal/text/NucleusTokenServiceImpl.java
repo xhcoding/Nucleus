@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
 
 public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
 
+    private static final Pattern suffixPattern = Pattern.compile(":([sp]+)$", Pattern.CASE_INSENSITIVE);
     private final Map<String, TokenParser> tokenStore = Maps.newHashMap();
     private final Map<String, Tuple<TokenParser, String>> primaryTokenStore = Maps.newHashMap();
     private final NucleusPlugin plugin;
@@ -113,43 +114,45 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         }
     }
 
-    public final Optional<Text> getTextFromToken(String token, CommandSource source, Map<String, Object> variables) {
+    private final Optional<Text> getTextFromToken(String token, CommandSource source, Map<String, Object> variables) {
         token = token.toLowerCase().trim().replace("{{", "").replace("}}", "");
-        boolean matches = token.matches(".*:[sp]+$");
-        boolean addSpace;
-        boolean prependSpace;
-        if (matches) {
-            Matcher m = Pattern.compile(":([sp]+)$", Pattern.CASE_INSENSITIVE).matcher(token);
-            m.find(0);
+        Matcher m = suffixPattern.matcher(token);
+        boolean addSpace = false;
+        boolean prependSpace = false;
+        if (m.find(0)) {
             String match = m.group(1).toLowerCase();
             addSpace = match.contains("s");
             prependSpace = match.contains("p");
 
             token = token.replaceAll(":[sp]+$", "");
-        } else {
-            addSpace = false;
-            prependSpace = false;
         }
 
         try {
+            Optional<Text> toReturn;
             if (token.startsWith("pl:") || token.startsWith("p:")) {
-                // Plugin identifers are of the form pl:<pluginid>:<identifier>
+                // Plugin identifiers are of the form pl:<pluginid>:<identifier>
                 String[] tokSplit = token.split(":", 3);
                 if (tokSplit.length < 3) {
                     return EMPTY;
                 }
 
-                return applyToken(tokSplit[1], tokSplit[2], source, variables)
-                        .map(x -> addSpace ? Text.join(x, Util.NOT_EMPTY) : x)
-                        .map(x -> prependSpace ? Text.join(Util.NOT_EMPTY, x) : x);
+                toReturn = applyToken(tokSplit[1], tokSplit[2], source, variables);
             } else if (token.startsWith("o:")) { // Option identifier.
-                return getTextFromOption(source, token.substring(2), addSpace, prependSpace);
+                toReturn = getTextFromOption(source, token.substring(2));
             } else {
                 // Standard.
-                return applyPrimaryToken(token, source, variables)
-                    .map(x -> addSpace ? Text.join(x, Util.NOT_EMPTY) : x)
-                    .map(x -> prependSpace ? Text.join(Util.NOT_EMPTY, x) : x);
+                toReturn = applyPrimaryToken(token, source, variables);
             }
+
+            if (addSpace) {
+                toReturn = toReturn.map(x -> x.isEmpty() ? x : Text.join(x, Util.SPACE));
+            }
+
+            if (prependSpace) {
+                toReturn = toReturn.map(x -> x.isEmpty() ? x : Text.join(Util.SPACE, x));
+            }
+
+            return toReturn;
         } catch (Exception e) {
             if (plugin.isDebugMode()) {
                 e.printStackTrace();
@@ -159,21 +162,9 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         }
     }
 
-    private Optional<Text> getTextFromOption(CommandSource cs, String option, boolean addSpace, boolean prependSpace) {
+    private Optional<Text> getTextFromOption(CommandSource cs, String option) {
         if (cs instanceof Player) {
-            Optional<String> os = Util.getOptionFromSubject(cs, option);
-            if (os.isPresent() && !os.get().isEmpty()) {
-                String s = os.get();
-                if (addSpace) {
-                    s += " ";
-                }
-
-                if (prependSpace) {
-                    s = " " + s;
-                }
-
-                return Optional.of(TextSerializers.FORMATTING_CODE.deserialize(s));
-            }
+            return Util.getOptionFromSubject(cs, option).map(TextSerializers.FORMATTING_CODE::deserialize);
         }
 
         return Optional.empty();
