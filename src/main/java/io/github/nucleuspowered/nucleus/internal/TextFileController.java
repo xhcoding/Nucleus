@@ -142,7 +142,7 @@ public final class TextFileController {
         if (title != null && !title.isEmpty()) {
             pb.title(title).padding(padding);
         } else {
-            pb.padding(Util.NOT_EMPTY);
+            pb.padding(Util.SPACE);
         }
 
         pb.sendTo(src);

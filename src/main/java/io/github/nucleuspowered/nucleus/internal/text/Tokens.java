@@ -35,8 +35,8 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
         translatorMap.put("player", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
         translatorMap.put("playername", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
 
-        translatorMap.put("prefix", (p, v, m) -> Optional.of(getTextFromOption(getFromVariableIfExists(p, v, m), "prefix")));
-        translatorMap.put("suffix", (p, v, m) -> Optional.of(getTextFromOption(getFromVariableIfExists(p, v, m), "suffix")));
+        translatorMap.put("prefix", (p, v, m) -> getTextFromOption(getFromVariableIfExists(p, v, m), "prefix"));
+        translatorMap.put("suffix", (p, v, m) -> getTextFromOption(getFromVariableIfExists(p, v, m), "suffix"));
 
         translatorMap.put("playerdisplayname", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
         translatorMap.put("displayname", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
@@ -91,15 +91,9 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
         return world;
     }
 
-    private static Text getTextFromOption(CommandSource cs, String option) {
-        if (cs instanceof Player) {
-            Optional<String> os = Util.getOptionFromSubject(cs, option);
-            if (os.isPresent() && !os.get().isEmpty()) {
-                return TextSerializers.FORMATTING_CODE.deserialize(os.get());
-            }
-        }
-
-        return Text.EMPTY;
+    private static Optional<Text> getTextFromOption(CommandSource cs, String option) {
+        return Util.getOptionFromSubject(cs, option)
+                .map(x -> x.isEmpty() ? null : TextSerializers.FORMATTING_CODE.deserialize(x));
     }
 
     @FunctionalInterface
