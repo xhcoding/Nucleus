@@ -161,9 +161,7 @@ public interface NucleusMessageTokenService {
         Preconditions.checkArgument(primaryToken != null && !primaryToken.isEmpty());
         String[] tokenData = primaryToken.split("\\|", 2);
         return getPrimaryTokenParserAndIdentifier(tokenData[0].toLowerCase())
-                .map(x -> x.getFirst().parse(
-                    tokenData.length == 2 ? x.getSecond() + "|" + tokenData[1] : x.getSecond(),
-                source, variables)).orElseGet(Optional::empty);
+                .flatMap(x -> x.getFirst().parse(tokenData.length == 2 ? x.getSecond() + "|" + tokenData[1] : x.getSecond(), source, variables));
     }
 
     /**

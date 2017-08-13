@@ -617,7 +617,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             if (r.isEmpty()) {
                 extended = desc;
             } else {
-                extended = desc.map(text -> Optional.of(Text.of(text, Text.NEW_LINE, Util.NOT_EMPTY, Text.NEW_LINE, Text.of(r))))
+                extended = desc.map(text -> Optional.of(Text.of(text, Text.NEW_LINE, Util.SPACE, Text.NEW_LINE, Text.of(r))))
                         .orElseGet(() -> Optional.of(Text.of(r)));
             }
         }
@@ -1245,7 +1245,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
             if (previous != null) {
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.noexist", previous));
-                textMessages.add(Util.NOT_EMPTY);
+                textMessages.add(Util.SPACE);
             }
 
             if (parent.sourceType == Player.class) {
@@ -1260,14 +1260,14 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
 
             String desc = getDescription();
             if (!desc.isEmpty()) {
-                textMessages.add(Util.NOT_EMPTY);
+                textMessages.add(Util.SPACE);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.summary"));
                 textMessages.add(Text.of(desc));
             }
 
             String ext = getExtendedDescription();
             if (!ext.isEmpty()) {
-                textMessages.add(Util.NOT_EMPTY);
+                textMessages.add(Util.SPACE);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.description"));
                 String[] split = ext.split("(\\r|\\n|\\r\\n)");
                 for (String s : split) {
@@ -1276,13 +1276,13 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             }
 
             if (hasExecutor) {
-                textMessages.add(Util.NOT_EMPTY);
+                textMessages.add(Util.SPACE);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.usage"));
                 textMessages.add(Text.of(TextColors.WHITE, StandardAbstractCommand.this.getSimpleUsage(source)));
             }
 
             getChildrenUsage(source).ifPresent(x -> {
-                textMessages.add(Util.NOT_EMPTY);
+                textMessages.add(Util.SPACE);
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.subcommand"));
                 textMessages.add(Text.of(TextColors.WHITE, x));
             });

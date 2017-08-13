@@ -93,7 +93,7 @@ public class ServerListCommand extends AbstractCommand<CommandSource> {
         ServerListGeneralDataModule ss = plugin.getGeneralService().get(ServerListGeneralDataModule.class);
         ss.getMessage().ifPresent(
                 t -> {
-                    src.sendMessage(Util.NOT_EMPTY);
+                    src.sendMessage(Util.SPACE);
                     src.sendMessage(messageProvider.getTextMessageWithFormat("command.serverlist.tempheader"));
                     src.sendMessage(t);
                     src.sendMessage(messageProvider.getTextMessageWithFormat("command.serverlist.message.expiry",
@@ -118,7 +118,7 @@ public class ServerListCommand extends AbstractCommand<CommandSource> {
         List<Text> m = Lists.newArrayList();
         messages.stream().map(x -> x.getForCommandSource(source)).forEach(x -> {
             if (!m.isEmpty()) {
-                m.add(Util.NOT_EMPTY);
+                m.add(Util.SPACE);
             }
 
             m.add(x);
