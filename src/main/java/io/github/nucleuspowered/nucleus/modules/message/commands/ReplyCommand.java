@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.message.commands;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.AlertOnAfkArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.util.NucleusProcessing;
-import io.github.nucleuspowered.nucleus.internal.annotations.command.ConfigCommandAlias;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RedirectModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoHelpSubcommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
@@ -32,7 +32,7 @@ import javax.inject.Inject;
  */
 @Permissions(mainOverride = "message", suggestedLevel = SuggestedLevel.USER)
 @NoHelpSubcommand
-@ConfigCommandAlias(value = "message", generate = false)
+@RedirectModifiers(value = "message")
 @RegisterCommand({"reply", "r"})
 @EssentialsEquivalent({"r", "reply"})
 @NonnullByDefault
@@ -71,4 +71,5 @@ public class ReplyCommand extends AbstractCommand<CommandSource> {
 
         return CommandResult.empty();
     }
+
 }

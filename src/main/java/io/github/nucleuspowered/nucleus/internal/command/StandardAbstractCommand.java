@@ -23,7 +23,7 @@ import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.annotations.command.ConfigCommandAlias;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RedirectModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCommandPrefix;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCost;
@@ -131,7 +131,6 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
     private final boolean bypassCost;
     private final boolean requiresEconomy;
     private final String configSection;
-    private final boolean generateDefaults;
     private final boolean isRoot;
 
     private CommandElement argumentParser = GenericArguments.none();
@@ -240,7 +239,7 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             this.bypassCost = this.getClass().getAnnotation(NoCost.class) != null;
         }
 
-        ConfigCommandAlias cca = this.getClass().getAnnotation(ConfigCommandAlias.class);
+        RedirectModifiers cca = this.getClass().getAnnotation(RedirectModifiers.class);
         String configSect;
         if (this.commandPath.isEmpty() || !this.commandPath.contains(".")) {
             configSect = "";
@@ -249,7 +248,6 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         }
 
         this.configSection = configSect + (cca == null ? getAliases()[0].toLowerCase() : cca.value().toLowerCase());
-        this.generateDefaults = cca == null || cca.generate();
 
         this.warmupKey = "nucleus." + configSection + ".warmup";
         this.cooldownKey = "nucleus." + configSection + ".cooldown";
@@ -812,10 +810,6 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
         return new CommandElement[]{};
     }
 
-    final boolean mergeDefaults() {
-        return generateDefaults;
-    }
-
     final CommentedConfigurationNode getDefaults() {
         CommentedConfigurationNode n = SimpleCommentedConfigurationNode.root();
         String aliasComment = NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.aliases");
@@ -830,16 +824,18 @@ public abstract class StandardAbstractCommand<T extends CommandSource> implement
             }
         }
 
-        if (!bypassCooldown) {
-            n.getNode("cooldown").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.cooldown")).setValue(0);
-        }
+        if (configSection.equalsIgnoreCase(aliases[0].toLowerCase())) {
+            if (!bypassCooldown) {
+                n.getNode("cooldown").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.cooldown")).setValue(0);
+            }
 
-        if (!bypassWarmup || generateWarmupAnyway) {
-            n.getNode("warmup").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.warmup")).setValue(0);
-        }
+            if (!bypassWarmup || generateWarmupAnyway) {
+                n.getNode("warmup").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.warmup")).setValue(0);
+            }
 
-        if (!bypassCost) {
-            n.getNode("cost").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.cost")).setValue(0);
+            if (!bypassCost) {
+                n.getNode("cost").setComment(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("config.cost")).setValue(0);
+            }
         }
 
         for (String alias : this.getRootCommandAliases()) {
