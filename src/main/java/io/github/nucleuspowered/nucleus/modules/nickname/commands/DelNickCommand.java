@@ -42,7 +42,7 @@ public class DelNickCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User pl = this.getUserFromArgs(User.class, src, playerKey, args);
-        nicknameService.setNick(pl, src, null, false);
+        nicknameService.removeNick(pl, src);
 
         if (!src.equals(pl)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.delnick.success.other", pl.getName()));

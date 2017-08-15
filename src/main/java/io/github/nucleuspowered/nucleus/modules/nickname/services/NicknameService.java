@@ -96,6 +96,20 @@ public class NicknameService implements NucleusNicknameService {
 
     }
 
+    public void removeNick(User user, CommandSource src) throws NicknameException {
+        Nucleus.getNucleus().getUserDataManager().get(user)
+                .orElseThrow(() -> new NicknameException(
+                        Nucleus.getNucleus().getMessageProvider()
+                                .getTextMessageWithFormat("standard.error.nouser"),
+                        NicknameException.Type.NO_USER
+                )).get(NicknameUserDataModule.class).removeNickname();
+
+        if (user.isOnline()) {
+            user.getPlayer().ifPresent(x ->
+                    x.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.delnick.success.base")));
+        }
+    }
+
     public void setNick(User pl, CommandSource src, Text nickname, boolean bypass) throws NicknameException {
         String plain = nickname.toPlain().trim();
         if (plain.isEmpty()) {
