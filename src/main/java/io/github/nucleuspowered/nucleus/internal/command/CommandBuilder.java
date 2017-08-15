@@ -65,12 +65,11 @@ public class CommandBuilder {
         // If we are using DocGen, add the command information to the system.
         plugin.getDocGenCache().ifPresent(x -> x.addCommand(moduleID, c));
 
-        if (c.mergeDefaults()) {
-            sn.getNode(c.getCommandConfigAlias()).setValue(c.getDefaults());
-        }
+        String commandSection = c.getAliases()[0].toLowerCase();
+        sn.getNode(commandSection).setValue(c.getDefaults());
 
-        if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("enabled").getBoolean(true)) {
-            ConfigurationNode cn = plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias());
+        if (plugin.getCommandsConfig().getCommandNode(commandSection).getNode("enabled").getBoolean(true)) {
+            ConfigurationNode cn = plugin.getCommandsConfig().getCommandNode(commandSection);
             ConfigurationNode node = cn.getNode("aliases");
             if (node.getValue() == null) {
                 cn.removeChild("aliases");
@@ -88,7 +87,7 @@ public class CommandBuilder {
 
                 // Register as another full blown command.
                 for (String s : c.getRootCommandAliases()) {
-                    if (plugin.getCommandsConfig().getCommandNode(c.getCommandConfigAlias()).getNode("aliases", s).getBoolean(true)) {
+                    if (cn.getNode("aliases", s).getBoolean(true)) {
                         Sponge.getCommandManager().register(plugin, c, s);
                     }
                 }

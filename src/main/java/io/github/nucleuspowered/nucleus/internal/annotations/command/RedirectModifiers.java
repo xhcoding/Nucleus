@@ -11,12 +11,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Signifies that the name of the command
+ * Signifies that the name of the command gets cooldowns etc. from another section
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-public @interface ConfigCommandAlias {
+public @interface RedirectModifiers {
     /**
      * The command name to use in the config file.
      *
@@ -24,10 +24,4 @@ public @interface ConfigCommandAlias {
      */
     String value();
 
-    /**
-     * Whether to ask the system to generate the default config.
-     *
-     * @return <code>true</code> if so, <code>false</code> otherwise.
-     */
-    boolean generate() default true;
 }
