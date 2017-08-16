@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.api.chat.NucleusNoFormatChannel;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
@@ -39,7 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -49,8 +47,7 @@ import javax.inject.Inject;
  * {@link NucleusMessageTokenService}, which
  * should be used if tokens need to be registered.
  */
-@ConditionalListener(ChatListener.Test.class)
-public class ChatListener extends ListenerBase implements Reloadable {
+public class ChatListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     private static final Pattern prefixPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*$");
     private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
@@ -161,6 +158,10 @@ public class ChatListener extends ListenerBase implements Reloadable {
             Text.join(footer, ctc.getSuffix().getForCommandSource(player)));
     }
 
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ChatModule.ID, ChatConfigAdapter.class, ChatConfig::isModifychat).orElse(false);
+    }
+
     private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {
         String m = stripPermissionless(player, TextSerializers.FORMATTING_CODE.serialize(rawMessage));
         if (chatConfig.isRemoveBlueUnderline()) {
@@ -185,11 +186,4 @@ public class ChatListener extends ListenerBase implements Reloadable {
         chatConfig = cca.getNodeOrDefault();
     }
 
-    public static class Test implements Predicate<Nucleus> {
-
-        @Override
-        public boolean test(Nucleus nucleus) {
-            return nucleus.getConfigValue(ChatModule.ID, ChatConfigAdapter.class, ChatConfig::isModifychat).orElse(false);
-        }
-    }
 }

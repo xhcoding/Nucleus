@@ -6,9 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.chatlogger.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.ChatLoggerModule;
-import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfig;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.handlers.ChatLoggerHandler;
 import org.spongepowered.api.command.CommandSource;
@@ -17,17 +15,17 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.message.MessageChannelEvent;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
-
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-@ConditionalListener(ChatLoggingListener.Condition.class)
-public class ChatLoggingListener extends ListenerBase {
+public class ChatLoggingListener extends ListenerBase implements ListenerBase.Conditional {
 
-    @Inject private ChatLoggerHandler handler;
+    private final ChatLoggerHandler handler;
+
+    @Inject
+    public ChatLoggingListener(ChatLoggerHandler handler) {
+        this.handler = handler;
+    }
 
     @Listener(order = Order.LAST)
     public void onCommand(MessageChannelEvent.Chat event, @First CommandSource source) {
@@ -43,20 +41,9 @@ public class ChatLoggingListener extends ListenerBase {
         }
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            try {
-                ChatLoggingConfig c = nucleus.getModuleContainer().getConfigAdapterForModule(ChatLoggerModule.ID, ChatLoggingConfigAdapter.class)
-                    .getNodeOrDefault();
-                return c.isEnableLog() && c.isLogChat();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ChatLoggerModule.ID, ChatLoggingConfigAdapter.class, x -> x.isEnableLog() && x.isLogChat())
+                .orElse(false);
     }
+
 }

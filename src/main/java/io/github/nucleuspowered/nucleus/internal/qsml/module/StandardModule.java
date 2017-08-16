@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
@@ -42,7 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -149,29 +147,7 @@ public abstract class StandardModule implements Module {
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
 
-            final ConditionalListener conditionalListener = c.getClass().getAnnotation(ConditionalListener.class);
-            if (conditionalListener != null) {
-                try {
-                    Predicate<Nucleus> cl = conditionalListener.value().newInstance();
-                    Reloadable tae = () -> {
-                        Sponge.getEventManager().unregisterListeners(c);
-                        if (cl.test(plugin)) {
-                            if (c instanceof Reloadable) {
-                                ((Reloadable) c).onReload();
-                            }
-                            Sponge.getEventManager().registerListeners(plugin, c);
-                        }
-                    };
-
-                    // Add reloadable to load in the listener dynamically if required.
-                    plugin.registerReloadable(tae);
-                    tae.onReload();
-                } catch (Exception e) {
-                    if (plugin.isDebugMode()) {
-                        e.printStackTrace();
-                    }
-                }
-            } else if (c instanceof ListenerBase.Conditional) {
+            if (c instanceof ListenerBase.Conditional) {
                 // Add reloadable to load in the listener dynamically if required.
                 Reloadable tae = () -> {
                     Sponge.getEventManager().unregisterListeners(c);

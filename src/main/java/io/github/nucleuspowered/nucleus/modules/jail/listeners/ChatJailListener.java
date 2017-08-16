@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.jail.JailModule;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfig;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
@@ -17,14 +16,16 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 
-import java.util.function.Predicate;
-
 import javax.inject.Inject;
 
-@ConditionalListener(ChatJailListener.Condition.class)
-public class ChatJailListener extends ListenerBase {
+public class ChatJailListener extends ListenerBase implements ListenerBase.Conditional {
 
-    @Inject private JailHandler handler;
+    private final JailHandler handler;
+
+    @Inject
+    public ChatJailListener(JailHandler handler) {
+        this.handler = handler;
+    }
 
     @Listener(order = Order.FIRST)
     public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
@@ -34,10 +35,8 @@ public class ChatJailListener extends ListenerBase {
         }
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            return nucleus.getConfigValue(JailModule.ID, JailConfigAdapter.class, JailConfig::isMuteOnJail).orElse(false);
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(JailModule.ID, JailConfigAdapter.class, JailConfig::isMuteOnJail).orElse(false);
     }
+
 }
