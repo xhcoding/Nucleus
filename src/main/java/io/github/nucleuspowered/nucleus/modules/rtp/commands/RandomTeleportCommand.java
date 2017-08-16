@@ -14,9 +14,8 @@ import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.rtp.RTPModule;
@@ -60,7 +59,7 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 @Permissions(supportsOthers = true)
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
-public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetOtherPlayer implements StandardAbstractCommand.Reloadable {
+public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlayer implements AbstractCommand.Reloadable {
 
     private RTPConfig rc = new RTPConfig();
 
@@ -93,7 +92,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
     }
 
     @Override
-    protected CommandResult executeWithPlayer(SubjectPermissionCache<CommandSource> src, Player player, CommandContext args, boolean self)
+    protected CommandResult executeWithPlayer(CommandSource src, Player player, CommandContext args, boolean self)
             throws Exception {
 
         // Get the current world.
@@ -101,7 +100,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         if (this.rc.getDefaultWorld().isPresent()) {
             wp = args.<WorldProperties>getOne(worldKey).orElseGet(() -> this.rc.getDefaultWorld().get());
         } else {
-            wp = this.getWorldFromUserOrArgs(src.getSubject(), worldKey, args);
+            wp = this.getWorldFromUserOrArgs(src, worldKey, args);
         }
 
         if (rc.isPerWorldPermissions()) {
@@ -120,11 +119,10 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         int diameter = Math.min(Math.abs(rc.getRadius(currentWorld.getName()) * 2), (int)wb.getDiameter());
         Vector3d centre = wb.getCenter();
 
-        src.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
+        src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
 
         if (self) {
-            SubjectPermissionCache<Player> sp = new SubjectPermissionCache<>(player, src);
-            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, centre, diameter, getCost(src, args), sp, currentWorld, rc))
+            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, centre, diameter, getCost(src, args), player, currentWorld, rc))
                     .submit(plugin);
         } else {
             Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, centre, diameter, getCost(src, args), player, currentWorld, src,
@@ -150,7 +148,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         private final Cause cause;
         private final int minY;
         private final int maxY;
-        private final SubjectPermissionCache<? extends CommandSource> source;
+        private final CommandSource source;
         private final Player target;
         private int count;
         private final int maxCount;
@@ -160,14 +158,14 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
         private final boolean onSurface;
         private boolean isSelf = false;
 
-        private RTPTask(Nucleus plugin, Vector3d centre, int diameter, double cost, SubjectPermissionCache<Player> target,
+        private RTPTask(Nucleus plugin, Vector3d centre, int diameter, double cost, Player target,
             World currentWorld, RTPConfig config) {
-            this(plugin, centre, diameter, cost, target.getSubject(), currentWorld, target, config);
+            this(plugin, centre, diameter, cost, target, currentWorld, target, config);
             isSelf = true;
         }
 
         private RTPTask(Nucleus plugin, Vector3d centre, int diameter, double cost, Player target, World currentWorld,
-                SubjectPermissionCache<? extends CommandSource> source, RTPConfig config) {
+                CommandSource source, RTPConfig config) {
             super(plugin, source, cost);
             this.count = Math.max(config.getNoOfAttempts(), 1);
             this.maxCount = this.count;
@@ -181,7 +179,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
             this.maxY = config.getMaxY(name);
             this.target = target;
             this.source = source;
-            this.cause = Cause.of(NamedCause.source(source.getSubject()));
+            this.cause = Cause.of(NamedCause.source(source));
         }
 
         @Override
@@ -276,7 +274,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
                     if (target.setLocation(tpTarget)) {
                         if (!isSelf) {
                             target.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.other"));
-                            source.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.successother",
+                            source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.successother",
                                 target.getName(),
                                 String.valueOf(tpTarget.getBlockX()),
                                 String.valueOf(tpTarget.getBlockY()),
@@ -289,7 +287,7 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
                                 String.valueOf(tpTarget.getBlockZ())));
                         return;
                     } else {
-                        source.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.cancelled"));
+                        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.cancelled"));
                         onCancel();
                         return;
                     }
@@ -307,8 +305,8 @@ public class RandomTeleportCommand extends StandardAbstractCommand.SimpleTargetO
 
         private void onUnsuccesfulAttempt() {
             if (count <= 0) {
-                plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", subject.getSubject().getName()));
-                subject.getSubject().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
+                plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", subject.getName()));
+                subject.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.error"));
                 onCancel();
             } else {
                 // We're using a scheduler to allow some ticks to go by between attempts to find a

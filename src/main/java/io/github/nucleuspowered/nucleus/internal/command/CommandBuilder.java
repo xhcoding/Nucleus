@@ -21,18 +21,18 @@ public class CommandBuilder {
 
     private final NucleusPlugin plugin;
     private final Injector injector;
-    private final Set<Class<? extends StandardAbstractCommand<?>>> commandSet;
+    private final Set<Class<? extends AbstractCommand<?>>> commandSet;
     private final SimpleCommentedConfigurationNode sn;
     private final String moduleID;
     private final String moduleName;
 
-    private final static Set<Class<? extends StandardAbstractCommand>> registeredCommands = Sets.newHashSet();
+    private final static Set<Class<? extends AbstractCommand>> registeredCommands = Sets.newHashSet();
 
-    public static boolean isCommandRegistered(Class<? extends StandardAbstractCommand> command) {
+    public static boolean isCommandRegistered(Class<? extends AbstractCommand> command) {
         return registeredCommands.contains(command);
     }
 
-    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends StandardAbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
+    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
         this.plugin = plugin;
         this.injector = injector;
         this.commandSet = commandSet;
@@ -41,11 +41,11 @@ public class CommandBuilder {
         this.moduleName = moduleName;
     }
 
-    public <T extends StandardAbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass) {
+    public <T extends AbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass) {
         return buildCommand(commandClass, true);
     }
 
-    <T extends StandardAbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass, boolean rootCmd) {
+    <T extends AbstractCommand<?>> Optional<T> buildCommand(Class<T> commandClass, boolean rootCmd) {
         Optional<T> optionalCommand = getInstance(commandClass);
         if (!optionalCommand.isPresent()) {
             return Optional.empty();
@@ -92,8 +92,8 @@ public class CommandBuilder {
                     }
                 }
 
-                if (c instanceof StandardAbstractCommand.Reloadable) {
-                    plugin.registerReloadable(((StandardAbstractCommand.Reloadable) c)::onReload);
+                if (c instanceof AbstractCommand.Reloadable) {
+                    plugin.registerReloadable(((AbstractCommand.Reloadable) c)::onReload);
                 }
             } catch (Exception e) {
                 throw new IllegalStateException(plugin.getMessageProvider().getMessageWithFormat("startup.commandfailiure", c.getAliases()[0],
@@ -107,7 +107,7 @@ public class CommandBuilder {
         return Optional.empty();
     }
 
-    private <T extends StandardAbstractCommand<?>> Optional<T> getInstance(Class<T> clazz) {
+    private <T extends AbstractCommand<?>> Optional<T> getInstance(Class<T> clazz) {
         try {
             T instance = injector.getInstance(clazz);
             if (instance.canLoad()) {

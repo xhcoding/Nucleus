@@ -8,7 +8,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -34,7 +33,7 @@ import javax.inject.Inject;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"helpop"})
 @EssentialsEquivalent({"helpop", "amsg", "ac"})
-public class HelpOpCommand extends AbstractCommand<Player> implements StandardAbstractCommand.Reloadable {
+public class HelpOpCommand extends AbstractCommand<Player> implements AbstractCommand.Reloadable {
 
     private final String messageKey = "message";
 

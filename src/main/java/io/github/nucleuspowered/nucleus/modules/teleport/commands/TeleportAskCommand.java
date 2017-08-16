@@ -14,10 +14,9 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ContinueMode;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.teleport.events.RequestEvent;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
@@ -48,7 +47,7 @@ import javax.inject.Inject;
 @RunAsync
 @NonnullByDefault
 @EssentialsEquivalent({"tpa", "call", "tpask"})
-public class TeleportAskCommand extends StandardAbstractCommand<Player> {
+public class TeleportAskCommand extends AbstractCommand<Player> {
 
     private final TeleportHandler tpHandler;
 
@@ -75,13 +74,12 @@ public class TeleportAskCommand extends StandardAbstractCommand<Player> {
         };
     }
 
-    @Override protected ContinueMode preProcessChecks(SubjectPermissionCache<Player> source, CommandContext args) {
+    @Override protected ContinueMode preProcessChecks(Player source, CommandContext args) {
         return TeleportHandler.canTeleportTo(source, args.<Player>getOne(playerKey).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
     }
 
     @Override
-    public CommandResult executeCommand(SubjectPermissionCache<Player> cache, CommandContext args) throws Exception {
-        Player src = cache.getSubject();
+    public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         Player target = args.<Player>getOne(playerKey).get();
         if (src.equals(target)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.teleport.self"));
@@ -89,19 +87,19 @@ public class TeleportAskCommand extends StandardAbstractCommand<Player> {
         }
 
         // Before we do all this, check the event.
-        RequestEvent.CauseToPlayer event = new RequestEvent.CauseToPlayer(Cause.of(NamedCause.owner(cache.getSubject())), target);
+        RequestEvent.CauseToPlayer event = new RequestEvent.CauseToPlayer(Cause.of(NamedCause.owner(src)), target);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(
                     event.getCancelMessage().orElseGet(() -> plugin.getMessageProvider().getTextMessageWithFormat("command.tpa.eventfailed")));
         }
 
         TeleportHandler.TeleportBuilder tb = tpHandler.getBuilder().setFrom(src).setTo(target).setSafe(!args.<Boolean>getOne("f").orElse(false));
-        int warmup = getWarmup(cache);
+        int warmup = getWarmup(src);
         if (warmup > 0) {
             tb.setWarmupTime(warmup);
         }
 
-        double cost = getCost(cache, args);
+        double cost = getCost(src, args);
         if (cost > 0.) {
             tb.setCharge(src).setCost(cost);
         }

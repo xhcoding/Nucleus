@@ -117,9 +117,9 @@ public class KitListener extends ListenerBase {
 
             // For each slot, is it a written book?
             x.getSecond().slots().forEach(slot -> slot.poll().ifPresent(item -> {
-                if (item.getItem().equals(ItemTypes.WRITTEN_BOOK)) {
+                if (item.getType().equals(ItemTypes.WRITTEN_BOOK)) {
                     item.get(Keys.BOOK_PAGES).ifPresent(y -> c.add(fixup(y)));
-                } else if (item.getItem().equals(ItemTypes.WRITABLE_BOOK)) {
+                } else if (item.getType().equals(ItemTypes.WRITABLE_BOOK)) {
                     item.get(Keys.BOOK_PAGES).ifPresent(page -> c.add(getCommandFromText(page)));
                 } else {
                     // Drop the item.

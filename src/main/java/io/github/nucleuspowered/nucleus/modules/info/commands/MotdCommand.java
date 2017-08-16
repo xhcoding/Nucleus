@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
@@ -33,7 +32,7 @@ import javax.inject.Inject;
 @NonnullByDefault
 @RegisterCommand("motd")
 @EssentialsEquivalent("motd")
-public class MotdCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
+public class MotdCommand extends AbstractCommand<CommandSource> implements AbstractCommand.Reloadable {
 
     private final InfoConfigAdapter infoConfigAdapter;
     private Text title = Text.EMPTY;

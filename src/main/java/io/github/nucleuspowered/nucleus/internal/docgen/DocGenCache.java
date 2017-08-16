@@ -17,7 +17,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoPermissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -88,7 +88,7 @@ public class DocGenCache {
 
     }
 
-    public void addCommand(final String moduleID, final StandardAbstractCommand<?> abstractCommand) {
+    public void addCommand(final String moduleID, final AbstractCommand<?> abstractCommand) {
         if (abstractCommand.getClass().isAnnotationPresent(NoDocumentation.class)) {
             return;
         }
@@ -106,7 +106,7 @@ public class DocGenCache {
 
         cmd.setPermissionbase(abstractCommand.getPermissionHandler().getBase());
 
-        Class<? extends StandardAbstractCommand> cac = abstractCommand.getClass();
+        Class<? extends AbstractCommand> cac = abstractCommand.getClass();
         Permissions s = cac.getAnnotation(Permissions.class);
         if (s == null) {
             cmd.setDefaultLevel(cac.isAnnotationPresent(NoPermissions.class) ? SuggestedLevel.USER.name() : SuggestedLevel.ADMIN.name());

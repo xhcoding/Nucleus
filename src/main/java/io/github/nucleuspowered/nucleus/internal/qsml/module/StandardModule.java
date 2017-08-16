@@ -4,9 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Injector;
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
@@ -22,7 +20,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Scan;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
@@ -41,7 +39,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -105,8 +102,8 @@ public abstract class StandardModule implements Module {
     @SuppressWarnings("unchecked")
     private void loadCommands() {
 
-        Set<Class<? extends StandardAbstractCommand<?>>> cmds = new HashSet<>(
-            performFilter(getStreamForModule(StandardAbstractCommand.class).map(x -> (Class<? extends StandardAbstractCommand<?>>)x))
+        Set<Class<? extends AbstractCommand<?>>> cmds = new HashSet<>(
+            performFilter(getStreamForModule(AbstractCommand.class).map(x -> (Class<? extends AbstractCommand<?>>)x))
                 .collect(Collectors.toSet()));
 
         // Find all commands that are also scannable.
@@ -114,16 +111,16 @@ public abstract class StandardModule implements Module {
             .filter(x -> x.getPackage().getName().startsWith(packageName))
             .filter(x -> x.isAnnotationPresent(Scan.class))
             .flatMap(x -> Arrays.stream(x.getDeclaredClasses()))
-            .filter(StandardAbstractCommand.class::isAssignableFrom)
-            .map(x -> (Class<? extends StandardAbstractCommand<?>>)x))
+            .filter(AbstractCommand.class::isAssignableFrom)
+            .map(x -> (Class<? extends AbstractCommand<?>>)x))
             .forEach(cmds::add);
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
         Injector injector = plugin.getInjector();
 
-        Set<Class<? extends StandardAbstractCommand>> commandBases =  cmds.stream().filter(x -> {
+        Set<Class<? extends AbstractCommand>> commandBases =  cmds.stream().filter(x -> {
             RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
-            return (rc != null && rc.subcommandOf().equals(StandardAbstractCommand.class));
+            return (rc != null && rc.subcommandOf().equals(AbstractCommand.class));
         }).collect(Collectors.toSet());
 
         CommandBuilder builder = new CommandBuilder(plugin, injector, cmds, moduleId, moduleName);
@@ -138,10 +135,10 @@ public abstract class StandardModule implements Module {
         }
     }
 
-    private Stream<Class<? extends StandardAbstractCommand<?>>> performFilter(Stream<Class<? extends StandardAbstractCommand<?>>> stream) {
+    private Stream<Class<? extends AbstractCommand<?>>> performFilter(Stream<Class<? extends AbstractCommand<?>>> stream) {
         return stream.filter(x -> x.isAnnotationPresent(RegisterCommand.class))
             .filter(checkMixin("command", t -> t.getName() + ": (" + t.getAnnotation(RegisterCommand.class).value()[0] + ")"))
-            .map(x -> (Class<? extends StandardAbstractCommand<?>>)x); // Keeping the compiler happy...
+            .map(x -> (Class<? extends AbstractCommand<?>>)x); // Keeping the compiler happy...
     }
 
     @SuppressWarnings("unchecked")
@@ -330,13 +327,13 @@ public abstract class StandardModule implements Module {
         createSeenModule((String)null, function);
     }
 
-    protected final void createSeenModule(@Nullable Class<? extends StandardAbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
+    protected final void createSeenModule(@Nullable Class<? extends AbstractCommand> permissionClass, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information.
         CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(permissionClass);
         createSeenModule(permissionHandler == null ? null : permissionHandler.getBase(), function);
     }
 
-    protected final void createSeenModule(@Nullable Class<? extends StandardAbstractCommand> permissionClass, String suffix, BiFunction<CommandSource, User, Collection<Text>> function) {
+    protected final void createSeenModule(@Nullable Class<? extends AbstractCommand> permissionClass, String suffix, BiFunction<CommandSource, User, Collection<Text>> function) {
         // Register seen information.
         CommandPermissionHandler permissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(permissionClass);
         createSeenModule(permissionHandler == null ? null : permissionHandler.getPermissionWithSuffix(suffix), function);
@@ -344,6 +341,6 @@ public abstract class StandardModule implements Module {
 
     private void createSeenModule(@Nullable String permission, BiFunction<CommandSource, User, Collection<Text>> function) {
         plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(),
-            new BasicSeenInformationProvider(permission == null ? null : permission, function)));
+            new BasicSeenInformationProvider(permission, function)));
     }
 }

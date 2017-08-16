@@ -17,7 +17,6 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
@@ -118,7 +117,7 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
         return false;
     }
 
-    @Override protected ContinueMode preProcessChecks(SubjectPermissionCache<CommandSource> source, CommandContext args) {
+    @Override protected ContinueMode preProcessChecks(CommandSource source, CommandContext args) {
         return TeleportHandler.canTeleportTo(source, args.<User>getOne(playerKey).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
     }
 

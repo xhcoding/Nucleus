@@ -572,7 +572,7 @@ public class Util {
             }
         }
 
-        return is.getItem();
+        return is.getType();
     }
 
     public static void dropItemOnFloorAtLocation(ItemStackSnapshot itemStackSnapshotToDrop, World world, Vector3d position) {

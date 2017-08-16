@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -51,7 +50,7 @@ import javax.inject.Inject;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"list", "listplayers", "ls"})
 @EssentialsEquivalent({"list", "who", "playerlist", "online", "plist"})
-public class ListPlayerCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
+public class ListPlayerCommand extends AbstractCommand<CommandSource> implements AbstractCommand.Reloadable {
 
     @Nullable private AFKHandler handler;
 

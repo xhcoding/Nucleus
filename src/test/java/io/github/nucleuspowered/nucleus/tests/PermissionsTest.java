@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.tests.util.TestModule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -59,11 +58,11 @@ public class PermissionsTest extends TestBase {
         public String permission;
 
         @Parameterized.Parameter(1)
-        public Class<? extends StandardAbstractCommand> clazz;
+        public Class<? extends AbstractCommand> clazz;
 
         @Test
         public void testPermissionIsValid() throws IllegalAccessException, InstantiationException {
-            StandardAbstractCommand c = clazz.newInstance();
+            AbstractCommand c = clazz.newInstance();
             getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);
@@ -103,11 +102,11 @@ public class PermissionsTest extends TestBase {
         public String permission;
 
         @Parameterized.Parameter(1)
-        public Class<? extends StandardAbstractCommand> clazz;
+        public Class<? extends AbstractCommand> clazz;
 
         @Test
         public void testPermissionIsNotValid() throws IllegalAccessException, InstantiationException {
-            StandardAbstractCommand c = clazz.newInstance();
+            AbstractCommand c = clazz.newInstance();
             getInjector().injectMembers(c);
             c.postInit();
             Subject s = Mockito.mock(Subject.class);

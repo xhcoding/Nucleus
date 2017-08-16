@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.tests.sanity;
 
 import com.google.common.reflect.ClassPath;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import org.junit.Assert;
@@ -69,10 +69,10 @@ public class SanityTests {
     public void testThatAnyConstructorInCommandsThatIsNotTheDefaultConstructorIsInjected() throws Exception {
         Set<ClassPath.ClassInfo> ci = ClassPath.from(this.getClass().getClassLoader())
                 .getTopLevelClassesRecursive("io.github.nucleuspowered.nucleus.modules");
-        Set<Class<? extends StandardAbstractCommand<?>>> sc = ci.stream().map(ClassPath.ClassInfo::load)
-                .filter(StandardAbstractCommand.class::isAssignableFrom)
+        Set<Class<? extends AbstractCommand<?>>> sc = ci.stream().map(ClassPath.ClassInfo::load)
+                .filter(AbstractCommand.class::isAssignableFrom)
                 .filter(x -> !Modifier.isAbstract(x.getModifiers()))
-                .map(x -> (Class<? extends StandardAbstractCommand<?>>)x)
+                .map(x -> (Class<? extends AbstractCommand<?>>)x)
                 .filter(x -> {
                     boolean isDefault = true;
                     for (Constructor t : x.getDeclaredConstructors()) {

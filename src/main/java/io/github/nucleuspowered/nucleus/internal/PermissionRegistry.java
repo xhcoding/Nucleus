@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.internal;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.PluginInfo;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 
@@ -17,14 +17,14 @@ import java.util.Map;
 public class PermissionRegistry {
 
     public final static String PERMISSIONS_PREFIX = PluginInfo.ID + ".";
-    private final Map<Class<? extends StandardAbstractCommand>, CommandPermissionHandler> serviceRegistry = Maps.newHashMap();
+    private final Map<Class<? extends AbstractCommand>, CommandPermissionHandler> serviceRegistry = Maps.newHashMap();
     private final Map<String, PermissionInformation> otherPermissions = Maps.newHashMap();
 
-    public CommandPermissionHandler getPermissionsForNucleusCommand(Class<? extends StandardAbstractCommand> command) {
+    public CommandPermissionHandler getPermissionsForNucleusCommand(Class<? extends AbstractCommand> command) {
         return serviceRegistry.getOrDefault(command, new CommandPermissionHandler(command, Nucleus.getNucleus()));
     }
 
-    public void addHandler(Class<? extends StandardAbstractCommand> cb, CommandPermissionHandler cph) {
+    public void addHandler(Class<? extends AbstractCommand> cb, CommandPermissionHandler cph) {
         if (serviceRegistry.containsKey(cb)) {
             // Silently discard.
             return;

@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.rules.RulesModule;
@@ -31,7 +30,7 @@ import javax.inject.Inject;
 @NoModifiers
 @NonnullByDefault
 @EssentialsEquivalent("rules")
-public class RulesCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
+public class RulesCommand extends AbstractCommand<CommandSource> implements AbstractCommand.Reloadable {
 
     private final RulesConfigAdapter rca;
     private Text title = Text.EMPTY;

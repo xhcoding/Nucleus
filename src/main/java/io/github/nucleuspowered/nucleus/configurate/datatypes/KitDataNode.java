@@ -120,7 +120,7 @@ public class KitDataNode implements Kit {
     @Override public Kit updateKitInventory(Inventory inventory) {
         List<Inventory> slots = Lists.newArrayList(inventory.slots());
         final List<ItemStackSnapshot> stacks = slots.stream()
-                .filter(x -> x.peek().isPresent() && x.peek().get().getItem() != ItemTypes.NONE)
+                .filter(x -> x.peek().isPresent() && x.peek().get().getType() != ItemTypes.NONE)
                 .map(x -> x.peek().get().createSnapshot()).collect(Collectors.toList());
 
         // Add all the stacks into the kit list.
