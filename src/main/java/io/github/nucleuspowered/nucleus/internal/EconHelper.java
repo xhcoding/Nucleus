@@ -31,11 +31,9 @@ public class EconHelper {
 
     public String getCurrencySymbol(double cost) {
         Optional<EconomyService> oes = Sponge.getServiceManager().provide(EconomyService.class);
-        if (oes.isPresent()) {
-            return oes.get().getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain();
-        }
+        return oes.map(economyService -> economyService.getDefaultCurrency().format(BigDecimal.valueOf(cost)).toPlain())
+                .orElseGet(() -> String.valueOf(cost));
 
-        return String.valueOf(cost);
     }
 
     public boolean hasBalance(Player src, double balance) {

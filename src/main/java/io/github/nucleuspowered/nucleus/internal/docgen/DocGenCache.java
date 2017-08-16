@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCost;
@@ -121,9 +120,6 @@ public class DocGenCache {
             cmd.setWarmup(!cac.isAnnotationPresent(NoWarmup.class));
         }
         cmd.setSince(cac.getAnnotation(Since.class));
-
-        RequireMixinPlugin rmp = cac.getAnnotation(RequireMixinPlugin.class);
-        cmd.setRequiresMixin(rmp != null && rmp.document() && rmp.value() == RequireMixinPlugin.MixinLoad.MIXIN_ONLY);
 
         String desc = abstractCommand.getDescription();
         if (!desc.contains(" ")) {

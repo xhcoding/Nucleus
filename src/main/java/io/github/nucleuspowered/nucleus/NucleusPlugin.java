@@ -32,7 +32,6 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralServi
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
-import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.PreloadTasks;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
@@ -109,8 +108,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION,
-        dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.2", optional = true))
+@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
 public class NucleusPlugin extends Nucleus {
 
     private static final String divider = "+------------------------------------------------------------+";
@@ -154,7 +152,6 @@ public class NucleusPlugin extends Nucleus {
     private final Path configDir;
     private final Supplier<Path> dataDir;
     private boolean isServer = false;
-    @Nullable private MixinConfigProxy mixinConfigProxy = null;
     private WarmupConfig warmupConfig;
 
     private boolean isDebugMode = false;
@@ -202,14 +199,6 @@ public class NucleusPlugin extends Nucleus {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
         Game game = Sponge.getGame();
         NucleusAPITokens.onPreInit(this);
-
-        try {
-            Class.forName("io.github.nucleuspowered.nucleus.mixins.NucleusMixinSpongePlugin");
-            this.mixinConfigProxy = new MixinConfigProxy();
-            logger.info(messageProvider.getMessageWithFormat("startup.mixins-available"));
-        } catch (ClassNotFoundException e) {
-            logger.info(messageProvider.getMessageWithFormat("startup.mixins-notavailable"));
-        }
 
         // Startup tasks, for the migrations I need to do.
         PreloadTasks.getPreloadTasks().forEach(x -> x.accept(this));
@@ -326,7 +315,7 @@ public class NucleusPlugin extends Nucleus {
 
         // Load up the general data files now, mods should have registered items by now.
         try {
-            // Reload so that we can update the serialisers.
+            // Reloadable so that we can update the serialisers.
             moduleContainer.reloadSystemConfig();
         } catch (Exception e) {
             isErrored = e;
@@ -716,10 +705,6 @@ public class NucleusPlugin extends Nucleus {
 
     @Override public Optional<DocGenCache> getDocGenCache() {
         return Optional.ofNullable(docGenCache);
-    }
-
-    public Optional<MixinConfigProxy> getMixinConfigIfAvailable() {
-        return Optional.ofNullable(this.mixinConfigProxy);
     }
 
     @Override public PluginContainer getPluginContainer() {

@@ -28,7 +28,7 @@ public class MoreCommand extends AbstractCommand<Player> {
             ItemStack stack = player.getItemInHand(HandTypes.MAIN_HAND).get();
             stack.setQuantity(stack.getMaxStackQuantity());
             player.setItemInHand(HandTypes.MAIN_HAND, stack);
-            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.more.success", stack.getItem().getName(),
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.more.success", stack.getType().getName(),
                     String.valueOf(stack.getType().getMaxStackQuantity())));
             return CommandResult.success();
         }

@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
@@ -92,8 +93,8 @@ public class CommandBuilder {
                     }
                 }
 
-                if (c instanceof AbstractCommand.Reloadable) {
-                    plugin.registerReloadable(((AbstractCommand.Reloadable) c)::onReload);
+                if (c instanceof Reloadable) {
+                    plugin.registerReloadable(((Reloadable) c)::onReload);
                 }
             } catch (Exception e) {
                 throw new IllegalStateException(plugin.getMessageProvider().getMessageWithFormat("startup.commandfailiure", c.getAliases()[0],

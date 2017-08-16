@@ -20,7 +20,6 @@ import io.github.nucleuspowered.nucleus.argumentparsers.util.NucleusProcessing;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
-import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RedirectModifiers;
@@ -660,7 +659,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      * <p> Note that the {@link CommandResult} is important here. A success is
      * treated differently to a non-success! </p>
      *
-     * @param src The executor of the command, wrapped in a {@link SubjectPermissionCache}.
+     * @param src The executor of the command
      * @param args The arguments for the command.
      * @return The {@link CommandResult}
      * @throws Exception If thrown, {@link TextMessageException#getText()} or
@@ -1244,10 +1243,6 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                 textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.playeronly"));
             }
 
-            if (parent.getClass().isAnnotationPresent(RequireMixinPlugin.class)) {
-                textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.mixin"));
-            }
-
             textMessages.add(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.module", module, moduleId));
 
             String desc = getDescription();
@@ -1313,17 +1308,6 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         public Text getUsage(CommandSource source) {
             return Text.EMPTY;
         }
-    }
-
-    /**
-     * If this is implemented, signifies that this command should be run on reload.
-     */
-    public interface Reloadable {
-
-        /**
-         * To run on reload.
-         */
-        void onReload();
     }
 
     @NonnullByDefault

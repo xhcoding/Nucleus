@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
@@ -59,7 +60,7 @@ import javax.annotation.Nullable;
 @NonnullByDefault
 @Permissions(supportsOthers = true)
 @RegisterCommand({"rtp", "randomteleport", "rteleport"})
-public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlayer implements AbstractCommand.Reloadable {
+public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlayer implements Reloadable {
 
     private RTPConfig rc = new RTPConfig();
 

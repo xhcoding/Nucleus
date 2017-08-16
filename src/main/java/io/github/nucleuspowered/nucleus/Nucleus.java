@@ -16,7 +16,6 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
-import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
@@ -123,8 +122,6 @@ public abstract class Nucleus {
     public abstract void registerReloadable(ThrowableAction<? extends Exception> reloadable);
 
     public abstract Optional<DocGenCache> getDocGenCache();
-
-    public abstract Optional<MixinConfigProxy> getMixinConfigIfAvailable();
 
     public abstract NucleusTeleportHandler getTeleportHandler();
 
