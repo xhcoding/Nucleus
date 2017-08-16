@@ -91,8 +91,8 @@ public class ItemInfoCommand extends AbstractCommand<Player> {
         }
 
         final List<Text> lt = new ArrayList<>();
-        String id = it.getItem().getId().toLowerCase();
-        lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.id", it.getItem().getId(), it.getTranslation().get()));
+        String id = it.getType().getId().toLowerCase();
+        lt.add(plugin.getMessageProvider().getTextMessageWithFormat("command.iteminfo.id", it.getType().getId(), it.getTranslation().get()));
 
         Optional<BlockState> obs = it.get(Keys.ITEM_BLOCKSTATE);
         if (obs.isPresent()) {

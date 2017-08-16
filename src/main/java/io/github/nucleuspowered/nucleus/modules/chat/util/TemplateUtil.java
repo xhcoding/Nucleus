@@ -14,6 +14,7 @@ import org.spongepowered.api.service.permission.Subject;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -29,44 +30,50 @@ public class TemplateUtil {
         this.chatConfigAdapter = chatConfigAdapter;
     }
 
-    public ChatTemplateConfig getTemplate(Subject subject) {
-        ChatConfig cc = chatConfigAdapter.getNodeOrDefault();
-        List<Subject> groups;
-        try {
-            groups = Util.getParentSubjects(subject);
-        } catch (Exception e) {
-            return cc.getDefaultTemplate();
-        }
+    public ChatTemplateConfig getTemplateNow(Subject subject) {
+        return getTemplate(subject).join();
+    }
 
-        if (groups == null || groups.isEmpty()) {
-            return cc.getDefaultTemplate();
-        }
+    public CompletableFuture<ChatTemplateConfig> getTemplate(Subject subject) {
+        return CompletableFuture.supplyAsync(() -> {
+            ChatConfig cc = chatConfigAdapter.getNodeOrDefault();
+            List<Subject> groups;
+            try {
+                groups = Util.getParentSubjects(subject).get();
+            } catch (Exception e) {
+                return cc.getDefaultTemplate();
+            }
 
-        if (cachedTemplates == null) {
-            cachedTemplates = cc.getGroupTemplates()
-                .entrySet()
-                .stream()
-                .collect(Collectors.groupingBy(x -> x.getValue().getWeight(), Collectors.toSet()))
-                .entrySet()
-                .stream()
-                // Reverse order.
-                .sorted((first, second) -> second.getKey().compareTo(first.getKey()))
-                .map(x -> x.getValue().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-                .collect(Collectors.toList());
-        }
+            if (groups == null || groups.isEmpty()) {
+                return cc.getDefaultTemplate();
+            }
 
-        // For each weight...
-        for (Map<String, WeightedChatTemplateConfig> templates : cachedTemplates) {
-            // Iterate through all groups the subject is in.
-            for (Subject group : groups) {
-                if (templates.containsKey(group.getIdentifier())) {
-                    return templates.get(group.getIdentifier());
+            if (this.cachedTemplates == null) {
+                this.cachedTemplates = cc.getGroupTemplates()
+                        .entrySet()
+                        .stream()
+                        .collect(Collectors.groupingBy(x -> x.getValue().getWeight(), Collectors.toSet()))
+                        .entrySet()
+                        .stream()
+                        // Reverse order.
+                        .sorted((first, second) -> second.getKey().compareTo(first.getKey()))
+                        .map(x -> x.getValue().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+                        .collect(Collectors.toList());
+            }
+
+            // For each weight...
+            for (Map<String, WeightedChatTemplateConfig> templates : cachedTemplates) {
+                // Iterate through all groups the subject is in.
+                for (Subject group : groups) {
+                    if (templates.containsKey(group.getIdentifier())) {
+                        return templates.get(group.getIdentifier());
+                    }
                 }
             }
-        }
 
-        // Return the default.
-        return cc.getDefaultTemplate();
+            // Return the default.
+            return cc.getDefaultTemplate();
+        });
     }
 
 }

@@ -11,7 +11,7 @@ import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-@ModuleData(id = PlayerInfoModule.ID, name = "Player Info")
+@ModuleData(id = PlayerInfoModule.ID, name = "Player Info", softDependencies = "afk")
 public class PlayerInfoModule extends ConfigurableModule<PlayerInfoConfigAdapter> {
 
     public static final String ID = "playerinfo";

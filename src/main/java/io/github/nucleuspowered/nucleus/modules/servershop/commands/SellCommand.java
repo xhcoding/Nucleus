@@ -54,7 +54,7 @@ public class SellCommand extends AbstractCommand<Player> {
         ItemStack is = src.getItemInHand(HandTypes.MAIN_HAND).orElseThrow(() -> new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.generalerror.handempty")));
         String id;
         Optional<BlockState> blockState = is.get(Keys.ITEM_BLOCKSTATE);
-        id = blockState.map(blockState1 -> blockState1.getId().toLowerCase()).orElseGet(() -> is.getItem().getId());
+        id = blockState.map(blockState1 -> blockState1.getId().toLowerCase()).orElseGet(() -> is.getType().getId());
 
         ItemDataNode node = itemDataService.getDataForItem(id);
         final double sellPrice = node.getServerSellPrice();

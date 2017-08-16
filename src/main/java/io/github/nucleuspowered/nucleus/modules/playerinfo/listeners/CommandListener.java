@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.PlayerInfoModule;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.config.PlayerInfoConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -15,13 +14,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
-import java.util.function.Predicate;
-
-@ConditionalListener(CommandListener.Condition.class)
-public class CommandListener extends ListenerBase {
+public class CommandListener extends ListenerBase implements ListenerBase.Conditional {
 
     private boolean messageShown = false;
 
@@ -37,19 +31,9 @@ public class CommandListener extends ListenerBase {
         }
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(PlayerInfoModule.ID, PlayerInfoConfigAdapter.class)
-                    .getNodeOrDefault().getList().isMulticraftCompatibility();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(PlayerInfoModule.ID, PlayerInfoConfigAdapter.class, x -> x.getList().isMulticraftCompatibility())
+                .orElse(false);
     }
+
 }

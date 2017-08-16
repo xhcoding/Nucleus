@@ -12,7 +12,7 @@ import io.github.nucleuspowered.nucleus.api.chat.NucleusNoFormatChannel;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -48,8 +47,7 @@ import javax.inject.Inject;
  * {@link NucleusMessageTokenService}, which
  * should be used if tokens need to be registered.
  */
-@ConditionalListener(ChatListener.Test.class)
-public class ChatListener extends ListenerBase.Reloadable {
+public class ChatListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     private static final Pattern prefixPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*$");
     private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
@@ -73,10 +71,11 @@ public class ChatListener extends ListenerBase.Reloadable {
             permissionToDesc.put(prefix + "color." + value.getName(), mp.getMessageWithFormat("permission.chat.colorspec", value.getName().toLowerCase(), key.toString()));
         });
 
-        NameUtil.getStyles().entrySet().stream().filter(x -> x.getKey().getFirst() != 'k').forEach((k) -> {
-            t.put("&" + k.getKey().getFirst(), Tuple.of(new String[] { prefix + "style." + k.getKey().getSecond().toLowerCase() }, s -> fss.apply(k.getKey().getFirst().toString(), s)));
-            permissionToDesc.put(prefix + "style." + k.getKey().getSecond().toLowerCase(),
-                mp.getMessageWithFormat("permission.chat.stylespec", k.getKey().getSecond().toLowerCase(), k.getKey().getFirst().toString()));
+        NameUtil.getStyleKeys().entrySet().stream().filter(x -> x.getKey() != 'k').forEach((k) -> {
+            t.put("&" + k.getKey(), Tuple.of(new String[] { prefix + "style." + k.getValue().toLowerCase() },
+                    s -> fss.apply(k.getKey().toString(), s)));
+            permissionToDesc.put(prefix + "style." + k.getValue().toLowerCase(),
+                mp.getMessageWithFormat("permission.chat.stylespec", k.getValue().toLowerCase(), k.getKey().toString()));
         });
 
         t.put("&k", Tuple.of(new String[] { prefix + "magic" }, s -> s.replaceAll("[&]+[kK]", "")));
@@ -149,7 +148,7 @@ public class ChatListener extends ListenerBase.Reloadable {
 
         final ChatTemplateConfig ctc;
         if (chatConfig.isUseGroupTemplates()) {
-            ctc = templateUtil.getTemplate(player);
+            ctc = templateUtil.getTemplateNow(player);
         } else {
             ctc = chatConfig.getDefaultTemplate();
         }
@@ -158,6 +157,10 @@ public class ChatListener extends ListenerBase.Reloadable {
             Text.join(prefix, ctc.getPrefix().getForCommandSource(player)),
             chatConfig.isModifyMainMessage() ? useMessage(player, rawMessage, ctc) : rawMessage,
             Text.join(footer, ctc.getSuffix().getForCommandSource(player)));
+    }
+
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ChatModule.ID, ChatConfigAdapter.class, ChatConfig::isModifychat).orElse(false);
     }
 
     private Text useMessage(Player player, Text rawMessage, ChatTemplateConfig chatTemplateConfig) {
@@ -184,11 +187,4 @@ public class ChatListener extends ListenerBase.Reloadable {
         chatConfig = cca.getNodeOrDefault();
     }
 
-    public static class Test implements Predicate<Nucleus> {
-
-        @Override
-        public boolean test(Nucleus nucleus) {
-            return nucleus.getConfigValue(ChatModule.ID, ChatConfigAdapter.class, ChatConfig::isModifychat).orElse(false);
-        }
-    }
 }

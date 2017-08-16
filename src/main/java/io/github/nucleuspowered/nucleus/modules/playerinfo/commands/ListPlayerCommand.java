@@ -13,8 +13,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
@@ -45,32 +45,30 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-// TODO: Put return on a new sync thread when permission data comes back.
 @NonnullByDefault
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"list", "listplayers", "ls"})
 @EssentialsEquivalent({"list", "who", "playerlist", "online", "plist"})
-public class ListPlayerCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
+public class ListPlayerCommand extends AbstractCommand<CommandSource> implements Reloadable {
+
+    private final PlayerInfoConfigAdapter configAdapter;
+
+    private ListConfig listConfig;
 
     @Nullable private AFKHandler handler;
-
-    @SuppressWarnings("NullableProblems") @Inject private PlayerInfoConfigAdapter configAdapter;
-
-    @SuppressWarnings("ConstantConditions")
-    private ListConfig listConfig = null;
-
-    @Nullable private Text afk = null;
-    @Nullable private Text hidden = null;
+    private final Text afk;
+    private final Text hidden;
 
     public static final Function<Subject, Integer> weightingFunction = s -> Util.getIntOptionFromSubject(s, "nucleus.list.weight").orElse(0);
 
-    private void init() {
-        if (afk == null) {
-            afk = plugin.getMessageProvider().getTextMessageWithFormat("command.list.afk");
-            hidden = plugin.getMessageProvider().getTextMessageWithFormat("command.list.hidden");
-            handler = plugin.getInternalServiceManager().getService(AFKHandler.class).orElse(null);
-        }
+    @Inject
+    public ListPlayerCommand(PlayerInfoConfigAdapter configAdapter) {
+        this.configAdapter = configAdapter;
+        this.listConfig = configAdapter.getNodeOrDefault().getList();
+        this.afk = Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.list.afk");
+        this.hidden = Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.list.hidden");
+        this.handler = Nucleus.getNucleus().getInternalServiceManager().getService(AFKHandler.class).orElse(null);
     }
 
     @Override
@@ -82,8 +80,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        init();
-        boolean showVanished = permissions.testSuffix(src, "seevanished");
+        boolean showVanished = this.permissions.testSuffix(src, "seevanished");
 
         Collection<Player> players = Sponge.getServer().getOnlinePlayers();
         long playerCount = players.size();
@@ -101,7 +98,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
         src.sendMessage(header);
 
         Optional<PermissionService> optPermissionService = Sponge.getServiceManager().provide(PermissionService.class);
-        if (listConfig.isGroupByPermissionGroup() && optPermissionService.isPresent()) {
+        if (this.listConfig.isGroupByPermissionGroup() && optPermissionService.isPresent()) {
             listByPermissionGroup(optPermissionService.get(), players, src, showVanished);
         } else {
             // If we have players, send them on.
@@ -131,7 +128,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
 
         // Keep a copy of the players that we will remove from.
         final Map<Player, List<String>> playersToList = players.stream()
-            .collect(Collectors.toMap(x -> x, y -> Util.getParentSubjects(y).stream().map(Contextual::getIdentifier).collect(Collectors.toList())));
+            .collect(Collectors.toMap(x -> x, y -> Util.getParentSubjects(y).join().stream().map(Contextual::getIdentifier).collect(Collectors.toList())));
 
         // Messages
         final List<Text> messages = Lists.newArrayList();

@@ -18,10 +18,10 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
-import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
@@ -31,7 +31,6 @@ import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.junit.BeforeClass;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.spongepowered.api.asset.Asset;
@@ -231,17 +230,12 @@ public abstract class TestBase {
 
         }
 
-        @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
+        @Override public void registerReloadable(Reloadable reloadable) {
 
         }
 
         @Override public Optional<DocGenCache> getDocGenCache() {
             return null;
-        }
-
-        @Override
-        public Optional<MixinConfigProxy> getMixinConfigIfAvailable() {
-            return Optional.empty();
         }
 
         @Override

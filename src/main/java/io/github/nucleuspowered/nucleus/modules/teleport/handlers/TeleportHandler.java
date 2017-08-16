@@ -10,7 +10,6 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.CancellableTask;
-import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.jail.JailModule;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
@@ -60,10 +59,10 @@ public class TeleportHandler {
         return from.hasPermission(tptoggleBypassPermission);
     }
 
-    public static boolean canTeleportTo(SubjectPermissionCache<? extends CommandSource> source, User to)  {
-        if (source.getSubject() instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
+    public static boolean canTeleportTo(CommandSource source, User to)  {
+        if (source instanceof Player && !TeleportHandler.canBypassTpToggle(source)) {
             if (!Nucleus.getNucleus().getUserDataManager().get(to).map(x -> x.get(TeleportUserDataModule.class).isTeleportToggled()).orElse(true)) {
-                source.getSubject().sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
+                source.sendMessage(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("teleport.fail.targettoggle", to.getName()));
                 return false;
             }
         }

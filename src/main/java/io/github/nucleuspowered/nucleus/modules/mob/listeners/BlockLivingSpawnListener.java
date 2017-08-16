@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mob.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.mob.MobModule;
 import io.github.nucleuspowered.nucleus.modules.mob.config.BlockSpawnsConfig;
 import io.github.nucleuspowered.nucleus.modules.mob.config.MobConfig;
@@ -24,21 +24,22 @@ import org.spongepowered.api.event.entity.ConstructEntityEvent;
 import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.world.World;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-@ConditionalListener(BlockLivingSpawnListener.Condition.class)
-public class BlockLivingSpawnListener extends ListenerBase.Reloadable {
+public class BlockLivingSpawnListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
-    @Inject private MobConfigAdapter configAdapter;
+    private final MobConfigAdapter configAdapter;
     private MobConfig config = null;
+
+    @Inject
+    public BlockLivingSpawnListener(MobConfigAdapter configAdapter) {
+        this.configAdapter = configAdapter;
+    }
+
 
     @Listener
     public void onConstruct(ConstructEntityEvent.Pre event, @Getter("getTransform") Transform<World> worldTransform, @Getter("getTargetType") EntityType type) {
@@ -82,32 +83,24 @@ public class BlockLivingSpawnListener extends ListenerBase.Reloadable {
         config = null;
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
+    @Override public boolean shouldEnable() {
             if (Sponge.getGame().getState().ordinal() < GameState.SERVER_STARTING.ordinal()) {
                 return true;
             }
 
-            try {
-                Map<String, BlockSpawnsConfig> config = nucleus.getModuleContainer().getConfigAdapterForModule(MobModule.ID, MobConfigAdapter.class)
-                    .getNodeOrDefault().getBlockSpawnsConfig();
-                if (config.entrySet().stream().anyMatch(x -> Sponge.getServer().getWorldProperties(x.getKey()).isPresent())) {
-                    for (BlockSpawnsConfig s : config.values()) {
-                        List<String> idsToBlock = s.getIdsToBlock();
-                        if (s.isBlockVanillaMobs() || Sponge.getRegistry().getAllOf(EntityType.class).stream()
-                            .anyMatch(x -> idsToBlock.contains(x.getId()))) {
-                            return true;
+            return Nucleus.getNucleus()
+                .getConfigValue(MobModule.ID, MobConfigAdapter.class, MobConfig::getBlockSpawnsConfig).map(conf -> {
+                    if (conf.entrySet().stream().anyMatch(x -> Sponge.getServer().getWorldProperties(x.getKey()).isPresent())) {
+                        for (BlockSpawnsConfig s : conf.values()) {
+                            List<String> idsToBlock = s.getIdsToBlock();
+                            if (s.isBlockVanillaMobs() || Sponge.getRegistry().getAllOf(EntityType.class).stream()
+                                    .anyMatch(x -> idsToBlock.contains(x.getId()))) {
+                                return true;
+                            }
                         }
                     }
-                }
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-            }
 
-            return false;
-        }
+                    return false;
+                }).orElse(false);
     }
 }

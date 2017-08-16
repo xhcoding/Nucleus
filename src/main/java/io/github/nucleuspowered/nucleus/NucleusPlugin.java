@@ -32,7 +32,6 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralServi
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
-import io.github.nucleuspowered.nucleus.internal.MixinConfigProxy;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.PreloadTasks;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
@@ -40,6 +39,7 @@ import io.github.nucleuspowered.nucleus.internal.client.ClientMessageReciever;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
@@ -61,7 +61,6 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
-import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -77,7 +76,6 @@ import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStartingServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
-import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -106,11 +104,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION,
-        dependencies = @Dependency(id = "nucleus-mixins", version = "0.25.2", optional = true))
+@Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
 public class NucleusPlugin extends Nucleus {
 
     private static final String divider = "+------------------------------------------------------------+";
@@ -133,7 +129,7 @@ public class NucleusPlugin extends Nucleus {
     private NameUtil nameUtil;
     private Injector injector;
     private SubInjectorModule subInjectorModule = new SubInjectorModule();
-    private final List<ThrowableAction<? extends Exception>> reloadableList = Lists.newArrayList();
+    private final List<Reloadable> reloadableList = Lists.newArrayList();
     private DocGenCache docGenCache = null;
     private final NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
     private NucleusTokenServiceImpl nucleusChatService;
@@ -154,7 +150,6 @@ public class NucleusPlugin extends Nucleus {
     private final Path configDir;
     private final Supplier<Path> dataDir;
     private boolean isServer = false;
-    @Nullable private MixinConfigProxy mixinConfigProxy = null;
     private WarmupConfig warmupConfig;
 
     private boolean isDebugMode = false;
@@ -202,14 +197,6 @@ public class NucleusPlugin extends Nucleus {
         logger.info(messageProvider.getMessageWithFormat("startup.preinit", PluginInfo.NAME));
         Game game = Sponge.getGame();
         NucleusAPITokens.onPreInit(this);
-
-        try {
-            Class.forName("io.github.nucleuspowered.nucleus.mixins.NucleusMixinSpongePlugin");
-            this.mixinConfigProxy = new MixinConfigProxy();
-            logger.info(messageProvider.getMessageWithFormat("startup.mixins-available"));
-        } catch (ClassNotFoundException e) {
-            logger.info(messageProvider.getMessageWithFormat("startup.mixins-notavailable"));
-        }
 
         // Startup tasks, for the migrations I need to do.
         PreloadTasks.getPreloadTasks().forEach(x -> x.accept(this));
@@ -326,7 +313,7 @@ public class NucleusPlugin extends Nucleus {
 
         // Load up the general data files now, mods should have registered items by now.
         try {
-            // Reload so that we can update the serialisers.
+            // Reloadable so that we can update the serialisers.
             moduleContainer.reloadSystemConfig();
         } catch (Exception e) {
             isErrored = e;
@@ -545,8 +532,8 @@ public class NucleusPlugin extends Nucleus {
     }
 
     private void fireReloadables() throws Exception {
-        for (ThrowableAction<? extends Exception> r : reloadableList) {
-            r.action();
+        for (Reloadable r : this.reloadableList) {
+            r.onReload();
         }
     }
 
@@ -710,16 +697,12 @@ public class NucleusPlugin extends Nucleus {
         }
     }
 
-    @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
+    @Override public void registerReloadable(Reloadable reloadable) {
         reloadableList.add(reloadable);
     }
 
     @Override public Optional<DocGenCache> getDocGenCache() {
         return Optional.ofNullable(docGenCache);
-    }
-
-    public Optional<MixinConfigProxy> getMixinConfigIfAvailable() {
-        return Optional.ofNullable(this.mixinConfigProxy);
     }
 
     @Override public PluginContainer getPluginContainer() {

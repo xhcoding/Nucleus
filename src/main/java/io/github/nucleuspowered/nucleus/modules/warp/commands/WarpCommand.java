@@ -22,7 +22,6 @@ import io.github.nucleuspowered.nucleus.internal.command.ContinueMode;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
@@ -39,6 +38,7 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +62,7 @@ import javax.inject.Inject;
  *     NoCost is applied, as this is handled via the main config file.
  * </p>
  */
+@NonnullByDefault
 @Permissions(suggestedLevel = SuggestedLevel.USER, supportsOthers = true)
 @RegisterCommand(value = "warp")
 @NoCost
@@ -71,7 +72,12 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
     static final String warpNameArg = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("args.name.warpname");
     private final String playerKey = "subject";
 
-    @Inject private WarpConfigAdapter adapter;
+    private final WarpConfigAdapter adapter;
+
+    @Inject
+    public WarpCommand(WarpConfigAdapter adapter) {
+        this.adapter = adapter;
+    }
 
     @Override
     protected Map<String, PermissionInformation> permissionsToRegister() {
@@ -103,11 +109,11 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
     }
 
     @Override
-    protected ContinueMode preProcessChecks(SubjectPermissionCache<CommandSource> source, CommandContext args) {
-        CommandSource cs = source.getSubject();
-        if (args.<Player>getOne(playerKey).map(x -> !(cs instanceof Player) || x.getUniqueId().equals(((Player) cs).getUniqueId())).orElse(false)) {
+    protected ContinueMode preProcessChecks(final CommandSource source, CommandContext args) {
+        if (args.<Player>getOne(playerKey).map(x -> !(source instanceof Player) || x.getUniqueId().equals(((Player) source).getUniqueId()))
+                .orElse(false)) {
             // Bypass cooldowns
-            source.setPermissionOverride(permissions.getPermissionWithSuffix("exempt.cooldown"), true);
+            args.putArg(NoModifiersArgument.NO_COOLDOWN_ARGUMENT, true);
             return ContinueMode.CONTINUE;
         }
 
@@ -124,15 +130,15 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
         }
 
         String costWithUnit = plugin.getEconHelper().getCurrencySymbol(cost);
-        if (plugin.getEconHelper().hasBalance((Player)source.getSubject(), cost)) {
+        if (plugin.getEconHelper().hasBalance((Player)source, cost)) {
             String command = String.format("/warp -y %s", wd.getName());
-            source.getSubject().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.details", wd.getName(), costWithUnit));
-            source.getSubject().sendMessage(
+            source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.details", wd.getName(), costWithUnit));
+            source.sendMessage(
             plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.clickaccept").toBuilder()
                     .onClick(TextActions.runCommand(command)).onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.clickhover", command)))
                     .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.alt")).build());
         } else {
-            source.getSubject().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.nomoney", wd.getName(), costWithUnit));
+            source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.cost.nomoney", wd.getName(), costWithUnit));
         }
 
         return ContinueMode.STOP;

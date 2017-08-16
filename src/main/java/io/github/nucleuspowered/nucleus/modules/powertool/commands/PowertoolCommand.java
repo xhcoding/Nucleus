@@ -64,17 +64,17 @@ public class PowertoolCommand extends AbstractCommand<Player> {
 
         Optional<String> command = args.getOne(commandKey);
         PowertoolUserDataModule inu = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
-        return command.map(s -> setPowertool(src, inu, itemStack.getItem(), s))
+        return command.map(s -> setPowertool(src, inu, itemStack.getType(), s))
                 .orElseGet(() -> viewPowertool(src, inu, itemStack));
     }
 
     private CommandResult viewPowertool(Player src, PowertoolUserDataModule user, ItemStack item) {
-        Optional<List<String>> cmds = user.getPowertoolForItem(item.getItem());
+        Optional<List<String>> cmds = user.getPowertoolForItem(item.getType());
         MessageProvider mp = plugin.getMessageProvider();
         if (cmds.isPresent() && !cmds.get().isEmpty()) {
             Util.getPaginationBuilder(src)
                     .contents(cmds.get().stream().map(f -> Text.of(TextColors.YELLOW, f)).collect(Collectors.toList()))
-                    .title(mp.getTextMessageWithTextFormat("command.powertool.viewcmdstitle", Text.of(item), Text.of(item.getItem().getId())))
+                    .title(mp.getTextMessageWithTextFormat("command.powertool.viewcmdstitle", Text.of(item), Text.of(item.getType().getId())))
                     .sendTo(src);
         } else {
             src.sendMessage(mp.getTextMessageWithTextFormat("command.powertool.nocmds", Text.of(item)));

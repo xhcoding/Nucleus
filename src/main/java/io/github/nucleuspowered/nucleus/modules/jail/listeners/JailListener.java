@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusOnLoginEvent;
 import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.commands.JailCommand;
@@ -44,24 +45,28 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-public class JailListener extends ListenerBase.Reloadable {
+public class JailListener extends ListenerBase implements Reloadable {
 
-    @Inject private UserDataManager loader;
-    @Inject private InternalServiceManager ism;
-    @Inject private JailConfigAdapter jailConfigAdapter;
-    @Inject private JailHandler handler;
+    private final UserDataManager loader;
+    private final InternalServiceManager ism;
+    private final JailConfigAdapter jailConfigAdapter;
+    private final JailHandler handler;
     private final String notify;
     private final String teleport;
     private final String teleportto;
 
-    private boolean isMuteOnJail = false;
     private List<String> allowedCommands;
 
     @Inject
-    public JailListener(NucleusPlugin plugin) {
-        notify = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("notify");
-        teleport = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleportjailed");
-        teleportto = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleporttojailed");
+    public JailListener(UserDataManager loader, InternalServiceManager ism,
+            JailConfigAdapter jailConfigAdapter, JailHandler handler, NucleusPlugin plugin) {
+        this.loader = loader;
+        this.ism = ism;
+        this.jailConfigAdapter = jailConfigAdapter;
+        this.handler = handler;
+        this.notify = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("notify");
+        this.teleport = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleportjailed");
+        this.teleportto = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleporttojailed");
     }
 
     @Listener
@@ -202,7 +207,6 @@ public class JailListener extends ListenerBase.Reloadable {
     }
 
     @Override public void onReload() throws Exception {
-        isMuteOnJail = jailConfigAdapter.getNodeOrDefault().isMuteOnJail();
-        allowedCommands = jailConfigAdapter.getNodeOrDefault().getAllowedCommands();
+        this.allowedCommands = jailConfigAdapter.getNodeOrDefault().getAllowedCommands();
     }
 }

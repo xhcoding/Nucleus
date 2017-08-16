@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.EntryPoint;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
-import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 
 import java.util.Map;
 
@@ -23,15 +22,9 @@ public abstract class ListenerBase {
         return Maps.newHashMap();
     }
 
-    public abstract static class Reloadable extends ListenerBase implements Reload {}
-
     public interface Conditional {
 
         boolean shouldEnable();
     }
 
-    public interface Reload {
-
-        void onReload() throws Exception;
-    }
 }

@@ -6,24 +6,25 @@ package io.github.nucleuspowered.nucleus.modules.chatlogger.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.ChatLoggerModule;
+import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfig;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.handlers.ChatLoggerHandler;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.io.IOException;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-@ConditionalListener(BaseLoggerListener.Condition.class)
-public class BaseLoggerListener extends ListenerBase {
+public class BaseLoggerListener extends ListenerBase implements ListenerBase.Conditional {
 
-    @Inject private ChatLoggerHandler handler;
+    private final ChatLoggerHandler handler;
+
+    @Inject
+    public BaseLoggerListener(ChatLoggerHandler handler) {
+        this.handler = handler;
+    }
 
     @Listener
     public void onShutdown(GameStoppedServerEvent event) {
@@ -34,19 +35,9 @@ public class BaseLoggerListener extends ListenerBase {
         }
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(ChatLoggerModule.ID, ChatLoggingConfigAdapter.class)
-                    .getNodeOrDefault().isEnableLog();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-        }
+    @Override
+    public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ChatLoggerModule.ID, ChatLoggingConfigAdapter.class, ChatLoggingConfig::isEnableLog).orElse(false);
     }
+
 }

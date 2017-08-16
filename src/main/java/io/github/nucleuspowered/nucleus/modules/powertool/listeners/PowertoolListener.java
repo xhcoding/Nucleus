@@ -41,7 +41,7 @@ public class PowertoolListener extends ListenerBase {
         }
 
         // Get the item and the user.
-        ItemType item = player.getItemInHand(HandTypes.MAIN_HAND).get().getItem();
+        ItemType item = player.getItemInHand(HandTypes.MAIN_HAND).get().getType();
         PowertoolUserDataModule user;
         try {
             user = loader.getUnchecked(player).get(PowertoolUserDataModule.class);

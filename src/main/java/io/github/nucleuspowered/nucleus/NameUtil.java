@@ -24,13 +24,11 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.util.Tuple;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -43,8 +41,16 @@ public class NameUtil {
     private final NucleusPlugin plugin;
 
     private final static Map<Character, TextColor> colourMap = Maps.newHashMap();
-    private final static Map<Character, TextStyle> styleMap;
-    private final static Map<Tuple<Character, String>, TextStyle> styleMapFull = Maps.newHashMap();
+    private final static Map<Character, TextStyle> styleMap = Maps.newHashMap();
+    private final static Map<String, TextStyle> styleMapFull = Maps.newHashMap();
+    private final static Map<Character, String> styleKeyMap = Maps.newHashMap();
+
+    private final static String OBFUSICATED = "OBFUSICATED";
+    private final static String BOLD = "BOLD";
+    private final static String STRIKETHROUGH = "STRIKETHROUGH";
+    private final static String UNDERLINE = "UNDERLINE";
+    private final static String ITALIC = "ITALIC";
+    private final static String RESET = "RESET";
 
     static {
         colourMap.put('0', TextColors.BLACK);
@@ -64,26 +70,40 @@ public class NameUtil {
         colourMap.put('e', TextColors.YELLOW);
         colourMap.put('f', TextColors.WHITE);
 
-        styleMapFull.put(Tuple.of('k', "OBFUSCATED"), TextStyles.OBFUSCATED);
-        styleMapFull.put(Tuple.of('l', "BOLD"), TextStyles.BOLD);
-        styleMapFull.put(Tuple.of('m', "STRIKETHROUGH"), TextStyles.STRIKETHROUGH);
-        styleMapFull.put(Tuple.of('n', "UNDERLINE"), TextStyles.UNDERLINE);
-        styleMapFull.put(Tuple.of('o', "ITALIC"), TextStyles.ITALIC);
-        styleMapFull.put(Tuple.of('r', "RESET"), TextStyles.RESET);
+        styleMapFull.put("OBFUSCATED", TextStyles.OBFUSCATED);
+        styleMapFull.put("MAGIC", TextStyles.OBFUSCATED);
+        styleMapFull.put("BOLD", TextStyles.BOLD);
+        styleMapFull.put("STRIKETHROUGH", TextStyles.STRIKETHROUGH);
+        styleMapFull.put("UNDERLINE", TextStyles.UNDERLINE);
+        styleMapFull.put("ITALIC", TextStyles.ITALIC);
+        styleMapFull.put("RESET", TextStyles.RESET);
 
-        styleMap = styleMapFull.entrySet().stream()
-            .collect(Collectors.toMap(x -> x.getKey().getFirst(), Map.Entry::getValue));
+        styleMap.put('k', TextStyles.OBFUSCATED);
+        styleMap.put('l', TextStyles.BOLD);
+        styleMap.put('m', TextStyles.STRIKETHROUGH);
+        styleMap.put('n', TextStyles.UNDERLINE);
+        styleMap.put('o', TextStyles.ITALIC);
+        styleMap.put('r', TextStyles.RESET);
 
-        // Do after to avoid exceptions.
-        styleMapFull.put(Tuple.of('k', "MAGIC"), TextStyles.OBFUSCATED);
+        styleKeyMap.put('k', OBFUSICATED);
+        styleKeyMap.put('l', BOLD);
+        styleKeyMap.put('m', STRIKETHROUGH);
+        styleKeyMap.put('n', UNDERLINE);
+        styleKeyMap.put('o', ITALIC);
+        styleKeyMap.put('r', RESET);
+
     }
 
     public static ImmutableMap<Character, TextColor> getColours() {
         return ImmutableMap.copyOf(colourMap);
     }
 
-    public static ImmutableMap<Tuple<Character, String>, TextStyle> getStyles() {
-        return ImmutableMap.copyOf(styleMapFull);
+    public static ImmutableMap<Character, TextStyle> getStyles() {
+        return ImmutableMap.copyOf(styleMap);
+    }
+
+    public static ImmutableMap<Character, String> getStyleKeys() {
+        return ImmutableMap.copyOf(styleKeyMap);
     }
 
     public Optional<Text> getName(UUID player) {
@@ -101,12 +121,7 @@ public class NameUtil {
 
         TextColor tc = getNameColour(player);
         TextStyle ts = getNameStyle(player);
-        Optional<Text> dname;
-        if (player.isOnline()) {
-            dname = player.getPlayer().get().get(Keys.DISPLAY_NAME);
-        } else {
-            dname = Optional.empty();
-        }
+        Optional<Text> dname = player.getPlayer().map(x -> x.get(Keys.DISPLAY_NAME).orElse(null));
 
         Text.Builder tb = null;
         if (plugin != null && plugin.isModuleLoaded(NicknameModule.ID)) {
@@ -140,11 +155,8 @@ public class NameUtil {
 
         UserStorageService uss = Sponge.getServiceManager().provideUnchecked(UserStorageService.class);
         Optional<User> user = uss.get(uuid);
-        if (user.isPresent()) {
-            return user.get().getName();
-        }
+        return user.map(User::getName).orElseGet(() -> Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.unknown"));
 
-        return Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("standard.unknown");
     }
 
     public TextColor getColourFromString(@Nullable String s) {
@@ -194,7 +206,7 @@ public class NameUtil {
         }
 
         Optional<TemplateUtil> optionalTemplateUtil = plugin.getInternalServiceManager().getService(TemplateUtil.class);
-        return optionalTemplateUtil.map(templateUtil -> fromTemplate.apply(templateUtil.getTemplate(player))).orElse(def);
+        return optionalTemplateUtil.map(templateUtil -> fromTemplate.apply(templateUtil.getTemplateNow(player))).orElse(def);
 
     }
 }

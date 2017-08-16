@@ -15,8 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
-import io.github.nucleuspowered.nucleus.internal.permissions.SubjectPermissionCache;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
@@ -47,7 +46,7 @@ import javax.inject.Inject;
 @RunAsync
 @NoModifiers
 @NonnullByDefault
-public class KitListCommand extends StandardAbstractCommand<CommandSource> {
+public class KitListCommand extends AbstractCommand<CommandSource> {
 
     private final KitHandler kitConfig;
     private final KitConfigAdapter kca;
@@ -63,8 +62,7 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
     }
 
     @Override
-    public CommandResult executeCommand(final SubjectPermissionCache<CommandSource> spc, CommandContext args) throws Exception {
-        final CommandSource src = spc.getSubject();
+    public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
         Set<String> kits = kitConfig.getKitNames();
         if (kits.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.empty"));
@@ -83,7 +81,7 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
             .filter(x -> showHidden || !x.getValue().isHiddenFromList())
             .filter(kit -> !kca.getNodeOrDefault().isSeparatePermissions() ||
                     src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + kit.getKey().toLowerCase()))
-            .forEach(kit -> kitText.add(createKit(spc, user, kit.getKey(), kit.getValue())));
+            .forEach(kit -> kitText.add(createKit(src, user, kit.getKey(), kit.getValue())));
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
                 .title(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
@@ -92,7 +90,7 @@ public class KitListCommand extends StandardAbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createKit(SubjectPermissionCache<CommandSource> source, @Nullable KitUserDataModule user, String kitName, Kit kitObj) {
+    private Text createKit(CommandSource source, @Nullable KitUserDataModule user, String kitName, Kit kitObj) {
         Text.Builder tb = Text.builder(kitName);
 
         if (user != null && Util.getKeyIgnoreCase(user.getKitLastUsedTime(), kitName).isPresent()) {

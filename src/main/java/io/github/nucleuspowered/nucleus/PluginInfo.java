@@ -4,9 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus;
 
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
 /**
  * Contains general information about the plugin.
  *
@@ -22,12 +19,6 @@ public final class PluginInfo {
     public static final String VERSION = "@version@";
     public static final String GIT_HASH = "@gitHash@";
 
-    public static final String MIXIN_VERSION = "@mixinversion@";
-
-    // Preparing for 4.0.0 SpongeAPI
     public static final String DESCRIPTION = "@description@";
-    public static final String URL = "@url@";
 
-    public static final Text MESSAGE_PREFIX = Text.of(TextColors.GREEN, "[" + NAME + "] ");
-    public static final Text ERROR_MESSAGE_PREFIX = Text.of(TextColors.RED, "[" + NAME + "] ");
 }

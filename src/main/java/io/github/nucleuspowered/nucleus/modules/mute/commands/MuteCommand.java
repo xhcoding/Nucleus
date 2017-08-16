@@ -14,8 +14,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
@@ -52,7 +52,7 @@ import javax.inject.Inject;
 @NoModifiers
 @RegisterCommand({"mute", "unmute"})
 @EssentialsEquivalent({"mute", "silence"})
-public class MuteCommand extends AbstractCommand<CommandSource> implements AbstractCommand.Reloadable {
+public class MuteCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     private final MuteConfigAdapter mca;
     private final MuteHandler handler;

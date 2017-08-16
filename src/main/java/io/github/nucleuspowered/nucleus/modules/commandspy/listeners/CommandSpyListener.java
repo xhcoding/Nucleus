@@ -9,7 +9,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.commandspy.CommandSpyModule;
 import io.github.nucleuspowered.nucleus.modules.commandspy.commands.CommandSpyCommand;
@@ -30,14 +30,12 @@ import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
-@ConditionalListener(CommandSpyListener.Test.class)
-public class CommandSpyListener extends ListenerBase.Reloadable {
+public class CommandSpyListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     private CommandPermissionHandler permissionHandler = null;
 
@@ -89,20 +87,17 @@ public class CommandSpyListener extends ListenerBase.Reloadable {
             .getNodeOrDefault();
     }
 
-    public static class Test implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            try {
-                CommandSpyConfig csc = nucleus.getModuleContainer().getConfigAdapterForModule(CommandSpyModule.ID, CommandSpyConfigAdapter.class)
-                    .getNodeOrDefault();
-                return !csc.isUseWhitelist() || !csc.getCommands().isEmpty();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
+    @Override public boolean shouldEnable() {
+        try {
+            CommandSpyConfig csc = Nucleus.getNucleus().getModuleContainer().getConfigAdapterForModule(CommandSpyModule.ID, CommandSpyConfigAdapter.class)
+                .getNodeOrDefault();
+            return !csc.isUseWhitelist() || !csc.getCommands().isEmpty();
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
             }
+
+            return false;
         }
     }
 }

@@ -48,7 +48,7 @@ public class DeletePowertoolCommand extends AbstractCommand<Player> {
         }
 
         PowertoolUserDataModule user = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
-        ItemType item = itemStack.get().getItem();
+        ItemType item = itemStack.get().getType();
 
         Optional<List<String>> cmds = user.getPowertoolForItem(item);
         if (cmds.isPresent() && !cmds.get().isEmpty()) {

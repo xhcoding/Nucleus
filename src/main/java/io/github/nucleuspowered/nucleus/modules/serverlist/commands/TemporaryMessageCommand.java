@@ -67,7 +67,7 @@ public class TemporaryMessageCommand extends AbstractCommand<CommandSource> {
         // Which line?
         boolean linetwo = args.<Integer>getOne(line).map(x -> x == 2).orElse(false);
 
-        Optional<String> onMessage = args.<String>getOne(this.message);
+        Optional<String> onMessage = args.getOne(this.message);
 
         if (!onMessage.isPresent()) {
             boolean isValid = mod.getExpiry().map(x -> x.isAfter(Instant.now())).orElse(false);

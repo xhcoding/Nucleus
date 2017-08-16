@@ -32,6 +32,7 @@ import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+@NonnullByDefault
 @RegisterCommand({"skull"})
 @Permissions
 @EssentialsEquivalent({"skull", "playerskull", "head"})
@@ -46,7 +48,12 @@ public class SkullCommand extends AbstractCommand<Player> {
 
     private final String player = "subject";
     private final String amountKey = "amount";
-    @Inject private ItemConfigAdapter itemConfigAdapter;
+    private final ItemConfigAdapter itemConfigAdapter;
+
+    @Inject
+    public SkullCommand(ItemConfigAdapter itemConfigAdapter) {
+        this.itemConfigAdapter = itemConfigAdapter;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -116,7 +123,7 @@ public class SkullCommand extends AbstractCommand<Player> {
             for (ItemStack itemStack : itemStackList) {
                 int stackSize = itemStack.getQuantity();
                 InventoryTransactionResult itr = inventoryToOfferTo.offer(itemStack);
-                int currentFail = itr.getRejectedItems().stream().mapToInt(ItemStackSnapshot::getCount).sum();
+                int currentFail = itr.getRejectedItems().stream().mapToInt(ItemStackSnapshot::getQuantity).sum();
                 failed += currentFail;
                 accepted += stackSize - currentFail;
             }

@@ -20,8 +20,6 @@ import io.github.nucleuspowered.nucleus.configurate.typeserialisers.Vector3dType
 import io.github.nucleuspowered.nucleus.configurate.wrappers.NucleusItemStackSnapshot;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
 
 import java.time.Instant;
@@ -51,10 +49,6 @@ public class ConfigurateHelper {
 
                 return comment;
         }).build(true);
-    }
-
-    public static CommentedConfigurationNode getNewNode() {
-        return SimpleCommentedConfigurationNode.root(setOptions(ConfigurationOptions.defaults()));
     }
 
     /**

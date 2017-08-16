@@ -13,10 +13,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions
 @RegisterCommand({"more", "stack"})
 @EssentialsEquivalent("more")
+@NonnullByDefault
 public class MoreCommand extends AbstractCommand<Player> {
 
     @Override
@@ -26,8 +28,8 @@ public class MoreCommand extends AbstractCommand<Player> {
             ItemStack stack = player.getItemInHand(HandTypes.MAIN_HAND).get();
             stack.setQuantity(stack.getMaxStackQuantity());
             player.setItemInHand(HandTypes.MAIN_HAND, stack);
-            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.more.success", stack.getItem().getName(),
-                    String.valueOf(stack.getItem().getMaxStackQuantity())));
+            player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.more.success", stack.getType().getName(),
+                    String.valueOf(stack.getType().getMaxStackQuantity())));
             return CommandResult.success();
         }
 

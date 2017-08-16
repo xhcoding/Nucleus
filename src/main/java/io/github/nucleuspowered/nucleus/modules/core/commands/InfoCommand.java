@@ -22,6 +22,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.util.TextMessageException;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import uk.co.drnaylor.quickstart.ModuleContainer;
 
 import java.io.BufferedWriter;
@@ -38,23 +39,24 @@ import java.util.Set;
 @RunAsync
 @NoModifiers
 @RegisterCommand(value = "info", subcommandOf = NucleusCommand.class)
+@NonnullByDefault
 public class InfoCommand extends AbstractCommand<CommandSource> {
 
-    private final String sep = "------------";
+    private final String SEPARATOR = "------------";
 
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // Sponge versions
         List<String> information = Lists.newArrayList();
 
-        information.add(sep);
+        information.add(SEPARATOR);
         information.add("Nucleus Diagnostics");
-        information.add(sep);
+        information.add(SEPARATOR);
 
         information.add("This file contains information about Nucleus and the environment it runs in.");
 
-        information.add(sep);
+        information.add(SEPARATOR);
         information.add("Environment");
-        information.add(sep);
+        information.add(SEPARATOR);
 
         Platform platform = Sponge.getPlatform();
         PluginContainer game = platform.getContainer(Platform.Component.GAME);
@@ -66,23 +68,15 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         information.add(String.format("Sponge API Version: %s %s", api.getName(), api.getVersion().orElse("unknown")));
         information.add("Nucleus Version: " + PluginInfo.VERSION + " (Git: " + PluginInfo.GIT_HASH + ")");
 
-        plugin.getMixinConfigIfAvailable().ifPresent(x -> {
-            information.add(sep);
-            information.add("Nucleus Mixins");
-            information.add(sep);
-            information.add("World Generation mixins: " + (x.testWorldGen() ? "on" : "off"));
-            information.add("/invsee mixins: " + (x.get().config.isInvsee() ? "on" : "off"));
-        });
-
-        information.add(sep);
+        information.add(SEPARATOR);
         information.add("Plugins");
-        information.add(sep);
+        information.add(SEPARATOR);
 
         Sponge.getPluginManager().getPlugins().forEach(x -> information.add(x.getName() + " (" + x.getId() + ") version " + x.getVersion().orElse("unknown")));
 
-        information.add(sep);
+        information.add(SEPARATOR);
         information.add("Registered Commands");
-        information.add(sep);
+        information.add(SEPARATOR);
 
         final Map<String, String> commands = Maps.newHashMap();
         final Map<String, String> plcmds = Maps.newHashMap();
@@ -114,22 +108,22 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         });
 
         commands.entrySet().stream().sorted(Comparator.comparing(x -> x.getKey().toLowerCase())).forEachOrdered(x -> information.add(x.getValue()));
-        information.add(sep);
+        information.add(SEPARATOR);
         information.add("Namespaced commands");
-        information.add(sep);
+        information.add(SEPARATOR);
         plcmds.entrySet().stream().sorted(Comparator.comparing(x -> x.getKey().toLowerCase())).forEachOrdered(x -> information.add(x.getValue()));
 
-        information.add(sep);
+        information.add(SEPARATOR);
         information.add("Nucleus: Enabled Modules");
-        information.add(sep);
+        information.add(SEPARATOR);
 
         plugin.getModuleContainer().getModules().stream().sorted().forEach(information::add);
 
         Set<String> disabled = plugin.getModuleContainer().getModules(ModuleContainer.ModuleStatusTristate.DISABLE);
         if (!disabled.isEmpty()) {
-            information.add(sep);
+            information.add(SEPARATOR);
             information.add("Nucleus: Disabled Modules");
-            information.add(sep);
+            information.add(SEPARATOR);
 
             disabled.stream().sorted().forEach(information::add);
         }

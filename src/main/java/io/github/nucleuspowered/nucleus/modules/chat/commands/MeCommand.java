@@ -11,9 +11,9 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.event.NucleusMessageChannelEvent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
@@ -42,7 +42,7 @@ import javax.inject.Inject;
 @RegisterCommand({"me", "action"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @EssentialsEquivalent({"me", "action", "describe"})
-public class MeCommand extends AbstractCommand<CommandSource> implements StandardAbstractCommand.Reloadable {
+public class MeCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     @Inject private ChatConfigAdapter chatConfigAdapter;
     private ChatConfig config = null;

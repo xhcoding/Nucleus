@@ -59,10 +59,10 @@ public class NicknameService implements NucleusNicknameService {
         });
 
         String stylePerm = permissions.getPermissionWithSuffix("style.");
-        NameUtil.getStyles().entrySet().stream().filter(x -> x.getKey().getFirst() != 'k').forEach((k) -> {
-            replacements.put(new String[] { stylePerm + k.getKey().getSecond().toLowerCase() },
-                    Tuple.of(Pattern.compile("[&]+" + k.getKey().getFirst().toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
-                            mp.getTextMessageWithFormat("command.nick.style.nopermswith", k.getKey().getSecond().toLowerCase())));
+        NameUtil.getStyleKeys().entrySet().stream().filter(x -> x.getKey() != 'k').forEach((k) -> {
+            replacements.put(new String[] { stylePerm + k.getValue().toLowerCase() },
+                    Tuple.of(Pattern.compile("[&]+" + k.getKey().toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
+                            mp.getTextMessageWithFormat("command.nick.style.nopermswith", k.getValue().toLowerCase())));
         });
 
         replacements.put(new String[] { permissions.getPermissionWithSuffix("magic") },

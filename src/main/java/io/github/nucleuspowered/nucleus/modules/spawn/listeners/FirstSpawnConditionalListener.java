@@ -8,7 +8,6 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.modules.spawn.SpawnModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
@@ -19,12 +18,9 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.scheduler.Task;
 
-import java.util.function.Predicate;
-
 import javax.inject.Inject;
 
-@ConditionalListener(FirstSpawnConditionalListener.Condition.class)
-public class FirstSpawnConditionalListener extends ListenerBase {
+public class FirstSpawnConditionalListener extends ListenerBase implements ListenerBase.Conditional {
 
     private final ModularGeneralService store;
 
@@ -40,10 +36,8 @@ public class FirstSpawnConditionalListener extends ListenerBase {
                 .submit(plugin);
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            return nucleus.getConfigValue(SpawnModule.ID, SpawnConfigAdapter.class, SpawnConfig::isForceFirstSpawn).orElse(false);
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(SpawnModule.ID, SpawnConfigAdapter.class, SpawnConfig::isForceFirstSpawn).orElse(false);
     }
+
 }

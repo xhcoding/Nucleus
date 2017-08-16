@@ -4,11 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus;
 
-import com.flowpowered.math.TrigMath;
 import com.flowpowered.math.vector.Vector3d;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.internal.data.EndTimestamp;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
@@ -77,6 +74,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -193,12 +191,6 @@ public class Util {
         }
 
         return consoleFakeUUID;
-    }
-
-    public static CommandSource getFromUUID(UUID uuid) {
-        return Sponge.getServiceManager().provideUnchecked(UserStorageService.class)
-                .get(uuid).map(x -> x.getPlayer().map(y -> (CommandSource)y).orElse((CommandSource)x))
-                .orElse(Sponge.getServer().getConsole());
     }
 
     public static Optional<User> getUserFromUUID(UUID uuid) {
@@ -395,19 +387,16 @@ public class Util {
      */
     public static Optional<CatalogType> getCatalogTypeForItemFromId(String id) {
         // Check for ItemType.
-        Optional<ItemType> oit = Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst();
+        Optional<CatalogType> oit = Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(x -> x.getId().equalsIgnoreCase(id))
+                .findFirst().map(x -> (CatalogType)x);
         if (oit.isPresent()) {
             return Optional.of(oit.get());
         }
 
         // BlockState, you're up next!
-        Optional<? extends CatalogType> obs = Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id))
-                .findFirst();
-        if (obs.isPresent()) {
-            return Optional.of(obs.get());
-        }
+        return Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst()
+                .map(x -> (CatalogType)x);
 
-        return Optional.empty();
     }
 
     public static <T extends CatalogType> String getTranslatableIfPresentOnCatalogType(T ct) {
@@ -496,15 +485,15 @@ public class Util {
      * @param pl The {@link Subject} to get the parents of
      * @return The {@link List} of {@link Subject}s, or an empty list if there nothing was found.
      */
-    public static List<Subject> getParentSubjects(Subject pl) {
-        try {
-            Set<Context> contextSet = pl.getActiveContexts();
+    public static CompletableFuture<List<Subject>> getParentSubjects(Subject pl) {
+        Set<Context> contextSet = pl.getActiveContexts();
+
+        return CompletableFuture.supplyAsync(() -> {
             Map<Subject, Integer> subjects = Maps.newHashMap();
 
             // Try to cache already known values
             Function<Subject, Integer> subjectIntegerFunction = subject -> subjects.computeIfAbsent(subject, k -> k.getParents(contextSet).size());
 
-            // TODO: Make all completable futures - API 7 (seriously)
             return pl.getParents(contextSet).stream().distinct()
                     .map(x -> {
                         try {
@@ -517,12 +506,11 @@ public class Util {
                     .filter(Objects::nonNull)
                     .sorted(Comparator.comparingInt(subjectIntegerFunction::apply))
                     .collect(Collectors.toList());
-        } catch (Exception e) {
-            return Lists.newArrayList();
-        }
+        });
+
     }
 
-    public static boolean compressAndDeleteFile(Path from) throws IOException {
+    public static void compressAndDeleteFile(Path from) throws IOException {
         // Get the file.
         if (Files.exists(from)) {
             Path to = Paths.get(from.toString() + ".gz");
@@ -532,10 +520,8 @@ public class Util {
                 Files.delete(from);
             }
 
-            return true;
         }
 
-        return false;
     }
 
     public static PaginationList.Builder getPaginationBuilder(CommandSource source) {
@@ -572,7 +558,7 @@ public class Util {
             }
         }
 
-        return is.getItem();
+        return is.getType();
     }
 
     public static void dropItemOnFloorAtLocation(ItemStackSnapshot itemStackSnapshotToDrop, World world, Vector3d position) {

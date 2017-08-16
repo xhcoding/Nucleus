@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.protection.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.protection.ProtectionModule;
 import io.github.nucleuspowered.nucleus.modules.protection.config.ProtectionConfigAdapter;
 import org.spongepowered.api.entity.EntityType;
@@ -16,21 +16,21 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
-@ConditionalListener(MobProtectionListener.Condition.class)
-public class MobProtectionListener extends ListenerBase.Reloadable {
+public class MobProtectionListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
+
+    private final ProtectionConfigAdapter protectionConfigAdapter;
+    private List<EntityType> whitelistedTypes;
 
     @Inject
-    private ProtectionConfigAdapter protectionConfigAdapter;
-    private List<EntityType> whitelistedTypes;
+    public MobProtectionListener(ProtectionConfigAdapter protectionConfigAdapter) {
+        this.protectionConfigAdapter = protectionConfigAdapter;
+    }
 
     @Listener
     @Exclude({ChangeBlockEvent.Grow.class, ChangeBlockEvent.Decay.class})
@@ -48,20 +48,8 @@ public class MobProtectionListener extends ListenerBase.Reloadable {
         whitelistedTypes = protectionConfigAdapter.getNodeOrDefault().getWhitelistedEntities();
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override
-        public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(ProtectionModule.ID, ProtectionConfigAdapter.class)
-                        .getNodeOrDefault().isEnableProtection();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-        }
+    @Override
+    public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ProtectionModule.ID, ProtectionConfigAdapter.class, x -> x.isEnableProtection()).orElse(false);
     }
 }

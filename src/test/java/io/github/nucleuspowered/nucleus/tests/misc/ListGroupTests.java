@@ -136,7 +136,7 @@ public class ListGroupTests {
     //
     // Set weight of admin to some number higher than ace
     //
-    // Reload or restart server then /list to see if it worked
+    // Reloadable or restart server then /list to see if it worked
 
     @Test
     @SuppressWarnings("all")

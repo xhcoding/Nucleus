@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.annotations.command;
 
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,11 +21,11 @@ import java.lang.annotation.Target;
 public @interface RegisterCommand {
 
     /**
-     * The subcommand that this represents. Defaults to the {@link StandardAbstractCommand} class.
+     * The subcommand that this represents. Defaults to the {@link AbstractCommand} class.
      *
      * @return The subcommand.
      */
-    Class<? extends StandardAbstractCommand> subcommandOf() default StandardAbstractCommand.class;
+    Class<? extends AbstractCommand> subcommandOf() default AbstractCommand.class;
 
     /**
      * The aliases for this command.

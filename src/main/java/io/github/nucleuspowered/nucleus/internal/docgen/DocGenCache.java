@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.configurate.ConfigurateHelper;
-import io.github.nucleuspowered.nucleus.internal.annotations.RequireMixinPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.Since;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCost;
@@ -17,7 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoPermissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
-import io.github.nucleuspowered.nucleus.internal.command.StandardAbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -88,7 +87,7 @@ public class DocGenCache {
 
     }
 
-    public void addCommand(final String moduleID, final StandardAbstractCommand<?> abstractCommand) {
+    public void addCommand(final String moduleID, final AbstractCommand<?> abstractCommand) {
         if (abstractCommand.getClass().isAnnotationPresent(NoDocumentation.class)) {
             return;
         }
@@ -106,7 +105,7 @@ public class DocGenCache {
 
         cmd.setPermissionbase(abstractCommand.getPermissionHandler().getBase());
 
-        Class<? extends StandardAbstractCommand> cac = abstractCommand.getClass();
+        Class<? extends AbstractCommand> cac = abstractCommand.getClass();
         Permissions s = cac.getAnnotation(Permissions.class);
         if (s == null) {
             cmd.setDefaultLevel(cac.isAnnotationPresent(NoPermissions.class) ? SuggestedLevel.USER.name() : SuggestedLevel.ADMIN.name());
@@ -121,9 +120,6 @@ public class DocGenCache {
             cmd.setWarmup(!cac.isAnnotationPresent(NoWarmup.class));
         }
         cmd.setSince(cac.getAnnotation(Since.class));
-
-        RequireMixinPlugin rmp = cac.getAnnotation(RequireMixinPlugin.class);
-        cmd.setRequiresMixin(rmp != null && rmp.document() && rmp.value() == RequireMixinPlugin.MixinLoad.MIXIN_ONLY);
 
         String desc = abstractCommand.getDescription();
         if (!desc.contains(" ")) {

@@ -153,7 +153,7 @@ public class BuyCommand extends AbstractCommand<Player> {
                             Text.of(unitCount), name, Text.of(econHelper.getCurrencySymbol(overallCost))));
                 } else {
                     Collection<ItemStackSnapshot> iss = itr.getRejectedItems();
-                    int rejected = iss.stream().mapToInt(ItemStackSnapshot::getCount).sum();
+                    int rejected = iss.stream().mapToInt(ItemStackSnapshot::getQuantity).sum();
                     double refund = rejected * perUnitCost;
                     econHelper.depositInPlayer(src, refund, false);
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.itembuy.transactionpartial",

@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.note.NoteModule;
@@ -28,15 +27,19 @@ import org.spongepowered.api.text.channel.MutableMessageChannel;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-@ConditionalListener(NoteListener.Condition.class)
-public class NoteListener extends ListenerBase {
+public class NoteListener extends ListenerBase implements ListenerBase.Conditional {
 
-    @Inject private NoteHandler handler;
+    private final NoteHandler handler;
+
     private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "note.showonlogin";
+
+    @Inject
+    public NoteListener(NoteHandler handler) {
+        this.handler = handler;
+    }
 
     /**
      * At the time the subject joins, check to see if the subject has any notes,
@@ -67,10 +70,8 @@ public class NoteListener extends ListenerBase {
         return mp;
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            return nucleus.getConfigValue(NoteModule.ID, NoteConfigAdapter.class, NoteConfig::isShowOnLogin).orElse(false);
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(NoteModule.ID, NoteConfigAdapter.class, NoteConfig::isShowOnLogin).orElse(false);
     }
+
 }
