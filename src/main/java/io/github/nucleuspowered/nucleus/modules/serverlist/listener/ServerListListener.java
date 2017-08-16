@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.serverlist.ServerListModule;
 import io.github.nucleuspowered.nucleus.modules.serverlist.config.ServerListConfig;
@@ -30,8 +31,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@ConditionalListener(ServerListListener.Condition.class)
-public class ServerListListener extends ListenerBase.Reloadable {
+public class ServerListListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     private final Random random = new Random();
     private ServerListConfig config;
@@ -89,11 +89,7 @@ public class ServerListListener extends ListenerBase.Reloadable {
                 .orElseGet(ServerListConfig::new);
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override
-        public boolean test(Nucleus nucleus) {
-            return nucleus.getConfigValue(ServerListModule.ID, ServerListConfigAdapter.class, ServerListConfig::enableListener).orElse(false);
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ServerListModule.ID, ServerListConfigAdapter.class, ServerListConfig::enableListener).orElse(false);
     }
 }

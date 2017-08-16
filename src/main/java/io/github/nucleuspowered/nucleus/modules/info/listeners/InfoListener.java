@@ -8,10 +8,9 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
-import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.InfoModule;
 import io.github.nucleuspowered.nucleus.modules.info.commands.MotdCommand;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
@@ -28,22 +27,24 @@ import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-@ConditionalListener(InfoListener.Test.class)
-public class InfoListener extends ListenerBase.Reloadable {
+public class InfoListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
-    @Inject private TextParsingUtils textParsingUtils;
-    @Inject private PermissionRegistry pr;
-    @Inject private InfoConfigAdapter ica;
+    private final PermissionRegistry pr;
+    private final InfoConfigAdapter ica;
 
     private String motdPermission = null;
-    private boolean isPaginated = true;
     private Text title = Text.EMPTY;
 
     private int delay = 500;
+
+    @Inject
+    public InfoListener(PermissionRegistry pr, InfoConfigAdapter ica) {
+        this.pr = pr;
+        this.ica = ica;
+    }
 
     @Listener
     public void playerJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
@@ -87,22 +88,19 @@ public class InfoListener extends ListenerBase.Reloadable {
             this.title = TextSerializers.FORMATTING_CODE.deserialize(title);
         }
 
-        this.isPaginated = config.isMotdUsePagination();
     }
 
-    public static class Test implements Predicate<Nucleus> {
-
-        @Override public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(InfoModule.ID, InfoConfigAdapter.class)
-                    .getNodeOrDefault().isShowMotdOnJoin();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
+    @Override public boolean shouldEnable() {
+        try {
+            return Nucleus.getNucleus().getModuleContainer().getConfigAdapterForModule(InfoModule.ID, InfoConfigAdapter.class)
+                .getNodeOrDefault().isShowMotdOnJoin();
+        } catch (NoModuleException | IncorrectAdapterTypeException e) {
+            if (Nucleus.getNucleus().isDebugMode()) {
+                e.printStackTrace();
             }
+
+            return false;
         }
+
     }
 }

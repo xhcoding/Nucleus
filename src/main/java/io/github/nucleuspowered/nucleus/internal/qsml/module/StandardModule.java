@@ -17,13 +17,12 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Scan;
-import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
-import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -154,7 +153,7 @@ public abstract class StandardModule implements Module {
             if (conditionalListener != null) {
                 try {
                     Predicate<Nucleus> cl = conditionalListener.value().newInstance();
-                    ThrowableAction<? extends Exception> tae = () -> {
+                    Reloadable tae = () -> {
                         Sponge.getEventManager().unregisterListeners(c);
                         if (cl.test(plugin)) {
                             if (c instanceof Reloadable) {
@@ -166,17 +165,15 @@ public abstract class StandardModule implements Module {
 
                     // Add reloadable to load in the listener dynamically if required.
                     plugin.registerReloadable(tae);
-                    tae.action();
+                    tae.onReload();
                 } catch (Exception e) {
                     if (plugin.isDebugMode()) {
                         e.printStackTrace();
                     }
-
-                    return;
                 }
             } else if (c instanceof ListenerBase.Conditional) {
                 // Add reloadable to load in the listener dynamically if required.
-                ThrowableAction<? extends Exception> tae = () -> {
+                Reloadable tae = () -> {
                     Sponge.getEventManager().unregisterListeners(c);
                     if (((ListenerBase.Conditional) c).shouldEnable()) {
                         if (c instanceof Reloadable) {
@@ -188,12 +185,12 @@ public abstract class StandardModule implements Module {
 
                 plugin.registerReloadable(tae);
                 try {
-                    tae.action();
+                    tae.onReload();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (c instanceof Reloadable) {
-                plugin.registerReloadable(((Reloadable) c)::onReload);
+                plugin.registerReloadable(((Reloadable) c));
                 Sponge.getEventManager().registerListeners(plugin, c);
             } else {
                 Sponge.getEventManager().registerListeners(plugin, c);

@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.interfaces;
 
+@FunctionalInterface
 public interface Reloadable {
 
     void onReload() throws Exception;

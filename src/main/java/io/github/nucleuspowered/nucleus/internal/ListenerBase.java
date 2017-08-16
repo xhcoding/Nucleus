@@ -22,8 +22,6 @@ public abstract class ListenerBase {
         return Maps.newHashMap();
     }
 
-    public abstract static class Reloadable extends ListenerBase implements io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable {}
-
     public interface Conditional {
 
         boolean shouldEnable();

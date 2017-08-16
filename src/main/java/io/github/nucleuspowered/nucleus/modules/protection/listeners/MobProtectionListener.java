@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.protection.listeners;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.protection.ProtectionModule;
 import io.github.nucleuspowered.nucleus.modules.protection.config.ProtectionConfigAdapter;
 import org.spongepowered.api.entity.EntityType;
@@ -25,8 +26,7 @@ import java.util.function.Predicate;
 import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
-@ConditionalListener(MobProtectionListener.Condition.class)
-public class MobProtectionListener extends ListenerBase.Reloadable {
+public class MobProtectionListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     @Inject
     private ProtectionConfigAdapter protectionConfigAdapter;
@@ -48,20 +48,7 @@ public class MobProtectionListener extends ListenerBase.Reloadable {
         whitelistedTypes = protectionConfigAdapter.getNodeOrDefault().getWhitelistedEntities();
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override
-        public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer().getConfigAdapterForModule(ProtectionModule.ID, ProtectionConfigAdapter.class)
-                        .getNodeOrDefault().isEnableProtection();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-
-                return false;
-            }
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ProtectionModule.ID, ProtectionConfigAdapter.class, x -> x.isEnableProtection()).orElse(false);
     }
 }

@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
@@ -32,7 +33,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-public class ConnectionMessagesListener extends ListenerBase.Reloadable {
+public class ConnectionMessagesListener extends ListenerBase implements Reloadable {
 
     private final ConnectionMessagesConfigAdapter cma;
     private ConnectionMessagesConfig cmc = null;

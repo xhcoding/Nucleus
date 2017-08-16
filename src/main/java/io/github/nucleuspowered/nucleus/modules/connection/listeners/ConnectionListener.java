@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.connection.listeners;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.connection.ConnectionModule;
@@ -27,7 +28,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class ConnectionListener extends ListenerBase.Reloadable {
+public class ConnectionListener extends ListenerBase implements Reloadable {
 
     private final String joinFullServer = PermissionRegistry.PERMISSIONS_PREFIX + "connection.joinfullserver";
 

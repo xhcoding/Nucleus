@@ -21,6 +21,7 @@ import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
@@ -229,7 +230,7 @@ public abstract class TestBase {
 
         }
 
-        @Override public void registerReloadable(ThrowableAction<? extends Exception> reloadable) {
+        @Override public void registerReloadable(Reloadable reloadable) {
 
         }
 

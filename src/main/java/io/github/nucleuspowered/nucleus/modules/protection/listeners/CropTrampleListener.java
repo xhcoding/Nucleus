@@ -7,7 +7,9 @@ package io.github.nucleuspowered.nucleus.modules.protection.listeners;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.protection.ProtectionModule;
+import io.github.nucleuspowered.nucleus.modules.protection.config.ProtectionConfig;
 import io.github.nucleuspowered.nucleus.modules.protection.config.ProtectionConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.Transaction;
@@ -23,8 +25,7 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-@ConditionalListener(CropTrampleListener.Condition.class)
-public class CropTrampleListener extends ListenerBase.Reloadable {
+public class CropTrampleListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     @Inject private ProtectionConfigAdapter protectionConfigAdapter;
     private boolean cropentity = false;
@@ -51,22 +52,8 @@ public class CropTrampleListener extends ListenerBase.Reloadable {
         cropplayer = protectionConfigAdapter.getNodeOrDefault().isDisablePlayerCropTrample();
     }
 
-    public static class Condition implements Predicate<Nucleus> {
-
-        @Override
-        public boolean test(Nucleus nucleus) {
-            try {
-                return nucleus.getModuleContainer()
-                        .getConfigAdapterForModule(ProtectionModule.ID, ProtectionConfigAdapter.class)
-                        .getNodeOrDefault()
-                        .isDisableAnyCropTrample();
-            } catch (NoModuleException | IncorrectAdapterTypeException e) {
-                if (nucleus.isDebugMode()) {
-                    e.printStackTrace();
-                }
-            }
-
-            return false;
-        }
+    @Override public boolean shouldEnable() {
+        return Nucleus.getNucleus().getConfigValue(ProtectionModule.ID, ProtectionConfigAdapter.class, ProtectionConfig::isDisableAnyCropTrample)
+                .orElse(false);
     }
 }

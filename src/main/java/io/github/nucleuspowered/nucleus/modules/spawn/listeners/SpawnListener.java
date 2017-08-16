@@ -12,10 +12,10 @@ import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfig;
@@ -42,16 +42,24 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-public class SpawnListener extends ListenerBase.Reloadable {
+public class SpawnListener extends ListenerBase implements Reloadable {
 
-    @Inject private ModularGeneralService store;
-    @Inject private UserDataManager loader;
-    @Inject private WorldDataManager wcl;
-    @Inject private CoreConfigAdapter cca;
-    @Inject private SpawnConfigAdapter sca;
+    private final ModularGeneralService store;
+    private final UserDataManager loader;
+    private final WorldDataManager wcl;
+    private final SpawnConfigAdapter sca;
     private SpawnConfig spawnConfig;
 
     private final String spawnExempt = PermissionRegistry.PERMISSIONS_PREFIX + "spawn.exempt.login";
+
+    @Inject
+    public SpawnListener(ModularGeneralService store, UserDataManager loader,
+            WorldDataManager wcl, SpawnConfigAdapter sca) {
+        this.store = store;
+        this.loader = loader;
+        this.wcl = wcl;
+        this.sca = sca;
+    }
 
     @Override
     public Map<String, PermissionInformation> getPermissions() {

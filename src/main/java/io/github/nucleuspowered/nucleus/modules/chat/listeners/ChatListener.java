@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.ConditionalListener;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -49,7 +50,7 @@ import javax.inject.Inject;
  * should be used if tokens need to be registered.
  */
 @ConditionalListener(ChatListener.Test.class)
-public class ChatListener extends ListenerBase.Reloadable {
+public class ChatListener extends ListenerBase implements Reloadable {
 
     private static final Pattern prefixPattern = Pattern.compile("^\\s*<[a-zA-Z0-9_]+>\\s*$");
     private static final String prefix = PermissionRegistry.PERMISSIONS_PREFIX + "chat.";
