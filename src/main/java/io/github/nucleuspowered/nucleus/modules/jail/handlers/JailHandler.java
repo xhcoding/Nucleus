@@ -193,7 +193,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
         if (user.isOnline()) {
             Player player = user.getPlayer().get();
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
-                player.setLocation(ow.orElseGet(() -> player.getWorld().getSpawnLocation()));
+                NucleusTeleportHandler.setLocation(player, ow.orElseGet(() -> player.getWorld().getSpawnLocation()));
                 player.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("jail.elapsed"));
 
                 // Remove after the teleport for the back data.

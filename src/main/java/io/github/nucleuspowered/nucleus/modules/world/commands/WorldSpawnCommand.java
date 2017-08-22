@@ -8,9 +8,11 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 /**
  * Teleports you to the world spawn.
@@ -19,11 +21,12 @@ import org.spongepowered.api.entity.living.player.Player;
  */
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"spawn"}, subcommandOf = WorldCommand.class)
+@NonnullByDefault
 public class WorldSpawnCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player pl, CommandContext args) throws Exception {
-        pl.setLocation(pl.getWorld().getSpawnLocation());
+        NucleusTeleportHandler.setLocation(pl, pl.getWorld().getSpawnLocation());
         pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.spawn.success"));
         return CommandResult.success();
     }

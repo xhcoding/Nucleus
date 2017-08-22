@@ -13,8 +13,8 @@ import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesAr
 import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
-import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -272,7 +272,7 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
                             String.valueOf(tpTarget.getBlockX()),
                             String.valueOf(tpTarget.getBlockY()),
                             String.valueOf(tpTarget.getBlockZ())));
-                    if (target.setLocation(tpTarget)) {
+                    if (NucleusTeleportHandler.setLocation(this.target, tpTarget)) {
                         if (!isSelf) {
                             target.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.other"));
                             source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.successother",

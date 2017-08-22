@@ -21,6 +21,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.misc.commands.SpeedCommand;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
@@ -185,7 +186,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
                 plugin.getMessageProvider().getTextMessageWithFormat("command.seen.teleportposition")
             )).onClick(TextActions.executeCallback(cs -> {
                 if (cs instanceof Player) {
-                    ((Player) cs).setLocation(lw);
+                    NucleusTeleportHandler.setLocation((Player) cs, lw);
                 }
             })).build();
         }

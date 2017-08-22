@@ -142,11 +142,18 @@ public class NucleusTeleportHandler {
             }
 
             // Do it, tell the routine if it worked.
+            TeleportResult tr;
             if (addOffset) {
-                return result(player.setLocationAndRotation(targetLocation.get().add(0.5, 0.5, 0.5), rotation));
+                tr = result(player.setLocationAndRotation(targetLocation.get().add(0.5, 0.5, 0.5), rotation));
+            } else {
+                tr = result(player.setLocationAndRotation(targetLocation.get(), rotation));
             }
 
-            return result(player.setLocationAndRotation(targetLocation.get(), rotation));
+            if (tr.isSuccess()) {
+                player.setSpectatorTarget(null);
+            }
+
+            return tr;
         }
 
         return TeleportResult.FAILED_NO_LOCATION;
@@ -172,6 +179,15 @@ public class NucleusTeleportHandler {
         }
 
         return block.getProperty(PassableProperty.class).map(x -> x.getValue()).orElse(false);
+    }
+
+    public static boolean setLocation(Player player, Location<World> location) {
+        if (player.setLocation(location)) {
+            player.setSpectatorTarget(null);
+            return true;
+        }
+
+        return false;
     }
 
     /**

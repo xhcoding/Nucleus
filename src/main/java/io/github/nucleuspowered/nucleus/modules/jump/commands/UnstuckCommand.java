@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.jump.JumpModule;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfig;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
@@ -42,7 +43,7 @@ public class UnstuckCommand extends AbstractCommand<Player> implements Reloadabl
             throw ReturnMessageException.fromKey("command.unstuck.notneeded");
         }
 
-        if (src.setLocation(location)) {
+        if (NucleusTeleportHandler.setLocation(src, location)) {
             src.sendMessage(this.plugin.getMessageProvider().getTextMessageWithTextFormat("command.unstuck.success"));
             return CommandResult.success();
         }
