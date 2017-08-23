@@ -8,6 +8,7 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAPIMetaService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
+import io.github.nucleuspowered.nucleus.api.service.NucleusInvulnerabilityService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
@@ -119,6 +120,19 @@ public class NucleusAPI {
      */
     public static Optional<NucleusHomeService> getHomeService() {
         return getService(NucleusHomeService.class);
+    }
+
+    /**
+     * Gets the {@link NucleusInvulnerabilityService}, if it exists.
+     *
+     * <p>
+     *     Requires the "misc" module.
+     * </p>
+     *
+     * @return The {@link NucleusInvulnerabilityService}
+     */
+    public static Optional<NucleusInvulnerabilityService> getInvulnerabilityService() {
+        return getService(NucleusInvulnerabilityService.class);
     }
 
     /**
