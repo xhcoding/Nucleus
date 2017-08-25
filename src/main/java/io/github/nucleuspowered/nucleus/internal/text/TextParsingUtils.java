@@ -46,6 +46,8 @@ public class TextParsingUtils {
 
     private final NucleusPlugin plugin;
 
+    private final Pattern colours = Pattern.compile(".*(&[0-9a-flmnrok])+$");
+
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
                 + "((?<options>\\{[a-z]+?})?(?<url>(http(s)?://)?([A-Za-z0-9]+\\.)+[A-Za-z0-9-]{2,}\\S*)|"
@@ -125,6 +127,18 @@ public class TextParsingUtils {
         return Text.join(texts);
     }
 
+    private Text oldLegacy(String message) {
+        Matcher colourMatcher = this.colours.matcher(message);
+        if (colourMatcher.matches()) {
+            Text first = TextSerializers.FORMATTING_CODE.deserialize(message.replace(colourMatcher.group(1), ""));
+            String match = colourMatcher.group(1) + " ";
+            Text t = TextSerializers.FORMATTING_CODE.deserialize(match);
+            return Text.of(first, t.getColor(), first.getStyle().and(t.getStyle()));
+        }
+
+        return TextSerializers.FORMATTING_CODE.deserialize(message);
+    }
+
     public Tuples.NullableTuple<List<TextRepresentable>, Map<String, Function<CommandSource, Text>>> createTextTemplateFragmentWithLinks(String message) {
         Preconditions.checkNotNull(message, "message");
         if (message.isEmpty()) {
@@ -133,7 +147,7 @@ public class TextParsingUtils {
 
         Matcher m = enhancedUrlParser.matcher(message);
         if (!m.find()) {
-            return new Tuples.NullableTuple<>(Lists.newArrayList(TextSerializers.FORMATTING_CODE.deserialize(message)), null);
+            return new Tuples.NullableTuple<>(Lists.newArrayList(oldLegacy(message)), null);
         }
 
         Map<String, Function<CommandSource, Text>> args = Maps.newHashMap();
@@ -144,7 +158,7 @@ public class TextParsingUtils {
             // We found a URL. We split on the URL that we have.
             String[] textArray = remaining.split(enhancedUrlParser.pattern(), 2);
             TextRepresentable first = Text.builder().color(st.colour).style(st.style)
-                    .append(TextSerializers.FORMATTING_CODE.deserialize(textArray[0])).build();
+                    .append(oldLegacy(textArray[0])).build();
 
             // Add this text to the list regardless.
             texts.add(first);
@@ -166,7 +180,7 @@ public class TextParsingUtils {
                     reset = TextStyles.RESET;
                 }
 
-                first = Text.of(reset, TextSerializers.FORMATTING_CODE.deserialize(m.group("colour") + " "));
+                first = Text.of(reset, oldLegacy(m.group("colour")));
             }
 
             st = getLastColourAndStyle(first, st);
