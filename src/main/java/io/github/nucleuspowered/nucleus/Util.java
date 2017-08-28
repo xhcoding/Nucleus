@@ -34,10 +34,9 @@ import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -103,7 +102,7 @@ public class Util {
     private static final Pattern inventory = Pattern.compile("\\{\\{.+?}}");
 
     public static Inventory getStandardInventory(Carrier player) {
-        return player.getInventory().query(Hotbar.class, GridInventory.class);
+        return player.getInventory().query(MainPlayerInventory.class);
     }
 
     public static Text applyChatTemplate(MessageEvent.MessageFormatter formatter) {
