@@ -46,7 +46,7 @@ public class TextParsingUtils {
 
     private final NucleusPlugin plugin;
 
-    private final Pattern colours = Pattern.compile(".*(&[0-9a-flmnrok])+$");
+    private static final Pattern colours = Pattern.compile(".*(&[0-9a-flmnrok])+$");
 
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
@@ -127,8 +127,8 @@ public class TextParsingUtils {
         return Text.join(texts);
     }
 
-    private Text oldLegacy(String message) {
-        Matcher colourMatcher = this.colours.matcher(message);
+    public static Text oldLegacy(String message) {
+        Matcher colourMatcher = colours.matcher(message);
         if (colourMatcher.matches()) {
             Text first = TextSerializers.FORMATTING_CODE.deserialize(message.replace(colourMatcher.group(1), ""));
             String match = colourMatcher.group(1) + " ";

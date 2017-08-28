@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.messages;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
@@ -35,7 +36,7 @@ public abstract class MessageProvider {
     }
 
     public final Text getTextMessageWithFormat(String key, String... substitutions) {
-        return getTextMessageWithTextFormat(key, Arrays.stream(substitutions).map(TextSerializers.FORMATTING_CODE::deserialize).collect(Collectors.toList()));
+        return getTextMessageWithTextFormat(key, Arrays.stream(substitutions).map(TextParsingUtils::oldLegacy).collect(Collectors.toList()));
     }
 
     public final Text getTextMessageWithTextFormat(String key, Text... substitutions) {
@@ -43,7 +44,7 @@ public abstract class MessageProvider {
     }
 
     public final Text getTextMessageWithTextFormat(String key, List<Text> textList) {
-        TextTemplate template = textTemplateMap.computeIfAbsent(key, k -> templateCreator(getMessageWithFormat(k)));
+        TextTemplate template = this.textTemplateMap.computeIfAbsent(key, k -> templateCreator(getMessageWithFormat(k)));
         if (textList.isEmpty()) {
             return template.toText();
         }
@@ -68,14 +69,14 @@ public abstract class MessageProvider {
         String[] s = string.split("\\{([\\d]+)}");
 
         List<Object> objects = Lists.newArrayList();
-        Text t = TextSerializers.FORMATTING_CODE.deserialize(s[0]);
+        Text t = TextParsingUtils.oldLegacy(s[0]);
         TextParsingUtils.StyleTuple tuple = TextParsingUtils.getLastColourAndStyle(t, null);
         objects.add(t);
         int count = 1;
         for (Integer x : map) {
             objects.add(TextTemplate.arg(x.toString()).optional().color(tuple.colour).style(tuple.style).build());
             if (s.length > count) {
-                t = Text.of(tuple.colour, tuple.style, TextSerializers.FORMATTING_CODE.deserialize(s[count]));
+                t = Text.of(tuple.colour, tuple.style, TextParsingUtils.oldLegacy(s[count]));
                 tuple = TextParsingUtils.getLastColourAndStyle(t, null);
                 objects.add(t);
             }
