@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.listeners;
 
+import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.modules.world.WorldModule;
@@ -20,9 +21,13 @@ import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.teleport.TeleportHelperFilters;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class WorldListener extends ListenerBase implements ListenerBase.Conditional {
+
+	private final Set<UUID> messageSent = Sets.newHashSet();
 
 	@Listener
 	public void onPlayerTeleport(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player player) {
@@ -31,8 +36,12 @@ public class WorldListener extends ListenerBase implements ListenerBase.Conditio
 
 		if (!player.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "worlds." + target.getName().toLowerCase())) {
 			event.setCancelled(true);
-			player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("world.access.denied", target.getName()));
+			if (!this.messageSent.contains(player.getUniqueId())) {
+				player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("world.access.denied", target.getName()));
+			}
+
 			if (event instanceof MoveEntityEvent.Teleport.Portal) {
+				this.messageSent.add(player.getUniqueId());
 				Sponge.getScheduler().createTaskBuilder()
 					.delayTicks(1)
 					.execute(relocate(player))
@@ -54,6 +63,8 @@ public class WorldListener extends ListenerBase implements ListenerBase.Conditio
 			} else {
 				player.setLocationSafely(player.getWorld().getSpawnLocation());
 			}
+
+			this.messageSent.remove(player.getUniqueId());
 		};
 	}
 
