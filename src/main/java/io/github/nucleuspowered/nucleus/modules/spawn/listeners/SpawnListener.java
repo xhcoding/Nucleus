@@ -31,6 +31,7 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -85,13 +86,16 @@ public class SpawnListener extends ListenerBase implements Reloadable {
                     Optional<Location<World>> location = plugin.getTeleportHandler().getSafeLocation(null, ofs.get().getLocation(), mode);
 
                     if (location.isPresent()) {
-                        loginEvent.setToTransform(new Transform<>(location.get().getExtent(), location.get().getPosition().add(0.5, 0, 0.5), ofs.get().getRotation()));
+                        setupForceCentre(loginEvent,
+                                new Transform<>(location.get().getExtent(), location.get().getPosition().add(0.5, 0, 0.5),
+                                        ofs.get().getRotation()));
                         return;
                     }
 
                     WorldProperties w = Sponge.getServer().getDefaultWorld().get();
-                    loginEvent.setToTransform(
-                            new Transform<>(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(), w.getSpawnPosition().add(0.5, 0, 0.5))));
+                    setupForceCentre(loginEvent,
+                            new Transform<>(new Location<>(Sponge.getServer().getWorld(w.getUniqueId()).get(),
+                                    w.getSpawnPosition().add(0.5, 0, 0.5))));
 
                     // We don't want to boot them elsewhere.
                     return;
@@ -114,13 +118,15 @@ public class SpawnListener extends ListenerBase implements Reloadable {
             }
 
             Location<World> lw = world.getSpawnLocation().add(0.5, 0, 0.5);
-            Optional<Location<World>> safe = plugin.getTeleportHandler().getSafeLocation(null, lw,
-                    spawnConfig.isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
+            Optional<Location<World>> safe = plugin.getTeleportHandler()
+                    .getSafeLocation(null, lw, spawnConfig.isSafeTeleport()
+                            ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
             if (safe.isPresent()) {
                 try {
-                    Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation);
+                    Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get()
+                            .quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation);
                     if (ov.isPresent()) {
-                        loginEvent.setToTransform(new Transform<>(safe.get().getExtent(),
+                        setupForceCentre(loginEvent, new Transform<>(safe.get().getExtent(),
                                 safe.get().getPosition().add(0.5, 0, 0.5),
                                 ov.get()));
                         return;
@@ -129,8 +135,19 @@ public class SpawnListener extends ListenerBase implements Reloadable {
                     //
                 }
 
-                loginEvent.setToTransform(new Transform<>(safe.get().add(0.5, 0, 0.5)));
+                setupForceCentre(loginEvent, new Transform<>(safe.get().add(0.5, 0, 0.5)));
             }
+        }
+    }
+
+    private void setupForceCentre(ClientConnectionEvent.Login event, Transform<World> transform) {
+        UUID uuid = event.getProfile().getUniqueId();
+        event.setToTransform(transform);
+
+        if (this.spawnConfig.isForceOnLogin()) {
+            Task.builder().execute(() -> Sponge.getServer().getPlayer(uuid).ifPresent(x -> x.setTransform(transform)))
+                    .delayTicks(2)
+                    .submit(Nucleus.getNucleus());
         }
     }
 
@@ -168,11 +185,13 @@ public class SpawnListener extends ListenerBase implements Reloadable {
         Transform<World> to = new Transform<>(spawn);
 
         // Compare current transform to spawn - set rotation.
-        wcl.getWorld(world).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
-            .ifPresent(y -> event.setToTransform(to.setRotation(y))));
+        wcl.getWorld(world)
+                .map(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation).map(to::setRotation).orElse(to))
+                .ifPresent(event::setToTransform);
     }
 
-    @Override public void onReload() throws Exception {
+    @Override
+    public void onReload() throws Exception {
         spawnConfig = sca.getNodeOrDefault();
     }
 }
