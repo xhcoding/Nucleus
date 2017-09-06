@@ -16,7 +16,7 @@ public class HomeConfig {
     @Setting(value = "respawn-at-home", comment = "config.home.respawnAtHome")
     private boolean respawnAtHome = false;
 
-    @Setting(value = "prevent-home-count-overhand", comment = "config.home.overhang")
+    @Setting(value = "prevent-home-count-overhang", comment = "config.home.overhang")
     private boolean preventHomeCountOverhang = true;
 
     public boolean isSafeTeleport() {
