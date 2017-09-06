@@ -25,9 +25,6 @@ public class SpawnConfig {
     @Setting(value = "per-world-permissions", comment = "config.spawn.worlds")
     private boolean perWorldPerms = false;
 
-    @Setting(value = "force-centre-on-login", comment = "config.spawn.forceglobal")
-    private boolean forceOnLogin = true;
-
     public boolean isSpawnOnLogin() {
         return spawnOnLogin;
     }
@@ -46,9 +43,5 @@ public class SpawnConfig {
 
     public boolean isPerWorldPerms() {
         return perWorldPerms;
-    }
-
-    public boolean isForceOnLogin() {
-        return forceOnLogin;
     }
 }
