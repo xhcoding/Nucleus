@@ -64,7 +64,8 @@ public class LoadWorldCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         }
 
-        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.load.failed", worldProperties.getWorldName()));
+        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.world.load.fail",
+                worldProperties.getWorldName()));
     }
 
 
