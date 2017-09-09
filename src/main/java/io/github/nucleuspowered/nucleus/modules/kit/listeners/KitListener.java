@@ -22,10 +22,6 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
@@ -140,8 +136,7 @@ public class KitListener extends ListenerBase implements Reloadable {
                         World world = player.getLocation().getExtent();
                         Entity e = world.createEntity(EntityTypes.ITEM, player.getLocation().getPosition());
                         e.offer(Keys.ITEM_BLOCKSTATE, z);
-                        world.spawnEntity(e, Cause.of(NamedCause.owner(EntitySpawnCause.builder()
-                                .type(SpawnTypes.PLUGIN).entity(player).build())));
+                        world.spawnEntity(e);
                     });
                 }
 

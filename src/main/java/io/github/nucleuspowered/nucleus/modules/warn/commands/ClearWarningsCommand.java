@@ -12,14 +12,13 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -77,7 +76,7 @@ public class ClearWarningsCommand extends AbstractCommand<CommandSource> {
             message = plugin.getMessageProvider().getTextMessageWithFormat("command.clearwarnings.expired", user.getName());
         }
 
-        if (handler.clearWarnings(user, removeActive, removeExpired, Cause.of(NamedCause.owner(src)))) {
+        if (handler.clearWarnings(user, removeActive, removeExpired, CauseStackHelper.createCause(src))) {
             src.sendMessage(message);
             return CommandResult.success();
         }

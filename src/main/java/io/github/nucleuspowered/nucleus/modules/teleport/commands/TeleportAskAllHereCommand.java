@@ -13,14 +13,14 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.teleport.events.RequestEvent;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Instant;
@@ -47,12 +47,14 @@ public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.flags().flag("f").buildWith(GenericArguments.none())};
+        return new CommandElement[] {
+                GenericArguments.flags().flag("f").buildWith(GenericArguments.none())
+        };
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        Cause cause = Cause.of(NamedCause.owner(src));
+        //Cause cause = Cause.of(NamedCause.owner(src));
         List<Player> cancelled = Lists.newArrayList();
         Sponge.getServer().getOnlinePlayers().forEach(x -> {
             if (x.equals(src)) {
@@ -60,7 +62,7 @@ public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
             }
 
             // Before we do all this, check the event.
-            RequestEvent.PlayerToCause event = new RequestEvent.PlayerToCause(cause, x);
+            RequestEvent.PlayerToCause event = new RequestEvent.PlayerToCause(CauseStackHelper.createCause(src), x);
             if (Sponge.getEventManager().post(event)) {
                 cancelled.add(x);
                 return;
@@ -78,7 +80,7 @@ public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpaall.success"));
         if (!cancelled.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tpall.cancelled",
-                cancelled.stream().map(x -> x.getName()).collect(Collectors.joining(", "))));
+                cancelled.stream().map(User::getName).collect(Collectors.joining(", "))));
         }
 
         return CommandResult.success();

@@ -22,6 +22,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -29,8 +30,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -113,7 +112,7 @@ public class JailCommand extends AbstractCommand<CommandSource> implements Reloa
     }
 
     private CommandResult onUnjail(CommandSource src, CommandContext args, User user) throws ReturnMessageException {
-        if (handler.unjailPlayer(user, Cause.of(NamedCause.owner(src)))) {
+        if (CauseStackHelper.createFrameWithCausesWithReturn(c -> handler.unjailPlayer(user), src)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jail.unjail.success", user.getName()));
             return CommandResult.success();
         } else {

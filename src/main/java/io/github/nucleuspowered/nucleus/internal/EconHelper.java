@@ -5,10 +5,10 @@
 package io.github.nucleuspowered.nucleus.internal;
 
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.economy.account.UniqueAccount;
 import org.spongepowered.api.service.economy.transaction.ResultType;
@@ -64,7 +64,7 @@ public class EconHelper {
                 return false;
             }
 
-            TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
+            TransactionResult tr = a.get().withdraw(es.getDefaultCurrency(), BigDecimal.valueOf(cost), CauseStackHelper.createCause(src));
             if (tr.getResult() == ResultType.ACCOUNT_NO_FUNDS) {
                 if (message) {
                     src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.nofunds", getCurrencySymbol(cost)));
@@ -94,19 +94,23 @@ public class EconHelper {
             // Check balance.
             EconomyService es = oes.get();
             Optional<UniqueAccount> a = es.getOrCreateAccount(src.getUniqueId());
-            if (!a.isPresent() && src.isOnline()) {
-                src.getPlayer().get().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.noaccount"));
+            if (!a.isPresent()) {
+                src.getPlayer().ifPresent(x ->
+                        x.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.noaccount")));
                 return false;
             }
 
-            TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), Cause.source(plugin).build());
+            TransactionResult tr = a.get().deposit(es.getDefaultCurrency(), BigDecimal.valueOf(cost), CauseStackHelper.createCause(src));
             if (tr.getResult() != ResultType.SUCCESS && src.isOnline()) {
-                src.getPlayer().get().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.error"));
+                src.getPlayer().ifPresent(x ->
+                        x.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.error")));
                 return false;
             }
 
             if (message && src.isOnline()) {
-                src.getPlayer().get().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("cost.refund", getCurrencySymbol(cost)));
+                src.getPlayer().ifPresent(x ->
+                        x.sendMessage(NucleusPlugin.getNucleus().getMessageProvider()
+                                .getTextMessageWithFormat("cost.refund", getCurrencySymbol(cost))));
             }
         }
 

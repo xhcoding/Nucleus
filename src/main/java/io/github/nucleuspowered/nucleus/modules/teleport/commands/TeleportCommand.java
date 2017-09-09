@@ -22,6 +22,7 @@ import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.handlers.TeleportHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -29,8 +30,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
@@ -54,8 +53,15 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
     private final String playerKey = "subject";
     private final String quietKey = "quiet";
 
-    @SuppressWarnings("NullableProblems") @Inject private TeleportHandler handler;
-    @SuppressWarnings("NullableProblems") @Inject private TeleportConfigAdapter tca;
+    private final TeleportHandler handler;
+    private final TeleportConfigAdapter tca;
+
+    @Inject
+    public TeleportCommand(TeleportHandler handler, TeleportConfigAdapter tca) {
+        this.handler = handler;
+        this.tca = tca;
+    }
+
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -159,8 +165,8 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
                 .orElseThrow(r);
 
         MessageProvider provider = plugin.getMessageProvider();
-        if (plugin.getTeleportHandler()
-                .teleportPlayer(from, l, NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE, Cause.of(NamedCause.owner(src))).isSuccess()) {
+        if (CauseStackHelper.createFrameWithCausesWithReturn(c ->
+                plugin.getTeleportHandler().teleportPlayer(from, l, NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE, c).isSuccess(), src)) {
             if (!(src instanceof Player && ((Player) src).getUniqueId().equals(from.getUniqueId()))) {
                 src.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.other", from.getName(), to.getName()));
             }

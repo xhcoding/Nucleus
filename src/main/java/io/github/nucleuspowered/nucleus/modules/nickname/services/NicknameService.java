@@ -18,11 +18,10 @@ import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfig;
 import io.github.nucleuspowered.nucleus.modules.nickname.config.NicknameConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.events.ChangeNicknameEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
@@ -166,7 +165,7 @@ public class NicknameService implements NucleusNicknameService {
         }
 
         // Send an event
-        ChangeNicknameEvent cne = new ChangeNicknameEvent(Cause.of(NamedCause.source(src)), nickname, pl);
+        ChangeNicknameEvent cne = new ChangeNicknameEvent(CauseStackHelper.createCause(src), nickname, pl);
         if (Sponge.getEventManager().post(cne)) {
             throw new NicknameException(
                     Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.nick.eventcancel", pl.getName()),

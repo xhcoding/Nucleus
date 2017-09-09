@@ -17,6 +17,7 @@ import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.events.SendToSpawnEvent;
 import io.github.nucleuspowered.nucleus.modules.spawn.helpers.SpawnHelper;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -26,8 +27,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
@@ -75,7 +74,7 @@ public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
 
         Transform<World> worldTransform = SpawnHelper.getSpawn(world, plugin, target.getPlayer().orElse(null));
 
-        SendToSpawnEvent event = new SendToSpawnEvent(worldTransform, target, Cause.of(NamedCause.source(src), NamedCause.owner(plugin)));
+        SendToSpawnEvent event = new SendToSpawnEvent(worldTransform, target, CauseStackHelper.createCause(src));
         if (Sponge.getEventManager().post(event)) {
             if (event.getCancelReason().isPresent()) {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.other.failed.reason", target.getName(), event.getCancelReason().get()));

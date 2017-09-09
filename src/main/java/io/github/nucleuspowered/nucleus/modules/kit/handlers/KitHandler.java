@@ -23,11 +23,11 @@ import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfig;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.kit.events.KitEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -141,7 +141,8 @@ public class KitHandler implements NucleusKitService {
         }
 
         // Kit pre redeem
-        Cause cause = Cause.of(NamedCause.owner(player));
+        Cause cause = CauseStackHelper.createCause(player);
+
         NucleusKitEvent.Redeem.Pre preEvent = new KitEvent.PreRedeem(cause, oi.orElse(null), kit, player);
         if (Sponge.getEventManager().post(preEvent)) {
             throw new KitRedeemException.PreCancelled(preEvent.getCancelMessage().orElse(null));

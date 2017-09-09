@@ -27,7 +27,7 @@ public abstract class BaseModuleEvent extends AbstractEvent implements NucleusMo
     private final Map<String, ModuleEnableState> state;
 
     private BaseModuleEvent(NucleusPlugin plugin) {
-        this.cause = Cause.source(plugin).build();
+        this.cause = Sponge.getCauseStackManager().getCurrentCause();
         this.plugin = plugin;
         this.state = getState();
     }

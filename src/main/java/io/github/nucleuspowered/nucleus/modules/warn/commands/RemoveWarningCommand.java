@@ -13,14 +13,13 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -64,7 +63,7 @@ public class RemoveWarningCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         }
 
-        if (handler.removeWarning(user, result.warnData, removePermanently, Cause.of(NamedCause.owner(src)))) {
+        if (handler.removeWarning(user, result.warnData, removePermanently, CauseStackHelper.createCause(src))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.removewarning.success", user.getName()));
             return CommandResult.success();
         }

@@ -19,12 +19,12 @@ import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.listeners.ChatListener;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.text.Text;
@@ -73,11 +73,11 @@ public class MeCommand extends AbstractCommand<CommandSource> implements Reloada
 
         // We create an event so that other plugins can provide transforms, such as Boop, and that we
         // can catch it in ignore and mutes, and so can other plugins.
-        MessageChannelEvent.Chat event = new NucleusMessageChannelEvent(
-                Cause.source(src).build(),
+        MessageChannelEvent.Chat event = CauseStackHelper.createFrameWithCausesWithReturn(c -> new NucleusMessageChannelEvent(
+                c,
                 channel,
                 originalMessage,
-                formatter);
+                formatter), src);
 
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.me.cancel"));

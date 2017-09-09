@@ -20,8 +20,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
@@ -83,7 +81,7 @@ public class KitEditCommandCommand extends AbstractCommand<Player> {
             .property(InventoryTitle.PROPERTY_NAME, title).build(plugin);
         books.forEach(inventory::offer);
 
-        src.openInventory(inventory, Cause.of(NamedCause.owner(plugin), NamedCause.source(src)))
+        src.openInventory(inventory)
             .ifPresent(x -> handler.addKitCommandInventoryToListener(Tuple.of(kitInfo, inventory), x));
 
         return CommandResult.success();

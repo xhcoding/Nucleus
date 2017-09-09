@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.PluginInfo;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.MuteInfo;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
@@ -18,10 +17,10 @@ import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.datamodules.MuteUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mute.events.MuteEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.permission.Subject;
@@ -37,7 +36,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteService {
 
@@ -74,7 +72,7 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
     }
 
     public boolean mutePlayer(User user, MuteData data) {
-        return mutePlayer(user, data, Cause.of(NamedCause.source(Util.getObjectFromUUID(data.getMuterInternal()))));
+        return mutePlayer(user, data, CauseStackHelper.createCause((Util.getObjectFromUUID(data.getMuterInternal()))));
     }
 
     public boolean mutePlayer(User user, MuteData data, Cause cause) {
@@ -104,7 +102,7 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
     }
 
     public boolean unmutePlayer(User user) {
-        return unmutePlayer(user, Cause.of(NamedCause.owner(Sponge.getPluginManager().getPlugin(PluginInfo.ID))), true);
+        return unmutePlayer(user, CauseStackHelper.createCause(), true);
     }
 
     @Override public boolean unmutePlayer(User user, Cause cause) {

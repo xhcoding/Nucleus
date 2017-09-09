@@ -4,22 +4,28 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mail.events;
 
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.impl.AbstractEvent;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
+@NonnullByDefault
 public class InternalNucleusMailEvent extends AbstractEvent implements io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent {
 
-    private final User from;
+    @Nullable private final User from;
     private final User to;
     private final String message;
+    private final Cause cause;
     private boolean cancelled = false;
 
-    public InternalNucleusMailEvent(User from, User to, String message) {
+    public InternalNucleusMailEvent(@Nullable User from, User to, String message) {
+        this.cause = CauseStackHelper.createCause(from == null ? Sponge.getServer().getConsole() : from);
         this.from = from;
         this.to = to;
         this.message = message;
@@ -37,11 +43,7 @@ public class InternalNucleusMailEvent extends AbstractEvent implements io.github
 
     @Override
     public Cause getCause() {
-        if (from == null) {
-            return Cause.of(NamedCause.source(Sponge.getServer().getConsole()));
-        }
-
-        return Cause.of(NamedCause.source(from));
+        return this.cause;
     }
 
     @Override

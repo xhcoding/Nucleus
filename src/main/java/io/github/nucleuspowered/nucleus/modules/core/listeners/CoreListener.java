@@ -14,14 +14,13 @@ import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataMod
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusOnLoginEvent;
 import io.github.nucleuspowered.nucleus.modules.core.events.OnFirstLoginEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.IsCancelled;
 import org.spongepowered.api.event.game.GameReloadEvent;
@@ -72,7 +71,11 @@ public class CoreListener extends ListenerBase {
         loader.get(profile.getUniqueId()).ifPresent(qsu -> {
             if (event.getFromTransform().equals(event.getToTransform())) {
                 CoreUserDataModule c = qsu.get(CoreUserDataModule.class);
-                NucleusOnLoginEvent onLoginEvent = new NucleusOnLoginEvent(Cause.of(NamedCause.source(profile)), user, qsu, event.getFromTransform());
+                // Check this
+                NucleusOnLoginEvent onLoginEvent =
+                        CauseStackHelper.createFrameWithCausesWithReturn(cause ->
+                                new NucleusOnLoginEvent(cause, user, qsu, event.getFromTransform()), profile);
+
                 Sponge.getEventManager().post(onLoginEvent);
                 if (onLoginEvent.getTo().isPresent()) {
                     event.setToTransform(onLoginEvent.getTo().get());

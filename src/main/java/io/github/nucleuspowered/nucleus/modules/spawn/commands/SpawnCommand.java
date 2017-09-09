@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -18,6 +17,7 @@ import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.events.SendToSpawnEvent;
 import io.github.nucleuspowered.nucleus.modules.spawn.helpers.SpawnHelper;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
@@ -25,9 +25,8 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
@@ -40,12 +39,17 @@ import javax.inject.Inject;
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("spawn")
 @EssentialsEquivalent("spawn")
+@NonnullByDefault
 public class SpawnCommand extends AbstractCommand<Player> {
 
-    @Inject private WorldDataManager wcl;
-    @Inject private SpawnConfigAdapter sca;
+    private final SpawnConfigAdapter sca;
 
     private final String key = "world";
+
+    @Inject
+    public SpawnCommand(SpawnConfigAdapter sca) {
+        this.sca = sca;
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -79,7 +83,7 @@ public class SpawnCommand extends AbstractCommand<Player> {
 
         Transform<World> worldTransform = SpawnHelper.getSpawn(wp, plugin, src);
 
-        SendToSpawnEvent event = new SendToSpawnEvent(worldTransform, src, Cause.of(NamedCause.source(src), NamedCause.owner(plugin)));
+        SendToSpawnEvent event = new SendToSpawnEvent(worldTransform, src, CauseStackHelper.createCause(src));
         if (Sponge.getEventManager().post(event)) {
             if (event.getCancelReason().isPresent()) {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.self.failed.reason", event.getCancelReason().get()));

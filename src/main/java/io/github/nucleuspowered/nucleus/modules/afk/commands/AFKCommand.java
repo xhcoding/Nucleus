@@ -14,11 +14,10 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
@@ -60,7 +59,7 @@ public class AFKCommand extends AbstractCommand<Player> {
 
         if (isAFK) {
             afkHandler.stageUserActivityUpdate(src);
-        } else if (!afkHandler.setAfk(src, Cause.of(NamedCause.owner(src)), true)) {
+        } else if (!this.afkHandler.setAfk(src, CauseStackHelper.createCause(src), true)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.afk.notset"));
         }
 

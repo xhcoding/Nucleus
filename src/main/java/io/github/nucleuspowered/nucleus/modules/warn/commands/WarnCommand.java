@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.warn.commands;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
@@ -17,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -25,8 +25,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -77,7 +75,7 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        User user = args.<User>getOne(playerKey).get();
+        final User user = args.<User>getOne(playerKey).get();
         Optional<Long> optDuration = args.getOne(durationKey);
         String reason = args.<String>getOne(reasonKey).get();
 
@@ -136,7 +134,8 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
 
                 //Expire all active warnings
                 // The cause is the plugin, as this isn't directly the warning user.
-                warnHandler.clearWarnings(user, false, false, Cause.of(NamedCause.owner(NucleusPlugin.getNucleus())));
+                CauseStackHelper.createFrameWithCausesWithConsumer(c ->
+                        warnHandler.clearWarnings(user, false, false, c), src);
 
                 //Get and run the action command
                 String command = wca.getNodeOrDefault().getActionCommand().replaceAll("\\{\\{name}}", user.getName());

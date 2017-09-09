@@ -14,5 +14,5 @@ package io.github.nucleuspowered.nucleus.util;
 @FunctionalInterface
 public interface ThrownFunction<I, R, X extends Throwable> {
 
-    R accept(I input) throws X;
+    R apply(I input) throws X;
 }

@@ -9,7 +9,9 @@ import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -19,11 +21,8 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
@@ -35,6 +34,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 @Permissions(supportsOthers = true)
+@NonnullByDefault
 @RegisterCommand({"lightning", "strike", "smite", "thor", "shock"})
 @EssentialsEquivalent(value = {"lightning", "strike", "smite", "thor", "shock"}, isExact = false,
         notes = "Selectors can be used, entities can be struck.")
@@ -87,15 +87,11 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
         return CommandResult.builder().successCount(successCount).build();
     }
 
-    private CommandResult spawnLightning(Location<World> location, CommandSource src, @Nullable Player target) {
+    private CommandResult spawnLightning(Location<World> location, CommandSource src, @Nullable Player target) throws ReturnMessageException {
         World world = location.getExtent();
         Entity bolt = world.createEntity(EntityTypes.LIGHTNING, location.getPosition());
 
-        Cause cause = Cause.of(
-                NamedCause.owner(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()),
-                NamedCause.source(src));
-
-        if (world.spawnEntity(bolt, cause)) {
+        if (CauseStackHelper.createFrameWithCausesWithReturn(c -> world.spawnEntity(bolt), src)) {
             if (target != null) {
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.lightning.success.other", plugin.getNameUtil()
                         .getName(target)));
@@ -105,12 +101,10 @@ public class LightningCommand extends AbstractCommand<CommandSource> {
         }
 
         if (target != null) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithTextFormat("command.lightning.errorplayer", plugin.getNameUtil()
-                    .getName(target)));
+            throw ReturnMessageException.fromKeyText("command.lightning.errorplayer", plugin.getNameUtil().getName(target));
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.lightning.error"));
+            throw ReturnMessageException.fromKey("command.lightning.error");
         }
 
-        return CommandResult.empty();
     }
 }

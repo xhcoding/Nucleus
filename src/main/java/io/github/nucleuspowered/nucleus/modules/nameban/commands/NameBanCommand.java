@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.nameban.config.NameBanConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.nameban.handlers.NameBanHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,8 +23,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -70,7 +69,7 @@ public class NameBanCommand extends AbstractCommand<CommandSource> {
         String name = args.<String>getOne(nameKey).get().toLowerCase();
         String reason = args.<String>getOne(reasonKey).orElse(nameBanConfigAdapter.getNodeOrDefault().getDefaultReason());
 
-        if (handler.addName(name, reason, Cause.of(NamedCause.owner(src)))) {
+        if (this.handler.addName(name, reason, CauseStackHelper.createCause(src))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nameban.success", name));
             return CommandResult.success();
         }

@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.afk.handlers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -18,12 +19,12 @@ import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.events.AFKEvents;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
@@ -120,7 +121,7 @@ public class AFKHandler implements NucleusAFKService {
                 final NucleusTextTemplateImpl messageToServer = config.getMessages().getOnKick();
 
                 Sponge.getServer().getPlayer(e.getKey()).ifPresent(player -> {
-                    if (Sponge.getEventManager().post(new AFKEvents.Kick(player, Cause.of(NamedCause.owner(plugin))))) {
+                    if (Sponge.getEventManager().post(new AFKEvents.Kick(player))) {
                         // Cancelled.
                         return;
                     }
@@ -163,7 +164,7 @@ public class AFKHandler implements NucleusAFKService {
     }
 
     public boolean setAfk(Player player) {
-        return setAfk(player, Cause.of(NamedCause.owner(player)), false);
+        return setAfk(player, CauseStackHelper.createCause(player), false);
     }
 
     public boolean setAfk(Player player, Cause cause, boolean force) {
@@ -200,7 +201,9 @@ public class AFKHandler implements NucleusAFKService {
     }
 
     private AFKData updateActivity(UUID uuid, AFKData data) {
-        return updateActivity(uuid, data, Cause.of(NamedCause.source(Sponge.getServer().getPlayer(uuid).map(x -> (Object)x).orElse(plugin))));
+        List<Object> lo = Lists.newArrayList();
+        Sponge.getServer().getPlayer(uuid).ifPresent(lo::add);
+        return updateActivity(uuid, data, CauseStackHelper.createCause(lo));
     }
 
     private AFKData updateActivity(UUID uuid, AFKData data, Cause cause) {

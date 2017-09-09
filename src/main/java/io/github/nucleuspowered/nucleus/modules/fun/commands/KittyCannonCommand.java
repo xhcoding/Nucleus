@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -27,10 +28,6 @@ import org.spongepowered.api.data.type.OcelotType;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
@@ -113,7 +110,7 @@ public class KittyCannonCommand extends AbstractCommand<CommandSource> {
             .execute(new CatTimer(world.getUniqueId(), cat.getUniqueId(), spawnAt, random.nextInt(60) + 20, damageEntities, breakBlocks, causeFire))
             .submit(plugin);
 
-        world.spawnEntity(cat, Cause.of(NamedCause.owner(SpawnCause.builder().type(SpawnTypes.PLUGIN).build()), NamedCause.source(source)));
+        CauseStackHelper.createFrameWithCausesWithConsumer(c -> world.spawnEntity(cat), source);
         cat.offer(Keys.VELOCITY, velocity);
     }
 
@@ -163,7 +160,8 @@ public class KittyCannonCommand extends AbstractCommand<CommandSource> {
                     .shouldDamageEntities(damageEntities).shouldPlaySmoke(true).shouldBreakBlocks(breakBlocks)
                     .radius(2).build();
                 e.remove();
-                oWorld.get().triggerExplosion(explosion, Cause.of(NamedCause.source(player), NamedCause.of("plugin", plugin.getPluginContainer())));
+                CauseStackHelper.createFrameWithCausesWithConsumer(c -> oWorld.get().triggerExplosion(explosion), this.player);
+
                 task.cancel();
             }
         }

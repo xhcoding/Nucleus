@@ -23,8 +23,6 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Carrier;
@@ -263,7 +261,7 @@ public class Util {
         try {
             Optional<String> optional = getOptionFromSubject(player, options);
             if (optional.isPresent()) {
-                return Optional.ofNullable(conversion.accept(optional.get()));
+                return Optional.ofNullable(conversion.apply(optional.get()));
             }
         } catch (Exception e) {
             // ignored
@@ -498,7 +496,7 @@ public class Util {
     public static ItemStack dropItemOnFloorAtLocation(ItemStackSnapshot itemStackSnapshotToDrop, World world, Vector3d position) {
         Entity entityToDrop = world.createEntity(EntityTypes.ITEM, position);
         entityToDrop.offer(Keys.REPRESENTED_ITEM, itemStackSnapshotToDrop);
-        world.spawnEntity(entityToDrop, Cause.of(NamedCause.owner(Nucleus.getNucleus())));
+        world.spawnEntity(entityToDrop);
         return itemStackSnapshotToDrop.createStack();
     }
 

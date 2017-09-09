@@ -20,8 +20,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -67,8 +65,7 @@ public class EnderChestCommand extends AbstractCommand<Player> {
                 throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.enderchest.targetexempt", target.getName()));
             }
 
-            Container container = src.openInventory(target.getEnderChestInventory(),
-                    Cause.of(NamedCause.of("plugin", plugin), NamedCause.source(src)))
+            Container container = src.openInventory(target.getEnderChestInventory())
                         .orElseThrow(() -> ReturnMessageException.fromKey("command.invsee.failed"));
 
             if (this.permissions.testSuffix(target, "exempt.modify") ||
@@ -77,8 +74,7 @@ public class EnderChestCommand extends AbstractCommand<Player> {
                 InvSeeListener.addEntry(src.getUniqueId(), container);
             }
         } else {
-            src.openInventory(src.getEnderChestInventory(), Cause.of(NamedCause.of("plugin", plugin), NamedCause.source(src)))
-                .orElseThrow(() -> ReturnMessageException.fromKey("command.invsee.failed"));
+            src.openInventory(src.getEnderChestInventory()).orElseThrow(() -> ReturnMessageException.fromKey("command.invsee.failed"));
         }
 
         return CommandResult.success();

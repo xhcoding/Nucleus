@@ -22,8 +22,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -77,7 +75,7 @@ public class KitViewCommand extends AbstractCommand<Player> implements Reloadabl
         }
 
         lis.forEach(inventory::offer);
-        return src.openInventory(inventory, Cause.of(NamedCause.owner(this.plugin), NamedCause.source(src)))
+        return src.openInventory(inventory)
             .map(x -> {
                 kitHandler.addViewer(x);
                 return CommandResult.success();

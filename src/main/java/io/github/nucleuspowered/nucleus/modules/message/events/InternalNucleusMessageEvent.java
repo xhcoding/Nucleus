@@ -4,19 +4,23 @@
  */
 package io.github.nucleuspowered.nucleus.modules.message.events;
 
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.impl.AbstractEvent;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+@NonnullByDefault
 public class InternalNucleusMessageEvent extends AbstractEvent implements io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent {
 
+    private final Cause cause;
     private final CommandSource from;
     private final CommandSource to;
     private final String message;
     private boolean isCancelled = false;
 
     public InternalNucleusMessageEvent(CommandSource from, CommandSource to, String message) {
+        this.cause = CauseStackHelper.createCause(from);
         this.from = from;
         this.to = to;
         this.message = message;
@@ -24,7 +28,7 @@ public class InternalNucleusMessageEvent extends AbstractEvent implements io.git
 
     @Override
     public Cause getCause() {
-        return Cause.of(NamedCause.source(from));
+        return this.cause;
     }
 
     @Override

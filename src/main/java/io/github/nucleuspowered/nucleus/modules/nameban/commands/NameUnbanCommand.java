@@ -13,12 +13,11 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.modules.nameban.handlers.NameBanHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -48,7 +47,7 @@ public class NameUnbanCommand extends AbstractCommand<CommandSource> {
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String name = args.<String>getOne(nameKey).get().toLowerCase();
 
-        if (handler.removeName(name, Cause.of(NamedCause.owner(src)))) {
+        if (this.handler.removeName(name, CauseStackHelper.createCause(src))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nameban.pardon.success", name));
             return CommandResult.success();
         }

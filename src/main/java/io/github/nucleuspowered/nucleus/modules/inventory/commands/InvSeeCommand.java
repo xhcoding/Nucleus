@@ -25,8 +25,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.text.Text;
@@ -82,7 +80,7 @@ public class InvSeeCommand extends AbstractCommand<Player> implements Reloadable
         // Just in case, get the subject inventory if they are online.
         try {
             Inventory targetInv = target.isOnline() ? target.getPlayer().get().getInventory() : target.getInventory();
-            Optional<Container> oc = src.openInventory(targetInv, Cause.of(NamedCause.of("plugin", plugin), NamedCause.source(src)));
+            Optional<Container> oc = src.openInventory(targetInv);
             if (oc.isPresent()) {
                 if (!permissions.testSuffix(src, "modify") || permissions.testSuffix(target, "exempt.interact")) {
                     InvSeeListener.addEntry(src.getUniqueId(), oc.get());

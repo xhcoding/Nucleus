@@ -15,12 +15,11 @@ import io.github.nucleuspowered.nucleus.modules.jail.JailModule;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.teleport.config.TeleportConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.teleport.datamodules.TeleportUserDataModule;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
@@ -167,7 +166,7 @@ public class TeleportHandler {
                     NucleusTeleportHandler.TeleportMode.NO_CHECK;
 
                 NucleusTeleportHandler.TeleportResult result =
-                        tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode, Cause.of(NamedCause.owner(this.source)));
+                        tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode, CauseStackHelper.createCause(this.source));
                 if (!result.isSuccess()) {
                     if (!silentSource) {
                         source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(result ==

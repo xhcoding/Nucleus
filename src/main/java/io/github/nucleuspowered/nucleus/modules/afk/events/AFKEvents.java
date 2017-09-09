@@ -7,7 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.afk.events;
 import io.github.nucleuspowered.nucleus.api.events.NucleusAFKEvent;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
+import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.entity.living.humanoid.player.TargetPlayerEvent;
 import org.spongepowered.api.event.impl.AbstractEvent;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -19,7 +20,7 @@ public abstract class AFKEvents extends AbstractEvent implements TargetPlayerEve
     private final Cause cause;
 
     public AFKEvents(Player target) {
-        this(target, Cause.of(NamedCause.owner(target)));
+        this(target, Cause.of(EventContext.builder().add(EventContextKeys.OWNER, target).build(), target));
     }
 
     public AFKEvents(Player target, Cause cause) {

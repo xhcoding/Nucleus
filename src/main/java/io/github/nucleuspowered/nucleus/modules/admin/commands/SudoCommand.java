@@ -4,15 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.admin.commands;
 
-import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
-import io.github.nucleuspowered.nucleus.internal.event.NucleusMessageChannelEvent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -20,11 +20,10 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.message.MessageChannelEvent;
+import org.spongepowered.api.event.CauseStackManager;
+import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.action.TextActions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,29 +68,13 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
             }
 
             Text rawMessage = Text.of(cmd.split(":", 2)[1]);
-
-            MessageChannelEvent.Chat event;
-            try {
-                event = pl.simulateChat(rawMessage, Cause.of(NamedCause.simulated(pl), NamedCause.owner(src)));
-            } catch (Throwable e) { // just in case people don't update.
-                event = new NucleusMessageChannelEvent(
-                        Cause.source(pl).named(NamedCause.notifier(src)).build(),
-                        pl.getMessageChannel(),
-                        rawMessage,
-                        new NucleusMessageChannelEvent.MessageFormatter(Text.builder(pl.getName())
-                                .onShiftClick(TextActions.insertText(pl.getName()))
-                                .onClick(TextActions.suggestCommand("/msg " + pl.getName()))
-                                .build(), rawMessage)
-                );
-
-                if (!Sponge.getEventManager().post(event)) {
-                    pl.getMessageChannel().send(pl, Util.applyChatTemplate(event.getFormatter()));
+            try (CauseStackManager.StackFrame c = CauseStackHelper.createFrameWithCauses(
+                    EventContext.builder()
+                        .add(EventContextKeys.PLAYER_SIMULATED, pl.getProfile())
+                        .build(), src)) {
+                if (pl.simulateChat(rawMessage, Sponge.getCauseStackManager().getCurrentCause()).isCancelled()) {
+                    throw ReturnMessageException.fromKey("command.sudo.chatcancelled");
                 }
-            }
-
-            if (event.isCancelled()) {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.sudo.chatcancelled"));
-                return CommandResult.empty();
             }
 
             return CommandResult.success();

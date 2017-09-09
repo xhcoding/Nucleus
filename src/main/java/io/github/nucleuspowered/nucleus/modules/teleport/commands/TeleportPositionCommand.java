@@ -9,7 +9,6 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
-import io.github.nucleuspowered.nucleus.argumentparsers.NoDescriptionArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -20,6 +19,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -29,7 +29,6 @@ import org.spongepowered.api.command.args.CommandFlags;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
@@ -119,10 +118,11 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
         }
 
         NucleusTeleportHandler teleportHandler = Nucleus.getNucleus().getTeleportHandler();
+        Cause cause = CauseStackHelper.createCause(src);
 
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
-            if (teleportHandler.teleportPlayer(pl, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK, Cause.of(NamedCause.owner(src))).isSuccess()) {
+            if (teleportHandler.teleportPlayer(pl, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK, cause).isSuccess()) {
                 pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
                 if (!src.equals(pl)) {
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -140,7 +140,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
             mode = NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE_CHUNK;
         }
 
-        NucleusTeleportHandler.TeleportResult result = teleportHandler.teleportPlayer(pl, loc, mode, Cause.of(NamedCause.owner(src)), true);
+        NucleusTeleportHandler.TeleportResult result = teleportHandler.teleportPlayer(pl, loc, mode, cause, true);
         if (result.isSuccess()) {
             pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
             if (!src.equals(pl)) {

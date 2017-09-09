@@ -24,12 +24,12 @@ import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailGeneralDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.events.JailEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.context.ContextCalculator;
 import org.spongepowered.api.service.permission.Subject;
@@ -158,26 +158,28 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
                 plugin.getTeleportHandler().teleportPlayer(player, owl.get().getLocation().get(), owl.get().getRotation(),
-                    NucleusTeleportHandler.TeleportMode.NO_CHECK, Cause.of(NamedCause.owner(plugin)));
+                    NucleusTeleportHandler.TeleportMode.NO_CHECK, Sponge.getCauseStackManager().getCurrentCause());
                 modularUserService.get(FlyUserDataModule.class).setFlying(false);
             });
         } else {
             jailUserDataModule.setJailOnNextLogin(true);
         }
 
-        jailDataCache.put(user.getUniqueId(), new Context(NucleusJailService.JAIL_CONTEXT, data.getJailName()));
-        Sponge.getEventManager().post(new JailEvent.Jailed(
-                user,
-                Cause.of(NamedCause.owner(Util.getObjectFromUUID(data.getJailerInternal()))),
-                data.getJailName(),
-                TextSerializers.FORMATTING_CODE.deserialize(data.getReason()),
-                data.getRemainingTime().orElse(null)));
+        this.jailDataCache.put(user.getUniqueId(), new Context(NucleusJailService.JAIL_CONTEXT, data.getJailName()));
+            Sponge.getEventManager().post(new JailEvent.Jailed(
+            user,
+            CauseStackHelper.createCause(Util.getObjectFromUUID(data.getJailerInternal())),
+            data.getJailName(),
+            TextSerializers.FORMATTING_CODE.deserialize(data.getReason()),
+            data.getRemainingTime().orElse(null)));
+
         return true;
     }
 
+    // Test
     @Override
     public boolean unjailPlayer(User user) {
-        return unjailPlayer(user, Cause.of(NamedCause.owner(Nucleus.getNucleus())));
+        return unjailPlayer(user, Sponge.getCauseStackManager().getCurrentCause());
     }
 
     public boolean unjailPlayer(User user, Cause cause) {

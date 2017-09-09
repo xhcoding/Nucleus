@@ -11,15 +11,15 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.modules.warp.event.CreateWarpEvent;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.regex.Pattern;
 
@@ -34,10 +34,16 @@ import javax.inject.Inject;
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"set"}, subcommandOf = WarpCommand.class, rootAliasRegister = { "setwarp", "warpset" })
 @EssentialsEquivalent({"setwarp", "createwarp"})
+@NonnullByDefault
 public class SetWarpCommand extends AbstractCommand<Player> {
 
-    @Inject private WarpHandler qs;
+    private final WarpHandler qs;
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
+
+    @Inject
+    public SetWarpCommand(WarpHandler qs) {
+        this.qs = qs;
+    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -66,7 +72,7 @@ public class SetWarpCommand extends AbstractCommand<Player> {
             return CommandResult.empty();
         }
 
-        CreateWarpEvent event = new CreateWarpEvent(Cause.of(NamedCause.owner(src)), warp, src.getLocation());
+        CreateWarpEvent event = CauseStackHelper.createFrameWithCausesWithReturn(c -> new CreateWarpEvent(c, warp, src.getLocation()), src);
         if (Sponge.getEventManager().post(event)) {
             throw new ReturnMessageException(event.getCancelMessage().orElseGet(() ->
                 plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")
@@ -81,7 +87,6 @@ public class SetWarpCommand extends AbstractCommand<Player> {
         }
 
         // Didn't work. Tell them.
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.seterror"));
-        return CommandResult.empty();
+        throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.seterror"));
     }
 }

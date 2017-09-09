@@ -20,8 +20,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Container;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -69,7 +67,7 @@ public class KitEditCommand extends AbstractCommand<Player> {
             .build(plugin);
 
         kitInfo.getStacks().stream().filter(x -> !x.getType().equals(ItemTypes.NONE)).forEach(x -> inventory.offer(x.createStack()));
-        Optional<Container> openedInventory = src.openInventory(inventory, Cause.of(NamedCause.owner(plugin), NamedCause.source(src)));
+        Optional<Container> openedInventory = src.openInventory(inventory);
 
         if (openedInventory.isPresent()) {
             kitHandler.addKitInventoryToListener(Tuple.of(kitInfo, inventory), openedInventory.get());

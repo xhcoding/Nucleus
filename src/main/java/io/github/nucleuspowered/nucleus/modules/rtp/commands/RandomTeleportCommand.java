@@ -23,6 +23,7 @@ import io.github.nucleuspowered.nucleus.modules.rtp.RTPModule;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfig;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.rtp.events.RTPSelectedLocationEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
@@ -35,7 +36,6 @@ import org.spongepowered.api.data.property.block.MatterProperty;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
@@ -180,7 +180,7 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
             this.maxY = config.getMaxY(name);
             this.target = target;
             this.source = source;
-            this.cause = Cause.of(NamedCause.source(source));
+            this.cause = CauseStackHelper.createCause(source);
         }
 
         @Override

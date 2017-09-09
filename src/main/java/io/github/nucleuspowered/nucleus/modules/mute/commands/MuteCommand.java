@@ -21,6 +21,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -29,8 +30,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.text.channel.MutableMessageChannel;
@@ -114,7 +113,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> implements Reloa
         if (omd.isPresent() && !time.isPresent() && !reas.isPresent()) {
             if (!this.requireUnmutePermission || this.permissions.testSuffix(src, "unmute")) {
                 // Unmute.
-                this.handler.unmutePlayer(user, Cause.of(NamedCause.source(src)), false);
+                this.handler.unmutePlayer(user, CauseStackHelper.createCause(src), false);
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.unmute.success", user.getName(), src.getName()));
                 return CommandResult.success();
             }

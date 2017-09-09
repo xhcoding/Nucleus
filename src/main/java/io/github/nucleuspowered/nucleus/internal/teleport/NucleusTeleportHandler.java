@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.SafeTeleportConfig;
 import io.github.nucleuspowered.nucleus.modules.teleport.events.AboutToTeleportEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
@@ -22,7 +23,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
@@ -87,20 +87,23 @@ public class NucleusTeleportHandler {
      */
     public TeleportResult teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {
         TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
-        return teleportPlayer(player, worldLocation, rotation, mode, Cause.of(NamedCause.owner(player)));
+        return CauseStackHelper.createFrameWithCausesWithReturn(c -> teleportPlayer(player, worldLocation, rotation, mode, c), player);
     }
 
     public TeleportResult teleportPlayer(Player player, Transform<World> worldTransform) {
-        return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), getTeleportModeForPlayer(player), Cause.of(NamedCause.owner(player)));
+        return CauseStackHelper.createFrameWithCausesWithReturn(c ->
+                teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), getTeleportModeForPlayer(player), c), player);
     }
 
     public TeleportResult teleportPlayer(Player player, Transform<World> worldTransform, boolean safe) {
         TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
-        return teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), mode, Cause.of(NamedCause.owner(player)));
+        return CauseStackHelper.createFrameWithCausesWithReturn(c ->
+                teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), mode, c), player);
     }
 
     public TeleportResult teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode) {
-        return teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, Cause.of(NamedCause.owner(player)));
+        return CauseStackHelper.createFrameWithCausesWithReturn(c ->
+                teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, c), player);
     }
 
     public TeleportResult teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode, Cause cause) {

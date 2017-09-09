@@ -27,10 +27,6 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
-import org.spongepowered.api.event.cause.entity.spawn.EntitySpawnCause;
-import org.spongepowered.api.event.cause.entity.spawn.SpawnTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -93,15 +89,10 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
         // Count the number of entities spawned.
         int i = 0;
 
-        // Sponge requires the root cause to be a SpawnCause. So we don't lose sight of the subject causing this,
-        // we make use of Sponge's awesome Cause system, and just make them the second argument.
-        Cause cause = Cause.of(
-                NamedCause.source(EntitySpawnCause.builder().type(SpawnTypes.PLUGIN).entity(pl).build()),
-                NamedCause.owner(pl));
         Entity entityone = null;
         do {
             Entity e = w.createEntity(et, loc.getPosition());
-            if (!w.spawnEntity(e, cause)) {
+            if (!w.spawnEntity(e)) {
                 throw ReturnMessageException.fromKeyText("command.spawnmob.fail", Text.of(e));
             }
 

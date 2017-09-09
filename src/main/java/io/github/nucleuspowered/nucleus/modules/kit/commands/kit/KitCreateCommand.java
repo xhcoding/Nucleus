@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
@@ -69,9 +67,8 @@ public class KitCreateCommand extends AbstractCommand<CommandSource> {
                     .property(InventoryTitle.PROPERTY_NAME,
                             InventoryTitle.of(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.create.title", kitName)))
                     .build(plugin);
-            Container container = player.openInventory(inventory, Cause.of(NamedCause.owner(plugin), NamedCause.source(player)))
-                    .orElseThrow(
-                            () -> ReturnMessageException.fromKey("command.kit.create.notcreated"));
+            Container container = player.openInventory(inventory)
+                    .orElseThrow(() -> ReturnMessageException.fromKey("command.kit.create.notcreated"));
             Sponge.getEventManager().registerListeners(plugin, new TemporaryEventListener(inventory, container, kitName));
         } else {
             try {

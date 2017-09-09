@@ -17,11 +17,11 @@ import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.datamodules.WarnUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.warn.events.WarnEvent;
+import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -77,7 +77,7 @@ public class WarnHandler implements NucleusWarningService {
 
         if (!warning.isExpired()) {
             Sponge.getEventManager().post(new WarnEvent.Warned(
-                    Cause.of(NamedCause.source(Util.getObjectFromUUID(warning.getWarner().orElse(Util.consoleFakeUUID)))),
+                    CauseStackHelper.createCause(warning.getWarner().orElse(Util.consoleFakeUUID)),
                     user,
                     warning.getReason(),
                     duration.orElseGet(() -> warning.getRemainingTime().orElse(null))
@@ -88,7 +88,7 @@ public class WarnHandler implements NucleusWarningService {
     }
 
     public boolean removeWarning(User user, WarnData warning) {
-        return removeWarning(user, warning, false, Cause.of(NamedCause.owner(NucleusPlugin.getNucleus())));
+        return removeWarning(user, warning, false, CauseStackHelper.createCause(NucleusPlugin.getNucleus()));
     }
 
     public boolean removeWarning(User user, Warning warning, boolean permanent, Cause of) {
@@ -102,7 +102,7 @@ public class WarnHandler implements NucleusWarningService {
 
             if (!warning.isExpired()) {
                 Sponge.getEventManager().post(new WarnEvent.Expire(
-                        Cause.of(NamedCause.source(Util.getObjectFromUUID(warning.getWarner().orElse(Util.consoleFakeUUID)))),
+                        CauseStackHelper.createCause(Util.getObjectFromUUID(warning.getWarner().orElse(Util.consoleFakeUUID))),
                         user,
                         warning.getReason(),
                         warning.getWarner().orElse(null)
