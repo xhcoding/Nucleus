@@ -99,11 +99,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @Plugin(id = ID, name = NAME, version = VERSION, description = DESCRIPTION)
@@ -151,15 +153,31 @@ public class NucleusPlugin extends Nucleus {
     private final Supplier<Path> dataDir;
     private boolean isServer = false;
     private WarmupConfig warmupConfig;
+    private final String versionFail;
 
     private boolean isDebugMode = false;
     private boolean sessionDebugMode = false;
     private int isTraceUserCreations = 0;
 
+    @Nullable
+    private static String versionCheck() {
+        // So we can ensure we have the Cause Stack Manager.
+        try {
+            // Check the CauseStackManager exists.
+            Class.forName("org.spongepowered.api.event.CauseStackManager");
+        } catch (Throwable e) {
+            return "CauseStackManager does not exist. Nucleus requires the CauseStackManager from API 7 to function.";
+        }
+
+        return null;
+    }
+
     // We inject this into the constructor so we can build the config path ourselves.
     @Inject
     public NucleusPlugin(@ConfigDir(sharedRoot = true) Path configDir, Logger logger, PluginContainer container) {
         Nucleus.setNucleus(this);
+        this.versionFail = versionCheck();
+        this.logger = new DebugLogger(this, logger);
         this.configDir = configDir.resolve(PluginInfo.ID);
         Supplier<Path> sp;
         try {
@@ -171,7 +189,6 @@ public class NucleusPlugin extends Nucleus {
         }
 
         this.dataDir = sp;
-        this.logger = new DebugLogger(this, logger);
         this.pluginContainer = container;
     }
 
@@ -185,6 +202,15 @@ public class NucleusPlugin extends Nucleus {
             s = new ClientMessageReciever();
         }
 
+        if (this.versionFail != null) {
+            s.sendMessage(messageProvider.getTextMessageWithFormat("startup.nostart.compat", PluginInfo.NAME,
+                    Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION).getName(),
+                    Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION).getVersion().orElse("unknown")));
+            s.sendMessage(messageProvider.getTextMessageWithFormat("startup.nostart.compat2", this.versionFail));
+            s.sendMessage(messageProvider.getTextMessageWithFormat("startup.nostart.compat3", this.versionFail));
+            disable();
+            return;
+        }
 
         s.sendMessage(Text.of(TextColors.WHITE, "--------------------------"));
         s.sendMessage(messageProvider.getTextMessageWithFormat("startup.welcome", PluginInfo.NAME,
@@ -772,7 +798,55 @@ public class NucleusPlugin extends Nucleus {
 
     private void errorOnStartup() {
         Sponge.getServer().setHasWhitelist(true);
-        Sponge.getServer().getConsole().sendMessages(getErrorMessage());
+        if (this.versionFail != null) {
+            Sponge.getServer().getConsole().sendMessages(getIncorrectVersion());
+        } else {
+            Sponge.getServer().getConsole().sendMessages(getErrorMessage());
+        }
+    }
+
+    private List<Text> getIncorrectVersion() {
+        List<Text> messages = Lists.newArrayList();
+        messages.add(Text.of(TextColors.RED, "------------------------------"));
+        messages.add(Text.of(TextColors.RED, "-   NUCLEUS FAILED TO LOAD   -"));
+        messages.add(Text.of(TextColors.RED, "------------------------------"));
+        addX(messages, 7);
+        messages.add(Text.of(TextColors.RED, "------------------------------"));
+        messages.add(Text.of(TextColors.RED, "-  INCORRECT SPONGE VERSION  -"));
+        messages.add(Text.of(TextColors.RED, "------------------------------"));
+        messages.add(Text.EMPTY);
+        messages.add(Text.of(TextColors.RED, "You are running an old version of Sponge on your server - new versions of Nucleus (like this one!) "
+                + "will not run."));
+        messages.add(Text.of(TextColors.RED, "Nucleus has not started. Update Sponge to the latest version and try again."));
+        messages.add(Text.of(TextColors.RED, "The server has been automatically whitelisted - this is to protect your server and players if you rely on some of Nucleus' functionality (such as fly states, etc.)"));
+        messages.add(Text.of(TextColors.RED, "------------------------------"));
+        messages.add(Text.of(TextColors.YELLOW, "Reason: "));
+        messages.add(Text.of(TextColors.YELLOW, this.versionFail));
+        messages.add(Text.of(TextColors.RED, "------------------------------"));
+        messages.add(Text.of(TextColors.YELLOW, "Current Sponge Implementation: ",
+                Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION).getName(), ", version ",
+                Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION).getVersion().orElse("unknown"), "."));
+        return messages;
+    }
+
+    private void addX(List<Text> messages, int spacing) {
+        Text space = Text.of(String.join("", Collections.nCopies(spacing, " ")));
+        messages.add(Text.of(space, TextColors.RED, "\\              /"));
+        messages.add(Text.of(space, TextColors.RED, " \\            /"));
+        messages.add(Text.of(space, TextColors.RED, "  \\          /"));
+        messages.add(Text.of(space, TextColors.RED, "   \\        /"));
+        messages.add(Text.of(space, TextColors.RED, "    \\      /"));
+        messages.add(Text.of(space, TextColors.RED, "     \\    /"));
+        messages.add(Text.of(space, TextColors.RED, "      \\  /"));
+        messages.add(Text.of(space, TextColors.RED, "       \\/"));
+        messages.add(Text.of(space, TextColors.RED, "       /\\"));
+        messages.add(Text.of(space, TextColors.RED, "      /  \\"));
+        messages.add(Text.of(space, TextColors.RED, "     /    \\"));
+        messages.add(Text.of(space, TextColors.RED, "    /      \\"));
+        messages.add(Text.of(space, TextColors.RED, "   /        \\"));
+        messages.add(Text.of(space, TextColors.RED, "  /          \\"));
+        messages.add(Text.of(space, TextColors.RED, " /            \\"));
+        messages.add(Text.of(space, TextColors.RED, "/              \\"));
     }
 
     private List<Text> getErrorMessage() {
@@ -780,6 +854,9 @@ public class NucleusPlugin extends Nucleus {
         messages.add(Text.of(TextColors.RED, "----------------------------"));
         messages.add(Text.of(TextColors.RED, "-  NUCLEUS FAILED TO LOAD  -"));
         messages.add(Text.of(TextColors.RED, "----------------------------"));
+        addX(messages, 5);
+        messages.add(Text.of(TextColors.RED, "----------------------------"));
+
         messages.add(Text.EMPTY);
         messages.add(Text.of(TextColors.RED, "Nucleus encountered an error during server start up and did not enable successfully. No commands, listeners or tasks are registered."));
         messages.add(Text.of(TextColors.RED, "The server has been automatically whitelisted - this is to protect your server and players if you rely on some of Nucleus' functionality (such as fly states, etc.)"));
