@@ -6,9 +6,9 @@ package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarmupManagerService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
-import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -19,7 +19,7 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 import javax.inject.Inject;
 
-public class WarmupListener extends ListenerBase {
+public class WarmupListener extends ListenerBase implements Reloadable {
 
     private NucleusWarmupManagerService service;
     @Inject private CoreConfigAdapter cca;
@@ -46,11 +46,6 @@ public class WarmupListener extends ListenerBase {
         cancelWarmup(event.getTargetEntity());
     }
 
-    @Listener
-    public void onNucleusConfigReload(NucleusReloadConfigEvent e) {
-        warmupConfig = null;
-    }
-
     private WarmupConfig getWarmupConfig() {
         if (warmupConfig == null) {
             warmupConfig = cca.getNodeOrDefault().getWarmupConfig();
@@ -68,5 +63,9 @@ public class WarmupListener extends ListenerBase {
         if (service.removeWarmup(player.getUniqueId()) && player.isOnline()) {
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("warmup.cancel"));
         }
+    }
+
+    @Override public void onReload() throws Exception {
+        this.warmupConfig = null;
     }
 }

@@ -60,7 +60,6 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
-import io.github.nucleuspowered.nucleus.modules.core.events.NucleusReloadConfigEvent;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -548,8 +547,6 @@ public class NucleusPlugin extends Nucleus {
             }
 
             fireReloadables();
-
-            Sponge.getEventManager().post(new NucleusReloadConfigEvent(this));
             return true;
         } catch (Exception e) {
             e.printStackTrace();

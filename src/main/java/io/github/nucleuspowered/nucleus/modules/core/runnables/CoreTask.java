@@ -4,24 +4,19 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.runnables;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import javax.inject.Inject;
-
 /**
  * Core tasks. No module, must always run.
  */
+@NonnullByDefault
 public class CoreTask extends TaskBase {
-    @Inject private NucleusPlugin plugin;
-    @Inject private CoreConfigAdapter cca;
-    @Inject private UserDataManager uda;
 
     @Override
     public boolean isAsync() {
@@ -35,14 +30,15 @@ public class CoreTask extends TaskBase {
 
     @Override
     public void accept(Task task) {
-        if (cca.getNodeOrDefault().isDebugmode()) {
+        Nucleus plugin = Nucleus.getNucleus();
+        if (Nucleus.getNucleus().isDebugMode()) {
             plugin.getLogger().info(plugin.getMessageProvider().getMessageWithFormat("core.savetask.starting"));
         }
 
         plugin.saveData();
-        uda.removeOfflinePlayers();
+        plugin.getUserDataManager().removeOfflinePlayers();
 
-        if (cca.getNodeOrDefault().isDebugmode()) {
+        if (Nucleus.getNucleus().isDebugMode()) {
             plugin.getLogger().info(plugin.getMessageProvider().getMessageWithFormat("core.savetask.complete"));
         }
     }
