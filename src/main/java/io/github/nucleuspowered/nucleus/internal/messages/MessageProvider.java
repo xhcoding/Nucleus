@@ -6,11 +6,9 @@ package io.github.nucleuspowered.nucleus.internal.messages;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextTemplate;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -43,7 +41,7 @@ public abstract class MessageProvider {
         return getTextMessageWithTextFormat(key, Arrays.asList(substitutions));
     }
 
-    public final Text getTextMessageWithTextFormat(String key, List<Text> textList) {
+    private Text getTextMessageWithTextFormat(String key, List<Text> textList) {
         TextTemplate template = this.textTemplateMap.computeIfAbsent(key, k -> templateCreator(getMessageWithFormat(k)));
         if (textList.isEmpty()) {
             return template.toText();

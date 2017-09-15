@@ -217,9 +217,9 @@ public class KitHandler implements NucleusKitService {
     @Override
     public Kit createKit(String name) throws IllegalArgumentException {
         Optional<String> key = Util.getKeyIgnoreCase(store.getKitNames(true), name);
-        if (key.isPresent()) {
+        key.ifPresent(s -> {
             throw new IllegalArgumentException("Kit " + name + " already exists!");
-        }
+        });
         return new SingleKit(name);
     }
 

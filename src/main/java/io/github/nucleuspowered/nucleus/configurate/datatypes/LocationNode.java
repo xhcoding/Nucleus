@@ -57,7 +57,7 @@ public class LocationNode {
         this.world = world;
     }
 
-    public LocationNode clone() {
+    public LocationNode copy() {
         return new LocationNode(this.world, getPosition(), getRotation());
     }
 

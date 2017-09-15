@@ -17,7 +17,6 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.info.handlers.InfoHandler;
@@ -52,16 +51,13 @@ import javax.inject.Inject;
 public class InfoCommand extends AbstractCommand<CommandSource> {
 
     private final InfoHandler infoHandler;
-    private final TextParsingUtils textParsingUtils;
     private final InfoConfigAdapter infoConfigAdapter;
 
     private final String key = "section";
 
     @Inject
-    public InfoCommand(InfoHandler infoHandler, TextParsingUtils textParsingUtils,
-            InfoConfigAdapter infoConfigAdapter) {
+    public InfoCommand(InfoHandler infoHandler, InfoConfigAdapter infoConfigAdapter) {
         this.infoHandler = infoHandler;
-        this.textParsingUtils = textParsingUtils;
         this.infoConfigAdapter = infoConfigAdapter;
     }
 

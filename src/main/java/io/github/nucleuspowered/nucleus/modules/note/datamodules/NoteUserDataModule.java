@@ -33,7 +33,7 @@ public class NoteUserDataModule extends DataModule<ModularUserService> {
     }
 
     public boolean removeNote(Note note) {
-        return notes.removeIf(x -> x.getNoterInternal().equals(note.getNoter().orElseGet(() -> Util.consoleFakeUUID))
+        return notes.removeIf(x -> x.getNoterInternal().equals(note.getNoter().orElse(Util.consoleFakeUUID))
                 && x.getNote().equals(note.getNote()));
     }
 

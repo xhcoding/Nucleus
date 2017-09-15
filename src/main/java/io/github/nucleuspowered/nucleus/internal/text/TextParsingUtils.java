@@ -61,7 +61,7 @@ public class TextParsingUtils {
             Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
                             + "(?<options>\\{[a-z]+?})?(?<url>(http(s)?://)?([A-Za-z0-9-]+\\.)+[A-Za-z0-9]{2,}\\S*)",
                     Pattern.CASE_INSENSITIVE);
-    public static final StyleTuple EMPTY = new StyleTuple(TextColors.NONE, TextStyles.NONE);
+    private static final StyleTuple EMPTY = new StyleTuple(TextColors.NONE, TextStyles.NONE);
 
     public TextParsingUtils(NucleusPlugin plugin) {
         this.plugin = plugin;
@@ -259,7 +259,7 @@ public class TextParsingUtils {
         return TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.command.click", cmd));
     }
 
-    public static Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st, @Nullable String optionString) {
+    private static Text getTextForUrl(String url, String msg, String whiteSpace, StyleTuple st, @Nullable String optionString) {
         String toParse = TextSerializers.FORMATTING_CODE.stripCodes(url);
         Nucleus plugin = Nucleus.getNucleus();
 
@@ -301,7 +301,7 @@ public class TextParsingUtils {
         return joinTextsWithColoursFlowing("", Arrays.asList(texts));
     }
 
-    public static Text joinTextsWithColoursFlowing(String joining, Iterable<Text> texts) {
+    private static Text joinTextsWithColoursFlowing(String joining, Iterable<Text> texts) {
         List<Text> result = Lists.newArrayList();
         Iterator<Text> t = texts.iterator();
         Text last = null;

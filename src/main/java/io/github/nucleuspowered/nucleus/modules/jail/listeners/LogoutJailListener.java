@@ -37,12 +37,12 @@ public class LogoutJailListener extends ListenerBase implements ListenerBase.Con
     public void onLogout(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
         loader.get(player).ifPresent(mus -> {
             Optional<JailData> ojd = mus.get(JailUserDataModule.class).getJailData();
-            if (ojd.isPresent()) {
-                JailData jd = ojd.get();
+            ojd.ifPresent(jailData -> {
+                JailData jd = jailData;
                 Optional<Instant> end = jd.getEndTimestamp();
                 end.ifPresent(instant -> jd.setTimeFromNextLogin(Duration.between(Instant.now(), instant)));
                 mus.get(JailUserDataModule.class).setJailData(jd);
-            }
+            });
         });
     }
 

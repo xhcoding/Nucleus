@@ -98,7 +98,7 @@ public class CheckNotesCommand extends AbstractCommand<CommandSource> {
             name = Sponge.getServer().getConsole().getName();
         } else {
             Optional<User> ou = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(note.getNoterInternal());
-            name = ou.isPresent() ? ou.get().getName() : plugin.getMessageProvider().getMessageWithFormat("standard.unknown");
+            name = ou.map(User::getName).orElseGet(() -> plugin.getMessageProvider().getMessageWithFormat("standard.unknown"));
         }
 
         //Get the ID of the note, its index in the users List<NoteData>. Add one to start with an ID of 1.

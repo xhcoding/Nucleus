@@ -51,18 +51,14 @@ public class NicknameService implements NucleusNicknameService {
         String colPerm = permissions.getPermissionWithSuffix("colour.");
         String colPerm2 = permissions.getPermissionWithSuffix("color.");
 
-        NameUtil.getColours().forEach((key, value) -> {
-            replacements.put(new String[]{colPerm + value.getName(), colPerm2 + value.getName()},
-                    Tuple.of(Pattern.compile("[&]+" + key.toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
-                            mp.getTextMessageWithFormat("command.nick.colour.nopermswith", value.getName())));
-        });
+        NameUtil.getColours().forEach((key, value) -> replacements.put(new String[]{colPerm + value.getName(), colPerm2 + value.getName()},
+                Tuple.of(Pattern.compile("[&]+" + key.toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
+                        mp.getTextMessageWithFormat("command.nick.colour.nopermswith", value.getName()))));
 
         String stylePerm = permissions.getPermissionWithSuffix("style.");
-        NameUtil.getStyleKeys().entrySet().stream().filter(x -> x.getKey() != 'k').forEach((k) -> {
-            replacements.put(new String[] { stylePerm + k.getValue().toLowerCase() },
-                    Tuple.of(Pattern.compile("[&]+" + k.getKey().toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
-                            mp.getTextMessageWithFormat("command.nick.style.nopermswith", k.getValue().toLowerCase())));
-        });
+        NameUtil.getStyleKeys().entrySet().stream().filter(x -> x.getKey() != 'k').forEach((k) -> replacements.put(new String[] { stylePerm + k.getValue().toLowerCase() },
+                Tuple.of(Pattern.compile("[&]+" + k.getKey().toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
+                        mp.getTextMessageWithFormat("command.nick.style.nopermswith", k.getValue().toLowerCase()))));
 
         replacements.put(new String[] { permissions.getPermissionWithSuffix("magic") },
                 Tuple.of(Pattern.compile("[&]+k", Pattern.CASE_INSENSITIVE).matcher(""),

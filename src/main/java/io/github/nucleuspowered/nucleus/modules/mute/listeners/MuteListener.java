@@ -97,12 +97,13 @@ public class MuteListener extends ListenerBase {
         // If the command is in the list, block it.
         if (commands.stream().map(String::toLowerCase).anyMatch(cmd::contains)) {
             Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
-            if (omd.isPresent()) {
-                onMute(omd.get(), player);
-                MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " (")).append(plugin.getMessageProvider().getTextMessageWithFormat("standard.muted"))
+            omd.ifPresent(muteData -> {
+                onMute(muteData, player);
+                MessageChannel.TO_CONSOLE.send(Text.builder().append(Text.of(player.getName() + " ("))
+                        .append(plugin.getMessageProvider().getTextMessageWithFormat("standard.muted"))
                         .append(Text.of("): ")).append(Text.of("/" + event.getCommand() + " " + event.getArguments())).build());
                 event.setCancelled(true);
-            }
+            });
         }
     }
 
@@ -117,7 +118,7 @@ public class MuteListener extends ListenerBase {
             cancel = true;
         }
 
-        if (cancelOnGlobalMute(player, event.isCancelled())) {
+        if (cancelOnGlobalMute(player, false)) {
             cancel = true;
         }
 
@@ -143,6 +144,7 @@ public class MuteListener extends ListenerBase {
             return;
         }
 
+        boolean isCancelled = false;
         Player user = (Player)event.getSender();
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(user), () -> handler.unmutePlayer(user));
         if (omd.isPresent()) {
@@ -150,24 +152,26 @@ public class MuteListener extends ListenerBase {
                 onMute(omd.get(), user.getPlayer().get());
             }
 
-            event.setCancelled(true);
+            isCancelled = true;
         }
 
-        if (cancelOnGlobalMute(user, event.isCancelled())) {
-            event.setCancelled(true);
+        if (cancelOnGlobalMute(user, isCancelled)) {
+            isCancelled = true;
         }
+
+        event.setCancelled(isCancelled);
     }
 
     @Listener
     public void onPlayerHelpOp(InternalNucleusHelpOpEvent event, @Root Player user) {
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(user), () -> handler.unmutePlayer(user));
-        if (omd.isPresent()) {
+        omd.ifPresent(muteData -> {
             if (user.isOnline()) {
-                onMute(omd.get(), user.getPlayer().get());
+                onMute(muteData, user.getPlayer().get());
             }
 
             event.setCancelled(true);
-        }
+        });
 
         if (cancelOnGlobalMute(user, event.isCancelled())) {
             event.setCancelled(true);

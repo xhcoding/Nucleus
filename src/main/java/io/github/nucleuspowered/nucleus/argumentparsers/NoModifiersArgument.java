@@ -24,7 +24,7 @@ public class NoModifiersArgument<T> extends WrappedElement {
 
     public static final String NO_COST_ARGUMENT = "nocost";
     public static final String NO_COOLDOWN_ARGUMENT = "nocooldown";
-    public static final String NO_WARMUP_ARGUMENT = "nowarmup";
+    private static final String NO_WARMUP_ARGUMENT = "nowarmup";
 
     public static final BiPredicate<CommandSource, Player> PLAYER_NOT_CALLER_PREDICATE =
         (c, o) -> !(c instanceof Player) || !((Player) c).getUniqueId().equals(o.getUniqueId());
@@ -37,7 +37,8 @@ public class NoModifiersArgument<T> extends WrappedElement {
     }
 
     @SuppressWarnings("SameParameterValue")
-    protected NoModifiersArgument(CommandElement element, @Nullable BiPredicate<CommandSource, T> test, boolean isNoCost, boolean isNoWarmup, boolean isNoCooldown) {
+    private NoModifiersArgument(CommandElement element, @Nullable BiPredicate<CommandSource, T> test, boolean isNoCost, boolean isNoWarmup,
+            boolean isNoCooldown) {
         super(element);
         this.test = test == null ? (c, o) -> true : test;
 

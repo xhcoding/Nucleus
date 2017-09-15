@@ -124,7 +124,7 @@ public class NucleusTeleportHandler {
         return teleportPlayer(player, locationToTeleportTo, rotation, teleportMode, cause, false);
     }
 
-    public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode,
+    private TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, Vector3d rotation, TeleportMode teleportMode,
             Cause cause, boolean addOffset) {
         Optional<Location<World>> targetLocation = getSafeLocation(player, locationToTeleportTo, teleportMode);
 

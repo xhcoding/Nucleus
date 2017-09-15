@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.modules.note.data.NoteData;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
@@ -26,12 +25,10 @@ import javax.annotation.Nullable;
 
 public class NoteArgument extends CommandElement {
 
-    private final Nucleus plugin;
     private final NoteHandler handler;
 
-    public NoteArgument(@Nullable Text key, Nucleus plugin, NoteHandler handler) {
+    public NoteArgument(@Nullable Text key, NoteHandler handler) {
         super(key);
-        this.plugin = plugin;
         this.handler = handler;
     }
 

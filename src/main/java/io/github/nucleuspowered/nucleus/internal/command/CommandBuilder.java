@@ -94,7 +94,7 @@ public class CommandBuilder {
                 }
 
                 if (c instanceof Reloadable) {
-                    plugin.registerReloadable(((Reloadable) c)::onReload);
+                    plugin.registerReloadable(((Reloadable) c));
                 }
             } catch (Exception e) {
                 throw new IllegalStateException(plugin.getMessageProvider().getMessageWithFormat("startup.commandfailiure", c.getAliases()[0],

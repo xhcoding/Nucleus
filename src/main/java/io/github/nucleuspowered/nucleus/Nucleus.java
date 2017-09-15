@@ -90,11 +90,8 @@ public abstract class Nucleus {
 
     public <R, C, T extends NucleusConfigAdapter<C>> Optional<R> getConfigValue(String id, Class<T> configAdapterClass, Function<C, R> fnToGetValue) {
         Optional<T> tOptional = getConfigAdapter(id, configAdapterClass);
-        if (tOptional.isPresent()) {
-            return Optional.of(fnToGetValue.apply(tOptional.get().getNodeOrDefault()));
-        }
+        return tOptional.map(t -> fnToGetValue.apply(t.getNodeOrDefault()));
 
-        return Optional.empty();
     }
 
     public abstract InternalServiceManager getInternalServiceManager();
@@ -128,6 +125,8 @@ public abstract class Nucleus {
     public abstract NucleusMessageTokenService getMessageTokenService();
 
     public abstract boolean isDebugMode();
+
+    public abstract void printStackTraceIfDebugMode(Throwable throwable);
 
     public abstract KitService getKitService();
 

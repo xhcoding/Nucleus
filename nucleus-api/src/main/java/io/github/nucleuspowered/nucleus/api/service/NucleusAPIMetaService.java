@@ -73,7 +73,7 @@ public final class NucleusAPIMetaService {
      * @return The patch version.
      */
     public int patch() {
-        return this.majorVersion;
+        return this.patchVersion;
     }
 
     /**

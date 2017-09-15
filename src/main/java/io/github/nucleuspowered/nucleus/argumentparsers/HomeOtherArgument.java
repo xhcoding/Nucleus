@@ -56,6 +56,7 @@ public class HomeOtherArgument extends HomeArgument {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
         Object saveState = null;
         try {

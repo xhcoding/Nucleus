@@ -52,7 +52,7 @@ public class CheckJailCommand extends AbstractCommand<CommandSource> {
         return new CommandElement[] {
             GenericArguments.firstParsing(
                 GenericArguments.user(Text.of(playerKey)),
-                new UUIDArgument<User>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
+                    new UUIDArgument<>(Text.of(playerKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
             )
         };
     }

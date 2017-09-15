@@ -67,7 +67,7 @@ public class NucleusTextTemplateFactory {
         }
     }
 
-    public NucleusTextTemplateImpl createFromAmpersand(String string) throws Throwable {
+    public NucleusTextTemplateImpl createFromAmpersand(String string) {
         return new NucleusTextTemplateImpl.Ampersand(string);
     }
 

@@ -64,10 +64,7 @@ public class MailData implements MailMessage {
         if (date != mailData.date) {
             return false;
         }
-        if (!uuid.equals(mailData.uuid)) {
-            return false;
-        }
-        return message.equals(mailData.message);
+        return uuid.equals(mailData.uuid) && message.equals(mailData.message);
     }
 
     @Override public int hashCode() {

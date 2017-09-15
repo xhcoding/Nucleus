@@ -56,7 +56,7 @@ public class ResetUserCommand extends AbstractCommand<CommandSource> {
             GenericArguments.flags().flag("a", "-all").buildWith(
                 GenericArguments.firstParsing(
                     GenericArguments.user(Text.of(userKey)),
-                    new UUIDArgument<User>(Text.of(uuidKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
+                        new UUIDArgument<>(Text.of(uuidKey), u -> Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(u))
                 ))
         };
     }

@@ -82,7 +82,7 @@ public class CoreUserDataModule extends DataModule<ModularUserService> {
     }
 
     public Optional<LocationNode> getLogoutLocationSafe() {
-        return this.lastLocation == null ? Optional.empty() : Optional.of(this.lastLocation.clone());
+        return this.lastLocation == null ? Optional.empty() : Optional.of(this.lastLocation.copy());
     }
 
     public Optional<Location<World>> getLogoutLocation() {

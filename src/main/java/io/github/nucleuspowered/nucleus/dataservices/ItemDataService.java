@@ -129,11 +129,8 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
 
     private String getIdFromSnapshot(ItemStackSnapshot stackSnapshot) {
         Optional<BlockState> blockState = stackSnapshot.get(Keys.ITEM_BLOCKSTATE);
-        if (blockState.isPresent()) {
-            return blockState.get().getId().toLowerCase();
-        }
+        return blockState.map(blockState1 -> blockState1.getId().toLowerCase()).orElseGet(() -> stackSnapshot.getType().getId());
 
-        return stackSnapshot.getType().getId();
     }
 
     private void clearCache() {

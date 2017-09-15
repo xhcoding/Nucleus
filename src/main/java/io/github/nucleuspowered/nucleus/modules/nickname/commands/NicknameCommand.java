@@ -69,10 +69,8 @@ public class NicknameCommand extends AbstractCommand<CommandSource> {
         });
 
         String stylePerm = permissions.getPermissionWithSuffix("style.");
-        NameUtil.getStyleKeys().entrySet().stream().filter(x -> x.getKey() != 'k').forEach((k) -> {
-            permissionToDesc.put(stylePerm + k.getValue().toLowerCase(),
-                mp.getMessageWithFormat("permission.nick.stylespec", k.getValue().toLowerCase(), k.getKey().toString()));
-        });
+        NameUtil.getStyleKeys().entrySet().stream().filter(x -> x.getKey() != 'k').forEach((k) -> permissionToDesc.put(stylePerm + k.getValue().toLowerCase(),
+            mp.getMessageWithFormat("permission.nick.stylespec", k.getValue().toLowerCase(), k.getKey().toString())));
     }
 
     @Override

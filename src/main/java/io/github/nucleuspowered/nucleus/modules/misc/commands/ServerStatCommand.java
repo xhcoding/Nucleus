@@ -56,12 +56,13 @@ public class ServerStatCommand extends AbstractCommand<CommandSource> {
         messages.add(plugin.getMessageProvider().getTextMessageWithTextFormat("command.serverstat.tps", getTPS(Sponge.getServer().getTicksPerSecond())));
 
         Optional<Instant> oi = plugin.getGameStartedTime();
-        if (oi.isPresent()) {
-            Duration duration = Duration.between(oi.get(), Instant.now());
-            double averageTPS = Math.min(20, ((double)Sponge.getServer().getRunningTimeTicks() / ((double)(duration.toMillis() + 50)/1000.0d)));
+        oi.ifPresent(instant -> {
+            Duration duration = Duration.between(instant, Instant.now());
+            double averageTPS = Math.min(20, ((double) Sponge.getServer().getRunningTimeTicks() / ((double) (duration.toMillis() + 50) / 1000.0d)));
             messages.add(plugin.getMessageProvider().getTextMessageWithTextFormat("command.serverstat.averagetps", getTPS(averageTPS)));
-            messages.add(createText("command.serverstat.uptime.main", "command.serverstat.uptime.hover", Util.getTimeStringFromSeconds(duration.getSeconds())));
-        }
+            messages.add(createText("command.serverstat.uptime.main", "command.serverstat.uptime.hover",
+                    Util.getTimeStringFromSeconds(duration.getSeconds())));
+        });
 
         messages.add(createText("command.serverstat.jvmuptime.main", "command.serverstat.jvmuptime.hover", Util.getTimeStringFromSeconds(uptime.getSeconds())));
 

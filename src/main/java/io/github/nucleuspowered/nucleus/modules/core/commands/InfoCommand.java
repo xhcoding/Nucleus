@@ -42,21 +42,20 @@ import java.util.Set;
 @NonnullByDefault
 public class InfoCommand extends AbstractCommand<CommandSource> {
 
-    private final String SEPARATOR = "------------";
-
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // Sponge versions
         List<String> information = Lists.newArrayList();
 
-        information.add(SEPARATOR);
+        String separator = "------------";
+        information.add(separator);
         information.add("Nucleus Diagnostics");
-        information.add(SEPARATOR);
+        information.add(separator);
 
         information.add("This file contains information about Nucleus and the environment it runs in.");
 
-        information.add(SEPARATOR);
+        information.add(separator);
         information.add("Environment");
-        information.add(SEPARATOR);
+        information.add(separator);
 
         Platform platform = Sponge.getPlatform();
         PluginContainer game = platform.getContainer(Platform.Component.GAME);
@@ -68,15 +67,15 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         information.add(String.format("Sponge API Version: %s %s", api.getName(), api.getVersion().orElse("unknown")));
         information.add("Nucleus Version: " + PluginInfo.VERSION + " (Git: " + PluginInfo.GIT_HASH + ")");
 
-        information.add(SEPARATOR);
+        information.add(separator);
         information.add("Plugins");
-        information.add(SEPARATOR);
+        information.add(separator);
 
         Sponge.getPluginManager().getPlugins().forEach(x -> information.add(x.getName() + " (" + x.getId() + ") version " + x.getVersion().orElse("unknown")));
 
-        information.add(SEPARATOR);
+        information.add(separator);
         information.add("Registered Commands");
-        information.add(SEPARATOR);
+        information.add(separator);
 
         final Map<String, String> commands = Maps.newHashMap();
         final Map<String, String> plcmds = Maps.newHashMap();
@@ -108,22 +107,22 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
         });
 
         commands.entrySet().stream().sorted(Comparator.comparing(x -> x.getKey().toLowerCase())).forEachOrdered(x -> information.add(x.getValue()));
-        information.add(SEPARATOR);
+        information.add(separator);
         information.add("Namespaced commands");
-        information.add(SEPARATOR);
+        information.add(separator);
         plcmds.entrySet().stream().sorted(Comparator.comparing(x -> x.getKey().toLowerCase())).forEachOrdered(x -> information.add(x.getValue()));
 
-        information.add(SEPARATOR);
+        information.add(separator);
         information.add("Nucleus: Enabled Modules");
-        information.add(SEPARATOR);
+        information.add(separator);
 
         plugin.getModuleContainer().getModules().stream().sorted().forEach(information::add);
 
         Set<String> disabled = plugin.getModuleContainer().getModules(ModuleContainer.ModuleStatusTristate.DISABLE);
         if (!disabled.isEmpty()) {
-            information.add(SEPARATOR);
+            information.add(separator);
             information.add("Nucleus: Disabled Modules");
-            information.add(SEPARATOR);
+            information.add(separator);
 
             disabled.stream().sorted().forEach(information::add);
         }

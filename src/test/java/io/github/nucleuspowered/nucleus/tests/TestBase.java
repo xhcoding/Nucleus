@@ -29,7 +29,6 @@ import io.github.nucleuspowered.nucleus.internal.services.WarmupManager;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
-import io.github.nucleuspowered.nucleus.util.ThrowableAction;
 import org.junit.BeforeClass;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -186,7 +185,7 @@ public abstract class TestBase {
         }
 
         @Override public Optional<Instant> getGameStartedTime() {
-            return null;
+            return Optional.empty();
         }
 
         @Override
@@ -223,7 +222,7 @@ public abstract class TestBase {
         }
 
         @Override public Optional<TextFileController> getTextFileController(String getController) {
-            return null;
+            return Optional.empty();
         }
 
         @Override public void addTextFileController(String id, Asset asset, Path file) throws IOException {
@@ -235,7 +234,7 @@ public abstract class TestBase {
         }
 
         @Override public Optional<DocGenCache> getDocGenCache() {
-            return null;
+            return Optional.empty();
         }
 
         @Override
@@ -249,6 +248,10 @@ public abstract class TestBase {
 
         @Override public boolean isDebugMode() {
             return true;
+        }
+
+        @Override public void printStackTraceIfDebugMode(Throwable throwable) {
+
         }
 
         @Override public KitService getKitService() {

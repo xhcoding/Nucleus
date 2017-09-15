@@ -22,7 +22,6 @@ import io.github.nucleuspowered.nucleus.internal.CostCancellableTask;
 import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresEconomy;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
-import io.github.nucleuspowered.nucleus.internal.annotations.command.RedirectModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCommandPrefix;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCooldown;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCost;
@@ -30,6 +29,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoHelpSubco
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoTimings;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.RedirectModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
@@ -108,8 +108,6 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     public static final String COMPLETION_ARG = "comp";
     private static final InputTokenizer tokeniser = InputTokenizer.quotedStrings(false);
 
-    public static final String BYPASS_COOLDOWN = "nucleus:bypass_cooldown";
-
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
 
     private Timing commandTimings = TimingsDummy.DUMMY;
@@ -122,7 +120,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     private final Map<UUID, Instant> cooldownStore = Maps.newHashMap();
 
     protected final CommandPermissionHandler permissions;
-    protected final String[] aliases;
+    private final String[] aliases;
     private final String[] forcedAliases;
     private final Class<T> sourceType;
     private final boolean bypassWarmup;
@@ -339,7 +337,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         return process(source, this.commandPath.replace(".", " "), arguments, args);
     }
 
-    public CommandResult process(CommandSource source, String command, String arguments, CommandArgs args) throws CommandException {
+    private CommandResult process(CommandSource source, String command, String arguments, CommandArgs args) throws CommandException {
         // Phase one: child command processing. Keep track of all thrown arguments.
         List<Tuple<String, CommandException>> thrown = Lists.newArrayList();
 
@@ -801,7 +799,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      *
      * @return The arguments of the command.
      */
-    public CommandElement[] getArguments() {
+    protected CommandElement[] getArguments() {
         return new CommandElement[]{};
     }
 
@@ -1218,7 +1216,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             return process(source, arguments, null);
         }
 
-        public CommandResult process(CommandSource source, String arguments, @Nullable String previous) throws CommandException {
+        CommandResult process(CommandSource source, String arguments, @Nullable String previous) {
             if (!testPermission(source)) {
                 source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.usage.nopermission"));
                 return CommandResult.empty();
@@ -1313,9 +1311,9 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
     @NonnullByDefault
     public abstract static class SimpleTargetOtherPlayer extends AbstractCommand<CommandSource> {
 
-        protected final String playerKey = "player";
+        final String playerKey = "player";
 
-        public CommandElement[] additionalArguments() {
+        protected CommandElement[] additionalArguments() {
             return new CommandElement[] {};
         }
 

@@ -9,7 +9,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.modules.world.commands.WorldCommand;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
-import org.spongepowered.api.world.WorldArchetype;
 import org.spongepowered.api.world.gen.WorldGeneratorModifier;
 
 @NonnullByDefault

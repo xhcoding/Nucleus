@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
@@ -101,7 +100,6 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
     }
 
     public Optional<ModularUserService> getUser(User user) {
-        Preconditions.checkNotNull("user");
         return get(user.getUniqueId());
     }
 }

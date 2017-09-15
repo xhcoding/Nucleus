@@ -692,6 +692,12 @@ public class NucleusPlugin extends Nucleus {
         return this.isDebugMode || this.sessionDebugMode;
     }
 
+    @Override public void printStackTraceIfDebugMode(Throwable throwable) {
+        if (isDebugMode()) {
+            throwable.printStackTrace();
+        }
+    }
+
     @Override public int traceUserCreations() {
         return this.isTraceUserCreations;
     }
@@ -764,18 +770,21 @@ public class NucleusPlugin extends Nucleus {
 
     @Override protected void registerPermissions() {
         Optional<PermissionService> ops = Sponge.getServiceManager().provide(PermissionService.class);
-        if (ops.isPresent()) {
+        ops.ifPresent(permissionService -> {
             Map<String, PermissionInformation> m = this.getPermissionRegistry().getPermissions();
             m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.ADMIN)
                     .filter(x -> x.getValue().isNormal)
-                    .forEach(k -> ops.get().newDescriptionBuilder(this).assign(PermissionDescription.ROLE_ADMIN, true).description(k.getValue().description).id(k.getKey()).register());
+                    .forEach(k -> permissionService.newDescriptionBuilder(this).assign(PermissionDescription.ROLE_ADMIN, true)
+                            .description(k.getValue().description).id(k.getKey()).register());
             m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.MOD)
                     .filter(x -> x.getValue().isNormal)
-                    .forEach(k -> ops.get().newDescriptionBuilder(this).assign(PermissionDescription.ROLE_STAFF, true).description(k.getValue().description).id(k.getKey()).register());
+                    .forEach(k -> permissionService.newDescriptionBuilder(this).assign(PermissionDescription.ROLE_STAFF, true)
+                            .description(k.getValue().description).id(k.getKey()).register());
             m.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER)
                     .filter(x -> x.getValue().isNormal)
-                    .forEach(k -> ops.get().newDescriptionBuilder(this).assign(PermissionDescription.ROLE_USER, true).description(k.getValue().description).id(k.getKey()).register());
-        }
+                    .forEach(k -> permissionService.newDescriptionBuilder(this).assign(PermissionDescription.ROLE_USER, true)
+                            .description(k.getValue().description).id(k.getKey()).register());
+        });
     }
 
     @Override

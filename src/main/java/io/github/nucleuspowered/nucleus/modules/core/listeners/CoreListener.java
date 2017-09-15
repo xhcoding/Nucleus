@@ -85,10 +85,10 @@ public class CoreListener extends ListenerBase {
 
                 // If we have a location to send them to in the config, send them there now!
                 Optional<Location<World>> olw = c.getLocationOnLogin();
-                if (olw.isPresent()) {
-                    event.setToTransform(event.getFromTransform().setLocation(olw.get()));
+                olw.ifPresent(worldLocation -> {
+                    event.setToTransform(event.getFromTransform().setLocation(worldLocation));
                     c.removeLocationOnLogin();
-                }
+                });
             }
 
             plugin.getUserCacheService().updateCacheForPlayer(qsu);

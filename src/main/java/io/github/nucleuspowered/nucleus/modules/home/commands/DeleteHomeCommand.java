@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
@@ -34,12 +33,10 @@ public class DeleteHomeCommand extends AbstractCommand<Player> {
 
     private final String homeKey = "home";
 
-    private final CoreConfigAdapter cca;
     private final HomeHandler homeHandler;
 
     @Inject
-    public DeleteHomeCommand(CoreConfigAdapter cca, HomeHandler homeHandler) {
-        this.cca = cca;
+    public DeleteHomeCommand(HomeHandler homeHandler) {
         this.homeHandler = homeHandler;
     }
 

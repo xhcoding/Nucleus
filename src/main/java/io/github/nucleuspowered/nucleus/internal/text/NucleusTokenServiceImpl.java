@@ -114,7 +114,7 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
         }
     }
 
-    private final Optional<Text> getTextFromToken(String token, CommandSource source, Map<String, Object> variables) {
+    private Optional<Text> getTextFromToken(String token, CommandSource source, Map<String, Object> variables) {
         token = token.toLowerCase().trim().replace("{{", "").replace("}}", "");
         Matcher m = suffixPattern.matcher(token);
         boolean addSpace = false;

@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.GameProfileArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -18,7 +19,6 @@ import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformati
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
-import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -50,7 +50,6 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class BanCommand extends AbstractCommand<CommandSource> {
 
-    private final Logger logger;
     private final CoreConfigAdapter cca;
 
     static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "ban.notify";
@@ -61,8 +60,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
     private final String reason = "reason";
 
     @Inject
-    public BanCommand(Logger logger, CoreConfigAdapter cca) {
-        this.logger = logger;
+    public BanCommand(CoreConfigAdapter cca) {
         this.cca = cca;
     }
 
@@ -132,15 +130,11 @@ public class BanCommand extends AbstractCommand<CommandSource> {
                     try {
                         executeBan(src, gp, r);
                     } catch (Exception e) {
-                        if (cca.getNodeOrDefault().isDebugmode()) {
-                            e.printStackTrace();
-                        }
+                        Nucleus.getNucleus().printStackTraceIfDebugMode(e);
                     }
                 });
             } catch (Exception e) {
-                if (cca.getNodeOrDefault().isDebugmode()) {
-                    e.printStackTrace();
-                }
+                Nucleus.getNucleus().printStackTraceIfDebugMode(e);
 
                 src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.profileerror", userToFind));
             }

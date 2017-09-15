@@ -45,11 +45,8 @@ public class InfoHandler {
      */
     public Optional<TextFileController> getSection(String name) {
         Optional<String> os = infoFiles.keySet().stream().filter(name::equalsIgnoreCase).findFirst();
-        if (os.isPresent()) {
-            return Optional.of(infoFiles.get(os.get()));
-        }
+        return os.map(infoFiles::get);
 
-        return Optional.empty();
     }
 
     public void onReload() throws Exception {

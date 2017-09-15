@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.modular;
 
-import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -27,7 +26,6 @@ public class ModularUserService extends ModularDataService<ModularUserService> {
 
     public ModularUserService(DataProvider<ConfigurationNode> provider, UUID uuid) throws Exception {
         super(provider);
-        Preconditions.checkNotNull("uuid", uuid );
         this.uuid = uuid;
     }
 
@@ -41,11 +39,8 @@ public class ModularUserService extends ModularDataService<ModularUserService> {
         }
 
         Optional<Player> p = getPlayer();
-        if (p.isPresent()) {
-            return p.get();
-        }
+        return p.map(x -> (User) x).orElseGet(() -> uss.get(this.uuid).orElseGet(() -> uss.getOrCreate(GameProfile.of(this.uuid, null))));
 
-        return uss.get(this.uuid).orElseGet(() -> uss.getOrCreate(GameProfile.of(this.uuid, null)));
     }
 
     public Optional<Player> getPlayer() {

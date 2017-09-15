@@ -15,6 +15,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class InfoArgument extends CommandElement {
             String p = args.peek();
             return handler.getInfoSections().stream().filter(x -> x.toLowerCase().startsWith(p.toLowerCase())).collect(Collectors.toList());
         } catch (Exception e) {
-            return handler.getInfoSections().stream().collect(Collectors.toList());
+            return new ArrayList<>(handler.getInfoSections());
         }
     }
 

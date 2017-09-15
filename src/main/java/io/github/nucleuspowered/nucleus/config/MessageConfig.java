@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvide
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.commented.SimpleCommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -68,7 +67,7 @@ public class MessageConfig extends AbstractStandardNodeConfig<CommentedConfigura
         return keysToFix;
     }
 
-    public void fixMistmatched(List<String> toFix) throws IOException, ObjectMappingException {
+    public void fixMistmatched(List<String> toFix) throws IOException {
         Preconditions.checkNotNull(toFix);
         toFix.forEach(x -> {
             String resKey = fallback.getMessageFromKey(x).get();

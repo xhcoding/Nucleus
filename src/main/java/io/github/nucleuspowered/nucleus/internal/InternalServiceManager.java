@@ -19,14 +19,13 @@ public final class InternalServiceManager {
         this.plugin = plugin;
     }
 
-    public <I, C extends I> boolean registerService(Class<I> key, C service) {
+    public <I, C extends I> void registerService(Class<I> key, C service) {
         if (serviceMap.containsKey(key)) {
-            return false;
+            return;
         }
 
         serviceMap.put(key, service);
         plugin.preInjectorUpdate(key, service);
-        return true;
     }
 
     @SuppressWarnings("unchecked")

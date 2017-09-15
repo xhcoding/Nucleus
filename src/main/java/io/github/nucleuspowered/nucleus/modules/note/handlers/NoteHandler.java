@@ -35,10 +35,7 @@ public class NoteHandler implements NucleusNoteService {
 
     public List<NoteData> getNotesInternal(User user) {
         Optional<ModularUserService> userService = userDataManager.get(user);
-        if (userService.isPresent()) {
-            return userService.get().get(NoteUserDataModule.class).getNotes();
-        }
-        return Lists.newArrayList();
+        return userService.map(modularUserService -> modularUserService.get(NoteUserDataModule.class).getNotes()).orElseGet(Lists::newArrayList);
     }
 
     @Override public ImmutableList<Note> getNotes(User user) {

@@ -24,11 +24,8 @@ public class BackHandler implements NucleusBackService {
     @Override
     public Optional<Transform<World>> getLastLocation(User user) {
         Optional<ModularUserService> oi = loader.getUser(user);
-        if (oi.isPresent()) {
-            return oi.get().getTransient(BackUserTransientModule.class).getLastLocation();
-        }
+        return oi.flatMap(modularUserService -> modularUserService.getTransient(BackUserTransientModule.class).getLastLocation());
 
-        return Optional.empty();
     }
 
     @Override

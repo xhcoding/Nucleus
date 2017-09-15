@@ -45,7 +45,7 @@ public class RemoveWarningCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {GenericArguments.flags().flag("-remove", "r").buildWith(
-                GenericArguments.onlyOne(new WarningArgument(Text.of(warningKey), plugin, handler)))};
+                GenericArguments.onlyOne(new WarningArgument(Text.of(warningKey), handler)))};
     }
 
     @Override

@@ -307,13 +307,11 @@ public class Util {
         // Check for ItemType.
         Optional<CatalogType> oit = Sponge.getRegistry().getAllOf(ItemType.class).stream().filter(x -> x.getId().equalsIgnoreCase(id))
                 .findFirst().map(x -> (CatalogType)x);
-        if (oit.isPresent()) {
-            return Optional.of(oit.get());
-        }
+        return oit.map(Optional::of)
+                .orElseGet(() -> Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst()
+                        .map(x -> (CatalogType) x));
 
         // BlockState, you're up next!
-        return Sponge.getRegistry().getAllOf(BlockState.class).stream().filter(x -> x.getId().equalsIgnoreCase(id)).findFirst()
-                .map(x -> (CatalogType)x);
 
     }
 

@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.dataservices.dataproviders;
 
-import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
@@ -18,9 +17,8 @@ class FileChangingSimpleConfigurateDataProvider implements DataProvider.FileChan
     private final Supplier<SimpleConfigurateDataProvider> providerSupplier;
     private SimpleConfigurateDataProvider provider;
 
-    @SuppressWarnings("unchecked") FileChangingSimpleConfigurateDataProvider(Function<Path, ConfigurationLoader<?>> loaderProvider, Supplier<Path> file,
-            boolean requiresChildren, Logger logger) {
-       this.providerSupplier = () -> new SimpleConfigurateDataProvider(loaderProvider, file.get(), requiresChildren, logger);
+    @SuppressWarnings("unchecked") FileChangingSimpleConfigurateDataProvider(Function<Path, ConfigurationLoader<?>> loaderProvider, Supplier<Path> file, Logger logger) {
+       this.providerSupplier = () -> new SimpleConfigurateDataProvider(loaderProvider, file.get(), false, logger);
     }
 
     public void onChange() {

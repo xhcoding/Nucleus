@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.datamodules;
 
+import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataKey;
 import io.github.nucleuspowered.nucleus.dataservices.modular.DataModule;
@@ -22,10 +23,11 @@ import javax.annotation.Nullable;
 public class NicknameUserDataModule extends DataModule.ReferenceService<ModularUserService> {
 
     // Transient, null infers that we need to retrieve the value.
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
     private static Optional<Text> prefix = null;
 
     static {
+        //noinspection OptionalAssignedToNull
         Nucleus.getNucleus().registerReloadable(() -> prefix = null);
     }
 
@@ -33,21 +35,8 @@ public class NicknameUserDataModule extends DataModule.ReferenceService<ModularU
     @Nullable
     private Text nickname = null;
 
-    @Deprecated
-    @DataKey("nickname")
-    @Nullable
-    private String nicknameStore;
-
     public NicknameUserDataModule(ModularUserService modularDataService) {
         super(modularDataService);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    protected void migrate() {
-        if (nicknameStore != null && !nicknameStore.isEmpty()) {
-            this.nickname = TextSerializers.FORMATTING_CODE.deserialize(nicknameStore);
-        }
     }
 
     public Optional<Text> getNicknameWithPrefix() {
@@ -72,7 +61,7 @@ public class NicknameUserDataModule extends DataModule.ReferenceService<ModularU
     }
 
     public void setNickname(Text nickname) {
-        this.nickname = nickname;
+        this.nickname = Preconditions.checkNotNull(nickname);
 
         getService().getPlayer().ifPresent(x -> {
             Optional<Text> p = getNickPrefix();

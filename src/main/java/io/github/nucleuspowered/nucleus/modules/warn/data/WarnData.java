@@ -133,11 +133,8 @@ public class WarnData extends EndTimestamp implements Warning {
             return false;
         }
 
-        if (timeFromNextLogin != null && timeFromNextLogin.equals(warnData.timeFromNextLogin)) {
-            return false;
-        }
+        return timeFromNextLogin == null || !timeFromNextLogin.equals(warnData.timeFromNextLogin) && reason.equals(warnData.reason);
 
-        return reason.equals(warnData.reason);
     }
 
     @Override public int hashCode() {

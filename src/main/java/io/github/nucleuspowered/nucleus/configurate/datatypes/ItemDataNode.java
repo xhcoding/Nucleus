@@ -24,7 +24,7 @@ public class ItemDataNode {
 
     public ItemDataNode() {}
 
-    public ItemDataNode(Set<String> aliases, double buy, double sell) {
+    private ItemDataNode(Set<String> aliases, double buy, double sell) {
         this.aliases = aliases;
         this.shop = new PriceNode(buy, sell);
     }

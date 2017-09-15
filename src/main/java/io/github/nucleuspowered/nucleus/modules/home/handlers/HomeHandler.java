@@ -46,20 +46,15 @@ public class HomeHandler implements NucleusHomeService {
 
     @Override public List<Home> getHomes(UUID user) {
         Optional<ModularUserService> service = plugin.getUserDataManager().get(user); //.get().getHome;
-        if (service.isPresent()) {
-            return Lists.newArrayList(service.get().get(HomeUserDataModule.class).getHomes().values());
-        }
+        return service.<List<Home>>map(modularUserService -> Lists.newArrayList(modularUserService.get(HomeUserDataModule.class).getHomes().values()))
+                .orElseGet(Lists::newArrayList);
 
-        return Lists.newArrayList();
     }
 
     @Override public Optional<Home> getHome(UUID user, String name) {
         Optional<ModularUserService> service = plugin.getUserDataManager().get(user);
-        if (service.isPresent()) {
-            return service.get().get(HomeUserDataModule.class).getHome(name);
-        }
+        return service.flatMap(modularUserService -> modularUserService.get(HomeUserDataModule.class).getHome(name));
 
-        return Optional.empty();
     }
 
     @Override public void createHome(Cause cause, User user, String name, Location<World> location, Vector3d rotation) throws NucleusException {

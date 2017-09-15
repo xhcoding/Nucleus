@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -27,9 +28,8 @@ import java.util.stream.Collectors;
 @NoModifiers
 @Permissions(prefix = "nucleus")
 @RegisterCommand(value = "printperms", subcommandOf = NucleusCommand.class)
+@NonnullByDefault
 public class PrintPermsCommand extends AbstractCommand<CommandSource> {
-
-    private final String file = "plugin-perms.txt";
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
@@ -43,6 +43,7 @@ public class PrintPermsCommand extends AbstractCommand<CommandSource> {
         List<String> user =
                 l.entrySet().stream().filter(x -> x.getValue().level == SuggestedLevel.USER).map(Map.Entry::getKey).collect(Collectors.toList());
 
+        String file = "plugin-perms.txt";
         BufferedWriter f = new BufferedWriter(new FileWriter(file));
         Consumer<String> permWriter = x -> {
             try {

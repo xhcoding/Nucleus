@@ -47,7 +47,6 @@ import javax.inject.Inject;
 public class TeleportHereCommand extends AbstractCommand<Player> {
 
     private final String playerKey = "subject";
-    private final String quietKey = "quiet";
 
     private final TeleportHandler handler;
     private final TeleportConfigAdapter tca;
@@ -68,16 +67,17 @@ public class TeleportHereCommand extends AbstractCommand<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(
-                IfConditionElseArgument.permission(this.permissions.getPermissionWithSuffix("offline"),
-                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER),
-                    SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER)))
+                GenericArguments.flags().flag("q", "-quiet").buildWith(
+                    GenericArguments.onlyOne(
+                        IfConditionElseArgument.permission(this.permissions.getPermissionWithSuffix("offline"),
+                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.USER),
+                            SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER))))
         };
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        boolean beQuiet = args.<Boolean>getOne(quietKey).orElse(tca.getNodeOrDefault().isDefaultQuiet());
+        boolean beQuiet = args.<Boolean>getOne("q").orElse(tca.getNodeOrDefault().isDefaultQuiet());
         User target = args.<User>getOne(playerKey).get();
         if (target.getPlayer().isPresent()) {
             handler.getBuilder().setFrom(target.getPlayer().get()).setTo(src).setSilentSource(beQuiet).startTeleport();

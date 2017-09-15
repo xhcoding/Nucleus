@@ -104,8 +104,8 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
     static class Ampersand extends NucleusTextTemplateImpl {
 
         private static final Pattern pattern =
-            Pattern.compile("(?<url>\\[[^\\[]+\\]\\(/[^\\)]*?)?(?<match>\\{\\{(?!subject)(?<name>[^\\s\\{\\}]+)}})"
-                    + "(?<urltwo>[^\\(]*?\\))?");
+            Pattern.compile("(?<url>\\[[^\\[]+]\\(/[^)]*?)?(?<match>\\{\\{(?!subject)(?<name>[^\\s{}]+)}})"
+                    + "(?<urltwo>[^(]*?\\))?");
 
         Ampersand(String representation) {
             super(representation);
@@ -196,7 +196,7 @@ public abstract class NucleusTextTemplateImpl implements NucleusTextTemplate {
 
         @Nullable private static TypeSerializer<TextTemplate> textTemplateTypeSerializer = null;
 
-        Json(String representation) throws ObjectMappingException {
+        Json(String representation) {
             super(representation);
         }
 

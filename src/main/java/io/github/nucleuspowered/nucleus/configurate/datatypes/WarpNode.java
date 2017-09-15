@@ -35,7 +35,7 @@ public class WarpNode extends LocationNode {
         this(location, rotation, -1);
     }
 
-    public WarpNode(Location<World> location, Vector3d rotation, int cost) {
+    private WarpNode(Location<World> location, Vector3d rotation, int cost) {
         super(location, rotation);
         this.cost = cost;
     }
@@ -44,7 +44,7 @@ public class WarpNode extends LocationNode {
         this(location, -1);
     }
 
-    public WarpNode(Location<World> location, int cost) {
+    private WarpNode(Location<World> location, int cost) {
         super(location);
         this.cost = cost;
     }

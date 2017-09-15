@@ -75,7 +75,7 @@ public final class TextFileController {
         this(asset, fileLocation, false);
     }
 
-    public TextFileController(@Nullable Asset asset, Path fileLocation, boolean getTitle) throws IOException {
+    private TextFileController(@Nullable Asset asset, Path fileLocation, boolean getTitle) throws IOException {
         this.asset = asset;
         this.fileLocation = fileLocation;
         this.getTitle = getTitle;

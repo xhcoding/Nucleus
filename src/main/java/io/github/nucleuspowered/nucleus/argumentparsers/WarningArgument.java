@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.argumentparsers;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
@@ -26,12 +25,10 @@ import javax.annotation.Nullable;
 
 public class WarningArgument extends CommandElement {
 
-    private final Nucleus plugin;
     private final WarnHandler handler;
 
-    public WarningArgument(@Nullable Text key, Nucleus plugin, WarnHandler handler) {
+    public WarningArgument(@Nullable Text key, WarnHandler handler) {
         super(key);
-        this.plugin = plugin;
         this.handler = handler;
     }
 

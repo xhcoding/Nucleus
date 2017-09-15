@@ -12,7 +12,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -36,16 +35,14 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitCostCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitConfig;
-    private final KitConfigAdapter kca;
+    private final KitHandler kitHandler;
 
     private final String costKey = "cost";
     private final String kitKey = "kit";
 
     @Inject
-    public KitCostCommand(KitHandler kitConfig, KitConfigAdapter kca) {
-        this.kitConfig = kitConfig;
-        this.kca = kca;
+    public KitCostCommand(KitHandler kitHandler) {
+        this.kitHandler = kitHandler;
     }
 
     @Override
@@ -64,7 +61,7 @@ public class KitCostCommand extends AbstractCommand<CommandSource> {
         }
 
         kit.setCost(cost);
-        kitConfig.saveKit(kit);
+        kitHandler.saveKit(kit);
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.cost.success", kit.getName(), String.valueOf(cost)));
         return CommandResult.success();
     }

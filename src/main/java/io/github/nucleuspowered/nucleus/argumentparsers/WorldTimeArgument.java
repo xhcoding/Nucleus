@@ -13,6 +13,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -140,7 +141,7 @@ public class WorldTimeArgument extends CommandElement {
             String a = args.peek().toLowerCase();
             return tickAliases.keySet().stream().filter(x -> x.startsWith(a)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
-            return tickAliases.keySet().stream().collect(Collectors.toList());
+            return new ArrayList<>(tickAliases.keySet());
         }
     }
 }

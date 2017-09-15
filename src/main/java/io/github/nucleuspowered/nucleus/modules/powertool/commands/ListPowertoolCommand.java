@@ -86,7 +86,7 @@ public class ListPowertoolCommand extends AbstractCommand<Player> {
             pl.sendMessage(mp.getTextMessageWithFormat("command.powertool.removed", powertool));
         });
 
-        TextColor tc = oit.isPresent() ? TextColors.YELLOW : TextColors.GRAY;
+        TextColor tc = oit.map(itemType -> TextColors.YELLOW).orElse(TextColors.GRAY);
 
         // id - [View] - [Delete]
         return Text.builder().append(Text.of(tc, powertool)).append(Text.of(" - "))

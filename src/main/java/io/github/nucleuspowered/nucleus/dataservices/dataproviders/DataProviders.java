@@ -117,7 +117,6 @@ public class DataProviders {
             return new FileChangingSimpleConfigurateDataProvider(
                     path -> new LazyConfigurationLoader<>(() -> getGsonBuilder().setPath(path).build()),
                     p,
-                    false,
                     plugin.getLogger());
         } catch (Exception e) {
             return null;

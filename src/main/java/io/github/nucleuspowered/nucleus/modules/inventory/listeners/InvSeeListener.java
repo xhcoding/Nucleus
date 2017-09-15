@@ -5,11 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.inventory.listeners;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.modules.inventory.commands.InvSeeCommand;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;

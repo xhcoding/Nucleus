@@ -43,7 +43,7 @@ public class RemoveNoteCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new NoteArgument(Text.of(noteKey), plugin, handler))};
+        return new CommandElement[] {GenericArguments.onlyOne(new NoteArgument(Text.of(noteKey), handler))};
     }
 
     @Override
