@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.chat.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.chat.ChatModule;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
@@ -12,7 +13,6 @@ import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
@@ -25,7 +25,11 @@ public class BodyFixChatListener extends ListenerBase implements ListenerBase.Co
     private static final Pattern colorCodeAdjustment = Pattern.compile("^((&[0-9a-fklmno])+)\\s+");
 
     @Listener(order = Order.LATE)
-    public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
+    public void onChat(MessageChannelEvent.Chat event) {
+        Util.onPlayerSimulatedOrPlayer(event, this::onChat);
+    }
+
+    private void onChat(MessageChannelEvent.Chat event, Player player) {
         if (bodyPattern.matcher(event.getFormatter().getBody().toText().toPlain()).find()) {
             String m = TextSerializers.FORMATTING_CODE.serialize(event.getFormatter().getBody().toText());
             m = m.replaceFirst("<" + player.getName() + ">", "").trim();

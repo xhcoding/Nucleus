@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.staffchat.commands;
 
+import io.github.nucleuspowered.nucleus.api.EventContexts;
 import io.github.nucleuspowered.nucleus.argumentparsers.RemainingStringsArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -14,14 +15,14 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.text.TextParsingUtils;
 import io.github.nucleuspowered.nucleus.modules.staffchat.StaffChatMessageChannel;
 import io.github.nucleuspowered.nucleus.modules.staffchat.datamodules.StaffChatTransientModule;
-import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
@@ -49,20 +50,24 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<String> toSend = args.getOne(message);
         if (toSend.isPresent()) {
-            if (src instanceof Player) {
-                Player pl = (Player) src;
-                MessageChannel mc = pl.getMessageChannel();
-                pl.setMessageChannel(StaffChatMessageChannel.getInstance());
-                CauseStackHelper.createFrameWithCausesWithConsumer(
-                        c -> pl.simulateChat(TextParsingUtils.addUrls(toSend.get()), c),
-                        EventContext.builder().add(EventContextKeys.PLAYER_SIMULATED, pl.getProfile()).build(), pl);
-                pl.setMessageChannel(mc);
-            } else {
-                StaffChatMessageChannel.getInstance()
-                        .send(src, TextParsingUtils.addUrls(toSend.get()), ChatTypes.CHAT);
-            }
+            try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
+                Sponge.getCauseStackManager().addContext(EventContexts.SHOULD_FORMAT_CHANNEL, StaffChatMessageChannel.getInstance().formatMessages());
+                if (src instanceof Player) {
+                    Player pl = (Player) src;
+                    Sponge.getCauseStackManager().pushCause(pl);
+                    Sponge.getCauseStackManager().addContext(EventContextKeys.PLAYER_SIMULATED, pl.getProfile());
 
-            return CommandResult.success();
+                    MessageChannel mc = pl.getMessageChannel();
+                    pl.setMessageChannel(StaffChatMessageChannel.getInstance());
+                    pl.simulateChat(TextParsingUtils.addUrls(toSend.get()), Sponge.getCauseStackManager().getCurrentCause());
+                    pl.setMessageChannel(mc);
+                } else {
+                    StaffChatMessageChannel.getInstance()
+                            .send(src, TextParsingUtils.addUrls(toSend.get()), ChatTypes.CHAT);
+                }
+
+                return CommandResult.success();
+            }
         }
 
         if (!(src instanceof Player)) {
@@ -85,4 +90,5 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.staffchat." + (result ? "on" : "off")));
         return CommandResult.success();
     }
+
 }

@@ -29,6 +29,7 @@ import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProviders
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
+import io.github.nucleuspowered.nucleus.internal.CatalogTypeFinalStaticProcessor;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
@@ -70,6 +71,7 @@ import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -321,6 +323,23 @@ public class NucleusPlugin extends Nucleus {
                     .build();
 
             moduleContainer.startDiscover();
+        } catch (Exception e) {
+            isErrored = e;
+            disable();
+            e.printStackTrace();
+        }
+    }
+
+    @Listener(order = Order.FIRST)
+    public void onInit(GameInitializationEvent event) {
+        if (isErrored != null) {
+            return;
+        }
+
+        logger.info(messageProvider.getMessageWithFormat("startup.init", PluginInfo.NAME));
+
+        try {
+            CatalogTypeFinalStaticProcessor.setEventContexts();
         } catch (Exception e) {
             isErrored = e;
             disable();

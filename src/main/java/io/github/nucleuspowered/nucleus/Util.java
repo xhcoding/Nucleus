@@ -23,6 +23,8 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.event.Event;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.inventory.Carrier;
@@ -32,6 +34,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
@@ -68,10 +71,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
+
+import javax.annotation.Nullable;
 
 public class Util {
 
@@ -500,5 +506,40 @@ public class Util {
 
     public static Inventory getStandardInventory(Carrier player) {
         return player.getInventory().query(MainPlayerInventory.class);
+    }
+
+    public static <T extends Event> void onPlayerSimulatedOrPlayer(T event, BiConsumer<T, Player> eventConsumer) {
+        // If we're simulating a player, we should use them instead.
+        @Nullable Player cs = checkSimulated(event).orElseGet(() -> {
+            Object root = event.getCause().root();
+            if (root instanceof Player) {
+                return (Player) root;
+            }
+
+            return null;
+        });
+
+        if (cs != null) {
+            eventConsumer.accept(event, cs);
+        }
+
+    }
+
+    public static <T extends Event> void onSourceSimulatedOr(T event, Function<T, Optional<CommandSource>> orElse,
+            BiConsumer<T, CommandSource> eventConsumer) {
+        // If we're simulating a player, we should use them instead.
+        @Nullable CommandSource cs = checkSimulated(event).map(x -> (CommandSource) x).orElseGet(() -> orElse.apply(event).orElse(null));
+        if (cs != null) {
+            eventConsumer.accept(event, cs);
+        }
+    }
+
+    private static Optional<Player> checkSimulated(Event event) {
+        if (event.getContext().containsKey(EventContextKeys.PLAYER_SIMULATED)) {
+            GameProfile gp = event.getContext().get(EventContextKeys.PLAYER_SIMULATED).get();
+            return Sponge.getServer().getPlayer(gp.getUniqueId());
+        }
+
+        return Optional.empty();
     }
 }

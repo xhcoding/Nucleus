@@ -44,10 +44,17 @@ import javax.inject.Inject;
 
 public class MuteListener extends ListenerBase {
 
-    @Inject private MuteHandler handler;
-    @Inject private MuteConfigAdapter mca;
-    @Inject private PermissionRegistry permissionRegistry;
+    private final MuteHandler handler;
+    private final MuteConfigAdapter mca;
+    private final PermissionRegistry permissionRegistry;
     private CommandPermissionHandler cph;
+
+    @Inject
+    public MuteListener(MuteHandler handler, MuteConfigAdapter mca, PermissionRegistry permissionRegistry) {
+        this.handler = handler;
+        this.mca = mca;
+        this.permissionRegistry = permissionRegistry;
+    }
 
     /**
      * At the time the subject joins, check to see if the subject is muted.
@@ -108,7 +115,11 @@ public class MuteListener extends ListenerBase {
     }
 
     @Listener(order = Order.LATE)
-    public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
+    public void onChat(MessageChannelEvent.Chat event) {
+        Util.onPlayerSimulatedOrPlayer(event, this::onChat);
+    }
+
+    private void onChat(MessageChannelEvent.Chat event, Player player) {
         boolean cancel = false;
         Optional<MuteData> omd = Util.testForEndTimestamp(handler.getPlayerMuteData(player), () -> handler.unmutePlayer(player));
         if (omd.isPresent()) {

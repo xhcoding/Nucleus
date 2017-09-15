@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.EventContexts;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusNoFormatChannel;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
@@ -25,7 +26,6 @@ import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 import org.spongepowered.api.event.message.MessageEvent;
 import org.spongepowered.api.service.permission.Subject;
@@ -123,9 +123,14 @@ public class ChatListener extends ListenerBase implements Reloadable, ListenerBa
 
     // We do this first so that other plugins can alter it later if needs be.
     @Listener(order = Order.EARLY)
-    public void onPlayerChat(MessageChannelEvent.Chat event, @Root Player player) {
-        if (event.getChannel().isPresent() && event.getChannel().get() instanceof NucleusNoFormatChannel
-                && !((NucleusNoFormatChannel) event.getChannel().get()).formatMessages()) {
+    public void onPlayerChat(MessageChannelEvent.Chat event) {
+        Util.onPlayerSimulatedOrPlayer(event, this::onPlayerChatInternal);
+    }
+
+    private void onPlayerChatInternal(MessageChannelEvent.Chat event, Player player) {
+        if (!event.getContext().get(EventContexts.SHOULD_FORMAT_CHANNEL).orElse(true) ||
+                event.getChannel().isPresent() && event.getChannel().get() instanceof NucleusNoFormatChannel
+                    && !((NucleusNoFormatChannel) event.getChannel().get()).formatMessages()) {
             if (((NucleusNoFormatChannel) event.getChannel().get()).removePrefix()) {
                 event.getFormatter().setHeader(Text.EMPTY);
             }

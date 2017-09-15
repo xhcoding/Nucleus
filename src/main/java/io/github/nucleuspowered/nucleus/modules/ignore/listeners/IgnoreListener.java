@@ -6,13 +6,13 @@ package io.github.nucleuspowered.nucleus.modules.ignore.listeners;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusNoIgnoreChannel;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMailEvent;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.ignore.commands.IgnoreCommand;
 import io.github.nucleuspowered.nucleus.modules.ignore.datamodules.IgnoreUserDataModule;
 import org.spongepowered.api.entity.living.player.Player;
@@ -32,16 +32,24 @@ import javax.inject.Inject;
 
 public class IgnoreListener extends ListenerBase {
 
-    @Inject private UserDataManager loader;
-    @Inject private CoreConfigAdapter cca;
+    private final UserDataManager loader;
     private CommandPermissionHandler ignoreHandler = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(IgnoreCommand.class);
 
+    @Inject
+    public IgnoreListener(UserDataManager loader) {
+        this.loader = loader;
+    }
+
     @Listener(order = Order.LATE)
-    public void onChat(MessageChannelEvent.Chat event, @Root Player player) {
+    public void onChat(MessageChannelEvent.Chat event) {
         if (event.getChannel().orElseGet(event::getOriginalChannel) instanceof NucleusNoIgnoreChannel) {
             return;
         }
 
+        Util.onPlayerSimulatedOrPlayer(event, this::onChat);
+    }
+
+    private void onChat(MessageChannelEvent.Chat event, Player player) {
         // Reset the channel - but only if we have to.
         checkCancels(event.getChannel().orElseGet(event::getOriginalChannel).getMembers(), player).ifPresent(x -> {
             MutableMessageChannel mmc = event.getChannel().orElseGet(event::getOriginalChannel).asMutable();
