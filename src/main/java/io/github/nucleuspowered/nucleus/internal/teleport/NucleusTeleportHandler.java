@@ -27,6 +27,7 @@ import org.spongepowered.api.text.channel.MessageReceiver;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.TeleportHelper;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.teleport.TeleportHelperFilters;
 
 import java.util.List;
 import java.util.Optional;
@@ -213,9 +214,11 @@ public class NucleusTeleportHandler {
             @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
                 if (player.get(Keys.IS_FLYING).orElse(false)) {
                     // If flying, we just need to check they don't end up in a wall or will enter an unsafe block.
-                    if (isPassable(location, true) && isPassable(location.add(0, 1, 0), true)) {
-                        return Optional.of(location);
-                    }
+                    return Sponge.getTeleportHelper().getSafeLocationWithBlacklist(location,
+                            TeleportHelper.DEFAULT_HEIGHT,
+                            TeleportHelper.DEFAULT_WIDTH,
+                            TeleportHelper.DEFAULT_FLOOR_CHECK_DISTANCE,
+                            TeleportHelperFilters.FLYING);
                 }
 
                 return SAFE_TELEPORT.apply(player, location);
@@ -229,9 +232,11 @@ public class NucleusTeleportHandler {
             @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
                 if (player.get(Keys.IS_FLYING).orElse(false)) {
                     // If flying, we just need to check they don't end up in a wall or will enter an unsafe block.
-                    if (isPassable(location, true) && isPassable(location.add(0, 1, 0), true)) {
-                        return Optional.of(location);
-                    }
+                    return Sponge.getTeleportHelper().getSafeLocationWithBlacklist(location,
+                            8,
+                            8,
+                            TeleportHelper.DEFAULT_FLOOR_CHECK_DISTANCE,
+                            TeleportHelperFilters.FLYING);
                 }
 
                 return SAFE_TELEPORT_CHUNK.apply(player, location);
