@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.api.events;
 
+import io.github.nucleuspowered.nucleus.api.annotations.MightOccurAsync;
 import org.spongepowered.api.event.Event;
 
 /**
@@ -28,10 +29,12 @@ public interface NucleusNameBanEvent extends Event {
     /**
      * Fired when a regular expression is banned.
      */
+    @MightOccurAsync
     interface Banned extends NucleusNameBanEvent {}
 
     /**
      * Fired when a regular expression is unbanned.
      */
+    @MightOccurAsync
     interface Unbanned extends NucleusNameBanEvent {}
 }
