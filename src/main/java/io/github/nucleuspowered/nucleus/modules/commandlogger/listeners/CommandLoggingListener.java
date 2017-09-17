@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.commandlogger.listeners;
 
 import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfig;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.handlers.CommandLoggerHandler;
@@ -28,21 +29,22 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-public class CommandLoggingListener extends ListenerBase {
+public class CommandLoggingListener extends ListenerBase implements Reloadable {
 
     private final CommandLoggerConfigAdapter clc;
     private final CommandLoggerHandler handler;
+    private CommandLoggerConfig c;
 
     @Inject
     public CommandLoggingListener(CommandLoggerConfigAdapter clc, CommandLoggerHandler handler) {
         this.clc = clc;
         this.handler = handler;
+        this.c = clc.getNodeOrDefault();
     }
 
     @Listener(order = Order.LAST)
     public void onCommand(SendCommandEvent event, @First CommandSource source) {
         // Check source.
-        CommandLoggerConfig c = clc.getNodeOrDefault();
         boolean accept;
         if (source instanceof Player) {
             accept = c.getLoggerTarget().isLogPlayer();
@@ -73,6 +75,11 @@ public class CommandLoggingListener extends ListenerBase {
             plugin.getLogger().info(message);
             handler.queueEntry(message);
         }
+    }
+
+    @Override
+    public void onReload() throws Exception {
+        this.c = this.clc.getNodeOrDefault();
     }
 
     @Listener
