@@ -176,12 +176,12 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadRunnables() {
-        Set<Class<? extends TaskBase>> commandsToLoad = getStreamForModule(TaskBase.class)
+        Set<Class<? extends TaskBase>> tasksToLoad = getStreamForModule(TaskBase.class)
                 .collect(Collectors.toSet());
 
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
         Injector injector = plugin.getInjector();
-        commandsToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
+        tasksToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().interval(c.interval().toMillis(), TimeUnit.MILLISECONDS);
@@ -200,6 +200,15 @@ public abstract class StandardModule implements Module {
             }
 
             tb.submit(plugin);
+
+            if (c instanceof Reloadable) {
+                this.plugin.registerReloadable((Reloadable) c);
+                try {
+                    ((Reloadable) c).onReload();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         });
     }
 
