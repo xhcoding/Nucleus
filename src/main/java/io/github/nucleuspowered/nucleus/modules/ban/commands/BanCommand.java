@@ -17,7 +17,6 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
@@ -41,8 +40,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @RegisterCommand("ban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoModifiers
@@ -50,19 +47,12 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class BanCommand extends AbstractCommand<CommandSource> {
 
-    private final CoreConfigAdapter cca;
-
     static final String notifyPermission = PermissionRegistry.PERMISSIONS_PREFIX + "ban.notify";
     private final String uuid = "uuid";
     private final String user = "user";
     private final String name = "name";
 
     private final String reason = "reason";
-
-    @Inject
-    public BanCommand(CoreConfigAdapter cca) {
-        this.cca = cca;
-    }
 
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {

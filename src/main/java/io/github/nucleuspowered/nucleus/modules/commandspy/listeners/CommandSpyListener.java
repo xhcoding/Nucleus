@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-@SuppressWarnings("ALL")
 public class CommandSpyListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     private CommandPermissionHandler permissionHandler =
@@ -42,13 +41,11 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
 
     private CommandSpyConfig config;
     private final UserDataManager dataManager;
-    private final TextParsingUtils textParsingUtils;
     private boolean listIsEmpty = true;
 
     @Inject
-    public CommandSpyListener(UserDataManager dataManager, TextParsingUtils textParsingUtils) {
+    public CommandSpyListener(UserDataManager dataManager) {
         this.dataManager = dataManager;
-        this.textParsingUtils = textParsingUtils;
     }
 
     @Listener(order = Order.LAST)
@@ -80,7 +77,7 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
 
                 if (!playerList.isEmpty()) {
                     Text prefix = config.getTemplate().getForCommandSource(player);
-                    TextParsingUtils.StyleTuple st = textParsingUtils.getLastColourAndStyle(prefix, null);
+                    TextParsingUtils.StyleTuple st = TextParsingUtils.getLastColourAndStyle(prefix, null);
                     Text messageToSend = prefix
                         .toBuilder().append(Text.of(st.colour, st.style, "/" + event.getCommand() + " " + event.getArguments())).build();
                     playerList.forEach(x -> x.sendMessage(messageToSend));

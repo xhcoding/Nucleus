@@ -112,29 +112,7 @@ public class WarnData extends EndTimestamp implements Warning {
         if (!warner.equals(warnData.warner)) {
             return false;
         }
-
-        if (endtimestamp == null && warnData.endtimestamp != null) {
-            return false;
-        }
-
-        if (endtimestamp != null && warnData.endtimestamp == null) {
-            return false;
-        }
-
-        if (endtimestamp != null && endtimestamp.equals(warnData.endtimestamp)) {
-            return false;
-        }
-
-        if (timeFromNextLogin == null && warnData.timeFromNextLogin != null) {
-            return false;
-        }
-
-        if (timeFromNextLogin != null && warnData.timeFromNextLogin == null) {
-            return false;
-        }
-
-        return timeFromNextLogin == null || !timeFromNextLogin.equals(warnData.timeFromNextLogin) && reason.equals(warnData.reason);
-
+        return reason.equals(warnData.reason);
     }
 
     @Override public int hashCode() {
@@ -142,8 +120,6 @@ public class WarnData extends EndTimestamp implements Warning {
         result = 31 * result + reason.hashCode();
         result = 31 * result + (int) (date ^ (date >>> 32));
         result = 31 * result + (expired ? 1 : 0);
-        result = 31 * result + (timeFromNextLogin == null ? 0 : timeFromNextLogin.intValue());
-        result = 31 * result + (endtimestamp == null ? 0 : endtimestamp.intValue());
         return result;
     }
 }

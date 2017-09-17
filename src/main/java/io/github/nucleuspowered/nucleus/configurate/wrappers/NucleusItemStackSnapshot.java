@@ -20,7 +20,4 @@ public class NucleusItemStackSnapshot {
         return snapshot;
     }
 
-    public void setSnapshot(ItemStackSnapshot snapshot) {
-        this.snapshot = snapshot;
-    }
 }

@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.internal.messages;
 
 import io.github.nucleuspowered.nucleus.config.MessageConfig;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -35,7 +34,7 @@ public class ConfigMessageProvider extends ResourceMessageProvider {
         return mc.walkThroughForMismatched();
     }
 
-    public void reset(List<String> keys) throws IOException, ObjectMappingException {
+    public void reset(List<String> keys) throws IOException {
         mc.fixMistmatched(keys);
     }
 }

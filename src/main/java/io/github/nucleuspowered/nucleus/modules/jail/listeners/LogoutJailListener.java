@@ -38,10 +38,9 @@ public class LogoutJailListener extends ListenerBase implements ListenerBase.Con
         loader.get(player).ifPresent(mus -> {
             Optional<JailData> ojd = mus.get(JailUserDataModule.class).getJailData();
             ojd.ifPresent(jailData -> {
-                JailData jd = jailData;
-                Optional<Instant> end = jd.getEndTimestamp();
-                end.ifPresent(instant -> jd.setTimeFromNextLogin(Duration.between(Instant.now(), instant)));
-                mus.get(JailUserDataModule.class).setJailData(jd);
+                Optional<Instant> end = jailData.getEndTimestamp();
+                end.ifPresent(instant -> jailData.setTimeFromNextLogin(Duration.between(Instant.now(), instant)));
+                mus.get(JailUserDataModule.class).setJailData(jailData);
             });
         });
     }
