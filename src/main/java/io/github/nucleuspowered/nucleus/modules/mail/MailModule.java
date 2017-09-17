@@ -7,23 +7,19 @@ package io.github.nucleuspowered.nucleus.modules.mail;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.StandardModule;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-
-import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
 @ModuleData(id = "mail", name = "Mail")
 public class MailModule extends StandardModule {
 
-    @Inject private Game game;
-
     @Override
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        MailHandler m = new MailHandler(game, plugin);
+        MailHandler m = new MailHandler();
         serviceManager.registerService(MailHandler.class, m);
-        game.getServiceManager().setProvider(plugin, NucleusMailService.class, m);
+        Sponge.getServiceManager().setProvider(this.plugin, NucleusMailService.class, m);
     }
 }

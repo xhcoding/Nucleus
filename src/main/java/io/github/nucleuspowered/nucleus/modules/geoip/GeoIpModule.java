@@ -22,7 +22,7 @@ public class GeoIpModule extends ConfigurableModule<GeoIpConfigAdapter> {
     @Override protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        GeoIpDatabaseHandler databaseHandler = new GeoIpDatabaseHandler(plugin);
+        GeoIpDatabaseHandler databaseHandler = new GeoIpDatabaseHandler();
         plugin.getInternalServiceManager().registerService(GeoIpDatabaseHandler.class, databaseHandler);
     }
 

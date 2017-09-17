@@ -24,7 +24,7 @@ public class HomeModule extends ConfigurableModule<HomeConfigAdapter> {
     @Override protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        HomeHandler homeHandler = new HomeHandler(plugin);
+        HomeHandler homeHandler = new HomeHandler();
         plugin.getInternalServiceManager().registerService(HomeHandler.class, homeHandler);
         Sponge.getServiceManager().setProvider(plugin, NucleusHomeService.class, homeHandler);
     }

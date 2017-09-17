@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.home.handlers;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
@@ -31,28 +31,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 public class HomeHandler implements NucleusHomeService {
 
-    private final NucleusPlugin plugin;
-    private final String unlimitedPermission;
-
-    @Inject
-    public HomeHandler(NucleusPlugin plugin) {
-        this.plugin = plugin;
-        this.unlimitedPermission = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(SetHomeCommand.class).getPermissionWithSuffix("unlimited");
-    }
+    private final String unlimitedPermission
+            = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(SetHomeCommand.class).getPermissionWithSuffix("unlimited");
 
     @Override public List<Home> getHomes(UUID user) {
-        Optional<ModularUserService> service = plugin.getUserDataManager().get(user); //.get().getHome;
+        Optional<ModularUserService> service = Nucleus.getNucleus().getUserDataManager().get(user); //.get().getHome;
         return service.<List<Home>>map(modularUserService -> Lists.newArrayList(modularUserService.get(HomeUserDataModule.class).getHomes().values()))
                 .orElseGet(Lists::newArrayList);
 
     }
 
     @Override public Optional<Home> getHome(UUID user, String name) {
-        Optional<ModularUserService> service = plugin.getUserDataManager().get(user);
+        Optional<ModularUserService> service = Nucleus.getNucleus().getUserDataManager().get(user);
         return service.flatMap(modularUserService -> modularUserService.get(HomeUserDataModule.class).getHome(name));
 
     }
@@ -65,14 +57,14 @@ public class HomeHandler implements NucleusHomeService {
     public void createHomeInternal(Cause cause, User user, String name, Location<World> location, Vector3d rotation) throws NucleusException {
         if (!NucleusHomeService.HOME_NAME_PATTERN.matcher(name).matches()) {
             throw new NucleusException(
-                plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.name"),
+                    Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.sethome.name"),
                 NucleusException.ExceptionType.DISALLOWED_NAME);
         }
 
         int max = getMaximumHomes(user);
         if (getHomes(user.getUniqueId()).size() >= max) {
             throw new NucleusException(
-                plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.limit", String.valueOf(max)),
+                    Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.sethome.limit", String.valueOf(max)),
                 NucleusException.ExceptionType.LIMIT_REACHED);
         }
 
@@ -80,9 +72,9 @@ public class HomeHandler implements NucleusHomeService {
         postEvent(event);
 
         // Just in case.
-        if (!plugin.getUserDataManager().get(user).get().get(HomeUserDataModule.class).setHome(name, location, rotation, false)) {
+        if (!Nucleus.getNucleus().getUserDataManager().get(user).get().get(HomeUserDataModule.class).setHome(name, location, rotation, false)) {
             throw new NucleusException(
-                plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", name),
+                    Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", name),
                 NucleusException.ExceptionType.UNKNOWN_ERROR);
         }
     }
@@ -97,9 +89,9 @@ public class HomeHandler implements NucleusHomeService {
         postEvent(event);
 
         // Just in case.
-        if (!plugin.getUserDataManager().getUnchecked(home.getUser()).get(HomeUserDataModule.class).setHome(home.getName(), location, rotation, true)) {
+        if (!Nucleus.getNucleus().getUserDataManager().getUnchecked(home.getUser()).get(HomeUserDataModule.class).setHome(home.getName(), location, rotation, true)) {
             throw new NucleusException(
-                plugin.getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home.getName()),
+                    Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.sethome.seterror", home.getName()),
                 NucleusException.ExceptionType.UNKNOWN_ERROR);
         }
     }
@@ -113,8 +105,8 @@ public class HomeHandler implements NucleusHomeService {
         DeleteHomeEvent event = new DeleteHomeEvent(cause, home);
         postEvent(event);
 
-        if (!plugin.getUserDataManager().get(home.getOwnersUniqueId()).get().get(HomeUserDataModule.class).deleteHome(home.getName())) {
-            throw new NucleusException(plugin.getMessageProvider().getTextMessageWithFormat("command.home.delete.fail", home.getName()), NucleusException.ExceptionType.UNKNOWN_ERROR);
+        if (!Nucleus.getNucleus().getUserDataManager().get(home.getOwnersUniqueId()).get().get(HomeUserDataModule.class).deleteHome(home.getName())) {
+            throw new NucleusException(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.home.delete.fail", home.getName()), NucleusException.ExceptionType.UNKNOWN_ERROR);
         }
     }
 
@@ -138,7 +130,7 @@ public class HomeHandler implements NucleusHomeService {
     private void postEvent(AbstractHomeEvent event) throws NucleusException {
         if (Sponge.getEventManager().post(event)) {
             throw new NucleusException(event.getCancelMessage().orElseGet(() ->
-                plugin.getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")), NucleusException.ExceptionType.EVENT_CANCELLED
+                    Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("nucleus.eventcancelled")), NucleusException.ExceptionType.EVENT_CANCELLED
             );
         }
     }

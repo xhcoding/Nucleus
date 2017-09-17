@@ -30,7 +30,7 @@ public class InfoModule extends ConfigurableModule<InfoConfigAdapter> {
                 Sponge.getAssetManager().getAsset(plugin, "motd.txt").get(),
                 plugin.getConfigDirPath().resolve("motd.txt"));
 
-        InfoHandler ih = new InfoHandler(plugin);
+        InfoHandler ih = new InfoHandler();
         serviceManager.registerService(InfoHandler.class, ih);
         plugin.registerReloadable(ih::onReload);
         ih.onReload();

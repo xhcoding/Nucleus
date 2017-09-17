@@ -23,7 +23,7 @@ public class CommandLoggerModule extends ConfigurableModule<CommandLoggerConfigA
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        CommandLoggerHandler clh = new CommandLoggerHandler(plugin, getAdapter());
+        CommandLoggerHandler clh = new CommandLoggerHandler(getAdapter());
         serviceManager.registerService(CommandLoggerHandler.class, clh);
         plugin.registerReloadable(clh::onReload);
         clh.onReload();

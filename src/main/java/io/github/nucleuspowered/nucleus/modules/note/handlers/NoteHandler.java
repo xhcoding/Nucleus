@@ -7,7 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.note.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Note;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
@@ -22,16 +22,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 public class NoteHandler implements NucleusNoteService {
 
-    private final NucleusPlugin nucleus;
-    @Inject private UserDataManager userDataManager;
-
-    public NoteHandler(NucleusPlugin nucleus) {
-        this.nucleus = nucleus;
-    }
+    private final Nucleus nucleus = Nucleus.getNucleus();
+    private final UserDataManager userDataManager = nucleus.getUserDataManager();
 
     public List<NoteData> getNotesInternal(User user) {
         Optional<ModularUserService> userService = userDataManager.get(user);

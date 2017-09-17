@@ -45,23 +45,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 public abstract class StandardModule implements Module {
 
     private final String moduleId;
     private final String moduleName;
     private String packageName;
-    @Inject protected NucleusPlugin plugin;
-    @Inject protected InternalServiceManager serviceManager;
-
-    @Inject
-    private CommandsConfig commandsConfig;
+    protected final Nucleus plugin;
+    protected final InternalServiceManager serviceManager;
+    private final CommandsConfig commandsConfig;
 
     public StandardModule() {
         ModuleData md = this.getClass().getAnnotation(ModuleData.class);
         this.moduleId = md.id();
         this.moduleName = md.name();
+        this.plugin = NucleusPlugin.getNucleus();
+        this.serviceManager = plugin.getInternalServiceManager();
+        this.commandsConfig = plugin.getCommandsConfig();
     }
 
     /**
@@ -269,7 +269,7 @@ public abstract class StandardModule implements Module {
     }
 
     private void createSeenModule(@Nullable String permission, BiFunction<CommandSource, User, Collection<Text>> function) {
-        plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x -> x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(),
-            new BasicSeenInformationProvider(permission, function)));
+        plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x ->
+                x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(), new BasicSeenInformationProvider(permission, function)));
     }
 }

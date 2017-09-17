@@ -24,7 +24,7 @@ public class ServerShopModule extends ConfigurableModule<ServerShopConfigAdapter
     @Override public void onEnable() {
         super.onEnable();
 
-        ItemWorthService service = new ItemWorthService(plugin);
+        ItemWorthService service = new ItemWorthService();
         serviceManager.registerService(ItemWorthService.class, service);
         Sponge.getServiceManager().setProvider(plugin, NucleusServerShopService.class, service);
     }

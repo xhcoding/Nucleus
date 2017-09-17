@@ -26,7 +26,7 @@ public class StaffChatModule extends ConfigurableModule<StaffChatConfigAdapter> 
         super.performPreTasks();
 
         // Registers itself.
-        new StaffChatMessageChannel(plugin);
+        new StaffChatMessageChannel();
         Sponge.getServiceManager().setProvider(plugin, NucleusStaffChatService.class, new StaffChatService());
     }
 }

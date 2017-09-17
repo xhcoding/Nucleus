@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.internal.command;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Injector;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
@@ -20,7 +21,7 @@ import java.util.Set;
 
 public class CommandBuilder {
 
-    private final NucleusPlugin plugin;
+    private final Nucleus plugin;
     private final Injector injector;
     private final Set<Class<? extends AbstractCommand<?>>> commandSet;
     private final SimpleCommentedConfigurationNode sn;
@@ -33,7 +34,7 @@ public class CommandBuilder {
         return registeredCommands.contains(command);
     }
 
-    public CommandBuilder(NucleusPlugin plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
+    public CommandBuilder(Nucleus plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
         this.plugin = plugin;
         this.injector = injector;
         this.commandSet = commandSet;

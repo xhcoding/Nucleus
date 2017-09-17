@@ -5,22 +5,18 @@
 package io.github.nucleuspowered.nucleus.internal.qsml;
 
 import com.google.common.reflect.TypeToken;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import uk.co.drnaylor.quickstart.config.AbstractAdaptableConfig;
 import uk.co.drnaylor.quickstart.config.TypedAbstractConfigAdapter;
 
-import javax.inject.Inject;
-
 public abstract class NucleusConfigAdapter<R> extends TypedAbstractConfigAdapter<R> {
-
-    @Inject private NucleusPlugin plugin;
 
     @Override
     @SuppressWarnings("unchecked")
     public void onAttach(String module, AbstractAdaptableConfig<?, ?> adapter) {
-        plugin.preInjectorUpdate((Class)this.getClass(), this);
+        Nucleus.getNucleus().preInjectorUpdate((Class)this.getClass(), this);
     }
 
     public abstract static class Standard<R> extends NucleusConfigAdapter<R> {

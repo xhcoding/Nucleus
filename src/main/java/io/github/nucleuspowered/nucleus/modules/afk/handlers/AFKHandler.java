@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
@@ -46,7 +47,6 @@ public class AFKHandler implements NucleusAFKService {
 
     private final Map<UUID, AFKData> data = Maps.newConcurrentMap();
     private final AFKConfigAdapter afkConfigAdapter;
-    private final NucleusPlugin plugin;
     private final CommandPermissionHandler afkPermissionHandler;
     private AFKConfig config;
 
@@ -64,11 +64,10 @@ public class AFKHandler implements NucleusAFKService {
     private final String afkOption = "nucleus.afk.toggletime";
     private final String afkKickOption = "nucleus.afk.kicktime";
 
-    public AFKHandler(NucleusPlugin plugin, AFKConfigAdapter afkConfigAdapter) {
-        this.plugin = plugin;
-        this.afkPermissionHandler = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(AFKCommand.class);
+    public AFKHandler(AFKConfigAdapter afkConfigAdapter) {
+        this.afkPermissionHandler = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(AFKCommand.class);
         this.afkConfigAdapter = afkConfigAdapter;
-        plugin.registerReloadable(this::onReload);
+        Nucleus.getNucleus().registerReloadable(this::onReload);
         onReload();
     }
 
@@ -113,7 +112,7 @@ public class AFKHandler implements NucleusAFKService {
                 NucleusTextTemplateImpl message = config.getMessages().getKickMessage();
                 TextRepresentable t;
                 if (message.isEmpty()) {
-                    t = plugin.getMessageProvider().getTextMessageWithTextFormat("afk.kickreason");
+                    t = Nucleus.getNucleus().getMessageProvider().getTextMessageWithTextFormat("afk.kickreason");
                 } else {
                     t = message;
                 }
@@ -127,7 +126,7 @@ public class AFKHandler implements NucleusAFKService {
                     }
 
                     Text toSend = t instanceof NucleusTextTemplateImpl ? ((NucleusTextTemplateImpl) t).getForCommandSource(player) : t.toText();
-                    Sponge.getScheduler().createSyncExecutor(plugin)
+                    Sponge.getScheduler().createSyncExecutor(Nucleus.getNucleus())
                         .execute(() -> player.kick(toSend));
                     if (!messageToServer.isEmpty()) {
                         MessageChannel mc;
@@ -299,7 +298,7 @@ public class AFKHandler implements NucleusAFKService {
             synchronized (lock2) {
                 disabledTracking.remove(player.getUniqueId(), t.getUniqueId());
             }
-        }).delayTicks(ticks).submit(plugin);
+        }).delayTicks(ticks).submit(Nucleus.getNucleus());
 
         synchronized (lock2) {
             disabledTracking.put(player.getUniqueId(), n.getUniqueId());

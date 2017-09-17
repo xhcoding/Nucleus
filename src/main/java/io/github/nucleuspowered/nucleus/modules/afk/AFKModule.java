@@ -25,7 +25,7 @@ public class AFKModule extends ConfigurableModule<AFKConfigAdapter> {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        AFKHandler handler = new AFKHandler(plugin, getAdapter());
+        AFKHandler handler = new AFKHandler(getAdapter());
         serviceManager.registerService(AFKHandler.class, handler);
         Sponge.getServiceManager().setProvider(plugin, NucleusAFKService.class, handler);
     }

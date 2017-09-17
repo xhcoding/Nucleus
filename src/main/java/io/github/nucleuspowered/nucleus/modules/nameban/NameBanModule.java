@@ -21,7 +21,7 @@ public class NameBanModule extends ConfigurableModule<NameBanConfigAdapter> {
     @Override protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        NameBanHandler handler = new NameBanHandler(plugin);
+        NameBanHandler handler = new NameBanHandler();
         plugin.getInternalServiceManager().registerService(NameBanHandler.class, handler);
         Sponge.getServiceManager().setProvider(plugin, NucleusNameBanService.class, handler);
     }

@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandlogger.handlers;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.logging.AbstractLoggingHandler;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
 
@@ -15,8 +14,8 @@ public class CommandLoggerHandler extends AbstractLoggingHandler {
     private final CommandLoggerConfigAdapter clca;
 
     @Inject
-    public CommandLoggerHandler(NucleusPlugin plugin, CommandLoggerConfigAdapter clca) {
-        super(plugin, "command", "cmds");
+    public CommandLoggerHandler(CommandLoggerConfigAdapter clca) {
+        super("command", "cmds");
         this.clca = clca;
     }
 

@@ -147,6 +147,10 @@ public abstract class TestBase {
             return true;
         }
 
+        @Override public void reloadMessages() {
+
+        }
+
         @Override
         public WarmupManager getWarmupManager() {
             return null;
@@ -219,6 +223,10 @@ public abstract class TestBase {
 
         @Override public int traceUserCreations() {
             return 0;
+        }
+
+        @Override public <T> void preInjectorUpdate(Class<T> clazz, T instance) {
+
         }
 
         @Override public Optional<TextFileController> getTextFileController(String getController) {

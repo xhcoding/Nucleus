@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.playerinfo.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.api.service.NucleusSeenService;
 import org.spongepowered.api.command.CommandSource;
@@ -64,7 +65,7 @@ public class SeenHandler implements NucleusSeenService {
         });
     }
 
-    public void register(NucleusPlugin plugin, String module, SeenInformationProvider seenInformationProvider) throws IllegalArgumentException {
+    public void register(Nucleus plugin, String module, SeenInformationProvider seenInformationProvider) throws IllegalArgumentException {
         Preconditions.checkNotNull(plugin);
         Preconditions.checkNotNull(module);
         Preconditions.checkNotNull(seenInformationProvider);

@@ -11,7 +11,6 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.record.Country;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.modules.geoip.GeoIpModule;
 import io.github.nucleuspowered.nucleus.modules.geoip.config.GeoIpConfigAdapter;
 import org.spongepowered.api.Sponge;
@@ -40,9 +39,9 @@ public class GeoIpDatabaseHandler implements Closeable {
     private DatabaseReader databaseReader;
     private boolean isLoading = false;
 
-    public GeoIpDatabaseHandler(NucleusPlugin plugin) {
-        downloadDirectory = plugin.getDataPath().resolve("geoip");
-        countries = downloadDirectory.resolve("countries.mmdb");
+    public GeoIpDatabaseHandler() {
+        this.downloadDirectory = Nucleus.getNucleus().getDataPath().resolve("geoip");
+        this.countries = this.downloadDirectory.resolve("countries.mmdb");
     }
 
     /**

@@ -25,7 +25,7 @@ public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        plugin.reloadMessages();
+        this.plugin.reloadMessages();
     }
 
     @Override public void onEnable() {
@@ -34,4 +34,5 @@ public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
         // Register service
         Sponge.getServiceManager().setProvider(this.plugin, NucleusPlayerMetadataService.class, new PlayerMetadataService());
     }
+
 }

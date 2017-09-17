@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.servershop.services;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusServerShopService;
 import org.spongepowered.api.CatalogType;
@@ -26,18 +26,12 @@ import java.util.function.Function;
 @NonnullByDefault
 public class ItemWorthService implements NucleusServerShopService {
 
-    private final NucleusPlugin plugin;
-
-    public ItemWorthService(NucleusPlugin plugin) {
-        this.plugin = plugin;
-    }
-
     @Override public Map<CatalogType, Double> getBuyPrices() {
-        return plugin.getItemDataService().getServerBuyPrices();
+        return Nucleus.getNucleus().getItemDataService().getServerBuyPrices();
     }
 
     @Override public Map<CatalogType, Double> getSellPrices() {
-        return plugin.getItemDataService().getServerSellPrices();
+        return Nucleus.getNucleus().getItemDataService().getServerSellPrices();
     }
 
     @Override public Optional<Double> getBuyPrice(BlockState type) throws NucleusException {
@@ -47,7 +41,7 @@ public class ItemWorthService implements NucleusServerShopService {
 
     @Override public Optional<Double> getBuyPrice(ItemStackSnapshot itemStackSnapshot) {
         Preconditions.checkNotNull(itemStackSnapshot);
-        double price = plugin.getItemDataService().getDataForItem(itemStackSnapshot).getServerBuyPrice();
+        double price = Nucleus.getNucleus().getItemDataService().getDataForItem(itemStackSnapshot).getServerBuyPrice();
         if (price < 0) {
             return Optional.empty();
         }
@@ -62,7 +56,7 @@ public class ItemWorthService implements NucleusServerShopService {
 
     @Override public Optional<Double> getSellPrice(ItemStackSnapshot itemStackSnapshot) {
         Preconditions.checkNotNull(itemStackSnapshot);
-        double price = plugin.getItemDataService().getDataForItem(itemStackSnapshot).getServerSellPrice();
+        double price = Nucleus.getNucleus().getItemDataService().getDataForItem(itemStackSnapshot).getServerSellPrice();
         if (price < 0) {
             return Optional.empty();
         }

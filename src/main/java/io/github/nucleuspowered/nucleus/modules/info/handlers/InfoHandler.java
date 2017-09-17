@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.info.handlers;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import org.spongepowered.api.Sponge;
@@ -25,12 +26,8 @@ import java.util.stream.Stream;
 public class InfoHandler {
 
     private final Map<String, TextFileController> infoFiles = Maps.newHashMap();
-    private final NucleusPlugin plugin;
+    private final Nucleus plugin = Nucleus.getNucleus();
     private final Pattern validFile = Pattern.compile("[a-zA-Z0-9_.\\-]+\\.txt", Pattern.CASE_INSENSITIVE);
-
-    public InfoHandler(NucleusPlugin plugin) {
-        this.plugin = plugin;
-    }
 
     public Set<String> getInfoSections() {
         return ImmutableSet.copyOf(infoFiles.keySet());

@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.staffchat;
 
 import com.google.common.base.Preconditions;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.staffchat.commands.StaffChatCommand;
@@ -45,13 +45,13 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
         return INSTANCE;
     }
 
-    private final NucleusPlugin plugin;
+    private final Nucleus plugin;
     private final String basePerm;
     private NucleusTextTemplateImpl template;
     private TextColor colour;
 
-    StaffChatMessageChannel(NucleusPlugin plugin) {
-        this.plugin = plugin;
+    StaffChatMessageChannel() {
+        this.plugin = Nucleus.getNucleus();
         plugin.registerReloadable(this::onReload);
         this.onReload();
         this.basePerm = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(StaffChatCommand.class).getBase();
@@ -89,7 +89,7 @@ public class StaffChatMessageChannel implements NucleusChatChannel.StaffChat {
     }
 
     private void onReload() {
-        plugin.getConfigAdapter(StaffChatModule.ID, StaffChatConfigAdapter.class)
+        this.plugin.getConfigAdapter(StaffChatModule.ID, StaffChatConfigAdapter.class)
                 .ifPresent(x -> {
                     this.formatting = x.getNodeOrDefault().isIncludeStandardChatFormatting();
                     this.template = x.getNodeOrDefault().getMessageTemplate();

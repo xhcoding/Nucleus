@@ -21,6 +21,6 @@ public class TeleportModule extends ConfigurableModule<TeleportConfigAdapter> {
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        serviceManager.registerService(TeleportHandler.class, new TeleportHandler(plugin));
+        serviceManager.registerService(TeleportHandler.class, new TeleportHandler());
     }
 }

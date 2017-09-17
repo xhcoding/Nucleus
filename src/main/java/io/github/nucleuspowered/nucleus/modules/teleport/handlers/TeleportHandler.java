@@ -40,18 +40,14 @@ import javax.annotation.Nullable;
 
 public class TeleportHandler {
 
-    private final NucleusPlugin plugin;
+    private final Nucleus plugin = Nucleus.getNucleus();
     private final Map<UUID, TeleportPrep> ask = new HashMap<>();
 
     private static final String tptoggleBypassPermission = PermissionRegistry.PERMISSIONS_PREFIX + "teleport.tptoggle.exempt";
     private Text acceptDeny;
 
-    public TeleportHandler(NucleusPlugin plugin) {
-        this.plugin = plugin;
-    }
-
     public TeleportBuilder getBuilder() {
-        return new TeleportBuilder(plugin);
+        return new TeleportBuilder();
     }
 
     public static boolean canBypassTpToggle(Subject from) {
@@ -137,15 +133,15 @@ public class TeleportHandler {
         private final double cost;
         private final boolean safe;
         private final CommandSource source;
-        private final NucleusPlugin plugin;
+        private final Nucleus plugin;
         private final boolean silentSource;
         private final boolean silentTarget;
 
-        private TeleportTask(NucleusPlugin plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, boolean safe, boolean silentSource, boolean silentTarget) {
+        private TeleportTask(Nucleus plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, boolean safe, boolean silentSource, boolean silentTarget) {
             this(plugin, source, playerToTeleport, playerToTeleportTo, null, 0, safe, silentSource, silentTarget);
         }
 
-        private TeleportTask(NucleusPlugin plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, Player charged, double cost, boolean safe,
+        private TeleportTask(Nucleus plugin, CommandSource source, Player playerToTeleport, Player playerToTeleportTo, Player charged, double cost, boolean safe,
                              boolean silentSource, boolean silentTarget) {
             this.plugin = plugin;
             this.source = source;
@@ -221,10 +217,10 @@ public class TeleportHandler {
         private boolean silentSource = false;
         private boolean silentTarget = false;
 
-        private final NucleusPlugin plugin;
+        private final Nucleus plugin;
 
-        private TeleportBuilder(NucleusPlugin plugin) {
-            this.plugin = plugin;
+        private TeleportBuilder() {
+            this.plugin = Nucleus.getNucleus();
             try {
                 this.safe = plugin.getModuleContainer().getConfigAdapterForModule("teleport", TeleportConfigAdapter.class)
                     .getNodeOrDefault().isUseSafeTeleport();

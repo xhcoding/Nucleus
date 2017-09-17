@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.logging;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
@@ -27,14 +28,13 @@ public abstract class AbstractLoggingHandler {
         .withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
     protected DateRotatableFileLogger logger;
     private final List<String> queueEntry = Lists.newArrayList();
-    private final NucleusPlugin plugin;
     private final String directoryName;
     private final String filePrefix;
     private final Object locking = new Object();
+    private final Nucleus plugin = Nucleus.getNucleus();
 
     @Inject
-    public AbstractLoggingHandler(NucleusPlugin plugin, String directoryName, String filePrefix) {
-        this.plugin = plugin;
+    public AbstractLoggingHandler(String directoryName, String filePrefix) {
         this.directoryName = directoryName;
         this.filePrefix = filePrefix;
     }

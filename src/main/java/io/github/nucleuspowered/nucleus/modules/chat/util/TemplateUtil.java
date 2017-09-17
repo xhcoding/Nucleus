@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat.util;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
@@ -25,8 +25,8 @@ public class TemplateUtil {
     private List<Map<String, WeightedChatTemplateConfig>> cachedTemplates = null;
     private final ChatConfigAdapter chatConfigAdapter;
 
-    public TemplateUtil(NucleusPlugin plugin, ChatConfigAdapter chatConfigAdapter) {
-        plugin.registerReloadable(() -> cachedTemplates = null);
+    public TemplateUtil(ChatConfigAdapter chatConfigAdapter) {
+        Nucleus.getNucleus().registerReloadable(() -> cachedTemplates = null);
         this.chatConfigAdapter = chatConfigAdapter;
     }
 

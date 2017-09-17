@@ -10,19 +10,15 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.warn.commands.CheckWarningsCommand;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import javax.inject.Inject;
-
-@ModuleData(id = "warn", name = "Warn")
+@ModuleData(id = WarnModule.ID, name = "Warn")
 public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
 
-    @Inject private Game game;
-    @Inject private Logger logger;
+    public static final String ID = "warn";
 
     @Override
     public WarnConfigAdapter createAdapter() {
@@ -34,12 +30,13 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
         super.performPreTasks();
 
         try {
-            WarnHandler warnHandler = new WarnHandler(plugin);
-            plugin.getInjector().injectMembers(warnHandler);
-            game.getServiceManager().setProvider(plugin, NucleusWarningService.class, warnHandler);
-            serviceManager.registerService(WarnHandler.class, warnHandler);
+            WarnHandler warnHandler = new WarnHandler();
+            this.plugin.registerReloadable(warnHandler);
+            this.plugin.getInjector().injectMembers(warnHandler);
+            Sponge.getServiceManager().setProvider(this.plugin, NucleusWarningService.class, warnHandler);
+            this.serviceManager.registerService(WarnHandler.class, warnHandler);
         } catch (Exception ex) {
-            logger.warn("Could not load the warn module for the reason below.");
+            this.plugin.getLogger().warn("Could not load the warn module for the reason below.");
             ex.printStackTrace();
             throw ex;
         }

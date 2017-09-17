@@ -7,12 +7,16 @@ package io.github.nucleuspowered.nucleus.modules.warn.handlers;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warning;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarningService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
+import io.github.nucleuspowered.nucleus.modules.warn.WarnModule;
+import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfig;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.datamodules.WarnUserDataModule;
@@ -30,17 +34,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
-public class WarnHandler implements NucleusWarningService {
+public class WarnHandler implements NucleusWarningService, Reloadable {
 
-    private final NucleusPlugin nucleus;
-    @Inject private UserDataManager userDataManager;
-    @Inject private WarnConfigAdapter wca;
-
-    public WarnHandler(NucleusPlugin nucleus) {
-        this.nucleus = nucleus;
-    }
+    private final Nucleus nucleus = Nucleus.getNucleus();
+    private final UserDataManager userDataManager = nucleus.getUserDataManager();
+    private boolean expireWarnings = false;
 
     public List<WarnData> getWarningsInternal(User user) {
         return getWarningsInternal(user, true, true);
@@ -87,6 +86,11 @@ public class WarnHandler implements NucleusWarningService {
         return true;
     }
 
+    @Override
+    public void onReload() throws Exception {
+        this.expireWarnings = Nucleus.getNucleus().getConfigValue(WarnModule.ID, WarnConfigAdapter.class, WarnConfig::isExpireWarnings).orElse(false);
+    }
+
     public boolean removeWarning(User user, WarnData warning) {
         return removeWarning(user, warning, false, CauseStackHelper.createCause(NucleusPlugin.getNucleus()));
     }
@@ -95,7 +99,7 @@ public class WarnHandler implements NucleusWarningService {
         Optional<ModularUserService> userService = userDataManager.get(user);
         if (userService.isPresent()) {
             userService.get().get(WarnUserDataModule.class).removeWarning(warning);
-            if (wca.getNodeOrDefault().isExpireWarnings() && !warning.isExpired() && !permanent) {
+            if (this.expireWarnings && !warning.isExpired() && !permanent) {
                 userService.get().get(WarnUserDataModule.class).addWarning(new WarnData(warning.getDate(), warning.getWarner()
                         .orElse(Util.consoleFakeUUID), warning.getReason(), true));
             }

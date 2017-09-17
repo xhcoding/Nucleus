@@ -579,7 +579,7 @@ public class NucleusPlugin extends Nucleus {
         }
     }
 
-    public void reloadMessages() {
+    @Override public void reloadMessages() {
         try {
             if (moduleContainer.getConfigAdapterForModule("core", CoreConfigAdapter.class).getNodeOrDefault().isCustommessages()) {
                 this.messageProvider = new ConfigMessageProvider(configDir.resolve("messages.conf"), ResourceMessageProvider.messagesBundle);
@@ -721,7 +721,7 @@ public class NucleusPlugin extends Nucleus {
         return this.isTraceUserCreations;
     }
 
-    public <T> void preInjectorUpdate(Class<T> clazz, T instance) {
+    @Override public <T> void preInjectorUpdate(Class<T> clazz, T instance) {
         if (injector.getExistingBinding(Key.get(clazz)) == null) {
             subInjectorModule.addInjection(clazz, instance);
         } else {

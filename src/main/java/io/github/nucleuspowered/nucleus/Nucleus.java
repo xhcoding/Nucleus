@@ -74,6 +74,8 @@ public abstract class Nucleus {
 
     public abstract boolean reload();
 
+    public abstract void reloadMessages();
+
     public abstract WarmupManager getWarmupManager();
 
     public abstract WarmupConfig getWarmupConfig();
@@ -111,6 +113,8 @@ public abstract class Nucleus {
     public abstract MessageProvider getCommandMessageProvider();
 
     public abstract int traceUserCreations();
+
+    public abstract <T> void preInjectorUpdate(Class<T> clazz, T instance);
 
     public abstract Optional<TextFileController> getTextFileController(String getController);
 

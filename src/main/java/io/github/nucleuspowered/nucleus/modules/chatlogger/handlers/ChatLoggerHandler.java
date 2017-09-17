@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chatlogger.handlers;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.logging.AbstractLoggingHandler;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
 
@@ -15,8 +14,8 @@ public class ChatLoggerHandler extends AbstractLoggingHandler {
     private final ChatLoggingConfigAdapter clca;
 
     @Inject
-    public ChatLoggerHandler(NucleusPlugin plugin, ChatLoggingConfigAdapter clca) {
-        super(plugin, "chat", "chat");
+    public ChatLoggerHandler(ChatLoggingConfigAdapter clca) {
+        super("chat", "chat");
         this.clca = clca;
     }
 

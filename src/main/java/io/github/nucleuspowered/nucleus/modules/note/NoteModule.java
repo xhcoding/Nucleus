@@ -10,21 +10,15 @@ import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.note.commands.CheckNotesCommand;
 import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.note.handlers.NoteHandler;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-
-import javax.inject.Inject;
 
 @ModuleData(id = NoteModule.ID, name = "Note")
 public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
 
     public final static String ID = "note";
-
-    @Inject private Game game;
-    @Inject private Logger logger;
 
     @Override
     public NoteConfigAdapter createAdapter() {
@@ -36,12 +30,12 @@ public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
         super.performPreTasks();
 
         try {
-            NoteHandler noteHandler = new NoteHandler(plugin);
-            plugin.getInjector().injectMembers(noteHandler);
-            game.getServiceManager().setProvider(plugin, NucleusNoteService.class, noteHandler);
-            serviceManager.registerService(NoteHandler.class, noteHandler);
+            NoteHandler noteHandler = new NoteHandler();
+            this.plugin.getInjector().injectMembers(noteHandler);
+            Sponge.getServiceManager().setProvider(this.plugin, NucleusNoteService.class, noteHandler);
+            this.serviceManager.registerService(NoteHandler.class, noteHandler);
         } catch (Exception ex) {
-            logger.warn("Could not load the note module for the reason below.");
+            this.plugin.getLogger().warn("Could not load the note module for the reason below.");
             ex.printStackTrace();
             throw ex;
         }

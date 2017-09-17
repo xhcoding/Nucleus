@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nameban.handlers;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNameBanService;
@@ -18,11 +18,7 @@ import java.util.Optional;
 
 public class NameBanHandler implements NucleusNameBanService {
 
-    private final NucleusPlugin plugin;
-
-    public NameBanHandler(NucleusPlugin plugin) {
-        this.plugin = plugin;
-    }
+    private final Nucleus plugin = Nucleus.getNucleus();
 
     @Override public boolean addName(String name, String reason, Cause cause) throws NucleusException {
         if (Util.usernameRegex.matcher(name).matches()) {

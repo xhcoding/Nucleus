@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.mail.handlers;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.MailMessage;
@@ -12,7 +13,6 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
 import io.github.nucleuspowered.nucleus.modules.mail.data.MailData;
 import io.github.nucleuspowered.nucleus.modules.mail.datamodules.MailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mail.events.InternalNucleusMailEvent;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
@@ -26,13 +26,7 @@ import java.util.stream.Collectors;
 
 public class MailHandler implements NucleusMailService {
 
-    private final Game game;
-    private final NucleusPlugin plugin;
-
-    public MailHandler(Game game, NucleusPlugin plugin) {
-        this.game = game;
-        this.plugin = plugin;
-    }
+    private final Nucleus plugin = Nucleus.getNucleus();
 
     @Override
     public final List<MailMessage> getMail(User player, MailFilter... filters) {
@@ -40,7 +34,7 @@ public class MailHandler implements NucleusMailService {
     }
 
     public final List<MailData> getMailInternal(User player, MailFilter... filters) {
-        MailUserDataModule iqsu = plugin.getUserDataManager().get(player).get().get(MailUserDataModule.class);
+        MailUserDataModule iqsu = plugin.getUserDataManager().getUnchecked(player).get(MailUserDataModule.class);
 
         List<MailData> lmd = iqsu.getMail();
         if (filters.length == 0 || lmd.isEmpty()) {
@@ -54,7 +48,7 @@ public class MailHandler implements NucleusMailService {
     @Override
     public boolean removeMail(User player, MailMessage mailData) {
         try {
-            return plugin.getUserDataManager().get(player).get().get(MailUserDataModule.class).removeMail(mailData);
+            return plugin.getUserDataManager().getUnchecked(player).get(MailUserDataModule.class).removeMail(mailData);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -65,7 +59,7 @@ public class MailHandler implements NucleusMailService {
     public void sendMail(User playerFrom, User playerTo, String message) {
         MailUserDataModule iqsu;
         try {
-            iqsu = plugin.getUserDataManager().get(playerTo).get().get(MailUserDataModule.class);
+            iqsu = plugin.getUserDataManager().getUnchecked(playerTo).get(MailUserDataModule.class);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -81,11 +75,10 @@ public class MailHandler implements NucleusMailService {
         MailData md = new MailData(playerFrom == null ? Util.consoleFakeUUID : playerFrom.getUniqueId(), Instant.now(), message);
         iqsu.addMail(md);
 
-        Text from = playerFrom == null ? Text.of(game.getServer().getConsole().getName()) : plugin.getNameUtil().getName(playerFrom);
-        if (playerTo.isOnline()) {
-            playerTo.getPlayer().get()
-                    .sendMessage(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("mail.youvegotmail")).append(Text.of(" ", from)).build());
-        }
+        Text from = playerFrom == null ? Text.of(Sponge.getServer().getConsole().getName()) : plugin.getNameUtil().getName(playerFrom);
+        playerTo.getPlayer().ifPresent(x ->
+                x.sendMessage(Text.builder().append(NucleusPlugin.getNucleus().getMessageProvider()
+                        .getTextMessageWithFormat("mail.youvegotmail")).append(Text.of(" ", from)).build()));
     }
 
     @Override
