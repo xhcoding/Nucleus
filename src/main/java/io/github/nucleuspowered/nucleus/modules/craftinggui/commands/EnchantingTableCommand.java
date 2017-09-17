@@ -16,6 +16,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 @NonnullByDefault
 public class EnchantingTableCommand extends BasicCraftingCommand {
 
+    // Max power is 32, when we can implement it.
     @Override protected InventoryArchetype getArchetype() {
         return InventoryArchetypes.ENCHANTING_TABLE;
     }
