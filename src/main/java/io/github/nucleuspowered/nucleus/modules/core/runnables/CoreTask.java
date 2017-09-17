@@ -6,6 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.core.runnables;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
+import io.github.nucleuspowered.nucleus.modules.core.CoreModule;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -16,7 +20,9 @@ import java.time.temporal.ChronoUnit;
  * Core tasks. No module, must always run.
  */
 @NonnullByDefault
-public class CoreTask extends TaskBase {
+public class CoreTask extends TaskBase implements Reloadable {
+
+    private boolean printSave = false;
 
     @Override
     public boolean isAsync() {
@@ -31,15 +37,21 @@ public class CoreTask extends TaskBase {
     @Override
     public void accept(Task task) {
         Nucleus plugin = Nucleus.getNucleus();
-        if (Nucleus.getNucleus().isDebugMode()) {
+        if (this.printSave || Nucleus.getNucleus().isDebugMode()) {
             plugin.getLogger().info(plugin.getMessageProvider().getMessageWithFormat("core.savetask.starting"));
         }
 
         plugin.saveData();
         plugin.getUserDataManager().removeOfflinePlayers();
 
-        if (Nucleus.getNucleus().isDebugMode()) {
+        if (this.printSave || Nucleus.getNucleus().isDebugMode()) {
             plugin.getLogger().info(plugin.getMessageProvider().getMessageWithFormat("core.savetask.complete"));
         }
+    }
+
+    @Override
+    public void onReload() throws Exception {
+        this.printSave = Nucleus.getNucleus().getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::isPrintOnAutosave)
+                .orElse(false);
     }
 }

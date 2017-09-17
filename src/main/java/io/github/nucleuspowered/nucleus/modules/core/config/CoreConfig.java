@@ -14,6 +14,9 @@ public class CoreConfig {
     @Setting(value = "debug-mode", comment = "config.debugmode")
     private boolean debugmode = false;
 
+    @Setting(value = "print-on-autosave", comment = "config.printonautosave")
+    private boolean printOnAutosave = false;
+
     @Setting(value = "use-custom-message-file", comment = "config.custommessages")
     private boolean custommessages = false;
 
@@ -46,6 +49,10 @@ public class CoreConfig {
 
     public boolean isDebugmode() {
         return debugmode;
+    }
+
+    public boolean isPrintOnAutosave() {
+        return this.printOnAutosave;
     }
 
     public boolean isCustommessages() {
