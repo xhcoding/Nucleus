@@ -97,7 +97,7 @@ public class NucleusAPI {
     }
 
     /**
-     * Gets the {@link NucleusAFKService}, if it exists.
+     * Gets the {@link NucleusBackService}, if it exists.
      *
      * <p>
      *     Requires the "back" module.
