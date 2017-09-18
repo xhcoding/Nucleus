@@ -75,8 +75,8 @@ public class NucleusAPI {
     }
 
     /**
-     * Gets the {@link NucleusWarmupManagerService} service, which allows plugins to use Nucleus to manage their warmups.
-     * @return The {@link NucleusWarmupManagerService}
+     * Gets the {@link NucleusMessageTokenService} service, which allows plugins to use Nucleus to manage their warmups.
+     * @return The {@link NucleusMessageTokenService}
      * @throws IllegalStateException if Nucleus hasn't completed pre init yet.
      */
     public static NucleusMessageTokenService getMessageTokenService() {
