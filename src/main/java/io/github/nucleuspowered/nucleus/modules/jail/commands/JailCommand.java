@@ -155,11 +155,11 @@ public class JailCommand extends AbstractCommand<CommandSource> implements Reloa
             MutableMessageChannel mc = new PermissionMessageChannel(permissions.getPermissionWithSuffix("notify")).asMutable();
             mc.addMember(src);
             mc.send(message);
-            mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
+            mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", reason));
 
             user.getPlayer().ifPresent(x -> {
                 x.sendMessage(messageTo);
-                x.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
+                x.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", reason));
             });
 
             return CommandResult.success();

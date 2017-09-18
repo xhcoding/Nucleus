@@ -11,6 +11,8 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
@@ -23,10 +25,8 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -61,10 +61,10 @@ public class CheckJailCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(playerKey).get();
         Optional<JailData> jail = handler.getPlayerJailDataInternal(user);
+        MessageProvider mp = this.plugin.getMessageProvider();
 
         if (!jail.isPresent()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.nojail", user.getName()));
-            return CommandResult.success();
+            throw ReturnMessageException.fromKey("command.checkjail.nojail", user.getName());
         }
 
         JailData md = jail.get();
@@ -73,26 +73,25 @@ public class CheckJailCommand extends AbstractCommand<CommandSource> {
             name = Sponge.getServer().getConsole().getName();
         } else {
             name = Sponge.getServiceManager().provideUnchecked(UserStorageService.class).get(md.getJailerInternal())
-                    .map(User::getName).orElseGet(() -> plugin.getMessageProvider().getMessageWithFormat("standard.unknown"));
+                    .map(User::getName).orElseGet(() -> mp.getMessageWithFormat("standard.unknown"));
         }
 
         if (md.getRemainingTime().isPresent()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailedfor", user.getName(), md.getJailName(),
+            src.sendMessage(mp.getTextMessageWithFormat("command.checkjail.jailedfor", user.getName(), md.getJailName(),
                     name, Util.getTimeStringFromSeconds(md.getRemainingTime().get().getSeconds())));
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.jailedperm", user.getName(), md.getJailName(),
+            src.sendMessage(mp.getTextMessageWithFormat("command.checkjail.jailedperm", user.getName(), md.getJailName(),
                     name));
         }
 
         if (md.getCreationTime() > 0) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.created",
+            src.sendMessage(mp.getTextMessageWithFormat("command.checkjail.created",
                     Util.FULL_TIME_FORMATTER.withLocale(src.getLocale()).format(Instant.ofEpochSecond(md.getCreationTime()))));
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkjail.created",
-                    plugin.getMessageProvider().getMessageWithFormat("standard.unknown")));
+            src.sendMessage(mp.getTextMessageWithFormat("command.checkjail.created", mp.getMessageWithFormat("standard.unknown")));
         }
 
-        src.sendMessage(Text.of(TextColors.GREEN, MessageFormat.format(plugin.getMessageProvider().getMessageWithFormat("standard.reason"), md.getReason())));
+        src.sendMessage(mp.getTextMessageWithFormat("standard.reasoncoloured", md.getReason()));
         return CommandResult.success();
     }
 }

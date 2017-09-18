@@ -93,7 +93,7 @@ public class CheckMuteCommand extends AbstractCommand<CommandSource> {
                     plugin.getMessageProvider().getMessageWithFormat("standard.unknown")));
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", md.getReason()));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", md.getReason()));
         return CommandResult.success();
     }
 }

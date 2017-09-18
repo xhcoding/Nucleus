@@ -84,7 +84,7 @@ public class CheckBanCommand extends AbstractCommand<CommandSource> {
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.checkban.created", Util.FULL_TIME_FORMATTER.withLocale(src.getLocale())
                 .format(bp.getCreationDate()
         )));
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", TextSerializers.FORMATTING_CODE.serialize(bp.getReason().orElse(plugin.getMessageProvider().getTextMessageWithFormat("ban.defaultreason")))));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", TextSerializers.FORMATTING_CODE.serialize(bp.getReason().orElse(plugin.getMessageProvider().getTextMessageWithFormat("ban.defaultreason")))));
         return CommandResult.success();
     }
 }

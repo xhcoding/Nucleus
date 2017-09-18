@@ -110,7 +110,7 @@ public class TempBanCommand extends AbstractCommand<CommandSource> {
         MutableMessageChannel send = new PermissionMessageChannel(BanCommand.notifyPermission).asMutable();
         send.addMember(src);
         send.send(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.applied", u.getName(), Util.getTimeStringFromSeconds(time), src.getName()));
-        send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", reason));
+        send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", reason));
 
         if (Sponge.getServer().getPlayer(u.getUniqueId()).isPresent()) {
             Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(reason));

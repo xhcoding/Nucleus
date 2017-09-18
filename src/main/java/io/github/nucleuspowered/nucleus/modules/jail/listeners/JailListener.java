@@ -124,7 +124,7 @@ public class JailListener extends ListenerBase implements Reloadable {
 
             oqs.get().get(FlyUserDataModule.class).setFlying(false);
             user.sendMessage(message);
-            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", jd.getReason()));
+            user.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", jd.getReason()));
         }
 
         qs.setJailOnNextLogin(false);

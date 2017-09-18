@@ -165,7 +165,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> implements Reloa
     private void timedMute(CommandSource src, User user, MuteData data, long time, MessageChannel mc) {
         String ts = Util.getTimeStringFromSeconds(time);
         mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.success.time", user.getName(), src.getName(), ts));
-        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", data.getReason()));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", data.getReason()));
 
         if (user.isOnline()) {
             user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.time", ts));
@@ -175,7 +175,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> implements Reloa
 
     private void permMute(CommandSource src, User user, MuteData data, MessageChannel mc) {
         mc.send(plugin.getMessageProvider().getTextMessageWithFormat("command.mute.success.norm", user.getName(), src.getName()));
-        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", data.getReason()));
+        mc.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", data.getReason()));
 
         if (user.isOnline()) {
             user.getPlayer().get().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mute.playernotify.standard"));

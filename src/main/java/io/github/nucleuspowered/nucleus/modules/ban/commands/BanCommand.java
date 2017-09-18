@@ -156,7 +156,7 @@ public class BanCommand extends AbstractCommand<CommandSource> {
         MutableMessageChannel send = new PermissionMessageChannel(notifyPermission).asMutable();
         send.addMember(src);
         send.send(plugin.getMessageProvider().getTextMessageWithFormat("command.ban.applied", u.getName().orElse(plugin.getMessageProvider().getMessageWithFormat("standard.unknown")), src.getName()));
-        send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reason", r));
+        send.send(plugin.getMessageProvider().getTextMessageWithFormat("standard.reasoncoloured", r));
 
         if (Sponge.getServer().getPlayer(u.getUniqueId()).isPresent()) {
             Sponge.getServer().getPlayer(u.getUniqueId()).get().kick(TextSerializers.FORMATTING_CODE.deserialize(r));

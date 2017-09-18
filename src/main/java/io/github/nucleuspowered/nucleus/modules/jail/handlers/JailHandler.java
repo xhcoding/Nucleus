@@ -284,6 +284,6 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
             user.sendMessage(provider.getTextMessageWithFormat("jail.playernotify.standard"));
         }
 
-        user.sendMessage(provider.getTextMessageWithFormat("standard.reason", md.getReason()));
+        user.sendMessage(provider.getTextMessageWithFormat("standard.reasoncoloured", md.getReason()));
     }
 }

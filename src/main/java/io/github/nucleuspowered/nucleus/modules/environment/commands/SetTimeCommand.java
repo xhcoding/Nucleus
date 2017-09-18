@@ -16,11 +16,13 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 @Permissions(prefix = "time")
 @RegisterCommand(value = "set", subcommandOf = TimeCommand.class, rootAliasRegister = { "settime", "timeset" })
 @EssentialsEquivalent(value = {"time", "day", "night"}, isExact = false, notes = "A time MUST be specified.")
+@NonnullByDefault
 public class SetTimeCommand extends AbstractCommand<CommandSource> {
     private final String time = "time";
     private final String world = "world";
@@ -39,7 +41,9 @@ public class SetTimeCommand extends AbstractCommand<CommandSource> {
 
         int tick = args.<Integer>getOne(time).get();
         pr.setWorldTime(tick);
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.settime.done", String.valueOf(Util.getTimeFromTicks(tick))));
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.settime.done2",
+                pr.getWorldName(),
+                String.valueOf(Util.getTimeFromTicks(tick))));
         return CommandResult.success();
     }
 }
