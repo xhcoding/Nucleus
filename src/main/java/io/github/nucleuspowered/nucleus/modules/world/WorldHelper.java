@@ -8,6 +8,7 @@ import com.flowpowered.math.GenericMath;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.world.commands.border.GenerateChunksCommand;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfig;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
@@ -20,20 +21,26 @@ import org.spongepowered.api.world.ChunkPreGenerate;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
-public class WorldHelper {
+public class WorldHelper implements Reloadable {
+
+    private boolean notify = false;
+    private boolean display = true;
+    private long timeToNotify = 20 * 1000L;
+
+    private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.##");
     private static final String TIME_FORMAT = "s's 'S'ms'";
 
     private static final String notifyPermission = Nucleus.getNucleus().getPermissionRegistry()
         .getPermissionsForNucleusCommand(GenerateChunksCommand.class).getPermissionWithSuffix("notify");
 
-    @Inject private NucleusPlugin plugin;
+    private final Nucleus plugin = Nucleus.getNucleus();
 
     private final Map<UUID, ChunkPreGenerate> pregen = Maps.newHashMap();
 
@@ -42,7 +49,15 @@ public class WorldHelper {
         return pregen.containsKey(uuid);
     }
 
-    public boolean startPregenningForWorld(World world, boolean aggressive, long saveTime, @Nullable Integer tickPercent) {
+    @Override
+    public void onReload() throws Exception {
+        WorldConfig config = Nucleus.getNucleus().getConfigValue(WorldModule.ID, WorldConfigAdapter.class, c -> c).orElseGet(WorldConfig::new);
+        this.notify = config.isDisplayAfterEachGen();
+        this.display = config.isDisplayWarningGeneration();
+        this.timeToNotify = config.getNotificationInterval() * 1000L;
+    }
+
+    public boolean startPregenningForWorld(World world, boolean aggressive, long saveTime, @Nullable Integer tickPercent, @Nullable Integer tickFrequency) {
         cleanup();
         if (!isPregenRunningForWorld(world.getUniqueId())) {
             WorldProperties wp = world.getProperties();
@@ -54,6 +69,10 @@ public class WorldHelper {
 
             if (tickPercent != null) {
                 wbcp.tickPercentLimit(Math.max(0f, Math.min(tickPercent / 100.0f, 1f)));
+            }
+
+            if (tickFrequency != null) {
+                wbcp.tickInterval(Math.max(1, tickFrequency));
             }
 
             pregen.put(world.getUniqueId(), wbcp.start());
@@ -96,6 +115,7 @@ public class WorldHelper {
         private boolean highMemTriggered = false;
         private long time = 0;
         private long lastSaveTime;
+        private long lastNotifyTime;
 
         public Listener(boolean aggressive, long timeToSave) {
             this.aggressive = aggressive;
@@ -146,15 +166,26 @@ public class WorldHelper {
                         String.valueOf(GenericMath.floor((cpg.getTotalGeneratedChunks() * 100) / cpg.getTargetTotalChunks())));
                 }
 
-                getChannel().send(message);
+                if (WorldHelper.this.notify) {
+                    getChannel().send(message);
+                }
 
-                boolean display = Nucleus.getNucleus().getConfigValue(WorldModule.ID, WorldConfigAdapter.class, WorldConfig::isDisplayWarningGeneration).orElse(true);
-                if (this.lastSaveTime + this.timeToSave < System.currentTimeMillis()) {
-                    if (display) {
-                        MessageChannel.TO_ALL.send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.all"));
-                    }
-
+                long time = System.currentTimeMillis();
+                if (this.lastSaveTime + this.timeToSave < time) {
                     save(event.getTargetWorld());
+                }
+
+                if (WorldHelper.this.display && this.lastNotifyTime + WorldHelper.this.timeToNotify < time) {
+                    MessageChannel.TO_ALL.send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.all"));
+
+                    double total = 100*(cpg.getTotalGeneratedChunks() + cpg.getTotalSkippedChunks())/(double) cpg.getTargetTotalChunks();
+
+                    getChannel().send(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.pregen.gen.quickstatus",
+                            WorldHelper.PERCENT_FORMAT.format(total),
+                            String.valueOf(cpg.getTotalGeneratedChunks() + cpg.getTotalSkippedChunks()),
+                            String.valueOf(cpg.getTargetTotalChunks())
+                    ));
+                    this.lastNotifyTime = time;
                 }
             } else if (event instanceof ChunkPreGenerationEvent.Complete) {
                 getChannel().send(

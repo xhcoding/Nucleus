@@ -27,6 +27,7 @@ public class WorldModule extends ConfigurableModule<WorldConfigAdapter> {
 
         try {
             WorldHelper wh = new WorldHelper();
+            plugin.registerReloadable(wh);
             plugin.getInjector().injectMembers(wh);
             serviceManager.registerService(WorldHelper.class, wh);
         } catch (Exception ex) {

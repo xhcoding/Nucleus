@@ -12,10 +12,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.WorldHelper;
-import io.github.nucleuspowered.nucleus.util.TriFunction;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -28,7 +28,6 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -40,20 +39,15 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
     public static final String ticksKey = "tickPercent";
+    public static final String tickFrequency = "tickFrequency";
     public static final String saveTimeKey = "time between saves";
 
+    private final WorldHelper worldHelper;
+
     @Inject
-    private WorldHelper worldHelper;
-
-    private final TriFunction<World, CommandSource, CommandContext, CommandResult> standardGeneration = (world, source, args) -> {
-        // Create the task.
-        this.worldHelper.startPregenningForWorld(world, args.hasAny("a"), args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L)
-                * 1000L, args.<Integer>getOne(ticksKey).orElse(null));
-
-        source.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", world.getProperties().getWorldName()));
-
-        return CommandResult.success();
-    };
+    public GenerateChunksCommand(WorldHelper worldHelper) {
+        this.worldHelper = worldHelper;
+    }
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -69,6 +63,7 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
                     .flag("a")
                     .valueFlag(new TimespanArgument(Text.of(saveTimeKey)), "-save")
                     .valueFlag(new BoundedIntegerArgument(Text.of(ticksKey), 0, 100), "t", "-tickpercent")
+                    .valueFlag(new BoundedIntegerArgument(Text.of(tickFrequency), 1, 100), "f", "-frequency")
                     .buildWith(
                         GenericArguments.optional(
                             GenericArguments.onlyOne(new NucleusWorldPropertiesArgument(Text.of(worldKey), NucleusWorldPropertiesArgument.Type.ENABLED_ONLY))))
@@ -79,16 +74,19 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         WorldProperties wp = getWorldFromUserOrArgs(src, worldKey, args);
         if (worldHelper.isPregenRunningForWorld(wp.getUniqueId())) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.alreadyrunning", wp.getWorldName()));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.world.gen.alreadyrunning", wp.getWorldName());
         }
 
-        Optional<World> w = Sponge.getServer().getWorld(wp.getUniqueId());
-        if (!w.isPresent()) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.gen.notloaded", wp.getWorldName()));
-            return CommandResult.empty();
-        }
+        World w = Sponge.getServer().getWorld(wp.getUniqueId())
+                .orElseThrow(() -> ReturnMessageException.fromKey("command.world.gen.notloaded", wp.getWorldName()));
+        this.worldHelper.startPregenningForWorld(w,
+                args.hasAny("a"),
+                args.<Long>getOne(Text.of(GenerateChunksCommand.saveTimeKey)).orElse(20L) * 1000L,
+                args.<Integer>getOne(ticksKey).orElse(null),
+                args.<Integer>getOne(tickFrequency).orElse(null));
 
-        return standardGeneration.accept(w.get(), src, args);
+        src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.world.gen.started", wp.getWorldName()));
+
+        return CommandResult.success();
     }
 }
