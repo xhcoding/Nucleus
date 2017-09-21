@@ -9,18 +9,20 @@ Nucleus
 * [TeamCity]
 * [Discord]
 
-Master branch build status:  [![API 5 branch](https://img.shields.io/travis/NucleusPowered/Nucleus/sponge-api/5.svg?style=flat-square)](https://travis-ci.org/NucleusPowered/Nucleus)
-
-Licence: [MIT](LICENSE.md)
+Licence: [MIT](LICENSE.md) (except for the Nucleus logo, which is all rights reserved)
 
 Nucleus is a Sponge plugin that forms a solid base for your server, providing essential commands, events, and other
 tidbits that you might need. Extremely configurable, only loading up the commands and modules you want (and providing a way for
 plugins to disable modules that they replace the functionality of), and providing a simple and rich API, Nucleus is an
 elite plugin for providing simple server tasks, and an essential addition to your server!
- 
-We're in beta right now, but we'd love the feedback!
 
-Nucleus is being actively developed for Sponge API 5 and Sponge API 6. Sponge API 4.1 builds are receiving bug fixes only.  
+Nucleus is being actively developed for Sponge API 7. Sponge API 5 and Sponge API 6 are in LTS and are receiving primarily bug fixes.
+
+The current active branches are:
+
+* sponge-api/7 (this branch - development - 1.12.2+)
+* sponge-api/6 (MC 1.11.2)
+* sponge-api/5 (MC 1.10.2)
 
 ## Contributions
 
@@ -42,11 +44,10 @@ or terminal:
 
 To build Nucleus, navigate to the source directory and run either:
 
-* `./gradlew build` on UNIX and UNIX like systems (including OS X and Linux)
+* `./gradlew build` on UNIX and UNIX like systems (including macOS and Linux)
 * `gradlew build` on Windows systems
 
-You will find the compiled JAR which will be named like `Nucleus-x.x.x-all.jar` in `builds/libs/`. Make sure you use the
-one ending in `-all`, as this contains shadowed dependencies.
+You will find the compiled JAR which will be named like `Nucleus-[version]-plugin.jar` in `output/`.
 
 ## Building against the Nucleus API
 
@@ -56,7 +57,7 @@ Nucleus is available via a Maven repository.
 * Group ID: `io.github.nucleuspowered`
 * Artifact Name: `nucleus-api`
 
-The versioning follows `version-S(sponge-api)`. Add `-SNAPSHOT` for a snapshot.
+The versioning follows `version[-SNAPSHOT]-S(sponge-api)`. Add the `-SNAPSHOT` section for the latest snapshot.
 
 You can also get Nucleus as a whole this way, but internals may break at any time. The API is guaranteed to be more stable.
 
