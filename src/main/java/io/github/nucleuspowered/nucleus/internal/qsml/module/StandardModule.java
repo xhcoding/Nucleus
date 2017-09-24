@@ -7,8 +7,10 @@ package io.github.nucleuspowered.nucleus.internal.qsml.module;
 import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.annotationprocessor.Store;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
+import io.github.nucleuspowered.nucleus.internal.Constants;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
@@ -36,6 +38,8 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -46,6 +50,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+@Store(isRoot = true)
 public abstract class StandardModule implements Module {
 
     private final String moduleId;
@@ -54,6 +59,7 @@ public abstract class StandardModule implements Module {
     protected final Nucleus plugin;
     protected final InternalServiceManager serviceManager;
     private final CommandsConfig commandsConfig;
+    @Nullable private Map<String, List<String>> msls;
 
     public StandardModule() {
         ModuleData md = this.getClass().getAnnotation(ModuleData.class);
@@ -62,6 +68,10 @@ public abstract class StandardModule implements Module {
         this.plugin = NucleusPlugin.getNucleus();
         this.serviceManager = plugin.getInternalServiceManager();
         this.commandsConfig = plugin.getCommandsConfig();
+    }
+
+    public void init(Map<String, List<String>> m) {
+        this.msls = m;
     }
 
     /**
@@ -97,18 +107,35 @@ public abstract class StandardModule implements Module {
     @SuppressWarnings("unchecked")
     private void loadCommands() {
 
-        Set<Class<? extends AbstractCommand<?>>> cmds = new HashSet<>(
-            performFilter(getStreamForModule(AbstractCommand.class).map(x -> (Class<? extends AbstractCommand<?>>)x))
-                .collect(Collectors.toSet()));
+        Set<Class<? extends AbstractCommand<?>>> cmds;
+        if (msls != null) {
+            cmds = new HashSet<>();
+            List<String> l = this.msls.get(Constants.COMMAND);
+            if (l == null) {
+                return;
+            }
 
-        // Find all commands that are also scannable.
-        performFilter(plugin.getModuleContainer().getLoadedClasses().stream()
-            .filter(x -> x.getPackage().getName().startsWith(packageName))
-            .filter(x -> x.isAnnotationPresent(Scan.class))
-            .flatMap(x -> Arrays.stream(x.getDeclaredClasses()))
-            .filter(AbstractCommand.class::isAssignableFrom)
-            .map(x -> (Class<? extends AbstractCommand<?>>)x))
-            .forEach(cmds::add);
+            for (String s : l) {
+                try {
+                    checkPlatformOpt((Class<? extends AbstractCommand<?>>) Class.forName(s)).ifPresent(cmds::add);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            cmds = new HashSet<>(
+                    performFilter(getStreamForModule(AbstractCommand.class).map(x -> (Class<? extends AbstractCommand<?>>) x))
+                            .collect(Collectors.toSet()));
+
+            // Find all commands that are also scannable.
+            performFilter(plugin.getModuleContainer().getLoadedClasses().stream()
+                    .filter(x -> x.getPackage().getName().startsWith(packageName))
+                    .filter(x -> x.isAnnotationPresent(Scan.class))
+                    .flatMap(x -> Arrays.stream(x.getDeclaredClasses()))
+                    .filter(AbstractCommand.class::isAssignableFrom)
+                    .map(x -> (Class<? extends AbstractCommand<?>>) x))
+                    .forEach(cmds::add);
+        }
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
         Injector injector = plugin.getInjector();
@@ -137,8 +164,24 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadEvents() {
-        Set<Class<? extends ListenerBase>> listenersToLoad = getStreamForModule(ListenerBase.class)
-            .collect(Collectors.toSet());
+        Set<Class<? extends ListenerBase>> listenersToLoad;
+        if (msls != null) {
+            listenersToLoad = new HashSet<>();
+            List<String> l = this.msls.get(Constants.LISTENER);
+            if (l == null) {
+                return;
+            }
+
+            for (String s : l) {
+                try {
+                    checkPlatformOpt((Class<? extends ListenerBase>) Class.forName(s)).ifPresent(listenersToLoad::add);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            listenersToLoad = getStreamForModule(ListenerBase.class).collect(Collectors.toSet());
+        }
 
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
         Injector injector = plugin.getInjector();
@@ -176,8 +219,24 @@ public abstract class StandardModule implements Module {
 
     @SuppressWarnings("unchecked")
     private void loadRunnables() {
-        Set<Class<? extends TaskBase>> tasksToLoad = getStreamForModule(TaskBase.class)
-                .collect(Collectors.toSet());
+        Set<Class<? extends TaskBase>> tasksToLoad;
+        if (msls != null) {
+            tasksToLoad = new HashSet<>();
+            List<String> l = this.msls.get(Constants.RUNNABLE);
+            if (l == null) {
+                return;
+            }
+
+            for (String s : l) {
+                try {
+                    checkPlatformOpt((Class<? extends TaskBase>) Class.forName(s)).ifPresent(tasksToLoad::add);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            tasksToLoad = getStreamForModule(TaskBase.class).collect(Collectors.toSet());
+        }
 
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
         Injector injector = plugin.getInjector();
@@ -237,6 +296,14 @@ public abstract class StandardModule implements Module {
 
             throw e;
         }
+    }
+
+    private <T extends Class<?>> Optional<T> checkPlatformOpt(T clazz) {
+        if (checkPlatform(clazz)) {
+            return Optional.of(clazz);
+        }
+
+        return Optional.empty();
     }
 
     private <T extends Class<?>> boolean checkPlatform(T clazz) {
