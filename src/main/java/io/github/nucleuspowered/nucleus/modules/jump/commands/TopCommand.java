@@ -21,6 +21,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Location;
@@ -32,6 +33,7 @@ import java.util.Map;
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"top", "tosurface", "totop"})
 @EssentialsEquivalent("top")
+@NonnullByDefault
 public class TopCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "subject";

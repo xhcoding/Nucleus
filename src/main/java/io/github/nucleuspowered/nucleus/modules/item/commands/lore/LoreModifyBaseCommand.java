@@ -17,9 +17,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
+@NonnullByDefault
 abstract class LoreModifyBaseCommand extends AbstractCommand<Player> {
 
     final String loreKey = "lore";

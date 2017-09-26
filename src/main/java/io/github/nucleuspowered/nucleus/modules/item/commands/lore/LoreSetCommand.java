@@ -9,7 +9,9 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+@NonnullByDefault
 @Permissions(prefix = "lore")
 @RegisterCommand(value = "set", subcommandOf = LoreCommand.class)
 public class LoreSetCommand extends LoreSetBaseCommand {

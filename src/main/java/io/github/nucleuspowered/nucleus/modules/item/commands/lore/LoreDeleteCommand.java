@@ -18,10 +18,12 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
 @Permissions(prefix = "lore", mainOverride = "set")
+@NonnullByDefault
 @RegisterCommand(value = "delete", subcommandOf = LoreCommand.class)
 public class LoreDeleteCommand extends AbstractCommand<Player> {
 

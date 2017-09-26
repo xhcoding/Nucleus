@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.internal.LocationData;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -21,8 +22,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "jail")
 @RunAsync
 @NoModifiers
@@ -31,13 +30,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class DeleteJailCommand extends AbstractCommand<CommandSource> {
 
-    private final JailHandler handler;
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
     private final String jailKey = "jail";
-
-    @Inject
-    public DeleteJailCommand(JailHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.item.commands;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -17,7 +18,9 @@ import org.spongepowered.api.data.manipulator.mutable.item.DurabilityData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+@NonnullByDefault
 @Permissions(supportsOthers = true)
 @RegisterCommand({"repair", "mend"})
 @EssentialsEquivalent({"repair", "fix"})
@@ -34,16 +37,13 @@ public class RepairCommand extends AbstractCommand.SimpleTargetOtherPlayer {
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.repair.success", pl.getName()));
                     return CommandResult.success();
                 } else {
-                    src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.repair.error"));
-                    return CommandResult.empty();
+                    throw ReturnMessageException.fromKey("command.repair.error");
                 }
             } else {
-                src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.repair.error.notreparable"));
-                return CommandResult.empty();
+                throw ReturnMessageException.fromKey("command.repair.error.notreparable");
             }
         } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.repair.error.handempty"));
-            return CommandResult.empty();
+            throw ReturnMessageException.fromKey("command.repair.error.handempty");
         }
     }
 }

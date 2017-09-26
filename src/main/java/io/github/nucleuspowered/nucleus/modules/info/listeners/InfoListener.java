@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.info.listeners;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -28,31 +27,24 @@ import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 public class InfoListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
-    private final PermissionRegistry pr;
-    private final InfoConfigAdapter ica;
+    private final String motdPerm = Nucleus.getNucleus().getPermissionRegistry()
+            .getPermissionsForNucleusCommand(MotdCommand.class).getPermissionWithSuffix("login");
 
     private String motdPermission = null;
+    private boolean usePagination = true;
     private Text title = Text.EMPTY;
 
     private int delay = 500;
-
-    @Inject
-    public InfoListener(PermissionRegistry pr, InfoConfigAdapter ica) {
-        this.pr = pr;
-        this.ica = ica;
-    }
 
     @Listener
     public void playerJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
         // Send message one second later on the Async thread.
         Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
-                if (player.hasPermission(getMotdPermission())) {
+                if (player.hasPermission(this.motdPermission)) {
                     plugin.getTextFileController(InfoModule.MOTD_KEY).ifPresent(x -> {
-                        if (ica.getNodeOrDefault().isMotdUsePagination()) {
+                        if (this.usePagination) {
                             x.sendToPlayer(player, title);
                         } else {
                             x.getTextFromNucleusTextTemplates(player).forEach(player::sendMessage);
@@ -65,21 +57,14 @@ public class InfoListener extends ListenerBase implements Reloadable, ListenerBa
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> msp = Maps.newHashMap();
-        msp.put(getMotdPermission(), PermissionInformation.getWithTranslation("permission.motd.join", SuggestedLevel.USER));
+        msp.put(this.motdPerm, PermissionInformation.getWithTranslation("permission.motd.join", SuggestedLevel.USER));
         return msp;
     }
 
-    private String getMotdPermission() {
-        if (motdPermission == null) {
-            motdPermission = pr.getPermissionsForNucleusCommand(MotdCommand.class).getPermissionWithSuffix("login");
-        }
-
-        return motdPermission;
-    }
-
     @Override public void onReload() throws Exception {
-        InfoConfig config = ica.getNodeOrDefault();
+        InfoConfig config = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(InfoConfigAdapter.class).getNodeOrDefault();
         this.delay = (int)(config.getMotdDelay() * 1000);
+        this.usePagination = config.isMotdUsePagination();
 
         String title = config.getMotdTitle();
         if (title.isEmpty()) {

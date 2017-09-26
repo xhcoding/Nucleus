@@ -9,11 +9,13 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
+@NonnullByDefault
 @RegisterCommand(value = "itemname", hasExecutor = false)
 public class ItemNameCommand extends AbstractCommand<Player> {
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        return null;
+        return CommandResult.empty();
     }
 }

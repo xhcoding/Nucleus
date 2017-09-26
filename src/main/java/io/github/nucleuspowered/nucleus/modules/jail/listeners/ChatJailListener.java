@@ -16,16 +16,9 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.message.MessageChannelEvent;
 
-import javax.inject.Inject;
-
 public class ChatJailListener extends ListenerBase implements ListenerBase.Conditional {
 
-    private final JailHandler handler;
-
-    @Inject
-    public ChatJailListener(JailHandler handler) {
-        this.handler = handler;
-    }
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
 
     @Listener(order = Order.FIRST)
     public void onChat(MessageChannelEvent.Chat event) {

@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
@@ -42,8 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @NonnullByDefault
 @Permissions(suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @NoModifiers
@@ -51,20 +50,13 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"togglejail", "tjail", "unjail", "jail"})
 public class JailCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final JailConfigAdapter jca;
-    private final JailHandler handler;
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
 
     private final String playerKey = "subject";
     private final String jailKey = "jail";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
     private boolean requireUnjailPermission = false;
-
-    @Inject
-    public JailCommand(JailConfigAdapter jca, JailHandler handler) {
-        this.jca = jca;
-        this.handler = handler;
-    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -170,6 +162,7 @@ public class JailCommand extends AbstractCommand<CommandSource> implements Reloa
 
     @Override
     public void onReload() {
-        this.requireUnjailPermission = this.jca.getNodeOrDefault().isRequireUnjailPermission();
+        this.requireUnjailPermission = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailConfigAdapter.class)
+                .getNodeOrDefault().isRequireUnjailPermission();
     }
 }

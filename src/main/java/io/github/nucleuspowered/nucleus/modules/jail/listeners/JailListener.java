@@ -4,14 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.listeners;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusSendToSpawnEvent;
 import io.github.nucleuspowered.nucleus.api.events.NucleusTeleportEvent;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
-import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
+import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.core.events.NucleusOnLoginEvent;
@@ -43,35 +42,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 public class JailListener extends ListenerBase implements Reloadable {
 
-    private final UserDataManager loader;
-    private final InternalServiceManager ism;
-    private final JailConfigAdapter jailConfigAdapter;
-    private final JailHandler handler;
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
     private final String notify;
     private final String teleport;
     private final String teleportto;
 
     private List<String> allowedCommands;
 
-    @Inject
-    public JailListener(UserDataManager loader, InternalServiceManager ism,
-            JailConfigAdapter jailConfigAdapter, JailHandler handler, NucleusPlugin plugin) {
-        this.loader = loader;
-        this.ism = ism;
-        this.jailConfigAdapter = jailConfigAdapter;
-        this.handler = handler;
-        this.notify = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("notify");
-        this.teleport = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleportjailed");
-        this.teleportto = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class).getPermissionWithSuffix("teleporttojailed");
+    public JailListener() {
+        CommandPermissionHandler cph = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(JailCommand.class);
+        this.notify = cph.getPermissionWithSuffix("notify");
+        this.teleport = cph.getPermissionWithSuffix("teleportjailed");
+        this.teleportto = cph.getPermissionWithSuffix("teleporttojailed");
     }
 
     @Listener
     public void onPlayerLogin(final NucleusOnLoginEvent event, @Getter("getTargetUser") User user, @Getter("getUserService") ModularUserService qs) {
-        JailHandler handler = ism.getService(JailHandler.class).get();
         JailUserDataModule userDataModule = qs.get(JailUserDataModule.class);
 
         // Jailing the subject if we need to.
@@ -99,13 +87,12 @@ public class JailListener extends ListenerBase implements Reloadable {
     @Listener(order = Order.LATE)
     public void onPlayerJoin(final ClientConnectionEvent.Join event) {
         final Player user = event.getTargetEntity();
-        Optional<ModularUserService> oqs = loader.get(user);
+        Optional<ModularUserService> oqs = Nucleus.getNucleus().getUserDataManager().get(user);
         if (!oqs.isPresent()) {
             return;
         }
 
         JailUserDataModule qs = oqs.get().get(JailUserDataModule.class);
-        JailHandler handler = ism.getService(JailHandler.class).get();
 
         // Jailing the subject if we need to.
         Optional<JailData> data = handler.getPlayerJailDataInternal(user);
@@ -207,6 +194,7 @@ public class JailListener extends ListenerBase implements Reloadable {
     }
 
     @Override public void onReload() throws Exception {
-        this.allowedCommands = jailConfigAdapter.getNodeOrDefault().getAllowedCommands();
+        this.allowedCommands = Nucleus.getNucleus().getInternalServiceManager()
+                .getServiceUnchecked(JailConfigAdapter.class).getNodeOrDefault().getAllowedCommands();
     }
 }

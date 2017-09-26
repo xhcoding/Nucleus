@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
@@ -23,8 +24,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 
-import javax.inject.Inject;
-
 @NoModifiers
 @NonnullByDefault
 @RegisterCommand(value = "tp", subcommandOf = JailsCommand.class)
@@ -32,12 +31,7 @@ import javax.inject.Inject;
 public class JailTeleportCommand extends AbstractCommand<Player> {
 
     private final String jailKey = "jail";
-    private final JailHandler handler;
-
-    @Inject
-    public JailTeleportCommand(JailHandler handler) {
-        this.handler = handler;
-    }
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
 
     @Override
     public CommandElement[] getArguments() {

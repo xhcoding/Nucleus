@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.info.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
@@ -25,8 +26,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @NoModifiers
@@ -35,14 +34,8 @@ import javax.inject.Inject;
 @EssentialsEquivalent("motd")
 public class MotdCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final InfoConfigAdapter infoConfigAdapter;
     private Text title = Text.EMPTY;
     private boolean usePagination = true;
-
-    @Inject
-    public MotdCommand(InfoConfigAdapter infoConfigAdapter) {
-        this.infoConfigAdapter = infoConfigAdapter;
-    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
@@ -62,7 +55,7 @@ public class MotdCommand extends AbstractCommand<CommandSource> implements Reloa
     }
 
     @Override public void onReload() {
-        InfoConfig config = infoConfigAdapter.getNodeOrDefault();
+        InfoConfig config = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(InfoConfigAdapter.class).getNodeOrDefault();
         String title = config.getMotdTitle();
         if (title.isEmpty()) {
             this.title = Text.EMPTY;

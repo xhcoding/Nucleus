@@ -4,32 +4,34 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jump.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.World;
 
-import javax.inject.Inject;
-
 @Permissions
 @RegisterCommand({"thru", "through"})
-public class ThruCommand extends AbstractCommand<Player> {
+@NonnullByDefault
+public class ThruCommand extends AbstractCommand<Player> implements Reloadable {
 
-    @Inject private JumpConfigAdapter jca;
+    private int maxThru = 20;
 
     // Original code taken from EssentialCmds. With thanks to 12AwsomeMan34 for
     // the initial contribution.
     @Override
     public CommandResult executeCommand(Player player, CommandContext args) throws Exception {
-        BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(jca.getNode().getMaxThru()).build();
+        BlockRay<World> playerBlockRay = BlockRay.from(player).distanceLimit(this.maxThru).build();
         World world = player.getWorld();
 
         // First, see if we get a wall.
@@ -68,4 +70,10 @@ public class ThruCommand extends AbstractCommand<Player> {
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.thru.nospot"));
         return CommandResult.empty();
     }
+
+    @Override
+    public void onReload() throws Exception {
+        this.maxThru = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JumpConfigAdapter.class).getNodeOrDefault().getMaxThru();
+    }
+
 }

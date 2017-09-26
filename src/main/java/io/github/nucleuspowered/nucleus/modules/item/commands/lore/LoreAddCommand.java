@@ -9,8 +9,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(prefix = "lore", mainOverride = "set")
+@NonnullByDefault
 @RegisterCommand(value = "add", subcommandOf = LoreCommand.class)
 public class LoreAddCommand extends LoreSetBaseCommand {
 

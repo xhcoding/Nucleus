@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -14,11 +15,9 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+import javax.annotation.Nullable;
 
 @NoModifiers
 @NonnullByDefault
@@ -41,17 +40,10 @@ import javax.inject.Inject;
 @EssentialsEquivalent("jails")
 public class JailsCommand extends AbstractCommand<CommandSource> {
 
-    private final JailHandler handler;
-
-    @Inject
-    public JailsCommand(JailHandler handler) {
-        this.handler = handler;
-    }
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
-
         Map<String, NamedLocation> mjs = handler.getJails();
         if (mjs.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jails.nojails"));
@@ -68,7 +60,7 @@ public class JailsCommand extends AbstractCommand<CommandSource> {
         return CommandResult.success();
     }
 
-    private Text createJail(NamedLocation data, String name) {
+    private Text createJail(@Nullable NamedLocation data, String name) {
         if (data == null || !data.getLocation().isPresent()) {
             return Text.builder(name).color(TextColors.RED).onHover(TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat
                     ("command.jails.unavailable"))).build();

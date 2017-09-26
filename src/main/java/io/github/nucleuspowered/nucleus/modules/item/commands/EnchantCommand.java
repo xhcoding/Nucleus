@@ -26,11 +26,13 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.Enchantment;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@NonnullByDefault
 @Permissions
 @RegisterCommand("enchant")
 @EssentialsEquivalent({"enchant", "enchantment"})

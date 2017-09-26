@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -19,8 +20,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "jail")
 @RunAsync
 @NoModifiers
@@ -30,12 +29,7 @@ import javax.inject.Inject;
 public class SetJailCommand extends AbstractCommand<Player> {
 
     private final String jailName = "jail";
-    private final JailHandler handler;
-
-    @Inject
-    public SetJailCommand(JailHandler handler) {
-        this.handler = handler;
-    }
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
 
     @Override
     public CommandElement[] getArguments() {

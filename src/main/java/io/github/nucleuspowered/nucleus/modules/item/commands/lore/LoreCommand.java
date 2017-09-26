@@ -10,8 +10,10 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions
+@NonnullByDefault
 @RegisterCommand(value = "lore", hasExecutor = false)
 public class LoreCommand extends AbstractCommand<Player> {
 

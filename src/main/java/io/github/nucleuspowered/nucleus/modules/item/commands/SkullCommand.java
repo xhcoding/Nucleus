@@ -5,12 +5,14 @@
 package io.github.nucleuspowered.nucleus.modules.item.commands;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.item.config.ItemConfigAdapter;
@@ -38,21 +40,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @NonnullByDefault
 @RegisterCommand({"skull"})
 @Permissions
 @EssentialsEquivalent({"skull", "playerskull", "head"})
-public class SkullCommand extends AbstractCommand<Player> {
+public class SkullCommand extends AbstractCommand<Player> implements Reloadable {
 
     private final String player = "subject";
     private final String amountKey = "amount";
-    private final ItemConfigAdapter itemConfigAdapter;
 
-    @Inject
-    public SkullCommand(ItemConfigAdapter itemConfigAdapter) {
-        this.itemConfigAdapter = itemConfigAdapter;
+    private boolean isUseMinecraftCommand = false;
+
+    @Override public void onReload() throws Exception {
+        this.isUseMinecraftCommand = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ItemConfigAdapter.class)
+                .getNodeOrDefault().getSkullConfig().isUseMinecraftCommand();
     }
 
     @Override
@@ -77,7 +78,7 @@ public class SkullCommand extends AbstractCommand<Player> {
         User user = this.getUserFromArgs(User.class, pl, player, args);
         int amount = args.<Integer>getOne(amountKey).orElse(1);
 
-        if (itemConfigAdapter.getNodeOrDefault().getSkullConfig().isUseMinecraftCommand()) {
+        if (this.isUseMinecraftCommand) {
             CommandResult result = Sponge.getCommandManager().process(Sponge.getServer().getConsole(),
                 String.format("minecraft:give %s skull %d 3 {SkullOwner:%s}", pl.getName(), amount, user.getName()));
             if (result.getSuccessCount().orElse(0) > 0) {

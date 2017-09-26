@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.info.commands;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.InfoArgument;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
@@ -15,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.info.config.InfoConfig;
@@ -40,25 +42,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @NoModifiers
 @NonnullByDefault
 @RegisterCommand({"info", "einfo"})
 @EssentialsEquivalent({"info", "ifo", "news", "about", "inform"})
-public class InfoCommand extends AbstractCommand<CommandSource> {
+public class InfoCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final InfoHandler infoHandler;
-    private final InfoConfigAdapter infoConfigAdapter;
+    private final InfoHandler infoHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(InfoHandler.class);
+    private InfoConfig infoConfig = new InfoConfig();
 
     private final String key = "section";
 
-    @Inject
-    public InfoCommand(InfoHandler infoHandler, InfoConfigAdapter infoConfigAdapter) {
-        this.infoHandler = infoHandler;
-        this.infoConfigAdapter = infoConfigAdapter;
+    @Override public void onReload() throws Exception {
+        this.infoConfig = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(InfoConfigAdapter.class).getNodeOrDefault();
     }
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -78,7 +76,6 @@ public class InfoCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Optional<InfoArgument.Result> oir = args.getOne(key);
-        InfoConfig infoConfig = infoConfigAdapter.getNodeOrDefault();
         if (infoConfig.isUseDefaultFile() && !oir.isPresent() && !args.hasAny("l")) {
             // Do we have a default?
             String def = infoConfig.getDefaultInfoSection();

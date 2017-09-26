@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.NamedLocation;
 import io.github.nucleuspowered.nucleus.argumentparsers.JailArgument;
@@ -28,8 +29,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions
 @RunAsync
 @NoModifiers
@@ -38,12 +37,7 @@ import javax.inject.Inject;
 public class CheckJailedCommand extends AbstractCommand<CommandSource> {
 
     private final String jailNameKey = "jail name";
-    private final JailHandler handler;
-
-    @Inject
-    public CheckJailedCommand(JailHandler handler) {
-        this.handler = handler;
-    }
+    private final JailHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

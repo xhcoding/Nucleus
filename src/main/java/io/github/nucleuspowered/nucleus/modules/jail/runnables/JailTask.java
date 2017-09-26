@@ -4,9 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail.runnables;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
@@ -18,13 +17,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 public class JailTask extends TaskBase {
-    @Inject private NucleusPlugin plugin;
-    @Inject private JailHandler jailHandler;
-    @Inject private UserDataManager userDataManager;
+
+    private JailHandler jailHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class);
 
     @Override
     public void accept(Task task) {
