@@ -16,7 +16,12 @@ public abstract class NucleusConfigAdapter<R> extends TypedAbstractConfigAdapter
     @Override
     @SuppressWarnings("unchecked")
     public void onAttach(String module, AbstractAdaptableConfig<?, ?> adapter) {
-        Nucleus.getNucleus().preInjectorUpdate((Class)this.getClass(), this);
+        registerService((Class)this.getClass(), this);
+    }
+
+    private static <T> void registerService(Class<? super T> clazz, T t) {
+        Nucleus.getNucleus().getInternalServiceManager().registerService(clazz, t);
+        Nucleus.getNucleus().preInjectorUpdate(clazz, t);
     }
 
     public abstract static class Standard<R> extends NucleusConfigAdapter<R> {
