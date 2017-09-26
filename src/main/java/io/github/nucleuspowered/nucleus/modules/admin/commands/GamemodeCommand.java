@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.admin.config.AdminConfigAdapter;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -25,22 +24,21 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions
 @RegisterCommand({"gamemode", "gm"})
+@NonnullByDefault
 @EssentialsEquivalent(value = {"gamemode", "gm", "creative", "survival", "adventure", "gmc", "gma", "gms", "gmt"}, isExact = false,
     notes = "Currently no way to simply give '/creative' or '/gmc', for example, with no arguments, gamemode is required.")
 public class GamemodeCommand extends AbstractCommand<CommandSource> {
 
     private final String userKey = "user";
     private final String gamemodeKey = "gamemode";
-    @Inject private AdminConfigAdapter adminConfigAdapter;
 
     private final Map<String, String> modeMap = new HashMap<String, String>() {{
         put(GameModes.SURVIVAL.getId(), "modes.survival");
@@ -93,9 +91,7 @@ public class GamemodeCommand extends AbstractCommand<CommandSource> {
 
         GameMode gm = ogm.get();
 
-        // We now check for the correct permissions for the game mode we are switching to, if set in config.
-        if (adminConfigAdapter.getNodeOrDefault().isSeparateGamemodePermission()
-                && !permissions.testSuffix(src, modeMap.computeIfAbsent(
+        if (!this.permissions.testSuffix(src, modeMap.computeIfAbsent(
             gm.getId(), key -> {
                 String[] keySplit = key.split(":", 2);
                 String r = keySplit[keySplit.length - 1].toLowerCase();
@@ -116,7 +112,6 @@ public class GamemodeCommand extends AbstractCommand<CommandSource> {
             return CommandResult.success();
         }
 
-        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.gamemode.error", user.getName()));
-        return CommandResult.empty();
+        throw ReturnMessageException.fromKey("command.gamemode.error", user.getName());
     }
 }

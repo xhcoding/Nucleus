@@ -45,7 +45,6 @@ public class KillCommand extends AbstractCommand<CommandSource> {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         Collection<Entity> entities = args.getAll(key);
 
