@@ -33,6 +33,7 @@ public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
 
         // Register service
         Sponge.getServiceManager().setProvider(this.plugin, NucleusPlayerMetadataService.class, new PlayerMetadataService());
+        serviceManager.registerService(PlayerMetadataService.class, new PlayerMetadataService());
     }
 
 }

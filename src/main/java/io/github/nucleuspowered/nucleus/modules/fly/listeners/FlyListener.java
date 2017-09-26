@@ -4,13 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fly.listeners;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.fly.commands.FlyCommand;
+import io.github.nucleuspowered.nucleus.modules.fly.config.FlyConfig;
 import io.github.nucleuspowered.nucleus.modules.fly.config.FlyConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.fly.datamodules.FlyUserDataModule;
 import org.spongepowered.api.Sponge;
@@ -30,14 +31,11 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
+public class FlyListener extends ListenerBase implements Reloadable {
 
-public class FlyListener extends ListenerBase {
-
-    @Inject private UserDataManager ucl;
-    @Inject private CoreConfigAdapter cca;
-    @Inject private FlyConfigAdapter fca;
-    private CommandPermissionHandler flyCommandHandler = null;
+    private FlyConfig flyConfig = new FlyConfig();
+    private CommandPermissionHandler flyCommandHandler =
+            Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(FlyCommand.class);
 
     // Do it first, so other plugins can have a say.
     @Listener(order = Order.FIRST)
@@ -46,12 +44,12 @@ public class FlyListener extends ListenerBase {
             return;
         }
 
-        if (fca.getNodeOrDefault().isPermissionOnLogin() && !getFlyCommandHandler().testBase(pl)) {
+        if (this.flyConfig.isPermissionOnLogin() && !this.flyCommandHandler.testBase(pl)) {
             safeTeleport(pl);
             return;
         }
 
-        Optional<ModularUserService> serviceOptional = ucl.get(pl);
+        Optional<ModularUserService> serviceOptional = Nucleus.getNucleus().getUserDataManager().get(pl);
         if (serviceOptional.isPresent()) {
             // Let's just reset these...
             if (serviceOptional.get().quickGet(FlyUserDataModule.class, FlyUserDataModule::isFlyingSafe)) {
@@ -71,7 +69,7 @@ public class FlyListener extends ListenerBase {
 
     @Listener
     public void onPlayerQuit(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player pl) {
-        if (!fca.getNodeOrDefault().isSaveOnQuit()) {
+        if (!this.flyConfig.isSaveOnQuit()) {
             return;
         }
 
@@ -80,11 +78,11 @@ public class FlyListener extends ListenerBase {
         }
 
         try {
-            ucl.getUser(pl).get().quickSet(FlyUserDataModule.class, x -> x.setFlying(pl.get(Keys.CAN_FLY).orElse(false)));
+            Nucleus.getNucleus().getUserDataManager().getUnchecked(pl)
+                    .quickSet(FlyUserDataModule.class, x -> x.setFlying(pl.get(Keys.CAN_FLY)
+                    .orElse(false)));
         } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
-            }
+            Nucleus.getNucleus().printStackTraceIfDebugMode(e);
         }
     }
 
@@ -106,14 +104,12 @@ public class FlyListener extends ListenerBase {
 
         ModularUserService uc;
         try {
-            uc = ucl.get(pl).get();
+            uc = Nucleus.getNucleus().getUserDataManager().getUnchecked(pl);
             if (!uc.quickGet(FlyUserDataModule.class, FlyUserDataModule::isFlying)) {
                 return;
             }
         } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
-            }
+            Nucleus.getNucleus().printStackTraceIfDebugMode(e);
 
             return;
         }
@@ -152,8 +148,12 @@ public class FlyListener extends ListenerBase {
         return flyCommandHandler;
     }
 
+    @Override public void onReload() throws Exception {
+        this.flyConfig = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(FlyConfigAdapter.class).getNode();
+    }
+
     private void safeTeleport(Player pl) {
-        if (!pl.isOnGround() && fca.getNodeOrDefault().isFindSafeOnLogin()) {
+        if (!pl.isOnGround() && this.flyConfig.isFindSafeOnLogin()) {
             // Try to bring the subject down.
             plugin.getTeleportHandler().teleportPlayer(pl, pl.getTransform(), NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_DESCEND);
         }

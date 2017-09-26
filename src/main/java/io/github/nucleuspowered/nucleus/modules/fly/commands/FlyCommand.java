@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.fly.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -20,19 +20,18 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @Permissions(supportsSelectors = true)
 @RegisterCommand("fly")
 @EssentialsEquivalent("fly")
+@NonnullByDefault
 public class FlyCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
     private static final String toggle = "toggle";
-    @Inject private UserDataManager udm;
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -48,7 +47,7 @@ public class FlyCommand extends AbstractCommand.SimpleTargetOtherPlayer {
     }
 
     @Override protected CommandResult executeWithPlayer(CommandSource src, Player pl, CommandContext args, boolean isSelf) throws Exception {
-        FlyUserDataModule uc = udm.get(pl).get().get(FlyUserDataModule.class);
+        FlyUserDataModule uc = Nucleus.getNucleus().getUserDataManager().getUnchecked(pl).get(FlyUserDataModule.class);
         boolean fly = args.<Boolean>getOne(toggle).orElse(!pl.get(Keys.CAN_FLY).orElse(false));
 
         if (!setFlying(pl, fly)) {

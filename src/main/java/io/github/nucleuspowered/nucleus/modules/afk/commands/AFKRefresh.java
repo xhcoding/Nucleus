@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -11,14 +12,14 @@ import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
-
-import javax.inject.Inject;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions
 @RegisterCommand("afkrefresh")
+@NonnullByDefault
 public class AFKRefresh extends AbstractCommand<CommandSource> {
 
-    @Inject private AFKHandler handler;
+    private final AFKHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(AFKHandler.class);
 
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         handler.invalidateAfkCache();

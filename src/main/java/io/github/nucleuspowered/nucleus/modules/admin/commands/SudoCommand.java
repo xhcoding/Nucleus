@@ -24,6 +24,7 @@ import org.spongepowered.api.event.CauseStackManager;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,7 @@ import java.util.Map;
 @Permissions
 @RegisterCommand("sudo")
 @EssentialsEquivalent("sudo")
+@NonnullByDefault
 public class SudoCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "subject";

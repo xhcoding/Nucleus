@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
@@ -22,8 +23,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(mainOverride = "home", suggestedLevel = SuggestedLevel.USER)
 @NoModifiers
 @RegisterCommand({"deletehome", "delhome"})
@@ -33,12 +32,7 @@ public class DeleteHomeCommand extends AbstractCommand<Player> {
 
     private final String homeKey = "home";
 
-    private final HomeHandler homeHandler;
-
-    @Inject
-    public DeleteHomeCommand(HomeHandler homeHandler) {
-        this.homeHandler = homeHandler;
-    }
+    private final HomeHandler homeHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeHandler.class);
 
     @Override
     public CommandElement[] getArguments() {

@@ -42,8 +42,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "home", mainOverride = "list", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @NoModifiers
@@ -55,12 +53,7 @@ public class ListHomeCommand extends AbstractCommand<CommandSource> {
     private final String exempt = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class)
         .getPermissionWithSuffix(HomeOtherCommand.OTHER_EXEMPT_PERM_SUFFIX);
 
-    private final HomeHandler homeHandler;
-
-    @Inject
-    public ListHomeCommand(HomeHandler homeHandler) {
-        this.homeHandler = homeHandler;
-    }
+    private final HomeHandler homeHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeHandler.class);
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

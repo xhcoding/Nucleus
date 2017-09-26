@@ -4,15 +4,16 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.events.UseHomeEvent;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
@@ -30,23 +31,18 @@ import org.spongepowered.api.world.World;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @NonnullByDefault
 @Permissions(prefix = "home", mainOverride = "other", suggestedLevel = SuggestedLevel.MOD)
 @RegisterCommand("homeother")
-public class HomeOtherCommand extends AbstractCommand<Player> {
+public class HomeOtherCommand extends AbstractCommand<Player> implements Reloadable {
 
     private final String home = "home";
     public static final String OTHER_EXEMPT_PERM_SUFFIX = "exempt.target";
+    private boolean isSafeTeleport = true;
 
-    private final CoreConfigAdapter cca;
-    private final HomeConfigAdapter homeConfigAdapter;
-
-    @Inject
-    public HomeOtherCommand(CoreConfigAdapter cca, HomeConfigAdapter homeConfigAdapter) {
-        this.cca = cca;
-        this.homeConfigAdapter = homeConfigAdapter;
+    @Override public void onReload() throws Exception {
+        this.isSafeTeleport = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeConfigAdapter.class).getNodeOrDefault()
+                .isSafeTeleport();
     }
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -57,7 +53,7 @@ public class HomeOtherCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new HomeOtherArgument(Text.of(home), plugin, cca))};
+        return new CommandElement[] {GenericArguments.onlyOne(new HomeOtherArgument(Text.of(home), plugin))};
     }
 
     @Override
@@ -78,8 +74,7 @@ public class HomeOtherCommand extends AbstractCommand<Player> {
         }
 
         // Warp to it safely.
-        if (plugin.getTeleportHandler().teleportPlayer(src, targetLocation, wl.getRotation(), homeConfigAdapter.getNodeOrDefault()
-                .isSafeTeleport()).isSuccess()) {
+        if (plugin.getTeleportHandler().teleportPlayer(src, targetLocation, wl.getRotation(), this.isSafeTeleport).isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.homeother.success", wl.getUser().getName(), wl.getName()));
             return CommandResult.success();
         } else {

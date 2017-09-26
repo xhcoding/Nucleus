@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.geoip.commands;
 
 import com.maxmind.geoip2.record.Country;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
@@ -26,8 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @Permissions
@@ -35,14 +34,9 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class GeoIpCommand extends AbstractCommand<CommandSource> {
 
-    private final GeoIpDatabaseHandler databaseHandler;
+    private final GeoIpDatabaseHandler databaseHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(GeoIpDatabaseHandler.class);
 
     private final String playerKey = "subject";
-
-    @Inject
-    public GeoIpCommand(GeoIpDatabaseHandler databaseHandler) {
-        this.databaseHandler = databaseHandler;
-    }
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{

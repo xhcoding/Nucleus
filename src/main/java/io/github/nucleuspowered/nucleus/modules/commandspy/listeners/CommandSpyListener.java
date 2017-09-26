@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.modules.commandspy.listeners;
 
 import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
@@ -32,21 +31,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 public class CommandSpyListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
     private CommandPermissionHandler permissionHandler =
             Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(CommandSpyCommand.class);
 
     private CommandSpyConfig config;
-    private final UserDataManager dataManager;
     private boolean listIsEmpty = true;
-
-    @Inject
-    public CommandSpyListener(UserDataManager dataManager) {
-        this.dataManager = dataManager;
-    }
 
     @Listener(order = Order.LAST)
     public void onCommand(SendCommandEvent event, @Root Player player) {
@@ -72,7 +63,8 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
                     .stream()
                     .filter(x -> !x.getUniqueId().equals(player.getUniqueId()))
                     .filter(x -> permissionHandler.testBase(x))
-                    .filter(x -> dataManager.get(x).get().quickGet(CommandSpyUserDataModule.class, CommandSpyUserDataModule::isCommandSpy))
+                    .filter(x -> Nucleus.getNucleus().getUserDataManager().getUnchecked(x)
+                            .quickGet(CommandSpyUserDataModule.class, CommandSpyUserDataModule::isCommandSpy))
                     .collect(Collectors.toList());
 
                 if (!playerList.isEmpty()) {

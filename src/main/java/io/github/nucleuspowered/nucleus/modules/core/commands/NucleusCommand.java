@@ -8,6 +8,7 @@ import static io.github.nucleuspowered.nucleus.PluginInfo.GIT_HASH;
 import static io.github.nucleuspowered.nucleus.PluginInfo.NAME;
 import static io.github.nucleuspowered.nucleus.PluginInfo.VERSION;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoCommandPrefix;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
@@ -25,7 +26,6 @@ import uk.co.drnaylor.quickstart.ModuleContainer;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @RunAsync
 @Permissions
@@ -34,13 +34,6 @@ import javax.inject.Inject;
 @NoCommandPrefix
 @NonnullByDefault
 public class NucleusCommand extends AbstractCommand<CommandSource> {
-
-    private final ModuleContainer container;
-
-    @Inject
-    public NucleusCommand(ModuleContainer container) {
-        this.container = container;
-    }
 
     private final Text version = Text.of(TextColors.GREEN, NAME + " version " + VERSION + " (built from commit " + GIT_HASH + ")");
     @Nullable private Text modules = null;
@@ -51,8 +44,8 @@ public class NucleusCommand extends AbstractCommand<CommandSource> {
             Text.Builder tb = Text.builder("Modules: ").color(TextColors.GREEN);
 
             boolean addComma = false;
-            Set<String> enabled = container.getModules();
-            for (String module : container.getModules(ModuleContainer.ModuleStatusTristate.ALL)) {
+            Set<String> enabled = Nucleus.getNucleus().getModuleContainer().getModules();
+            for (String module : Nucleus.getNucleus().getModuleContainer().getModules(ModuleContainer.ModuleStatusTristate.ALL)) {
                 if (addComma) {
                     tb.append(Text.of(TextColors.GREEN, ", "));
                 }

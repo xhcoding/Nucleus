@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandspy.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
@@ -19,18 +19,16 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @Permissions
 @RegisterCommand("commandspy")
+@NonnullByDefault
 public class CommandSpyCommand extends AbstractCommand<Player> {
 
     private final String truefalse = "true/false";
-
-    @Inject private UserDataManager userDataManager;
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> mspi = super.permissionSuffixesToRegister();
@@ -45,7 +43,7 @@ public class CommandSpyCommand extends AbstractCommand<Player> {
     }
 
     @Override public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        ModularUserService service = userDataManager.get(src).get();
+        ModularUserService service = Nucleus.getNucleus().getUserDataManager().getUnchecked(src);
         CommandSpyUserDataModule c = service.get(CommandSpyUserDataModule.class);
         boolean to = args.<Boolean>getOne(truefalse).orElseGet(() -> !c.isCommandSpy());
         c.setCommandSpy(to);

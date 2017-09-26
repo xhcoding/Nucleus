@@ -4,11 +4,14 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.listeners;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.api.text.NucleusTextTemplate;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
@@ -30,7 +33,6 @@ import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.Tristate;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -40,19 +42,18 @@ import java.time.Instant;
 import java.util.Iterator;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import javax.annotation.Nullable;
 
-public class CoreListener extends ListenerBase {
+public class CoreListener extends ListenerBase implements Reloadable {
 
-    @Inject private UserDataManager loader;
-    @Inject private CoreConfigAdapter cca;
+    @Nullable private NucleusTextTemplate getKickOnStopMessage = null;
 
     @IsCancelled(Tristate.UNDEFINED)
     @Listener(order = Order.FIRST)
     public void onPlayerLoginFirst(final ClientConnectionEvent.Login event, @Getter("getTargetUser") User user) {
         // This works here. Not complaining.
         if (Util.isFirstPlay(user)) {
-            loader.get(user).ifPresent(qsu -> {
+            Nucleus.getNucleus().getUserDataManager().get(user).ifPresent(qsu -> {
                 CoreUserDataModule cu = qsu.get(CoreUserDataModule.class);
                 if (!cu.getLastLogout().isPresent()) {
                     cu.setStartedFirstJoin(true);
@@ -68,7 +69,7 @@ public class CoreListener extends ListenerBase {
     public void onPlayerLoginLast(final ClientConnectionEvent.Login event, @Getter("getProfile") GameProfile profile,
         @Getter("getTargetUser") User user) {
 
-        loader.get(profile.getUniqueId()).ifPresent(qsu -> {
+        Nucleus.getNucleus().getUserDataManager().get(profile.getUniqueId()).ifPresent(qsu -> {
             if (event.getFromTransform().equals(event.getToTransform())) {
                 CoreUserDataModule c = qsu.get(CoreUserDataModule.class);
                 // Check this
@@ -101,7 +102,7 @@ public class CoreListener extends ListenerBase {
     @Listener(order = Order.FIRST)
     public void onPlayerJoinFirst(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
         try {
-            ModularUserService qsu = loader.get(player).get();
+            ModularUserService qsu = Nucleus.getNucleus().getUserDataManager().getUnchecked(player);
             CoreUserDataModule c = qsu.get(CoreUserDataModule.class);
             c.setLastLogin(Instant.now());
 
@@ -127,7 +128,7 @@ public class CoreListener extends ListenerBase {
 
     @Listener
     public void onPlayerJoinLast(final ClientConnectionEvent.Join event, @Getter("getTargetEntity") final Player player) {
-        if (loader.get(player).map(x -> x.get(CoreUserDataModule.class).isFirstPlay()).orElse(true)) {
+        if (Nucleus.getNucleus().getUserDataManager().get(player).map(x -> x.get(CoreUserDataModule.class).isFirstPlay()).orElse(true)) {
             NucleusFirstJoinEvent firstJoinEvent = new OnFirstLoginEvent(
                 event.getCause(), player, event.getOriginalChannel(), event.getChannel().orElse(null), event.getOriginalMessage(),
                     event.isMessageCancelled(), event.getFormatter());
@@ -135,7 +136,7 @@ public class CoreListener extends ListenerBase {
             Sponge.getEventManager().post(firstJoinEvent);
             event.setChannel(firstJoinEvent.getChannel().get());
             event.setMessageCancelled(firstJoinEvent.isMessageCancelled());
-            loader.getUnchecked(player).get(CoreUserDataModule.class).setStartedFirstJoin(false);
+            Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(CoreUserDataModule.class).setStartedFirstJoin(false);
         }
     }
 
@@ -164,27 +165,33 @@ public class CoreListener extends ListenerBase {
 
             plugin.getUserCacheService().updateCacheForPlayer(x);
         } catch (Exception e) {
-            if (cca.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
-            }
+            Nucleus.getNucleus().printStackTraceIfDebugMode(e);
         }
+    }
+
+    @Override public void onReload() throws Exception {
+        CoreConfig c = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(CoreConfigAdapter.class)
+                .getNodeOrDefault();
+        this.getKickOnStopMessage = c.isKickOnStop() ? c.getKickOnStopMessage() : null;
     }
 
     @Listener
     public void onServerAboutToStop(final GameStoppingServerEvent event) {
         plugin.getUserDataManager().getOnlineUsers().forEach(x -> x.getPlayer().ifPresent(y -> onPlayerQuit(x, y)));
 
-        if (cca.getNodeOrDefault().isKickOnStop()) {
+        if (this.getKickOnStopMessage != null) {
             Iterator<Player> players = Sponge.getServer().getOnlinePlayers().iterator();
             while (players.hasNext()) {
-                Text msg = TextSerializers.FORMATTING_CODE.deserialize(cca.getNodeOrDefault().getKickOnStopMessage());
+                Player p = players.next();
+                Text msg = this.getKickOnStopMessage.getForCommandSource(p);
                 if (msg.isEmpty()) {
-                    players.next().kick();
+                    p.kick();
                 } else {
-                    players.next().kick(msg);
+                    p.kick(msg);
                 }
             }
         }
+
     }
 
     @Listener

@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.modules.afk.listeners;
 
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -15,14 +14,7 @@ import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.world.World;
 
-import javax.inject.Inject;
-
 public class AFKRotationOnlyListener extends AbstractAFKListener implements ListenerBase.Conditional {
-
-    @Inject
-    public AFKRotationOnlyListener(AFKHandler handler) {
-        super(handler);
-    }
 
     @Listener(order = Order.LAST)
     public void onPlayerMove(final MoveEntityEvent event, @Root Player player,

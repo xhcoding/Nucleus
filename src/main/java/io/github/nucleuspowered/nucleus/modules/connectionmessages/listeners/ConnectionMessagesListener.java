@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.events.NucleusFirstJoinEvent;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
@@ -29,20 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 public class ConnectionMessagesListener extends ListenerBase implements Reloadable {
 
-    private final ConnectionMessagesConfigAdapter cma;
-    private ConnectionMessagesConfig cmc = null;
-    private final UserDataManager loader;
+    private ConnectionMessagesConfig cmc = new ConnectionMessagesConfig();
     private final String disablePermission = PermissionRegistry.PERMISSIONS_PREFIX + "connectionmessages.disable";
-
-    @Inject
-    public ConnectionMessagesListener(ConnectionMessagesConfigAdapter cma, UserDataManager loader) {
-        this.cma = cma;
-        this.loader = loader;
-    }
 
     @Override
     public Map<String, PermissionInformation> getPermissions() {
@@ -61,7 +50,7 @@ public class ConnectionMessagesListener extends ListenerBase implements Reloadab
         }
 
         try {
-            ModularUserService nucleusUser = loader.get(pl).get();
+            ModularUserService nucleusUser = Nucleus.getNucleus().getUserDataManager().getUnchecked(pl);
             Optional<String> lastKnown = nucleusUser.quickGet(CoreUserDataModule.class, CoreUserDataModule::getLastKnownName);
             if (cmc.isDisplayPriorName() &&
                 !cmc.getPriorNameMessage().isEmpty() &&
@@ -88,7 +77,6 @@ public class ConnectionMessagesListener extends ListenerBase implements Reloadab
 
     @Listener
     public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player pl) {
-        ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
         if (cmc.isShowFirstTimeMessage() && !cmc.getFirstTimeMessage().isEmpty()) {
             event.getChannel().orElse(MessageChannel.TO_ALL).send(plugin, cmc.getFirstTimeMessage().getForCommandSource(pl));
         }
@@ -96,7 +84,6 @@ public class ConnectionMessagesListener extends ListenerBase implements Reloadab
 
     @Listener
     public void onPlayerQuit(ClientConnectionEvent.Disconnect leaveEvent, @Getter("getTargetEntity") Player pl) {
-        ConnectionMessagesConfig cmc = cma.getNodeOrDefault();
         if (cmc.isDisableWithPermission() && pl.hasPermission(this.disablePermission)) {
             leaveEvent.setMessageCancelled(true);
             return;
@@ -113,6 +100,6 @@ public class ConnectionMessagesListener extends ListenerBase implements Reloadab
 
     @Override
     public void onReload() throws Exception {
-        cmc = cma.getNodeOrDefault();
+        cmc = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ConnectionMessagesConfigAdapter.class).getNodeOrDefault();
     }
 }

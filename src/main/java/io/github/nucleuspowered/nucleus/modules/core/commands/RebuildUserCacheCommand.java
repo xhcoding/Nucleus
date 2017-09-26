@@ -13,11 +13,13 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RunAsync
 @NoModifiers
 @RegisterCommand(value = "rebuildusercache", subcommandOf = NucleusCommand.class)
+@NonnullByDefault
 public class RebuildUserCacheCommand extends AbstractCommand<CommandSource> {
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {

@@ -4,32 +4,25 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chatlogger.runnables;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfig;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.handlers.ChatLoggerHandler;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import javax.inject.Inject;
+@NonnullByDefault
+public class ChatLoggerRunnable extends TaskBase implements Reloadable {
 
-public class ChatLoggerRunnable extends TaskBase {
-
-    private final ChatLoggingConfigAdapter clca;
-    private final ChatLoggerHandler handler;
-    private ChatLoggingConfig config = null;
-
-    @Inject
-    public ChatLoggerRunnable(NucleusPlugin plugin, ChatLoggingConfigAdapter clca, ChatLoggerHandler handler) {
-        plugin.registerReloadable(() -> config = null);
-        this.clca = clca;
-        this.handler = handler;
-    }
+    private final ChatLoggerHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ChatLoggerHandler.class);
+    private ChatLoggingConfig config = new ChatLoggingConfig();
 
     @Override
     public boolean isAsync() {
@@ -48,12 +41,12 @@ public class ChatLoggerRunnable extends TaskBase {
             return;
         }
 
-        if (config == null) {
-            config = clca.getNodeOrDefault();
-        }
-
         if (config.isEnableLog()) {
             handler.onTick();
         }
+    }
+
+    @Override public void onReload() throws Exception {
+        this.config = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ChatLoggingConfigAdapter.class).getNodeOrDefault();
     }
 }

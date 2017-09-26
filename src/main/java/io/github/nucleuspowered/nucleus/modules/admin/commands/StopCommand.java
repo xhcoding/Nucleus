@@ -17,6 +17,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ import java.util.Optional;
 @NoModifiers
 @NoTimings
 @RegisterCommand({"stop"})
+@NonnullByDefault
 public class StopCommand extends AbstractCommand<CommandSource> {
 
     private final String messageKey = "message";

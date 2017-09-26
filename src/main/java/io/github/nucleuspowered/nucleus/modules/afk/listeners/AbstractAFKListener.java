@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.listeners;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.afk.AFKModule;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
@@ -15,11 +16,7 @@ import java.util.function.Predicate;
 
 public abstract class AbstractAFKListener extends ListenerBase {
 
-    private final AFKHandler handler;
-
-    AbstractAFKListener(AFKHandler handler) {
-        this.handler = handler;
-    }
+    private final AFKHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(AFKHandler.class);
 
     final void update(Player player) {
         handler.stageUserActivityUpdate(player);

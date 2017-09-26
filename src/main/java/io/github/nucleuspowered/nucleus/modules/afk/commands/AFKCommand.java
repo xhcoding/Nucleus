@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.afk.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -23,8 +24,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @RegisterCommand({"afk", "away"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @NoModifiers
@@ -33,12 +32,7 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class AFKCommand extends AbstractCommand<Player> {
 
-    private final AFKHandler afkHandler;
-
-    @Inject
-    public AFKCommand(AFKHandler afkHandler) {
-        this.afkHandler = afkHandler;
-    }
+    private final AFKHandler afkHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(AFKHandler.class);
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {

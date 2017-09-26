@@ -23,15 +23,12 @@ import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 public class GeoIpListener extends ListenerBase implements ListenerBase.Conditional {
 
     private boolean isPrinted = false;
     private CommandPermissionHandler commandPermissionHandler = null;
 
-    @Inject
-    private GeoIpDatabaseHandler handler;
+    private final GeoIpDatabaseHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(GeoIpDatabaseHandler.class);
 
     @Listener(order = Order.LAST)
     public void onPlayerJoin(ClientConnectionEvent.Join event) {

@@ -4,13 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeOtherArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.command.CommandResult;
@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "home", mainOverride = "deleteother")
 @NoModifiers
 @RegisterCommand({"deletehomeother", "delhomeother"})
@@ -31,18 +29,13 @@ public class DeleteOtherHomeCommand extends AbstractCommand<CommandSource> {
 
     private final String homeKey = "home";
 
-    private final CoreConfigAdapter cca;
-    private final HomeHandler homeHandler;
-
-    @Inject
-    public DeleteOtherHomeCommand(CoreConfigAdapter cca, HomeHandler homeHandler) {
-        this.cca = cca;
-        this.homeHandler = homeHandler;
-    }
+    private final HomeHandler homeHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeHandler.class);
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new HomeOtherArgument(Text.of(homeKey), plugin, cca))};
+        return new CommandElement[] {
+                GenericArguments.onlyOne(new HomeOtherArgument(Text.of(homeKey), plugin))
+        };
     }
 
     @Override

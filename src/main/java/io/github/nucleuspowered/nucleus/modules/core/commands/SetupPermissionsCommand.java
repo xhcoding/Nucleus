@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @NoModifiers
@@ -42,12 +41,7 @@ import javax.inject.Inject;
 @RegisterCommand(value = {"setupperms", "setperms"}, subcommandOf = NucleusCommand.class)
 public class SetupPermissionsCommand extends AbstractCommand<CommandSource> {
 
-    private final PermissionRegistry permissionRegistry;
-
-    @Inject
-    public SetupPermissionsCommand(PermissionRegistry permissionRegistry) {
-        this.permissionRegistry = permissionRegistry;
-    }
+    private final PermissionRegistry permissionRegistry = Nucleus.getNucleus().getPermissionRegistry();
 
     private final String roleKey = "Nucleus Role";
     private final String groupKey = "Permission Group";

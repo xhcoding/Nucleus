@@ -8,7 +8,6 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
-import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.command.SendCommandEvent;
@@ -18,17 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 public class AFKCommandListener extends AbstractAFKListener implements ListenerBase.Conditional {
-    private final List<String> commands;
-
-    @Inject
-    public AFKCommandListener(AFKHandler handler) {
-        super(handler);
-        this.commands = Arrays.stream(AFKCommand.class.getAnnotation(RegisterCommand.class).value()).map(String::toLowerCase)
-                .collect(Collectors.toList());
-    }
+    private final List<String> commands =
+            Arrays.stream(AFKCommand.class.getAnnotation(RegisterCommand.class).value()).map(String::toLowerCase).collect(Collectors.toList());
 
     @Listener
     public void onPlayerCommand(final SendCommandEvent event, @Root Player player) {

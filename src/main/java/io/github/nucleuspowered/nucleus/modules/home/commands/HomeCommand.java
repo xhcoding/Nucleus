@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
 import io.github.nucleuspowered.nucleus.argumentparsers.HomeArgument;
@@ -14,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfig;
 import io.github.nucleuspowered.nucleus.modules.home.config.HomeConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.events.UseHomeEvent;
 import io.github.nucleuspowered.nucleus.modules.home.handlers.HomeHandler;
@@ -31,8 +33,6 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("home")
 @EssentialsEquivalent(value = {"home", "homes"}, notes = "'/homes' will list homes, '/home' will teleport like Essentials did.")
@@ -41,21 +41,10 @@ public class HomeCommand extends AbstractCommand<Player> implements Reloadable {
 
     private final String home = "home";
 
-    private final HomeHandler homeHandler;
-    private final HomeConfigAdapter homeConfigAdapter;
+    private final HomeHandler homeHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeHandler.class);
 
     private boolean isSafeTeleport = true;
     private boolean isPreventOverhang = true;
-
-    @Inject
-    public HomeCommand(HomeHandler homeHandler, HomeConfigAdapter homeConfigAdapter) {
-        this.homeHandler = homeHandler;
-        this.homeConfigAdapter = homeConfigAdapter;
-        try {
-            onReload();
-        } catch (Exception ignored) {
-        }
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -111,7 +100,8 @@ public class HomeCommand extends AbstractCommand<Player> implements Reloadable {
 
     @Override
     public void onReload() throws Exception {
-        this.isSafeTeleport = this.homeConfigAdapter.getNodeOrDefault().isSafeTeleport();
-        this.isPreventOverhang = this.homeConfigAdapter.getNodeOrDefault().isPreventHomeCountOverhang();
+        HomeConfig hc = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeConfigAdapter.class).getNodeOrDefault();
+        this.isSafeTeleport = hc.isSafeTeleport();
+        this.isPreventOverhang = hc.isPreventHomeCountOverhang();
     }
 }

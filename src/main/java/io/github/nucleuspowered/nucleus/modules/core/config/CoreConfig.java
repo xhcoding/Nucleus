@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.core.config;
 
 import io.github.nucleuspowered.neutrino.annotations.DoNotGenerate;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -71,7 +72,7 @@ public class CoreConfig {
         return kickOnStop.isKickOnStop();
     }
 
-    public String getKickOnStopMessage() {
+    public NucleusTextTemplateImpl getKickOnStopMessage() {
         return kickOnStop.getKickOnStopMessage();
     }
 

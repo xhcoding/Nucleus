@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.back.commands;
 
 import com.google.common.collect.Maps;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -28,22 +29,15 @@ import org.spongepowered.api.world.World;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions
 @RegisterCommand({"back", "return"})
 @EssentialsEquivalent({"back", "return"})
 @NonnullByDefault
 public class BackCommand extends AbstractCommand<Player> {
 
-    private final BackHandler handler;
+    private final BackHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(BackHandler.class);
 
     private final String key = "force";
-
-    @Inject
-    public BackCommand(BackHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -55,9 +49,9 @@ public class BackCommand extends AbstractCommand<Player> {
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = Maps.newHashMap();
-        m.put(BackListeners.onDeath, PermissionInformation.getWithTranslation("permission.back.ondeath", SuggestedLevel.USER));
-        m.put(BackListeners.onTeleport, PermissionInformation.getWithTranslation("permission.back.onteleport", SuggestedLevel.USER));
-        m.put(BackListeners.onPortal, PermissionInformation.getWithTranslation("permission.back.onportal", SuggestedLevel.USER));
+        m.put(BackListeners.ON_DEATH, PermissionInformation.getWithTranslation("permission.back.ondeath", SuggestedLevel.USER));
+        m.put(BackListeners.ON_TELEPORT, PermissionInformation.getWithTranslation("permission.back.onteleport", SuggestedLevel.USER));
+        m.put(BackListeners.ON_PORTAL, PermissionInformation.getWithTranslation("permission.back.onportal", SuggestedLevel.USER));
         return m;
     }
 

@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.home.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.exceptions.NucleusException;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Home;
 import io.github.nucleuspowered.nucleus.api.service.NucleusHomeService;
@@ -32,8 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 @Permissions(prefix = "home", mainOverride = "set", suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand(value = {"homeset"}, rootAliasRegister = "sethome")
@@ -43,19 +42,8 @@ public class SetHomeCommand extends AbstractCommand<Player> implements Reloadabl
 
     private final String homeKey = "home";
 
-    private final HomeHandler homeHandler;
-    private final HomeConfigAdapter homeConfigAdapter;
+    private final HomeHandler homeHandler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeHandler.class);
     private boolean preventOverhang = true;
-
-    @Inject
-    public SetHomeCommand(HomeHandler homeHandler, HomeConfigAdapter homeConfigAdapter) {
-        this.homeHandler = homeHandler;
-        this.homeConfigAdapter = homeConfigAdapter;
-        try {
-            onReload();
-        } catch (Exception ignored) {
-        }
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -68,7 +56,9 @@ public class SetHomeCommand extends AbstractCommand<Player> implements Reloadabl
 
     @Override
     public void onReload() throws Exception {
-        this.preventOverhang = this.homeConfigAdapter.getNodeOrDefault().isPreventHomeCountOverhang();
+        this.preventOverhang = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(HomeConfigAdapter.class)
+                .getNodeOrDefault()
+                .isPreventHomeCountOverhang();
     }
 
     @Override

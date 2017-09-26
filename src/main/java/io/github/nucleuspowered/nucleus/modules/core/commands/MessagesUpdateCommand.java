@@ -21,6 +21,7 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
 @NoModifiers
 @Permissions(prefix = "nucleus", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = "update-messages", subcommandOf = NucleusCommand.class)
+@NonnullByDefault
 public class MessagesUpdateCommand extends AbstractCommand<CommandSource> {
 
     @Override public CommandElement[] getArguments() {

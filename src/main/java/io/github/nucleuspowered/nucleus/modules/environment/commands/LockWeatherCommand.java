@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.environment.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -23,8 +24,6 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions
 @RunAsync
 @RegisterCommand({ "lockweather", "killweather" })
@@ -32,15 +31,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class LockWeatherCommand extends AbstractCommand<CommandSource> {
 
-    private final WorldDataManager loader;
+    private final WorldDataManager loader = Nucleus.getNucleus().getWorldDataManager();
 
     private final String worldKey = "world";
     private final String toggleKey = "toggle";
-
-    @Inject
-    public LockWeatherCommand(WorldDataManager loader) {
-        this.loader = loader;
-    }
 
     @Override
     public CommandElement[] getArguments() {

@@ -6,23 +6,12 @@ package io.github.nucleuspowered.nucleus.modules.chatlogger.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.events.NucleusMessageEvent;
-import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.ChatLoggerModule;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.chatlogger.handlers.ChatLoggerHandler;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 
-import javax.inject.Inject;
-
-public class MessageLoggingListener extends ListenerBase implements ListenerBase.Conditional {
-
-    private final ChatLoggerHandler handler;
-
-    @Inject
-    public MessageLoggingListener(ChatLoggerHandler handler) {
-        this.handler = handler;
-    }
+public class MessageLoggingListener extends AbstractLoggerListener {
 
     @Listener(order = Order.LAST)
     public void onCommand(NucleusMessageEvent event) {

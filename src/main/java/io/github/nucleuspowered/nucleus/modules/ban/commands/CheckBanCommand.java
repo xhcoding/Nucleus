@@ -23,6 +23,7 @@ import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.ban.BanService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.ban.Ban;
 
 import java.util.Optional;
@@ -31,6 +32,7 @@ import java.util.Optional;
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoModifiers
 @RunAsync
+@NonnullByDefault
 public class CheckBanCommand extends AbstractCommand<CommandSource> {
 
     private final String key = "uuid";

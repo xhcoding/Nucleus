@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.commands.itemalias;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
@@ -21,8 +22,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @Permissions(prefix = "nucleus.itemalias")
@@ -30,15 +29,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class SetItemAliasCommand extends AbstractCommand<CommandSource> {
 
-    private final ItemDataService itemDataService;
+    private final ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
 
     private final String item = "item";
     private final String alias = "alias";
-
-    @Inject
-    public SetItemAliasCommand(ItemDataService itemDataService) {
-        this.itemDataService = itemDataService;
-    }
 
     @Override
     public CommandElement[] getArguments() {

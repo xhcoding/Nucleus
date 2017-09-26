@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.EventContexts;
 import io.github.nucleuspowered.nucleus.api.chat.NucleusChatChannel;
@@ -39,7 +40,6 @@ import java.util.Collection;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
 @RegisterCommand({"me", "action"})
@@ -47,7 +47,6 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"me", "action", "describe"})
 public class MeCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    @Inject private ChatConfigAdapter chatConfigAdapter;
     private ChatConfig config = null;
     private final MeChannel channel = new MeChannel();
 
@@ -89,7 +88,8 @@ public class MeCommand extends AbstractCommand<CommandSource> implements Reloada
     }
 
     @Override public void onReload() {
-        config = chatConfigAdapter.getNodeOrDefault();
+        this.config = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ChatConfigAdapter.class)
+                .getNodeOrDefault();
     }
 
     public class MeChannel implements NucleusChatChannel.ActionMessage {

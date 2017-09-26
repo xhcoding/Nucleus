@@ -4,6 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.core.config;
 
+import io.github.nucleuspowered.neutrino.annotations.Default;
+import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
@@ -12,14 +14,15 @@ public class KickOnStopConfig {
     @Setting(value = "enabled", comment = "config.core.kickonstop.flag")
     private boolean kickOnStop = false;
 
+    @Default("Server closed")
     @Setting(value = "message", comment = "config.core.kickonstop.message")
-    private String kickOnStopMessage = "Server closed";
+    private NucleusTextTemplateImpl kickOnStopMessage;
 
     public boolean isKickOnStop() {
         return kickOnStop;
     }
 
-    public String getKickOnStopMessage() {
+    public NucleusTextTemplateImpl getKickOnStopMessage() {
         return kickOnStopMessage;
     }
 }

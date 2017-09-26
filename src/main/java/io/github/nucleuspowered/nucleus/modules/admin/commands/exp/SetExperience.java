@@ -20,12 +20,14 @@ import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
 @NoModifiers
 @Permissions(prefix = "exp")
 @RegisterCommand(value = "set", subcommandOf = ExperienceCommand.class)
+@NonnullByDefault
 public class SetExperience extends AbstractCommand<CommandSource> {
 
     @Override

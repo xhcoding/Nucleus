@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.ignore.commands;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -26,8 +26,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @RegisterCommand("ignore")
@@ -36,15 +34,9 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class IgnoreCommand extends AbstractCommand<Player> {
 
-    private final UserDataManager loader;
 
     private final String userKey = "user";
     private final String toggleKey = "toggle";
-
-    @Inject
-    public IgnoreCommand(UserDataManager loader) {
-        this.loader = loader;
-    }
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -69,7 +61,7 @@ public class IgnoreCommand extends AbstractCommand<Player> {
             return CommandResult.empty();
         }
 
-        IgnoreUserDataModule inu = loader.get(src).get().get(IgnoreUserDataModule.class);
+        IgnoreUserDataModule inu = Nucleus.getNucleus().getUserDataManager().getUnchecked(src).get(IgnoreUserDataModule.class);
 
         if (permissions.testSuffix(target, "exempt.chat")) {
             // Make sure they are removed.

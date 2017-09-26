@@ -5,21 +5,13 @@
 package io.github.nucleuspowered.nucleus.modules.afk.listeners;
 
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 
-import javax.inject.Inject;
-
 public class AFKFullMoveListener extends AbstractAFKListener implements ListenerBase.Conditional {
-
-    @Inject
-    public AFKFullMoveListener(AFKHandler handler) {
-        super(handler);
-    }
 
     @Listener(order = Order.LAST)
     public void onPlayerMove(final MoveEntityEvent event, @Root Player player) {

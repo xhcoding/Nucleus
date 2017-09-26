@@ -20,6 +20,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +28,9 @@ import java.util.Map;
 @Permissions(supportsSelectors = true)
 @RegisterCommand({"ignite", "burn"})
 @EssentialsEquivalent("burn")
+@NonnullByDefault
 public class IgniteCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
-    private final String player = "subject";
     private final String ticks = "ticks";
 
     @Override

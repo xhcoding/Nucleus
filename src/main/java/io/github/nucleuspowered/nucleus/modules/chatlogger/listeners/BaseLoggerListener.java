@@ -5,26 +5,15 @@
 package io.github.nucleuspowered.nucleus.modules.chatlogger.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.ChatLoggerModule;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfig;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.chatlogger.handlers.ChatLoggerHandler;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
-
-public class BaseLoggerListener extends ListenerBase implements ListenerBase.Conditional {
-
-    private final ChatLoggerHandler handler;
-
-    @Inject
-    public BaseLoggerListener(ChatLoggerHandler handler) {
-        this.handler = handler;
-    }
+public class BaseLoggerListener extends AbstractLoggerListener {
 
     @Listener
     public void onShutdown(GameStoppedServerEvent event) {

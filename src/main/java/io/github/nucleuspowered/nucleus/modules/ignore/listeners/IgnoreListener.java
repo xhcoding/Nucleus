@@ -28,17 +28,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 public class IgnoreListener extends ListenerBase {
 
-    private final UserDataManager loader;
+    private final UserDataManager loader = Nucleus.getNucleus().getUserDataManager();
     private CommandPermissionHandler ignoreHandler = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(IgnoreCommand.class);
-
-    @Inject
-    public IgnoreListener(UserDataManager loader) {
-        this.loader = loader;
-    }
 
     @Listener(order = Order.LATE)
     public void onChat(MessageChannelEvent.Chat event) {
@@ -62,7 +55,7 @@ public class IgnoreListener extends ListenerBase {
     public void onMessage(NucleusMessageEvent event, @Root Player player) {
         if (event.getRecipient() instanceof User) {
             try {
-                event.setCancelled(loader.get((User) event.getRecipient()).get()
+                event.setCancelled(loader.getUnchecked((User) event.getRecipient())
                         .get(IgnoreUserDataModule.class)
                         .getIgnoreList().contains(player.getUniqueId()));
             } catch (Exception e) {
@@ -76,7 +69,7 @@ public class IgnoreListener extends ListenerBase {
     @Listener(order = Order.FIRST)
     public void onMail(NucleusMailEvent event, @Root Player player) {
         try {
-            event.setCancelled(loader.get(event.getRecipient()).get()
+            event.setCancelled(loader.getUnchecked(event.getRecipient())
                     .get(IgnoreUserDataModule.class)
                     .getIgnoreList().contains(player.getUniqueId()));
         } catch (Exception e) {

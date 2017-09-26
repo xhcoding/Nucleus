@@ -16,10 +16,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("time")
+@NonnullByDefault
 @EssentialsEquivalent(value = {"time"}, isExact = false, notes = "This just displays the time. Use '/time set' to set the time.")
 public class TimeCommand extends AbstractCommand<CommandSource> {
 

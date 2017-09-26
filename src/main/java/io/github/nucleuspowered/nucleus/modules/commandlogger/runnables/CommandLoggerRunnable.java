@@ -4,31 +4,25 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandlogger.runnables;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfig;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.handlers.CommandLoggerHandler;
 import org.spongepowered.api.GameState;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import javax.inject.Inject;
+@NonnullByDefault
+public class CommandLoggerRunnable extends TaskBase implements Reloadable {
 
-@SuppressWarnings("ALL")
-public class CommandLoggerRunnable extends TaskBase {
-
-    @Inject private CommandLoggerConfigAdapter clca;
-    @Inject private CommandLoggerHandler handler;
-    private CommandLoggerConfig config = null;
-
-    @Inject
-    public CommandLoggerRunnable(NucleusPlugin plugin) {
-        plugin.registerReloadable(() -> config = null);
-    }
+    private final CommandLoggerHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(CommandLoggerHandler.class);
+    private CommandLoggerConfig config = new CommandLoggerConfig();
 
     @Override
     public boolean isAsync() {
@@ -46,12 +40,13 @@ public class CommandLoggerRunnable extends TaskBase {
             return;
         }
 
-        if (config == null) {
-            config = clca.getNodeOrDefault();
-        }
-
         if (config.isLogToFile()) {
             handler.onTick();
         }
+    }
+
+    @Override
+    public void onReload() throws Exception {
+        this.config = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(CommandLoggerConfigAdapter.class).getNodeOrDefault();
     }
 }

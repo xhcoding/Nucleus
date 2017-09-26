@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public final class InternalServiceManager {
@@ -35,5 +36,14 @@ public final class InternalServiceManager {
         }
 
         return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <I> I getServiceUnchecked(Class<I> key) {
+        if (serviceMap.containsKey(key)) {
+            return (I)serviceMap.get(key);
+        }
+
+        throw new NoSuchElementException(key.getName());
     }
 }

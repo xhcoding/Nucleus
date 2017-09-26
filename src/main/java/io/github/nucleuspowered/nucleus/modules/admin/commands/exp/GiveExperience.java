@@ -19,10 +19,12 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @NoModifiers
 @Permissions(prefix = "exp")
 @RegisterCommand(value = "give", subcommandOf = ExperienceCommand.class)
+@NonnullByDefault
 public class GiveExperience extends AbstractCommand<CommandSource> {
 
     @Override

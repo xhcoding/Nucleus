@@ -4,17 +4,18 @@
  */
 package io.github.nucleuspowered.nucleus.modules.environment.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.WeatherArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularWorldService;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.environment.config.EnvironmentConfigAdapter;
@@ -26,6 +27,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.weather.Weather;
@@ -34,18 +36,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions
 @RegisterCommand("weather")
+@NonnullByDefault
 @EssentialsEquivalent({"thunder", "sun", "weather", "sky", "storm", "rain"})
-public class WeatherCommand extends AbstractCommand<CommandSource> {
+public class WeatherCommand extends AbstractCommand<CommandSource> implements Reloadable {
+
     private final String world = "world";
     private final String weather = "weather";
     private final String duration = "duration";
 
-    @Inject private WorldDataManager loader;
-    @Inject private EnvironmentConfigAdapter eca;
+    private long max = Long.MAX_VALUE;
+
+    @Override public void onReload() throws Exception {
+        this.max = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(EnvironmentConfigAdapter.class).getNodeOrDefault()
+                .getMaximumWeatherTimespan();
+    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -72,7 +78,7 @@ public class WeatherCommand extends AbstractCommand<CommandSource> {
             .orElseThrow(() -> ReturnMessageException.fromKey("args.worldproperties.notloaded", wp.getWorldName()));
 
         // Get whether we locked the weather.
-        ModularWorldService ew = loader.getWorld(w).get();
+        ModularWorldService ew = Nucleus.getNucleus().getWorldDataManager().getWorld(w).get();
         if (ew.quickGet(EnvironmentWorldDataModule.class, EnvironmentWorldDataModule::isLockWeather)) {
             // Tell the user to unlock first.
             throw ReturnMessageException.fromKey("command.weather.locked", w.getName());
@@ -85,7 +91,6 @@ public class WeatherCommand extends AbstractCommand<CommandSource> {
         Optional<Long> oi = args.getOne(duration);
 
         // Even weather masters have their limits. Sometimes.
-        long max = eca.getNodeOrDefault().getMaximumWeatherTimespan();
         if (max > 0 && oi.orElse(Long.MAX_VALUE) > max && !permissions.testSuffix(src, "exempt.length")) {
             throw ReturnMessageException.fromKey("command.weather.toolong", Util.getTimeStringFromSeconds(max));
         }
@@ -103,4 +108,6 @@ public class WeatherCommand extends AbstractCommand<CommandSource> {
         // The weather control device has been activated!
         return CommandResult.success();
     }
+
+
 }

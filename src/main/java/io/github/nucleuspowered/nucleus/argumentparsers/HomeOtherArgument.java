@@ -7,7 +7,6 @@ package io.github.nucleuspowered.nucleus.argumentparsers;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.home.commands.HomeOtherCommand;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -29,7 +28,7 @@ public class HomeOtherArgument extends HomeArgument {
     private final NicknameArgument nickArg;
     private final CommandPermissionHandler reg;
 
-    public HomeOtherArgument(@Nullable Text key, Nucleus plugin, CoreConfigAdapter cca) {
+    public HomeOtherArgument(@Nullable Text key, Nucleus plugin) {
         super(key, plugin);
         nickArg = new NicknameArgument<>(key, NicknameArgument.UnderlyingType.USER);
         this.reg = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(HomeOtherCommand.class);

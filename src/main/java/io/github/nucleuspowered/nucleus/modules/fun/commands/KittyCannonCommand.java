@@ -30,6 +30,7 @@ import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.explosion.Explosion;
 
@@ -42,15 +43,14 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import javax.inject.Inject;
-
 @Permissions(supportsOthers = true)
 @RegisterCommand({"kittycannon", "kc"})
+@NonnullByDefault
 public class KittyCannonCommand extends AbstractCommand<CommandSource> {
 
     private final Random random = new Random();
     private final String playerKey = "subject";
-    private final List<OcelotType> ocelotTypes;
+    private final List<OcelotType> ocelotTypes = Lists.newArrayList(Sponge.getRegistry().getAllOf(OcelotType.class));
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{
@@ -59,11 +59,6 @@ public class KittyCannonCommand extends AbstractCommand<CommandSource> {
             put("break", new PermissionInformation(provider.getMessageWithFormat("permission.kittycannon.break"), SuggestedLevel.ADMIN));
             put("fire", new PermissionInformation(provider.getMessageWithFormat("permission.kittycannon.fire"), SuggestedLevel.ADMIN));
         }};
-    }
-
-    @Inject
-    public KittyCannonCommand() {
-        this.ocelotTypes = Lists.newArrayList(Sponge.getRegistry().getAllOf(OcelotType.class));
     }
 
     @Override public CommandElement[] getArguments() {

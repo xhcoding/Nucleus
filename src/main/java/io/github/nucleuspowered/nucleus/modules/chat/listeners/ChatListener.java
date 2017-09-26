@@ -40,8 +40,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 /**
  * A listener that modifies all chat messages. Uses the
  * {@link NucleusMessageTokenService}, which
@@ -97,15 +95,8 @@ public class ChatListener extends ListenerBase implements Reloadable, ListenerBa
     }
 
     // --- Listener Proper
-    private final ChatConfigAdapter cca;
     private ChatConfig chatConfig = null;
-    private final TemplateUtil templateUtil;
-
-    @Inject
-    public ChatListener(ChatConfigAdapter cca, TemplateUtil templateUtil) {
-        this.cca = cca;
-        this.templateUtil = templateUtil;
-    }
+    private final TemplateUtil templateUtil = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(TemplateUtil.class);
 
     @Override
     public Map<String, PermissionInformation> getPermissions() {
@@ -189,7 +180,7 @@ public class ChatListener extends ListenerBase implements Reloadable, ListenerBa
     }
 
     @Override public void onReload() throws Exception {
-        chatConfig = cca.getNodeOrDefault();
+        this.chatConfig = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ChatConfigAdapter.class).getNodeOrDefault();
     }
 
 }

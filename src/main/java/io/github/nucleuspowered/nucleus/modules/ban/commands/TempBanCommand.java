@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.ban.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ResortUserArgumentParser;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
@@ -13,8 +14,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.ban.config.BanConfig;
 import io.github.nucleuspowered.nucleus.modules.ban.config.BanConfigAdapter;
 import io.github.nucleuspowered.nucleus.util.PermissionMessageChannel;
 import org.spongepowered.api.Sponge;
@@ -37,24 +40,20 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @RegisterCommand("tempban")
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoModifiers
 @EssentialsEquivalent("tempban")
 @NonnullByDefault
-public class TempBanCommand extends AbstractCommand<CommandSource> {
-
-    private final BanConfigAdapter bca;
+public class TempBanCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     private final String user = "user";
     private final String reasonKey = "reasonKey";
     private final String duration = "duration";
+    private BanConfig banConfig = new BanConfig();
 
-    @Inject
-    public TempBanCommand(BanConfigAdapter bca) {
-        this.bca = bca;
+    @Override public void onReload() throws Exception {
+        this.banConfig = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(BanConfigAdapter.class).getNodeOrDefault();
     }
 
     @Override
@@ -88,8 +87,10 @@ public class TempBanCommand extends AbstractCommand<CommandSource> {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.offline.noperms"));
         }
 
-        if (time > bca.getNodeOrDefault().getMaximumTempBanLength() &&  bca.getNodeOrDefault().getMaximumTempBanLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.length.toolong", Util.getTimeStringFromSeconds(bca.getNodeOrDefault().getMaximumTempBanLength())));
+        if (time > banConfig.getMaximumTempBanLength() &&  banConfig.getMaximumTempBanLength() != -1 &&
+                !permissions.testSuffix(src, "exempt.length")) {
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tempban.length.toolong",
+                    Util.getTimeStringFromSeconds(this.banConfig.getMaximumTempBanLength())));
             return CommandResult.success();
         }
 

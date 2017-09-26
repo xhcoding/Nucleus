@@ -21,11 +21,13 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @RegisterCommand({"exp", "experience", "xp"})
 @Permissions
 @NoModifiers
 @EssentialsEquivalent({"exp", "xp"})
+@NonnullByDefault
 public class ExperienceCommand extends AbstractCommand<CommandSource> {
 
     public static final String playerKey = "subject";
