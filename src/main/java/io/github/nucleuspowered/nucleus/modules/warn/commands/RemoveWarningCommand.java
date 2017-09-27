@@ -25,8 +25,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RunAsync
 @NoModifiers
@@ -34,13 +32,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class RemoveWarningCommand extends AbstractCommand<CommandSource> {
 
-    private final WarnHandler handler;
+    private final WarnHandler handler = getServiceUnchecked(WarnHandler.class);
     private final String warningKey = "warning";
-
-    @Inject
-    public RemoveWarningCommand(WarnHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

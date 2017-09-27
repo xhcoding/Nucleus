@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
@@ -31,8 +32,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * NOTE: TeleportHere is considered an admin command, as there is a potential
  * for abuse for non-admin players trying to pull players. No cost or warmups
@@ -44,17 +43,16 @@ import javax.inject.Inject;
 @EssentialsEquivalent(value = {"tphere", "s", "tpohere"}, isExact = false,
         notes = "If you have permission, this will override '/tptoggle' automatically.")
 @NonnullByDefault
-public class TeleportHereCommand extends AbstractCommand<Player> {
+public class TeleportHereCommand extends AbstractCommand<Player> implements Reloadable {
 
     private final String playerKey = "subject";
 
-    private final TeleportHandler handler;
-    private final TeleportConfigAdapter tca;
+    private final TeleportHandler handler = getServiceUnchecked(TeleportHandler.class);
 
-    @Inject
-    public TeleportHereCommand(TeleportHandler handler, TeleportConfigAdapter tca) {
-        this.handler = handler;
-        this.tca = tca;
+    private boolean isDefaultQuiet = false;
+
+    @Override public void onReload() throws Exception {
+        this.isDefaultQuiet = getServiceUnchecked(TeleportConfigAdapter.class).getNodeOrDefault().isDefaultQuiet();
     }
 
     @Override
@@ -77,7 +75,7 @@ public class TeleportHereCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        boolean beQuiet = args.<Boolean>getOne("q").orElse(tca.getNodeOrDefault().isDefaultQuiet());
+        boolean beQuiet = args.<Boolean>getOne("q").orElse(this.isDefaultQuiet);
         User target = args.<User>getOne(playerKey).get();
         if (target.getPlayer().isPresent()) {
             handler.getBuilder().setFrom(target.getPlayer().get()).setTo(src).setSilentSource(beQuiet).startTeleport();

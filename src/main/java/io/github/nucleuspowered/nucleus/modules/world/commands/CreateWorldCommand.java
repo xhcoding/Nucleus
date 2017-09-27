@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
 import org.spongepowered.api.CatalogType;
@@ -61,12 +62,12 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @SuppressWarnings("ALL")
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"create"}, subcommandOf = WorldCommand.class)
-public class CreateWorldCommand extends AbstractCommand<CommandSource> {
+@NonnullByDefault
+public class CreateWorldCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     private final DataQuery uuidLeast = DataQuery.of("SpongeData", "UUIDLeast");
     private final DataQuery uuidMost = DataQuery.of("SpongeData", "UUIDMost");
@@ -81,8 +82,7 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
     private final String difficulty = "difficulty";
     private final String modifier = "modifier";
     private final String seed = "seed";
-
-    @Inject private WorldConfigAdapter worldConfigAdapter;
+    @Nullable private Long worldBorderDefault;
 
     @Override
     public CommandElement[] getArguments() {
@@ -186,7 +186,10 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
 
         WorldProperties worldProperties = Sponge.getGame().getServer().createWorldProperties(nameInput, wa);
 
-        worldConfigAdapter.getNodeOrDefault().getWorldBorderDefault().ifPresent(worldProperties::setWorldBorderDiameter);
+        if (this.worldBorderDefault != null && this.worldBorderDefault > 0) {
+            worldProperties.setWorldBorderDiameter(this.worldBorderDefault);
+        }
+
         worldProperties.setDifficulty(wa.getDifficulty());
 
         if (!Sponge.getServer().saveWorldProperties(worldProperties)) {
@@ -323,6 +326,10 @@ public class CreateWorldCommand extends AbstractCommand<CommandSource> {
         });
 
         return sb.toString();
+    }
+
+    @Override public void onReload() throws Exception {
+        this.worldBorderDefault = getServiceUnchecked(WorldConfigAdapter.class).getNodeOrDefault().getWorldBorderDefault().orElse(null);
     }
 
     @NonnullByDefault

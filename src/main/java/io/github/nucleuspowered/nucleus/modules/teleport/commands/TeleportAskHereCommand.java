@@ -33,8 +33,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsSelectors = true)
 @RunAsync
@@ -43,7 +41,7 @@ import javax.inject.Inject;
 @EssentialsEquivalent("tpahere")
 public class TeleportAskHereCommand extends AbstractCommand<Player> {
 
-    @Inject private TeleportHandler tpHandler;
+    private final TeleportHandler tpHandler = getServiceUnchecked(TeleportHandler.class);
 
     static final String playerKey = "subject";
 

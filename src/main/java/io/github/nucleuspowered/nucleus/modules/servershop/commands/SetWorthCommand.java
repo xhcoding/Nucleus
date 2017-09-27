@@ -30,8 +30,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import javax.inject.Inject;
-
 /**
  * Sets or unsets an item's worth for either buying or selling.
  */
@@ -46,14 +44,8 @@ public class SetWorthCommand extends AbstractCommand<CommandSource> {
     private final String item = "item";
     private final String type = "type";
     private final String cost = "cost";
-    private final ItemDataService itemDataService;
-    private final EconHelper econHelper;
-
-    @Inject
-    public SetWorthCommand(ItemDataService itemDataService, EconHelper econHelper) {
-        this.itemDataService = itemDataService;
-        this.econHelper = econHelper;
-    }
+    private final ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
+    private final EconHelper econHelper = Nucleus.getNucleus().getEconHelper();
 
     @Override
     public CommandElement[] getArguments() {

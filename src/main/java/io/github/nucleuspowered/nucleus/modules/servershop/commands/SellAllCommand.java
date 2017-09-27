@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
@@ -37,8 +38,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @NonnullByDefault
@@ -47,16 +46,10 @@ import javax.inject.Inject;
 @RegisterCommand({"itemsellall", "sellall"})
 public class SellAllCommand extends AbstractCommand<Player> {
 
-    private final ItemDataService itemDataService;
-    private final EconHelper econHelper;
+    private final ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
+    private final EconHelper econHelper = Nucleus.getNucleus().getEconHelper();
 
     private final String itemKey = "item";
-
-    @Inject
-    public SellAllCommand(ItemDataService itemDataService, EconHelper econHelper) {
-        this.itemDataService = itemDataService;
-        this.econHelper = econHelper;
-    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

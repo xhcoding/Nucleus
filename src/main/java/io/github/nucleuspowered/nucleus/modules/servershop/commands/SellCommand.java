@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
 import io.github.nucleuspowered.nucleus.internal.EconHelper;
@@ -28,8 +29,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @RequiresEconomy
@@ -39,14 +38,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class SellCommand extends AbstractCommand<Player> {
 
-    private final ItemDataService itemDataService;
-    private final EconHelper econHelper;
-
-    @Inject
-    public SellCommand(ItemDataService itemDataService, EconHelper econHelper) {
-        this.itemDataService = itemDataService;
-        this.econHelper = econHelper;
-    }
+    private final ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
+    private final EconHelper econHelper = Nucleus.getNucleus().getEconHelper();
 
     @Override
     public CommandResult executeCommand(final Player src, CommandContext args) throws Exception {

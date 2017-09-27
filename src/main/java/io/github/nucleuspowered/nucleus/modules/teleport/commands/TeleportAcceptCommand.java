@@ -16,8 +16,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "teleport", suggestedLevel = SuggestedLevel.USER)
 @NoModifiers
 @NonnullByDefault
@@ -25,12 +23,7 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"tpaccept", "tpyes"})
 public class TeleportAcceptCommand extends AbstractCommand<Player> {
 
-    private final TeleportHandler teleportHandler;
-
-    @Inject
-    public TeleportAcceptCommand(TeleportHandler teleportHandler) {
-        this.teleportHandler = teleportHandler;
-    }
+    private final TeleportHandler teleportHandler = getServiceUnchecked(TeleportHandler.class);
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

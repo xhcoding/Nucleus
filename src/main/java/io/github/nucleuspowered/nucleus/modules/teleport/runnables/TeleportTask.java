@@ -11,12 +11,10 @@ import org.spongepowered.api.scheduler.Task;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 public class TeleportTask extends TaskBase {
 
-    @Inject private TeleportHandler handler;
+    private final TeleportHandler handler = getServiceUnchecked(TeleportHandler.class);
 
     @Override
     public void accept(Task task) {

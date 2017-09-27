@@ -35,8 +35,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * Sends a request to a subject to teleport to them, using click handlers.
  */
@@ -48,14 +46,9 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"tpa", "call", "tpask"})
 public class TeleportAskCommand extends AbstractCommand<Player> {
 
-    private final TeleportHandler tpHandler;
+    private final TeleportHandler tpHandler = getServiceUnchecked(TeleportHandler.class);
 
     private static final String playerKey = "subject";
-
-    @Inject
-    public TeleportAskCommand(TeleportHandler tpHandler) {
-        this.tpHandler = tpHandler;
-    }
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {

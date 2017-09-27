@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 /**
  * Allows a user to warp to the specified warp.
@@ -20,6 +21,7 @@ import org.spongepowered.api.command.args.CommandContext;
  */
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = "world", rootAliasRegister = { "nworld", "nucleusworld" }, hasExecutor = false)
+@NonnullByDefault
 public class WorldCommand extends AbstractCommand<CommandSource> {
 
     @Override

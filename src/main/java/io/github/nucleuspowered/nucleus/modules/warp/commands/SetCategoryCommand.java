@@ -58,7 +58,7 @@ public class SetCategoryCommand extends AbstractCommand<CommandSource> {
         return new CommandElement[] {
             GenericArguments.flags().flag("r", "-remove", "-delete").flag("n", "-new").buildWith(
                 GenericArguments.seq(
-                    new WarpArgument(Text.of(warpKey), warpConfigAdapter, false, false),
+                    new WarpArgument(Text.of(warpKey), false, false),
                     GenericArguments.optional(new SetCategoryWarpCategoryArgument (Text.of(categoryKey)))
                 )
             )

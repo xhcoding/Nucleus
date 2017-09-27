@@ -9,11 +9,13 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.CoreUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.GlobalSpawnConfig;
+import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfig;
 import io.github.nucleuspowered.nucleus.modules.spawn.config.SpawnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.spawn.events.SendToSpawnEvent;
 import io.github.nucleuspowered.nucleus.modules.spawn.helpers.SpawnHelper;
@@ -35,29 +37,29 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 @NoModifiers
 @NonnullByDefault
 @Permissions(prefix = "spawn", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = "other", subcommandOf = SpawnCommand.class)
-public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
+public class SpawnOtherCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     private final String otherKey = "subject";
     private final String worldKey = "world";
-    private final SpawnConfigAdapter sca;
-
-    @Inject
-    public SpawnOtherCommand(SpawnConfigAdapter sca) {
-        this.sca = sca;
-    }
+    private GlobalSpawnConfig gsc = new GlobalSpawnConfig();
+    private boolean safeTeleport = true;
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.user(Text.of(otherKey)),
             GenericArguments.optional(GenericArguments.world(Text.of(worldKey)))
         };
+    }
+
+    @Override public void onReload() throws Exception {
+        SpawnConfig sc = getServiceUnchecked(SpawnConfigAdapter.class).getNodeOrDefault();
+        this.gsc = sc.getGlobalSpawn();
+        this.safeTeleport = sc.isSafeTeleport();
     }
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -68,7 +70,6 @@ public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
 
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User target = args.<User>getOne(otherKey).get();
-        GlobalSpawnConfig gsc = sca.getNodeOrDefault().getGlobalSpawn();
         WorldProperties world = this.getWorldProperties(src, worldKey, args)
             .orElseGet(() -> gsc.isOnSpawnCommand() ? gsc.getWorld().get() : Sponge.getServer().getDefaultWorld().get());
 
@@ -89,8 +90,7 @@ public class SpawnOtherCommand extends AbstractCommand<CommandSource> {
 
         // If we don't have a rotation, then use the current rotation
         Player player = target.getPlayer().get();
-        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(player, worldTransform, sca.getNodeOrDefault()
-                .isSafeTeleport());
+        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(player, worldTransform, this.safeTeleport);
         if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.success.source", target.getName(), world.getWorldName()));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnother.success.target", world.getWorldName()));

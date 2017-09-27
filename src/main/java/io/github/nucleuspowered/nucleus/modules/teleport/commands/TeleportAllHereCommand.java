@@ -19,8 +19,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "teleport")
 @NoModifiers
 @NonnullByDefault
@@ -28,12 +26,7 @@ import javax.inject.Inject;
 @EssentialsEquivalent("tpall")
 public class TeleportAllHereCommand extends AbstractCommand<Player> {
 
-    private final TeleportHandler handler;
-
-    @Inject
-    public TeleportAllHereCommand(TeleportHandler handler) {
-        this.handler = handler;
-    }
+    private final TeleportHandler handler = getServiceUnchecked(TeleportHandler.class);
 
     @Override
     public CommandElement[] getArguments() {

@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 /**
  * Sets spawn of world.
@@ -19,6 +20,7 @@ import org.spongepowered.api.entity.living.player.Player;
  */
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setspawn"}, subcommandOf = WorldCommand.class)
+@NonnullByDefault
 public class SetSpawnWorldCommand extends AbstractCommand<Player> {
 
     @Override

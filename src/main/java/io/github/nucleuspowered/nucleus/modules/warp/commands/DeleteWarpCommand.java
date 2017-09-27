@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
-import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.event.DeleteWarpEvent;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
@@ -24,8 +23,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
-
-import javax.inject.Inject;
 
 /**
  * Deletes a warp.
@@ -39,16 +36,11 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class DeleteWarpCommand extends AbstractCommand<CommandSource> {
 
-    private final WarpConfigAdapter adapter;
-
-    @Inject
-    public DeleteWarpCommand(WarpConfigAdapter adapter) {
-        this.adapter = adapter;
-    }
-
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.onlyOne(new WarpArgument(Text.of(WarpCommand.warpNameArg), adapter, false))};
+        return new CommandElement[] {
+                GenericArguments.onlyOne(new WarpArgument(Text.of(WarpCommand.warpNameArg), false))
+        };
     }
 
     @Override
@@ -73,4 +65,5 @@ public class DeleteWarpCommand extends AbstractCommand<CommandSource> {
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.delerror"));
         return CommandResult.empty();
     }
+
 }

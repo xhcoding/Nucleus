@@ -31,7 +31,6 @@ public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
 
         try {
             NoteHandler noteHandler = new NoteHandler();
-            this.plugin.getInjector().injectMembers(noteHandler);
             Sponge.getServiceManager().setProvider(this.plugin, NucleusNoteService.class, noteHandler);
             this.serviceManager.registerService(NoteHandler.class, noteHandler);
         } catch (Exception ex) {

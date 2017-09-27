@@ -19,8 +19,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import javax.inject.Inject;
-
 @NoModifiers
 @NonnullByDefault
 @Permissions(prefix = "world.border", mainOverride = "gen")
@@ -29,12 +27,7 @@ public class CancelChunkGenCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
 
-    private final WorldHelper worldHelper;
-
-    @Inject
-    public CancelChunkGenCommand(WorldHelper worldHelper) {
-        this.worldHelper = worldHelper;
-    }
+    private final WorldHelper worldHelper = getServiceUnchecked(WorldHelper.class);
 
     @Override
     public CommandElement[] getArguments() {

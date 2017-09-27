@@ -9,6 +9,8 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
+import io.github.nucleuspowered.nucleus.internal.traits.InternalServiceManagerTrait;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
@@ -29,22 +31,28 @@ import javax.annotation.Nullable;
  */
 @NonnullByDefault
 @SuppressWarnings("all")
-public class WarpArgument extends CommandElement {
+public class WarpArgument extends CommandElement implements Reloadable, InternalServiceManagerTrait {
 
     private NucleusWarpService service;
-    private final WarpConfigAdapter configAdapter;
     private final boolean permissionCheck;
     private final boolean requiresLocation;
+    private boolean separate = true;
 
-    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck) {
-        this(key, configAdapter, permissionCheck, true);
+    public WarpArgument(@Nullable Text key, boolean permissionCheck) {
+        this(key, permissionCheck, true);
     }
 
-    public WarpArgument(@Nullable Text key, WarpConfigAdapter configAdapter, boolean permissionCheck, boolean requiresLocation) {
+    public WarpArgument(@Nullable Text key, boolean permissionCheck, boolean requiresLocation) {
         super(key);
-        this.configAdapter = configAdapter;
         this.permissionCheck = permissionCheck;
         this.requiresLocation = requiresLocation;
+        if (this.permissionCheck) {
+            Nucleus.getNucleus().registerReloadable(this);
+        }
+    }
+
+    @Override public void onReload() throws Exception {
+        this.separate = getServiceUnchecked(WarpConfigAdapter.class).getNodeOrDefault().isSeparatePermissions();
     }
 
     @Nullable
@@ -80,7 +88,7 @@ public class WarpArgument extends CommandElement {
     }
 
     private boolean checkPermission(CommandSource src, String name) {
-        if (!permissionCheck || !configAdapter.getNodeOrDefault().isSeparatePermissions()) {
+        if (!this.permissionCheck || !this.separate) {
             return true;
         }
 

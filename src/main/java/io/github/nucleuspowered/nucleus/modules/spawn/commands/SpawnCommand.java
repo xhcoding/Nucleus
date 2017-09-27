@@ -9,6 +9,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
@@ -34,21 +35,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("spawn")
 @EssentialsEquivalent("spawn")
 @NonnullByDefault
-public class SpawnCommand extends AbstractCommand<Player> {
+public class SpawnCommand extends AbstractCommand<Player> implements Reloadable {
 
-    private final SpawnConfigAdapter sca;
-
+    private SpawnConfig sc = new SpawnConfig();
     private final String key = "world";
 
-    @Inject
-    public SpawnCommand(SpawnConfigAdapter sca) {
-        this.sca = sca;
+    @Override public void onReload() throws Exception {
+        this.sc = getServiceUnchecked(SpawnConfigAdapter.class).getNodeOrDefault();
     }
 
     @Override
@@ -68,7 +65,6 @@ public class SpawnCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        SpawnConfig sc = sca.getNodeOrDefault();
         GlobalSpawnConfig gsc = sc.getGlobalSpawn();
         WorldProperties wp = args.<WorldProperties>getOne(key)
             .orElseGet(() -> gsc.isOnSpawnCommand() ? gsc.getWorld().orElse(src.getWorld().getProperties()) : src.getWorld().getProperties());
@@ -94,7 +90,7 @@ public class SpawnCommand extends AbstractCommand<Player> {
 
         // If we don't have a rotation, then use the current rotation
         NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(src,
-                SpawnHelper.getSpawn(ow.get().getProperties(), plugin, src), sca.getNodeOrDefault().isSafeTeleport());
+                SpawnHelper.getSpawn(ow.get().getProperties(), plugin, src), sc.isSafeTeleport());
         if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
             return CommandResult.success();

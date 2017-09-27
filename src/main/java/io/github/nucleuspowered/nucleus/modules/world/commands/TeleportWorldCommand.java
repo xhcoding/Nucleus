@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -28,8 +28,6 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"teleport", "tp"}, subcommandOf = WorldCommand.class)
@@ -38,9 +36,6 @@ public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
 
     private final String world = "world";
     private final String playerKey = "subject";
-
-    @Inject
-    private WorldDataManager worldDataManager;
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -78,8 +73,8 @@ public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
         }
 
         // Rotate.
-        worldDataManager.getWorld(worldProperties.getUniqueId()).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
-            .ifPresent(player::setRotation));
+        Nucleus.getNucleus().getWorldDataManager().getWorld(worldProperties.getUniqueId())
+                .ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation).ifPresent(player::setRotation));
         if (src instanceof Player && ((Player) src).getUniqueId().equals(player.getUniqueId())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", worldProperties.getWorldName()));
         } else {

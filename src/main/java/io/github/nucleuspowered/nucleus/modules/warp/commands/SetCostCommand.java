@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -22,30 +23,22 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @NonnullByDefault
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"cost", "setcost"}, subcommandOf = WarpCommand.class)
-public class SetCostCommand extends AbstractCommand<CommandSource> {
+public class SetCostCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final WarpConfigAdapter warpConfigAdapter;
-    private final WarpHandler warpHandler;
+    private final WarpHandler warpHandler = getServiceUnchecked(WarpHandler.class);
     private final String warpKey = "warp";
     private final String costKey = "cost";
-
-    @Inject
-    public SetCostCommand(WarpConfigAdapter warpConfigAdapter, WarpHandler warpHandler) {
-        this.warpConfigAdapter = warpConfigAdapter;
-        this.warpHandler = warpHandler;
-    }
+    private double defaultCost = 0;
 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.onlyOne(new WarpArgument(Text.of(warpKey), warpConfigAdapter, false)),
+            GenericArguments.onlyOne(new WarpArgument(Text.of(warpKey), false)),
             GenericArguments.onlyOne(new PositiveDoubleArgument(Text.of(costKey)))
         };
     }
@@ -60,7 +53,7 @@ public class SetCostCommand extends AbstractCommand<CommandSource> {
         }
 
         if (cost == -1 && warpHandler.setWarpCost(warpData.getName(), -1)) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.reset", warpData.getName(), String.valueOf(warpConfigAdapter.getNodeOrDefault().getDefaultWarpCost())));
+            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.reset", warpData.getName(), String.valueOf(this.defaultCost)));
             return CommandResult.success();
         } else if (warpHandler.setWarpCost(warpData.getName(), cost)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.success", warpData.getName(), String.valueOf(cost)));
@@ -69,5 +62,9 @@ public class SetCostCommand extends AbstractCommand<CommandSource> {
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.warp.costset.failed", warpData.getName()));
         return CommandResult.empty();
+    }
+
+    @Override public void onReload() throws Exception {
+        this.defaultCost = getServiceUnchecked(WarpConfigAdapter.class).getNodeOrDefault().getDefaultWarpCost();
     }
 }

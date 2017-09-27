@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
@@ -23,18 +24,18 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
-
-import javax.inject.Inject;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @RunAsync
 @RegisterCommand("worth")
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @EssentialsEquivalent({"worth", "price"})
+@NonnullByDefault
 public class WorthCommand extends AbstractCommand<CommandSource> {
 
     private final String item = "item";
-    @Inject private ItemDataService itemDataService;
-    @Inject private EconHelper econHelper;
+    private final ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
+    private final EconHelper econHelper = Nucleus.getNucleus().getEconHelper();
 
     @Override
     public CommandElement[] getArguments() {

@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ContinueMode;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -40,28 +41,24 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "teleport", mainOverride = "teleport", suggestedLevel = SuggestedLevel.MOD, supportsOthers = true)
 @RegisterCommand(value = "teleport", rootAliasRegister = "tp")
 @EssentialsEquivalent(value = {"tp", "tele", "tp2p", "teleport", "tpo"}, isExact = false,
         notes = "If you have permission, this will override '/tptoggle' automatically.")
 @NonnullByDefault
-public class TeleportCommand extends AbstractCommand<CommandSource> {
+public class TeleportCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     private final String playerToKey = "Player to warp to";
     private final String playerKey = "subject";
     private final String quietKey = "quiet";
 
-    private final TeleportHandler handler;
-    private final TeleportConfigAdapter tca;
+    private boolean isDefaultQuiet = false;
 
-    @Inject
-    public TeleportCommand(TeleportHandler handler, TeleportConfigAdapter tca) {
-        this.handler = handler;
-        this.tca = tca;
+    private final TeleportHandler handler = getServiceUnchecked(TeleportHandler.class);
+
+    @Override public void onReload() throws Exception {
+        this.isDefaultQuiet = getServiceUnchecked(TeleportConfigAdapter.class).getNodeOrDefault().isDefaultQuiet();
     }
-
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -129,7 +126,7 @@ public class TeleportCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        boolean beQuiet = args.<Boolean>getOne(quietKey).orElse(tca.getNodeOrDefault().isDefaultQuiet());
+        boolean beQuiet = args.<Boolean>getOne(quietKey).orElse(this.isDefaultQuiet);
         Optional<Player> oTo = args.getOne(playerToKey);
         User to;
         Player from;

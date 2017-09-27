@@ -21,9 +21,11 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ContinueMode;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfig;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.event.UseWarpEvent;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
@@ -43,8 +45,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.inject.Inject;
 
 /**
  * Allows a user to warp to the specified warp.
@@ -66,16 +66,17 @@ import javax.inject.Inject;
 @RegisterCommand(value = "warp")
 @NoCost
 @EssentialsEquivalent(value = {"warp", "warps"}, isExact = false, notes = "Use '/warp' for warping, '/warps' to list warps.")
-public class WarpCommand extends AbstractCommand<CommandSource> {
+public class WarpCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     static final String warpNameArg = Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("args.name.warpname");
     private final String playerKey = "subject";
+    private boolean isSafeTeleport = true;
+    private double defaultCost = 0;
 
-    private final WarpConfigAdapter adapter;
-
-    @Inject
-    public WarpCommand(WarpConfigAdapter adapter) {
-        this.adapter = adapter;
+    @Override public void onReload() throws Exception {
+        WarpConfig wc = getServiceUnchecked(WarpConfigAdapter.class).getNodeOrDefault();
+        this.defaultCost = wc.getDefaultWarpCost();
+        this.isSafeTeleport = wc.isSafeTeleport();
     }
 
     @Override
@@ -100,7 +101,7 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
 
                 GenericArguments.onlyOne(
                     new AdditionalCompletionsArgument(
-                        new WarpArgument(Text.of(warpNameArg), adapter, true), 0, 1,
+                        new WarpArgument(Text.of(warpNameArg), true), 0, 1,
                             (c, s) -> permissions.testOthers(c) ?
                                 Sponge.getServer().getOnlinePlayers().stream().map(User::getName).collect(Collectors.toList()) : Lists.newArrayList()
                 ))
@@ -122,7 +123,7 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
 
         Warp wd = args.<Warp>getOne(warpNameArg).get();
         Optional<Double> i = wd.getCost();
-        double cost = i.orElseGet(() -> adapter.getNodeOrDefault().getDefaultWarpCost());
+        double cost = i.orElse(this.defaultCost);
 
         if (cost <= 0) {
             return ContinueMode.CONTINUE;
@@ -167,7 +168,7 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
         }
 
         Optional<Double> i = wd.getCost();
-        double cost = i.orElseGet(() -> adapter.getNodeOrDefault().getDefaultWarpCost());
+        double cost = i.orElse(this.defaultCost);
 
         boolean charge = false;
         if (!isOther && plugin.getEconHelper().economyServiceExists() && !permissions.testCostExempt(source) && cost > 0) {
@@ -187,7 +188,7 @@ public class WarpCommand extends AbstractCommand<CommandSource> {
         }
 
         // Warp them.
-        boolean isSafe = !args.getOne("f").isPresent() && adapter.getNodeOrDefault().isSafeTeleport();
+        boolean isSafe = !args.getOne("f").isPresent() && this.isSafeTeleport;
         NucleusTeleportHandler.TeleportResult result =
                 plugin.getTeleportHandler().teleportPlayer(player, wd.getLocation().get(), wd.getRotation(), isSafe);
         if (!result.isSuccess()) {

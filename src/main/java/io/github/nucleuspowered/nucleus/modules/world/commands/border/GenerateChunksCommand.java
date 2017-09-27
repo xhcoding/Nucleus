@@ -23,18 +23,18 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 @Permissions(prefix = "world.border")
 @RegisterCommand(value = {"gen", "genchunks", "generatechunks", "chunkgen"}, subcommandOf = BorderCommand.class)
 @SkipOnError
+@NonnullByDefault
 public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
@@ -42,12 +42,7 @@ public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
     public static final String tickFrequency = "tickFrequency";
     public static final String saveTimeKey = "time between saves";
 
-    private final WorldHelper worldHelper;
-
-    @Inject
-    public GenerateChunksCommand(WorldHelper worldHelper) {
-        this.worldHelper = worldHelper;
-    }
+    private final WorldHelper worldHelper = getServiceUnchecked(WorldHelper.class);
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {

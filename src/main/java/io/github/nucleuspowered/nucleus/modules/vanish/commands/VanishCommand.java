@@ -5,7 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.commands;
 
 import com.google.common.collect.Maps;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
@@ -30,8 +30,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @Permissions(supportsOthers = true)
 @NoModifiers
 @NonnullByDefault
@@ -39,14 +37,7 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"vanish", "v"})
 public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
-    private final UserDataManager userDataManager;
-
     private final String b = "toggle";
-
-    @Inject
-    public VanishCommand(UserDataManager userDataManager) {
-        this.userDataManager = userDataManager;
-    }
 
     @Override public CommandElement[] additionalArguments() {
         return new CommandElement[] {
@@ -72,7 +63,7 @@ public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.noperm", playerToVanish.getName()));
         }
 
-        VanishUserDataModule uss = userDataManager.get(playerToVanish).get().get(VanishUserDataModule.class);
+        VanishUserDataModule uss = Nucleus.getNucleus().getUserDataManager().getUnchecked(playerToVanish).get(VanishUserDataModule.class);
         uss.setVanished(args.<Boolean>getOne(b).orElse(!uss.isVanished()));
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.successuser",
@@ -86,7 +77,7 @@ public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
         // If we don't specify whether to vanish, toggle
         boolean toVanish = args.<Boolean>getOne(b).orElse(!playerToVanish.get(Keys.VANISH).orElse(false));
 
-        userDataManager.get(playerToVanish).get().get(VanishUserDataModule.class).setVanished(toVanish);
+        Nucleus.getNucleus().getUserDataManager().getUnchecked(playerToVanish).get(VanishUserDataModule.class).setVanished(toVanish);
         if (!playerToVanish.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET).equals(GameModes.SPECTATOR)) {
             DataTransactionResult dtr = playerToVanish.offer(Keys.VANISH, toVanish);
             playerToVanish.offer(Keys.VANISH_PREVENTS_TARGETING, toVanish);

@@ -6,10 +6,10 @@ package io.github.nucleuspowered.nucleus.modules.warp.handlers;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Preconditions;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Warp;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.WarpCategory;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarpService;
-import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.modules.warp.datamodules.WarpGeneralDataModule;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -25,15 +25,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @NonnullByDefault
 public class WarpHandler implements NucleusWarpService {
 
-    @Inject private ModularGeneralService store;
-
     private WarpGeneralDataModule getModule() {
-        return store.get(WarpGeneralDataModule.class);
+        return Nucleus.getNucleus().getGeneralService().get(WarpGeneralDataModule.class);
     }
 
     @Override

@@ -28,8 +28,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "teleport")
 @NoModifiers
 @NonnullByDefault
@@ -38,12 +36,7 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"tpaall"})
 public class TeleportAskAllHereCommand extends AbstractCommand<Player> {
 
-    private final TeleportHandler tpHandler;
-
-    @Inject
-    public TeleportAskAllHereCommand(TeleportHandler tpHandler) {
-        this.tpHandler = tpHandler;
-    }
+    private final TeleportHandler tpHandler = getServiceUnchecked(TeleportHandler.class);
 
     @Override
     public CommandElement[] getArguments() {

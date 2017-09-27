@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.spawn.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -16,8 +16,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * plugin.firstspawn.remove.base
  */
@@ -28,16 +26,9 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class RemoveFirstSpawnCommand extends AbstractCommand<CommandSource> {
 
-    private final ModularGeneralService data;
-
-    @Inject
-    public RemoveFirstSpawnCommand(ModularGeneralService data) {
-        this.data = data;
-    }
-
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        data.get(SpawnGeneralDataModule.class).removeFirstSpawn();
+        Nucleus.getNucleus().getGeneralService().get(SpawnGeneralDataModule.class).removeFirstSpawn();
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.setfirstspawn.remove"));
         return CommandResult.success();
     }

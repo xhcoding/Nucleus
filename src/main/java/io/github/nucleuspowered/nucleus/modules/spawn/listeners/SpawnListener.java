@@ -7,9 +7,6 @@ package io.github.nucleuspowered.nucleus.modules.spawn.listeners;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.WorldDataManager;
-import io.github.nucleuspowered.nucleus.dataservices.modular.ModularGeneralService;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
@@ -40,26 +37,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 public class SpawnListener extends ListenerBase implements Reloadable {
 
-    private final ModularGeneralService store;
-    private final UserDataManager loader;
-    private final WorldDataManager wcl;
-    private final SpawnConfigAdapter sca;
     private SpawnConfig spawnConfig;
 
     private final String spawnExempt = PermissionRegistry.PERMISSIONS_PREFIX + "spawn.exempt.login";
-
-    @Inject
-    public SpawnListener(ModularGeneralService store, UserDataManager loader,
-            WorldDataManager wcl, SpawnConfigAdapter sca) {
-        this.store = store;
-        this.loader = loader;
-        this.wcl = wcl;
-        this.sca = sca;
-    }
 
     @Override
     public Map<String, PermissionInformation> getPermissions() {
@@ -71,12 +53,12 @@ public class SpawnListener extends ListenerBase implements Reloadable {
     @Listener
     public void onJoin(ClientConnectionEvent.Login loginEvent) {
         UUID pl = loginEvent.getProfile().getUniqueId();
-        boolean first = loader.getUnchecked(pl).get(CoreUserDataModule.class).isStartedFirstJoin();
+        boolean first = Nucleus.getNucleus().getUserDataManager().getUnchecked(pl).get(CoreUserDataModule.class).isStartedFirstJoin();
 
         try {
             if (first) {
                 // first spawn.
-                Optional<Transform<World>> ofs = store.get(SpawnGeneralDataModule.class).getFirstSpawn();
+                Optional<Transform<World>> ofs = Nucleus.getNucleus().getGeneralService().get(SpawnGeneralDataModule.class).getFirstSpawn();
 
                 // Bit of an odd line, but what what is going on here is checking for first spawn, and if it exists, then
                 // setting the location the player safely. If this cannot be done in either case, send them to world spawn.
@@ -118,7 +100,8 @@ public class SpawnListener extends ListenerBase implements Reloadable {
                     spawnConfig.isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
             if (safe.isPresent()) {
                 try {
-                    Optional<Vector3d> ov = wcl.getWorld(world.getUniqueId()).get().quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation);
+                    Optional<Vector3d> ov = Nucleus.getNucleus().getWorldDataManager().getWorld(world.getUniqueId()).get().quickGet(SpawnWorldDataModule.class,
+                            SpawnWorldDataModule::getSpawnRotation);
                     if (ov.isPresent()) {
                         loginEvent.setToTransform(new Transform<>(safe.get().getExtent(),
                                 process(safe.get().getPosition()),
@@ -140,7 +123,8 @@ public class SpawnListener extends ListenerBase implements Reloadable {
             // Are we heading TO a spawn?
             Transform<World> to = event.getToTransform();
             if (to.getLocation().getBlockPosition().equals(to.getExtent().getSpawnLocation().getBlockPosition())) {
-                wcl.getWorld(to.getExtent()).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
+                Nucleus.getNucleus().getWorldDataManager()
+                        .getWorld(to.getExtent()).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
                     .ifPresent(y -> event.setToTransform(to.setRotation(y))));
             }
         }
@@ -168,12 +152,12 @@ public class SpawnListener extends ListenerBase implements Reloadable {
         Transform<World> to = new Transform<>(spawn);
 
         // Compare current transform to spawn - set rotation.
-        wcl.getWorld(world).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
+        Nucleus.getNucleus().getWorldDataManager().getWorld(world).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
             .ifPresent(y -> event.setToTransform(to.setRotation(y))));
     }
 
     @Override public void onReload() throws Exception {
-        spawnConfig = sca.getNodeOrDefault();
+        spawnConfig = getServiceUnchecked(SpawnConfigAdapter.class).getNodeOrDefault();
     }
 
     private static Location<World> process(Location<World> v3d) {

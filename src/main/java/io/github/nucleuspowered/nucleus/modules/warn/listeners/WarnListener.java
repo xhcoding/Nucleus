@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
@@ -28,14 +29,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+public class WarnListener extends ListenerBase implements Reloadable {
 
-public class WarnListener extends ListenerBase {
-
-    @Inject private WarnHandler handler;
-    @Inject private WarnConfigAdapter wca;
-
+    private final WarnHandler handler = getServiceUnchecked(WarnHandler.class);
     private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "warn.showonlogin";
+    private boolean isShowOnLogin = true;
 
     /**
      * At the time the subject joins, check to see if the subject has been warned.
@@ -54,7 +52,7 @@ public class WarnListener extends ListenerBase {
                     if (warning.getEndTimestamp().isPresent() && warning.getEndTimestamp().get().isBefore(Instant.now())) {
                         handler.removeWarning(player, warning);
                     } else {
-                        if (wca.getNodeOrDefault().isShowOnLogin()) {
+                        if (this.isShowOnLogin) {
                             if (warning.getEndTimestamp().isPresent()) {
                                 player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("warn.playernotify.time", warning.getReason(),
                                         Util.getTimeStringFromSeconds(Instant.now().until(warning.getEndTimestamp().get(), ChronoUnit.SECONDS))));
@@ -66,7 +64,7 @@ public class WarnListener extends ListenerBase {
                 }
 
                 // Now, let's check again
-                if (wca.getNodeOrDefault().isShowOnLogin()) {
+                if (this.isShowOnLogin) {
                     List<WarnData> lwd = warnings.stream().filter(x -> !x.isExpired()).collect(Collectors.toList());
                     if (!lwd.isEmpty()) {
                         MutableMessageChannel messageChannel = new PermissionMessageChannel(showOnLogin).asMutable();
@@ -85,5 +83,9 @@ public class WarnListener extends ListenerBase {
         Map<String, PermissionInformation> mp = Maps.newHashMap();
         mp.put(showOnLogin, PermissionInformation.getWithTranslation("permission.warn.showonlogin", SuggestedLevel.MOD));
         return mp;
+    }
+
+    @Override public void onReload() throws Exception {
+        this.isShowOnLogin = getServiceUnchecked(WarnConfigAdapter.class).getNodeOrDefault().isShowOnLogin();
     }
 }

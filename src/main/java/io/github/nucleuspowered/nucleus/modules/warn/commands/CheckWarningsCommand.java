@@ -36,8 +36,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 /**
  * Checks the warnings of a subject.
  *
@@ -50,13 +48,8 @@ import javax.inject.Inject;
 @RegisterCommand({"checkwarnings", "checkwarn", "warnings"})
 public class CheckWarningsCommand extends AbstractCommand<CommandSource> {
 
-    private final WarnHandler handler;
+    private final WarnHandler handler = getServiceUnchecked(WarnHandler.class);
     private final String playerKey = "subject";
-
-    @Inject
-    public CheckWarningsCommand(WarnHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

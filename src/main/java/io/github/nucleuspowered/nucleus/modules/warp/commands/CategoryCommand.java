@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Scan
 @Permissions(prefix = "warp")
 @RegisterCommand(value = {"category"}, subcommandOf = WarpCommand.class, hasExecutor = false)
@@ -53,12 +51,7 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
     @RegisterCommand(value = {"list"}, subcommandOf = CategoryCommand.class)
     public static class ListCategoryCommand extends AbstractCommand<CommandSource> {
 
-        private final WarpHandler handler;
-
-        @Inject
-        public ListCategoryCommand(WarpHandler handler) {
-            this.handler = handler;
-        }
+        private final WarpHandler handler = getServiceUnchecked(WarpHandler.class);
 
         @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
             // Get all the categories.
@@ -86,12 +79,7 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
     @RegisterCommand(value = {"setdisplayname"}, subcommandOf = CategoryCommand.class)
     public static class CategoryDisplayNameCommand extends AbstractCommand<CommandSource> {
 
-        private final WarpHandler handler;
-
-        @Inject
-        public CategoryDisplayNameCommand(WarpHandler handler) {
-            this.handler = handler;
-        }
+        private final WarpHandler handler = getServiceUnchecked(WarpHandler.class);
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {
@@ -116,12 +104,7 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
     @RegisterCommand(value = {"removedisplayname"}, subcommandOf = CategoryCommand.class)
     public static class CategoryRemoveDisplayNameCommand extends AbstractCommand<CommandSource> {
 
-        private final WarpHandler handler;
-
-        @Inject
-        public CategoryRemoveDisplayNameCommand(WarpHandler handler) {
-            this.handler = handler;
-        }
+        private final WarpHandler handler = getServiceUnchecked(WarpHandler.class);
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {
@@ -143,12 +126,7 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
     @RegisterCommand(value = {"setdescription"}, subcommandOf = CategoryCommand.class)
     public static class CategoryDescriptionCommand extends AbstractCommand<CommandSource> {
 
-        private final WarpHandler handler;
-
-        @Inject
-        public CategoryDescriptionCommand(WarpHandler handler) {
-            this.handler = handler;
-        }
+        private final WarpHandler handler = getServiceUnchecked(WarpHandler.class);
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {
@@ -172,12 +150,7 @@ public class CategoryCommand extends AbstractCommand<CommandSource> {
     @RegisterCommand(value = {"removedescription"}, subcommandOf = CategoryCommand.class)
     public static class CategoryRemoveDescriptionCommand extends AbstractCommand<CommandSource> {
 
-        private final WarpHandler handler;
-
-        @Inject
-        public CategoryRemoveDescriptionCommand(WarpHandler handler) {
-            this.handler = handler;
-        }
+        private final WarpHandler handler = getServiceUnchecked(WarpHandler.class);
 
         @Override public CommandElement[] getArguments() {
             return new CommandElement[] {

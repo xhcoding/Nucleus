@@ -18,6 +18,7 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import javax.annotation.Nullable;
@@ -28,18 +29,19 @@ public class PropertiesWorldCommands {
     private static final String worldKey = "world";
     private static final String valueKey = "true|false";
 
+    @NonnullByDefault
     private static abstract class AbstractSetCommand extends AbstractCommand<CommandSource> {
 
         private final ThrownBiConsumer<WorldProperties, Boolean, Exception>  setter;
         private final String name;
-        private final TriConsumer<CommandSource, WorldProperties, Boolean> extraLogic;
+        @Nullable private final TriConsumer<CommandSource, WorldProperties, Boolean> extraLogic;
 
         private AbstractSetCommand(String name, ThrownBiConsumer<WorldProperties, Boolean, Exception> setter) {
             this(name, setter, null);
         }
 
-        private AbstractSetCommand(String name, ThrownBiConsumer<WorldProperties, Boolean, Exception> setter, @Nullable
-            TriConsumer<CommandSource, WorldProperties, Boolean> extraLogic) {
+        private AbstractSetCommand(String name, ThrownBiConsumer<WorldProperties, Boolean, Exception> setter,
+                @Nullable TriConsumer<CommandSource, WorldProperties, Boolean> extraLogic) {
 
             super();
             this.name = name;

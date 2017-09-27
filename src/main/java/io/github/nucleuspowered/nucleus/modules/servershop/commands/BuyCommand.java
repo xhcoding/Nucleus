@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.servershop.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PositiveIntegerArgument;
@@ -17,6 +18,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.servershop.config.ServerShopConfigAdapter;
 import org.spongepowered.api.CatalogType;
@@ -39,8 +41,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @RequiresEconomy
@@ -48,20 +48,13 @@ import javax.inject.Inject;
 @RegisterCommand({"itembuy", "buy"})
 @EssentialsEquivalent("buy")
 @NonnullByDefault
-public class BuyCommand extends AbstractCommand<Player> {
+public class BuyCommand extends AbstractCommand<Player> implements Reloadable {
 
-    private final ServerShopConfigAdapter ssca;
-    private final ItemDataService itemDataService;
-    private final EconHelper econHelper;
+    private final ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
+    private final EconHelper econHelper = Nucleus.getNucleus().getEconHelper();
     private final String itemKey = "item";
     private final String amountKey = "amount";
-
-    @Inject
-    public BuyCommand(ServerShopConfigAdapter ssca, ItemDataService itemDataService, EconHelper econHelper) {
-        this.ssca = ssca;
-        this.itemDataService = itemDataService;
-        this.econHelper = econHelper;
-    }
+    private int max;
 
     @Override
     public CommandElement[] getArguments() {
@@ -84,7 +77,6 @@ public class BuyCommand extends AbstractCommand<Player> {
             return CommandResult.empty();
         }
 
-        int max = ssca.getNodeOrDefault().getMaxPurchasableAtOnce();
         if (amount > max) {
             amount = max;
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.itembuy.maximum", String.valueOf(amount)));
@@ -115,6 +107,10 @@ public class BuyCommand extends AbstractCommand<Player> {
         }
 
         return CommandResult.success();
+    }
+
+    @Override public void onReload() throws Exception {
+        this.max = getServiceUnchecked(ServerShopConfigAdapter.class).getNodeOrDefault().getMaxPurchasableAtOnce();
     }
 
     private class BuyCallback implements Consumer<CommandSource> {

@@ -11,8 +11,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfig;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warn.data.WarnData;
 import io.github.nucleuspowered.nucleus.modules.warn.handlers.WarnHandler;
@@ -36,25 +38,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoModifiers
 @NonnullByDefault
 @RegisterCommand({"warn", "warning", "addwarning"})
-public class WarnCommand extends AbstractCommand<CommandSource> {
+public class WarnCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     private final String playerKey = "subject";
     private final String durationKey = "duration";
     private final String reasonKey = "reason";
 
-    private final WarnHandler warnHandler;
-    private final WarnConfigAdapter wca;
+    private final WarnHandler handler = getServiceUnchecked(WarnHandler.class);
 
-    @Inject
-    public WarnCommand(WarnHandler warnHandler, WarnConfigAdapter wca) {
-        this.warnHandler = warnHandler;
-        this.wca = wca;
+    private WarnConfig warnConfig = new WarnConfig();
+
+    @Override public void onReload() throws Exception {
+        this.warnConfig = getServiceUnchecked(WarnConfigAdapter.class).getNodeOrDefault();
     }
 
     @Override
@@ -84,8 +83,8 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
         }
 
         //Set default duration if no duration given
-        if (wca.getNodeOrDefault().getDefaultLength() != -1 && !optDuration.isPresent()) {
-            optDuration = Optional.of(wca.getNodeOrDefault().getDefaultLength());
+        if (warnConfig.getDefaultLength() != -1 && !optDuration.isPresent()) {
+            optDuration = Optional.of(warnConfig.getDefaultLength());
         }
 
         UUID warner = Util.getUUID(src);
@@ -93,21 +92,21 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
                 .orElseGet(() -> new WarnData(Instant.now(), warner, reason));
 
         //Check if too long (No duration provided, it is infinite)
-        if (!optDuration.isPresent() && wca.getNodeOrDefault().getMaximumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            throw ReturnMessageException.fromKey("command.warn.length.toolong", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMaximumWarnLength()));
+        if (!optDuration.isPresent() && warnConfig.getMaximumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
+            throw ReturnMessageException.fromKey("command.warn.length.toolong", Util.getTimeStringFromSeconds(warnConfig.getMaximumWarnLength()));
         }
 
         //Check if too long
-        if (optDuration.orElse(Long.MAX_VALUE) > wca.getNodeOrDefault().getMaximumWarnLength() && wca.getNodeOrDefault().getMaximumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            throw ReturnMessageException.fromKey("command.warn.length.toolong", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMaximumWarnLength()));
+        if (optDuration.orElse(Long.MAX_VALUE) > warnConfig.getMaximumWarnLength() && warnConfig.getMaximumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
+            throw ReturnMessageException.fromKey("command.warn.length.toolong", Util.getTimeStringFromSeconds(warnConfig.getMaximumWarnLength()));
         }
 
         //Check if too short
-        if (optDuration.orElse(Long.MAX_VALUE) < wca.getNodeOrDefault().getMinimumWarnLength() && wca.getNodeOrDefault().getMinimumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
-            throw ReturnMessageException.fromKey("command.warn.length.tooshort", Util.getTimeStringFromSeconds(wca.getNodeOrDefault().getMinimumWarnLength()));
+        if (optDuration.orElse(Long.MAX_VALUE) < warnConfig.getMinimumWarnLength() && warnConfig.getMinimumWarnLength() != -1 && !permissions.testSuffix(src, "exempt.length")) {
+            throw ReturnMessageException.fromKey("command.warn.length.tooshort", Util.getTimeStringFromSeconds(warnConfig.getMinimumWarnLength()));
         }
 
-        if (warnHandler.addWarning(user, warnData)) {
+        if (handler.addWarning(user, warnData)) {
             MutableMessageChannel messageChannel = new PermissionMessageChannel(permissions.getPermissionWithSuffix("notify")).asMutable();
             messageChannel.addMember(src);
 
@@ -127,18 +126,17 @@ public class WarnCommand extends AbstractCommand<CommandSource> {
             }
 
             //Check if the subject has action command should be executed
-            if (wca.getNodeOrDefault().getWarningsBeforeAction() != -1) {
-                if (warnHandler.getWarningsInternal(user, true, false).size() < wca.getNodeOrDefault().getWarningsBeforeAction()) {
+            if (warnConfig.getWarningsBeforeAction() != -1) {
+                if (handler.getWarningsInternal(user, true, false).size() < warnConfig.getWarningsBeforeAction()) {
                     return CommandResult.success();
                 }
 
                 //Expire all active warnings
                 // The cause is the plugin, as this isn't directly the warning user.
-                CauseStackHelper.createFrameWithCausesWithConsumer(c ->
-                        warnHandler.clearWarnings(user, false, false, c), src);
+                CauseStackHelper.createFrameWithCausesWithConsumer(c -> handler.clearWarnings(user, false, false, c), src);
 
                 //Get and run the action command
-                String command = wca.getNodeOrDefault().getActionCommand().replaceAll("\\{\\{name}}", user.getName());
+                String command = warnConfig.getActionCommand().replaceAll("\\{\\{name}}", user.getName());
                 Sponge.getCommandManager().process(Sponge.getServer().getConsole(), command);
             }
 

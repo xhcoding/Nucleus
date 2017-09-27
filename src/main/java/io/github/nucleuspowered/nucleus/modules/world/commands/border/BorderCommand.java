@@ -22,12 +22,14 @@ import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.List;
 
 @Permissions(prefix = "world")
 @RegisterCommand(value = {"border"}, subcommandOf = WorldCommand.class)
+@NonnullByDefault
 public class BorderCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";

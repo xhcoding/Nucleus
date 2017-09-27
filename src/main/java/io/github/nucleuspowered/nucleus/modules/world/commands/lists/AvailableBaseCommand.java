@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @NonnullByDefault
 public abstract class AvailableBaseCommand extends AbstractCommand<CommandSource> {
 
-   private final Class<? extends CatalogType> catalogType;
-   private final String titleKey;
+    private final Class<? extends CatalogType> catalogType;
+    private final String titleKey;
 
     AvailableBaseCommand(Class<? extends CatalogType> catalogType, String titleKey) {
         this.catalogType = catalogType;

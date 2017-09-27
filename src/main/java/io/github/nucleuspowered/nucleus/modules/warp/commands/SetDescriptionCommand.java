@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -24,8 +23,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @NonnullByDefault
@@ -35,20 +32,13 @@ public class SetDescriptionCommand extends AbstractCommand<CommandSource> {
 
     private final String warpKey = "warp";
     private final String descriptionKey = "description";
-    private final WarpConfigAdapter warpConfigAdapter;
-    private final WarpHandler handler;
-
-    @Inject
-    public SetDescriptionCommand(WarpConfigAdapter warpConfigAdapter, WarpHandler handler) {
-        this.warpConfigAdapter = warpConfigAdapter;
-        this.handler = handler;
-    }
+    private final WarpHandler handler = getServiceUnchecked(WarpHandler.class);
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.flags().flag("r", "-remove", "-delete").buildWith(
                 GenericArguments.seq(
-                    new WarpArgument(Text.of(warpKey), warpConfigAdapter, false, false),
+                    new WarpArgument(Text.of(warpKey), false, false),
                     GenericArguments.optional(new RemainingStringsArgument(Text.of(descriptionKey)))
                 )
             )

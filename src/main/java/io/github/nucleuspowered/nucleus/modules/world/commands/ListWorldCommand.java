@@ -18,6 +18,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.Collection;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 @Permissions(prefix = "world", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = WorldCommand.class, rootAliasRegister = "worlds")
+@NonnullByDefault
 public class ListWorldCommand extends AbstractCommand<CommandSource> {
 
     // Use a space over EMPTY so pagination doesn't mess up.

@@ -32,7 +32,6 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
         try {
             WarnHandler warnHandler = new WarnHandler();
             this.plugin.registerReloadable(warnHandler);
-            this.plugin.getInjector().injectMembers(warnHandler);
             Sponge.getServiceManager().setProvider(this.plugin, NucleusWarningService.class, warnHandler);
             this.serviceManager.registerService(WarnHandler.class, warnHandler);
         } catch (Exception ex) {

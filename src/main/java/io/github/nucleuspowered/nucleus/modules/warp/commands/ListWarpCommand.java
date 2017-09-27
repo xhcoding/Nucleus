@@ -12,8 +12,10 @@ import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
+import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfig;
 import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.command.CommandResult;
@@ -25,6 +27,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -37,18 +40,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 /**
  * Lists all the warps that a subject can access.
  */
 @Permissions(prefix = "warp", suggestedLevel = SuggestedLevel.USER)
 @RunAsync
+@NonnullByDefault
 @RegisterCommand(value = {"list"}, subcommandOf = WarpCommand.class, rootAliasRegister = "warps")
-public class ListWarpCommand extends AbstractCommand<CommandSource> {
+public class ListWarpCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    @Inject private WarpHandler service;
-    @Inject private WarpConfigAdapter adapter;
+    private final WarpHandler service = getServiceUnchecked(WarpHandler.class);
+    private boolean isDescriptionInList = true;
+    private double defaultCost = 0;
+    private String defaultName = "unknown";
+    private boolean isSeparatePerms = true;
+    private boolean isCategorise = false;
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
@@ -63,12 +70,11 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
             return CommandResult.empty();
         }
 
-        return !args.hasAny("u") && adapter.getNodeOrDefault().isCategoriseWarps() ? categories(src) : noCategories(src);
+        return !args.hasAny("u") && this.isCategorise ? categories(src) : noCategories(src);
     }
 
     private boolean canView(CommandSource src, String warp) {
-        return !adapter.getNodeOrDefault().isSeparatePermissions()
-                || src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "warps." + warp.toLowerCase());
+        return !this.isSeparatePerms || src.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "warps." + warp.toLowerCase());
     }
 
     private CommandResult categories(final CommandSource src) {
@@ -92,7 +98,7 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
 
         // Uncategorised
         if (warps.containsKey(null)) {
-            lt.add(Text.builder("> " + adapter.getNodeOrDefault().getDefaultName()).color(TextColors.GREEN).style(TextStyles.ITALIC)
+            lt.add(Text.builder("> " + this.defaultName).color(TextColors.GREEN).style(TextStyles.ITALIC)
                 .onClick(TextActions.executeCallback(source -> createSub(source, null, warps))).build());
         }
 
@@ -106,8 +112,7 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
 
     private void createSub(final CommandSource src, @Nullable final WarpCategory category, final Map<WarpCategory, List<Warp>> warpDataList) {
         final boolean econExists = plugin.getEconHelper().economyServiceExists();
-        final double defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
-        Text name = category == null ? Text.of(adapter.getNodeOrDefault().getDefaultName()) : category.getDisplayName();
+        Text name = category == null ? Text.of(this.defaultName) : category.getDisplayName();
 
         List<Text> lt = warpDataList.get(category).stream().sorted(Comparator.comparing(Warp::getName))
             .map(s -> createWarp(s, s.getName(), econExists, defaultCost)).collect(Collectors.toList());
@@ -124,7 +129,6 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
         // Get the warp list.
         Set<String> ws = service.getWarpNames();
         final boolean econExists = plugin.getEconHelper().economyServiceExists();
-        final double defaultCost = adapter.getNodeOrDefault().getDefaultWarpCost();
         List<Text> lt = ws.stream().filter(s -> canView(src, s.toLowerCase())).sorted(String::compareTo).map(s -> {
             Optional<Warp> wd = service.getWarp(s);
             return createWarp(wd.orElse(null), s, econExists, defaultCost);
@@ -151,7 +155,7 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
 
         Text.Builder tb;
         Optional<Text> description = data.getDescription();
-        if (adapter.getNodeOrDefault().isDescriptionInList()) {
+        if (this.isDescriptionInList) {
             Text.Builder hoverBuilder = Text.builder()
                     .append(plugin.getMessageProvider().getTextMessageWithFormat("command.warps.warpprompt", name))
                     .append(Text.NEW_LINE)
@@ -196,5 +200,14 @@ public class ListWarpCommand extends AbstractCommand<CommandSource> {
         }
 
         return tb.build();
+    }
+
+    @Override public void onReload() throws Exception {
+        WarpConfig warpConfig = getServiceUnchecked(WarpConfigAdapter.class).getNodeOrDefault();
+        this.defaultName = warpConfig.getDefaultName();
+        this.defaultCost = warpConfig.getDefaultWarpCost();
+        this.isDescriptionInList = warpConfig.isDescriptionInList();
+        this.isCategorise = warpConfig.isCategoriseWarps();
+        this.isSeparatePerms = warpConfig.isSeparatePermissions();
     }
 }

@@ -15,11 +15,13 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import java.util.List;
 
 @Permissions(prefix = "world", mainOverride = "list")
+@NonnullByDefault
 @RegisterCommand(value = "info", subcommandOf = WorldCommand.class)
 public class InfoWorldCommand extends AbstractCommand<CommandSource> {
 
