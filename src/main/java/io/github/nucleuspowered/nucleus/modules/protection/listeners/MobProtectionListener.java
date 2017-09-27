@@ -19,18 +19,10 @@ import org.spongepowered.api.event.filter.type.Exclude;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 public class MobProtectionListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
-    private final ProtectionConfigAdapter protectionConfigAdapter;
     private List<EntityType> whitelistedTypes;
-
-    @Inject
-    public MobProtectionListener(ProtectionConfigAdapter protectionConfigAdapter) {
-        this.protectionConfigAdapter = protectionConfigAdapter;
-    }
 
     @Listener
     @Exclude({ChangeBlockEvent.Grow.class, ChangeBlockEvent.Decay.class})
@@ -45,7 +37,7 @@ public class MobProtectionListener extends ListenerBase implements Reloadable, L
 
     @Override
     public void onReload() throws Exception {
-        whitelistedTypes = protectionConfigAdapter.getNodeOrDefault().getWhitelistedEntities();
+        whitelistedTypes = getServiceUnchecked(ProtectionConfigAdapter.class).getNodeOrDefault().getWhitelistedEntities();
     }
 
     @Override

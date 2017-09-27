@@ -18,18 +18,10 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 
-import javax.inject.Inject;
-
 public class CropTrampleListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
-    private final ProtectionConfigAdapter protectionConfigAdapter;
     private boolean cropentity = false;
     private boolean cropplayer = false;
-
-    @Inject
-    public CropTrampleListener(ProtectionConfigAdapter protectionConfigAdapter) {
-        this.protectionConfigAdapter = protectionConfigAdapter;
-    }
 
     // Not sure this should be correct. Keep an eye.
     @Listener
@@ -48,6 +40,7 @@ public class CropTrampleListener extends ListenerBase implements Reloadable, Lis
 
     @Override
     public void onReload() throws Exception {
+        ProtectionConfigAdapter protectionConfigAdapter = getServiceUnchecked(ProtectionConfigAdapter.class);
         cropentity = protectionConfigAdapter.getNodeOrDefault().isDisableMobCropTrample();
         cropplayer = protectionConfigAdapter.getNodeOrDefault().isDisablePlayerCropTrample();
     }

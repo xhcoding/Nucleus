@@ -43,8 +43,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 @NonnullByDefault
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
@@ -53,20 +51,13 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"mute", "silence"})
 public class MuteCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final MuteConfigAdapter mca;
-    private final MuteHandler handler;
+    private final MuteHandler handler = getServiceUnchecked(MuteHandler.class);
 
     private boolean requireUnmutePermission = false;
     private long maxMute = Long.MAX_VALUE;
 
     private final static String mutedChatPermission = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(MuteCommand.class)
             .getPermissionWithSuffix("seemutedchat");
-
-    @Inject
-    public MuteCommand(MuteConfigAdapter mca, MuteHandler handler) {
-        this.mca = mca;
-        this.handler = handler;
-    }
 
     public static String getMutedChatPermission() {
         return mutedChatPermission;
@@ -130,7 +121,7 @@ public class MuteCommand extends AbstractCommand<CommandSource> implements Reloa
 
         if (this.maxMute > 0 && time.orElse(Long.MAX_VALUE) > this.maxMute && !permissions.testSuffix(src, "exempt.length")) {
             throw ReturnMessageException.fromKey("command.mute.length.toolong",
-                    Util.getTimeStringFromSeconds(mca.getNodeOrDefault().getMaximumMuteLength()));
+                    Util.getTimeStringFromSeconds(this.maxMute));
         }
 
         MuteData data;
@@ -185,7 +176,8 @@ public class MuteCommand extends AbstractCommand<CommandSource> implements Reloa
 
     @Override
     public void onReload() {
-        this.requireUnmutePermission = this.mca.getNodeOrDefault().isRequireUnmutePermission();
-        this.maxMute = this.mca.getNodeOrDefault().getMaximumMuteLength();
+        MuteConfigAdapter mca = getServiceUnchecked(MuteConfigAdapter.class);
+        this.requireUnmutePermission = mca.getNodeOrDefault().isRequireUnmutePermission();
+        this.maxMute = mca.getNodeOrDefault().getMaximumMuteLength();
     }
 }

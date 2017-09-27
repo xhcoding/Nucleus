@@ -43,7 +43,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @NonnullByDefault
 @RunAsync
@@ -52,9 +51,7 @@ import javax.inject.Inject;
 @EssentialsEquivalent({"list", "who", "playerlist", "online", "plist"})
 public class ListPlayerCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final PlayerInfoConfigAdapter configAdapter;
-
-    private ListConfig listConfig;
+    private ListConfig listConfig = new ListConfig();
 
     @Nullable private AFKHandler handler;
     private final Text afk;
@@ -62,10 +59,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
 
     public static final Function<Subject, Integer> weightingFunction = s -> Util.getIntOptionFromSubject(s, "nucleus.list.weight").orElse(0);
 
-    @Inject
-    public ListPlayerCommand(PlayerInfoConfigAdapter configAdapter) {
-        this.configAdapter = configAdapter;
-        this.listConfig = configAdapter.getNodeOrDefault().getList();
+    public ListPlayerCommand() {
         this.afk = Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.list.afk");
         this.hidden = Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.list.hidden");
         this.handler = Nucleus.getNucleus().getInternalServiceManager().getService(AFKHandler.class).orElse(null);
@@ -230,7 +224,7 @@ public class ListPlayerCommand extends AbstractCommand<CommandSource> implements
     }
 
     @Override public void onReload() {
-        listConfig = configAdapter.getNodeOrDefault().getList();
+        listConfig = getServiceUnchecked(PlayerInfoConfigAdapter.class).getNodeOrDefault().getList();
     }
 
     public static Map<String, List<Player>> linkPlayersToGroups(List<Subject> groups, Map<String, String> groupAliases,

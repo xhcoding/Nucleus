@@ -28,8 +28,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @NoModifiers
@@ -37,13 +35,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class CheckMuteCommand extends AbstractCommand<CommandSource> {
 
-    private final MuteHandler handler;
+    private final MuteHandler handler = getServiceUnchecked(MuteHandler.class);
     private final String playerKey = "user/UUID";
-
-    @Inject
-    public CheckMuteCommand(MuteHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

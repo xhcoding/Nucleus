@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.listeners;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import org.spongepowered.api.data.key.Keys;
@@ -16,15 +16,11 @@ import org.spongepowered.api.text.Text;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 public class NicknameListener extends ListenerBase {
-
-    @Inject private UserDataManager ucl;
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event, @Root Player player) {
-        ucl.get(player).ifPresent(x -> {
+        Nucleus.getNucleus().getUserDataManager().get(player).ifPresent(x -> {
             Optional<Text> d = x.get(NicknameUserDataModule.class).getNicknameAsText();
             if (d.isPresent()) {
                 player.offer(Keys.DISPLAY_NAME, d.get());

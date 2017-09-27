@@ -17,20 +17,13 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @NonnullByDefault
 @RegisterCommand({"delnick", "delnickname", "deletenick"})
 @Permissions(mainOverride = "nick")
 public class DelNickCommand extends AbstractCommand<CommandSource> {
 
-    private final NicknameService nicknameService;
+    private final NicknameService nicknameService = getServiceUnchecked(NicknameService.class);
     private final String playerKey = "subject";
-
-    @Inject
-    public DelNickCommand(NicknameService nicknameService) {
-        this.nicknameService = nicknameService;
-    }
 
     @Override
     public CommandElement[] getArguments() {

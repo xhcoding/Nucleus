@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -24,8 +24,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions(mainOverride = "powertool")
 @RunAsync
 @NoModifiers
@@ -33,12 +31,6 @@ import javax.inject.Inject;
 @RegisterCommand(value = {"delete", "del", "rm", "remove"}, subcommandOf = PowertoolCommand.class)
 public class DeletePowertoolCommand extends AbstractCommand<Player> {
 
-    private final UserDataManager loader;
-
-    @Inject
-    public DeletePowertoolCommand(UserDataManager loader) {
-        this.loader = loader;
-    }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
@@ -47,7 +39,7 @@ public class DeletePowertoolCommand extends AbstractCommand<Player> {
             throw ReturnMessageException.fromKey("command.powertool.noitem");
         }
 
-        PowertoolUserDataModule user = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
+        PowertoolUserDataModule user = Nucleus.getNucleus().getUserDataManager().getUnchecked(src).get(PowertoolUserDataModule.class);
         ItemType item = itemStack.get().getType();
 
         Optional<List<String>> cmds = user.getPowertoolForItem(item);

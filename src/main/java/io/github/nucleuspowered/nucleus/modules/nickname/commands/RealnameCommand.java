@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.nickname.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 @RegisterCommand({"realname"})
 @Permissions(suggestedLevel = SuggestedLevel.USER)
@@ -38,8 +36,6 @@ import javax.inject.Inject;
 public class RealnameCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "name";
-
-    @Inject private UserDataManager udm;
 
     @Override
     public CommandElement[] getArguments() {
@@ -58,7 +54,7 @@ public class RealnameCommand extends AbstractCommand<CommandSource> {
 
         List<Text> realNames = players.stream().map(x -> {
             // I can't get display name to work!
-            Optional<ModularUserService> ous = udm.get(x);
+            Optional<ModularUserService> ous = Nucleus.getNucleus().getUserDataManager().get(x);
             if (ous.isPresent()) {
                 Optional<Text> ot = ous.get().get(NicknameUserDataModule.class).getNicknameAsText();
                 if (ot.isPresent()) {

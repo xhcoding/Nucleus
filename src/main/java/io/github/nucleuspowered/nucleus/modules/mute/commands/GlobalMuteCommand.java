@@ -19,8 +19,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @NonnullByDefault
@@ -29,12 +27,7 @@ import javax.inject.Inject;
 public class GlobalMuteCommand extends AbstractCommand<CommandSource> {
 
     private final String on = "turn on";
-    private final MuteHandler muteHandler;
-
-    @Inject
-    public GlobalMuteCommand(MuteHandler muteHandler) {
-        this.muteHandler = muteHandler;
-    }
+    private final MuteHandler muteHandler = getServiceUnchecked(MuteHandler.class);
 
     @Override
     public CommandElement[] getArguments() {

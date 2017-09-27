@@ -5,8 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions
 @RunAsync
 @NoModifiers
@@ -42,13 +40,7 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class PowertoolCommand extends AbstractCommand<Player> {
 
-    private final UserDataManager loader;
     private final String commandKey = "command";
-
-    @Inject
-    public PowertoolCommand(UserDataManager userDataManager) {
-        this.loader = userDataManager;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -63,7 +55,7 @@ public class PowertoolCommand extends AbstractCommand<Player> {
                 .orElseThrow(() -> ReturnMessageException.fromKey("command.powertool.noitem"));
 
         Optional<String> command = args.getOne(commandKey);
-        PowertoolUserDataModule inu = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
+        PowertoolUserDataModule inu = Nucleus.getNucleus().getUserDataManager().getUnchecked(src).get(PowertoolUserDataModule.class);
         return command.map(s -> setPowertool(src, inu, itemStack.getType(), s))
                 .orElseGet(() -> viewPowertool(src, inu, itemStack));
     }

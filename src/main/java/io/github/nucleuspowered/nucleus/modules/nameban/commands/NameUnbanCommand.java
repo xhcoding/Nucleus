@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "nameban", mainOverride = "unban")
 @RunAsync
 @NoModifiers
@@ -31,12 +29,7 @@ import javax.inject.Inject;
 public class NameUnbanCommand extends AbstractCommand<CommandSource> {
 
     private final String nameKey = "name";
-    private final NameBanHandler handler;
-
-    @Inject
-    public NameUnbanCommand(NameBanHandler handler) {
-        this.handler = handler;
-    }
+    private final NameBanHandler handler = getServiceUnchecked(NameBanHandler.class);
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

@@ -22,6 +22,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -30,6 +31,7 @@ import java.util.Map;
 @Permissions(suggestedLevel = SuggestedLevel.USER, supportsOthers = true)
 @RegisterCommand({"getpos", "coords", "position", "whereami", "getlocation", "getloc"})
 @EssentialsEquivalent({"getpos", "coords", "position", "whereami", "getlocation", "getloc"})
+@NonnullByDefault
 public class GetPosCommand extends AbstractCommand<CommandSource> {
 
     private final String playerKey = "subject";

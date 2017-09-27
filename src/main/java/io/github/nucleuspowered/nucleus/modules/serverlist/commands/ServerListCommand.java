@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.serverlist.config.ServerListConfig;
@@ -27,20 +28,13 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 @NoModifiers
 @RunAsync
 @NonnullByDefault
 @RegisterCommand(value = {"serverlist", "sl"})
-public class ServerListCommand extends AbstractCommand<CommandSource> {
+public class ServerListCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final ServerListConfigAdapter configAdapter;
-
-    @Inject
-    public ServerListCommand(ServerListConfigAdapter adapter) {
-        this.configAdapter = adapter;
-    }
+    private ServerListConfig slc = new ServerListConfig();
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
@@ -53,8 +47,6 @@ public class ServerListCommand extends AbstractCommand<CommandSource> {
 
     @Override protected CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         // Display current information
-        ServerListConfig slc = configAdapter.getNodeOrDefault();
-
         if (args.hasAny("m")) {
             onMessage(src, slc.getMessages(), "command.serverlist.head.messages");
             return CommandResult.success();
@@ -128,4 +120,7 @@ public class ServerListCommand extends AbstractCommand<CommandSource> {
                 .title(plugin.getMessageProvider().getTextMessageWithFormat(key)).sendTo(source);
     }
 
+    @Override public void onReload() throws Exception {
+        this.slc = getServiceUnchecked(ServerListConfigAdapter.class).getNodeOrDefault();
+    }
 }

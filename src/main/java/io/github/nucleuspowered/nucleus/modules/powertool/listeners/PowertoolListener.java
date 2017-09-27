@@ -5,10 +5,8 @@
 package io.github.nucleuspowered.nucleus.modules.powertool.listeners;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
-import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.powertool.commands.PowertoolCommand;
 import io.github.nucleuspowered.nucleus.modules.powertool.datamodules.PowertoolUserDataModule;
 import org.spongepowered.api.Sponge;
@@ -22,12 +20,7 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.item.ItemType;
 
-import javax.inject.Inject;
-
 public class PowertoolListener extends ListenerBase {
-
-    @Inject private UserDataManager loader;
-    @Inject private CoreConfigAdapter config;
 
     private final CommandPermissionHandler permissionRegistry =
             Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(PowertoolCommand.class);
@@ -44,12 +37,9 @@ public class PowertoolListener extends ListenerBase {
         ItemType item = player.getItemInHand(HandTypes.MAIN_HAND).get().getType();
         PowertoolUserDataModule user;
         try {
-            user = loader.getUnchecked(player).get(PowertoolUserDataModule.class);
+            user = Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(PowertoolUserDataModule.class);
         } catch (Exception e) {
-            if (config.getNodeOrDefault().isDebugmode()) {
-                e.printStackTrace();
-            }
-
+            Nucleus.getNucleus().printStackTraceIfDebugMode(e);
             return;
         }
 

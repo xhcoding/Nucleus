@@ -4,8 +4,8 @@
  */
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions(mainOverride = "powertool")
 @RunAsync
 @NoModifiers
@@ -39,16 +37,9 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class ListPowertoolCommand extends AbstractCommand<Player> {
 
-    private final UserDataManager loader;
-
-    @Inject
-    public ListPowertoolCommand(UserDataManager loader) {
-        this.loader = loader;
-    }
-
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        PowertoolUserDataModule inu = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
+        PowertoolUserDataModule inu = Nucleus.getNucleus().getUserDataManager().getUnchecked(src).get(PowertoolUserDataModule.class);
 
         boolean toggle = inu.isPowertoolToggled();
         Map<String, List<String>> powertools = inu.getPowertools();

@@ -23,8 +23,6 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RunAsync
 @RegisterCommand("rules")
@@ -33,13 +31,7 @@ import javax.inject.Inject;
 @EssentialsEquivalent("rules")
 public class RulesCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final RulesConfigAdapter rca;
     private Text title = Text.EMPTY;
-
-    @Inject
-    public RulesCommand(RulesConfigAdapter rca) {
-        this.rca = rca;
-    }
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
@@ -50,7 +42,7 @@ public class RulesCommand extends AbstractCommand<CommandSource> implements Relo
     }
 
     @Override public void onReload() {
-        RulesConfig config = rca.getNodeOrDefault();
+        RulesConfig config = getServiceUnchecked(RulesConfigAdapter.class).getNodeOrDefault();
         String title = config.getRulesTitle();
         if (title.isEmpty()) {
             this.title = Text.EMPTY;

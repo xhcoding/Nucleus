@@ -14,11 +14,13 @@ import io.github.nucleuspowered.nucleus.api.nucleusdata.MuteInfo;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
+import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.datamodules.MuteUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mute.events.MuteEvent;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.service.context.Context;
@@ -29,6 +31,7 @@ import org.spongepowered.api.util.Identifiable;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +52,16 @@ public class MuteHandler implements ContextCalculator<Subject>, NucleusMuteServi
 
     public MuteHandler() {
         this.ucl = Nucleus.getNucleus().getUserDataManager();
+    }
+
+    public void onMute(MuteData md, Player user) {
+        MessageProvider messageProvider = Nucleus.getNucleus().getMessageProvider();
+        if (md.getEndTimestamp().isPresent()) {
+            user.sendMessage(messageProvider.getTextMessageWithFormat("mute.playernotify.time",
+                    Util.getTimeStringFromSeconds(Instant.now().until(md.getEndTimestamp().get(), ChronoUnit.SECONDS))));
+        } else {
+            user.sendMessage(messageProvider.getTextMessageWithFormat("mute.playernotify.standard"));
+        }
     }
 
     @Override public boolean isMuted(User user) {

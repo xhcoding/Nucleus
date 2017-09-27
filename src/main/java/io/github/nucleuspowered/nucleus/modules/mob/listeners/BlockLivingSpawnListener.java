@@ -28,24 +28,15 @@ import org.spongepowered.api.world.World;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 public class BlockLivingSpawnListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
-    private final MobConfigAdapter configAdapter;
-    private MobConfig config = null;
-
-    @Inject
-    public BlockLivingSpawnListener(MobConfigAdapter configAdapter) {
-        this.configAdapter = configAdapter;
-    }
-
+    private MobConfig config = new MobConfig();
 
     @Listener
     public void onConstruct(ConstructEntityEvent.Pre event, @Getter("getTransform") Transform<World> worldTransform, @Getter("getTargetType") EntityType type) {
         // No, let's not prevent players from spawning...
         Class<? extends Entity> entityType = type.getEntityClass();
-        if (!checkIsValid(entityType) && !isSpawnable(entityType, type, worldTransform.getExtent())) {
+        if (!checkIsValid(entityType) && !isSpawnable(type, worldTransform.getExtent())) {
             event.setCancelled(true);
         }
     }
@@ -55,7 +46,7 @@ public class BlockLivingSpawnListener extends ListenerBase implements Reloadable
     public void onSpawn(SpawnEntityEvent event) {
         event.filterEntities(x -> {
             Class<? extends Entity> entityType = x.getClass();
-            return checkIsValid(entityType) || isSpawnable(entityType, x.getType(), x.getWorld());
+            return checkIsValid(entityType) || isSpawnable(x.getType(), x.getWorld());
         });
     }
 
@@ -65,11 +56,7 @@ public class BlockLivingSpawnListener extends ListenerBase implements Reloadable
                 ArmorStand.class.isAssignableFrom(entityType);
     }
 
-    private boolean isSpawnable(Class<? extends Entity> classType, EntityType type, World world) {
-        if (config == null) {
-            config = configAdapter.getNodeOrDefault();
-        }
-
+    private boolean isSpawnable(EntityType type, World world) {
         Optional<BlockSpawnsConfig> bsco = config.getBlockSpawnsConfigForWorld(world);
         if (!bsco.isPresent()) {
             return true;
@@ -80,7 +67,7 @@ public class BlockLivingSpawnListener extends ListenerBase implements Reloadable
     }
 
     @Override public void onReload() throws Exception {
-        config = null;
+        this.config = getServiceUnchecked(MobConfigAdapter.class).getNodeOrDefault();
     }
 
     @Override public boolean shouldEnable() {

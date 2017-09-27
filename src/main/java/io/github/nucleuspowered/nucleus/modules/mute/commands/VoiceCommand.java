@@ -26,8 +26,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 @RunAsync
 @NoModifiers
 @Permissions(prefix = "globalmute")
@@ -38,12 +36,7 @@ public class VoiceCommand extends AbstractCommand<CommandSource> {
     private final String on = "turn on";
     private final String player = "subject";
 
-    private final MuteHandler muteHandler;
-
-    @Inject
-    public VoiceCommand(MuteHandler muteHandler) {
-        this.muteHandler = muteHandler;
-    }
+    private final MuteHandler muteHandler = getServiceUnchecked(MuteHandler.class);
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {

@@ -20,6 +20,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Permissions
 @RegisterCommand("getfromip")
+@NonnullByDefault
 public class GetFromIpCommand extends AbstractCommand<CommandSource> {
 
     private final String ipKey = "IP Address";

@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 /**
  * Checks the notes of a subject.
  *
@@ -48,13 +46,8 @@ import javax.inject.Inject;
 @RegisterCommand({"checknotes", "notes"})
 public class CheckNotesCommand extends AbstractCommand<CommandSource> {
 
-    private final NoteHandler handler;
+    private final NoteHandler handler = getServiceUnchecked(NoteHandler.class);
     private final String playerKey = "subject";
-
-    @Inject
-    public CheckNotesCommand(NoteHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

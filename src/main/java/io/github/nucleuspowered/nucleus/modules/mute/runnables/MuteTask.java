@@ -4,9 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.mute.runnables;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
 import org.spongepowered.api.Sponge;
@@ -18,13 +16,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 public class MuteTask extends TaskBase {
-    @Inject private NucleusPlugin plugin;
-    @Inject private MuteHandler muteHandler;
-    @Inject private UserDataManager userDataManager;
+
+    private final MuteHandler muteHandler = getServiceUnchecked(MuteHandler.class);
 
     @Override
     public void accept(Task task) {

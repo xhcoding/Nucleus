@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @NonnullByDefault
 @RegisterCommand({"nick", "nickname"})
 @Permissions
@@ -41,12 +39,7 @@ import javax.inject.Inject;
         notes = "To remove a nickname, use '/delnick'")
 public class NicknameCommand extends AbstractCommand<CommandSource> {
 
-    private final NicknameService nicknameService;
-
-    @Inject
-    public NicknameCommand(NicknameService service) {
-        this.nicknameService = service;
-    }
+    private final NicknameService nicknameService = getServiceUnchecked(NicknameService.class);
 
     private final String playerKey = "subject";
     private final String nickName = "nickname";

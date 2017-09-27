@@ -31,8 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @NoModifiers
 @NonnullByDefault
@@ -43,12 +41,7 @@ public class NoteCommand extends AbstractCommand<CommandSource> {
     private final String playerKey = "subject";
     private final String noteKey = "note";
 
-    private final NoteHandler noteHandler;
-
-    @Inject
-    public NoteCommand(NoteHandler noteHandler) {
-        this.noteHandler = noteHandler;
-    }
+    private final NoteHandler noteHandler = getServiceUnchecked(NoteHandler.class);
 
     @Override
     public Map<String, PermissionInformation> permissionsToRegister() {

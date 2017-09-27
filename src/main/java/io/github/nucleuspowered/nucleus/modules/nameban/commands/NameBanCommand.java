@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.nameban.config.NameBanConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.nameban.handlers.NameBanHandler;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
@@ -28,26 +29,18 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions
 @RunAsync
 @NoModifiers
 @NonnullByDefault
 @RegisterCommand("nameban")
-public class NameBanCommand extends AbstractCommand<CommandSource> {
+public class NameBanCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
     private final String nameKey = "name";
     private final String reasonKey = "reason";
 
-    private final NameBanConfigAdapter nameBanConfigAdapter;
-    private final NameBanHandler handler;
-
-    @Inject
-    public NameBanCommand(NameBanConfigAdapter nameBanConfigAdapter, NameBanHandler handler) {
-        this.nameBanConfigAdapter = nameBanConfigAdapter;
-        this.handler = handler;
-    }
+    private final NameBanHandler handler = getServiceUnchecked(NameBanHandler.class);
+    private String defaultReason = "Your name is inappropriate";
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
@@ -67,7 +60,7 @@ public class NameBanCommand extends AbstractCommand<CommandSource> {
 
     @Override public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         String name = args.<String>getOne(nameKey).get().toLowerCase();
-        String reason = args.<String>getOne(reasonKey).orElse(nameBanConfigAdapter.getNodeOrDefault().getDefaultReason());
+        String reason = args.<String>getOne(reasonKey).orElse(this.defaultReason);
 
         if (this.handler.addName(name, reason, CauseStackHelper.createCause(src))) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nameban.success", name));
@@ -75,5 +68,10 @@ public class NameBanCommand extends AbstractCommand<CommandSource> {
         }
 
         throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.nameban.failed", name));
+    }
+
+
+    @Override public void onReload() throws Exception {
+        this.defaultReason = getServiceUnchecked(NameBanConfigAdapter.class).getNodeOrDefault().getDefaultReason();
     }
 }

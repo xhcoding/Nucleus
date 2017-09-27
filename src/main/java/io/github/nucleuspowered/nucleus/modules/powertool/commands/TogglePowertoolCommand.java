@@ -4,7 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.powertool.commands;
 
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -21,8 +21,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(mainOverride = "powertool")
 @RunAsync
 @NoModifiers
@@ -32,12 +30,6 @@ import javax.inject.Inject;
 public class TogglePowertoolCommand extends AbstractCommand<Player> {
 
     private final String toggleKey = "toggle";
-    private final UserDataManager loader;
-
-    @Inject
-    public TogglePowertoolCommand(UserDataManager loader) {
-        this.loader = loader;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -46,7 +38,7 @@ public class TogglePowertoolCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        PowertoolUserDataModule user = loader.getUnchecked(src).get(PowertoolUserDataModule.class);
+        PowertoolUserDataModule user = Nucleus.getNucleus().getUserDataManager().getUnchecked(src).get(PowertoolUserDataModule.class);
 
         // If specified - get the key. Else, the inverse of what we have now.
         boolean toggle = args.<Boolean>getOne(toggleKey).orElse(!user.isPowertoolToggled());

@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
@@ -28,6 +29,7 @@ import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -35,23 +37,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions(supportsOthers = true)
 @RegisterCommand({"spawnmob", "spawnentity", "mobspawn"})
 @EssentialsEquivalent({"spawnmob", "mob"})
-public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
+@NonnullByDefault
+public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer implements Reloadable {
 
     private final String amountKey = "amount";
     private final String mobTypeKey = "mob";
 
-    @Inject private MobConfigAdapter mobConfigAdapter;
+    private MobConfig mobConfig = new MobConfig();
 
     @Override public CommandElement[] additionalArguments() {
         return new CommandElement[] {
                 new ImprovedCatalogTypeArgument(Text.of(mobTypeKey), CatalogTypes.ENTITY_TYPE),
                 GenericArguments.optional(new PositiveIntegerArgument(Text.of(amountKey)), 1)
         };
+    }
+
+    @Override public void onReload() throws Exception {
+        this.mobConfig = getServiceUnchecked(MobConfigAdapter.class).getNodeOrDefault();
     }
 
     @Override
@@ -71,13 +76,12 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.livingonly", et.getTranslation().get()));
         }
 
-        MobConfig mc = mobConfigAdapter.getNodeOrDefault();
         String id = et.getId().toLowerCase();
-        if (mc.isPerMobPermission() && !permissions.testSuffix(src, "mob." + id.replace(":", "."))) {
+        if (this.mobConfig.isPerMobPermission() && !permissions.testSuffix(src, "mob." + id.replace(":", "."))) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.mobnoperm", et.getTranslation().get()));
         }
 
-        Optional<BlockSpawnsConfig> config = mc.getBlockSpawnsConfigForWorld(pl.getWorld());
+        Optional<BlockSpawnsConfig> config = this.mobConfig.getBlockSpawnsConfigForWorld(pl.getWorld());
         if (config.isPresent() && (config.get().isBlockVanillaMobs() && id.startsWith("minecraft:") || config.get().getIdsToBlock().contains(id))) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.spawnmob.blockedinconfig", et.getTranslation().get()));
         }
@@ -101,11 +105,11 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
             }
 
             i++;
-        } while (i < Math.min(amount, mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()));
+        } while (i < Math.min(amount, this.mobConfig.getMaxMobsToSpawn()));
 
-        if (amount > mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn()) {
+        if (amount > this.mobConfig.getMaxMobsToSpawn()) {
             src.sendMessage(
-                    mp.getTextMessageWithFormat("command.spawnmob.limit", String.valueOf(mobConfigAdapter.getNodeOrDefault().getMaxMobsToSpawn())));
+                    mp.getTextMessageWithFormat("command.spawnmob.limit", String.valueOf(this.mobConfig.getMaxMobsToSpawn())));
         }
 
         if (i == 0) {
@@ -120,4 +124,6 @@ public class SpawnMobCommand extends AbstractCommand.SimpleTargetOtherPlayer {
 
         return CommandResult.success();
     }
+
+
 }

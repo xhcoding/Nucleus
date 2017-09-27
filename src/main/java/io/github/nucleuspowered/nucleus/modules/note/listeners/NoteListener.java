@@ -28,18 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 public class NoteListener extends ListenerBase implements ListenerBase.Conditional {
 
-    private final NoteHandler handler;
+    private final NoteHandler handler = getServiceUnchecked(NoteHandler.class);
 
     private final String showOnLogin = PermissionRegistry.PERMISSIONS_PREFIX + "note.showonlogin";
-
-    @Inject
-    public NoteListener(NoteHandler handler) {
-        this.handler = handler;
-    }
 
     /**
      * At the time the subject joins, check to see if the subject has any notes,

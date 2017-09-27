@@ -24,8 +24,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.ADMIN)
 @RunAsync
 @NoModifiers
@@ -33,13 +31,8 @@ import javax.inject.Inject;
 @RegisterCommand({"removenote", "deletenote", "delnote"})
 public class RemoveNoteCommand extends AbstractCommand<CommandSource> {
 
-    private final NoteHandler handler;
+    private final NoteHandler handler = getServiceUnchecked(NoteHandler.class);
     private final String noteKey = "note";
-
-    @Inject
-    public RemoveNoteCommand(NoteHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {
