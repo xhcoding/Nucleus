@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.internal.command;
 
 import com.google.common.collect.Sets;
-import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
@@ -22,7 +21,6 @@ import java.util.Set;
 public class CommandBuilder {
 
     private final Nucleus plugin;
-    private final Injector injector;
     private final Set<Class<? extends AbstractCommand<?>>> commandSet;
     private final SimpleCommentedConfigurationNode sn;
     private final String moduleID;
@@ -34,9 +32,8 @@ public class CommandBuilder {
         return registeredCommands.contains(command);
     }
 
-    public CommandBuilder(Nucleus plugin, Injector injector, Set<Class<? extends AbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
+    public CommandBuilder(Nucleus plugin, Set<Class<? extends AbstractCommand<?>>> commandSet, String moduleID, String moduleName) {
         this.plugin = plugin;
-        this.injector = injector;
         this.commandSet = commandSet;
         this.sn = SimpleCommentedConfigurationNode.root();
         this.moduleID = moduleID;
@@ -111,7 +108,7 @@ public class CommandBuilder {
 
     private <T extends AbstractCommand<?>> Optional<T> getInstance(Class<T> clazz) {
         try {
-            T instance = injector.getInstance(clazz);
+            T instance = clazz.newInstance();
             if (instance.canLoad()) {
                 return Optional.of(instance);
             }
@@ -119,13 +116,17 @@ public class CommandBuilder {
             return Optional.empty();
 
             // I can't believe I have to do this...
-        } catch (RuntimeException | NoClassDefFoundError e) {
+        } catch (IllegalAccessException | InstantiationException | RuntimeException | NoClassDefFoundError e) {
             if (clazz.isAnnotationPresent(SkipOnError.class)) {
                 plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
                 return Optional.empty();
             }
 
-            throw e;
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 

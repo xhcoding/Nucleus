@@ -26,7 +26,6 @@ public final class InternalServiceManager {
         }
 
         serviceMap.put(key, service);
-        plugin.preInjectorUpdate(key, service);
     }
 
     @SuppressWarnings("unchecked")

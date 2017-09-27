@@ -272,12 +272,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             }
         }
 
-        // Injector
         this.plugin = Nucleus.getNucleus();
     }
 
     /**
-     * The command will only load if this condition is true. Happens after injections.
+     * The command will only load if this condition is true. Happens after construction.
      *
      * @return <code>true</code> if the command can be loaded.
      */

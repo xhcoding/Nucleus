@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
-import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.annotationprocessor.Store;
@@ -138,14 +137,12 @@ public abstract class StandardModule implements Module {
         }
 
         // We all love the special injector. We just want to provide the module with more commands, in case it needs a child.
-        Injector injector = plugin.getInjector();
-
         Set<Class<? extends AbstractCommand>> commandBases =  cmds.stream().filter(x -> {
             RegisterCommand rc = x.getAnnotation(RegisterCommand.class);
             return (rc != null && rc.subcommandOf().equals(AbstractCommand.class));
         }).collect(Collectors.toSet());
 
-        CommandBuilder builder = new CommandBuilder(plugin, injector, cmds, moduleId, moduleName);
+        CommandBuilder builder = new CommandBuilder(plugin, cmds, moduleId, moduleName);
         commandBases.forEach(builder::buildCommand);
 
         try {
@@ -184,8 +181,7 @@ public abstract class StandardModule implements Module {
         }
 
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
-        Injector injector = plugin.getInjector();
-        listenersToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
+        listenersToLoad.stream().map(this::getInstance).filter(Objects::nonNull).forEach(c -> {
             // Register suggested permissions
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
@@ -239,8 +235,8 @@ public abstract class StandardModule implements Module {
         }
 
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
-        Injector injector = plugin.getInjector();
-        tasksToLoad.stream().map(x -> this.getInstance(injector, x)).filter(Objects::nonNull).forEach(c -> {
+
+        tasksToLoad.stream().map(this::getInstance).filter(Objects::nonNull).forEach(c -> {
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
             Task.Builder tb = Sponge.getScheduler().createTaskBuilder().interval(c.interval().toMillis(), TimeUnit.MILLISECONDS);
@@ -283,18 +279,22 @@ public abstract class StandardModule implements Module {
 
     protected void performPreTasks() throws Exception { }
 
-    private <T> T getInstance(Injector injector, Class<T> clazz) {
+    private <T> T getInstance(Class<T> clazz) {
         try {
-            return injector.getInstance(clazz);
+            return clazz.newInstance();
 
         // I can't believe I have to do this...
-        } catch (RuntimeException | NoClassDefFoundError e) {
+        } catch (IllegalAccessException | InstantiationException | RuntimeException | NoClassDefFoundError e) {
             if (clazz.isAnnotationPresent(SkipOnError.class)) {
                 plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider().getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
                 return null;
             }
 
-            throw e;
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                throw new RuntimeException(e);
+            }
         }
     }
 

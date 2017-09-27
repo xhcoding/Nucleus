@@ -14,9 +14,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.typesafe.config.ConfigException;
 import io.github.nucleuspowered.nucleus.api.NucleusAPITokens;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
@@ -41,8 +38,6 @@ import io.github.nucleuspowered.nucleus.internal.PreloadTasks;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
 import io.github.nucleuspowered.nucleus.internal.client.ClientMessageReciever;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
-import io.github.nucleuspowered.nucleus.internal.guice.QuickStartInjectorModule;
-import io.github.nucleuspowered.nucleus.internal.guice.SubInjectorModule;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
@@ -134,8 +129,6 @@ public class NucleusPlugin extends Nucleus {
     private KitService kitService;
     private TextParsingUtils textParsingUtils;
     private NameUtil nameUtil;
-    private Injector injector;
-    private SubInjectorModule subInjectorModule = new SubInjectorModule();
     private final List<Reloadable> reloadableList = Lists.newArrayList();
     private DocGenCache docGenCache = null;
     private final NucleusTeleportHandler teleportHandler = new NucleusTeleportHandler();
@@ -267,7 +260,6 @@ public class NucleusPlugin extends Nucleus {
         // We register the ModuleService NOW so that others can hook into it.
         game.getServiceManager().setProvider(this, NucleusModuleService.class, new ModuleRegistrationProxyService(this));
         game.getServiceManager().setProvider(this, NucleusWarmupManagerService.class, warmupManager);
-        this.injector = Guice.createInjector(new QuickStartInjectorModule(this));
         serviceManager.registerService(WarmupManager.class, warmupManager);
 
         nucleusChatService = new NucleusTokenServiceImpl(this);
@@ -291,9 +283,9 @@ public class NucleusPlugin extends Nucleus {
                 }
 
                 db.setDiscoveryStrategy((string, classloader) -> sc)
-                        .setConstructor(new QuickStartModuleConstructor(injector, m));
+                        .setConstructor(new QuickStartModuleConstructor(m));
             } else {
-                db.setConstructor(new QuickStartModuleConstructor(injector, null));
+                db.setConstructor(new QuickStartModuleConstructor(null));
             }
             this.moduleContainer = db
                     .setConfigurationLoader(
@@ -305,12 +297,10 @@ public class NucleusPlugin extends Nucleus {
                     .setLoggerProxy(new NucleusLoggerProxy(logger))
                     .setConfigurationOptionsTransformer(x -> ConfigurateHelper.setOptions(x).setHeader(he))
                     .setOnPreEnable(() -> {
-                        runInjectorUpdate();
                         initDocGenIfApplicable();
                         Sponge.getEventManager().post(new BaseModuleEvent.AboutToEnable(this));
                     })
                     .setOnEnable(() -> {
-                        runInjectorUpdate();
                         Sponge.getEventManager().post(new BaseModuleEvent.PreEnable(this));
                     })
                     .setOnPostEnable(() -> Sponge.getEventManager().post(new BaseModuleEvent.Enabled(this)))
@@ -515,11 +505,6 @@ public class NucleusPlugin extends Nucleus {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public Injector getInjector() {
-        return injector;
     }
 
     @Override
@@ -742,14 +727,6 @@ public class NucleusPlugin extends Nucleus {
         return this.isTraceUserCreations;
     }
 
-    @Override public <T> void preInjectorUpdate(Class<T> clazz, T instance) {
-        if (injector.getExistingBinding(Key.get(clazz)) == null) {
-            subInjectorModule.addInjection(clazz, instance);
-        } else {
-            logger.warn(Nucleus.getNucleus().getMessageProvider().getMessageWithFormat("nucleus.injector.duplicate", clazz.getName()));
-        }
-    }
-
     /**
      * Gets the {@link TextFileController}
      *
@@ -784,15 +761,6 @@ public class NucleusPlugin extends Nucleus {
 
     @Override public void setSessionDebug(boolean debug) {
         this.sessionDebugMode = debug;
-    }
-
-    private void runInjectorUpdate() {
-        if (subInjectorModule.isEmpty()) {
-            return;
-        }
-
-        injector = injector.createChildInjector(subInjectorModule);
-        subInjectorModule = new SubInjectorModule();
     }
 
     private void initDocGenIfApplicable() {

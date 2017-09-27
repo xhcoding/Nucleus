@@ -23,8 +23,7 @@ public class ChatModule extends ConfigurableModule<ChatConfigAdapter> {
         super.performPreTasks();
 
         try {
-            ChatConfigAdapter cca = plugin.getInjector().getInstance(ChatConfigAdapter.class);
-            TemplateUtil templateUtil = new TemplateUtil(cca);
+            TemplateUtil templateUtil = new TemplateUtil(getAdapter());
             serviceManager.registerService(TemplateUtil.class, templateUtil);
         } catch (Exception ex) {
             plugin.getLogger().warn("Could not load the chat module for the reason below.");

@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus;
 
-import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
 import io.github.nucleuspowered.nucleus.config.CommandsConfig;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
@@ -53,8 +52,6 @@ public abstract class Nucleus {
     }
 
     public abstract void saveData();
-
-    public abstract Injector getInjector();
 
     public abstract Logger getLogger();
 
@@ -113,8 +110,6 @@ public abstract class Nucleus {
     public abstract MessageProvider getCommandMessageProvider();
 
     public abstract int traceUserCreations();
-
-    public abstract <T> void preInjectorUpdate(Class<T> clazz, T instance);
 
     public abstract Optional<TextFileController> getTextFileController(String getController);
 

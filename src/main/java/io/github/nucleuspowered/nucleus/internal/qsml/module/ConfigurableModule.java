@@ -24,7 +24,6 @@ public abstract class ConfigurableModule<A extends NucleusConfigAdapter<?>> exte
     protected final A getAdapter() {
         if (adapter == null) {
             adapter = createAdapter();
-            plugin.getInjector().injectMembers(adapter);
         }
 
         return adapter;

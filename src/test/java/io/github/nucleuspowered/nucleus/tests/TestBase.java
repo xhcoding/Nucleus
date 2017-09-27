@@ -4,7 +4,6 @@
  */
 package io.github.nucleuspowered.nucleus.tests;
 
-import com.google.inject.Injector;
 import io.github.nucleuspowered.nucleus.NameUtil;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMessageTokenService;
@@ -100,10 +99,6 @@ public abstract class TestBase {
         @Override
         public void saveData() {
 
-        }
-
-        @Override public Injector getInjector() {
-            return null;
         }
 
         @Override
@@ -223,10 +218,6 @@ public abstract class TestBase {
 
         @Override public int traceUserCreations() {
             return 0;
-        }
-
-        @Override public <T> void preInjectorUpdate(Class<T> clazz, T instance) {
-
         }
 
         @Override public Optional<TextFileController> getTextFileController(String getController) {
