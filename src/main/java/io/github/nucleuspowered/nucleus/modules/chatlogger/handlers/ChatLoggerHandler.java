@@ -4,30 +4,30 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chatlogger.handlers;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.logging.AbstractLoggingHandler;
 import io.github.nucleuspowered.nucleus.modules.chatlogger.config.ChatLoggingConfigAdapter;
 
-import javax.inject.Inject;
+public class ChatLoggerHandler extends AbstractLoggingHandler implements Reloadable {
 
-public class ChatLoggerHandler extends AbstractLoggingHandler {
+    private boolean enabled = false;
 
-    private final ChatLoggingConfigAdapter clca;
-
-    @Inject
-    public ChatLoggerHandler(ChatLoggingConfigAdapter clca) {
+    public ChatLoggerHandler() {
         super("chat", "chat");
-        this.clca = clca;
     }
 
     public void onReload() throws Exception {
-        if (clca.getNodeOrDefault().isEnableLog() && logger == null) {
+        ChatLoggingConfigAdapter clca = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ChatLoggingConfigAdapter.class);
+        this.enabled = clca.getNodeOrDefault().isEnableLog();
+        if (this.enabled && logger == null) {
             this.createLogger();
-        } else if (!clca.getNodeOrDefault().isEnableLog() && logger != null) {
+        } else if (!this.enabled && logger != null) {
             onShutdown();
         }
     }
 
     @Override protected boolean enabledLog() {
-        return clca.getNodeOrDefault().isEnableLog();
+        return this.enabled;
     }
 }

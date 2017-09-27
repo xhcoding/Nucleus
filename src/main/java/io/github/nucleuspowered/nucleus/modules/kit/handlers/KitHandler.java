@@ -52,8 +52,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 public class KitHandler implements NucleusKitService {
 
     private static final InventoryTransactionResult EMPTY_ITR =
@@ -75,7 +73,7 @@ public class KitHandler implements NucleusKitService {
     private final Map<Container, Tuple<Kit, Inventory>> inventoryKitMap = Maps.newHashMap();
     private final Map<Container, Tuple<Kit, Inventory>> inventoryKitCommandMap = Maps.newHashMap();
 
-    @Inject private KitService store;
+    private final KitService store = Nucleus.getNucleus().getKitService();
 
     @Override
     public Set<String> getKitNames() {

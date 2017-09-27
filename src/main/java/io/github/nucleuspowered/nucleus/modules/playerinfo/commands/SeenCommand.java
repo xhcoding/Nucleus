@@ -9,7 +9,6 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.UUIDArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
@@ -42,6 +41,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -55,16 +55,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import javax.annotation.Nullable;
 
 @Permissions
 @RunAsync
 @RegisterCommand({"seen", "seenplayer", "lookup"})
 @EssentialsEquivalent("seen")
+@NonnullByDefault
 public class SeenCommand extends AbstractCommand<CommandSource> {
 
-    @Inject private UserDataManager udm;
-    @Inject private SeenHandler seenHandler;
+    private final SeenHandler seenHandler = getServiceUnchecked(SeenHandler.class);
 
     private static final String EXTENDED_SUFFIX = "extended";
     public static final String EXTENDED_PERMISSION = PermissionRegistry.PERMISSIONS_PREFIX + "seen." + EXTENDED_SUFFIX;
@@ -92,7 +92,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
         User user = args.<User>getOne(uuid).isPresent() ? args.<User>getOne(uuid).get() : args.<User>getOne(playerKey).get();
-        ModularUserService iqsu = udm.get(user).get();
+        ModularUserService iqsu = Nucleus.getNucleus().getUserDataManager().getUnchecked(user);
         CoreUserDataModule coreUserDataModule = iqsu.get(CoreUserDataModule.class);
 
         List<Text> messages = new ArrayList<>();
@@ -194,7 +194,7 @@ public class SeenCommand extends AbstractCommand<CommandSource> {
         return text;
     }
 
-    private String getYesNo(Boolean bool) {
+    private String getYesNo(@Nullable Boolean bool) {
         if (bool == null) {
             bool = false;
         }

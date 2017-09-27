@@ -24,9 +24,9 @@ public class ChatLoggerModule extends ConfigurableModule<ChatLoggingConfigAdapte
     protected void performPreTasks() throws Exception {
         super.performPreTasks();
 
-        ChatLoggerHandler clh = new ChatLoggerHandler(getAdapter());
+        ChatLoggerHandler clh = new ChatLoggerHandler();
         serviceManager.registerService(ChatLoggerHandler.class, clh);
-        plugin.registerReloadable(clh::onReload);
+        plugin.registerReloadable(clh);
         clh.onReload();
     }
 }

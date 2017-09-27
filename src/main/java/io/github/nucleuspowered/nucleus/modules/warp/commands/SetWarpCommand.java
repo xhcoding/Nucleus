@@ -23,8 +23,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 /**
  * Creates a warp where the player is currently standing. The warp must not
  * exist.
@@ -37,13 +35,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class SetWarpCommand extends AbstractCommand<Player> {
 
-    private final WarpHandler qs;
+    private final WarpHandler qs = getServiceUnchecked(WarpHandler.class);
     private final Pattern warpRegex = Pattern.compile("^[A-Za-z][A-Za-z0-9]{0,25}$");
-
-    @Inject
-    public SetWarpCommand(WarpHandler qs) {
-        this.qs = qs;
-    }
 
     @Override
     public CommandElement[] getArguments() {

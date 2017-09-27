@@ -4,23 +4,18 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusKitService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.handlers.KitHandler;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-
-import javax.inject.Inject;
 
 @ModuleData(id = KitModule.ID, name = "Kit")
 public class KitModule extends ConfigurableModule<KitConfigAdapter> {
 
     public static final String ID = "kit";
-
-    @Inject private Game game;
-    @Inject private Logger logger;
 
     @Override
     protected void performPreTasks() throws Exception {
@@ -29,11 +24,10 @@ public class KitModule extends ConfigurableModule<KitConfigAdapter> {
         try {
             KitHandler kitHandler = new KitHandler();
             plugin.registerReloadable(kitHandler::reload);
-            plugin.getInjector().injectMembers(kitHandler);
             serviceManager.registerService(KitHandler.class, kitHandler);
-            game.getServiceManager().setProvider(plugin, NucleusKitService.class, kitHandler);
+            Sponge.getServiceManager().setProvider(plugin, NucleusKitService.class, kitHandler);
         } catch (Exception ex) {
-            logger.warn("Could not load the kits module for the reason below.");
+            Nucleus.getNucleus().getLogger().warn("Could not load the kits module for the reason below.");
             ex.printStackTrace();
             throw ex;
         }

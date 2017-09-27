@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
-import io.github.nucleuspowered.nucleus.modules.warp.config.WarpConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.warp.handlers.WarpHandler;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @RunAsync
 @NoModifiers
@@ -45,14 +43,7 @@ public class SetCategoryCommand extends AbstractCommand<CommandSource> {
 
     private final String warpKey = "warp";
     private final String categoryKey = "category";
-    private final WarpConfigAdapter warpConfigAdapter;
-    private final WarpHandler handler;
-
-    @Inject
-    public SetCategoryCommand(WarpConfigAdapter warpConfigAdapter, WarpHandler handler) {
-        this.warpConfigAdapter = warpConfigAdapter;
-        this.handler = handler;
-    }
+    private final WarpHandler handler = getServiceUnchecked(WarpHandler.class);
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

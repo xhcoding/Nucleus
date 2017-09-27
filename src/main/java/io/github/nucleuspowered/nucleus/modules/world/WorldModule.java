@@ -4,18 +4,15 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
-import org.slf4j.Logger;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-
-import javax.inject.Inject;
 
 @ModuleData(id = WorldModule.ID, name = "World")
 public class WorldModule extends ConfigurableModule<WorldConfigAdapter> {
 
     public static final String ID = "world";
-    @Inject private Logger logger;
 
     @Override public WorldConfigAdapter createAdapter() {
         return new WorldConfigAdapter();
@@ -28,10 +25,9 @@ public class WorldModule extends ConfigurableModule<WorldConfigAdapter> {
         try {
             WorldHelper wh = new WorldHelper();
             plugin.registerReloadable(wh);
-            plugin.getInjector().injectMembers(wh);
             serviceManager.registerService(WorldHelper.class, wh);
         } catch (Exception ex) {
-            logger.warn("Could not load the world module for the reason below.");
+            Nucleus.getNucleus().getLogger().warn("Could not load the world module for the reason below.");
             ex.printStackTrace();
             throw ex;
         }

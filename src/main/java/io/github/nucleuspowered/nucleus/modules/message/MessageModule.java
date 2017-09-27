@@ -14,21 +14,17 @@ import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyComman
 import io.github.nucleuspowered.nucleus.modules.message.config.MessageConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.message.handlers.MessageHandler;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 @ModuleData(id = MessageModule.ID, name = "Message")
 public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
 
     public static final String ID = "message";
     private MessageHandler handler;
-
-    @Inject private Game game;
 
     @Override
     public MessageConfigAdapter createAdapter() {
@@ -42,7 +38,7 @@ public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
         handler = new MessageHandler(plugin);
         plugin.registerReloadable(handler ::onReload);
         serviceManager.registerService(MessageHandler.class, handler );
-        game.getServiceManager().setProvider(plugin, NucleusPrivateMessagingService.class, handler);
+        Sponge.getServiceManager().setProvider(plugin, NucleusPrivateMessagingService.class, handler);
     }
 
     @Override public void onEnable() {

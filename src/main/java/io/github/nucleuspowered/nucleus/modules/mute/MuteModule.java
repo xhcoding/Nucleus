@@ -5,28 +5,23 @@
 package io.github.nucleuspowered.nucleus.modules.mute;
 
 import com.google.common.collect.Lists;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.mute.commands.CheckMuteCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.mute.data.MuteData;
 import io.github.nucleuspowered.nucleus.modules.mute.handler.MuteHandler;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
-import javax.inject.Inject;
-
 @ModuleData(id = MuteModule.ID, name = "Mute")
 public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
 
     public static final String ID = "mute";
-    @Inject private Game game;
-    @Inject private Logger logger;
 
     @Override
     public MuteConfigAdapter createAdapter() {
@@ -42,7 +37,7 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
             serviceManager.registerService(MuteHandler.class, m);
             Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> x.registerContextCalculator(m));
         } catch (Exception ex) {
-            logger.warn("Could not load the mute module for the reason below.");
+            Nucleus.getNucleus().getLogger().warn("Could not load the mute module for the reason below.");
             ex.printStackTrace();
             throw ex;
         }

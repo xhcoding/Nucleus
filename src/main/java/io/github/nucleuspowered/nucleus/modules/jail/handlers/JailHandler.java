@@ -51,13 +51,13 @@ import java.util.UUID;
 public class JailHandler implements NucleusJailService, ContextCalculator<Subject> {
 
     private final ModularGeneralService store;
-    private final NucleusPlugin plugin;
+    private final Nucleus plugin;
 
     // Used for the context calculator
     private final Map<UUID, Context> jailDataCache = Maps.newHashMap();
     private final static Context jailContext = new Context(NucleusJailService.JAILED_CONTEXT, "true");
 
-    public JailHandler(NucleusPlugin plugin) {
+    public JailHandler(Nucleus plugin) {
         this.plugin = plugin;
         this.store = plugin.getGeneralService();
     }

@@ -8,15 +8,11 @@ import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.back.config.BackConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
-
-import javax.inject.Inject;
 
 @ModuleData(id = "back", name = "Back", softDependencies = "jail")
 public class BackModule extends ConfigurableModule<BackConfigAdapter> {
-
-    @Inject private Game game;
 
     @Override
     public BackConfigAdapter createAdapter() {
@@ -28,8 +24,7 @@ public class BackModule extends ConfigurableModule<BackConfigAdapter> {
         super.performPreTasks();
 
         BackHandler m = new BackHandler();
-        plugin.getInjector().injectMembers(m);
         serviceManager.registerService(BackHandler.class, m);
-        game.getServiceManager().setProvider(plugin, NucleusBackService.class, m);
+        Sponge.getServiceManager().setProvider(plugin, NucleusBackService.class, m);
     }
 }

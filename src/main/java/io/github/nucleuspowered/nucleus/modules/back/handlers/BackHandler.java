@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.back.handlers;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
 import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
@@ -14,12 +15,10 @@ import org.spongepowered.api.world.World;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("deprecation")
 public class BackHandler implements NucleusBackService {
 
-    @Inject private UserDataManager loader;
+    private final UserDataManager loader = Nucleus.getNucleus().getUserDataManager();
 
     @Override
     public Optional<Transform<World>> getLastLocation(User user) {
