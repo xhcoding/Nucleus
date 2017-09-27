@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.internal;
 import io.github.nucleuspowered.nucleus.annotationprocessor.Store;
 import io.github.nucleuspowered.nucleus.internal.annotations.EntryPoint;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.traits.InternalServiceManagerTrait;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
 @EntryPoint
 @NonnullByDefault
 @Store(Constants.RUNNABLE)
-public abstract class TaskBase implements Consumer<Task> {
+public abstract class TaskBase implements Consumer<Task>, InternalServiceManagerTrait {
 
     public abstract boolean isAsync();
 

@@ -34,6 +34,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RedirectModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.traits.InternalServiceManagerTrait;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.util.Action;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -101,7 +102,7 @@ import javax.annotation.Nullable;
  */
 @NonnullByDefault
 @Store(Constants.COMMAND)
-public abstract class AbstractCommand<T extends CommandSource> implements CommandCallable {
+public abstract class AbstractCommand<T extends CommandSource> implements CommandCallable, InternalServiceManagerTrait {
 
     /**
      * An argument key to denote that the current operation is for a tab completion and
