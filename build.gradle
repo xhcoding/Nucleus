@@ -10,9 +10,9 @@ plugins {
 }
 
 project.ext.versionno = '1.2.0'
-project.ext.minecraftversion = '1.12.1'
+project.ext.minecraftversion = '1.12.2'
 project.ext.spongeapiversion = '7.0'
-project.ext.suffix = '-SNAPSHOT'
+project.ext.suffix = '-PR2'
 
 allprojects {
     apply plugin: 'java'
