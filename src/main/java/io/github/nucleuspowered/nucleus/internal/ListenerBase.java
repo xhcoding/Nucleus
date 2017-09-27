@@ -11,12 +11,13 @@ import io.github.nucleuspowered.nucleus.annotationprocessor.Store;
 import io.github.nucleuspowered.nucleus.internal.annotations.EntryPoint;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.traits.InternalServiceManagerTrait;
+import io.github.nucleuspowered.nucleus.internal.traits.PermissionHandlerTrait;
 
 import java.util.Map;
 
 @EntryPoint
 @Store(Constants.LISTENER)
-public abstract class ListenerBase implements InternalServiceManagerTrait {
+public abstract class ListenerBase implements InternalServiceManagerTrait, PermissionHandlerTrait {
 
     protected final Nucleus plugin = NucleusPlugin.getNucleus();
 

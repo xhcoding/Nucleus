@@ -4,8 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.runnables;
 
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.modules.misc.datamodules.InvulnerabilityUserDataModule;
 import org.spongepowered.api.Sponge;
@@ -21,26 +20,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 /**
  * Temporary solution until we can check for feeding levels to drop.
  */
 @NonnullByDefault
 public class GodRunnable extends TaskBase {
 
-    private final NucleusPlugin plugin;
-    private final UserDataManager ucl;
-
     private int defaultFoodLevel = 0;
     private double defaultSaturationLevel = 0;
     private double defaultExhaustionLevel = 0;
-
-    @Inject
-    public GodRunnable(NucleusPlugin plugin, UserDataManager ucl) {
-        this.plugin = plugin;
-        this.ucl = ucl;
-    }
 
     @Override
     public boolean isAsync() {
@@ -66,11 +54,11 @@ public class GodRunnable extends TaskBase {
             this.defaultExhaustionLevel = def.exhaustion().getDefault();
         }
 
-        List<Player> toFeed = cp.stream().filter(x -> ucl.getUser(x)
+        List<Player> toFeed = cp.stream().filter(x -> Nucleus.getNucleus().getUserDataManager().getUser(x)
                 .map(y -> y.get(InvulnerabilityUserDataModule.class).isInvulnerable()).orElse(false))
                 .collect(Collectors.toList());
         if (!toFeed.isEmpty()) {
-            Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> toFeed.forEach(p -> {
+            Sponge.getScheduler().createSyncExecutor(Nucleus.getNucleus()).execute(() -> toFeed.forEach(p -> {
                 p.offer(Keys.FOOD_LEVEL, this.defaultFoodLevel);
                 p.offer(Keys.EXHAUSTION, this.defaultExhaustionLevel);
                 p.offer(Keys.SATURATION, this.defaultSaturationLevel);

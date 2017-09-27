@@ -8,9 +8,10 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.MailMessage;
 import io.github.nucleuspowered.nucleus.api.service.NucleusMailService;
+import io.github.nucleuspowered.nucleus.internal.traits.InternalServiceManagerTrait;
 import io.github.nucleuspowered.nucleus.modules.mail.data.MailData;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -29,16 +30,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MailReadBase {
+public class MailReadBase implements InternalServiceManagerTrait {
 
-    private final MailHandler handler;
-    private final Game game;
+    public static MailReadBase INSTANCE = new MailReadBase();
+
+    private MailReadBase() {}
+
+    private final MailHandler handler = getServiceUnchecked(MailHandler.class);
     static final String filters = "filters";
-
-    MailReadBase(Game game, MailHandler handler) {
-        this.game = game;
-        this.handler = handler;
-    }
 
     public CommandResult executeCommand(CommandSource src, final User target, Collection<NucleusMailService.MailFilter> lmf) {
         List<MailData> lmd;
@@ -61,7 +60,7 @@ public class MailReadBase {
         List<Text> mails = lmd.stream().sorted(Comparator.comparing(MailMessage::getDate)).map(x -> createMessage(x, target)).collect(Collectors.toList());
 
         // Paginate the mail.
-        PaginationService ps = game.getServiceManager().provideUnchecked(PaginationService.class);
+        PaginationService ps = Sponge.getServiceManager().provideUnchecked(PaginationService.class);
         PaginationList.Builder b = ps.builder().padding(Text.of(TextColors.GREEN, "-")).title(getHeader(src, target, !lmf.isEmpty())).contents(mails);
         if (!(src instanceof Player)) {
             b.linesPerPage(-1);

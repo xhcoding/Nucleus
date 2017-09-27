@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.misc.commands;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.argumentparsers.ItemAliasArgument;
 import io.github.nucleuspowered.nucleus.configurate.datatypes.ItemDataNode;
 import io.github.nucleuspowered.nucleus.dataservices.ItemDataService;
@@ -34,6 +35,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,15 +44,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions
+@NonnullByDefault
 @RegisterCommand({"iteminfo", "itemdb"})
 @EssentialsEquivalent(value = {"itemdb", "itemno", "durability", "dura"}, isExact = false, notes = "Nucleus tries to provide much more info!")
 public class ItemInfoCommand extends AbstractCommand<Player> {
 
-    @Inject private ItemDataService itemDataService;
-    @Inject private EconHelper econHelper;
+    private final ItemDataService itemDataService = Nucleus.getNucleus().getItemDataService();
+    private EconHelper econHelper = Nucleus.getNucleus().getEconHelper();
 
     private final String key = "key";
     private final Text comma = Text.of(TextColors.GREEN, ", ");

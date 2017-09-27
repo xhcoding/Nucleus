@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * Sets kit as a one time use.
  *
@@ -35,15 +33,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitOneTimeCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitConfig;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     private final String kit = "kit";
     private final String toggle = "oneTimeToggle";
-
-    @Inject
-    public KitOneTimeCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -61,7 +54,7 @@ public class KitOneTimeCommand extends AbstractCommand<CommandSource> {
         // This Kit is a reference back to the version in list, so we don't need
         // to update it explicitly
         kitInfo.setOneTime(b);
-        kitConfig.saveKit(kitInfo);
+        handler.saveKit(kitInfo);
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(b ? "command.kit.onetime.on" : "command.kit.onetime.off",
                 kitInfo.getName()));
 

@@ -31,8 +31,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * Gives a kit to a subject.
  */
@@ -41,17 +39,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitGiveCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final KitHandler kitHandler;
-    private final KitConfigAdapter kca;
+    private final KitHandler kitHandler = getServiceUnchecked(KitHandler.class);
 
     private boolean mustGetAll;
     private boolean isDrop;
-
-    @Inject
-    public KitGiveCommand(KitHandler handler, KitConfigAdapter kitConfigAdapter) {
-        this.kitHandler = handler;
-        this.kca = kitConfigAdapter;
-    }
 
     private final String playerKey = "subject";
     private final String kitKey = "kit";
@@ -129,6 +120,7 @@ public class KitGiveCommand extends AbstractCommand<CommandSource> implements Re
 
     @Override
     public void onReload() throws Exception {
+        KitConfigAdapter kca = getServiceUnchecked(KitConfigAdapter.class);
         this.isDrop = kca.getNodeOrDefault().isDropKitIfFull();
         this.mustGetAll = kca.getNodeOrDefault().isMustGetAll();
     }

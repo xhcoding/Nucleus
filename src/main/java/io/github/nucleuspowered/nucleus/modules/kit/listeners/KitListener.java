@@ -36,26 +36,15 @@ import org.spongepowered.api.world.World;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @SuppressWarnings("ALL")
 public class KitListener extends ListenerBase implements Reloadable {
 
-    private final UserDataManager loader;
-    private final KitHandler handler;
-    private final KitService gds;
-    private final KitConfigAdapter kca;
+    private final UserDataManager loader = Nucleus.getNucleus().getUserDataManager();
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
+    private final KitService gds = Nucleus.getNucleus().getKitService();
 
+    private boolean isSepratePermissions;
     private boolean mustGetAll;
-
-    @Inject
-    public KitListener(UserDataManager loader, KitHandler handler, KitService gds,
-            KitConfigAdapter kca) {
-        this.loader = loader;
-        this.handler = handler;
-        this.gds = gds;
-        this.kca = kca;
-    }
 
     @Listener
     public void onPlayerFirstJoin(NucleusFirstJoinEvent event, @Getter("getTargetEntity") Player player) {
@@ -77,7 +66,7 @@ public class KitListener extends ListenerBase implements Reloadable {
             KitUserDataModule user = loader.get(player.getUniqueId()).get().get(KitUserDataModule.class);
             gds.getAutoRedeemable().stream()
                 .filter(k -> k.ignoresPermission() ||
-                        (!kca.getNodeOrDefault().isSeparatePermissions() &&
+                        (!this.isSepratePermissions &&
                         !player.hasPermission(PermissionRegistry.PERMISSIONS_PREFIX + "kits." + k.getName().toLowerCase())))
                 .forEach(k -> {
                     try {
@@ -184,6 +173,8 @@ public class KitListener extends ListenerBase implements Reloadable {
     }
 
     @Override public void onReload() throws Exception {
+        KitConfigAdapter kca = getServiceUnchecked(KitConfigAdapter.class);
+        this.isSepratePermissions = kca.getNodeOrDefault().isSeparatePermissions();
         this.mustGetAll = kca.getNodeOrDefault().isMustGetAll();
     }
 }

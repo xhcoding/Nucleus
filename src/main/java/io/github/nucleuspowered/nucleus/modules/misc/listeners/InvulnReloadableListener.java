@@ -18,14 +18,10 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 
 public class InvulnReloadableListener extends ListenerBase implements ListenerBase.Conditional {
 
-    private String basePerm = null;
+    private String basePerm = getPermisisonHandlerFor(GodCommand.class).getBase();
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join joinEvent, @Getter("getTargetEntity") Player player) {
-        if (basePerm == null) {
-            basePerm = plugin.getPermissionRegistry().getPermissionsForNucleusCommand(GodCommand.class).getBase();
-        }
-
         if (!player.hasPermission(basePerm)) {
             plugin.getUserDataManager().get(player).ifPresent(x -> x.get(InvulnerabilityUserDataModule.class).setInvulnerable(false));
         }

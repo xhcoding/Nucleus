@@ -26,6 +26,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.World;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 
 @Permissions
 @RegisterCommand({"entityinfo"})
+@NonnullByDefault
 public class EntityInfoCommand extends AbstractCommand<Player> {
 
     @Override

@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @NoModifiers
 @NonnullByDefault
 @RunAsync
@@ -43,12 +41,7 @@ import javax.inject.Inject;
 public class KitEditCommandCommand extends AbstractCommand<Player> {
 
     private final String key = "kit";
-    private final KitHandler handler;
-
-    @Inject
-    public KitEditCommandCommand(KitHandler handler) {
-        this.handler = handler;
-    }
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

@@ -25,8 +25,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.time.Duration;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setcooldown", "setinterval"}, subcommandOf = KitCommand.class)
 @RunAsync
@@ -34,15 +32,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitSetCooldownCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitHandler;
+    private final KitHandler kitHandler = getServiceUnchecked(KitHandler.class);
 
     private final String kit = "kit";
     private final String duration = "duration";
-
-    @Inject
-    public KitSetCooldownCommand(KitHandler kitHandler) {
-        this.kitHandler = kitHandler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

@@ -24,27 +24,27 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 @RunAsync
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand({"helpop"})
 @EssentialsEquivalent({"helpop", "amsg", "ac"})
+@NonnullByDefault
 public class HelpOpCommand extends AbstractCommand<Player> implements Reloadable {
 
     private final String messageKey = "message";
 
-    @Inject private MessageConfigAdapter mca;
-    private MessageConfig messageConfig;
-    @Inject private TextParsingUtils textParsingUtils;
+    private MessageConfig messageConfig = new MessageConfig();
 
     @Override
     public CommandElement[] getArguments() {
-        return new CommandElement[] {GenericArguments.remainingJoinedStrings(Text.of(messageKey))};
+        return new CommandElement[] {
+                GenericArguments.remainingJoinedStrings(Text.of(messageKey))
+        };
     }
 
     @Override
@@ -76,6 +76,6 @@ public class HelpOpCommand extends AbstractCommand<Player> implements Reloadable
     }
 
     @Override public void onReload() {
-        messageConfig = mca.getNodeOrDefault();
+        messageConfig = getServiceUnchecked(MessageConfigAdapter.class).getNodeOrDefault();
     }
 }

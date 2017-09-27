@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * Sets kit to be automatically redeemed on login.
  *
@@ -35,15 +33,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitAutoRedeemCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitConfig;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     private final String kit = "kit";
     private final String toggle = "true|false";
-
-    @Inject
-    public KitAutoRedeemCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -61,7 +54,7 @@ public class KitAutoRedeemCommand extends AbstractCommand<CommandSource> {
         // This Kit is a reference back to the version in list, so we don't need
         // to update it explicitly
         kitInfo.setAutoRedeem(b);
-        kitConfig.saveKit(kitInfo);
+        this.handler.saveKit(kitInfo);
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(b ? "command.kit.autoredeem.on" : "command.kit.autoredeem.off",
                 kitInfo.getName()));
 

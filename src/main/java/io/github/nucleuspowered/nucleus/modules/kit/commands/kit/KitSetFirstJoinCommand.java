@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"setfirstjoin", "firstjoin"}, subcommandOf = KitCommand.class)
 @RunAsync
@@ -30,15 +28,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitSetFirstJoinCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitConfig;
+    private final KitHandler kitConfig = getServiceUnchecked(KitHandler.class);
 
     private final String kit = "kit";
     private final String toggle = "true|false";
-
-    @Inject
-    public KitSetFirstJoinCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
 
     @Override
     public CommandElement[] getArguments() {

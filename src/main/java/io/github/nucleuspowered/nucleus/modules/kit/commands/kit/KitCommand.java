@@ -35,8 +35,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * Allows a user to redeem a kit.
  */
@@ -50,19 +48,10 @@ public class KitCommand extends AbstractCommand<Player> implements Reloadable {
 
     private final String kitKey = "kit";
 
-    private final KitHandler kitHandler;
-    private final KitConfigAdapter kca;
-    private final EconHelper econHelper;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     private boolean isDrop;
     private boolean mustGetAll;
-
-    @Inject
-    public KitCommand(KitHandler kitHandler, KitConfigAdapter kca, EconHelper econHelper) {
-        this.kitHandler = kitHandler;
-        this.kca = kca;
-        this.econHelper = econHelper;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -92,7 +81,8 @@ public class KitCommand extends AbstractCommand<Player> implements Reloadable {
     public CommandResult executeCommand(Player player, CommandContext args) throws ReturnMessageException {
         Kit kit = args.<Kit>getOne(this.kitKey).get();
 
-        double cost = kit.getCost();
+        EconHelper econHelper = Nucleus.getNucleus().getEconHelper();
+        double cost = econHelper.economyServiceExists() ? kit.getCost() : 0;
         if (permissions.testCostExempt(player)) {
             // If exempt - no cost.
             cost = 0;
@@ -105,7 +95,7 @@ public class KitCommand extends AbstractCommand<Player> implements Reloadable {
 
         try {
             NucleusKitService.RedeemResult redeemResult =
-                    this.kitHandler.redeemKit(kit, player, true, this.mustGetAll);
+                    this.handler.redeemKit(kit, player, true, this.mustGetAll);
             if (!redeemResult.rejected().isEmpty()) {
                 // If we drop them, tell the user
                 if (this.isDrop) {
@@ -151,6 +141,7 @@ public class KitCommand extends AbstractCommand<Player> implements Reloadable {
 
     @Override
     public void onReload() throws Exception {
+        KitConfigAdapter kca = getServiceUnchecked(KitConfigAdapter.class);
         this.isDrop = kca.getNodeOrDefault().isDropKitIfFull();
         this.mustGetAll = kca.getNodeOrDefault().isMustGetAll();
     }

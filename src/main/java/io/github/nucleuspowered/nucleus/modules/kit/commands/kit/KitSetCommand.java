@@ -20,8 +20,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * Sets kit items.
  *
@@ -33,13 +31,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitSetCommand extends AbstractCommand<Player> {
 
-    private final KitHandler kitConfig;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
     private final String kit = "kit";
-
-    @Inject
-    public KitSetCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -52,7 +45,7 @@ public class KitSetCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
         Kit kitInfo = args.<Kit>getOne(kit).get();
         kitInfo.updateKitInventory(player);
-        kitConfig.saveKit(kitInfo);
+        handler.saveKit(kitInfo);
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.set.success", kitInfo.getName()));
         return CommandResult.success();
     }

@@ -4,10 +4,10 @@
  */
 package io.github.nucleuspowered.nucleus.modules.kit.commands.kit;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
 import io.github.nucleuspowered.nucleus.argumentparsers.KitArgument;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
@@ -25,8 +25,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"resetusage", "reset"}, subcommandOf = KitCommand.class)
 @RunAsync
@@ -34,15 +32,8 @@ import javax.inject.Inject;
 @NoModifiers
 public class KitResetUsageCommand extends AbstractCommand<CommandSource> {
 
-    private final UserDataManager userConfigLoader;
-
     private final String kit = "kit";
     private final String user = "subject";
-
-    @Inject
-    public KitResetUsageCommand(UserDataManager userConfigLoader) {
-        this.userConfigLoader = userConfigLoader;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -56,7 +47,7 @@ public class KitResetUsageCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
         Kit kitInfo = args.<Kit>getOne(kit).get();
         User u = args.<User>getOne(user).get();
-        KitUserDataModule inu = userConfigLoader.getUnchecked(u).get(KitUserDataModule.class);
+        KitUserDataModule inu = Nucleus.getNucleus().getUserDataManager().getUnchecked(u).get(KitUserDataModule.class);
 
         if (Util.getKeyIgnoreCase(inu.getKitLastUsedTime(), kitInfo.getName()).isPresent()) {
             // Remove the key.

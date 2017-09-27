@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"toggleredeemmessage", "togglemessage"}, subcommandOf = KitCommand.class)
 @RunAsync
@@ -30,14 +28,9 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitRedeemMessageCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler handler;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
     private final String toggle = "displayMessageToggle";
     private final String kit = "kit";
-
-    @Inject
-    public KitRedeemMessageCommand(KitHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

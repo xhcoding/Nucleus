@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"permissionbypass"}, subcommandOf = KitCommand.class)
 @RunAsync
@@ -30,15 +28,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitPermissionBypassCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitConfig;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     private final String kit = "kit";
     private final String toggle = "true|false";
-
-    @Inject
-    public KitPermissionBypassCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -56,7 +49,7 @@ public class KitPermissionBypassCommand extends AbstractCommand<CommandSource> {
         // This Kit is a reference back to the version in list, so we don't need
         // to update it explicitly
         kitInfo.setIgnoresPermission(b);
-        kitConfig.saveKit(kitInfo);
+        handler.saveKit(kitInfo);
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(b ? "command.kit.permissionbypass.on" : "command.kit.permissionbypass.off",
                 kitInfo.getName().toLowerCase()));
 

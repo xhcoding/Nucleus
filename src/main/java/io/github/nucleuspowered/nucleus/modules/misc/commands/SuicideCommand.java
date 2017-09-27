@@ -15,14 +15,15 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(suggestedLevel = SuggestedLevel.USER)
 @RegisterCommand("suicide")
 @EssentialsEquivalent("suicide")
+@NonnullByDefault
 public class SuicideCommand extends AbstractCommand<Player> {
 
     @Override
-    @SuppressWarnings("deprecation")
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
         GameMode gm = src.gameMode().getDirect().orElse(src.gameMode().getDefault());
         if (gm != GameModes.SURVIVAL && gm != GameModes.NOT_SET) {

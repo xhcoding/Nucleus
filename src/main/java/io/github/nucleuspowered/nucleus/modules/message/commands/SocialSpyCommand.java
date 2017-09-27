@@ -25,8 +25,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 @Permissions(suggestedLevel = SuggestedLevel.MOD)
 @RunAsync
 @NoModifiers
@@ -36,12 +34,7 @@ import javax.inject.Inject;
 public class SocialSpyCommand extends AbstractCommand<Player> {
 
     private final String arg = "Social Spy";
-    private final MessageHandler handler;
-
-    @Inject
-    public SocialSpyCommand(MessageHandler handler) {
-        this.handler = handler;
-    }
+    private final MessageHandler handler = getServiceUnchecked(MessageHandler.class);
 
     @Override protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
         return new HashMap<String, PermissionInformation>() {{

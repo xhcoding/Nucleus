@@ -33,8 +33,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"view"}, subcommandOf = KitCommand.class)
 @NoModifiers
@@ -42,16 +40,9 @@ import javax.inject.Inject;
 @Since(spongeApiVersion = "7.0", minecraftVersion = "1.12.1", nucleusVersion = "1.2")
 public class KitViewCommand extends AbstractCommand<Player> implements Reloadable {
 
-    private final KitConfigAdapter kitConfigAdapter;
-    private final KitHandler kitHandler;
+    private final KitHandler kitHandler = getServiceUnchecked(KitHandler.class);
     private final String kitKey = "kit";
     private boolean processTokens = false;
-
-    @Inject
-    public KitViewCommand(KitHandler kitHandler, KitConfigAdapter kca) {
-        this.kitHandler = kitHandler;
-        this.kitConfigAdapter = kca;
-    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {
@@ -85,6 +76,6 @@ public class KitViewCommand extends AbstractCommand<Player> implements Reloadabl
 
     @Override
     public void onReload() throws Exception {
-        this.processTokens = this.kitConfigAdapter.getNodeOrDefault().isProcessTokens();
+        this.processTokens = getServiceUnchecked(KitConfigAdapter.class).getNodeOrDefault().isProcessTokens();
     }
 }

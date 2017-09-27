@@ -28,8 +28,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 /**
  * Messages a player.
  */
@@ -41,12 +39,7 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
     private final String to = "to";
     private final String message = "message";
 
-    private final MessageHandler handler;
-
-    @Inject
-    private MessageCommand(MessageHandler handler) {
-        this.handler = handler;
-    }
+    private final MessageHandler handler = getServiceUnchecked(MessageHandler.class);
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {

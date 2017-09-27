@@ -30,8 +30,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"edit", "ed"}, subcommandOf = KitCommand.class)
 @NoModifiers
@@ -39,13 +37,8 @@ import javax.inject.Inject;
 @Since(spongeApiVersion = "5.0", minecraftVersion = "1.10.2", nucleusVersion = "0.13")
 public class KitEditCommand extends AbstractCommand<Player> {
 
-    private final KitHandler kitHandler;
+    private final KitHandler kitHandler = getServiceUnchecked(KitHandler.class);
     private final String kitKey = "kit";
-
-    @Inject
-    public KitEditCommand(KitHandler kitHandler) {
-        this.kitHandler = kitHandler;
-    }
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

@@ -30,8 +30,6 @@ import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"create"}, subcommandOf = KitCommand.class)
 @NoModifiers
@@ -39,14 +37,9 @@ import javax.inject.Inject;
 @Since(spongeApiVersion = "5.0", minecraftVersion = "1.10.2", nucleusVersion = "0.13")
 public class KitCreateCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitConfig;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     private final String name = "name";
-
-    @Inject
-    public KitCreateCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -57,7 +50,7 @@ public class KitCreateCommand extends AbstractCommand<CommandSource> {
     public CommandResult executeCommand(final CommandSource source, CommandContext args) throws ReturnMessageException {
         String kitName = args.<String>getOne(name).get();
 
-        if (kitConfig.getKitNames().stream().anyMatch(kitName::equalsIgnoreCase)) {
+        if (handler.getKitNames().stream().anyMatch(kitName::equalsIgnoreCase)) {
             throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.alreadyexists", kitName));
         }
 
@@ -72,7 +65,7 @@ public class KitCreateCommand extends AbstractCommand<CommandSource> {
             Sponge.getEventManager().registerListeners(plugin, new TemporaryEventListener(inventory, container, kitName));
         } else {
             try {
-                kitConfig.saveKit(kitConfig.createKit(kitName));
+                handler.saveKit(handler.createKit(kitName));
                 source.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.addempty.success", kitName));
             } catch (IllegalArgumentException ex) {
                 throw ReturnMessageException.fromKey("command.kit.create.failed", kitName);
@@ -101,8 +94,8 @@ public class KitCreateCommand extends AbstractCommand<CommandSource> {
                 this.run = true;
                 Sponge.getEventManager().unregisterListeners(this);
 
-                if (kitConfig.getKitNames().stream().noneMatch(kitName::equalsIgnoreCase)) {
-                    kitConfig.saveKit(kitConfig.createKit(kitName).updateKitInventory(this.inventory));
+                if (handler.getKitNames().stream().noneMatch(kitName::equalsIgnoreCase)) {
+                    handler.saveKit(handler.createKit(kitName).updateKitInventory(this.inventory));
                     player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.success", this.kitName));
                 } else {
                     player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.alreadyexists", this.kitName));

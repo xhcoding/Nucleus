@@ -13,7 +13,6 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -23,8 +22,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(prefix = "mail")
 @RunAsync
 @NoModifiers
@@ -32,15 +29,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class MailOtherCommand extends AbstractCommand<CommandSource> {
 
-    private final MailReadBase base;
-    private final MailHandler handler;
+    private final MailHandler handler = getServiceUnchecked(MailHandler.class);
     private final String userKey = "user";
-
-    @Inject
-    public MailOtherCommand(MailHandler handler, Game game) {
-        base = new MailReadBase(game, handler);
-        this.handler = handler;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -51,6 +41,6 @@ public class MailOtherCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        return base.executeCommand(src, args.<User>getOne(userKey).get(), args.getAll(MailReadBase.filters));
+        return MailReadBase.INSTANCE.executeCommand(src, args.<User>getOne(userKey).get(), args.getAll(MailReadBase.filters));
     }
 }

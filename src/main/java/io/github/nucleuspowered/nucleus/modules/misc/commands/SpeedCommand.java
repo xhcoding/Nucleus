@@ -10,6 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
@@ -25,24 +26,21 @@ import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
-@SuppressWarnings("ALL")
+@NonnullByDefault
 @RegisterCommand("speed")
 @Permissions(supportsOthers = true)
 @EssentialsEquivalent(value = {"speed", "flyspeed", "walkspeed", "fspeed", "wspeed"}, isExact = false,
     notes = "This command either uses your current state or a specified argument to determine whether to alter fly or walk speed.")
-public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
+public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer implements Reloadable {
 
     private final String speedKey = "speed";
     private final String typeKey = "type";
-
-    @Inject private MiscConfigAdapter miscConfigAdapter;
 
     /**
      * As the standard flying speed is 0.05 and the standard walking speed is
@@ -50,6 +48,11 @@ public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
      * therefore 2, standard flying speed - 1.
      */
     public static final int multiplier = 20;
+    private int maxSpeed = 5;
+
+    @Override public void onReload() throws Exception {
+        this.maxSpeed = getServiceUnchecked(MiscConfigAdapter.class).getNodeOrDefault().getMaxSpeed();
+    }
 
     @Override
     protected Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -98,7 +101,6 @@ public class SpeedCommand extends AbstractCommand.SimpleTargetOtherPlayer {
             return CommandResult.empty();
         }
 
-        int maxSpeed = miscConfigAdapter.getNodeOrDefault().getMaxSpeed();
         if (!permissions.testSuffix(src, "exempt.max", src, true) && maxSpeed < speed) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.speed.max", String.valueOf(maxSpeed)));
             return CommandResult.empty();

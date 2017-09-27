@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * Sets kit cost.
  *
@@ -35,15 +33,10 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitCostCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitHandler;
+    private final KitHandler kitHandler = getServiceUnchecked(KitHandler.class);
 
     private final String costKey = "cost";
     private final String kitKey = "kit";
-
-    @Inject
-    public KitCostCommand(KitHandler kitHandler) {
-        this.kitHandler = kitHandler;
-    }
 
     @Override
     public CommandElement[] getArguments() {

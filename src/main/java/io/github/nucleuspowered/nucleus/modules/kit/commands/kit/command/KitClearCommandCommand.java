@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @NoModifiers
 @NonnullByDefault
 @RunAsync
@@ -32,12 +30,7 @@ public class KitClearCommandCommand extends AbstractCommand<CommandSource> {
 
     private final String key = "kit";
 
-    private final KitHandler handler;
-
-    @Inject
-    public KitClearCommandCommand(KitHandler handler) {
-        this.handler = handler;
-    }
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

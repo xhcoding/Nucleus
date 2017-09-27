@@ -8,13 +8,13 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.nucleusdata.Kit;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoModifiers;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.kit.config.KitConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
@@ -38,31 +38,25 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 @Permissions(prefix = "kit", suggestedLevel = SuggestedLevel.ADMIN)
 @RegisterCommand(value = {"list", "ls"}, subcommandOf = KitCommand.class, rootAliasRegister = "kits")
 @RunAsync
 @NoModifiers
 @NonnullByDefault
-public class KitListCommand extends AbstractCommand<CommandSource> {
+public class KitListCommand extends AbstractCommand<CommandSource> implements Reloadable {
 
-    private final KitHandler kitConfig;
-    private final KitConfigAdapter kca;
-    private final UserDataManager userConfigLoader;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
+
     private final CommandPermissionHandler kitPermissionHandler = Nucleus.getNucleus().getPermissionRegistry()
             .getPermissionsForNucleusCommand(KitCommand.class);
 
-    @Inject
-    public KitListCommand(KitHandler kitConfig, KitConfigAdapter kca, UserDataManager userConfigLoader) {
-        this.kitConfig = kitConfig;
-        this.kca = kca;
-        this.userConfigLoader = userConfigLoader;
-    }
+    private boolean isSeparatePermissions = false;
+
 
     @Override
     public CommandResult executeCommand(final CommandSource src, CommandContext args) throws Exception {
-        Set<String> kits = kitConfig.getKitNames();
+        Set<String> kits = handler.getKitNames();
         if (kits.isEmpty()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.empty"));
             return CommandResult.empty();
@@ -72,14 +66,14 @@ public class KitListCommand extends AbstractCommand<CommandSource> {
         ArrayList<Text> kitText = Lists.newArrayList();
 
         final KitUserDataModule user =
-                src instanceof Player ? userConfigLoader.getUnchecked(((Player)src).getUniqueId()).get(KitUserDataModule.class) : null;
+                src instanceof Player ? Nucleus.getNucleus().getUserDataManager()
+                        .getUnchecked(((Player)src).getUniqueId()).get(KitUserDataModule.class) : null;
 
         // Only show kits that the user has permission for, if needed. This is the permission "plugin.kits.<kit>".
         final boolean showHidden = kitPermissionHandler.testSuffix(src, "showhidden");
-        kitConfig.getKitNames(showHidden, src).stream()
-            .filter(kit -> !kca.getNodeOrDefault().isSeparatePermissions() ||
-                    src.hasPermission(KitHandler.getPermissionForKit(kit.toLowerCase())))
-            .forEach(kit -> kitText.add(createKit(src, user, kit, kitConfig.getKit(kit).get())));
+        handler.getKitNames(showHidden, src).stream()
+            .filter(kit -> !this.isSeparatePermissions || src.hasPermission(KitHandler.getPermissionForKit(kit.toLowerCase())))
+            .forEach(kit -> kitText.add(createKit(src, user, kit, handler.getKit(kit).get())));
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
                 .title(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
@@ -125,5 +119,10 @@ public class KitListCommand extends AbstractCommand<CommandSource> {
         }
 
         return builder.build();
+    }
+
+    @Override
+    public void onReload() throws Exception {
+        this.isSeparatePermissions = getServiceUnchecked(KitConfigAdapter.class).getNodeOrDefault().isSeparatePermissions();
     }
 }

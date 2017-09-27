@@ -21,8 +21,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * Sets kit items.
  *
@@ -35,13 +33,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitRemoveCommand extends AbstractCommand<CommandSource> {
 
-    private final KitHandler kitConfig;
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
     private final String kit = "kit";
-
-    @Inject
-    public KitRemoveCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
 
     @Override
     public CommandElement[] getArguments() {
@@ -51,7 +44,7 @@ public class KitRemoveCommand extends AbstractCommand<CommandSource> {
     @Override
     public CommandResult executeCommand(final CommandSource player, CommandContext args) throws Exception {
         Kit kitName = args.<Kit>getOne(kit).get();
-        kitConfig.removeKit(kitName.getName());
+        handler.removeKit(kitName.getName());
         player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.remove.success", kitName.getName()));
         return CommandResult.success();
     }

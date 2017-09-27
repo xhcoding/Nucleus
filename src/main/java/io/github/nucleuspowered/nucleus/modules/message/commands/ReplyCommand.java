@@ -25,8 +25,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * Replies to the last player who sent a message.
  */
@@ -40,12 +38,7 @@ public class ReplyCommand extends AbstractCommand<CommandSource> {
 
     private final String message = "message";
 
-    private final MessageHandler handler;
-
-    @Inject
-    public ReplyCommand(MessageHandler handler) {
-        this.handler = handler;
-    }
+    private final MessageHandler handler = getServiceUnchecked(MessageHandler.class);
 
     @Override
     public CommandElement[] getArguments() {

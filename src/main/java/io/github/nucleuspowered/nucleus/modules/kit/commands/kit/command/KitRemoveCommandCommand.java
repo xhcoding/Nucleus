@@ -26,8 +26,6 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 @NoModifiers
 @NonnullByDefault
 @RunAsync
@@ -39,12 +37,7 @@ public class KitRemoveCommandCommand extends AbstractCommand<CommandSource> {
     private final String index = "index";
     private final String command = "command";
 
-    private final KitHandler handler;
-
-    @Inject
-    public KitRemoveCommandCommand(KitHandler handler) {
-        this.handler = handler;
-    }
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     @Override public CommandElement[] getArguments() {
         return new CommandElement[] {

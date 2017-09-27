@@ -6,7 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.mail.listeners;
 
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.modules.mail.handlers.MailHandler;
-import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.Text;
@@ -16,16 +16,13 @@ import org.spongepowered.api.text.format.TextStyles;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 public class MailListener extends ListenerBase {
 
-    @Inject private MailHandler handler;
-    @Inject private Game game;
+    private MailHandler handler = getServiceUnchecked(MailHandler.class);
 
     @Listener
     public void onPlayerJoin(ClientConnectionEvent.Join event) {
-        game.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
+        Sponge.getScheduler().createAsyncExecutor(plugin).schedule(() -> {
             int mailCount = handler.getMailInternal(event.getTargetEntity()).size();
             if (mailCount > 0) {
                 event.getTargetEntity().sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("mail.login", String.valueOf(mailCount)));

@@ -16,8 +16,6 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 @Permissions(mainOverride = "mail", suggestedLevel = SuggestedLevel.USER)
 @NoModifiers
 @RunAsync
@@ -25,12 +23,7 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class ClearMailCommand extends AbstractCommand<Player> {
 
-    private final MailHandler handler;
-
-    @Inject
-    public ClearMailCommand(MailHandler handler) {
-        this.handler = handler;
-    }
+    private final MailHandler handler = getServiceUnchecked(MailHandler.class);
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {

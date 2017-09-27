@@ -19,8 +19,6 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
-import javax.inject.Inject;
-
 /**
  * Sets kit items.
  *
@@ -32,13 +30,8 @@ import javax.inject.Inject;
 @NonnullByDefault
 public class KitAddCommand extends AbstractCommand<Player> {
 
-    private final KitHandler kitConfig;
     private final String name = "name";
-
-    @Inject
-    public KitAddCommand(KitHandler kitConfig) {
-        this.kitConfig = kitConfig;
-    }
+    private final KitHandler handler = getServiceUnchecked(KitHandler.class);
 
     @Override
     public CommandElement[] getArguments() {
@@ -49,8 +42,8 @@ public class KitAddCommand extends AbstractCommand<Player> {
     public CommandResult executeCommand(final Player player, CommandContext args) throws Exception {
         String kitName = args.<String>getOne(name).get();
 
-        if (kitConfig.getKitNames().stream().noneMatch(kitName::equalsIgnoreCase)) {
-            kitConfig.saveKit(kitConfig.createKit(kitName).updateKitInventory(player));
+        if (this.handler.getKitNames().stream().noneMatch(kitName::equalsIgnoreCase)) {
+            this.handler.saveKit(this.handler.createKit(kitName).updateKitInventory(player));
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.add.success", kitName));
             return CommandResult.success();
         } else {
