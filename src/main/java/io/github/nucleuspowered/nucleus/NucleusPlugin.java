@@ -66,6 +66,7 @@ import org.spongepowered.api.GameState;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.asset.Asset;
+import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
@@ -78,6 +79,7 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
@@ -479,6 +481,35 @@ public class NucleusPlugin extends Nucleus {
 
             this.hasStarted = true;
             Sponge.getScheduler().createSyncExecutor(this).submit(() -> this.gameStartedTime = Instant.now());
+
+            // What about perms and econ?
+            List<Text> lt = Lists.newArrayList();
+            boolean simplePerms = Sponge.getServiceManager().getRegistration(PermissionService.class)
+                    .map(x -> Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION).equals(x.getPlugin())).orElse(true);
+            if (simplePerms) {
+                addTri(lt, 0);
+                lt.add(messageProvider.getTextMessageWithFormat("standard.line"));
+                lt.add(messageProvider.getTextMessageWithFormat("standard.nopermplugin"));
+                lt.add(messageProvider.getTextMessageWithFormat("standard.nopermplugin2"));
+            }
+
+            if (!Sponge.getServiceManager().isRegistered(EconomyService.class)) {
+                if (lt.isEmpty()) {
+                    addTri(lt, 0);
+                }
+
+                lt.add(messageProvider.getTextMessageWithFormat("standard.line"));
+                lt.add(messageProvider.getTextMessageWithFormat("standard.noeconplugin"));
+                lt.add(messageProvider.getTextMessageWithFormat("standard.noeconplugin2"));
+            }
+
+            if (!lt.isEmpty()) {
+                lt.add(messageProvider.getTextMessageWithFormat("standard.line"));
+                lt.add(messageProvider.getTextMessageWithFormat("standard.seesuggested"));
+                lt.add(messageProvider.getTextMessageWithFormat("standard.line"));
+                ConsoleSource c = Sponge.getServer().getConsole();
+                lt.forEach(c::sendMessage);
+            }
         }
     }
 
@@ -842,6 +873,21 @@ public class NucleusPlugin extends Nucleus {
                 Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION).getVersion().orElse("unknown"), "."));
         return messages;
     }
+
+    private void addTri(List<Text> messages, int spacing) {
+        Text space = Text.of(String.join("", Collections.nCopies(spacing, " ")));
+
+        messages.add(Text.of(space, TextColors.YELLOW, "        /\\"));
+        messages.add(Text.of(space, TextColors.YELLOW, "       /  \\"));
+        messages.add(Text.of(space, TextColors.YELLOW, "      / || \\"));
+        messages.add(Text.of(space, TextColors.YELLOW, "     /  ||  \\"));
+        messages.add(Text.of(space, TextColors.YELLOW, "    /   ||   \\"));
+        messages.add(Text.of(space, TextColors.YELLOW, "   /    ||    \\"));
+        messages.add(Text.of(space, TextColors.YELLOW, "  /            \\"));
+        messages.add(Text.of(space, TextColors.YELLOW, " /      **      \\"));
+        messages.add(Text.of(space, TextColors.YELLOW, "------------------"));
+    }
+
 
     private void addX(List<Text> messages, int spacing) {
         Text space = Text.of(String.join("", Collections.nCopies(spacing, " ")));
