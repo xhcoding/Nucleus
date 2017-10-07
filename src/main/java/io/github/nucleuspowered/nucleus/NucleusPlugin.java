@@ -678,10 +678,6 @@ public class NucleusPlugin extends Nucleus {
         try {
             return Optional.of(getModuleContainer().getConfigAdapterForModule(id, configAdapterClass));
         } catch (NoModuleException | IncorrectAdapterTypeException e) {
-            if (isDebugMode()) {
-                e.printStackTrace();
-            }
-
             return Optional.empty();
         }
     }
