@@ -30,6 +30,10 @@ public abstract class AbstractService<T> implements Service {
         }
     }
 
+    public final boolean isLoaded() {
+        return this.data != null;
+    }
+
     @Override public boolean load() {
         try {
             loadInternal();

@@ -36,6 +36,14 @@ public abstract class ModularDataService<S extends ModularDataService<S>> extend
         super(dataProvider, loadNow);
     }
 
+    public <T extends DataModule<S>, R> Optional<R> quickGetIfLoaded(Class<T> module, Function<T, R> getter) {
+        if (this.isLoaded()) {
+            return Optional.of(getter.apply(get(module)));
+        }
+
+        return Optional.empty();
+    }
+
     public <T extends DataModule<S>, R> R quickGet(Class<T> module, Function<T, R> getter) {
         return getter.apply(get(module));
     }
