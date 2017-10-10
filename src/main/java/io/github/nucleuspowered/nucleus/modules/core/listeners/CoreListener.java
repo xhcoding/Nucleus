@@ -140,7 +140,7 @@ public class CoreListener extends ListenerBase implements Reloadable {
         }
     }
 
-    @Listener
+    @Listener(beforeModifications = true)
     @SuppressWarnings("ConstantConditionalExpression")
     public void onPlayerQuit(final ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") final Player player) {
         // There is an issue in Sponge where the connection may not even exist, because they were disconnected before the connection was
@@ -163,6 +163,7 @@ public class CoreListener extends ListenerBase implements Reloadable {
                 y.setLastIp(address);
             });
 
+            x.save();
             plugin.getUserCacheService().updateCacheForPlayer(x);
         } catch (Exception e) {
             Nucleus.getNucleus().printStackTraceIfDebugMode(e);
