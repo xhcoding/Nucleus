@@ -18,6 +18,7 @@ import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.property.block.PassableProperty;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
@@ -111,6 +112,10 @@ public class NucleusTeleportHandler {
         return teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, cause);
     }
 
+    public TeleportResult teleportPlayer(Player pl, Location<World> loc, TeleportMode mode) {
+        return CauseStackHelper.createFrameWithCausesWithReturn(c -> teleportPlayer(pl, loc, mode, c), pl);
+    }
+
     public TeleportResult teleportPlayer(Player pl, Location<World> loc, TeleportMode mode, Cause of) {
         return teleportPlayer(pl, loc, pl.getRotation(), mode, of);
     }
@@ -145,6 +150,11 @@ public class NucleusTeleportHandler {
                 return TeleportResult.FAILED_CANCELLED;
             }
 
+            Optional<Entity> oe = player.getVehicle();
+            if (oe.isPresent()) {
+                player.setVehicle(null);
+            }
+
             // Do it, tell the routine if it worked.
             TeleportResult tr;
             if (addOffset) {
@@ -155,6 +165,8 @@ public class NucleusTeleportHandler {
 
             if (tr.isSuccess()) {
                 player.setSpectatorTarget(null);
+            } else {
+                oe.ifPresent(player::setVehicle);
             }
 
             return tr;

@@ -12,6 +12,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
+import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
 import io.github.nucleuspowered.nucleus.modules.jump.config.JumpConfigAdapter;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandResult;
@@ -74,7 +75,7 @@ public class JumpCommand extends AbstractCommand<Player> implements Reloadable {
             throw ReturnMessageException.fromKey("command.jump.outsideborder");
         }
 
-        if (player.setLocationSafely(finalLocation)) {
+        if (Nucleus.getNucleus().getTeleportHandler().teleportPlayer(player, finalLocation, NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT).isSuccess()) {
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jump.success"));
             return CommandResult.success();
         }
