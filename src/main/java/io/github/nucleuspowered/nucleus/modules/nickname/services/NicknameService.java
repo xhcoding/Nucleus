@@ -43,8 +43,13 @@ public class NicknameService implements NucleusNicknameService {
     private int min = 3;
     private int max = 16;
     private final Map<String[], Tuple<Matcher, Text>> replacements = Maps.newHashMap();
+    private boolean registered = false;
 
     public void register() {
+        if (this.registered) {
+            return;
+        }
+
         MessageProvider mp = Nucleus.getNucleus().getMessageProvider();
         CommandPermissionHandler permissions = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(NicknameCommand.class);
 
@@ -60,9 +65,10 @@ public class NicknameService implements NucleusNicknameService {
                 Tuple.of(Pattern.compile("[&]+" + k.getKey().toString().toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(""),
                         mp.getTextMessageWithFormat("command.nick.style.nopermswith", k.getValue().toLowerCase()))));
 
-        replacements.put(new String[] { permissions.getPermissionWithSuffix("magic") },
+        this.replacements.put(new String[] { permissions.getPermissionWithSuffix("magic") },
                 Tuple.of(Pattern.compile("[&]+k", Pattern.CASE_INSENSITIVE).matcher(""),
                         mp.getTextMessageWithFormat("command.nick.style.nopermswith", "magic")));
+        this.registered = true;
     }
 
     @Override
