@@ -145,4 +145,6 @@ public abstract class Nucleus {
     public abstract boolean isServer();
 
     public abstract void addStartupMessage(Text message);
+
+    public abstract boolean isPrintingSavesAndLoads();
 }

@@ -288,5 +288,9 @@ public abstract class TestBase {
         @Override public void addStartupMessage(Text message) {
             // NOOP
         }
+
+        @Override public boolean isPrintingSavesAndLoads() {
+            return false;
+        }
     }
 }

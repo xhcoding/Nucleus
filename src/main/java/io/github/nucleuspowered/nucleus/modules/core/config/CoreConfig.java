@@ -48,6 +48,10 @@ public class CoreConfig {
     @Setting(value = "trace-user-creations-level")
     private int traceUserCreations = 0;
 
+    @DoNotGenerate
+    @Setting(value = "print-file-save-load")
+    private boolean printSaveLoad = false;
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -98,5 +102,9 @@ public class CoreConfig {
      */
     public int traceUserCreations() {
         return this.traceUserCreations;
+    }
+
+    public boolean isPrintSaveLoad() {
+        return this.printSaveLoad;
     }
 }
