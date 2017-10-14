@@ -429,11 +429,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
             thrown.add(
                 Tuple.of(command, new CommandException(
                     Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("command.exception.unexpected", m), throwable)));
-
-            if (plugin.isDebugMode()) {
-                throwable.printStackTrace();
-            }
-
+            throwable.printStackTrace(); // this is on demand, so we should throw it.
             throw new NucleusCommandException(thrown);
         }
 
@@ -482,9 +478,7 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                     plugin.getMessageProvider().getTextMessageWithTextFormat("command.exception.unexpected", ex.getText()));
             return CommandResult.empty();
         } catch (Throwable throwable) {
-            if (plugin.isDebugMode()) {
-                throwable.printStackTrace();
-            }
+            throwable.printStackTrace();
 
             String m;
             if (throwable.getMessage() == null) {
