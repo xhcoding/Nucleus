@@ -43,14 +43,14 @@ public class BackListeners extends ListenerBase implements Reloadable {
     @Listener
     @Exclude(MoveEntityEvent.Teleport.Portal.class) // Don't set /back on a portal.
     public void onTeleportPlayer(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player pl) {
-        if (backConfig.isOnTeleport() && getLogBack(pl) && s.testSuffix(pl, ON_TELEPORT)) {
+        if (backConfig.isOnTeleport() && check(event) && getLogBack(pl) && s.testSuffix(pl, ON_TELEPORT)) {
             handler.setLastLocation(pl, event.getFromTransform());
         }
     }
 
     @Listener
     public void onPortalPlayer(MoveEntityEvent.Teleport.Portal event, @Getter("getTargetEntity") Player pl) {
-        if (backConfig.isOnPortal() && getLogBack(pl) && s.testSuffix(pl, ON_PORTAL)) {
+        if (backConfig.isOnPortal() && check(event) && getLogBack(pl) && s.testSuffix(pl, ON_PORTAL)) {
             handler.setLastLocation(pl, event.getFromTransform());
         }
     }
@@ -66,6 +66,10 @@ public class BackListeners extends ListenerBase implements Reloadable {
         if (backConfig.isOnDeath() && getLogBack(pl) && s.testSuffix(pl, ON_DEATH)) {
             handler.setLastLocation(pl, event.getTargetEntity().getTransform());
         }
+    }
+
+    private boolean check(MoveEntityEvent.Teleport event) {
+        return !event.getFromTransform().equals(event.getToTransform());
     }
 
     private boolean getLogBack(Player player) {
