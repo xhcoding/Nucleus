@@ -59,7 +59,7 @@ public class HomeCommand extends AbstractCommand<Player> implements Reloadable {
         int current = this.homeHandler.getHomeCount(src) ;
         if (this.isPreventOverhang && max < current) {
             // If the player has too many homes, tell them
-            throw ReturnMessageException.fromKey("command.home.overhang", String.valueOf(current), String.valueOf(max));
+            throw ReturnMessageException.fromKey("command.home.overhang", String.valueOf(max), String.valueOf(current));
         }
 
         // Get the home.
