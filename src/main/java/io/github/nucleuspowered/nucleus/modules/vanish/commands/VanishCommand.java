@@ -50,6 +50,7 @@ public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
         Map<String, PermissionInformation> mspi = Maps.newHashMap();
         mspi.put("see", PermissionInformation.getWithTranslation("permission.vanish.see", SuggestedLevel.ADMIN));
         mspi.put("persist", PermissionInformation.getWithTranslation("permission.vanish.persist", SuggestedLevel.ADMIN));
+        mspi.put("onlogin", PermissionInformation.getWithTranslation("permission.vanish.onlogin", SuggestedLevel.NONE));
         return mspi;
     }
 

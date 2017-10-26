@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.modules.vanish.datamodules.VanishUserDat
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 
@@ -22,6 +23,14 @@ public class VanishListener extends ListenerBase implements Reloadable {
     private VanishConfig vanishConfig = new VanishConfig();
 
     private final String permission = getPermisisonHandlerFor(VanishCommand.class).getPermissionWithSuffix("persist");
+    private final String loginVanishPermission = getPermisisonHandlerFor(VanishCommand.class).getPermissionWithSuffix("onlogin");
+
+    @Listener(order = Order.POST)
+    public void onLogin(ClientConnectionEvent.Login event, @Root Player player) {
+        if (player.hasPermission(this.loginVanishPermission)) {
+            Nucleus.getNucleus().getUserDataManager().getUnchecked(player).quickSet(VanishUserDataModule.class, x -> x.setVanished(true));
+        }
+    }
 
     @Listener
     public void onLogin(ClientConnectionEvent.Join event, @Root Player player) {
