@@ -163,7 +163,7 @@ public class TeleportCommand extends AbstractCommand<CommandSource> implements R
 
         MessageProvider provider = plugin.getMessageProvider();
         if (CauseStackHelper.createFrameWithCausesWithReturn(c ->
-                plugin.getTeleportHandler().teleportPlayer(from, l, NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE, c).isSuccess(), src)) {
+                plugin.getTeleportHandler().teleportPlayer(from, l, NucleusTeleportHandler.StandardTeleportMode.FLYING_THEN_SAFE, c).isSuccess(), src)) {
             if (!(src instanceof Player && ((Player) src).getUniqueId().equals(from.getUniqueId()))) {
                 src.sendMessage(provider.getTextMessageWithFormat("command.teleport.offline.other", from.getName(), to.getName()));
             }

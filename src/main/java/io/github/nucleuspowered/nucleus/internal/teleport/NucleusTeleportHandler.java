@@ -52,26 +52,26 @@ public class NucleusTeleportHandler {
         BlockTypes.FLOWING_LAVA
     );
 
-    public final TeleportMode getTeleportModeForPlayer(Player pl) {
+    public final StandardTeleportMode getTeleportModeForPlayer(Player pl) {
         GameMode gm = pl.getGameModeData().get(Keys.GAME_MODE).orElse(GameModes.SURVIVAL);
         if (gm == GameModes.CREATIVE) {
             // We just need no solid blocks...
-            return TeleportMode.WALL_CHECK;
+            return StandardTeleportMode.WALL_CHECK;
         } else if (gm == GameModes.SPECTATOR) {
             // The walls are welcoming too!
-            return TeleportMode.NO_CHECK;
+            return StandardTeleportMode.NO_CHECK;
         }
 
         // If we're flying, the sky is the limit! If not, feet firmly on the ground!
-        return TeleportMode.FLYING_THEN_SAFE;
+        return StandardTeleportMode.FLYING_THEN_SAFE;
     }
 
     /**
-     * Attempts to teleport a subject using the appropriate {@link TeleportMode} strategy.
+     * Attempts to teleport a subject using the appropriate {@link StandardTeleportMode} strategy.
      *
      * @param player The {@link Player}
      * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
-     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
+     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link StandardTeleportMode#WALL_CHECK}
      * @return The {@link TeleportResult}
      */
     public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, boolean safe) {
@@ -79,16 +79,16 @@ public class NucleusTeleportHandler {
     }
 
     /**
-     * Attempts to teleport a subject using a {@link TeleportMode} strategy.
+     * Attempts to teleport a subject using a {@link StandardTeleportMode} strategy.
      *
      * @param player The {@link Player}
      * @param worldLocation The {@link Location} in the {@link World} to teleport to.
      * @param rotation The {@link Vector3d} containing the rotation to port to.
-     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link TeleportMode#WALL_CHECK}
+     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link StandardTeleportMode#WALL_CHECK}
      * @return The {@link TeleportResult}
      */
     public TeleportResult teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {
-        TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
+        StandardTeleportMode mode = safe ? getTeleportModeForPlayer(player) : StandardTeleportMode.WALL_CHECK;
         return CauseStackHelper.createFrameWithCausesWithReturn(c -> teleportPlayer(player, worldLocation, rotation, mode, c), player);
     }
 
@@ -98,12 +98,12 @@ public class NucleusTeleportHandler {
     }
 
     public TeleportResult teleportPlayer(Player player, Transform<World> worldTransform, boolean safe) {
-        TeleportMode mode = safe ? getTeleportModeForPlayer(player) : TeleportMode.WALL_CHECK;
+        StandardTeleportMode mode = safe ? getTeleportModeForPlayer(player) : StandardTeleportMode.WALL_CHECK;
         return CauseStackHelper.createFrameWithCausesWithReturn(c ->
                 teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), mode, c), player);
     }
 
-    public TeleportResult teleportPlayer(Player player, Transform<World> locationToTeleportTo, TeleportMode teleportMode) {
+    public TeleportResult teleportPlayer(Player player, Transform<World> locationToTeleportTo, StandardTeleportMode teleportMode) {
         return CauseStackHelper.createFrameWithCausesWithReturn(c ->
                 teleportPlayer(player, locationToTeleportTo.getLocation(), locationToTeleportTo.getRotation(), teleportMode, c), player);
     }
@@ -176,8 +176,8 @@ public class NucleusTeleportHandler {
     }
 
     public Optional<Location<World>> getSafeLocation(@Nullable Player player, Location<World> locationToTeleportTo, TeleportMode teleportMode) {
-        if (player == null && teleportMode == TeleportMode.FLYING_THEN_SAFE) {
-            teleportMode = TeleportMode.SAFE_TELEPORT;
+        if (player == null && teleportMode == StandardTeleportMode.FLYING_THEN_SAFE) {
+            teleportMode = StandardTeleportMode.SAFE_TELEPORT;
         }
 
         // World around Sponge not loading chunks properly sometimes.
@@ -206,10 +206,12 @@ public class NucleusTeleportHandler {
         return false;
     }
 
+    public interface TeleportMode extends BiFunction<Player, Location<World>, Optional<Location<World>>> { }
+
     /**
      * The type of checks to perform when teleporting.
      */
-    public enum TeleportMode implements BiFunction<Player, Location<World>, Optional<Location<World>>> {
+    public enum StandardTeleportMode implements TeleportMode {
         /**
          * Teleport without doing any checks.
          */
@@ -317,6 +319,54 @@ public class NucleusTeleportHandler {
         },
 
         /**
+         * Teleport using the Sponge Safe Teleport routine - surface only.
+         */
+        FLYING_THEN_SAFE_TELEPORT_SURFACE {
+
+            @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
+                if (player.get(Keys.IS_FLYING).orElse(false)) {
+                    // If flying, we just need to check they don't end up in a wall or will enter an unsafe block.
+                    return Sponge.getTeleportHelper().getSafeLocationWithBlacklist(location,
+                            TeleportHelper.DEFAULT_HEIGHT,
+                            TeleportHelper.DEFAULT_WIDTH,
+                            TeleportHelper.DEFAULT_FLOOR_CHECK_DISTANCE,
+                            TeleportHelperFilters.FLYING);
+                }
+
+                return SAFE_TELEPORT_SURFACE.apply(player, location);
+            }
+        },
+
+        /**
+         * Teleport using the Sponge Safe Teleport routine - surface only.
+         */
+        SAFE_TELEPORT_SURFACE {
+
+            private CoreConfigAdapter coreConfigAdapter = null;
+
+            private CoreConfigAdapter getCoreConfigAdapter() throws Exception {
+                if (coreConfigAdapter == null) {
+                    coreConfigAdapter = Nucleus.getNucleus().getModuleContainer().getConfigAdapterForModule("core", CoreConfigAdapter.class);
+                }
+
+                return coreConfigAdapter;
+            }
+
+            @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
+                SafeTeleportConfig stc;
+                try {
+                    stc = getCoreConfigAdapter().getNodeOrDefault().getSafeTeleportConfig();
+                } catch (Exception e) {
+                    stc = new SafeTeleportConfig();
+                }
+
+                return TELEPORT_HELPER.getSafeLocationWithBlacklist(location, stc.getHeight(), stc.getWidth(),
+                        TeleportHelper.DEFAULT_FLOOR_CHECK_DISTANCE,
+                        TeleportHelperFilters.SURFACE_ONLY);
+            }
+        },
+
+        /**
          * Teleport using the Sponge Safe Teleport routine, but using a chunk radius.
          */
         SAFE_TELEPORT_CHUNK {
@@ -330,7 +380,8 @@ public class NucleusTeleportHandler {
          */
         SAFE_TELEPORT_ASCENDING {
             @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
-                return TeleportMode.teleportCheck(player, location, (l, h) -> l.add(0, h, 0), i -> i < location.getExtent().getBlockMax().getY() - 1);
+                return StandardTeleportMode
+                        .teleportCheck(player, location, (l, h) -> l.add(0, h, 0), i -> i < location.getExtent().getBlockMax().getY() - 1);
             }
         },
 
@@ -339,7 +390,7 @@ public class NucleusTeleportHandler {
          */
         SAFE_TELEPORT_DESCEND {
             @Override public Optional<Location<World>> apply(Player player, Location<World> location) {
-                return TeleportMode.teleportCheck(player, location, (l, h) -> l.sub(0, h, 0), i -> i > 1);
+                return StandardTeleportMode.teleportCheck(player, location, (l, h) -> l.sub(0, h, 0), i -> i > 1);
             }
         };
 

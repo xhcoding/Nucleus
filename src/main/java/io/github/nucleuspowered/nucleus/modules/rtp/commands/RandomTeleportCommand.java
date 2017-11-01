@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.rtp.commands;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
@@ -19,6 +20,8 @@ import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.teleport.NucleusTeleportHandler;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfig;
+import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.rtp.RTPModule;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfig;
 import io.github.nucleuspowered.nucleus.modules.rtp.config.RTPConfigAdapter;
@@ -42,6 +45,7 @@ import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 import org.spongepowered.api.util.blockray.BlockRay;
 import org.spongepowered.api.util.blockray.BlockRayHit;
+import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
@@ -63,6 +67,7 @@ import javax.annotation.Nullable;
 public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlayer implements Reloadable {
 
     private RTPConfig rc = new RTPConfig();
+    private int height = 10;
 
     private final String worldKey = "world";
 
@@ -134,7 +139,16 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
     }
 
     @Override public void onReload() {
-        this.rc = plugin.getConfigAdapter(RTPModule.ID, RTPConfigAdapter.class).map(TypedAbstractConfigAdapter::getNodeOrDefault).orElseGet(RTPConfig::new);
+        this.rc = this.plugin.getConfigAdapter(RTPModule.ID, RTPConfigAdapter.class)
+                .map(TypedAbstractConfigAdapter::getNodeOrDefault).orElseGet(RTPConfig::new);
+        CoreConfig cc = this.plugin.getInternalServiceManager().getService(CoreConfigAdapter.class)
+                .map(TypedAbstractConfigAdapter::getNodeOrDefault).orElseGet(CoreConfig::new);
+        this.height = cc.getSafeTeleportConfig().getHeight();
+    }
+
+    private static NucleusTeleportHandler.TeleportMode wrapMode(NucleusTeleportHandler.TeleportMode nth) {
+        return (player, location) -> nth.apply(player, location)
+                .filter(x -> location.getBlockY() >= x.getExtent().getHighestYAt(x.getBlockX(), x.getBlockZ()));
     }
 
     /*
@@ -145,6 +159,8 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
      * still gets to keep ticking, avoiding timeouts and too much lag.
      */
     private class RTPTask extends CostCancellableTask {
+
+        private final NucleusTeleportHandler.TeleportMode mode;
 
         private final Cause cause;
         private final int minY;
@@ -181,6 +197,11 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
             this.target = target;
             this.source = source;
             this.cause = CauseStackHelper.createCause(source);
+            if (this.onSurface) {
+                this.mode = NucleusTeleportHandler.StandardTeleportMode.FLYING_THEN_SAFE_TELEPORT_SURFACE;
+            } else {
+                this.mode = plugin.getTeleportHandler().getTeleportModeForPlayer(this.target);
+            }
         }
 
         @Override
@@ -191,9 +212,6 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
                 return;
             }
 
-            Transform<World> transform = target.getTransform();
-            World world = transform.getExtent();
-
             plugin.getLogger().debug(String.format("RTP of %s, attempt %s of %s", target.getName(), maxCount - count, maxCount));
 
             // Generate random co-ords.
@@ -202,51 +220,40 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
 
             int counter = 0;
             do {
+                if (counter++ == 10) {
+                    onUnsuccesfulAttempt();
+                    return;
+                }
+
                 x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
                 z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
 
                 // Load the chunk before continuing with /rtp. Sponge issue means we have to load the chunk first.
-                // currentWorld.loadChunk(new Vector3i(x / 16, 0, z / 16), true);
-                // Of course, the above line doesn't work. So, let's just inspect the location instead using a method we KNOW will work.
-                NucleusTeleportHandler.TELEPORT_HELPER.getSafeLocation(new Location<>(transform.getExtent(), x, 0, z), 1, 1);
-                if (counter++ == 5) {
-                    onUnsuccesfulAttempt();
-                    return;
+                Optional<Chunk> oc = this.currentWorld.loadChunk(new Vector3i(x / 16, 0, z / 16), true);
+                if (!oc.isPresent()) {
+                    Sponge.getTeleportHelper().getSafeLocation(new Location<>(this.currentWorld, x, 1, z));
                 }
 
                 // If this is a prohibited type, loop again.
-            } while (prohibitedBiomeTypes.contains(transform.getExtent().getBiome(x, 0, z).getId()));
+            } while (prohibitedBiomeTypes.contains(this.currentWorld.getBiome(x, 0, z).getId()));
 
             int y;
             if (onSurface) {
-                int startY = Math.min(world.getBlockMax().getY() - 11, maxY);
-                int distance = startY - Math.max(world.getBlockMin().getY(), minY);
-                if (distance < 0) {
-                    onUnsuccesfulAttempt();
-                    return;
-                }
-
-                // From the x and z co-ordinates, scan down from the top to get the next block.
-                BlockRay<World> blockRay = BlockRay
-                    .from(new Location<>(currentWorld, new Vector3d(x, Math.min(world.getBlockMax().getY() - 11, maxY), z)))
-                    .direction(direction)
-                    .distanceLimit(distance)
-                    .stopFilter(bl -> bl.getExtent().getBlock(bl.getBlockPosition()).getType().equals(BlockTypes.AIR)).build();
-                Optional<BlockRayHit<World>> blockRayHitOptional = blockRay.end();
-                if (blockRayHitOptional.isPresent()) {
-                    y = blockRayHitOptional.get().getBlockY();
-                } else {
+                y = this.currentWorld.getHighestYAt(x, z) + 1;
+                if (y < this.minY || y > this.maxY) {
                     onUnsuccesfulAttempt();
                     return;
                 }
             } else {
                 // We remove 11 to avoid getting a location too high up for the safe location teleporter to handle.
-                y = Math.min(world.getBlockMax().getY() - 11, random.nextInt(maxY - minY + 1) + minY);
+                y = Math.min(this.currentWorld.getBlockMax().getY() - RandomTeleportCommand.this.height - 1,
+                        random.nextInt(maxY - minY + 1) + minY);
             }
 
             // To get within the world border, add the centre on.
-            final Location<World> test = new Location<>(currentWorld, new Vector3d(x + centre.getX(), y, z + centre.getZ()));
-            Optional<Location<World>> oSafeLocation = NucleusTeleportHandler.TELEPORT_HELPER.getSafeLocation(test, 10, 5);
+            final Location<World> test = new Location<>(this.currentWorld, new Vector3d(x + centre.getX(), y, z + centre.getZ()));
+            Optional<Location<World>> oSafeLocation =
+                    Nucleus.getNucleus().getTeleportHandler().getSafeLocation(this.target, test, this.mode);
 
             // getSafeLocation might have put us out of the world border. Best to check.
             // We also check to see that it's not in water or lava, and if enabled, we see if the subject would end up on the surface.
@@ -254,8 +261,9 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
                 if (oSafeLocation.isPresent()
                     && oSafeLocation.get().getPosition().getY() >= minY
                     && oSafeLocation.get().getPosition().getY() <= maxY
-                    && isSafe(oSafeLocation.get()) && Util.isLocationInWorldBorder(oSafeLocation.get())
-                    && isOnSurface(oSafeLocation.get())) {
+                    && !isProhibitedBlockType(oSafeLocation.get().sub(Vector3d.UNIT_Y))
+                    && !isProhibitedBlockType(oSafeLocation.get().sub(Vector3d.UNIT_Y).sub(Vector3d.UNIT_Y))
+                    && Util.isLocationInWorldBorder(oSafeLocation.get())) {
 
                     if (Sponge.getEventManager().post(new RTPSelectedLocationEvent(
                             oSafeLocation.get(),
@@ -300,10 +308,6 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
             onUnsuccesfulAttempt();
         }
 
-        private boolean isOnSurface(Location<World> worldLocation) {
-            return isSolid(worldLocation.sub(0, 1, 0)) || isSolid(worldLocation.sub(0, 2, 0));
-        }
-
         private void onUnsuccesfulAttempt() {
             if (count <= 0) {
                 plugin.getLogger().debug(String.format("RTP of %s was unsuccessful", subject.getName()));
@@ -314,10 +318,6 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
                 // safe place.
                 Sponge.getScheduler().createTaskBuilder().delayTicks(2).execute(this).submit(plugin);
             }
-        }
-
-        private boolean isSafe(Location<World> location) {
-            return !location.hasBlock() || !isProhibitedBlockType(location) || !isSolid(location);
         }
 
         private boolean isProhibitedBlockType(Location<World> location) {

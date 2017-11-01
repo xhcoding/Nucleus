@@ -66,7 +66,7 @@ public class BackCommand extends AbstractCommand<Player> {
 
         Transform<World> loc = ol.get();
         NucleusTeleportHandler.TeleportResult result = args.hasAny(key)
-                ? plugin.getTeleportHandler().teleportPlayer(src, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK)
+                ? plugin.getTeleportHandler().teleportPlayer(src, loc, NucleusTeleportHandler.StandardTeleportMode.NO_CHECK)
                 : plugin.getTeleportHandler().teleportPlayer(src, loc);
         if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.back.success"));

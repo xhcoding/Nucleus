@@ -75,7 +75,7 @@ public class JumpCommand extends AbstractCommand<Player> implements Reloadable {
             throw ReturnMessageException.fromKey("command.jump.outsideborder");
         }
 
-        if (Nucleus.getNucleus().getTeleportHandler().teleportPlayer(player, finalLocation, NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT).isSuccess()) {
+        if (Nucleus.getNucleus().getTeleportHandler().teleportPlayer(player, finalLocation, NucleusTeleportHandler.StandardTeleportMode.SAFE_TELEPORT).isSuccess()) {
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.jump.success"));
             return CommandResult.success();
         }

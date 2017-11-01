@@ -59,7 +59,7 @@ public class ThruCommand extends AbstractCommand<Player> implements Reloadable {
 
                 // If we can go, do so.
                 if (Nucleus.getNucleus().getTeleportHandler()
-                        .teleportPlayer(player, b.getLocation(), NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT).isSuccess()) {
+                        .teleportPlayer(player, b.getLocation(), NucleusTeleportHandler.StandardTeleportMode.SAFE_TELEPORT).isSuccess()) {
                     player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.thru.success"));
                     return CommandResult.success();
                 } else {

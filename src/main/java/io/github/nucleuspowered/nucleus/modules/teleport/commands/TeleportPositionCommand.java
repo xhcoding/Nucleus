@@ -122,7 +122,7 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
 
         // Don't bother with the safety if the flag is set.
         if (args.<Boolean>getOne("f").orElse(false)) {
-            if (teleportHandler.teleportPlayer(pl, loc, NucleusTeleportHandler.TeleportMode.NO_CHECK, cause).isSuccess()) {
+            if (teleportHandler.teleportPlayer(pl, loc, NucleusTeleportHandler.StandardTeleportMode.NO_CHECK, cause).isSuccess()) {
                 pl.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.self"));
                 if (!src.equals(pl)) {
                     src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.tppos.success.other", pl.getName()));
@@ -135,9 +135,9 @@ public class TeleportPositionCommand extends AbstractCommand<CommandSource> {
         }
 
         // If we have a chunk, scan the whole chunk.
-        NucleusTeleportHandler.TeleportMode mode = teleportHandler.getTeleportModeForPlayer(pl);
-        if (args.hasAny("c") && mode == NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE) {
-            mode = NucleusTeleportHandler.TeleportMode.FLYING_THEN_SAFE_CHUNK;
+        NucleusTeleportHandler.StandardTeleportMode mode = teleportHandler.getTeleportModeForPlayer(pl);
+        if (args.hasAny("c") && mode == NucleusTeleportHandler.StandardTeleportMode.FLYING_THEN_SAFE) {
+            mode = NucleusTeleportHandler.StandardTeleportMode.FLYING_THEN_SAFE_CHUNK;
         }
 
         NucleusTeleportHandler.TeleportResult result = teleportHandler.teleportPlayer(pl, loc, mode, cause, true);

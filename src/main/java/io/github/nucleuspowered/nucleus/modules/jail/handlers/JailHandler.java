@@ -158,7 +158,7 @@ public class JailHandler implements NucleusJailService, ContextCalculator<Subjec
             Sponge.getScheduler().createSyncExecutor(plugin).execute(() -> {
                 Player player = user.getPlayer().get();
                 plugin.getTeleportHandler().teleportPlayer(player, owl.get().getLocation().get(), owl.get().getRotation(),
-                    NucleusTeleportHandler.TeleportMode.NO_CHECK, Sponge.getCauseStackManager().getCurrentCause());
+                    NucleusTeleportHandler.StandardTeleportMode.NO_CHECK, Sponge.getCauseStackManager().getCurrentCause());
                 modularUserService.get(FlyUserDataModule.class).setFlying(false);
             });
         } else {

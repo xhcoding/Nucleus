@@ -63,7 +63,8 @@ public class SpawnListener extends ListenerBase implements Reloadable {
                 // Bit of an odd line, but what what is going on here is checking for first spawn, and if it exists, then
                 // setting the location the player safely. If this cannot be done in either case, send them to world spawn.
                 if (ofs.isPresent()) {
-                    NucleusTeleportHandler.TeleportMode mode = spawnConfig.isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT : NucleusTeleportHandler.TeleportMode.WALL_CHECK;
+                    NucleusTeleportHandler.StandardTeleportMode
+                            mode = spawnConfig.isSafeTeleport() ? NucleusTeleportHandler.StandardTeleportMode.SAFE_TELEPORT : NucleusTeleportHandler.StandardTeleportMode.WALL_CHECK;
                     Optional<Location<World>> location = plugin.getTeleportHandler().getSafeLocation(null, ofs.get().getLocation(), mode);
 
                     if (location.isPresent()) {
@@ -97,7 +98,7 @@ public class SpawnListener extends ListenerBase implements Reloadable {
 
             Location<World> lw = world.getSpawnLocation().add(0.5, 0, 0.5);
             Optional<Location<World>> safe = plugin.getTeleportHandler().getSafeLocation(null, lw,
-                    spawnConfig.isSafeTeleport() ? NucleusTeleportHandler.TeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.TeleportMode.NO_CHECK);
+                    spawnConfig.isSafeTeleport() ? NucleusTeleportHandler.StandardTeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.StandardTeleportMode.NO_CHECK);
             if (safe.isPresent()) {
                 try {
                     Optional<Vector3d> ov = Nucleus.getNucleus().getWorldDataManager().getWorld(world.getUniqueId()).get().quickGet(SpawnWorldDataModule.class,

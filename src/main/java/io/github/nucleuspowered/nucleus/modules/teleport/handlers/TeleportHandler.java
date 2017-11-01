@@ -158,8 +158,8 @@ public class TeleportHandler {
             if (playerToTeleportTo.isOnline()) {
                 // If safe, get the teleport mode
                 NucleusTeleportHandler tpHandler = plugin.getTeleportHandler();
-                NucleusTeleportHandler.TeleportMode mode = safe ? tpHandler.getTeleportModeForPlayer(playerToTeleport) :
-                    NucleusTeleportHandler.TeleportMode.NO_CHECK;
+                NucleusTeleportHandler.StandardTeleportMode mode = safe ? tpHandler.getTeleportModeForPlayer(playerToTeleport) :
+                    NucleusTeleportHandler.StandardTeleportMode.NO_CHECK;
 
                 NucleusTeleportHandler.TeleportResult result =
                         tpHandler.teleportPlayer(playerToTeleport, playerToTeleportTo.getTransform(), mode, CauseStackHelper.createCause(this.source));
