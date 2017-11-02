@@ -72,7 +72,7 @@ public abstract class Nucleus {
 
     public abstract boolean reload();
 
-    public abstract void reloadMessages();
+    public abstract boolean reloadMessages();
 
     public abstract WarmupManager getWarmupManager();
 
