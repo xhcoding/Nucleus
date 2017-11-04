@@ -25,7 +25,7 @@ public class VanishListener extends ListenerBase implements Reloadable {
     private final String permission = getPermisisonHandlerFor(VanishCommand.class).getPermissionWithSuffix("persist");
     private final String loginVanishPermission = getPermisisonHandlerFor(VanishCommand.class).getPermissionWithSuffix("onlogin");
 
-    @Listener(order = Order.POST)
+    @Listener(order = Order.FIRST)
     public void onLogin(ClientConnectionEvent.Login event, @Root Player player) {
         if (player.hasPermission(this.loginVanishPermission)) {
             Nucleus.getNucleus().getUserDataManager().getUnchecked(player).quickSet(VanishUserDataModule.class, x -> x.setVanished(true));
@@ -53,14 +53,12 @@ public class VanishListener extends ListenerBase implements Reloadable {
 
     @Listener
     public void onQuit(ClientConnectionEvent.Disconnect event, @Root Player player) {
-        player.get(Keys.VANISH).ifPresent(x -> {
-            if (x) {
-                Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(VanishUserDataModule.class).setVanished(true);
-                if (vanishConfig.isSuppressMessagesOnVanish()) {
-                    event.setMessageCancelled(true);
-                }
+        if (player.get(Keys.VANISH).orElse(false)) {
+            Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(VanishUserDataModule.class).setVanished(true);
+            if (vanishConfig.isSuppressMessagesOnVanish()) {
+                event.setMessageCancelled(true);
             }
-        });
+        }
     }
 
     @Override public void onReload() throws Exception {
