@@ -34,6 +34,7 @@ import uk.co.drnaylor.quickstart.modulecontainers.DiscoveryModuleContainer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -51,6 +52,8 @@ public abstract class Nucleus {
     public static Nucleus getNucleus() {
         return nucleus;
     }
+
+    public abstract void addX(List<Text> messages, int spacing);
 
     public abstract void saveData();
 

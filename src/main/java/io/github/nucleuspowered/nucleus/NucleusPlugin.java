@@ -36,6 +36,7 @@ import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.PermissionRegistry;
 import io.github.nucleuspowered.nucleus.internal.PreloadTasks;
 import io.github.nucleuspowered.nucleus.internal.TextFileController;
+import io.github.nucleuspowered.nucleus.internal.WorldCorrector;
 import io.github.nucleuspowered.nucleus.internal.client.ClientMessageReciever;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
@@ -60,6 +61,7 @@ import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.config.WarmupConfig;
 import io.github.nucleuspowered.nucleus.modules.core.datamodules.UniqueUserCountTransientModule;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.GameState;
@@ -451,6 +453,15 @@ public class NucleusPlugin extends Nucleus {
     public void onGameStarting(GameStartingServerEvent event) {
         if (isErrored == null) {
             logger.info(messageProvider.getMessageWithFormat("startup.gamestart", PluginInfo.NAME));
+            try {
+                if (this.getConfigValue(CoreModule.ID, CoreConfigAdapter.class, CoreConfig::isTrackWorldUUIDs).orElse(true)) {
+                    WorldCorrector.worldCheck();
+                } else {
+                    WorldCorrector.delete();
+                }
+            } catch (IOException | ObjectMappingException e) {
+                e.printStackTrace();
+            }
 
             // Load up the general data files now, mods should have registered items by now.
             try {
@@ -575,15 +586,6 @@ public class NucleusPlugin extends Nucleus {
     @Override
     public Supplier<Path> getDataPathSupplier() {
         return this.dataDir;
-    }
-
-    /**
-     * Gets whether the modules are loaded.
-     *
-     * @return Whether the modules are loaded.
-     */
-    public boolean areModulesLoaded() {
-        return this.modulesLoaded;
     }
 
     @Override
@@ -931,7 +933,8 @@ public class NucleusPlugin extends Nucleus {
         messages.add(Text.of(space, TextColors.YELLOW, "------------------"));
     }
 
-    private void addX(List<Text> messages, int spacing) {
+    @Override
+    public void addX(List<Text> messages, int spacing) {
         Text space = Text.of(String.join("", Collections.nCopies(spacing, " ")));
         messages.add(Text.of(space, TextColors.RED, "\\              /"));
         messages.add(Text.of(space, TextColors.RED, " \\            /"));

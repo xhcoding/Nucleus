@@ -45,6 +45,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -95,6 +96,11 @@ public abstract class TestBase {
 
         private final MessageProvider mp = new ResourceMessageProvider(ResourceMessageProvider.messagesBundle);
         private final PermissionRegistry permissionRegistry = new PermissionRegistry();
+
+        @Override
+        public void addX(List<Text> messages, int spacing) {
+            // NOOP
+        }
 
         @Override
         public void saveData() {

@@ -52,6 +52,9 @@ public class CoreConfig {
     @Setting(value = "print-file-save-load")
     private boolean printSaveLoad = false;
 
+    @Setting(value = "track-world-uuids", comment = "config.core.track")
+    private boolean trackWorldUUIDs = true;
+
     public boolean isDebugmode() {
         return debugmode;
     }
@@ -106,5 +109,9 @@ public class CoreConfig {
 
     public boolean isPrintSaveLoad() {
         return this.printSaveLoad;
+    }
+
+    public boolean isTrackWorldUUIDs() {
+        return trackWorldUUIDs;
     }
 }
