@@ -36,6 +36,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -69,11 +70,14 @@ public class KitListCommand extends AbstractCommand<CommandSource> implements Re
                 src instanceof Player ? Nucleus.getNucleus().getUserDataManager()
                         .getUnchecked(((Player)src).getUniqueId()).get(KitUserDataModule.class) : null;
 
-        // Only show kits that the user has permission for, if needed. This is the permission "plugin.kits.<kit>".
         final boolean showHidden = kitPermissionHandler.testSuffix(src, "showhidden");
-        handler.getKitNames(showHidden, src).stream()
-            .filter(kit -> !this.isSeparatePermissions || src.hasPermission(KitHandler.getPermissionForKit(kit.toLowerCase())))
-            .forEach(kit -> kitText.add(createKit(src, user, kit, handler.getKit(kit).get())));
+        Stream<String> kitStream = handler.getKitNames(showHidden).stream();
+
+        if (this.isSeparatePermissions) {
+            kitStream = kitStream.filter(kit -> src.hasPermission(KitHandler.getPermissionForKit(kit.toLowerCase())));
+        }
+
+        kitStream.forEach(kit -> kitText.add(createKit(src, user, kit, handler.getKit(kit).get())));
 
         PaginationList.Builder paginationBuilder = paginationService.builder().contents(kitText)
                 .title(plugin.getMessageProvider().getTextMessageWithFormat("command.kit.list.kits")).padding(Text.of(TextColors.GREEN, "-"));
