@@ -19,7 +19,7 @@ import io.github.nucleuspowered.nucleus.modules.jail.datamodules.JailUserDataMod
 import io.github.nucleuspowered.nucleus.modules.kit.datamodules.KitUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mail.datamodules.MailUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.message.datamodules.MessageUserDataModule;
-import io.github.nucleuspowered.nucleus.modules.misc.datamodules.InvulnerabilityUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.invulnerability.datamodules.InvulnerabilityUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.mute.datamodules.MuteUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.datamodules.NicknameUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.note.datamodules.NoteUserDataModule;

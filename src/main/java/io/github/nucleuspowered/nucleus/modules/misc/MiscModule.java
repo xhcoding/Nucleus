@@ -8,10 +8,10 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.api.service.NucleusInvulnerabilityService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
-import io.github.nucleuspowered.nucleus.modules.misc.commands.GodCommand;
+import io.github.nucleuspowered.nucleus.modules.invulnerability.commands.GodCommand;
 import io.github.nucleuspowered.nucleus.modules.misc.config.MiscConfigAdapter;
-import io.github.nucleuspowered.nucleus.modules.misc.datamodules.InvulnerabilityUserDataModule;
-import io.github.nucleuspowered.nucleus.modules.misc.handlers.InvulnerabilityService;
+import io.github.nucleuspowered.nucleus.modules.invulnerability.datamodules.InvulnerabilityUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.invulnerability.handlers.InvulnerabilityService;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 

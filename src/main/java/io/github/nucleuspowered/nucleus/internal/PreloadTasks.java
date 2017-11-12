@@ -21,31 +21,32 @@ public abstract class PreloadTasks {
     @SuppressWarnings("unchecked")
     public static List<Consumer<NucleusPlugin>> getPreloadTasks() {
         return Lists.newArrayList(
-            // Move the modules location
-            plugin -> {
-                try {
-                    // Get the main conf file, move the "modules" section
-                    Path main = plugin.getConfigDirPath().resolve("main.conf");
-                    if (!Files.exists(main)) {
-                        return;
-                    }
+                // Move the misc.require-god-permission-on-login to invulnerability.require-invulnerbility-permission-on-login
+                plugin -> {
+                    try {
+                        // Get the main conf file
+                        Path main = plugin.getConfigDirPath().resolve("main.conf");
+                        if (!Files.exists(main)) {
+                            return;
+                        }
 
-                    HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(main).build();
-                    CommentedConfigurationNode node = loader.load();
-                    CommentedConfigurationNode c = node.getNode("modules");
-                    if (!c.isVirtual()) {
-                        node.getNode("-modules").setValue(c);
-                        node.getNode("modules").setValue(null);
-                    }
+                        HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setPath(main).build();
+                        CommentedConfigurationNode node = loader.load();
+                        if (node.getNode("invulnerability", "require-invulnerbility-permission-on-login").isVirtual()) {
+                            CommentedConfigurationNode cn = node.getNode("misc", "require-god-permission-on-login");
+                            if (!cn.isVirtual()) {
+                                boolean c = node.getNode("misc", "require-god-permission-on-login").getBoolean();
+                                node.getNode("invulnerability", "require-invulnerbility-permission-on-login").setValue(c);
+                                node.getNode("misc", "require-god-permission-on-login").setValue(null);
+                            }
 
-                    // Remove the blacklist node.
-                    node.getNode("-modules", "blacklist").setValue(null);
-                    node.getNode("blacklist").setValue(null);
-                    loader.save(node);
-                } catch (Exception ignored) {
-                    // ignored
+                            loader.save(node);
+                        }
+                    } catch (Exception ignored) {
+                        // ignored
+                    }
                 }
-            });
+            );
     }
 
     @SuppressWarnings("unchecked")
