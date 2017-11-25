@@ -10,7 +10,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 
 public interface PermissionHandlerTrait {
 
-    default CommandPermissionHandler getPermisisonHandlerFor(Class<? extends AbstractCommand<?>> clazz) {
+    default CommandPermissionHandler getPermissionHandlerFor(Class<? extends AbstractCommand<?>> clazz) {
         return Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(clazz);
     }
 

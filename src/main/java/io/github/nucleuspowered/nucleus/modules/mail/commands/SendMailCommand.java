@@ -29,7 +29,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 public class SendMailCommand extends AbstractCommand<CommandSource> {
 
     private final MailHandler handler = getServiceUnchecked(MailHandler.class);
-    private final String perm = getPermisisonHandlerFor(MailCommand.class).getBase();
+    private final String perm = getPermissionHandlerFor(MailCommand.class).getBase();
 
     private final String player = "subject";
     private final String message = "message";

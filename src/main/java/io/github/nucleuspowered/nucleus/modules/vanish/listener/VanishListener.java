@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.modules.vanish.commands.VanishCommand;
 import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfig;
 import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.vanish.datamodules.VanishUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.vanish.service.VanishService;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -21,9 +22,10 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 public class VanishListener extends ListenerBase implements Reloadable {
 
     private VanishConfig vanishConfig = new VanishConfig();
+    private VanishService service = getServiceUnchecked(VanishService.class);
 
-    private final String permission = getPermisisonHandlerFor(VanishCommand.class).getPermissionWithSuffix("persist");
-    private final String loginVanishPermission = getPermisisonHandlerFor(VanishCommand.class).getPermissionWithSuffix("onlogin");
+    private final String permission = getPermissionHandlerFor(VanishCommand.class).getPermissionWithSuffix("persist");
+    private final String loginVanishPermission = getPermissionHandlerFor(VanishCommand.class).getPermissionWithSuffix("onlogin");
 
     @Listener(order = Order.FIRST)
     public void onLogin(ClientConnectionEvent.Login event, @Root Player player) {
@@ -44,9 +46,7 @@ public class VanishListener extends ListenerBase implements Reloadable {
                 event.setMessageCancelled(true);
             }
 
-            player.offer(Keys.VANISH, true);
-            player.offer(Keys.VANISH_IGNORES_COLLISION, true);
-            player.offer(Keys.VANISH_PREVENTS_TARGETING, true);
+            this.service.vanishPlayer(player);
             player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("vanish.login"));
         }
     }
@@ -61,7 +61,8 @@ public class VanishListener extends ListenerBase implements Reloadable {
         }
     }
 
-    @Override public void onReload() throws Exception {
+    @Override
+    public void onReload() throws Exception {
         this.vanishConfig = getServiceUnchecked(VanishConfigAdapter.class).getNodeOrDefault();
     }
 }

@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEq
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.vanish.datamodules.VanishUserDataModule;
+import io.github.nucleuspowered.nucleus.modules.vanish.service.VanishService;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
@@ -23,25 +24,30 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Permissions(supportsOthers = true)
 @NoModifiers
 @NonnullByDefault
 @RegisterCommand({"vanish", "v"})
 @EssentialsEquivalent({"vanish", "v"})
-public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
+public class VanishCommand extends AbstractCommand<CommandSource > {
 
+    private final String player = "player";
     private final String b = "toggle";
 
-    @Override public CommandElement[] additionalArguments() {
+    @Override
+    public CommandElement[] getArguments() {
         return new CommandElement[] {
-            GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))
+                GenericArguments.requiringPermission(GenericArguments.optionalWeak(GenericArguments.user(Text.of(player))), permissions.getOthers()),
+                GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.bool(Text.of(b))))
         };
     }
 
@@ -55,39 +61,37 @@ public class VanishCommand extends AbstractCommand.SimpleTargetOtherPlayer {
     }
 
     @Override
-    public CommandResult executeWithPlayer(CommandSource src, Player playerToVanish, CommandContext args, boolean isSelf) throws Exception {
-        if (playerToVanish.getPlayer().isPresent()) {
-            return onPlayer(src, args, playerToVanish.getPlayer().get());
+    public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
+        User ou = getUserFromArgs(User.class, src, player, args);
+        if (ou.getPlayer().isPresent()) {
+            return onPlayer(src, args, ou.getPlayer().get());
         }
 
-        if (!permissions.testSuffix(playerToVanish, "persist")) {
-            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.noperm", playerToVanish.getName()));
+        if (!permissions.testSuffix(ou, "persist")) {
+            throw new ReturnMessageException(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.noperm", ou.getName()));
         }
 
-        VanishUserDataModule uss = Nucleus.getNucleus().getUserDataManager().getUnchecked(playerToVanish).get(VanishUserDataModule.class);
+        VanishUserDataModule uss = Nucleus.getNucleus().getUserDataManager().getUnchecked(ou).get(VanishUserDataModule.class);
         uss.setVanished(args.<Boolean>getOne(b).orElse(!uss.isVanished()));
 
         src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.successuser",
-            playerToVanish.getName(),
+            ou.getName(),
             uss.isVanished() ? plugin.getMessageProvider().getMessageWithFormat("command.vanish.vanished") : plugin.getMessageProvider().getMessageWithFormat("command.vanish.visible")));
 
         return CommandResult.success();
     }
 
     private CommandResult onPlayer(CommandSource src, CommandContext args, Player playerToVanish) throws Exception {
+        if (playerToVanish.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET).equals(GameModes.SPECTATOR)) {
+            throw ReturnMessageException.fromKey("command.vanish.fail");
+        }
+
         // If we don't specify whether to vanish, toggle
         boolean toVanish = args.<Boolean>getOne(b).orElse(!playerToVanish.get(Keys.VANISH).orElse(false));
-
-        Nucleus.getNucleus().getUserDataManager().getUnchecked(playerToVanish).get(VanishUserDataModule.class).setVanished(toVanish);
-        if (!playerToVanish.get(Keys.GAME_MODE).orElse(GameModes.NOT_SET).equals(GameModes.SPECTATOR)) {
-            DataTransactionResult dtr = playerToVanish.offer(Keys.VANISH, toVanish);
-            playerToVanish.offer(Keys.VANISH_PREVENTS_TARGETING, toVanish);
-            playerToVanish.offer(Keys.VANISH_IGNORES_COLLISION, toVanish);
-            playerToVanish.offer(Keys.IS_SILENT, toVanish);
-
-            if (!dtr.isSuccessful()) {
-                throw ReturnMessageException.fromKey("command.vanish.fail");
-            }
+        if (toVanish) {
+            getServiceUnchecked(VanishService.class).vanishPlayer(playerToVanish);
+        } else {
+            getServiceUnchecked(VanishService.class).unvanishPlayer(playerToVanish);
         }
 
         playerToVanish.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.vanish.success",

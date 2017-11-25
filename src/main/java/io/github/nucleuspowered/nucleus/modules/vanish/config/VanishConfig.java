@@ -13,7 +13,14 @@ public class VanishConfig {
     @Setting(value = "hide-connection-messages-on-vanish", comment = "config.vanish.connectionmessages")
     private boolean suppressMessagesOnVanish = false;
 
+    @Setting(value = "alter-tab-list", comment = "config.vanish.altertablist")
+    private boolean alterTabList = true;
+
     public boolean isSuppressMessagesOnVanish() {
         return suppressMessagesOnVanish;
+    }
+
+    public boolean isAlterTabList() {
+        return alterTabList;
     }
 }

@@ -35,7 +35,7 @@ public class MuteListener extends ListenerBase implements Reloadable {
 
     private final MuteHandler handler = getServiceUnchecked(MuteHandler.class);
     private MuteConfig muteConfig = new MuteConfig();
-    private final String voicePerm = getPermisisonHandlerFor(VoiceCommand.class).getPermissionWithSuffix("auto");
+    private final String voicePerm = getPermissionHandlerFor(VoiceCommand.class).getPermissionWithSuffix("auto");
 
     /**
      * At the time the subject joins, check to see if the subject is muted.
