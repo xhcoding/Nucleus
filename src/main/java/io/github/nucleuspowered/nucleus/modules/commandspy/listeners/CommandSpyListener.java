@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.commandspy.listeners;
 
 import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
@@ -23,8 +24,6 @@ import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.command.SendCommandEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.text.Text;
-import uk.co.drnaylor.quickstart.exceptions.IncorrectAdapterTypeException;
-import uk.co.drnaylor.quickstart.exceptions.NoModuleException;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,16 +32,22 @@ import java.util.stream.Collectors;
 
 public class CommandSpyListener extends ListenerBase implements Reloadable, ListenerBase.Conditional {
 
-    private CommandPermissionHandler permissionHandler =
-            Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(CommandSpyCommand.class);
-
-    private CommandSpyConfig config;
+    private final String basePermission;
+    private final String exemptTarget;
+    private CommandSpyConfig config = new CommandSpyConfig();
     private boolean listIsEmpty = true;
+
+    public CommandSpyListener() {
+        CommandPermissionHandler permissionHandler =
+                Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(CommandSpyCommand.class);
+        this.basePermission = permissionHandler.getBase();
+        this.exemptTarget = permissionHandler.getPermissionWithSuffix("exempt.target");
+    }
 
     @Listener(order = Order.LAST)
     public void onCommand(SendCommandEvent event, @Root Player player) {
 
-        if (!permissionHandler.testSuffix(player, "exempt.target")) {
+        if (!player.hasPermission(this.exemptTarget)) {
             boolean isInList;
             if (!this.listIsEmpty) {
                 String command = event.getCommand().toLowerCase();
@@ -52,7 +57,7 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
                 // If the command exists, then get all aliases.
                 cmd = oc.map(commandMapping -> commandMapping.getAllAliases().stream().map(String::toLowerCase).collect(Collectors.toSet()))
                         .orElseGet(() -> Sets.newHashSet(command));
-                isInList = config.getCommands().stream().map(String::toLowerCase).anyMatch(cmd::contains);
+                isInList = this.config.getCommands().stream().map(String::toLowerCase).anyMatch(cmd::contains);
             } else {
                 isInList = true;
             }
@@ -62,40 +67,32 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
                 List<Player> playerList = Sponge.getServer().getOnlinePlayers()
                     .stream()
                     .filter(x -> !x.getUniqueId().equals(player.getUniqueId()))
-                    .filter(x -> permissionHandler.testBase(x))
+                    .filter(x -> x.hasPermission(this.basePermission))
                     .filter(x -> Nucleus.getNucleus().getUserDataManager().getUnchecked(x)
                             .quickGet(CommandSpyUserDataModule.class, CommandSpyUserDataModule::isCommandSpy))
                     .collect(Collectors.toList());
 
                 if (!playerList.isEmpty()) {
-                    Text prefix = config.getTemplate().getForCommandSource(player);
+                    Text prefix = this.config.getTemplate().getForCommandSource(player);
                     TextParsingUtils.StyleTuple st = TextParsingUtils.getLastColourAndStyle(prefix, null);
                     Text messageToSend = prefix
-                        .toBuilder().append(Text.of(st.colour, st.style, "/" + event.getCommand() + " " + event.getArguments())).build();
+                            .toBuilder()
+                            .append(Text.of(st.colour, st.style, "/", event.getCommand(), Util.SPACE, event.getArguments())).build();
                     playerList.forEach(x -> x.sendMessage(messageToSend));
                 }
             }
         }
     }
 
-    @Override public void onReload() throws Exception {
+    @Override
+    public void onReload() throws Exception {
         this.config = this.plugin.getModuleContainer().getConfigAdapterForModule(CommandSpyModule.ID, CommandSpyConfigAdapter.class)
             .getNodeOrDefault();
         this.listIsEmpty = this.config.getCommands().isEmpty();
     }
 
-    @Override public boolean shouldEnable() {
-        try {
-            CommandSpyConfig csc = Nucleus.getNucleus().getModuleContainer().getConfigAdapterForModule(CommandSpyModule.ID, CommandSpyConfigAdapter.class)
-                .getNodeOrDefault();
-            // Blacklist OR whitelist with commands enables this.
-            return !csc.isUseWhitelist() || !csc.getCommands().isEmpty();
-        } catch (NoModuleException | IncorrectAdapterTypeException e) {
-            if (Nucleus.getNucleus().isDebugMode()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
+    @Override
+    public boolean shouldEnable() {
+        return !this.config.isUseWhitelist() || !this.listIsEmpty;
     }
 }

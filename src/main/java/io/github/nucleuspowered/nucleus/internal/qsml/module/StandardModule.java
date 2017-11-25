@@ -181,7 +181,7 @@ public abstract class StandardModule implements Module {
         }
 
         Optional<DocGenCache> docGenCache = plugin.getDocGenCache();
-        listenersToLoad.stream().map(this::getInstance).filter(Objects::nonNull).forEach(c -> {
+        listenersToLoad.stream().map(x -> this.getInstance(x, true)).filter(Objects::nonNull).forEach(c -> {
             // Register suggested permissions
             c.getPermissions().forEach((k, v) -> plugin.getPermissionRegistry().registerOtherPermission(k, v));
             docGenCache.ifPresent(x -> x.addPermissionDocs(moduleId, c.getPermissions()));
@@ -190,10 +190,11 @@ public abstract class StandardModule implements Module {
                 // Add reloadable to load in the listener dynamically if required.
                 Reloadable tae = () -> {
                     Sponge.getEventManager().unregisterListeners(c);
+                    if (c instanceof Reloadable) {
+                        ((Reloadable) c).onReload();
+                    }
+
                     if (((ListenerBase.Conditional) c).shouldEnable()) {
-                        if (c instanceof Reloadable) {
-                            ((Reloadable) c).onReload();
-                        }
                         Sponge.getEventManager().registerListeners(plugin, c);
                     }
                 };
@@ -280,7 +281,16 @@ public abstract class StandardModule implements Module {
     protected void performPreTasks() throws Exception { }
 
     private <T> T getInstance(Class<T> clazz) {
+        return getInstance(clazz, false);
+    }
+
+    private <T> T getInstance(Class<T> clazz, boolean checkMethods) {
         try {
+            if (checkMethods) {
+                // This checks all the methods to ensure the classes in question exist.
+                clazz.getDeclaredMethods();
+            }
+
             return clazz.newInstance();
 
         // I can't believe I have to do this...
