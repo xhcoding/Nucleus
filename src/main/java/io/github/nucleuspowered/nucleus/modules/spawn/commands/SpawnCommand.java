@@ -51,6 +51,7 @@ public class SpawnCommand extends AbstractCommand<Player> implements Reloadable 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
         Map<String, PermissionInformation> m = new HashMap<>();
+        m.put("force", PermissionInformation.getWithTranslation("permission.spawn.force", SuggestedLevel.ADMIN));
         m.put("otherworlds", PermissionInformation.getWithTranslation("permission.spawn.otherworlds", SuggestedLevel.ADMIN));
         m.put("worlds", PermissionInformation.getWithTranslation("permission.spawn.worlds", SuggestedLevel.ADMIN));
         return m;
@@ -59,12 +60,15 @@ public class SpawnCommand extends AbstractCommand<Player> implements Reloadable 
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
+            GenericArguments.flags().permissionFlag(this.permissions.getPermissionWithSuffix("force"), "f", "-force").buildWith(
                 GenericArguments.optional(GenericArguments.requiringPermission(GenericArguments.onlyOne(GenericArguments.world(Text.of(key))),
-                        permissions.getPermissionWithSuffix("otherworlds")))};
+                        permissions.getPermissionWithSuffix("otherworlds"))))
+        };
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
+        boolean force = args.hasAny("f");
         GlobalSpawnConfig gsc = sc.getGlobalSpawn();
         WorldProperties wp = args.<WorldProperties>getOne(key)
             .orElseGet(() -> gsc.isOnSpawnCommand() ? gsc.getWorld().orElse(src.getWorld().getProperties()) : src.getWorld().getProperties());
@@ -89,8 +93,10 @@ public class SpawnCommand extends AbstractCommand<Player> implements Reloadable 
         }
 
         // If we don't have a rotation, then use the current rotation
-        NucleusTeleportHandler.TeleportResult result = plugin.getTeleportHandler().teleportPlayer(src,
-                SpawnHelper.getSpawn(ow.get().getProperties(), plugin, src), sc.isSafeTeleport());
+        NucleusTeleportHandler.TeleportResult result = this.plugin.getTeleportHandler()
+                .teleportPlayer(src,
+                    SpawnHelper.getSpawn(ow.get().getProperties(), this.plugin, src),
+                    !force && this.sc.isSafeTeleport());
         if (result.isSuccess()) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.spawn.success", wp.getWorldName()));
             return CommandResult.success();
