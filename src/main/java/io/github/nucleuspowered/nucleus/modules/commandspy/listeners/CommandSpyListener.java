@@ -48,7 +48,7 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
     public void onCommand(SendCommandEvent event, @Root Player player) {
 
         if (!player.hasPermission(this.exemptTarget)) {
-            boolean isInList;
+            boolean isInList = false;
             if (!this.listIsEmpty) {
                 String command = event.getCommand().toLowerCase();
                 Optional<? extends CommandMapping> oc = Sponge.getCommandManager().get(command, player);
@@ -58,8 +58,6 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
                 cmd = oc.map(commandMapping -> commandMapping.getAllAliases().stream().map(String::toLowerCase).collect(Collectors.toSet()))
                         .orElseGet(() -> Sets.newHashSet(command));
                 isInList = this.config.getCommands().stream().map(String::toLowerCase).anyMatch(cmd::contains);
-            } else {
-                isInList = true;
             }
 
             // If the command is in the list, report it.
