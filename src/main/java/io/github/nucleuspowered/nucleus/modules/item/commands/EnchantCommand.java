@@ -20,10 +20,10 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
-import org.spongepowered.api.data.meta.ItemEnchantment;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.Enchantment;
+import org.spongepowered.api.item.enchantment.Enchantment;
+import org.spongepowered.api.item.enchantment.EnchantmentType;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
@@ -51,7 +51,7 @@ public class EnchantCommand extends AbstractCommand<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-            new ImprovedCatalogTypeArgument(Text.of(enchantmentKey), Enchantment.class),
+            new ImprovedCatalogTypeArgument(Text.of(enchantmentKey), EnchantmentType.class),
             new BoundedIntegerArgument(Text.of(levelKey), 1, Short.MAX_VALUE),
             GenericArguments.flags()
                     .permissionFlag(permissions.getPermissionWithSuffix("unsafe"), "u", "-unsafe")
@@ -70,7 +70,7 @@ public class EnchantCommand extends AbstractCommand<Player> {
 
         // Get the arguments
         ItemStack itemInHand = src.getItemInHand(HandTypes.MAIN_HAND).get();
-        Enchantment enchantment = args.<Enchantment>getOne(enchantmentKey).get();
+        EnchantmentType enchantment = args.<EnchantmentType>getOne(enchantmentKey).get();
         int level = args.<Integer>getOne(levelKey).get();
         boolean allowUnsafe = args.hasAny("u");
         boolean allowOverwrite = args.hasAny("o");
@@ -92,9 +92,9 @@ public class EnchantCommand extends AbstractCommand<Player> {
         EnchantmentData ed = itemInHand.getOrCreate(EnchantmentData.class).get();
 
         // Get all the enchantments.
-        List<ItemEnchantment> currentEnchants = ed.getListValue().get();
-        List<ItemEnchantment> enchantmentsToRemove = currentEnchants.stream()
-                .filter(x -> !x.getEnchantment().isCompatibleWith(enchantment) || x.getEnchantment().equals(enchantment))
+        List<Enchantment> currentEnchants = ed.getListValue().get();
+        List<Enchantment> enchantmentsToRemove = currentEnchants.stream()
+                .filter(x -> !x.getType().isCompatibleWith(enchantment) || x.getType().equals(enchantment))
                 .collect(Collectors.toList());
 
         if (!allowOverwrite && !enchantmentsToRemove.isEmpty()) {
@@ -105,7 +105,7 @@ public class EnchantCommand extends AbstractCommand<Player> {
                     sb.append(", ");
                 }
 
-                sb.append(Util.getTranslatableIfPresent(x.getEnchantment()));
+                sb.append(Util.getTranslatableIfPresent(x.getType()));
             });
 
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.enchant.overwrite", sb.toString()));
@@ -116,7 +116,7 @@ public class EnchantCommand extends AbstractCommand<Player> {
         currentEnchants.removeIf(enchantmentsToRemove::contains);
 
         // Create the enchantment
-        currentEnchants.add(new ItemEnchantment(enchantment, level));
+        currentEnchants.add(Enchantment.of(enchantment, level));
         ed.setElements(currentEnchants);
 
         // Offer it to the item.

@@ -120,7 +120,6 @@ public class NucleusPlugin extends Nucleus {
 
     private final PluginContainer pluginContainer;
     private Instant gameStartedTime = null;
-    private boolean modulesLoaded = false;
     private boolean hasStarted = false;
     private Throwable isErrored = null;
     private CommandsConfig commandsConfig;
@@ -168,10 +167,11 @@ public class NucleusPlugin extends Nucleus {
     private static String versionCheck() {
         // So we can ensure we have the Cause Stack Manager.
         try {
-            // Check the CauseStackManager exists.
-            Class.forName("org.spongepowered.api.event.CauseStackManager");
+            // Check the org.spongepowered.api.item.enchantment.EnchantmentType exists.
+            Class.forName("org.spongepowered.api.item.enchantment.EnchantmentType");
         } catch (Throwable e) {
-            return "CauseStackManager does not exist. Nucleus requires the CauseStackManager from API 7 to function.";
+            return "EnchantmentType does not exist. Nucleus requires the EnchantmentType from API 7 to function. Update Nucleus to the latest "
+                    + "version.";
         }
 
         return null;
@@ -415,7 +415,6 @@ public class NucleusPlugin extends Nucleus {
 
         logger.info(messageProvider.getMessageWithFormat("startup.moduleloaded", PluginInfo.NAME));
         registerPermissions();
-        modulesLoaded = true;
         Sponge.getEventManager().post(new BaseModuleEvent.Complete(this));
 
         logger.info(messageProvider.getMessageWithFormat("startup.completeinit", PluginInfo.NAME));
