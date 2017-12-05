@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -94,8 +95,11 @@ public class WorldCorrector {
                 Sponge.getEventManager().registerListener(Nucleus.getNucleus(), GameStoppedServerEvent.class, event -> {
                     for (Map.Entry<UUID, UUID> meuu : fromToConverter.entrySet()) {
                         // Magic!
-                        WorldProperties wp = Sponge.getServer().getWorldProperties(meuu.getKey()).get();
-                        String name = wp.getWorldName();
+                        WorldProperties wp = Sponge.getServer().getWorldProperties(meuu.getKey())
+                                .orElseThrow(() -> new NoSuchElementException(
+                                        mpr.getMessageWithFormat("worldrepair.repair.nouuid", meuu.getKey().toString())
+                                ));
+                        final String name = wp.getWorldName();
                         try {
                             cs.sendMessage(mpr.getTextMessageWithFormat("worldrepair.repair.try", name));
                             method.invoke(wp, meuu.getValue());
