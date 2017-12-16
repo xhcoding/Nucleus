@@ -31,6 +31,9 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.TextRepresentable;
 import org.spongepowered.api.text.channel.MessageChannel;
+import org.spongepowered.api.text.chat.ChatType;
+import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.util.Tuple;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -120,24 +123,22 @@ public class AFKHandler implements NucleusAFKService {
                 final NucleusTextTemplateImpl messageToServer = config.getMessages().getOnKick();
 
                 Sponge.getServer().getPlayer(e.getKey()).ifPresent(player -> {
-                    if (Sponge.getEventManager().post(new AFKEvents.Kick(player))) {
+                    MessageChannel mc;
+                    if (config.isBroadcastOnKick()) {
+                        mc = MessageChannel.TO_ALL;
+                    } else {
+                        mc = MessageChannel.permission(this.afkPermissionHandler.getPermissionWithSuffix("notify"));
+                    }
+
+                    AFKEvents.Kick events = new AFKEvents.Kick(player, messageToServer.getForCommandSource(player), mc);
+                    if (Sponge.getEventManager().post(events)) {
                         // Cancelled.
                         return;
                     }
 
                     Text toSend = t instanceof NucleusTextTemplateImpl ? ((NucleusTextTemplateImpl) t).getForCommandSource(player) : t.toText();
-                    Sponge.getScheduler().createSyncExecutor(Nucleus.getNucleus())
-                        .execute(() -> player.kick(toSend));
-                    if (!messageToServer.isEmpty()) {
-                        MessageChannel mc;
-                        if (config.isBroadcastOnKick()) {
-                            mc = MessageChannel.TO_ALL;
-                        } else {
-                            mc = MessageChannel.permission(this.afkPermissionHandler.getPermissionWithSuffix("notify"));
-                        }
-
-                        mc.send(messageToServer.getForCommandSource(player));
-                    }
+                    Sponge.getScheduler().createSyncExecutor(Nucleus.getNucleus()).execute(() -> player.kick(toSend));
+                    events.getMessage().ifPresent(m -> events.getChannel().send(player, m, ChatTypes.SYSTEM));
                 });
             }
         });
@@ -185,10 +186,12 @@ public class AFKHandler implements NucleusAFKService {
                 activity.remove(uuid);
             }
 
-            Sponge.getEventManager().post(new AFKEvents.To(player, cause));
+            Tuple<Text, MessageChannel> ttmc = getAFKMessage(player, true);
+            AFKEvents.To event = new AFKEvents.To(player, ttmc.getFirst(), ttmc.getSecond(), cause);
+            Sponge.getEventManager().post(event);
+            actionEvent(event, "command.afk.to.vanish");
 
             a.isKnownAfk = true;
-            sendAFKMessage(uuid, true);
             return true;
         }
 
@@ -210,29 +213,36 @@ public class AFKHandler implements NucleusAFKService {
         if (data.isKnownAfk) {
             data.isKnownAfk = false;
             data.willKick = false;
-            Sponge.getServer().getPlayer(uuid).ifPresent(x -> Sponge.getEventManager().post(new AFKEvents.From(x, cause)));
+            Sponge.getServer().getPlayer(uuid).ifPresent(x -> {
+                Tuple<Text, MessageChannel> ttmc = getAFKMessage(x, false);
+                AFKEvents.From event = new AFKEvents.From(x, ttmc.getFirst(), ttmc.getSecond(), cause);
+                Sponge.getEventManager().post(event);
+                actionEvent(event, "command.afk.from.vanish");
+            });
 
-            // Send message.
-            sendAFKMessage(uuid, false);
         }
 
         return data;
     }
 
-    private void sendAFKMessage(UUID uuid, boolean isAfk) {
-        Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
-            // If we have the config set to true, or the subject is NOT invisible, send an AFK message
-            if (config.isAfkOnVanish() || !player.get(Keys.VANISH).orElse(false)) {
-                NucleusTextTemplateImpl template = isAfk ? config.getMessages().getAfkMessage() : config.getMessages().getReturnAfkMessage();
-                if (!template.isEmpty()) {
-                    MessageChannel.TO_ALL.send(template.getForCommandSource(player));
-                }
-            } else {
-                // Tell the user in question about them going AFK
-                player.sendMessage(
-                    NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(isAfk ? "command.afk.to.vanish" : "command.afk.from.vanish"));
-            }
-        });
+    private void actionEvent(AFKEvents event, String key) {
+        if (event.getMessage().isPresent()) {
+            event.getChannel().send(event.getTargetEntity(), event.getMessage().get(), ChatTypes.SYSTEM);
+        } else {
+            event.getTargetEntity().sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(key));
+        }
+    }
+
+    private Tuple<Text, MessageChannel> getAFKMessage(Player player, boolean isAfk) {
+        if (config.isAfkOnVanish() || !player.get(Keys.VANISH).orElse(false)) {
+            NucleusTextTemplateImpl template = isAfk ? config.getMessages().getAfkMessage() : config.getMessages().getReturnAfkMessage();
+            return Tuple.of(template.getForCommandSource(player), MessageChannel.TO_ALL);
+        } else {
+            // Tell the user in question about them going AFK
+            // player.sendMessage(
+            //        NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat(isAfk ? "command.afk.to.vanish" : "command.afk.from.vanish"));
+            return Tuple.of(Text.EMPTY, MessageChannel.TO_NONE);
+        }
     }
 
     @Override public boolean canGoAFK(User user) {
