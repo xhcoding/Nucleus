@@ -5,6 +5,7 @@
 package io.github.nucleuspowered.nucleus.modules.vanish.service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.vanish.commands.VanishCommand;
@@ -18,6 +19,8 @@ import org.spongepowered.api.entity.living.player.tab.TabListEntry;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class VanishService implements Reloadable {
 
@@ -54,7 +57,10 @@ public class VanishService implements Reloadable {
         if (this.isAlter) {
             Sponge.getServer().getOnlinePlayers().forEach(x -> {
                 if (!x.getTabList().getEntry(player.getUniqueId()).isPresent()) {
-                    x.getTabList().addEntry(TabListEntry.builder().profile(player.getProfile()).build());
+                    x.getTabList().addEntry(TabListEntry.builder().profile(player.getProfile())
+                            .gameMode(player.gameMode().get())
+                            .latency(player.getConnection().getLatency())
+                            .list(x.getTabList()).build());
                 }
             });
         }
@@ -63,13 +69,19 @@ public class VanishService implements Reloadable {
     public void resetPlayerTabLists() {
         if (this.isAlter) {
             Collection<Player> players = Sponge.getServer().getOnlinePlayers();
-            List<TabListEntry> standard = Lists.newArrayList();
-            List<TabListEntry> enhanced = Lists.newArrayList();
+            List<TabListEntry.Builder> standard = Lists.newArrayList();
+            List<TabListEntry.Builder> enhanced = Lists.newArrayList();
+            Map<UUID, TabListEntry.Builder> difference = Maps.newHashMap();
 
             players.forEach(x -> {
-                TabListEntry t = TabListEntry.builder().profile(x.getProfile()).build();
+                TabListEntry.Builder t = TabListEntry.builder()
+                        .profile(x.getProfile())
+                        .gameMode(x.gameMode().get())
+                        .latency(x.getConnection().getLatency());
                 if (!x.get(Keys.VANISH).orElse(false)) {
                     standard.add(t);
+                } else {
+                    difference.put(x.getUniqueId(), t);
                 }
 
                 enhanced.add(t);
@@ -77,13 +89,17 @@ public class VanishService implements Reloadable {
 
             players.forEach(x -> {
                 TabList list = x.getTabList();
-                Collection<TabListEntry> toRemove = list.getEntries();
+                Collection<TabListEntry> toRemove = Lists.newArrayList(list.getEntries());
                 toRemove.forEach(y -> list.removeEntry(y.getProfile().getUniqueId()));
 
                 if (x.hasPermission(this.canseePerm)) {
-                    enhanced.forEach(list::addEntry);
+                    enhanced.forEach(y -> list.addEntry(y.list(list).build()));
                 } else {
-                    standard.forEach(list::addEntry);
+                    standard.forEach(y -> list.addEntry(y.list(list).build()));
+                    TabListEntry.Builder t = difference.get(x.getUniqueId());
+                    if (t != null) {
+                        list.addEntry(t.list(list).build());
+                    }
                 }
             });
         }
