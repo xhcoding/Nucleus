@@ -10,22 +10,37 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.impl.AbstractEvent;
 import org.spongepowered.api.text.Text;
 
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
 public class ChangeNicknameEvent extends AbstractEvent implements NucleusChangeNicknameEvent {
 
     private final Cause cause;
-    private final Text newNickname;
     private final User target;
+    @Nullable private final Text previousNickname;
+    @Nullable private final Text newNickname;
     private boolean cancel = false;
 
-    public ChangeNicknameEvent(Cause cause, Text newNickname, User target) {
+    public ChangeNicknameEvent(Cause cause, @Nullable Text previousNickname, @Nullable Text newNickname, User target) {
         this.cause = cause;
+        this.previousNickname = previousNickname;
         this.newNickname = newNickname;
         this.target = target;
     }
 
     @Override
+    public Optional<Text> getPreviousNickname() {
+        return Optional.ofNullable(this.previousNickname);
+    }
+
+    @Override
     public Text getNewNickname() {
-        return newNickname;
+        return getNickname().orElseGet(() -> Text.of(this.target.getName()));
+    }
+
+    @Override public Optional<Text> getNickname() {
+        return Optional.ofNullable(this.newNickname);
     }
 
     @Override
