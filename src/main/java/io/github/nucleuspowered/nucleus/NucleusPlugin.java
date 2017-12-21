@@ -420,8 +420,8 @@ public class NucleusPlugin extends Nucleus {
         logger.info(messageProvider.getMessageWithFormat("startup.completeinit", PluginInfo.NAME));
     }
 
-    @Listener
-    public void onGameAboutToStart(GameStartingServerEvent event) {
+    @Listener(order = Order.EARLY)
+    public void onGameStartingEarly(GameStartingServerEvent event) {
         if (!this.isServer) {
             try {
                 Files.createDirectories(this.dataDir.get());
@@ -464,8 +464,8 @@ public class NucleusPlugin extends Nucleus {
 
             // Load up the general data files now, mods should have registered items by now.
             try {
-                generalService.loadInternal();
-                kitService.loadInternal();
+                this.generalService.loadInternal();
+                this.kitService.loadInternal();
             } catch (Exception e) {
                 isErrored = e;
                 disable();
