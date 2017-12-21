@@ -254,7 +254,7 @@ public class NucleusPlugin extends Nucleus {
             this.nameUtil = new NameUtil(this);
 
             if (this.isServer) {
-                allChange(false);
+                allChange();
             }
         } catch (Exception e) {
             this.isErrored = e;
@@ -425,7 +425,7 @@ public class NucleusPlugin extends Nucleus {
         if (!this.isServer) {
             try {
                 Files.createDirectories(this.dataDir.get());
-                allChange(true);
+                allChange();
             } catch (IOException e) {
                 isErrored = e;
                 disable();
@@ -434,7 +434,7 @@ public class NucleusPlugin extends Nucleus {
         }
     }
 
-    private void allChange(boolean load) {
+    private void allChange() {
         this.generalService.changeFile();
         this.kitService.changeFile();
         this.nameBanService.changeFile();
@@ -442,10 +442,6 @@ public class NucleusPlugin extends Nucleus {
 
         this.userCacheService.load();
         this.nameBanService.load();
-        if (load) {
-            this.generalService.load();
-            this.kitService.load();
-        }
     }
 
     @Listener
