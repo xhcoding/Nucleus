@@ -12,7 +12,7 @@ import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions
-@RegisterCommand("workbench", "wb", "craft")
+@RegisterCommand({"workbench", "wb", "craft"})
 @NonnullByDefault
 public class WorkbenchCommand extends BasicCraftingCommand {
 
