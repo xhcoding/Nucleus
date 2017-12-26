@@ -36,15 +36,12 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.data.property.block.MatterProperty;
-import org.spongepowered.api.entity.Transform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.util.PositionOutOfBoundsException;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
-import org.spongepowered.api.util.blockray.BlockRay;
-import org.spongepowered.api.util.blockray.BlockRayHit;
 import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
@@ -238,7 +235,7 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
             } while (prohibitedBiomeTypes.contains(this.currentWorld.getBiome(x, 0, z).getId()));
 
             int y;
-            if (onSurface) {
+            if (this.onSurface && this.currentWorld.getDimension().hasSky()) {
                 y = this.currentWorld.getHighestYAt(x, z) + 1;
                 if (y < this.minY || y > this.maxY) {
                     onUnsuccesfulAttempt();
