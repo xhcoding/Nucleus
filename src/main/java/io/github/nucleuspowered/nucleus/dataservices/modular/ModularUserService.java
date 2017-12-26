@@ -53,7 +53,7 @@ public class ModularUserService extends ModularDataService<ModularUserService> {
      * @return The {@link Instant} the service was loaded.
      */
     public final Instant serviceLoadTime() {
-        return serviceLoadTime;
+        return this.serviceLoadTime;
     }
 
     @Override protected String serviceName() {
