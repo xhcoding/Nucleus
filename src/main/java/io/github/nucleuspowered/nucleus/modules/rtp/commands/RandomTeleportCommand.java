@@ -120,16 +120,18 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
         WorldBorder wb = currentWorld.getWorldBorder();
 
         int diameter = Math.min(Math.abs(rc.getRadius(currentWorld.getName()) * 2), (int)wb.getDiameter());
+        int minDiameter = Math.max(Math.abs(rc.getMinRadius(currentWorld.getName()) * 2), 0);
         Vector3d centre = wb.getCenter();
 
         src.sendMessage(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.rtp.searching"));
 
         if (self) {
-            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, centre, diameter, getCost(src, args), player, currentWorld, rc))
+            Sponge.getScheduler().createTaskBuilder().execute(
+                    new RTPTask(plugin, centre, minDiameter, diameter, getCost(src, args), player, currentWorld, rc))
                     .submit(plugin);
         } else {
-            Sponge.getScheduler().createTaskBuilder().execute(new RTPTask(plugin, centre, diameter, getCost(src, args), player, currentWorld, src,
-                    rc)).submit(plugin);
+            Sponge.getScheduler().createTaskBuilder().execute(
+                    new RTPTask(plugin, centre, minDiameter, diameter, getCost(src, args), player, currentWorld, src, rc)).submit(plugin);
         }
 
         return CommandResult.success();
@@ -166,23 +168,26 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
         private final Player target;
         private int count;
         private final int maxCount;
+        private final int minDiameter;
         private final int diameter;
         private final Vector3d centre;
         private final World currentWorld;
         private final boolean onSurface;
+        private final boolean aroundPlayer;
         private boolean isSelf = false;
 
-        private RTPTask(Nucleus plugin, Vector3d centre, int diameter, double cost, Player target,
+        private RTPTask(Nucleus plugin, Vector3d centre, int minDiameter, int diameter, double cost, Player target,
             World currentWorld, RTPConfig config) {
-            this(plugin, centre, diameter, cost, target, currentWorld, target, config);
+            this(plugin, centre, minDiameter, diameter, cost, target, currentWorld, target, config);
             isSelf = true;
         }
 
-        private RTPTask(Nucleus plugin, Vector3d centre, int diameter, double cost, Player target, World currentWorld,
+        private RTPTask(Nucleus plugin, Vector3d centre, int minDiameter, int diameter, double cost, Player target, World currentWorld,
                 CommandSource source, RTPConfig config) {
             super(plugin, source, cost);
             this.count = Math.max(config.getNoOfAttempts(), 1);
             this.maxCount = this.count;
+            this.minDiameter = Math.max(0, minDiameter);
             this.diameter = diameter;
             this.centre = centre;
             this.currentWorld = currentWorld;
@@ -194,6 +199,7 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
             this.target = target;
             this.source = source;
             this.cause = CauseStackHelper.createCause(source);
+            this.aroundPlayer = config.isAroundPlayer(name);
             if (this.onSurface) {
                 this.mode = NucleusTeleportHandler.StandardTeleportMode.FLYING_THEN_SAFE_TELEPORT_SURFACE;
             } else {
@@ -222,8 +228,20 @@ public class RandomTeleportCommand extends AbstractCommand.SimpleTargetOtherPlay
                     return;
                 }
 
-                x = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
-                z = RandomTeleportCommand.this.random.nextInt(diameter) - diameter/2;
+                x = RandomTeleportCommand.this.random.nextInt(diameter - minDiameter) - diameter / 2;
+                z = RandomTeleportCommand.this.random.nextInt(diameter - minDiameter) - diameter / 2;
+                if (this.minDiameter > 0) {
+                    x += (x / Math.abs(x)) * this.minDiameter;
+                    z += (z / Math.abs(z)) * this.minDiameter;
+                }
+
+                if (this.aroundPlayer) {
+                    x += this.target.getLocation().getBlockX();
+                    z += this.target.getLocation().getBlockZ();
+                    if (!Util.isLocationInWorldBorder(new Location<>(this.currentWorld, x, 0, z))) {
+                        continue;
+                    }
+                }
 
                 // Load the chunk before continuing with /rtp. Sponge issue means we have to load the chunk first.
                 Optional<Chunk> oc = this.currentWorld.loadChunk(new Vector3i(x / 16, 0, z / 16), true);

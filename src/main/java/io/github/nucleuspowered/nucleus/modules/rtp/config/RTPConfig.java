@@ -22,8 +22,14 @@ public class RTPConfig {
     @Setting(value = "attempts", comment = "config.rtp.attempts")
     private int noOfAttempts = 10;
 
+    @Setting(value = "center-on-player", comment = "config.rtp.onplayer")
+    private boolean basedOnPlayer = false;
+
     @Setting(value = "radius", comment = "config.rtp.radius")
     private int radius = 30000;
+
+    @Setting(value = "min-radius", comment = "config.rtp.minradius")
+    private int minRadius = 0;
 
     @Setting(value = "minimum-y", comment = "config.rtp.min-y")
     private int minY = 0;
@@ -54,6 +60,10 @@ public class RTPConfig {
         return Optional.ofNullable(perWorldRTPConfigList.get(worldName.toLowerCase()));
     }
 
+    public int getMinRadius(String worldName) {
+        return get(worldName).map(x -> x.minRadius).orElse(this.minRadius);
+    }
+
     public int getRadius(String worldName) {
         return get(worldName).map(x -> x.radius).orElse(radius);
     }
@@ -76,6 +86,10 @@ public class RTPConfig {
         return perWorldPermissions;
     }
 
+    public boolean isAroundPlayer(String worldName) {
+        return get(worldName).map(x -> x.basedOnPlayer).orElse(this.basedOnPlayer);
+    }
+
     public Optional<WorldProperties> getDefaultWorld() {
         if (this.defaultWorld == null || this.defaultWorld.equalsIgnoreCase("")) {
             return Optional.empty();
@@ -89,6 +103,9 @@ public class RTPConfig {
         @Setting(value = "radius")
         private int radius = 30000;
 
+        @Setting(value = "min-radius")
+        private int minRadius = 30000;
+
         @Setting(value = "minimum-y")
         private int minY = 0;
 
@@ -98,5 +115,7 @@ public class RTPConfig {
         @Setting(value = "surface-only")
         private boolean mustSeeSky = false;
 
+        @Setting(value = "center-on-player", comment = "config.rtp.onplayer")
+        private boolean basedOnPlayer = false;
     }
 }
