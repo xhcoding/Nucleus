@@ -46,7 +46,7 @@ public class TextParsingUtils {
 
     private final NucleusPlugin plugin;
 
-    private static final Pattern colours = Pattern.compile(".*(&[0-9a-flmnrok])+$");
+    private static final Pattern colours = Pattern.compile(".*?(?<colour>(&[0-9a-flmnrok])+)$");
 
     private final Pattern enhancedUrlParser =
             Pattern.compile("(?<first>(^|\\s))(?<reset>&r)?(?<colour>(&[0-9a-flmnrok])+)?"
@@ -130,8 +130,8 @@ public class TextParsingUtils {
     public static Text oldLegacy(String message) {
         Matcher colourMatcher = colours.matcher(message);
         if (colourMatcher.matches()) {
-            Text first = TextSerializers.FORMATTING_CODE.deserialize(message.replace(colourMatcher.group(1), ""));
-            String match = colourMatcher.group(1) + " ";
+            Text first = TextSerializers.FORMATTING_CODE.deserialize(message.replace(colourMatcher.group("colour"), ""));
+            String match = colourMatcher.group("colour") + " ";
             Text t = TextSerializers.FORMATTING_CODE.deserialize(match);
             return Text.of(first, t.getColor(), first.getStyle().and(t.getStyle()));
         }
@@ -252,7 +252,9 @@ public class TextParsingUtils {
             }
 
             if (optionList.contains("s")) {
-                return TextActions.showText(plugin.getMessageProvider().getTextMessageWithFormat("chat.command.clicksuggest", cmd));
+                return TextActions.showText(
+                        plugin.getMessageProvider().getTextMessageWithFormat("chat.command.clicksuggest", cmd)
+                );
             }
         }
 
