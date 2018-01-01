@@ -16,13 +16,11 @@ tidbits that you might need. Extremely configurable, only loading up the command
 plugins to disable modules that they replace the functionality of), and providing a simple and rich API, Nucleus is an
 elite plugin for providing simple server tasks, and an essential addition to your server!
 
-Nucleus is being actively developed for Sponge API 7. Sponge API 5 and Sponge API 6 are in LTS and are receiving primarily bug fixes.
+Nucleus is being actively developed for Sponge API 7. 
 
 The current active branches are:
 
-* sponge-api/7 (this branch - development - 1.12.2+)
-* sponge-api/6 (MC 1.11.2)
-* sponge-api/5 (MC 1.10.2)
+* sponge-api/7 (this branch - 1.12.2+)
 
 ## Contributions
 
