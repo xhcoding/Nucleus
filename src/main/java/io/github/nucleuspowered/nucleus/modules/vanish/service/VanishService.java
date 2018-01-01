@@ -16,6 +16,7 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.tab.TabList;
 import org.spongepowered.api.entity.living.player.tab.TabListEntry;
+import org.spongepowered.api.text.Text;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,7 +58,9 @@ public class VanishService implements Reloadable {
         if (this.isAlter) {
             Sponge.getServer().getOnlinePlayers().forEach(x -> {
                 if (!x.getTabList().getEntry(player.getUniqueId()).isPresent()) {
-                    x.getTabList().addEntry(TabListEntry.builder().profile(player.getProfile())
+                    x.getTabList().addEntry(TabListEntry.builder()
+                            .displayName(Text.of(player.getName()))
+                            .profile(player.getProfile())
                             .gameMode(player.gameMode().get())
                             .latency(player.getConnection().getLatency())
                             .list(x.getTabList()).build());
@@ -75,6 +78,7 @@ public class VanishService implements Reloadable {
 
             players.forEach(x -> {
                 TabListEntry.Builder t = TabListEntry.builder()
+                        .displayName(Text.of(x.getName()))
                         .profile(x.getProfile())
                         .gameMode(x.gameMode().get())
                         .latency(x.getConnection().getLatency());

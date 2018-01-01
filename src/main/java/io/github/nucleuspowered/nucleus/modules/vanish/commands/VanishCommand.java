@@ -21,7 +21,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.data.DataTransactionResult;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -31,14 +30,13 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Permissions(supportsOthers = true)
 @NoModifiers
 @NonnullByDefault
 @RegisterCommand({"vanish", "v"})
 @EssentialsEquivalent({"vanish", "v"})
-public class VanishCommand extends AbstractCommand<CommandSource > {
+public class VanishCommand extends AbstractCommand<CommandSource> {
 
     private final String player = "player";
     private final String b = "toggle";
