@@ -72,7 +72,7 @@ public class NucleusTeleportHandler {
      *
      * @param player The {@link Player}
      * @param locationToTeleportTo The {@link Location} in the {@link World} to teleport to.
-     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link StandardTeleportMode#WALL_CHECK}
+     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode
      * @return The {@link TeleportResult}
      */
     public TeleportResult teleportPlayer(Player player, Location<World> locationToTeleportTo, boolean safe) {
@@ -85,11 +85,11 @@ public class NucleusTeleportHandler {
      * @param player The {@link Player}
      * @param worldLocation The {@link Location} in the {@link World} to teleport to.
      * @param rotation The {@link Vector3d} containing the rotation to port to.
-     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode, if false, do a basic {@link StandardTeleportMode#WALL_CHECK}
+     * @param safe If {@code true}, try to teleport the subject safely based on their current game mode
      * @return The {@link TeleportResult}
      */
     public TeleportResult teleportPlayer(Player player, Location<World> worldLocation, Vector3d rotation, boolean safe) {
-        StandardTeleportMode mode = safe ? getTeleportModeForPlayer(player) : StandardTeleportMode.WALL_CHECK;
+        StandardTeleportMode mode = safe ? getTeleportModeForPlayer(player) : StandardTeleportMode.NO_CHECK;
         return CauseStackHelper.createFrameWithCausesWithReturn(c -> teleportPlayer(player, worldLocation, rotation, mode, c), player);
     }
 
@@ -99,7 +99,7 @@ public class NucleusTeleportHandler {
     }
 
     public TeleportResult teleportPlayer(Player player, Transform<World> worldTransform, boolean safe) {
-        StandardTeleportMode mode = safe ? getTeleportModeForPlayer(player) : StandardTeleportMode.WALL_CHECK;
+        StandardTeleportMode mode = safe ? getTeleportModeForPlayer(player) : StandardTeleportMode.NO_CHECK;
         return CauseStackHelper.createFrameWithCausesWithReturn(c ->
                 teleportPlayer(player, worldTransform.getLocation(), worldTransform.getRotation(), mode, c), player);
     }
