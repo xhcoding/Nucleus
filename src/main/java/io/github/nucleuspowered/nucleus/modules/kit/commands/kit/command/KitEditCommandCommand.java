@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 
 @NoModifiers
 @NonnullByDefault
-@RunAsync
 @Permissions(prefix = "kit.command", suggestedLevel = SuggestedLevel.NONE)
 @RegisterCommand(value = {"edit"}, subcommandOf = KitCommandCommand.class)
 public class KitEditCommandCommand extends AbstractCommand<Player> {
