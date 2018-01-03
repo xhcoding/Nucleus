@@ -349,4 +349,25 @@ public abstract class StandardModule implements Module {
         plugin.getInternalServiceManager().getService(SeenHandler.class).ifPresent(x ->
                 x.register(plugin, this.getClass().getAnnotation(ModuleData.class).name(), new BasicSeenInformationProvider(permission, function)));
     }
+
+    protected final <I, S extends I> void register(Class<S> impl) throws IllegalAccessException, InstantiationException {
+        Nucleus.getNucleus().getInternalServiceManager().registerService(impl, impl.newInstance());
+    }
+
+    protected final <I, S extends I> void register(Class<I> api, Class<S> impl) throws IllegalAccessException, InstantiationException {
+        S object = impl.newInstance();
+        Sponge.getServiceManager().setProvider(Nucleus.getNucleus(), api, object);
+        Nucleus.getNucleus().getInternalServiceManager().registerService(api, object);
+        register(impl, object);
+    }
+
+    protected final <I, S extends I> void register(Class<S> impl, S object) {
+        Nucleus.getNucleus().getInternalServiceManager().registerService(impl, object);
+    }
+
+    protected final <I, S extends I> void register(Class<I> api, Class<S> impl, S object) {
+        Sponge.getServiceManager().setProvider(Nucleus.getNucleus(), api, object);
+        Nucleus.getNucleus().getInternalServiceManager().registerService(api, object);
+        register(impl, object);
+    }
 }
