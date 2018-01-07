@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommandInterceptors;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
+import io.github.nucleuspowered.nucleus.internal.annotations.ServerOnly;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Scan;
@@ -39,6 +40,7 @@ import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.quickstart.Module;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
+import uk.co.drnaylor.quickstart.exceptions.MissingDependencyException;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -79,6 +81,17 @@ public abstract class StandardModule implements Module {
     public void init(Map<String, List<String>> m) {
         this.msls = m;
     }
+
+    @Override
+    public final void checkExternalDependencies() throws MissingDependencyException {
+        if (this.getClass().isAnnotationPresent(ServerOnly.class) && !Nucleus.getNucleus().isServer()) {
+            throw new MissingDependencyException("This module is server only and will not be loaded.");
+        }
+
+        otherDeps();
+    }
+
+    protected void otherDeps() throws MissingDependencyException { }
 
     /**
      * Non-configurable module, no configuration to register.
