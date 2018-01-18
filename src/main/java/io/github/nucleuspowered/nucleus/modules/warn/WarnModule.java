@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.warn;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.api.service.NucleusWarningService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.warn.commands.CheckWarningsCommand;
 import io.github.nucleuspowered.nucleus.modules.warn.config.WarnConfigAdapter;
@@ -15,6 +16,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(value = WarnHandler.class, apiService = NucleusWarningService.class)
 @ModuleData(id = WarnModule.ID, name = "Warn")
 public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
 
@@ -23,22 +25,6 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
     @Override
     public WarnConfigAdapter createAdapter() {
         return new WarnConfigAdapter();
-    }
-
-    @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        try {
-            WarnHandler warnHandler = new WarnHandler();
-            this.plugin.registerReloadable(warnHandler);
-            Sponge.getServiceManager().setProvider(this.plugin, NucleusWarningService.class, warnHandler);
-            this.serviceManager.registerService(WarnHandler.class, warnHandler);
-        } catch (Exception ex) {
-            this.plugin.getLogger().warn("Could not load the warn module for the reason below.");
-            ex.printStackTrace();
-            throw ex;
-        }
     }
 
     @Override

@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.Constants;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
@@ -21,6 +22,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
+import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import org.spongepowered.api.Platform;
@@ -28,6 +30,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.context.Context;
+import org.spongepowered.api.service.context.ContextCalculator;
+import org.spongepowered.api.service.permission.Subject;
 import org.spongepowered.api.text.Text;
 import uk.co.drnaylor.quickstart.Module;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
@@ -86,10 +91,64 @@ public abstract class StandardModule implements Module {
     @Override
     public final void preEnable() {
         try {
+            registerServices();
             performPreTasks();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Cannot enable module!", e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void registerServices() throws Exception {
+        RegisterService[] annotations = getClass().getAnnotationsByType(RegisterService.class);
+        if (annotations != null && annotations.length > 0) {
+            // for each annotation, attempt to register the service.
+            for (RegisterService service : annotations) {
+                Class<?> impl = service.value();
+                // create the impl
+                Object serviceImpl;
+                try {
+                    serviceImpl = impl.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    String error = "ERROR: Cannot instantiate " + impl.getName();
+                    Nucleus.getNucleus().getLogger().error(error);
+                    throw new IllegalStateException(error, e);
+                }
+
+                Class<?> api = service.apiService();
+
+                if (api != Object.class) {
+                    if (api.isInstance(serviceImpl)) {
+                        // OK
+                        register((Class) api, (Class) impl, serviceImpl);
+                    } else {
+                        String error = "ERROR: " + api.getName() + " does not inherit from " + impl.getName();
+                        Nucleus.getNucleus().getLogger().error(error);
+                        throw new IllegalStateException(error);
+                    }
+                } else {
+                    register((Class) impl, serviceImpl);
+                }
+
+                if (serviceImpl instanceof Reloadable) {
+                    Reloadable reloadable = (Reloadable) serviceImpl;
+                    Nucleus.getNucleus().registerReloadable(reloadable);
+                    reloadable.onReload();
+                }
+
+                if (serviceImpl instanceof ContextCalculator) {
+                    try {
+                        // boolean matches(Context context, T calculable);
+                        serviceImpl.getClass().getMethod("matches", Context.class, Subject.class);
+
+                        // register it
+                        ServiceChangeListener.getInstance().registerCalculator((ContextCalculator<Subject>) serviceImpl);
+                    } catch (NoSuchMethodException e) {
+                        // ignored
+                    }
+                }
+            }
         }
     }
 

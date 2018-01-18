@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.note;
 
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNoteService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.note.commands.CheckNotesCommand;
 import io.github.nucleuspowered.nucleus.modules.note.config.NoteConfigAdapter;
@@ -15,6 +16,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(value = NoteHandler.class, apiService = NucleusNoteService.class)
 @ModuleData(id = NoteModule.ID, name = "Note")
 public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
 
@@ -26,25 +28,10 @@ public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
     }
 
     @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        try {
-            NoteHandler noteHandler = new NoteHandler();
-            Sponge.getServiceManager().setProvider(this.plugin, NucleusNoteService.class, noteHandler);
-            this.serviceManager.registerService(NoteHandler.class, noteHandler);
-        } catch (Exception ex) {
-            this.plugin.getLogger().warn("Could not load the note module for the reason below.");
-            ex.printStackTrace();
-            throw ex;
-        }
-    }
-
-    @Override
     public void onEnable() {
         super.onEnable();
 
-        // Take base permission from /checkwarnings.
+        // Take base permission from /checknotes.
         createSeenModule(CheckNotesCommand.class, (c, u) -> {
 
             NoteHandler jh = plugin.getInternalServiceManager().getService(NoteHandler.class).get();

@@ -4,11 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.chat;
 
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.util.TemplateUtil;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(TemplateUtil.class)
 @ModuleData(id = ChatModule.ID, name = "Chat")
 public class ChatModule extends ConfigurableModule<ChatConfigAdapter> {
 
@@ -19,16 +21,4 @@ public class ChatModule extends ConfigurableModule<ChatConfigAdapter> {
         return new ChatConfigAdapter();
     }
 
-    @Override protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        try {
-            TemplateUtil templateUtil = new TemplateUtil(getAdapter());
-            serviceManager.registerService(TemplateUtil.class, templateUtil);
-        } catch (Exception ex) {
-            plugin.getLogger().warn("Could not load the chat module for the reason below.");
-            ex.printStackTrace();
-            throw ex;
-        }
-    }
 }

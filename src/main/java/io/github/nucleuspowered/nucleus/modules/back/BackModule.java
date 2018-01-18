@@ -5,12 +5,14 @@
 package io.github.nucleuspowered.nucleus.modules.back;
 
 import io.github.nucleuspowered.nucleus.api.service.NucleusBackService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.back.config.BackConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.back.handlers.BackHandler;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(value = BackHandler.class, apiService = NucleusBackService.class)
 @ModuleData(id = "back", name = "Back", softDependencies = "jail")
 public class BackModule extends ConfigurableModule<BackConfigAdapter> {
 
@@ -19,12 +21,4 @@ public class BackModule extends ConfigurableModule<BackConfigAdapter> {
         return new BackConfigAdapter();
     }
 
-    @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        BackHandler m = new BackHandler();
-        serviceManager.registerService(BackHandler.class, m);
-        Sponge.getServiceManager().setProvider(plugin, NucleusBackService.class, m);
-    }
 }

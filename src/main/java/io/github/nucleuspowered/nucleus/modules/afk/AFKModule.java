@@ -5,12 +5,14 @@
 package io.github.nucleuspowered.nucleus.modules.afk;
 
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(value = AFKHandler.class, apiService = NucleusAFKService.class)
 @ModuleData(id = AFKModule.ID, name = "AFK")
 public class AFKModule extends ConfigurableModule<AFKConfigAdapter> {
 
@@ -21,12 +23,4 @@ public class AFKModule extends ConfigurableModule<AFKConfigAdapter> {
         return new AFKConfigAdapter();
     }
 
-    @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        AFKHandler handler = new AFKHandler(getAdapter());
-        serviceManager.registerService(AFKHandler.class, handler);
-        Sponge.getServiceManager().setProvider(plugin, NucleusAFKService.class, handler);
-    }
 }

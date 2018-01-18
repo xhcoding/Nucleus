@@ -67,9 +67,9 @@ public class AFKHandler implements NucleusAFKService {
     private final String afkOption = "nucleus.afk.toggletime";
     private final String afkKickOption = "nucleus.afk.kicktime";
 
-    public AFKHandler(AFKConfigAdapter afkConfigAdapter) {
+    public AFKHandler() {
         this.afkPermissionHandler = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(AFKCommand.class);
-        this.afkConfigAdapter = afkConfigAdapter;
+        this.afkConfigAdapter = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(AFKConfigAdapter.class);
         Nucleus.getNucleus().registerReloadable(this::onReload);
         onReload();
     }

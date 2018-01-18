@@ -4,11 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.vanish;
 
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.vanish.service.VanishService;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(VanishService.class)
 @ModuleData(id = "vanish", name = "Vanish")
 public class VanishModule extends ConfigurableModule<VanishConfigAdapter> {
 
@@ -17,11 +19,4 @@ public class VanishModule extends ConfigurableModule<VanishConfigAdapter> {
         return new VanishConfigAdapter();
     }
 
-    @Override
-    protected void performPreTasks() throws Exception {
-        VanishService vs = new VanishService();
-        this.plugin.getInternalServiceManager().registerService(VanishService.class, vs);
-        this.plugin.registerReloadable(vs);
-        super.performPreTasks();
-    }
 }

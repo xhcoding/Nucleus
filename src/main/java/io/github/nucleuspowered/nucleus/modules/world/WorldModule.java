@@ -4,11 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world;
 
-import io.github.nucleuspowered.nucleus.Nucleus;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.world.config.WorldConfigAdapter;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(WorldHelper.class)
 @ModuleData(id = WorldModule.ID, name = "World")
 public class WorldModule extends ConfigurableModule<WorldConfigAdapter> {
 
@@ -18,18 +19,4 @@ public class WorldModule extends ConfigurableModule<WorldConfigAdapter> {
         return new WorldConfigAdapter();
     }
 
-    @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        try {
-            WorldHelper wh = new WorldHelper();
-            plugin.registerReloadable(wh);
-            serviceManager.registerService(WorldHelper.class, wh);
-        } catch (Exception ex) {
-            Nucleus.getNucleus().getLogger().warn("Could not load the world module for the reason below.");
-            ex.printStackTrace();
-            throw ex;
-        }
-    }
 }

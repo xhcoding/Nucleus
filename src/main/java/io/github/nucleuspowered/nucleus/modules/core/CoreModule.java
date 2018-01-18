@@ -5,12 +5,14 @@
 package io.github.nucleuspowered.nucleus.modules.core;
 
 import io.github.nucleuspowered.nucleus.api.service.NucleusPlayerMetadataService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.core.config.CoreConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.core.service.PlayerMetadataService;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(value = PlayerMetadataService.class, apiService = NucleusPlayerMetadataService.class)
 @ModuleData(id = CoreModule.ID, name = "Core", isRequired = true)
 public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
 
@@ -26,14 +28,6 @@ public class CoreModule extends ConfigurableModule<CoreConfigAdapter> {
         super.performPreTasks();
 
         this.plugin.reloadMessages();
-    }
-
-    @Override public void onEnable() {
-        super.onEnable();
-
-        // Register service
-        Sponge.getServiceManager().setProvider(this.plugin, NucleusPlayerMetadataService.class, new PlayerMetadataService());
-        serviceManager.registerService(PlayerMetadataService.class, new PlayerMetadataService());
     }
 
 }

@@ -4,11 +4,13 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandlogger;
 
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.handlers.CommandLoggerHandler;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(value = CommandLoggerHandler.class)
 @ModuleData(id = CommandLoggerModule.ID, name = "Command Logger")
 public class CommandLoggerModule extends ConfigurableModule<CommandLoggerConfigAdapter> {
 
@@ -17,15 +19,5 @@ public class CommandLoggerModule extends ConfigurableModule<CommandLoggerConfigA
     @Override
     public CommandLoggerConfigAdapter createAdapter() {
         return new CommandLoggerConfigAdapter();
-    }
-
-    @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        CommandLoggerHandler clh = new CommandLoggerHandler(getAdapter());
-        serviceManager.registerService(CommandLoggerHandler.class, clh);
-        plugin.registerReloadable(clh::onReload);
-        clh.onReload();
     }
 }

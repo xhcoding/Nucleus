@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusPrivateMessagingService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.message.commands.SocialSpyCommand;
@@ -20,6 +21,7 @@ import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 import java.util.List;
 
+@RegisterService(value = MessageHandler.class, apiService = NucleusPrivateMessagingService.class)
 @ModuleData(id = MessageModule.ID, name = "Message")
 public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
 
@@ -29,16 +31,6 @@ public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
     @Override
     public MessageConfigAdapter createAdapter() {
         return new MessageConfigAdapter();
-    }
-
-    @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        handler = new MessageHandler(plugin);
-        plugin.registerReloadable(handler ::onReload);
-        serviceManager.registerService(MessageHandler.class, handler );
-        Sponge.getServiceManager().setProvider(plugin, NucleusPrivateMessagingService.class, handler);
     }
 
     @Override public void onEnable() {

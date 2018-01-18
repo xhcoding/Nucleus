@@ -69,7 +69,8 @@ public class MessageHandler implements NucleusPrivateMessagingService {
 
     public static final String socialSpyOption = "nucleus.socialspy.level";
 
-    public MessageHandler(Nucleus nucleus) throws Exception {
+    public MessageHandler() throws Exception {
+        Nucleus nucleus = Nucleus.getNucleus();
         textParsingUtils = nucleus.getTextParsingUtils();
         ucl = nucleus.getUserDataManager();
         mca = nucleus.getModuleContainer().getConfigAdapterForModule(MessageModule.ID, MessageConfigAdapter.class);

@@ -7,6 +7,8 @@ package io.github.nucleuspowered.nucleus.modules.mute;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.api.service.NucleusMuteService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.mute.commands.CheckMuteCommand;
 import io.github.nucleuspowered.nucleus.modules.mute.config.MuteConfigAdapter;
@@ -18,6 +20,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
+@RegisterService(value = MuteHandler.class, apiService = NucleusMuteService.class)
 @ModuleData(id = MuteModule.ID, name = "Mute")
 public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
 
@@ -26,21 +29,6 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
     @Override
     public MuteConfigAdapter createAdapter() {
         return new MuteConfigAdapter();
-    }
-
-    @Override
-    protected void performPreTasks() throws Exception {
-        super.performPreTasks();
-
-        try {
-            MuteHandler m = new MuteHandler();
-            serviceManager.registerService(MuteHandler.class, m);
-            Sponge.getServiceManager().provide(PermissionService.class).ifPresent(x -> x.registerContextCalculator(m));
-        } catch (Exception ex) {
-            Nucleus.getNucleus().getLogger().warn("Could not load the mute module for the reason below.");
-            ex.printStackTrace();
-            throw ex;
-        }
     }
 
     @Override

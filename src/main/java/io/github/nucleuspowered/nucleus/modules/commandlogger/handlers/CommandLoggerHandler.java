@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.commandlogger.handlers;
 
+import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.logging.AbstractLoggingHandler;
 import io.github.nucleuspowered.nucleus.modules.commandlogger.config.CommandLoggerConfigAdapter;
 
@@ -11,9 +12,9 @@ public class CommandLoggerHandler extends AbstractLoggingHandler {
 
     private final CommandLoggerConfigAdapter clca;
 
-    public CommandLoggerHandler(CommandLoggerConfigAdapter clca) {
+    public CommandLoggerHandler() {
         super("command", "cmds");
-        this.clca = clca;
+        this.clca = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(CommandLoggerConfigAdapter.class);
     }
 
     public void onReload() throws Exception {

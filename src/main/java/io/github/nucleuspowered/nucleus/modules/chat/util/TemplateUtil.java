@@ -6,6 +6,7 @@ package io.github.nucleuspowered.nucleus.modules.chat.util;
 
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfig;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.chat.config.ChatTemplateConfig;
@@ -20,15 +21,11 @@ import java.util.stream.Collectors;
 /**
  * Contains the logic for caching templates and the template selection logic.
  */
-public class TemplateUtil {
+public class TemplateUtil implements Reloadable {
 
     private List<Map<String, WeightedChatTemplateConfig>> cachedTemplates = null;
-    private final ChatConfigAdapter chatConfigAdapter;
-
-    public TemplateUtil(ChatConfigAdapter chatConfigAdapter) {
-        Nucleus.getNucleus().registerReloadable(() -> cachedTemplates = null);
-        this.chatConfigAdapter = chatConfigAdapter;
-    }
+    private final ChatConfigAdapter chatConfigAdapter
+            = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(ChatConfigAdapter.class);
 
     public ChatTemplateConfig getTemplateNow(Subject subject) {
         return getTemplate(subject).join();
@@ -76,4 +73,7 @@ public class TemplateUtil {
         });
     }
 
+    @Override public void onReload() throws Exception {
+        this.cachedTemplates = null;
+    }
 }
