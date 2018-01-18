@@ -44,6 +44,7 @@ import io.github.nucleuspowered.nucleus.internal.messages.ConfigMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.internal.messages.ResourceMessageProvider;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.internal.qsml.ModuleRegistrationProxyService;
 import io.github.nucleuspowered.nucleus.internal.qsml.NucleusConfigAdapter;
@@ -496,9 +497,7 @@ public class NucleusPlugin extends Nucleus {
 
             // What about perms and econ?
             List<Text> lt = Lists.newArrayList();
-            boolean simplePerms = Sponge.getServiceManager().getRegistration(PermissionService.class)
-                    .map(x -> Sponge.getPlatform().getContainer(Platform.Component.IMPLEMENTATION).equals(x.getPlugin())).orElse(true);
-            if (simplePerms) {
+            if (ServiceChangeListener.isOpOnly()) {
                 addTri(lt, 0);
                 lt.add(messageProvider.getTextMessageWithFormat("standard.line"));
                 lt.add(messageProvider.getTextMessageWithFormat("standard.nopermplugin"));

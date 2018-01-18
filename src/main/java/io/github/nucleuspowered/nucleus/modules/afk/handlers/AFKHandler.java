@@ -15,6 +15,7 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
+import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfig;
@@ -370,7 +371,7 @@ public class AFKHandler implements NucleusAFKService {
                 if (!cacheValid) {
                     // Get the subject.
                     Sponge.getServer().getPlayer(uuid).ifPresent(x -> {
-                        if (AFKHandler.this.afkPermissionHandler.testSuffix(x, exempttoggle)) {
+                        if (!ServiceChangeListener.isOpOnly() && AFKHandler.this.afkPermissionHandler.testSuffix(x, exempttoggle)) {
                             timeToAfk = -1;
                         } else {
                             timeToAfk = Util.getPositiveLongOptionFromSubject(x, afkOption).orElseGet(() -> config.getAfkTime()) * 1000;

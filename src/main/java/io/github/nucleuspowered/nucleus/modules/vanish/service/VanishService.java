@@ -35,6 +35,10 @@ public class VanishService implements Reloadable {
                 .isAlterTabList();
     }
 
+    public boolean isVanished(Player player) {
+        return Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(VanishUserDataModule.class).isVanished();
+    }
+
     public void vanishPlayer(Player player) {
         VanishUserDataModule service = Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(VanishUserDataModule.class);
         service.setVanished(true);

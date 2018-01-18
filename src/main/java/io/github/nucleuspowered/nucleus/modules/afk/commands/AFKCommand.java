@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.ReturnMessageException;
 import io.github.nucleuspowered.nucleus.internal.docgen.annotations.EssentialsEquivalent;
 import io.github.nucleuspowered.nucleus.internal.permissions.PermissionInformation;
+import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
 import io.github.nucleuspowered.nucleus.internal.permissions.SuggestedLevel;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
 import io.github.nucleuspowered.nucleus.util.CauseStackHelper;
@@ -45,7 +46,7 @@ public class AFKCommand extends AbstractCommand<Player> {
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        if (permissions.testSuffix(src, "exempt.toggle")) {
+        if (!ServiceChangeListener.isOpOnly() && permissions.testSuffix(src, "exempt.toggle")) {
             throw ReturnMessageException.fromKey("command.afk.exempt");
         }
 

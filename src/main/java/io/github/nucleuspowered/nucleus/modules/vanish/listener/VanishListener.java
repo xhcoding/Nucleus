@@ -7,6 +7,7 @@ package io.github.nucleuspowered.nucleus.modules.vanish.listener;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
+import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
 import io.github.nucleuspowered.nucleus.modules.vanish.commands.VanishCommand;
 import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfig;
 import io.github.nucleuspowered.nucleus.modules.vanish.config.VanishConfigAdapter;
@@ -29,18 +30,17 @@ public class VanishListener extends ListenerBase implements Reloadable {
 
     @Listener(order = Order.FIRST)
     public void onLogin(ClientConnectionEvent.Login event, @Root Player player) {
-        if (player.hasPermission(this.loginVanishPermission)) {
-            Nucleus.getNucleus().getUserDataManager().getUnchecked(player).quickSet(VanishUserDataModule.class, x -> x.setVanished(true));
+        if (!ServiceChangeListener.isOpOnly() && player.hasPermission(this.loginVanishPermission)) {
+            service.vanishPlayer(player);
         }
     }
 
     @Listener
     public void onLogin(ClientConnectionEvent.Join event, @Root Player player) {
-        VanishUserDataModule service = Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(VanishUserDataModule.class);
-        if (service.isVanished()) {
+        if (service.isVanished(player)) {
             if (!player.hasPermission(this.permission)) {
                 // No permission, no vanish.
-                service.setVanished(false);
+                service.unvanishPlayer(player);
                 return;
             } else if (vanishConfig.isSuppressMessagesOnVanish()) {
                 event.setMessageCancelled(true);
