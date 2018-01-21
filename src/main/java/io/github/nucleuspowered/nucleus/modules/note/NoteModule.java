@@ -34,7 +34,7 @@ public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
         // Take base permission from /checknotes.
         createSeenModule(CheckNotesCommand.class, (c, u) -> {
 
-            NoteHandler jh = plugin.getInternalServiceManager().getService(NoteHandler.class).get();
+            NoteHandler jh = plugin.getInternalServiceManager().getServiceUnchecked(NoteHandler.class);
             int active = jh.getNotesInternal(u).size();
 
             Text r = plugin.getMessageProvider().getTextMessageWithFormat("seen.notes", String.valueOf(active));

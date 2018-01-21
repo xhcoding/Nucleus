@@ -34,7 +34,7 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
         // Take base permission from /checkwarnings.
         createSeenModule(CheckWarningsCommand.class, (c, u) -> {
 
-            WarnHandler jh = plugin.getInternalServiceManager().getService(WarnHandler.class).get();
+            WarnHandler jh = plugin.getInternalServiceManager().getServiceUnchecked(WarnHandler.class);
             int active = jh.getWarningsInternal(u, true, false).size();
             int expired = jh.getWarningsInternal(u, false, true).size();
 

@@ -37,7 +37,7 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
         createSeenModule(CheckMuteCommand.class, (c, u) -> {
 
             // If we have a ban service, then check for a ban.
-            MuteHandler jh = plugin.getInternalServiceManager().getService(MuteHandler.class).get();
+            MuteHandler jh = plugin.getInternalServiceManager().getServiceUnchecked(MuteHandler.class);
             if (jh.isMuted(u)) {
                 MuteData jd = jh.getPlayerMuteData(u).get();
                 // Lightweight checkban.

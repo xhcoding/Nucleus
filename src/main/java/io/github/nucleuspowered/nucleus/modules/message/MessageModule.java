@@ -26,7 +26,6 @@ import java.util.List;
 public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
 
     public static final String ID = "message";
-    private MessageHandler handler;
 
     @Override
     public MessageConfigAdapter createAdapter() {
@@ -37,6 +36,7 @@ public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
         super.onEnable();
 
         createSeenModule(SocialSpyCommand.class, (cs, user) -> {
+            MessageHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(MessageHandler.class);
             boolean socialSpy = handler.isSocialSpy(user);
             boolean msgToggle = Nucleus.getNucleus().getUserDataManager().get(user)
                     .map(y -> y.get(MessageUserDataModule.class).isMsgToggle()).orElse(true);
