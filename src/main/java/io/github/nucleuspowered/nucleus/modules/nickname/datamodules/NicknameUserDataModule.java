@@ -84,9 +84,9 @@ public class NicknameUserDataModule extends DataModule.ReferenceService<ModularU
 
     @Override
     @SuppressWarnings("unchecked")
-    protected <T> Optional<T> getValue(TypeToken<T> token, String[] path, ConfigurationNode node) {
+    protected <T> Optional<T> getValue(TypeToken<T> token, String path, ConfigurationNode node) {
         if (TextRepresentable.class.isAssignableFrom(token.getRawType())) {
-            String str = node.getNode((Object[]) path).getString();
+            String str = node.getNode(path).getString();
             if (str == null || str.isEmpty()) {
                 return Optional.empty();
             }
@@ -102,14 +102,14 @@ public class NicknameUserDataModule extends DataModule.ReferenceService<ModularU
     }
 
     @Override
-    protected <T> void saveNode(TypeToken<T> typeToken, T value, String[] path, ConfigurationNode node) throws ObjectMappingException {
+    protected <T> void saveNode(TypeToken<T> typeToken, T value, String path, ConfigurationNode node) throws ObjectMappingException {
         if (value == null) {
-            node.getNode((Object[]) path).setValue(null);
+            node.getNode(path).setValue(null);
             return;
         }
 
         if (value instanceof TextRepresentable) {
-            node.getNode((Object[]) path).setValue(TextSerializers.JSON.serialize(((TextRepresentable) value).toText()));
+            node.getNode(path).setValue(TextSerializers.JSON.serialize(((TextRepresentable) value).toText()));
             return;
         }
 

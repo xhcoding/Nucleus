@@ -142,7 +142,7 @@ public class NicknameArgument<T extends User> extends CommandElement {
         // TODO: Display name
         Map<String, ModularUserService> allPlayers;
         if (Nucleus.getNucleus().isModuleLoaded(NicknameModule.ID)) {
-            allPlayers = userDataManager.getOnlineUsersInternal().stream()
+            allPlayers = userDataManager.getOnlineUsers().stream()
                     .filter(x -> x.getUser().isOnline() && x.get(NicknameUserDataModule.class).getNicknameAsString().isPresent())
                     .collect(Collectors.toMap(s -> TextSerializers.FORMATTING_CODE.stripCodes(s.get(NicknameUserDataModule.class)
                     .getNicknameAsString().get().toLowerCase()), s -> s));
@@ -193,7 +193,7 @@ public class NicknameArgument<T extends User> extends CommandElement {
         if (playerOnly) {
             return original.stream().map(x -> "p:" + x).collect(Collectors.toList());
         } else if (Nucleus.getNucleus().isModuleLoaded(NicknameModule.ID)) {
-            List<String> toAdd = userDataManager.getOnlineUsersInternal().stream()
+            List<String> toAdd = userDataManager.getOnlineUsers().stream()
                     .filter(x -> x.getUser().isOnline() && x.get(NicknameUserDataModule.class).getNicknameAsString().isPresent() &&
                             TextSerializers.FORMATTING_CODE.stripCodes(x.get(NicknameUserDataModule.class).getNicknameAsString().get())
                                     .toLowerCase().startsWith(fName))

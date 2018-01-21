@@ -52,7 +52,7 @@ public class FlyListener extends ListenerBase implements Reloadable {
         Optional<ModularUserService> serviceOptional = Nucleus.getNucleus().getUserDataManager().get(pl);
         if (serviceOptional.isPresent()) {
             // Let's just reset these...
-            if (serviceOptional.get().quickGet(FlyUserDataModule.class, FlyUserDataModule::isFlyingSafe)) {
+            if (serviceOptional.get().get(FlyUserDataModule.class).isFlyingSafe()) {
                 pl.offer(Keys.CAN_FLY, true);
 
                 // If in the air, flying!
@@ -79,8 +79,7 @@ public class FlyListener extends ListenerBase implements Reloadable {
 
         try {
             Nucleus.getNucleus().getUserDataManager().getUnchecked(pl)
-                    .quickSet(FlyUserDataModule.class, x -> x.setFlying(pl.get(Keys.CAN_FLY)
-                    .orElse(false)));
+                    .get(FlyUserDataModule.class).setFlying(pl.get(Keys.CAN_FLY).orElse(false));
         } catch (Exception e) {
             Nucleus.getNucleus().printStackTraceIfDebugMode(e);
         }
@@ -105,7 +104,7 @@ public class FlyListener extends ListenerBase implements Reloadable {
         ModularUserService uc;
         try {
             uc = Nucleus.getNucleus().getUserDataManager().getUnchecked(pl);
-            if (!uc.quickGet(FlyUserDataModule.class, FlyUserDataModule::isFlying)) {
+            if (!uc.get(FlyUserDataModule.class).isFlying()) {
                 return;
             }
         } catch (Exception e) {

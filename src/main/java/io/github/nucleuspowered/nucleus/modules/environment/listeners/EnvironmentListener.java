@@ -15,6 +15,6 @@ public class EnvironmentListener extends ListenerBase {
     @Listener
     public void onWeatherChange(ChangeWorldWeatherEvent event) {
         Nucleus.getNucleus().getWorldDataManager().getWorld(event.getTargetWorld()).ifPresent(x ->
-            event.setCancelled(x.quickGet(EnvironmentWorldDataModule.class, EnvironmentWorldDataModule::isLockWeather)));
+            event.setCancelled(x.get(EnvironmentWorldDataModule.class).isLockWeather()));
     }
 }

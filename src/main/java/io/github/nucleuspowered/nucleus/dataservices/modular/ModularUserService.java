@@ -5,7 +5,6 @@
 package io.github.nucleuspowered.nucleus.dataservices.modular;
 
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
-import io.github.nucleuspowered.nucleus.dataservices.loaders.UserDataManager;
 import ninja.leaping.configurate.ConfigurationNode;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
@@ -13,7 +12,6 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.user.UserStorageService;
 
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,7 +19,6 @@ public class ModularUserService extends ModularDataService<ModularUserService> {
 
     private static UserStorageService uss = null;
 
-    private final Instant serviceLoadTime = Instant.now();
     private final UUID uuid;
 
     public ModularUserService(DataProvider<ConfigurationNode> provider, UUID uuid) throws Exception {
@@ -45,15 +42,6 @@ public class ModularUserService extends ModularDataService<ModularUserService> {
 
     public Optional<Player> getPlayer() {
         return Sponge.getServer().getPlayer(this.uuid);
-    }
-
-    /**
-     * Primarily used internally to determine if the {@link UserDataManager#removeOfflinePlayers()} method should really remove this.
-     *
-     * @return The {@link Instant} the service was loaded.
-     */
-    public final Instant serviceLoadTime() {
-        return this.serviceLoadTime;
     }
 
     @Override protected String serviceName() {

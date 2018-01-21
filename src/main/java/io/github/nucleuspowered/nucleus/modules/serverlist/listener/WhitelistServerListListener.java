@@ -36,8 +36,7 @@ public class WhitelistServerListListener extends ListenerBase implements Reloada
             return;
         }
 
-        Optional<Text> ott = plugin.getGeneralService()
-                .quickGet(ServerListGeneralDataModule.class, ServerListGeneralDataModule::getMessage);
+        Optional<Text> ott = plugin.getGeneralService().get(ServerListGeneralDataModule.class).getMessage();
 
         if (!ott.isPresent() &&  !this.config.getWhitelist().isEmpty()) {
             List<NucleusTextTemplateImpl> list = this.config.getWhitelist();

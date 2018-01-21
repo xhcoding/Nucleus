@@ -19,9 +19,13 @@ import java.util.function.Predicate;
 
 public class WorldDataManager extends DataManager<UUID, ConfigurationNode, ModularWorldService> {
 
-    public WorldDataManager(NucleusPlugin plugin, BiFunction<UUID, Boolean, DataProvider<ConfigurationNode>> dataProviderFactory,
-            Predicate<UUID> fileExist) {
-        super(plugin, dataProviderFactory, fileExist);
+    public WorldDataManager(BiFunction<UUID, Boolean, DataProvider<ConfigurationNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+        super(dataProviderFactory, fileExist);
+    }
+
+    @Override
+    protected boolean shouldNotExpire(UUID key) {
+        return Sponge.getServer().getWorld(key).isPresent();
     }
 
     @Override
@@ -34,7 +38,7 @@ public class WorldDataManager extends DataManager<UUID, ConfigurationNode, Modul
 
     public Optional<ModularWorldService> getWorld(UUID uuid) {
         Preconditions.checkNotNull(uuid);
-        return Optional.ofNullable(get(uuid).orElse(null));
+        return get(uuid);
     }
 
     public Optional<ModularWorldService> getWorld(World world) {

@@ -66,8 +66,7 @@ public class CommandSpyListener extends ListenerBase implements Reloadable, List
                     .stream()
                     .filter(x -> !x.getUniqueId().equals(player.getUniqueId()))
                     .filter(x -> x.hasPermission(this.basePermission))
-                    .filter(x -> Nucleus.getNucleus().getUserDataManager().getUnchecked(x)
-                            .quickGet(CommandSpyUserDataModule.class, CommandSpyUserDataModule::isCommandSpy))
+                    .filter(x -> Nucleus.getNucleus().getUserDataManager().getUnchecked(x).get(CommandSpyUserDataModule.class).isCommandSpy())
                     .collect(Collectors.toList());
 
                 if (!playerList.isEmpty()) {

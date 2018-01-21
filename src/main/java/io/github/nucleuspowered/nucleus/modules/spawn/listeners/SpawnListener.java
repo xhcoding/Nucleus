@@ -101,8 +101,7 @@ public class SpawnListener extends ListenerBase implements Reloadable {
                     spawnConfig.isSafeTeleport() ? NucleusTeleportHandler.StandardTeleportMode.SAFE_TELEPORT_ASCENDING : NucleusTeleportHandler.StandardTeleportMode.NO_CHECK);
             if (safe.isPresent()) {
                 try {
-                    Optional<Vector3d> ov = Nucleus.getNucleus().getWorldDataManager().getWorld(world.getUniqueId()).get().quickGet(SpawnWorldDataModule.class,
-                            SpawnWorldDataModule::getSpawnRotation);
+                    Optional<Vector3d> ov = Nucleus.getNucleus().getWorldDataManager().getWorld(world.getUniqueId()).get().get(SpawnWorldDataModule.class).getSpawnRotation();
                     if (ov.isPresent()) {
                         loginEvent.setToTransform(new Transform<>(safe.get().getExtent(),
                                 process(safe.get().getPosition()),
@@ -125,8 +124,8 @@ public class SpawnListener extends ListenerBase implements Reloadable {
             Transform<World> to = event.getToTransform();
             if (to.getLocation().getBlockPosition().equals(to.getExtent().getSpawnLocation().getBlockPosition())) {
                 Nucleus.getNucleus().getWorldDataManager()
-                        .getWorld(to.getExtent()).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
-                    .ifPresent(y -> event.setToTransform(to.setRotation(y))));
+                        .getWorld(to.getExtent()).ifPresent(x -> x.get(SpawnWorldDataModule.class).getSpawnRotation()
+                        .ifPresent(y -> event.setToTransform(to.setRotation(y))));
             }
         }
     }
@@ -153,7 +152,7 @@ public class SpawnListener extends ListenerBase implements Reloadable {
         Transform<World> to = new Transform<>(spawn);
 
         // Compare current transform to spawn - set rotation.
-        Nucleus.getNucleus().getWorldDataManager().getWorld(world).ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation)
+        Nucleus.getNucleus().getWorldDataManager().getWorld(world).ifPresent(x -> x.get(SpawnWorldDataModule.class).getSpawnRotation()
             .ifPresent(y -> event.setToTransform(to.setRotation(y))));
     }
 

@@ -105,7 +105,7 @@ public class UserCacheService extends AbstractService<UserCacheVersionNode> {
                 if (manager.has(user)) {
                     manager.get(user).ifPresent(x -> data.put(user, new UserCacheDataNode(x)));
                     if (++count >= 10) {
-                        manager.removeOfflinePlayers(true);
+                        manager.removeOfflinePlayers();
                         count = 0;
                     }
                 }

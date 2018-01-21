@@ -79,7 +79,7 @@ public class WeatherCommand extends AbstractCommand<CommandSource> implements Re
 
         // Get whether we locked the weather.
         ModularWorldService ew = Nucleus.getNucleus().getWorldDataManager().getWorld(w).get();
-        if (ew.quickGet(EnvironmentWorldDataModule.class, EnvironmentWorldDataModule::isLockWeather)) {
+        if (ew.get(EnvironmentWorldDataModule.class).isLockWeather()) {
             // Tell the user to unlock first.
             throw ReturnMessageException.fromKey("command.weather.locked", w.getName());
         }

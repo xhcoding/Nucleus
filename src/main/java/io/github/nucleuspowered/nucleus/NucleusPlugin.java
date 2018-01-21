@@ -245,8 +245,8 @@ public class NucleusPlugin extends Nucleus {
             this.generalService = new ModularGeneralService(d.getGeneralDataProvider());
             this.itemDataService = new ItemDataService(d.getItemDataProvider());
             this.itemDataService.loadInternal();
-            this.userDataManager = new UserDataManager(this, d::getUserFileDataProviders, d::doesUserFileExist);
-            this.worldDataManager = new WorldDataManager(this, d::getWorldFileDataProvider, d::doesWorldFileExist);
+            this.userDataManager = new UserDataManager(d::getUserFileDataProviders, d::doesUserFileExist);
+            this.worldDataManager = new WorldDataManager(d::getWorldFileDataProvider, d::doesWorldFileExist);
             this.kitService = new KitService(d.getKitsDataProvider());
             this.nameBanService = new NameBanService(d.getNameBanDataProvider());
             this.userCacheService = new UserCacheService(d.getUserCacheDataProvider());

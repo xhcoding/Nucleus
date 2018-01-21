@@ -42,7 +42,7 @@ public abstract class DataModule<S extends ModularDataService<S>> {
     }
 
     @GuardedBy("lockingObject")
-    void loadFrom(ConfigurationNode node) {
+    protected void loadFrom(ConfigurationNode node) {
         synchronized (this.lockingObject) {
             for (FieldData d : data) {
                 try {
@@ -52,7 +52,7 @@ public abstract class DataModule<S extends ModularDataService<S>> {
                     }
                 } catch (IllegalArgumentException e) {
                     Nucleus.getNucleus().getLogger().warn("Could not set field data for " + d.field.getName() + " "
-                            + "(data key " + Arrays.toString(d.path) + ") - falling back to default.");
+                            + "(data key " + d.path + ") - falling back to default.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -70,9 +70,9 @@ public abstract class DataModule<S extends ModularDataService<S>> {
         // noop
     }
 
-    protected <T> Optional<T> getValue(TypeToken<T> token, String[] path, ConfigurationNode node) {
+    protected <T> Optional<T> getValue(TypeToken<T> token, String path, ConfigurationNode node) {
         try {
-            return Optional.ofNullable(node.getNode((Object[]) path).getValue(token));
+            return Optional.ofNullable(node.getNode(path).getValue(token));
         } catch (ObjectMappingException e) {
             e.printStackTrace();
             return Optional.empty();
@@ -80,7 +80,7 @@ public abstract class DataModule<S extends ModularDataService<S>> {
     }
 
     @GuardedBy("lockingObject")
-    void saveTo(ConfigurationNode node) {
+    protected void saveTo(ConfigurationNode node) {
         synchronized (this.lockingObject) {
             for (FieldData d : data) {
                 try {
@@ -93,7 +93,7 @@ public abstract class DataModule<S extends ModularDataService<S>> {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void saveFieldData(TypeToken<T> typeToken, Field field, String[] path, ConfigurationNode node) throws ObjectMappingException {
+    private <T> void saveFieldData(TypeToken<T> typeToken, Field field, String path, ConfigurationNode node) throws ObjectMappingException {
         T t;
         try {
             t = (T)field.get(this);
@@ -105,8 +105,8 @@ public abstract class DataModule<S extends ModularDataService<S>> {
         saveNode(typeToken, t, path, node);
     }
 
-    protected <T> void saveNode(TypeToken<T> typeToken, T value, String[] path, ConfigurationNode node) throws ObjectMappingException {
-        ConfigurationNode cn = node.getNode((Object[]) path);
+    protected <T> void saveNode(TypeToken<T> typeToken, T value, String path, ConfigurationNode node) throws ObjectMappingException {
+        ConfigurationNode cn = node.getNode(path);
         if (value == null) {
             cn.setValue(null);
         } else {
@@ -145,11 +145,11 @@ public abstract class DataModule<S extends ModularDataService<S>> {
 
     private static class FieldData {
 
-        private final String[] path;
+        private final String path;
         private final TypeToken<?> clazz;
         private final Field field;
 
-        private FieldData(String[] path, TypeToken<?> clazz, Field field) {
+        private FieldData(String path, TypeToken<?> clazz, Field field) {
             this.path = path;
             this.clazz = clazz;
             this.field = field;

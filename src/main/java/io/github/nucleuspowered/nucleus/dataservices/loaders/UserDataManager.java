@@ -6,7 +6,6 @@ package io.github.nucleuspowered.nucleus.dataservices.loaders;
 
 import com.google.common.collect.ImmutableList;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -14,11 +13,9 @@ import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.user.UserStorageService;
+import org.spongepowered.api.util.Identifiable;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
@@ -27,9 +24,8 @@ import java.util.stream.Collectors;
 
 public class UserDataManager extends DataManager<UUID, ConfigurationNode, ModularUserService> {
 
-    public UserDataManager(NucleusPlugin plugin, BiFunction<UUID, Boolean, DataProvider<ConfigurationNode>> dataProviderFactory,
-            Predicate<UUID> fileExist) {
-        super(plugin, dataProviderFactory, fileExist);
+    public UserDataManager(BiFunction<UUID, Boolean, DataProvider<ConfigurationNode>> dataProviderFactory, Predicate<UUID> fileExist) {
+        super(dataProviderFactory, fileExist);
     }
 
     public ModularUserService getUnchecked(UUID user) {
@@ -46,6 +42,11 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
 
     public Optional<ModularUserService> get(User user, boolean create) {
         return get(user.getUniqueId(), create);
+    }
+
+    @Override
+    protected boolean shouldNotExpire(UUID key) {
+        return Sponge.getServer().getPlayer(key).isPresent();
     }
 
     @Override
@@ -75,30 +76,27 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
     }
 
     public void removeOfflinePlayers() {
-        removeOfflinePlayers(false);
-    }
-
-    public void removeOfflinePlayers(boolean allOffline) {
-        saveAll();
-
-        // If allOffline is false, then remove only if it was loaded over two minutes ago.
-        this.dataStore.entrySet().removeIf(x -> !x.getValue().getUser().isOnline() && (allOffline || x.getValue().serviceLoadTime().plus(2, ChronoUnit.MINUTES).isBefore(Instant.now())));
+        this.invalidateOld(true);
     }
 
     public List<ModularUserService> getOnlineUsersInternal() {
-        return ImmutableList.copyOf(dataStore.entrySet().stream().filter(x -> x.getValue().getUser().isOnline()).map(Map.Entry::getValue).collect(Collectors.toList()));
+        return ImmutableList.copyOf(
+                getAll(Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toList())).values()
+        );
     }
 
     public void forceUnloadAndDelete(UUID uuid) {
-        ModularUserService service = this.dataStore.remove(uuid);
+        ModularUserService service = get(uuid).orElse(null);
+        this.invalidate(uuid, false);
         if (service != null) {
             service.delete();
         }
     }
 
     public List<ModularUserService> getOnlineUsers() {
-        removeOfflinePlayers();
-        return ImmutableList.copyOf(dataStore.values());
+        return ImmutableList.copyOf(
+                getAll(Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toList())).values()
+        );
     }
 
     public Optional<ModularUserService> getUser(User user) {

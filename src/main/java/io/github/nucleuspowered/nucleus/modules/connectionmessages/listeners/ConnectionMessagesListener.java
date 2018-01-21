@@ -52,7 +52,7 @@ public class ConnectionMessagesListener extends ListenerBase implements Reloadab
 
         try {
             ModularUserService nucleusUser = Nucleus.getNucleus().getUserDataManager().getUnchecked(pl);
-            Optional<String> lastKnown = nucleusUser.quickGet(CoreUserDataModule.class, CoreUserDataModule::getLastKnownName);
+            Optional<String> lastKnown = nucleusUser.get(CoreUserDataModule.class).getLastKnownName();
             if (cmc.isDisplayPriorName() &&
                 !cmc.getPriorNameMessage().isEmpty() &&
                 !lastKnown.orElseGet(pl::getName).equalsIgnoreCase(pl.getName())) {

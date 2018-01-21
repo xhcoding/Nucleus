@@ -34,24 +34,6 @@ public abstract class ModularDataService<S extends ModularDataService<S>> extend
         super(dataProvider);
     }
 
-    public <T extends DataModule<S>, R> Optional<R> quickGetIfLoaded(Class<T> module, Function<T, R> getter) {
-        if (this.isLoaded()) {
-            return Optional.of(getter.apply(get(module)));
-        }
-
-        return Optional.empty();
-    }
-
-    public <T extends DataModule<S>, R> R quickGet(Class<T> module, Function<T, R> getter) {
-        return getter.apply(get(module));
-    }
-
-    public <T extends DataModule<S>> void quickSet(Class<T> module, Consumer<T> setter) {
-        T m = get(module);
-        setter.accept(m);
-        set(m);
-    }
-
     @SuppressWarnings("unchecked")
     public final <T extends TransientModule<S>> T getTransient(Class<T> module) {
         if (transientCache.containsKey(module)) {

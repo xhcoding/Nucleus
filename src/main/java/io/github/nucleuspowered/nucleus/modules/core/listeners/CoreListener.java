@@ -158,11 +158,9 @@ public class CoreListener extends ListenerBase implements Reloadable {
         final InetAddress address = player.getConnection().getAddress().getAddress();
 
         try {
-            x.quickSet(CoreUserDataModule.class, y -> {
-                y.setLastLogout(location);
-                y.setLastIp(address);
-            });
-
+            CoreUserDataModule coreUserDataModule = x.get(CoreUserDataModule.class);
+            coreUserDataModule.setLastIp(address);
+            coreUserDataModule.setLastLogout(location);
             x.save();
             plugin.getUserCacheService().updateCacheForPlayer(x);
         } catch (Exception e) {

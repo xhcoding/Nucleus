@@ -47,8 +47,7 @@ public class ServerListListener extends ListenerBase implements Reloadable, List
 
         if (this.config.isModifyServerList()) {
             List<NucleusTextTemplateImpl> list = null;
-            Optional<Text> ott = plugin.getGeneralService()
-                    .quickGetIfLoaded(ServerListGeneralDataModule.class, ServerListGeneralDataModule::getMessage).map(x -> x.orElse(null));
+            Optional<Text> ott = plugin.getGeneralService().get(ServerListGeneralDataModule.class).getMessage();
 
             if (ott.isPresent()) {
                 response.setDescription(ott.get());

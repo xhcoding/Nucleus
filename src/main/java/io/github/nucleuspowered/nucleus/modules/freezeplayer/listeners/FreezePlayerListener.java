@@ -40,8 +40,7 @@ public class FreezePlayerListener extends ListenerBase {
     }
 
     private boolean checkForFrozen(Player player, String message) {
-        if (Nucleus.getNucleus().getUserDataManager().getUnchecked(player)
-                .quickGet(FreezePlayerUserDataModule.class, FreezePlayerUserDataModule::isFrozen)) {
+        if (Nucleus.getNucleus().getUserDataManager().getUnchecked(player).get(FreezePlayerUserDataModule.class).isFrozen()) {
             Instant now = Instant.now();
             if (lastFreezeNotification.getOrDefault(player.getUniqueId(), now).isBefore(now)) {
                 player.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat(message));

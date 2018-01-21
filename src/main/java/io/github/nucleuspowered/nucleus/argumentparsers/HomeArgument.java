@@ -52,7 +52,8 @@ public class HomeArgument extends CommandElement {
 
     Home getHome(User user, String home, CommandArgs args) throws ArgumentParseException {
         try {
-            Optional<Home> owl = plugin.getUserDataManager().get(user).get().quickGet(HomeUserDataModule.class, x -> x.getHome(home));
+            Optional<Home> owl = Nucleus.getNucleus().getUserDataManager().getUnchecked(user)
+                    .get(HomeUserDataModule.class).getHome(home);
             if (owl.isPresent()) {
                 return owl.get();
             }
@@ -84,7 +85,7 @@ public class HomeArgument extends CommandElement {
     protected List<String> complete(User src, String homeName) {
         Set<String> s;
         try {
-            s = plugin.getUserDataManager().get(src).get().quickGet(HomeUserDataModule.class, HomeUserDataModule::getHomes).keySet();
+            s = Nucleus.getNucleus().getUserDataManager().getUnchecked(src).get(HomeUserDataModule.class).getHomes().keySet();
         } catch (Exception e) {
             return Lists.newArrayList();
         }

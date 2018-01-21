@@ -42,7 +42,6 @@ public class CoreTask extends TaskBase implements Reloadable {
         }
 
         plugin.saveData();
-        plugin.getUserDataManager().removeOfflinePlayers();
 
         if (this.printSave || Nucleus.getNucleus().isDebugMode()) {
             plugin.getLogger().info(plugin.getMessageProvider().getMessageWithFormat("core.savetask.complete"));

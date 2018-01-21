@@ -74,7 +74,7 @@ public class TeleportWorldCommand extends AbstractCommand<CommandSource> {
 
         // Rotate.
         Nucleus.getNucleus().getWorldDataManager().getWorld(worldProperties.getUniqueId())
-                .ifPresent(x -> x.quickGet(SpawnWorldDataModule.class, SpawnWorldDataModule::getSpawnRotation).ifPresent(player::setRotation));
+                .ifPresent(x -> x.get(SpawnWorldDataModule.class).getSpawnRotation().ifPresent(player::setRotation));
         if (src instanceof Player && ((Player) src).getUniqueId().equals(player.getUniqueId())) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.world.teleport.success", worldProperties.getWorldName()));
         } else {

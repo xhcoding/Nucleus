@@ -18,7 +18,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 
 /**
- * Clears the {@link UserDataManager} cache, so any offline user's files wll be read on next startup.
+ * Clears the {@link UserDataManager} cache, so any offline user's files wll be read on next login.
  */
 @SuppressWarnings("ALL")
 @Permissions(prefix = "nucleus")
@@ -27,23 +27,10 @@ import org.spongepowered.api.command.args.GenericArguments;
 @RegisterCommand(value = "clearcache", subcommandOf = NucleusCommand.class)
 public class ClearCacheCommand extends AbstractCommand<CommandSource> {
 
-    @Override public CommandElement[] getArguments() {
-        return new CommandElement[] {
-            GenericArguments.flags().flag("f").buildWith(GenericArguments.none())
-        };
-    }
-
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        boolean force = args.hasAny("f");
-        Nucleus.getNucleus().getUserDataManager().removeOfflinePlayers(force);
-
-        if (force) {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.clearcache.success"));
-        } else {
-            src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.clearcache.success2m"));
-        }
-
+        Nucleus.getNucleus().getUserDataManager().invalidateOld(true);
+        src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.nucleus.clearcache.success"));
         return CommandResult.success();
     }
 }
