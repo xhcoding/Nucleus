@@ -11,6 +11,7 @@ import io.github.nucleuspowered.nucleus.api.exceptions.NicknameException;
 import io.github.nucleuspowered.nucleus.api.service.NucleusNicknameService;
 import io.github.nucleuspowered.nucleus.dataservices.modular.ModularUserService;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.messages.MessageProvider;
 import io.github.nucleuspowered.nucleus.modules.nickname.NicknameModule;
 import io.github.nucleuspowered.nucleus.modules.nickname.commands.NicknameCommand;
@@ -38,7 +39,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-public class NicknameService implements NucleusNicknameService {
+public class NicknameService implements NucleusNicknameService, Reloadable {
 
     private Pattern pattern;
     private int min = 3;
@@ -201,6 +202,7 @@ public class NicknameService implements NucleusNicknameService {
 
     }
 
+    @Override
     public void onReload() {
         NicknameConfig nc = Nucleus.getNucleus().getConfigAdapter(NicknameModule.ID, NicknameConfigAdapter.class).get().getNodeOrDefault();
         pattern = nc.getPattern();
