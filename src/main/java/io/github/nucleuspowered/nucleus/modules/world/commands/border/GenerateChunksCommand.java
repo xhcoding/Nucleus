@@ -8,7 +8,6 @@ import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.argumentparsers.BoundedIntegerArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NucleusWorldPropertiesArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.TimespanArgument;
-import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -30,17 +29,15 @@ import org.spongepowered.api.world.storage.WorldProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("ALL")
 @Permissions(prefix = "world.border")
 @RegisterCommand(value = {"gen", "genchunks", "generatechunks", "chunkgen"}, subcommandOf = BorderCommand.class)
-@SkipOnError
 @NonnullByDefault
 public class GenerateChunksCommand extends AbstractCommand<CommandSource> {
 
     private final String worldKey = "world";
-    public static final String ticksKey = "tickPercent";
-    public static final String tickFrequency = "tickFrequency";
-    public static final String saveTimeKey = "time between saves";
+    private static final String ticksKey = "tickPercent";
+    private static final String tickFrequency = "tickFrequency";
+    private static final String saveTimeKey = "time between saves";
 
     private final WorldHelper worldHelper = getServiceUnchecked(WorldHelper.class);
 
