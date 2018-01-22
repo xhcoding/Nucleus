@@ -14,6 +14,7 @@ import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
+import io.github.nucleuspowered.nucleus.api.util.NoExceptionAutoClosable;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
 import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
@@ -303,7 +304,7 @@ public class AFKHandler implements NucleusAFKService {
         stageUserActivityUpdate(player);
     }
 
-    @Override public AutoCloseable disableTrackingFor(final Player player, int ticks) {
+    @Override public NoExceptionAutoClosable disableTrackingForPlayer(final Player player, int ticks) {
         // Disable tracking now with a new UUID.
         Task n = Task.builder().execute(t -> {
             synchronized (lock2) {
