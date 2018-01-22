@@ -4,12 +4,12 @@
  */
 package io.github.nucleuspowered.nucleus.modules.teleport.commands;
 
-import io.github.nucleuspowered.nucleus.argumentparsers.AlertOnAfkArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
 import io.github.nucleuspowered.nucleus.internal.annotations.RunAsync;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.NoWarmup;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -44,11 +44,12 @@ import java.util.Map;
 @RunAsync
 @NonnullByDefault
 @EssentialsEquivalent({"tpa", "call", "tpask"})
+@NotifyIfAFK(TeleportAskCommand.PLAYER_KEY)
 public class TeleportAskCommand extends AbstractCommand<Player> {
 
     private final TeleportHandler tpHandler = getServiceUnchecked(TeleportHandler.class);
 
-    private static final String playerKey = "subject";
+    static final String PLAYER_KEY = "subject";
 
     @Override
     public Map<String, PermissionInformation> permissionSuffixesToRegister() {
@@ -60,19 +61,19 @@ public class TeleportAskCommand extends AbstractCommand<Player> {
     @Override
     public CommandElement[] getArguments() {
         return new CommandElement[] {
-                new AlertOnAfkArgument(SelectorWrapperArgument.nicknameSelector(Text.of(playerKey), NicknameArgument.UnderlyingType.PLAYER,
-                        true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c))),
+                SelectorWrapperArgument.nicknameSelector(Text.of(PLAYER_KEY), NicknameArgument.UnderlyingType.PLAYER,
+                        true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c)),
                 GenericArguments.flags().permissionFlag(permissions.getPermissionWithSuffix("force"), "f").buildWith(GenericArguments.none())
         };
     }
 
     @Override protected ContinueMode preProcessChecks(Player source, CommandContext args) {
-        return TeleportHandler.canTeleportTo(source, args.<Player>getOne(playerKey).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
+        return TeleportHandler.canTeleportTo(source, args.<Player>getOne(PLAYER_KEY).get()) ? ContinueMode.CONTINUE : ContinueMode.STOP;
     }
 
     @Override
     public CommandResult executeCommand(Player src, CommandContext args) throws Exception {
-        Player target = args.<Player>getOne(playerKey).get();
+        Player target = args.<Player>getOne(PLAYER_KEY).get();
         if (src.equals(target)) {
             src.sendMessage(plugin.getMessageProvider().getTextMessageWithFormat("command.teleport.self"));
             return CommandResult.empty();

@@ -4,11 +4,11 @@
  */
 package io.github.nucleuspowered.nucleus.modules.message.commands;
 
-import io.github.nucleuspowered.nucleus.argumentparsers.AlertOnAfkArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.MessageTargetArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.NicknameArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.PlayerConsoleArgument;
 import io.github.nucleuspowered.nucleus.argumentparsers.SelectorWrapperArgument;
+import io.github.nucleuspowered.nucleus.internal.annotations.command.NotifyIfAFK;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Permissions;
 import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCommand;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
@@ -35,8 +35,9 @@ import java.util.Map;
 @RegisterCommand(value = { "message", "m", "msg", "whisper", "w", "t" }, rootAliasRegister = { "tell" })
 @EssentialsEquivalent({"msg", "tell", "m", "t", "whisper"})
 @NonnullByDefault
+@NotifyIfAFK(MessageCommand.TO)
 public class MessageCommand extends AbstractCommand<CommandSource> {
-    private final String to = "to";
+    final static String TO = "to";
     private final String message = "message";
 
     private final MessageHandler handler = getServiceUnchecked(MessageHandler.class);
@@ -56,9 +57,9 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
     public CommandElement[] getArguments() {
         return new CommandElement[] {
             GenericArguments.firstParsing(
-                    new MessageTargetArgument(Text.of(to)),
-                    new AlertOnAfkArgument(SelectorWrapperArgument.nicknameSelector(Text.of(to), NicknameArgument.UnderlyingType.PLAYER_CONSOLE,
-                            true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c)))
+                    new MessageTargetArgument(Text.of(TO)),
+                    SelectorWrapperArgument.nicknameSelector(Text.of(TO), NicknameArgument.UnderlyingType.PLAYER_CONSOLE,
+                            true, Player.class, (c, p) -> PlayerConsoleArgument.shouldShow(p, c))
             ),
             GenericArguments.onlyOne(GenericArguments.remainingJoinedStrings(Text.of(message)))
         };
@@ -66,7 +67,7 @@ public class MessageCommand extends AbstractCommand<CommandSource> {
 
     @Override
     public CommandResult executeCommand(CommandSource src, CommandContext args) throws Exception {
-        boolean b = handler.sendMessage(src, args.<CommandSource>getOne(to).get(), args.<String>getOne(message).get());
+        boolean b = handler.sendMessage(src, args.<CommandSource>getOne(TO).get(), args.<String>getOne(message).get());
         return b ? CommandResult.success() : CommandResult.empty();
     }
 }

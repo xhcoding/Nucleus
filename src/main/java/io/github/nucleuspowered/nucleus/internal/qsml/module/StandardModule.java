@@ -13,6 +13,7 @@ import io.github.nucleuspowered.nucleus.internal.Constants;
 import io.github.nucleuspowered.nucleus.internal.InternalServiceManager;
 import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommandInterceptors;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
@@ -20,6 +21,7 @@ import io.github.nucleuspowered.nucleus.internal.annotations.command.RegisterCom
 import io.github.nucleuspowered.nucleus.internal.annotations.command.Scan;
 import io.github.nucleuspowered.nucleus.internal.command.AbstractCommand;
 import io.github.nucleuspowered.nucleus.internal.command.CommandBuilder;
+import io.github.nucleuspowered.nucleus.internal.command.ICommandInterceptor;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
@@ -93,6 +95,7 @@ public abstract class StandardModule implements Module {
         try {
             registerServices();
             performPreTasks();
+            registerCommandInterceptors();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Cannot enable module!", e);
@@ -152,9 +155,36 @@ public abstract class StandardModule implements Module {
         }
     }
 
+    private void registerCommandInterceptors() throws Exception {
+        RegisterCommandInterceptors annotation = getClass().getAnnotation(RegisterCommandInterceptors.class);
+        if (annotation != null) {
+            // for each annotation, attempt to register the service.
+            for (Class<? extends ICommandInterceptor> service : annotation.value()) {
+
+                // create the impl
+                ICommandInterceptor impl;
+                try {
+                    impl = service.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    String error = "ERROR: Cannot instantiate ICommandInterceptor " + service.getName();
+                    Nucleus.getNucleus().getLogger().error(error);
+                    throw new IllegalStateException(error, e);
+                }
+
+                if (impl instanceof Reloadable) {
+                    Reloadable reloadable = (Reloadable) impl;
+                    Nucleus.getNucleus().registerReloadable(reloadable);
+                    reloadable.onReload();
+                }
+
+                AbstractCommand.registerInterceptor(impl);
+            }
+        }
+    }
+
     @Override
     public void onEnable() {
-        packageName = this.getClass().getPackage().getName() + ".";
+        this.packageName = this.getClass().getPackage().getName() + ".";
 
         // Construct commands
         loadCommands();
@@ -166,7 +196,7 @@ public abstract class StandardModule implements Module {
     private void loadCommands() {
 
         Set<Class<? extends AbstractCommand<?>>> cmds;
-        if (msls != null) {
+        if (this.msls != null) {
             cmds = new HashSet<>();
             List<String> l = this.msls.get(Constants.COMMAND);
             if (l == null) {

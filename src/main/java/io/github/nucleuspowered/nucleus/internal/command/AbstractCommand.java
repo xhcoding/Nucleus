@@ -112,6 +112,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
      */
     public static final String COMPLETION_ARG = "comp";
     private static final InputTokenizer tokeniser = InputTokenizer.quotedStrings(false);
+    private static final List<ICommandInterceptor> commandInterceptors = Lists.newArrayList();
+
+    public static void registerInterceptor(ICommandInterceptor interceptor) {
+        commandInterceptors.add(Preconditions.checkNotNull(interceptor));
+    }
 
     private final boolean isAsync = this.getClass().getAnnotation(RunAsync.class) != null;
 
@@ -494,22 +499,20 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     private CommandResult startExecute(T src, CommandContext args) throws Exception {
         CommandResult cr;
         boolean isSuccess = false;
         try {
             // Any pre-processing steps
-            if (args.hasAny(NucleusProcessing.PRE_RUN_KEY)) {
-                args.<Action>getAll(NucleusProcessing.PRE_RUN_KEY).forEach(Action::action);
-            }
+            commandInterceptors.forEach(x -> x.onPreCommand(
+                    (Class<? extends AbstractCommand<?>>) getClass(), src, args
+            ));
 
             // Execute the command in the specific executor.
             cr = executeCommand(src, args);
 
-            isSuccess = cr.getSuccessCount().orElse(0) > 0 ;
-            if (args.hasAny(NucleusProcessing.SUCCESS_KEY)) {
-                args.<Action>getAll(NucleusProcessing.SUCCESS_KEY).forEach(Action::action);
-            }
+            isSuccess = cr.getSuccessCount().orElse(0) > 0;
         } catch (ReturnMessageException e) {
             Text t = e.getText();
             src.sendMessage((t == null) ? NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("command.error") : t);
@@ -531,6 +534,11 @@ public abstract class AbstractCommand<T extends CommandSource> implements Comman
                     }
                 }
             }
+
+        }
+
+        for (ICommandInterceptor x : commandInterceptors) {
+            x.onPostCommand((Class<? extends AbstractCommand<?>>) getClass(), src, args, cr);
         }
 
         return cr;

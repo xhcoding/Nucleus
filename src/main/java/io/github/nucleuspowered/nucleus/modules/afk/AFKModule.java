@@ -5,14 +5,17 @@
 package io.github.nucleuspowered.nucleus.modules.afk;
 
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommandInterceptors;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
 import io.github.nucleuspowered.nucleus.modules.afk.config.AFKConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.afk.handlers.AFKHandler;
+import io.github.nucleuspowered.nucleus.modules.afk.interceptors.AFKCommandInterceptor;
 import org.spongepowered.api.Sponge;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
 
 @RegisterService(value = AFKHandler.class, apiService = NucleusAFKService.class)
+@RegisterCommandInterceptors(AFKCommandInterceptor.class)
 @ModuleData(id = AFKModule.ID, name = "AFK")
 public class AFKModule extends ConfigurableModule<AFKConfigAdapter> {
 
