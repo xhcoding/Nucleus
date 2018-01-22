@@ -62,6 +62,16 @@ public interface NucleusAFKService {
     Instant lastActivity(Player player);
 
     /**
+     * Returns the {@link Duration} since last recorded active moment of the player.
+     *
+     * @param player The player in question
+     * @return The {@link Instant}
+     */
+    default Duration timeSinceLastActivity(Player player) {
+        return Duration.between(lastActivity(player), Instant.now());
+    }
+
+    /**
      * Returns how long the specified {@link User} has to be inactive before going AFK.
      *
      * @param user The {@link User} in question.
