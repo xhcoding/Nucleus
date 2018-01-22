@@ -12,7 +12,11 @@ import java.util.Map;
 /**
  * This service provides methods to support obtaining Nucleus' blacklist entries
  * for use by another plugin.
+ *
+ * @deprecated The Blacklist has been removed. Will be removed in a future version
+ * of Nucleus.
  */
+@Deprecated
 public interface NucleusBlacklistMigrationService {
 
     /**
