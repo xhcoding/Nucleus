@@ -13,17 +13,4 @@ public class CoreConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDe
     public CoreConfigAdapter() {
         super(CoreConfig.class);
     }
-
-    @Override
-    protected List<Transformation> getTransformations() {
-        List<Transformation> lt = super.getTransformations();
-
-        // Delete the "permission-command" node as we do not need it any more.
-        lt.add(new Transformation(new Object[] { "permission-command" }, (inputPath, valueAtPath) -> {
-            valueAtPath.setValue(null);
-            return null;
-        }));
-
-        return lt;
-    }
 }

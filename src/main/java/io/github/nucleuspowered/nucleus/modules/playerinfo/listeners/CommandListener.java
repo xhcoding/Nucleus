@@ -32,7 +32,7 @@ public class CommandListener extends ListenerBase implements ListenerBase.Condit
     }
 
     @Override public boolean shouldEnable() {
-        return Nucleus.getNucleus().getConfigValue(PlayerInfoModule.ID, PlayerInfoConfigAdapter.class, x -> x.getList().isMulticraftCompatibility())
+        return Nucleus.getNucleus().getConfigValue(PlayerInfoModule.ID, PlayerInfoConfigAdapter.class, x -> x.getList().isPanelCompatibility())
                 .orElse(false);
     }
 

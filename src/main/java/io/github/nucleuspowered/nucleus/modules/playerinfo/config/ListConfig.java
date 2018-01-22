@@ -23,35 +23,35 @@ public class ListConfig {
     @Setting("list-grouping-by-permission")
     private GroupConfig groupByPermissionGroup = new GroupConfig();
 
-    @Setting(value = "multicraft-compatibility", comment = "config.playerinfo.list.multicraft")
-    private boolean multicraftCompatibility = false;
+    @Setting(value = "server-panel-compatibility", comment = "config.playerinfo.list.panel")
+    private boolean panelCompatibility = false;
 
     public boolean isGroupByPermissionGroup() {
-        return groupByPermissionGroup.enabled;
+        return this.groupByPermissionGroup.enabled;
     }
 
     public Map<String, String> getAliases() {
-        return ImmutableMap.copyOf(groupByPermissionGroup.groupAliasing);
+        return ImmutableMap.copyOf(this.groupByPermissionGroup.groupAliasing);
     }
 
     public List<String> getOrder() {
-        return ImmutableList.copyOf(groupByPermissionGroup.groupPriority);
+        return ImmutableList.copyOf(this.groupByPermissionGroup.groupPriority);
     }
 
     public String getDefaultGroupName() {
-        if (groupByPermissionGroup.defaultGroupName.isEmpty()) {
+        if (this.groupByPermissionGroup.defaultGroupName.isEmpty()) {
             return "Default";
         }
 
-        return groupByPermissionGroup.defaultGroupName;
+        return this.groupByPermissionGroup.defaultGroupName;
     }
 
     public boolean isUseAliasOnly() {
-        return groupByPermissionGroup.useAliasOnly;
+        return this.groupByPermissionGroup.useAliasOnly;
     }
 
-    public boolean isMulticraftCompatibility() {
-        return multicraftCompatibility;
+    public boolean isPanelCompatibility() {
+        return this.panelCompatibility;
     }
 
     @ConfigSerializable

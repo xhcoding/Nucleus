@@ -13,8 +13,7 @@ public class PlayerInfoConfigAdapter extends NucleusConfigAdapter.StandardWithSi
 
     @Override protected List<Transformation> getTransformations() {
         return Lists.newArrayList(
-            Transformation.moveFrom("list", "group-by-permission-groups").to("list", "list-grouping-by-permission", "enabled"),
-            Transformation.moveFrom("list", "default-group-name").to("list", "list-grouping-by-permission", "default-group-name")
+            Transformation.moveFrom("list", "multicraft-compatibility").to("list", "server-panel-compatibility")
         );
     }
 
