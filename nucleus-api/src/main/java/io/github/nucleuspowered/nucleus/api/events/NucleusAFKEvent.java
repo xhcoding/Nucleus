@@ -18,6 +18,13 @@ import javax.annotation.Nullable;
 public interface NucleusAFKEvent extends TargetPlayerEvent {
 
     /**
+     * Gets the original message that would have been sent to players, if any.
+     *
+     * @return The message, if any
+     */
+    Optional<Text> getOriginalMessage();
+
+    /**
      * Gets the message to send to players
      *
      * @return The message, if any.
@@ -84,4 +91,33 @@ public interface NucleusAFKEvent extends TargetPlayerEvent {
      */
     @MightOccurAsync
     interface Kick extends NucleusAFKEvent, Cancellable {}
+
+    /**
+     * Fired when the target of a command is AFK and the command is marked
+     * as one that should notify the sender.
+     */
+    @MightOccurAsync
+    interface NotifyCommand extends TargetPlayerEvent {
+
+        /**
+         * Gets the original message that would have been sent to players, if any.
+         *
+         * @return The message, if any
+         */
+        Optional<Text> getOriginalMessage();
+
+        /**
+         * Gets the message to send to the command invoker
+         *
+         * @return The message, if any.
+         */
+        Optional<Text> getMessage();
+
+        /**
+         * Sets the message to send to the command invoker, if any.
+         *
+         * @param message The message. A null message suppresses the message.
+         */
+        void setMessage(@Nullable Text message);
+    }
 }

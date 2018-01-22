@@ -29,6 +29,7 @@ public abstract class AFKEvents extends AbstractEvent implements TargetPlayerEve
     private final Cause cause;
     private final MessageChannel original;
     private MessageChannel channel;
+    @Nullable private final Text originalMessage;
     @Nullable private Text message;
 
     AFKEvents(Player target, Text message, MessageChannel original) {
@@ -38,6 +39,7 @@ public abstract class AFKEvents extends AbstractEvent implements TargetPlayerEve
     AFKEvents(Player target, Text message, MessageChannel original, Cause cause) {
         this.target = target;
         this.cause = cause;
+        this.originalMessage = message;
         this.message = message;
         this.original = original;
         this.channel = original;
@@ -51,6 +53,11 @@ public abstract class AFKEvents extends AbstractEvent implements TargetPlayerEve
     @Override
     public Cause getCause() {
         return this.cause;
+    }
+
+    @Override
+    public Optional<Text> getOriginalMessage() {
+        return Optional.ofNullable(this.originalMessage);
     }
 
     @Override
@@ -114,6 +121,41 @@ public abstract class AFKEvents extends AbstractEvent implements TargetPlayerEve
 
         @Override public void setCancelled(boolean cancel) {
             this.cancelled = cancel;
+        }
+    }
+
+    public static class Notify implements NucleusAFKEvent.NotifyCommand {
+
+        private final Player target;
+        private final Cause cause;
+        @Nullable private final Text originalMessage;
+        @Nullable private Text message;
+
+        public Notify(Player target, @Nullable Text message, Cause cause) {
+            this.target = target;
+            this.originalMessage = message;
+            this.message = message;
+            this.cause = cause;
+        }
+
+        @Override public Cause getCause() {
+            return this.cause;
+        }
+
+        @Override public Optional<Text> getOriginalMessage() {
+            return Optional.ofNullable(this.originalMessage);
+        }
+
+        @Override public Optional<Text> getMessage() {
+            return Optional.ofNullable(this.message);
+        }
+
+        @Override public Player getTargetEntity() {
+            return this.target;
+        }
+
+        @Override public void setMessage(@Nullable Text message) {
+            this.message = message;
         }
     }
 }
