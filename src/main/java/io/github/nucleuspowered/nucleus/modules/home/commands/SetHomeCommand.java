@@ -35,7 +35,7 @@ import java.util.Optional;
 
 @SuppressWarnings("ALL")
 @Permissions(prefix = "home", mainOverride = "set", suggestedLevel = SuggestedLevel.USER)
-@RegisterCommand(value = {"homeset"}, rootAliasRegister = "sethome")
+@RegisterCommand(value = "set", subcommandOf = HomeCommand.class, rootAliasRegister = {"homeset", "sethome"})
 @EssentialsEquivalent({"sethome", "createhome"})
 @NonnullByDefault
 public class SetHomeCommand extends AbstractCommand<Player> implements Reloadable {

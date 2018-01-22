@@ -33,7 +33,7 @@ import java.util.Map;
 
 @NonnullByDefault
 @Permissions(prefix = "home", mainOverride = "other", suggestedLevel = SuggestedLevel.MOD)
-@RegisterCommand("homeother")
+@RegisterCommand(value = "other", subcommandOf = HomeCommand.class, rootAliasRegister = "homeother")
 public class HomeOtherCommand extends AbstractCommand<Player> implements Reloadable {
 
     private final String home = "home";

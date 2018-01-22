@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @RunAsync
 @NoModifiers
 @NonnullByDefault
-@RegisterCommand({"listhomes", "homes"})
+@RegisterCommand(value = "list", subcommandOf = HomeCommand.class, rootAliasRegister = {"listhomes", "homes"})
 public class ListHomeCommand extends AbstractCommand<CommandSource> {
 
     private final String player = "subject";

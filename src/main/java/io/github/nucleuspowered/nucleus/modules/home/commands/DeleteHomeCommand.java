@@ -25,7 +25,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(mainOverride = "home", suggestedLevel = SuggestedLevel.USER)
 @NoModifiers
-@RegisterCommand({"deletehome", "delhome"})
+@RegisterCommand(value = {"delete", "del"}, subcommandOf = HomeCommand.class, rootAliasRegister = {"deletehome", "delhome"})
 @EssentialsEquivalent({"delhome", "remhome", "rmhome"})
 @NonnullByDefault
 public class DeleteHomeCommand extends AbstractCommand<Player> {

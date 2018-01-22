@@ -23,7 +23,7 @@ import org.spongepowered.api.util.annotation.NonnullByDefault;
 
 @Permissions(prefix = "home", mainOverride = "deleteother")
 @NoModifiers
-@RegisterCommand({"deletehomeother", "delhomeother"})
+@RegisterCommand(value = {"deleteother", "delother"}, subcommandOf = HomeCommand.class, rootAliasRegister = {"deletehomeother", "delhomeother"})
 @NonnullByDefault
 public class DeleteOtherHomeCommand extends AbstractCommand<CommandSource> {
 
