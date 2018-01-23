@@ -881,7 +881,10 @@ public class NucleusPlugin extends Nucleus {
     }
 
     private void errorOnStartup() {
-        Sponge.getServer().setHasWhitelist(true);
+        if (this.isServer) {
+            Sponge.getServer().setHasWhitelist(true);
+        }
+
         if (this.versionFail != null) {
             Sponge.getServer().getConsole().sendMessages(getIncorrectVersion());
         } else {
@@ -902,7 +905,10 @@ public class NucleusPlugin extends Nucleus {
         messages.add(Text.of(TextColors.RED, "You are running an old version of Sponge on your server - new versions of Nucleus (like this one!) "
                 + "will not run."));
         messages.add(Text.of(TextColors.RED, "Nucleus has not started. Update Sponge to the latest version and try again."));
-        messages.add(Text.of(TextColors.RED, "The server has been automatically whitelisted - this is to protect your server and players if you rely on some of Nucleus' functionality (such as fly states, etc.)"));
+        if (this.isServer) {
+            messages.add(Text.of(TextColors.RED,
+                    "The server has been automatically whitelisted - this is to protect your server and players if you rely on some of Nucleus' functionality (such as fly states, etc.)"));
+        }
         messages.add(Text.of(TextColors.RED, "------------------------------"));
         messages.add(Text.of(TextColors.YELLOW, "Reason: "));
         messages.add(Text.of(TextColors.YELLOW, this.versionFail));
@@ -958,7 +964,10 @@ public class NucleusPlugin extends Nucleus {
 
         messages.add(Text.EMPTY);
         messages.add(Text.of(TextColors.RED, "Nucleus encountered an error during server start up and did not enable successfully. No commands, listeners or tasks are registered."));
-        messages.add(Text.of(TextColors.RED, "The server has been automatically whitelisted - this is to protect your server and players if you rely on some of Nucleus' functionality (such as fly states, etc.)"));
+        if (this.isServer) {
+            messages.add(Text.of(TextColors.RED,
+                    "The server has been automatically whitelisted - this is to protect your server and players if you rely on some of Nucleus' functionality (such as fly states, etc.)"));
+        }
         messages.add(Text.of(TextColors.RED, "The error that Nucleus encountered will be reproduced below for your convenience."));
 
         messages.add(Text.of(TextColors.YELLOW, "----------------------------"));
