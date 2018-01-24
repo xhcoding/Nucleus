@@ -16,9 +16,7 @@ import java.util.Optional;
 @ModuleData(id = "freeze-subject", name = "Freeze Player")
 public class FreezePlayerModule extends StandardModule {
 
-    @Override public void onEnable() {
-        super.onEnable();
-
+    @Override public void performEnableTasks() {
         createSeenModule(FreezePlayerCommand.class, (c, u) -> {
             Optional<ModularUserService> us = plugin.getUserDataManager().get(u);
             if (us.isPresent() && us.get().get(FreezePlayerUserDataModule.class).isFrozen()) {

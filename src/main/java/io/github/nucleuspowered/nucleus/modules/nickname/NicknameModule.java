@@ -18,7 +18,8 @@ public class NicknameModule extends ConfigurableModule<NicknameConfigAdapter> {
 
     public final static String ID = "nickname";
 
-    @Override public void postEnable() {
+    @Override
+    public void performPostTasks() {
         this.plugin.getInternalServiceManager().getServiceUnchecked(NicknameService.class).register();
     }
 

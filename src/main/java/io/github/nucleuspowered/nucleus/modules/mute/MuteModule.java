@@ -32,8 +32,7 @@ public class MuteModule extends ConfigurableModule<MuteConfigAdapter> {
     }
 
     @Override
-    public void onEnable() {
-        super.onEnable();
+    public void performEnableTasks() {
         createSeenModule(CheckMuteCommand.class, (c, u) -> {
 
             // If we have a ban service, then check for a ban.

@@ -48,8 +48,7 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
     }
 
     @Override
-    public void onEnable() {
-        super.onEnable();
+    public void performEnableTasks() {
         createSeenModule(CheckJailCommand.class, (c, u) -> {
 
             // If we have a ban service, then check for a ban.

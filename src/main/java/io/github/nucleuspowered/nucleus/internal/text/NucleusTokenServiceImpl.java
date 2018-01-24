@@ -41,10 +41,9 @@ public class NucleusTokenServiceImpl implements NucleusMessageTokenService {
     public NucleusTokenServiceImpl(NucleusPlugin plugin) {
         this.plugin = plugin;
         try {
-            Tokens tokens = new Tokens();
             PluginContainer pluginContainer = plugin.getPluginContainer();
-            register(pluginContainer, tokens);
-            tokens.getTokenNames().forEach(x -> registerPrimaryToken(x.toLowerCase(), pluginContainer, x.toLowerCase()));
+            register(pluginContainer, Tokens.INSTANCE);
+            Tokens.INSTANCE.getTokenNames().forEach(x -> registerPrimaryToken(x.toLowerCase(), pluginContainer, x.toLowerCase()));
         } catch (PluginAlreadyRegisteredException e) {
             e.printStackTrace();
         }

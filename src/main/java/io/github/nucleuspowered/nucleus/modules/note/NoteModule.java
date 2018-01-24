@@ -28,9 +28,7 @@ public class NoteModule extends ConfigurableModule<NoteConfigAdapter> {
     }
 
     @Override
-    public void onEnable() {
-        super.onEnable();
-
+    public void performEnableTasks() {
         // Take base permission from /checknotes.
         createSeenModule(CheckNotesCommand.class, (c, u) -> {
 

@@ -28,9 +28,7 @@ public class WarnModule extends ConfigurableModule<WarnConfigAdapter> {
     }
 
     @Override
-    public void onEnable() {
-        super.onEnable();
-
+    public void performEnableTasks() {
         // Take base permission from /checkwarnings.
         createSeenModule(CheckWarningsCommand.class, (c, u) -> {
 

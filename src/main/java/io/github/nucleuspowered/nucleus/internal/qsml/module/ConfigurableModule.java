@@ -36,10 +36,7 @@ public abstract class ConfigurableModule<A extends NucleusConfigAdapter<?>> exte
     }
 
     @Override
-    public void postEnable() {
-        super.postEnable();
+    void configTasks() {
         plugin.getDocGenCache().ifPresent(x -> x.addConfigurableModule(this.getClass().getAnnotation(ModuleData.class).id(), this));
     }
-
-
 }

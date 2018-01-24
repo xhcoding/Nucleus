@@ -32,9 +32,7 @@ public class MessageModule extends ConfigurableModule<MessageConfigAdapter> {
         return new MessageConfigAdapter();
     }
 
-    @Override public void onEnable() {
-        super.onEnable();
-
+    @Override public void performEnableTasks() {
         createSeenModule(SocialSpyCommand.class, (cs, user) -> {
             MessageHandler handler = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(MessageHandler.class);
             boolean socialSpy = handler.isSocialSpy(user);

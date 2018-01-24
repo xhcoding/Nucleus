@@ -27,9 +27,10 @@ import javax.annotation.Nonnull;
 
 public final class Tokens implements NucleusMessageTokenService.TokenParser {
 
+    public static final Tokens INSTANCE = new Tokens();
     private final Map<String, Translator> translatorMap = Maps.newHashMap();
 
-    Tokens() {
+    private Tokens() {
         translatorMap.put("name", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToName(getFromVariableIfExists(p, v, m))));
         translatorMap.put("player", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
         translatorMap.put("playername", (p, v, m) -> Optional.of(Nucleus.getNucleus().getTextParsingUtils().addCommandToDisplayName(getFromVariableIfExists(p, v, m))));
@@ -71,6 +72,18 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
         return Sets.newHashSet(translatorMap.keySet());
     }
 
+    public boolean register(String name, Translator translator, boolean primary) throws IllegalArgumentException {
+        final String nameLower = name.toLowerCase();
+        if (this.translatorMap.containsKey(nameLower)) {
+            throw new IllegalArgumentException("Cannot register this");
+        }
+
+        this.translatorMap.put(name, translator);
+        return !primary || Nucleus.getNucleus().getMessageTokenService()
+                .registerPrimaryToken(nameLower, Nucleus.getNucleus().getPluginContainer(), nameLower);
+
+    }
+
     private static CommandSource getFromVariableIfExists(CommandSource source, String v, Map<String, Object> m) {
         if (m.containsKey(v) && m.get(v) instanceof CommandSource) {
             return (CommandSource)m.get(v);
@@ -96,7 +109,7 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
     }
 
     @FunctionalInterface
-    private interface Translator {
+    public interface Translator {
 
         Optional<Text> get(CommandSource source, String variableString, Map<String, Object> variables);
     }

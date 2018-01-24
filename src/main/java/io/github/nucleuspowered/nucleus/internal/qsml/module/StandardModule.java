@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.internal.qsml.module;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.annotationprocessor.Store;
@@ -26,6 +27,7 @@ import io.github.nucleuspowered.nucleus.internal.command.ICommandInterceptor;
 import io.github.nucleuspowered.nucleus.internal.docgen.DocGenCache;
 import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
+import io.github.nucleuspowered.nucleus.internal.text.Tokens;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.BasicSeenInformationProvider;
 import io.github.nucleuspowered.nucleus.modules.playerinfo.handlers.SeenHandler;
 import org.spongepowered.api.Platform;
@@ -92,6 +94,10 @@ public abstract class StandardModule implements Module {
     }
 
     protected void otherDeps() throws MissingDependencyException { }
+
+    protected Map<String, Tokens.Translator> tokensToRegister() {
+        return ImmutableMap.of();
+    }
 
     /**
      * Non-configurable module, no configuration to register.
@@ -196,13 +202,31 @@ public abstract class StandardModule implements Module {
     }
 
     @Override
-    public void onEnable() {
+    public final void onEnable() {
         this.packageName = this.getClass().getPackage().getName() + ".";
 
         // Construct commands
         loadCommands();
         loadEvents();
         loadRunnables();
+        try {
+            performEnableTasks();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Cannot enable module!", e);
+        }
+    }
+
+    @Override
+    public final void postEnable() {
+        tokensToRegister();
+        configTasks();
+        try {
+            performPostTasks();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Cannot perform post enable on module!", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -370,6 +394,21 @@ public abstract class StandardModule implements Module {
         });
     }
 
+    private void loadTokens() {
+        Map<String, Tokens.Translator> map = tokensToRegister();
+        if (!map.isEmpty()) {
+            map.forEach((k, t) -> {
+                try {
+                    if (!Tokens.INSTANCE.register(k, t, true)) {
+                        Nucleus.getNucleus().getLogger().warn("Could not register primary token identifier " + k);
+                    }
+                } catch (IllegalArgumentException e) {
+                    Nucleus.getNucleus().getLogger().warn("Could not register nucleus token identifier " + k);
+                }
+            });
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private <T> Stream<Class<? extends T>> getStreamForModule(Class<T> assignableClass) {
         return Nucleus.getNucleus().getModuleContainer().getLoadedClasses().stream()
@@ -381,6 +420,14 @@ public abstract class StandardModule implements Module {
     }
 
     protected void performPreTasks() throws Exception { }
+
+    protected void performEnableTasks() throws Exception { }
+
+    protected void performPostTasks() throws Exception { }
+
+    void configTasks() {
+
+    }
 
     private <T> T getInstance(Class<T> clazz) {
         return getInstance(clazz, false);

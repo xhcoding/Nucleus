@@ -29,9 +29,7 @@ public class BanModule extends ConfigurableModule<BanConfigAdapter> {
     }
 
     @Override
-    public void onEnable() {
-        super.onEnable();
-
+    public void performEnableTasks() {
         // Take base permission from /checkban.
         createSeenModule(CheckBanCommand.class, (c, u) -> {
 
