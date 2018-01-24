@@ -101,9 +101,8 @@ public abstract class DataManager<I, P, S extends Service> {
         return this.get(data, true);
     }
 
-    @GuardedBy("lockingObject")
     public final Optional<S> get(I data, boolean create) {
-        if (!create || has(data)) {
+        if (create || has(data)) {
             return Optional.ofNullable(this.cache.get(data));
         }
 
