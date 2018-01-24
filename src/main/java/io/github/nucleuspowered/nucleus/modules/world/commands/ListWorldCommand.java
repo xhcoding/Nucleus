@@ -4,6 +4,7 @@
  */
 package io.github.nucleuspowered.nucleus.modules.world.commands;
 
+import com.flowpowered.math.vector.Vector3i;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.Util;
@@ -52,6 +53,9 @@ public class ListWorldCommand extends AbstractCommand<CommandSource> {
         // As requested by Pixelmon for use in their config.
         x.getAdditionalProperties().getInt(DataQuery.of("SpongeData", "dimensionId")).ifPresent(i ->
             listContent.add(plugin.getMessageProvider().getTextMessageWithFormat("command.world.list.dimensionid", String.valueOf(i))));
+        Vector3i spawnPosition = x.getSpawnPosition();
+        listContent.add(plugin.getMessageProvider().getTextMessageWithFormat("command.world.list.spawnpoint",
+                String.valueOf(spawnPosition.getX()), String.valueOf(spawnPosition.getY()), String.valueOf(spawnPosition.getZ())));
 
         listContent.add(plugin.getMessageProvider().getTextMessageWithFormat("command.world.list.uuid", x.getUniqueId().toString()));
         if (x.isEnabled()) {
