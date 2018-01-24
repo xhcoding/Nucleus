@@ -4,21 +4,31 @@
  */
 package io.github.nucleuspowered.nucleus.modules.jail;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusJailService;
 import io.github.nucleuspowered.nucleus.internal.qsml.module.ConfigurableModule;
+import io.github.nucleuspowered.nucleus.internal.text.Tokens;
+import io.github.nucleuspowered.nucleus.modules.freezeplayer.datamodules.FreezePlayerUserDataModule;
 import io.github.nucleuspowered.nucleus.modules.jail.commands.CheckJailCommand;
 import io.github.nucleuspowered.nucleus.modules.jail.config.JailConfigAdapter;
 import io.github.nucleuspowered.nucleus.modules.jail.data.JailData;
 import io.github.nucleuspowered.nucleus.modules.jail.handlers.JailHandler;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.text.format.TextColors;
 import uk.co.drnaylor.quickstart.annotations.ModuleData;
+
+import java.util.Map;
+import java.util.Optional;
 
 @ModuleData(id = JailModule.ID, name = "Jail")
 public class JailModule extends ConfigurableModule<JailConfigAdapter> {
@@ -70,5 +80,33 @@ public class JailModule extends ConfigurableModule<JailConfigAdapter> {
 
             return Lists.newArrayList(NucleusPlugin.getNucleus().getMessageProvider().getTextMessageWithFormat("seen.notjailed"));
         });
+    }
+
+    @Override protected Map<String, Tokens.Translator> tokensToRegister() {
+        return ImmutableMap.<String, Tokens.Translator>builder()
+                .put("jailed", new Tokens.TrueFalseVariableTranslator() {
+                    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+                    final Optional<Text> def = Optional.of(Text.of(TextColors.GRAY, "[Jailed]"));
+
+                    @Override protected Optional<Text> getDefault() {
+                        return this.def;
+                    }
+
+                    @Override protected boolean condition(CommandSource commandSource) {
+                        return commandSource instanceof Player &&
+                                Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class)
+                                        .isPlayerJailed((Player) commandSource);
+                    }
+                })
+                .put("jail", (source, variableString, variables) -> {
+                    if (source instanceof Player) {
+                        return Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(JailHandler.class)
+                                .getPlayerJailData((Player) source)
+                                .map(x -> Text.of(x.getJailName()));
+                    }
+
+                    return Optional.empty();
+                })
+                .build();
     }
 }

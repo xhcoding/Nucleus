@@ -219,7 +219,7 @@ public abstract class StandardModule implements Module {
 
     @Override
     public final void postEnable() {
-        tokensToRegister();
+        loadTokens();
         configTasks();
         try {
             performPostTasks();

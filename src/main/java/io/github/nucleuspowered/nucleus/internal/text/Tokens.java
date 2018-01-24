@@ -78,7 +78,7 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
             throw new IllegalArgumentException("Cannot register this");
         }
 
-        this.translatorMap.put(name, translator);
+        this.translatorMap.put(nameLower, translator);
         return !primary || Nucleus.getNucleus().getMessageTokenService()
                 .registerPrimaryToken(nameLower, Nucleus.getNucleus().getPluginContainer(), nameLower);
 
@@ -112,5 +112,30 @@ public final class Tokens implements NucleusMessageTokenService.TokenParser {
     public interface Translator {
 
         Optional<Text> get(CommandSource source, String variableString, Map<String, Object> variables);
+    }
+
+    public static abstract class TrueFalseVariableTranslator implements Translator {
+
+        protected abstract Optional<Text> getDefault();
+
+        protected abstract boolean condition(CommandSource commandSource);
+
+        public final Optional<Text> get(CommandSource source, String variableString, Map<String, Object> variables) {
+            boolean res = condition(source);
+            if (variableString != null && !variableString.isEmpty()) {
+                if (variableString.contains("|")) {
+                    String[] s = variableString.split("\\|", 2);
+                    return Optional.of(res ?
+                            TextSerializers.FORMATTING_CODE.deserialize(s[0]) :
+                            TextSerializers.FORMATTING_CODE.deserialize(s[1]));
+                }
+
+                return Optional.ofNullable(res ?
+                        TextSerializers.FORMATTING_CODE.deserialize(variableString) :
+                        null);
+            } else {
+                return res ? getDefault() : Optional.empty();
+            }
+        }
     }
 }
