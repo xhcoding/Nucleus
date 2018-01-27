@@ -34,6 +34,8 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.entity.MainPlayerInventory;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
+import org.spongepowered.api.item.inventory.query.QueryOperation;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.service.context.Context;
 import org.spongepowered.api.service.pagination.PaginationList;
@@ -505,7 +507,7 @@ public class Util {
     }
 
     public static Inventory getStandardInventory(Carrier player) {
-        return player.getInventory().query(MainPlayerInventory.class);
+        return player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(MainPlayerInventory.class));
     }
 
     public static <T extends Event> void onPlayerSimulatedOrPlayer(T event, BiConsumer<T, Player> eventConsumer) {

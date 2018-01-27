@@ -53,7 +53,7 @@ public class HatCommand extends AbstractCommand.SimpleTargetOtherPlayer {
         }
 
         // If the old item can't be placed back in the subject inventory, drop the item.
-        helmetOptional.ifPresent(itemStack -> Util.getStandardInventory(pl).offer(itemStack)
+        helmetOptional.ifPresent(itemStack -> Util.getStandardInventory(pl).offer(itemStack.copy())
                 .getRejectedItems().forEach(x -> Util.dropItemOnFloorAtLocation(x, pl.getWorld(), pl.getLocation().getPosition())));
 
         if (!isSelf) {
