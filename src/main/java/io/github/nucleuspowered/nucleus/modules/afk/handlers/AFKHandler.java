@@ -16,6 +16,7 @@ import io.github.nucleuspowered.nucleus.Util;
 import io.github.nucleuspowered.nucleus.api.service.NucleusAFKService;
 import io.github.nucleuspowered.nucleus.api.util.NoExceptionAutoClosable;
 import io.github.nucleuspowered.nucleus.internal.CommandPermissionHandler;
+import io.github.nucleuspowered.nucleus.internal.interfaces.Reloadable;
 import io.github.nucleuspowered.nucleus.internal.permissions.ServiceChangeListener;
 import io.github.nucleuspowered.nucleus.internal.text.NucleusTextTemplateImpl;
 import io.github.nucleuspowered.nucleus.modules.afk.commands.AFKCommand;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.concurrent.GuardedBy;
 
-public class AFKHandler implements NucleusAFKService {
+public class AFKHandler implements NucleusAFKService, Reloadable {
 
     private final Map<UUID, AFKData> data = Maps.newConcurrentMap();
     private final AFKConfigAdapter afkConfigAdapter;
@@ -72,8 +73,6 @@ public class AFKHandler implements NucleusAFKService {
     public AFKHandler() {
         this.afkPermissionHandler = Nucleus.getNucleus().getPermissionRegistry().getPermissionsForNucleusCommand(AFKCommand.class);
         this.afkConfigAdapter = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(AFKConfigAdapter.class);
-        Nucleus.getNucleus().registerReloadable(this::onReload);
-        onReload();
     }
 
     public void stageUserActivityUpdate(Player player) {
@@ -200,8 +199,9 @@ public class AFKHandler implements NucleusAFKService {
         return false;
     }
 
-    private void onReload() {
-        config = afkConfigAdapter.getNodeOrDefault();
+    @Override
+    public void onReload() {
+        this.config = this.afkConfigAdapter.getNodeOrDefault();
     }
 
     private AFKData updateActivity(UUID uuid, AFKData data) {
