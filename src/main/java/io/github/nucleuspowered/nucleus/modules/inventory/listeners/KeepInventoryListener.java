@@ -25,13 +25,13 @@ public class KeepInventoryListener extends ListenerBase {
     @Override
     public Map<String, PermissionInformation> getPermissions() {
         Map<String, PermissionInformation> perms = Maps.newHashMap();
-        perms.put("nucleus.inventory.keep", PermissionInformation.getWithTranslation("permission.inventory.keep", SuggestedLevel.ADMIN));
+        perms.put("nucleus.inventory.keepondeath", PermissionInformation.getWithTranslation("permission.inventory.keep", SuggestedLevel.ADMIN));
         return perms;
     }
 
     @Listener
     public void onEntityDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Living living) {
-        if (living instanceof Player && ((Player) living).hasPermission("nucleus.inventory.keep")) {
+        if (living instanceof Player && ((Player) living).hasPermission("nucleus.inventory.keepondeath")) {
             event.setKeepInventory(true);
         }
     }
