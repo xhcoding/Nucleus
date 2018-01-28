@@ -16,6 +16,8 @@ import io.github.nucleuspowered.nucleus.internal.ListenerBase;
 import io.github.nucleuspowered.nucleus.internal.TaskBase;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterCommandInterceptors;
 import io.github.nucleuspowered.nucleus.internal.annotations.RegisterService;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequireExistenceOf;
+import io.github.nucleuspowered.nucleus.internal.annotations.RequireExistenceOfHolder;
 import io.github.nucleuspowered.nucleus.internal.annotations.RequiresPlatform;
 import io.github.nucleuspowered.nucleus.internal.annotations.ServerOnly;
 import io.github.nucleuspowered.nucleus.internal.annotations.SkipOnError;
@@ -44,6 +46,7 @@ import uk.co.drnaylor.quickstart.annotations.ModuleData;
 import uk.co.drnaylor.quickstart.config.AbstractConfigAdapter;
 import uk.co.drnaylor.quickstart.exceptions.MissingDependencyException;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
@@ -435,6 +438,47 @@ public abstract class StandardModule implements Module {
 
     private <T> T getInstance(Class<T> clazz, boolean checkMethods) {
         try {
+            RequireExistenceOf[] v = clazz.getAnnotationsByType(RequireExistenceOf.class);
+            if (v.length > 0) {
+                try {
+                    for (RequireExistenceOf r : v) {
+                        String toFind = r.value();
+                        String[] a;
+                        if (toFind.contains("#")) {
+                            a = toFind.split("#", 2);
+                        } else {
+                            a = new String[]{toFind};
+                        }
+
+                        // Check the class.
+                        Class<?> c = Class.forName(a[0]);
+                        if (a.length == 2) {
+                            // Check the method
+                            Method[] methods = c.getDeclaredMethods();
+                            boolean methodFound = false;
+                            for (Method m : methods) {
+                                if (m.getName().equals(a[1])) {
+                                    methodFound = true;
+                                    break;
+                                }
+                            }
+
+                            if (!methodFound) {
+                                if (r.showError()) {
+                                    throw new RuntimeException();
+                                }
+
+                                return null;
+                            }
+                        }
+                    }
+                } catch (ClassNotFoundException | RuntimeException | NoClassDefFoundError e) {
+                    plugin.getLogger().warn(NucleusPlugin.getNucleus().getMessageProvider()
+                            .getMessageWithFormat("startup.injectablenotloaded", clazz.getName()));
+                    return null;
+                }
+            }
+
             if (checkMethods) {
                 // This checks all the methods to ensure the classes in question exist.
                 clazz.getDeclaredMethods();
