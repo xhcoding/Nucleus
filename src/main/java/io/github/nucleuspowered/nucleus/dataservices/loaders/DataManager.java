@@ -11,17 +11,15 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.RemovalListener;
+import com.google.common.collect.Sets;
 import io.github.nucleuspowered.nucleus.Nucleus;
-import io.github.nucleuspowered.nucleus.NucleusPlugin;
 import io.github.nucleuspowered.nucleus.dataservices.Service;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 import io.github.nucleuspowered.nucleus.internal.TimingsDummy;
-import org.spongepowered.api.Sponge;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -30,10 +28,10 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
 
 public abstract class DataManager<I, P, S extends Service> {
 
+    private final Collection<I> bypassSave = Sets.newConcurrentHashSet();
     private final Predicate<I> fileExists;
     private final BiFunction<I, Boolean, DataProvider<P>> dataProviderFactory;
     private final LoadingCache<I, S> cache;
@@ -41,6 +39,7 @@ public abstract class DataManager<I, P, S extends Service> {
     private Timing GENERAL_LOAD_TIMINGS = TimingsDummy.DUMMY;
     private Timing ACTUAL_LOAD_TIMINGS = TimingsDummy.DUMMY;
     private Timing SAVE_TIMINGS = TimingsDummy.DUMMY;
+    @Nullable private String name;
 
     DataManager(BiFunction<I, Boolean, DataProvider<P>> dataProviderFactory, Predicate<I> fileExistsPredicate) {
         this.dataProviderFactory = dataProviderFactory;
@@ -60,12 +59,43 @@ public abstract class DataManager<I, P, S extends Service> {
         }
     }
 
+    private String getClassName() {
+        if (this.name == null) {
+            this.name = getClass().getSimpleName();
+        }
+
+        return this.name;
+    }
+
     private class Removal implements RemovalListener<I, S> {
 
         @Override
         public void onRemoval(@Nullable I key, @Nullable S value, @Nonnull RemovalCause cause) {
+            if (key != null && DataManager.this.bypassSave.remove(key)) {
+                // don't save.
+                return;
+            }
+
             if (value != null) {
-                value.save();
+                try {
+                    SAVE_TIMINGS.startTimingIfSync();
+                    value.saveInternal();
+                } catch (Exception e) {
+                    if (Nucleus.getNucleus().isDebugMode()) {
+                        Nucleus.getNucleus().getLogger().error("[" + getClassName()  + "] Could not save " + String.valueOf(key) + ".", e);
+                    }
+
+                    // Errored. Put value back in cache if we have the key.
+                    if (key != null) {
+                        Nucleus.getNucleus().getLogger().warn("[" + getClassName() + "] Could not save " + String.valueOf(key) +
+                                ", re-adding to cache to try later.");
+                        DataManager.this.cache.put(key, value);
+                    }
+
+                    return;
+                } finally {
+                    SAVE_TIMINGS.stopTimingIfSync();
+                }
             }
 
             if (key != null && shouldNotExpire(key)) {
@@ -120,27 +150,18 @@ public abstract class DataManager<I, P, S extends Service> {
     final void invalidate(I key, boolean save) {
         S value = this.cache.getIfPresent(key);
         if (value != null) {
-            this.cache.invalidate(key);
-            if (save) {
-                value.save();
+            if (!save) {
+                this.bypassSave.add(key);
             }
+
+            this.cache.invalidate(key);
         }
     }
 
-    public final void invalidateOld(boolean save) {
-        Collection<Map.Entry<I, S>> keys = this.cache.asMap().entrySet().stream().filter(x -> !this.shouldNotExpire(x.getKey())).collect(Collectors.toList());
-        if (save) {
-            try {
-                SAVE_TIMINGS.startTimingIfSync();
-                for (Map.Entry<I, S> key : keys) {
-                    key.getValue().save();
-                }
-            } finally {
-                SAVE_TIMINGS.stopTimingIfSync();
-            }
-        }
-
-        this.cache.invalidateAll(keys);
+    public final void invalidateOld() {
+        this.cache.invalidateAll(
+                this.cache.asMap().entrySet().stream().filter(x -> !this.shouldNotExpire(x.getKey())).collect(Collectors.toList())
+        );
     }
 
     public final void saveAll() {

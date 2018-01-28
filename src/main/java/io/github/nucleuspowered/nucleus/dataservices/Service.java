@@ -12,5 +12,7 @@ public interface Service {
 
     boolean save();
 
+    void saveInternal() throws Exception;
+
     boolean delete();
 }

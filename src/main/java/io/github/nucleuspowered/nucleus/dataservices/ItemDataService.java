@@ -54,9 +54,9 @@ public class ItemDataService extends AbstractService<Map<String, ItemDataNode>> 
     }
 
     @Override
-    public boolean save() {
+    public void saveInternal() throws Exception {
         clearCache();
-        return super.save();
+        super.saveInternal();
     }
 
     public Set<String> getAliases() {

@@ -8,6 +8,8 @@ import com.google.common.base.Preconditions;
 import io.github.nucleuspowered.nucleus.Nucleus;
 import io.github.nucleuspowered.nucleus.dataservices.dataproviders.DataProvider;
 
+import java.io.IOException;
+
 public abstract class AbstractService<T> implements Service {
 
     protected T data;
@@ -29,7 +31,8 @@ public abstract class AbstractService<T> implements Service {
 
     protected abstract String serviceName();
 
-    @Override public boolean load() {
+    @Override
+    public boolean load() {
         try {
             loadInternal();
             return true;
@@ -40,29 +43,36 @@ public abstract class AbstractService<T> implements Service {
         }
     }
 
-    @Override public void loadInternal() throws Exception {
+    @Override
+    public void loadInternal() throws Exception {
         if (Nucleus.getNucleus().isPrintingSavesAndLoads()) {
             Nucleus.getNucleus().getLogger().info("Loading: " + serviceName());
         }
         data = dataProvider.load();
     }
 
-    @Override public boolean save() {
-        if (data != null) {
-            try {
-                if (Nucleus.getNucleus().isPrintingSavesAndLoads()) {
-                    Nucleus.getNucleus().getLogger().info("Saving: " + serviceName());
-                }
-                dataProvider.save(data);
-                return true;
-            } catch (Exception e) {
-                Nucleus.getNucleus().getLogger().error("Could not save", e);
+    @Override
+    public boolean save() {
+        try {
+            saveInternal();
+            return true;
+        } catch (Exception e) {
+            Nucleus.getNucleus().getLogger().error("Could not save", e);
+            return false;
+        }
+    }
 
-                return false;
+    @Override
+    public void saveInternal() throws Exception {
+        if (this.data != null) {
+            if (Nucleus.getNucleus().isPrintingSavesAndLoads()) {
+                Nucleus.getNucleus().getLogger().info("Saving: " + serviceName());
             }
+            dataProvider.save(data);
+            return;
         }
 
-        return true;
+        throw new IllegalStateException("Data has not been initialised.");
     }
 
     @Override public boolean delete() {

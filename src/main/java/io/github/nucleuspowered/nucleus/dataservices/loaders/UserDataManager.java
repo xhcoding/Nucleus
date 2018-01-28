@@ -76,7 +76,7 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
     }
 
     public void removeOfflinePlayers() {
-        this.invalidateOld(true);
+        this.invalidateOld();
     }
 
     public List<ModularUserService> getOnlineUsersInternal() {
