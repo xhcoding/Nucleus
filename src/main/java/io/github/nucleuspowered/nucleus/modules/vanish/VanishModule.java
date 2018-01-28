@@ -32,7 +32,7 @@ public class VanishModule extends ConfigurableModule<VanishConfigAdapter> {
 
     @Override protected Map<String, Tokens.Translator> tokensToRegister() {
         return ImmutableMap.<String, Tokens.Translator>builder()
-                .put("jailed", new Tokens.TrueFalseVariableTranslator() {
+                .put("vanished", new Tokens.TrueFalseVariableTranslator() {
                     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
                     final Optional<Text> def = Optional.of(Text.of(TextColors.GRAY, "[Vanished]"));
 
