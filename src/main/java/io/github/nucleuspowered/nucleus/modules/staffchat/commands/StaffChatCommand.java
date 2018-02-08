@@ -51,11 +51,11 @@ public class StaffChatCommand extends AbstractCommand<CommandSource> {
         Optional<String> toSend = args.getOne(message);
         if (toSend.isPresent()) {
             try (CauseStackManager.StackFrame frame = Sponge.getCauseStackManager().pushCauseFrame()) {
-                Sponge.getCauseStackManager().addContext(EventContexts.SHOULD_FORMAT_CHANNEL, StaffChatMessageChannel.getInstance().formatMessages());
+                frame.addContext(EventContexts.SHOULD_FORMAT_CHANNEL, StaffChatMessageChannel.getInstance().formatMessages());
                 if (src instanceof Player) {
                     Player pl = (Player) src;
-                    Sponge.getCauseStackManager().pushCause(pl);
-                    Sponge.getCauseStackManager().addContext(EventContextKeys.PLAYER_SIMULATED, pl.getProfile());
+                    frame.pushCause(pl);
+                    frame.addContext(EventContextKeys.PLAYER_SIMULATED, pl.getProfile());
 
                     MessageChannel mc = pl.getMessageChannel();
                     pl.setMessageChannel(StaffChatMessageChannel.getInstance());

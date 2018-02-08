@@ -73,7 +73,7 @@ public class SudoCommand extends AbstractCommand<CommandSource> {
             try (CauseStackManager.StackFrame c = CauseStackHelper.createFrameWithCauses(
                     EventContext.builder()
                         .add(EventContextKeys.PLAYER_SIMULATED, pl.getProfile())
-                        .build(), src)) {
+                        .build(), pl, src)) {
                 if (pl.simulateChat(rawMessage, Sponge.getCauseStackManager().getCurrentCause()).isCancelled()) {
                     throw ReturnMessageException.fromKey("command.sudo.chatcancelled");
                 }
