@@ -19,20 +19,6 @@ public class ChatConfigAdapter extends NucleusConfigAdapter.StandardWithSimpleDe
     @Override
     protected List<Transformation> getTransformations() {
         return Lists.newArrayList(
-            new Transformation(new Object[] {"template"}, ((inputPath, valueAtPath) -> new Object[] { "templates", "default" })),
-            new Transformation(new Object[] {"group-templates"}, ((inputPath, valueAtPath) -> new Object[] { "templates", "group-templates" })),
-            new Transformation(new Object[] {"modifychat"}, ((inputPath, valueAtPath) -> new Object[] { "modify-chat" })),
-            new Transformation(new Object[] {"templates", "group-templates"}, (((inputPath, valueAtPath) -> {
-                if (valueAtPath instanceof CommentedConfigurationNode) {
-                    CommentedConfigurationNode ccn = (CommentedConfigurationNode)valueAtPath;
-                    ccn.getComment().ifPresent(x -> {
-                        if (x.equals("Group templates override the default chat template based on the users group. Note that the group name is case sensitive.")) {
-                            ccn.setComment(null);
-                        }
-                    });
-                }
-
-                return null;
-            }))));
+                Transformation.moveFrom("use-group-templates").to("templates", "use-group-templates"));
     }
 }

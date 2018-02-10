@@ -18,9 +18,6 @@ public class ChatConfig {
     @Setting(value = "modify-chat", comment = "config.chat.modify")
     private boolean modifychat = true;
 
-    @Setting(value = "use-group-templates", comment = "config.chat.useGroupTemplates")
-    private boolean useGroupTemplates = true;
-
     @Setting(value = "templates")
     private TemplateConfig templates = new TemplateConfig();
 
@@ -56,7 +53,11 @@ public class ChatConfig {
     }
 
     public boolean isUseGroupTemplates() {
-        return useGroupTemplates;
+        return this.templates.isUseGroupTemplates();
+    }
+
+    public boolean isCheckPermissionGroups() {
+        return this.templates.isCheckPermissionGroups();
     }
 
     public ChatTemplateConfig getDefaultTemplate() {

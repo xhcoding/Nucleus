@@ -14,6 +14,12 @@ import java.util.Map;
 @ConfigSerializable
 public class TemplateConfig {
 
+    @Setting(value = "use-group-templates", comment = "config.chat.useGroupTemplates")
+    private boolean useGroupTemplates = true;
+
+    @Setting(value = "check-permission-groups", comment = "config.chat.check-permission-groups")
+    private boolean checkPermissionGroups = true;
+
     @Setting(value = "default", comment = "config.chat.default-template")
     private ChatTemplateConfig defaultTemplate = new ChatTemplateConfig();
 
@@ -25,10 +31,18 @@ public class TemplateConfig {
     }};
 
     public ChatTemplateConfig getDefaultTemplate() {
-        return defaultTemplate;
+        return this.defaultTemplate;
     }
 
     public Map<String, WeightedChatTemplateConfig> getGroupTemplates() {
-        return groupTemplates;
+        return this.groupTemplates;
+    }
+
+    public boolean isUseGroupTemplates() {
+        return this.useGroupTemplates;
+    }
+
+    public boolean isCheckPermissionGroups() {
+        return this.checkPermissionGroups;
     }
 }
