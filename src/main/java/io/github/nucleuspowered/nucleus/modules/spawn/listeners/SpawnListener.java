@@ -132,7 +132,7 @@ public class SpawnListener extends ListenerBase implements Reloadable {
 
     @Listener(order = Order.EARLY)
     public void onRespawn(RespawnPlayerEvent event) {
-        if (event.isBedSpawn()) {
+        if (event.isBedSpawn() && !this.spawnConfig.isRedirectBedSpawn()) {
             // Nope, we don't care.
             return;
         }

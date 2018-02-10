@@ -25,6 +25,9 @@ public class SpawnConfig {
     @Setting(value = "per-world-permissions", comment = "config.spawn.worlds")
     private boolean perWorldPerms = false;
 
+    @Setting(value = "affect-bed-spawn", comment = "config.spawn.bedspawn")
+    private boolean redirectBedSpawn = true;
+
     public boolean isSpawnOnLogin() {
         return spawnOnLogin;
     }
@@ -43,5 +46,9 @@ public class SpawnConfig {
 
     public boolean isPerWorldPerms() {
         return perWorldPerms;
+    }
+
+    public boolean isRedirectBedSpawn() {
+        return this.redirectBedSpawn;
     }
 }
