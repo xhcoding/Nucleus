@@ -172,17 +172,20 @@ artifacts {
 }
 
 signing {
-    sign shadowJar
+    required {
+        project.properties.hasProperty("signing.keyId")
+    }
+    sign configurations.archives
 }
 
-task copyAsc(type: Copy, dependsOn: 'signShadowJar') {
-    from([signShadowJar.getSignatureFiles()])
+task copyAsc(type: Copy, dependsOn: 'signArchives') {
+    from([signArchives.getSignatureFiles()])
     into project.file('output')
 }
 
 task buildAndSign {
     dependsOn 'build'
-    dependsOn 'signShadowJar'
+    dependsOn 'signArchives'
     dependsOn 'copyAsc'
 }
 
@@ -197,5 +200,5 @@ clean.dependsOn(cleanJars)
 copyJars.mustRunAfter(cleanJars)
 build.dependsOn(shadowJar)
 build.dependsOn(copyJars)
-signShadowJar.dependsOn(shadowJar)
-copyAsc.dependsOn(signShadowJar)
+signArchives.dependsOn(shadowJar)
+copyAsc.dependsOn(signArchives)
