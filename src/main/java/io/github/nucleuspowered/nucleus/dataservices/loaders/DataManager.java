@@ -45,7 +45,7 @@ public abstract class DataManager<I, P, S extends Service> {
         this.dataProviderFactory = dataProviderFactory;
         this.fileExists = fileExistsPredicate;
         this.cache = Caffeine.newBuilder()
-                .expireAfterAccess(2, TimeUnit.MINUTES)
+                .maximumSize(500)
                 .removalListener(new Removal())
                 .build(new Loader());
 

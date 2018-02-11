@@ -79,12 +79,6 @@ public class UserDataManager extends DataManager<UUID, ConfigurationNode, Modula
         this.invalidateOld();
     }
 
-    public List<ModularUserService> getOnlineUsersInternal() {
-        return ImmutableList.copyOf(
-                getAll(Sponge.getServer().getOnlinePlayers().stream().map(Identifiable::getUniqueId).collect(Collectors.toList())).values()
-        );
-    }
-
     public void forceUnloadAndDelete(UUID uuid) {
         ModularUserService service = get(uuid).orElse(null);
         this.invalidate(uuid, false);
