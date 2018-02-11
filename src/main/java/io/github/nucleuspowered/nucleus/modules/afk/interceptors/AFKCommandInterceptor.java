@@ -62,7 +62,7 @@ public class AFKCommandInterceptor implements ICommandInterceptor, Reloadable {
         AFKConfig config = Nucleus.getNucleus().getInternalServiceManager().getServiceUnchecked(AFKConfigAdapter.class).getNodeOrDefault();
         if (config.isAlertSenderOnAfk()) {
             NucleusTextTemplate textTemplate = config.getMessages().getOnCommand();
-            if (textTemplate.isEmpty()) {
+            if (textTemplate == null || textTemplate.isEmpty()) { // NPE has occurred here in the past due to an empty message.
                 this.message = null;
             } else {
                 this.message = textTemplate;
