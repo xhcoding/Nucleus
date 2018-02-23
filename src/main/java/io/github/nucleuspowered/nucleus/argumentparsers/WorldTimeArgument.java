@@ -16,6 +16,7 @@ import org.spongepowered.api.text.Text;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.LongFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,35 +45,40 @@ import javax.annotation.Nullable;
  */
 public class WorldTimeArgument extends CommandElement {
 
-    private static final HashMap<String, Integer> tickAliases = Maps.newHashMap();
+    private static final int TICKS_IN_DAY = 24000;
+    private static final HashMap<String, LongFunction<Long>> tickAliases = Maps.newHashMap();
     private static final Pattern tfh = Pattern.compile("^(\\d{1,2})[hH]$");
     private static final Pattern ampm = Pattern.compile("^(\\d{1,2})(a[m]?|p[m]?)$", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     private static final Pattern ticks = Pattern.compile("^(\\d{1,5})$");
 
+    private static final RoundUp DAWN = new RoundUp(0);
+    private static final RoundUp DAY = new RoundUp(1000);
+    private static final RoundUp NOON = new RoundUp(6000);
+    private static final RoundUp DUSK = new RoundUp(12000);
+    private static final RoundUp NIGHT = new RoundUp(14000);
+    private static final RoundUp MIDNIGHT = new RoundUp(18000);
+
     // Thanks to http://minecraft.gamepedia.com/Day-night_cycle
     static {
-        tickAliases.put("dawn", 0);
-        tickAliases.put("sunrise", 0);
-        tickAliases.put("morning", 1000);
-        tickAliases.put("day", 1000);
-        tickAliases.put("daytime", 1000);
-        tickAliases.put("noon", 6000);
-        tickAliases.put("afternoon", 6000);
-        tickAliases.put("dusk", 12000);
-        tickAliases.put("sunset", 12000);
-        tickAliases.put("evening", 12000);
-        tickAliases.put("night", 14000);
-        tickAliases.put("midnight", 18000);
+        tickAliases.put("dawn", DAWN);
+        tickAliases.put("sunrise", DAWN);
+        tickAliases.put("morning", DAY);
+        tickAliases.put("day", DAY);
+        tickAliases.put("daytime", DAY);
+        tickAliases.put("noon", NOON);
+        tickAliases.put("afternoon", NOON);
+        tickAliases.put("dusk", DUSK);
+        tickAliases.put("sunset", DUSK);
+        tickAliases.put("evening", DUSK);
+        tickAliases.put("night", NIGHT);
+        tickAliases.put("midnight", MIDNIGHT);
     }
 
     public WorldTimeArgument(@Nullable Text key) {
         super(key);
     }
 
-    @Nullable
-    @Override
-    protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
-        String arg = args.next().toLowerCase();
+    private LongFunction<Long> getValue(String arg, CommandArgs args) throws ArgumentParseException {
         if (tickAliases.containsKey(arg)) {
             return tickAliases.get(arg);
         }
@@ -81,7 +87,7 @@ public class WorldTimeArgument extends CommandElement {
         Matcher m1 = tfh.matcher(arg);
         if (m1.matches()) {
             // Get the number, multiply by 1000, return.
-            int i = Integer.parseInt(m1.group(1));
+            long i = Long.parseLong(m1.group(1));
             if (i > 23 || i < 0) {
                 throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldtime.24herror"));
             }
@@ -91,7 +97,8 @@ public class WorldTimeArgument extends CommandElement {
                 i += 24;
             }
 
-            return i * 1000;
+            final long res = i * 1000;
+            return x -> res;
         }
 
         // <number>am,pm
@@ -119,20 +126,28 @@ public class WorldTimeArgument extends CommandElement {
                 i += 24;
             }
 
-            return i * 1000;
+            final long res = i * 1000;
+            return x -> res;
         }
 
         // 0 -> 23999
         if (ticks.matcher(arg).matches()) {
-            int i = Integer.parseInt(arg);
+            final long i = Long.parseLong(arg);
             if (i >= 0 && i <= 23999) {
-                return i;
+                return x -> i;
             }
 
             throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldtime.ticks"));
         }
 
         throw args.createError(Nucleus.getNucleus().getMessageProvider().getTextMessageWithFormat("args.worldtime.error", arg));
+    }
+
+    @Nullable
+    @Override
+    protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
+        String arg = args.next().toLowerCase();
+        return getValue(arg, args);
     }
 
     @Override
@@ -142,6 +157,35 @@ public class WorldTimeArgument extends CommandElement {
             return tickAliases.keySet().stream().filter(x -> x.startsWith(a)).collect(Collectors.toList());
         } catch (ArgumentParseException e) {
             return new ArrayList<>(tickAliases.keySet());
+        }
+    }
+
+    private static class RoundUp implements LongFunction<Long> {
+
+        private final long target;
+
+        private RoundUp(long target) {
+            this.target = target;
+        }
+
+        @Override
+        public final Long apply(long value) {
+            // 23999 is the max tick number
+            // Get the time of day
+            long remainder = value % TICKS_IN_DAY;
+
+            if (this.target == remainder) {
+                // no advancement
+                return value;
+            }
+
+            if (this.target < remainder) {
+                // target is below remainder, we need to get to target on next day
+                value += TICKS_IN_DAY;
+            }
+
+            // remove remainder, add target
+            return value - remainder + this.target;
         }
     }
 }
