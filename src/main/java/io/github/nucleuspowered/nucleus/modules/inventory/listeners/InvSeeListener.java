@@ -10,6 +10,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.filter.Getter;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.filter.type.Exclude;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
@@ -39,7 +40,7 @@ public class InvSeeListener extends ListenerBase {
      */
     @Listener
     @Exclude({InteractInventoryEvent.Open.class, InteractInventoryEvent.Close.class})
-    public void onInventoryChange(InteractInventoryEvent event, @Root Player player, @Getter("getTargetInventory") Container targetInventory) {
+    public void onInventoryChange(InteractInventoryEvent event, @First Player player, @Getter("getTargetInventory") Container targetInventory) {
 
         if (preventModify.get(player.getUniqueId()) == targetInventory) {
             event.setCancelled(true);
@@ -49,7 +50,7 @@ public class InvSeeListener extends ListenerBase {
     }
 
     @Listener(order = Order.POST)
-    public void onInventoryClose(InteractInventoryEvent.Close event, @Root Player player, @Getter("getTargetInventory") Container targetInventory) {
+    public void onInventoryClose(InteractInventoryEvent.Close event, @First Player player, @Getter("getTargetInventory") Container targetInventory) {
         if (preventModify.get(player.getUniqueId()) == targetInventory) {
             preventModify.remove(player.getUniqueId());
         }
